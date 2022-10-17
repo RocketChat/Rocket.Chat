@@ -227,7 +227,7 @@
   "Additional_emails": "ອີເມລເພີ່ມເຕີມ",
   "Additional_Feedback": "ຜົນຕອບຮັບເພີ່ມເຕີມ",
   "additional_integrations_Bots": "ຖ້າທ່ານກໍາລັງຊອກຫາວິທີການບູລະນາການຂອງຕົນເອງ, ຫຼັງຈາກນັ້ນເບິ່ງບໍ່ມີຫຍັງອີກຕໍ່ໄປກ່ວາຕົວປ່ຽນ Hubot ຂອງພວກເຮົາ. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "ທ່ານກໍາລັງຊອກຫາການເຊື່ອມໂຍງກັບຊອບແວແລະແອັບພລິເຄຊັນອື່ນໆທີ່ມີ RocketChat ແຕ່ທ່ານບໍ່ມີເວລາທີ່ຈະເຮັດມັນດ້ວຍຕົນເອງບໍ? ຫຼັງຈາກນັ້ນ, ພວກເຮົາແນະນໍາໃຫ້ນໍາໃຊ້ Zapier ທີ່ພວກເຮົາສະຫນັບສະຫນູນຢ່າງເຕັມສ່ວນ. ອ່ານເພີ່ມເຕີມກ່ຽວກັບເອກະສານຂອງພວກເຮົາ. <a href='https: //rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps /' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "ທ່ານກໍາລັງຊອກຫາການເຊື່ອມໂຍງກັບຊອບແວແລະແອັບພລິເຄຊັນອື່ນໆທີ່ມີ RocketChat ແຕ່ທ່ານບໍ່ມີເວລາທີ່ຈະເຮັດມັນດ້ວຍຕົນເອງບໍ? ຫຼັງຈາກນັ້ນ, ພວກເຮົາແນະນໍາໃຫ້ນໍາໃຊ້ Zapier ທີ່ພວກເຮົາສະຫນັບສະຫນູນຢ່າງເຕັມສ່ວນ. ອ່ານເພີ່ມເຕີມກ່ຽວກັບເອກະສານຂອງພວກເຮົາ. <a href='https: //rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps /' target='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_Info": "Admin Info",
   "Administration": "ການບໍລິຫານ",
   "Adult_images_are_not_allowed": "ຮູບພາບຜູ້ໃຫຍ່ບໍ່ໄດ້ອະນຸຍາດໃຫ້",

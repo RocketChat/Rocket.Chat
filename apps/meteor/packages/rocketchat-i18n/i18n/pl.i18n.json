@@ -308,7 +308,7 @@
   "Additional_emails": "Dodatkowe adresy e-mail",
   "Additional_Feedback": "Dodatkowy komentarz",
   "additional_integrations_Bots": "Jeśli szukasz sposobu na zintegrowanie własnego bota, nie szukaj dalej niż nasz adapter Hubota. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Czy chcesz zintegrować inne oprogramowanie i aplikacje z Rocket.Chat, ale nie masz czasu, aby zrobić to ręcznie? Proponujemy użycie narzędzia Zapier, które w pełni obsługujemy. Przeczytaj więcej na ten temat w naszej dokumentacji. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "Czy chcesz zintegrować inne oprogramowanie i aplikacje z Rocket.Chat, ale nie masz czasu, aby zrobić to ręcznie? Proponujemy użycie narzędzia Zapier, które w pełni obsługujemy. Przeczytaj więcej na ten temat w naszej dokumentacji. <a href=\"https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/\" target=\"_blank\">https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_disabled_encryption": "Administrator nie włączył szyfrowania E2E",
   "Admin_Info": "Informacje administracyjne",
   "admin-no-active-video-conf-provider": "**Połączenie konferencyjne nie jest włączone**: Skonfiguruj połączenia konferencyjne, aby były dostępne w tej przestrzeni roboczej.",

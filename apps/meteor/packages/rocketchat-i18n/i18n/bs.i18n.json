@@ -216,7 +216,7 @@
   "Additional_emails": "Dodatni Emailovi",
   "Additional_Feedback": "Dodatne povratne informacije",
   "additional_integrations_Bots": "Ako tražite kako integrirati svoj bot, nemojte gledati dalje od našeg Hubot adaptera. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Tražite li integrirati drugi softver i aplikacije s Rocket.Chat, ali nemate vremena za ručno raditi? Onda predlažemo da koristite Zapier koji u potpunosti podržavamo. Pročitajte više o našoj dokumentaciji. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "Tražite li integrirati drugi softver i aplikacije s Rocket.Chat, ali nemate vremena za ručno raditi? Onda predlažemo da koristite Zapier koji u potpunosti podržavamo. Pročitajte više o našoj dokumentaciji. <a href='https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/' target='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_Info": "Informacije o administratoru",
   "Administration": "Administracija",
   "Adult_images_are_not_allowed": "Slike za odrasle nisu dopuštene",

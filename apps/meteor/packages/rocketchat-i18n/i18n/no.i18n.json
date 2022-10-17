@@ -250,7 +250,7 @@
   "Additional_emails": "Ekstra e-postadresser",
   "Additional_Feedback": "Ekstra tilbakemelding",
   "additional_integrations_Bots": "Hvis du leter etter hvordan du integrerer din egen bot, så se ikke lenger enn vår Hubot-adapter. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Ser du etter å integrere annen programvare og applikasjoner med Rocket.Chat, men du har ikke tid til å manuelt gjøre det? Da foreslår vi å bruke Zapier som vi støtter fullt ut. Les mer om det på vår dokumentasjon. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "Ser du etter å integrere annen programvare og applikasjoner med Rocket.Chat, men du har ikke tid til å manuelt gjøre det? Da foreslår vi å bruke Zapier som vi støtter fullt ut. Les mer om det på vår dokumentasjon. <a href='https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/' target='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_disabled_encryption": "Din administrator har ikke aktivert ende-til-ende kryptering.",
   "Admin_Info": "Admin Info",
   "Administration": "Administrasjon",

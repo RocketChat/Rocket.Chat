@@ -293,7 +293,7 @@
   "Additional_emails": "Extra e-mails",
   "Additional_Feedback": "Extra feedback",
   "additional_integrations_Bots": "Als je op zoek bent naar het integreren van je eigen bot, zoek dan niet verder dan onze Hubot-adapter. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Wilt u andere software en applicaties integreren met Rocket.Chat, maar heeft u geen tijd om het handmatig te doen? Dan stellen we voor om Zapier te gebruiken die we volledig ondersteunen. Lees er meer over in onze documentatie. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "Wilt u andere software en applicaties integreren met Rocket.Chat, maar heeft u geen tijd om het handmatig te doen? Dan stellen we voor om Zapier te gebruiken die we volledig ondersteunen. Lees er meer over in onze documentatie. <a href=\"https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/\" target=\"_blank\">https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_disabled_encryption": "Uw beheerder heeft E2E-codering niet ingeschakeld.",
   "Admin_Info": "Admin info",
   "Administration": "Administratie",

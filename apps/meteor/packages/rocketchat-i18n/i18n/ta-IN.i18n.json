@@ -216,7 +216,7 @@
   "Additional_emails": "கூடுதல் மின் அஞ்சல்",
   "Additional_Feedback": "கூடுதல் கருத்துத்",
   "additional_integrations_Bots": "உங்கள் சொந்த பாட்டை ஒருங்கிணைக்க எப்படி தேடுகிறீர்கள் எனில், எங்கள் Hubot adapter ஐப் பார்க்க வேண்டாம். <a href='https://github.com/RocketChat/hubot-rocketchat' இலக்கு = '_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "நீங்கள் Rocket.Chat மற்ற மென்பொருள் மற்றும் பயன்பாடுகள் ஒருங்கிணைக்க பார்க்கிறாய் ஆனால் நீங்கள் கைமுறையாக அதை செய்ய நேரம் இல்லை? பின்னர் நாம் முழுமையாக ஆதரிக்கும் Zapier ஐப் பரிந்துரைக்கிறோம். எங்கள் ஆவணத்தில் அதைப் பற்றி மேலும் அறியவும். <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' இலக்கு = '_blank'>https://rocket.chat/docs/administrator-guides/integrations / ஜாப்பியர் / யூஸ்-ஜாப்ஸ் /</a>",
+  "additional_integrations_Zapier": "நீங்கள் Rocket.Chat மற்ற மென்பொருள் மற்றும் பயன்பாடுகள் ஒருங்கிணைக்க பார்க்கிறாய் ஆனால் நீங்கள் கைமுறையாக அதை செய்ய நேரம் இல்லை? பின்னர் நாம் முழுமையாக ஆதரிக்கும் Zapier ஐப் பரிந்துரைக்கிறோம். எங்கள் ஆவணத்தில் அதைப் பற்றி மேலும் அறியவும். <a href='https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/' இலக்கு = '_blank'>https://rocket.chat/docs/administrator-guides/integrations / ஜாப்பியர் / யூஸ்-ஜாப்ஸ் /</a>",
   "Admin_Info": "நிர்வாகம் தகவல்",
   "Administration": "நிர்வாகம்",
   "Adult_images_are_not_allowed": "வயது வந்தோருக்கான படங்கள் அனுமதிக்கப்படவில்லை",

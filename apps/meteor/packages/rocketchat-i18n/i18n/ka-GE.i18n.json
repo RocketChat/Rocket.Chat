@@ -263,7 +263,7 @@
   "Additional_emails": "დამატებითი ელ.ფოსტები",
   "Additional_Feedback": "დამატებითი უკუკავშირი",
   "additional_integrations_Bots": "თუ თქვენ ეძებთ თუ როგორ ჩაამატოთ თქვენი საკუთარი ბოტი, მაშინ ნახეთ ჩვენი ჰაბოტ გადამყვანი. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\"> https://github.com/RocketChat/hubot-rocketchat </a>",
-  "additional_integrations_Zapier": "გსურთ სხვა პროგრამული უზრუნველყოფისა და პროგრამების Rocket.Chat– ში ინტეგრაცია, მაგრამ ამის ხელით სკეთებლად დრო არ გაქვთ?  ჩვენ გთავაზობთ Zapier გამოყენებას, რომელსაც ჩვენ სრულად ვუჭერთ მხარს. დაწვრილებით ამის შესახებ ჩვენს დოკუმენტაციაზე წაიკითხეთ. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\"> https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/ </a>",
+  "additional_integrations_Zapier": "გსურთ სხვა პროგრამული უზრუნველყოფისა და პროგრამების Rocket.Chat– ში ინტეგრაცია, მაგრამ ამის ხელით სკეთებლად დრო არ გაქვთ?  ჩვენ გთავაზობთ Zapier გამოყენებას, რომელსაც ჩვენ სრულად ვუჭერთ მხარს. დაწვრილებით ამის შესახებ ჩვენს დოკუმენტაციაზე წაიკითხეთ. <a href=\"https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/\" target=\"_blank\"> https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/ </a>",
   "Admin_disabled_encryption": "თქვენს ადმინისტრატორს არ გაუაქტიურებია E2E დაშიფვრა.",
   "Admin_Info": "ადმინისტრატორის ინფორმაცია",
   "Administration": "ადმინისტრაცია",

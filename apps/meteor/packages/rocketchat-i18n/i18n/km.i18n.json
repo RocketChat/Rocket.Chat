@@ -247,7 +247,7 @@
   "Additional_emails": "បន្ថែមអ៊ីមែល",
   "Additional_Feedback": "មតិបន្ថែម",
   "additional_integrations_Bots": "ប្រសិនបើអ្នកកំពុងស្វែងរកវិធីបញ្ចូលប៊ិចផ្ទាល់ខ្លួនរបស់អ្នកនោះអ្នកនឹងរកមើលបន្ថែមទៀតមិនមែនអាដាប់ធ័រ Hubot របស់យើងទេ។ <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "តើអ្នកកំពុងសម្លឹងរកមើលការរួមបញ្ចូលកម្មវិធីនិងកម្មវិធីផ្សេងៗជាមួយ Rocket.Chat ប៉ុន្តែអ្នកមិនមានពេលធ្វើដោយដៃទេ? បន្ទាប់យើងស្នើឱ្យប្រើ Zapier ដែលយើងគាំទ្រយ៉ាងពេញទំហឹង។ អានបន្ថែមអំពីវានៅលើឯកសាររបស់យើង។ <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "តើអ្នកកំពុងសម្លឹងរកមើលការរួមបញ្ចូលកម្មវិធីនិងកម្មវិធីផ្សេងៗជាមួយ Rocket.Chat ប៉ុន្តែអ្នកមិនមានពេលធ្វើដោយដៃទេ? បន្ទាប់យើងស្នើឱ្យប្រើ Zapier ដែលយើងគាំទ្រយ៉ាងពេញទំហឹង។ អានបន្ថែមអំពីវានៅលើឯកសាររបស់យើង។ <a href='https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/' target='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_disabled_encryption": "អ្នកគ្រប់គ្រងមិនបានបើកដំណើរការ ការបំលែងកូដ E2E។",
   "Admin_Info": "ព័ត៌មានអ្នកគ្រប់គ្រង",
   "Administration": "រដ្ឋបាល",

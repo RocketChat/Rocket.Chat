@@ -275,7 +275,7 @@
   "Additional_emails": "其他 Email",
   "Additional_Feedback": "其他反馈",
   "additional_integrations_Bots": "如果你正在研究如何整合你自己的机器人，那么可以看看我们的 Hubot 适配器。 <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "您是否希望将其他软件和应用程序与 Rocket.Chat 集成，但您没有时间手动完成？那么我们建议使用我们完全支持的 Zapier。请阅读我们的文档了解更多信息。 <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "您是否希望将其他软件和应用程序与 Rocket.Chat 集成，但您没有时间手动完成？那么我们建议使用我们完全支持的 Zapier。请阅读我们的文档了解更多信息。 <a href=\"https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/\" target=\"_blank\">https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_disabled_encryption": "您的管理员并没有启用端到端加密",
   "Admin_Info": "管理员信息",
   "Administration": "管理",

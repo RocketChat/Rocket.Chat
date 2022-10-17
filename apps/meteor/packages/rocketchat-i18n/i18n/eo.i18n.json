@@ -216,7 +216,7 @@
   "Additional_emails": "Aldonaj retpoŝtoj",
   "Additional_Feedback": "Pliaj rimarkoj",
   "additional_integrations_Bots": "Se vi serĉas kiel integri vian propran boton, tiam rigardu ne plu ol nia Hubot-adaptilo. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Ĉu vi volas integri aliajn programojn kaj programojn kun Rocket.Chat sed vi ne havas la tempon por permane fari ĝin? Tiam ni sugestas uzi Zapier, kiun ni plene subtenas. Legu pli pri ĝi pri nia dokumentado. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
+  "additional_integrations_Zapier": "Ĉu vi volas integri aliajn programojn kaj programojn kun Rocket.Chat sed vi ne havas la tempon por permane fari ĝin? Tiam ni sugestas uzi Zapier, kiun ni plene subtenas. Legu pli pri ĝi pri nia dokumentado. <a href='https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/' target='_blank'>https://docs.rocket.chat/guides/administration/admin-panel/integrations/zapier/</a>",
   "Admin_Info": "Admin Informoj",
   "Administration": "Administrado",
   "Adult_images_are_not_allowed": "Plenkreskulaj bildoj ne estas permesataj",
