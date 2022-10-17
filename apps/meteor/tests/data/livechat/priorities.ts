@@ -1,9 +1,9 @@
 import faker from '@faker-js/faker';
-import { ILivechatPriority } from '@rocket.chat/core-typings';
+import { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import { credentials, methodCall, request } from '../api-data';
 import { DummyResponse } from './utils';
 
-export const savePriority = (): Promise<ILivechatPriority> => {
+export const savePriority = (): Promise<IOmnichannelServiceLevelAgreements> => {
     return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:savePriority`))

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add(
 	'livechat.beforeRoom',
@@ -15,7 +15,7 @@ callbacks.add(
 			return roomInfo;
 		}
 
-		const priority = LivechatPriority.findOneByIdOrName(searchTerm);
+		const priority = Promise.await(OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm));
 		if (!priority) {
 			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
 				function: 'livechat.beforeRoom',

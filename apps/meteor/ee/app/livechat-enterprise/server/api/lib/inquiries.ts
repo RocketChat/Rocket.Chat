@@ -1,4 +1,4 @@
-import { LivechatInquiry, Users, LivechatPriority } from '@rocket.chat/models';
+import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { LivechatEnterprise } from '../../lib/LivechatEnterprise';
 
@@ -16,7 +16,7 @@ export async function setPriorityToInquiry({
 		throw new Error('error-invalid-inquiry');
 	}
 
-	const priorityData = priority && (await LivechatPriority.findOneByIdOrName(priority));
+	const priorityData = priority && (await OmnichannelServiceLevelAgreements.findOneByIdOrName(priority));
 	if (!priorityData) {
 		throw new Error('error-invalid-priority');
 	}

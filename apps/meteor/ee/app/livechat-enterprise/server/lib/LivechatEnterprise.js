@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users } from '@rocket.chat/models';
+import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import { LivechatRooms, Messages } from '../../../../../app/models/server';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import {
@@ -140,6 +139,7 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
+	// make async
 	savePriority(_id, priorityData) {
 		check(_id, Match.Maybe(String));
 
@@ -149,8 +149,8 @@ export const LivechatEnterprise = {
 			dueTimeInMinutes: String,
 		});
 
-		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
-		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
+		const oldPriority = _id && Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const priority = Promise.await(OmnichannelServiceLevelAgreements.createOrUpdatePriority(priorityData, _id));
 		if (!oldPriority) {
 			return priority;
 		}
@@ -168,14 +168,14 @@ export const LivechatEnterprise = {
 	removePriority(_id) {
 		check(_id, String);
 
-		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
+		const priority = Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } }));
 
 		if (!priority) {
 			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
 				method: 'livechat:removePriority',
 			});
 		}
-		const removed = LivechatPriority.removeById(_id);
+		const removed = Promise.await(OmnichannelServiceLevelAgreements.removeById(_id));
 		if (removed) {
 			removePriorityFromRooms(_id);
 		}

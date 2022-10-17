@@ -1,6 +1,6 @@
 import { log } from 'console';
 
-import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnit } from '@rocket.chat/models';
 
 import { getModules, getTags, hasLicense } from './license';
 import { Analytics } from '../../../../server/sdk';
@@ -63,9 +63,9 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 		}),
 	);
 
-	// Number of Priorities
+	// Number of Service Level Agreements
 	statsPms.push(
-		LivechatPriority.col.count().then((count) => {
+		OmnichannelServiceLevelAgreements.col.count().then((count) => {
 			statistics.priorities = count;
 			return true;
 		}),

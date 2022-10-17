@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add(
@@ -13,9 +13,11 @@ callbacks.add(
 			return extraData;
 		}
 
-		const priority = LivechatPriority.findOneByIdOrName(searchTerm, {
-			fields: { dueTimeInMinutes: 1 },
-		});
+		const priority = Promise.await(
+			OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm, {
+				projection: { dueTimeInMinutes: 1 },
+			}),
+		);
 		if (!priority) {
 			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
 				function: 'livechat.beforeInquiry',

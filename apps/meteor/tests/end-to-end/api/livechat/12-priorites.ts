@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 
-import type { ILivechatPriority } from '@rocket.chat/core-typings';
+import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { savePriority } from '../../../data/livechat/priorities';
-import { createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
+import { createVisitor, createLivechatRoom, takeInquiry, createAgent } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -42,7 +42,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array').with.lengthOf.greaterThan(0);
-			expect(response.body.priorities.find((p: ILivechatPriority) => p._id === priority._id)).to.be.an('object');
+			expect(response.body.priorities.find((p: IOmnichannelServiceLevelAgreements) => p._id === priority._id)).to.be.an('object');
 		});
 	});
 
@@ -126,6 +126,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should fail if priority is not valid', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
+			await createAgent();
+
 			const response = await request
 				.put(api('livechat/inquiry.prioritize'))
 				.set(credentials)

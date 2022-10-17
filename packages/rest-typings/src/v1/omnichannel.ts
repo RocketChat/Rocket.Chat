@@ -12,7 +12,6 @@ import type {
 	IOmnichannelRoom,
 	IRoom,
 	ISetting,
-	ILivechatPriority,
 	ILivechatAgentActivity,
 	ILivechatCustomField,
 	IOmnichannelSystemMessage,
@@ -20,6 +19,7 @@ import type {
 	ILivechatBusinessHour,
 	ILivechatTrigger,
 	ILivechatInquiryRecord,
+	IOmnichannelServiceLevelAgreements,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
@@ -2806,11 +2806,11 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities': {
-		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
+		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: IOmnichannelServiceLevelAgreements[] }>;
 	};
 
 	'/v1/livechat/priorities/:priorityId': {
-		GET: () => ILivechatPriority;
+		GET: () => IOmnichannelServiceLevelAgreements;
 	};
 
 	'/v1/livechat/visitors.search': {
