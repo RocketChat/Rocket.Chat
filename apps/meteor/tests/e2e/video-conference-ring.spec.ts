@@ -13,7 +13,7 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe.only('video conference ringing', () => {
+test.describe('video conference ringing', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.skip(!IS_EE, 'Enterprise Only');
