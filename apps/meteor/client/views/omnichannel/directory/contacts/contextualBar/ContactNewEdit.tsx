@@ -107,7 +107,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 
 	const {
 		register,
-		formState: { errors, isValid: isFormValid },
+		formState: { errors, isValid: isFormValid, isDirty },
 		control,
 		setValue,
 		getValues,
@@ -127,7 +127,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 	});
 
 	const [customFieldsErrors, setCustomFieldsErrors] = useState([]);
-	const isValid = isFormValid && customFieldsErrors.length === 0;
+	const isValid = isDirty && isFormValid && customFieldsErrors.length === 0;
 
 	useEffect(() => {
 		if (!initialUsername) {
@@ -160,6 +160,8 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		const { contact } = await getContactBy({ phone });
 		return !contact || contact._id === id || t('Phone_already_exists');
 	};
+
+	const isNameValid = (v: string): string | boolean => (!v.trim() ? t('The_field_is_required', t('Name')) : true);
 
 	const handleContactManagerChange = async (userId: string): Promise<void> => {
 		setUserId(userId);
@@ -207,11 +209,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 				<Field>
 					<Field.Label>{t('Name')}*</Field.Label>
 					<Field.Row>
-						<TextInput
-							{...register('name', { required: t('The_field_is_required', t('Name')) })}
-							error={errors.name?.message}
-							flexGrow={1}
-						/>
+						<TextInput {...register('name', { validate: isNameValid })} error={errors.name?.message} flexGrow={1} />
 					</Field.Row>
 					<Field.Error>{errors.name?.message}</Field.Error>
 				</Field>
