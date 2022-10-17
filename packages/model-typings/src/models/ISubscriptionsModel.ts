@@ -24,6 +24,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		rid: string,
 		uid: string,
 		readThreads?: boolean,
+		alert?: boolean,
 		options?: FindOptions<ISubscription>,
 	): ReturnType<IBaseModel<ISubscription>['update']>;
 

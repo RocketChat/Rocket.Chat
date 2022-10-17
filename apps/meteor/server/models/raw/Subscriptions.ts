@@ -105,6 +105,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		rid: string,
 		uid: string,
 		readThreads = false,
+		alert = false,
 		options: FindOptions<ISubscription> = {},
 	): ReturnType<BaseRaw<ISubscription>['update']> {
 		const query: Filter<ISubscription> = {
@@ -122,7 +123,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			}),
 			$set: {
 				open: true,
-				alert: false,
+				alert,
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
