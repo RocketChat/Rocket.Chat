@@ -179,6 +179,14 @@ export class HomeContent {
 		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
 	}
 
+	get btnDeclineCall(): Locator {
+		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
+	}
+
+	ringCallText(text: string): Locator {
+		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
+	}
+
 	get btnJoinCall(): Locator {
 		return this.page.locator('.rcx-button--small >> text="Join call"');
 	}
