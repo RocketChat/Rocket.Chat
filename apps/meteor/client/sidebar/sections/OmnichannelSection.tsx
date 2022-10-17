@@ -9,7 +9,6 @@ import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggl
 
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
-
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
 	const hasPermissionToSeeContactCenter = usePermission('view-omnichannel-contact-center');
