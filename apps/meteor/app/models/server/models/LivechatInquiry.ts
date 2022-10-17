@@ -13,7 +13,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
-		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
+		this.tryEnsureIndex({ estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 		this.tryEnsureIndex({ 'v.token': 1, 'status': 1 }); // visitor token and status
 		this.tryEnsureIndex({ locked: 1, lockedAt: 1 }, { sparse: true }); // locked and lockedAt
 	}
@@ -34,7 +34,6 @@ export class LivechatInquiry extends Base {
 			},
 			{
 				sort: {
-					queueOrder: 1,
 					estimatedWaitingTimeQueue: 1,
 					estimatedServiceTimeAt: 1,
 				},

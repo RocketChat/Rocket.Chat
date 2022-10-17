@@ -143,7 +143,6 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 				status,
 			},
 			t: 'l',
-			queueOrder: 1,
 			estimatedWaitingTimeQueue: 0,
 			estimatedServiceTimeAt: ts,
 		},

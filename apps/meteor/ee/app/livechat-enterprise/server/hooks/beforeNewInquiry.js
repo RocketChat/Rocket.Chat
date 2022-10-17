@@ -27,11 +27,10 @@ callbacks.add(
 		const now = new Date();
 		const ts = new Date(now.getTime());
 		const { dueTimeInMinutes: estimatedWaitingTimeQueue } = priority;
-		const queueOrder = 0;
 		const estimatedServiceTimeAt = new Date(now.setMinutes(now.getMinutes() + estimatedWaitingTimeQueue));
 
 		cbLogger.debug('Callback success. Queue timing properties added');
-		return Object.assign({ ...props }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
+		return Object.assign({ ...props }, { ts, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-before-new-inquiry',
