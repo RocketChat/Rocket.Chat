@@ -14,11 +14,11 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe.only('video conference ringing', () => {
+test.describe('video conference ringing', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let targetTeam: string;
-	// test.skip(!IS_EE, 'Enterprise Only');
+	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
