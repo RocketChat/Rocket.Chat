@@ -12,7 +12,6 @@ addMigration({
 				$set: {
 					matrixFederation: await getMatrixFederationStatistics(),
 				},
-				$unset: { matrixBridgeEnabled: 1 },
 			},
 		);
 	},
