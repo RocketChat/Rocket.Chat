@@ -1,3 +1,4 @@
+import { ILogEntry } from '@rocket.chat/core-typings';
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
@@ -5,12 +6,7 @@ import React, { FC } from 'react';
 import AppLogsItemEntry from './AppLogsItemEntry';
 
 type AppLogsItemProps = {
-	entries: {
-		severity: string;
-		timestamp: string;
-		caller: string;
-		args: unknown;
-	}[];
+	entries: ILogEntry[];
 	instanceId: string;
 	title: string;
 };
