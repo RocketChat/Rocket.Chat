@@ -8,7 +8,7 @@ const fraction = () => {
 	return array[0] * 2.3283064365386963e-10;
 };
 
-export const chooseElement = (arrayOrString) => {
+export const chooseElement = (arrayOrString: string | string[]) => {
 	const index = Math.floor(fraction() * arrayOrString.length);
 
 	if (typeof arrayOrString === 'string') {
@@ -18,7 +18,7 @@ export const chooseElement = (arrayOrString) => {
 	return arrayOrString[index];
 };
 
-export const createRandomString = (charsCount, alphabet) => Array.from({ length: charsCount }, () => chooseElement(alphabet)).join('');
+export const createRandomString = (charsCount: number, alphabet: string) => Array.from({ length: charsCount }, () => chooseElement(alphabet)).join('');
 
 export const createRandomId = (charsCount = 17) => createRandomString(charsCount, UNMISTAKABLE_CHARS);
 
