@@ -60,7 +60,7 @@ const ChannelsOverview = (): ReactElement => {
 			</EngagementDashboardCardFilter>
 			<Box>
 				{channels && !channels.length && (
-					<Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
+					<Tile fontScale='p1' color='annotation' style={{ textAlign: 'center' }}>
 						{t('No_data_found')}
 					</Tile>
 				)}

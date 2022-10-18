@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, MessageBody } from '@rocket.chat/fuselage';
+import { Box, MessageBody, Palette } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -98,9 +98,9 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 			border-radius: 2px;
 			border-width: 2px;
 			border-style: solid;
-			background-color: var(--rcx-color-neutral-100, ${colors.n100});
-			border-color: var(--rcx-color-neutral-200, ${colors.n200});
-			border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+			background-color: ${Palette.surface['surface-tint']};
+			border-color: ${Palette.stroke['stroke-extra-light']};
+			border-inline-start-color: ${Palette.stroke['stroke-medium']};
 
 			&:hover,
 			&:focus {

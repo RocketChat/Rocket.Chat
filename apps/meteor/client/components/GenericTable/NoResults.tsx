@@ -28,7 +28,7 @@ const NoResults: FC<NoResultsProps> = ({ icon, title, description, buttonTitle, 
 		<Box is='h2' fontScale='h2' flexGrow={1}>
 			{title}
 		</Box>
-		<Tile paddingBlockStart='x5' fontScale='p2' elevation='0' color='info' textAlign='center'>
+		<Tile paddingBlockStart='x5' fontScale='p2' elevation='0' color='annotation' textAlign='center'>
 			<Box margin='auto' maxWidth='400px'>
 				{description}
 			</Box>
