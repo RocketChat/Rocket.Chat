@@ -55,6 +55,9 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 			case 'l':
 				open('room-info', username);
 				break;
+			case 'v':
+				open('voip-room-info', username);
+				break;
 			case 'd':
 				(room.uids?.length ?? 0) > 2 ? open('user-info-group', username) : open('user-info', username);
 				break;
