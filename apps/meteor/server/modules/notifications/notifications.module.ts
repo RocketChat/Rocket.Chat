@@ -161,6 +161,14 @@ export class NotificationsModule {
 				return true;
 			}
 
+			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v' | '_id'>>(rid, {
+				projection: { 't': 1, 'v.token': 1 },
+			});
+
+			if (!room) {
+				return false;
+			}
+
 			// typing from livechat widget
 			if (extraData?.token) {
 				// TODO improve this to make a query 'v.token'
@@ -173,9 +181,9 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
+			const canAccess = await Authorization.canAccessRoomId(room._id, this.userId);
 
-			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
-			return subsCount > 0;
+			return canAccess;
 		});
 
 		async function canType({
