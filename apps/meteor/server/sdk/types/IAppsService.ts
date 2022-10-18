@@ -1,9 +1,8 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import type { RealAppBridges } from '../../services/apps/bridges';
 import type { AppsPersistenceModel } from '../../../app/models/server';
 
 export interface IAppsService {
@@ -15,7 +14,10 @@ export interface IAppsService {
 	isLoaded: () => boolean;
 	isEnabled: () => SettingValue;
 	isInitialized: () => boolean;
-	getBridges: () => RealAppBridges | undefined;
-	getManager: () => AppManager | undefined;
 	getPersistenceModel: () => AppsPersistenceModel;
+	getMarketplaceUrl: () => string;
+	rocketChatLoggerWarn<T>(obj: T, args: any[]): void;
+	rocketChatLoggerError<T>(obj: T, args: any[]): void;
+	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem> | undefined;
+	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
 }

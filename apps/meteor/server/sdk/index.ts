@@ -21,6 +21,9 @@ import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IAppsService } from './types/IAppsService';
 import { FibersContextStore } from './lib/ContextStore';
+import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
+import type { IAppsConverterService } from './types/IAppsConverterService';
+import type { IAppsManagerService } from './types/IAppsManagerService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -42,6 +45,9 @@ export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 export const Apps = proxifyWithWait<IAppsService>('apps');
+export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
+export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
+export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

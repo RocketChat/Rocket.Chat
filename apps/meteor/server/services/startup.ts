@@ -21,12 +21,18 @@ import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
+import { AppsStatisticsService } from './apps/statisticsService';
+import { AppsConverterService } from './apps/converterService';
+import { AppsManagerService } from './apps/managerService';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
 api.registerService(new AppsOrchestratorService());
+api.registerService(new AppsStatisticsService());
+api.registerService(new AppsConverterService());
+api.registerService(new AppsManagerService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());
 api.registerService(new LDAPService());

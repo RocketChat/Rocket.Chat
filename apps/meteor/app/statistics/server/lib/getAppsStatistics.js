@@ -1,11 +1,12 @@
-import { Apps } from '../../../../server/sdk';
+import { AppsStatistics, Apps } from '../../../../server/sdk';
 import { Info } from '../../../utils/server';
 
-export function getAppsStatistics() {
-	const { totalInstalled, totalActive, totalFailed } = Apps.getAppsStatistics();
+export async function getAppsStatistics() {
+	const { totalInstalled, totalActive, totalFailed } = await AppsStatistics.getStatistics();
+
 	return {
 		engineVersion: Info.marketplaceApiVersion,
-		enabled: Apps.isEnabled(),
+		enabled: await Apps.isEnabled(),
 		totalInstalled,
 		totalActive,
 		totalFailed,

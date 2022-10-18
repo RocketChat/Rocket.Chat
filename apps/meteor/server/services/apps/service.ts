@@ -1,26 +1,19 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import type { SettingValue } from '@rocket.chat/core-typings';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import type { AppsPersistenceModel } from '../../../app/models/server';
 import type { IAppsService } from '../../sdk/types/IAppsService';
-import type { RealAppBridges } from './bridges';
-import { addAppsSettings, watchAppsSettingsChanges } from './settings';
 import { settings } from '../../../app/settings/server';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { AppServerOrchestrator } from './orchestrator';
+import type { AppServerOrchestrator } from './orchestrator';
+import { OrchestratorFactory } from './orchestratorFactory';
 
 type AppsInitParams = {
 	appsSourceStorageFilesystemPath: any;
 	appsSourceStorageType: any;
 	marketplaceUrl?: string | undefined;
-};
-
-type AppStatistcs = {
-	totalInstalled: number | boolean;
-	totalActive: number | boolean;
-	totalFailed: number | boolean;
 };
 
 export class AppsOrchestratorService extends ServiceClass implements IAppsService {
@@ -37,19 +30,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 	constructor() {
 		super();
 
-		addAppsSettings();
-
-		this.apps = new AppServerOrchestrator();
-
-		const { OVERWRITE_INTERNAL_MARKETPLACE_URL } = process.env || {};
-
-		if (typeof OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && OVERWRITE_INTERNAL_MARKETPLACE_URL.length > 0) {
-			this.appsInitParams.marketplaceUrl = OVERWRITE_INTERNAL_MARKETPLACE_URL;
-		}
-
-		this.initialize();
-
-		watchAppsSettingsChanges(this.apps);
+		this.apps = OrchestratorFactory.getOrchestrator();
 	}
 
 	async started(): Promise<void> {
@@ -92,19 +73,27 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.isInitialized();
 	}
 
-	getBridges(): RealAppBridges | undefined {
-		return this.apps.getBridges();
-	}
-
-	getManager(): AppManager | undefined {
-		return this.apps.getManager();
-	}
-
 	getPersistenceModel(): AppsPersistenceModel {
 		return this.apps.getPersistenceModel();
 	}
 
-	getAppsStatistics(): AppStatistcs {
-		return this.apps.getAppsStatistics();
+	getMarketplaceUrl(): string {
+		return this.apps.getMarketplaceUrl() as string;
+	}
+
+	rocketChatLoggerWarn<T>(obj: T, args: any[]) {
+		return this.apps.getRocketChatLogger()?.warn(obj, args);
+	}
+
+	rocketChatLoggerError<T>(obj: T, args: any[]) {
+		return this.apps.getRocketChatLogger()?.error(obj, args);
+	}
+
+	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem> | undefined {
+		return this.apps.getStorage()?.retrieveOne(appId);
+	}
+
+	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined {
+		return this.apps.getAppSourceStorage()?.fetch(storageItem);
 	}
 }
