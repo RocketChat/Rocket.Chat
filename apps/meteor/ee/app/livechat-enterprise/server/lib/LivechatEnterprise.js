@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { LivechatInquiry, Users, LivechatRooms } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { Subscriptions, Messages } from '../../../../../app/models/server';
+import { Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
@@ -194,8 +194,8 @@ export const LivechatEnterprise = {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		await LivechatRoomsRaw.setOnHoldByRoomId(roomId);
-		Subscriptions.setOnHold(roomId);
+
+		await LivechatRooms.setOnHoldByRoomId(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
@@ -213,8 +213,7 @@ export const LivechatEnterprise = {
 		}
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
-		await LivechatRoomsRaw.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
-		Subscriptions.unsetOnHold(roomId);
+		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
 	},
 };
 

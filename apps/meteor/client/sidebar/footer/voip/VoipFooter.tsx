@@ -90,7 +90,7 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium className='sidebar--custom-colors'>
+						<ButtonGroup medium className='sidebar--custom-colors' onClick={(e): void => e.stopPropagation()}>
 							<IconButton
 								small
 								disabled={paused}
