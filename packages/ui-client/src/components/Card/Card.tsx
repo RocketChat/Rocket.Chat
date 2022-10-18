@@ -12,7 +12,7 @@ const Card: FC<CardProps> = ({ variant, ...props }: CardProps) => (
 		height='full'
 		display='flex'
 		flexDirection='column'
-		backgroundColor={variant === 'light' ? 'white' : 'neutral-100'}
+		backgroundColor={variant === 'light' ? 'white' : 'tint'}
 		{...props}
 	/>
 );

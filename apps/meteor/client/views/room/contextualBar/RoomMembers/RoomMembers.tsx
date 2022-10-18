@@ -108,7 +108,7 @@ const RoomMembers = ({
 				)}
 
 				{!loading && members.length <= 0 && (
-					<Box textAlign='center' p='x12' color='neutral-600'>
+					<Box textAlign='center' p='x12' color='annotation'>
 						{t('No_members_found')}
 					</Box>
 				)}
