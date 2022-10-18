@@ -21,7 +21,7 @@ test.describe('video conference', () => {
 		await page.goto('/home');
 	});
 
-	test('expect create video conference in a channel', async () => {
+	test('expect create video conference in a "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
 		await poHomeChannel.content.btnCall.click();
@@ -36,30 +36,12 @@ test.describe('video conference', () => {
 		await expect(poHomeChannel.content.btnJoinCall.last()).toBeVisible();
 	});
 
-	test.describe('video conference in a direct', async () => {
-		test.use({ storageState: 'user2-session.json' });
-		test('verify if user received a call invite', async () => {
-			await poHomeChannel.sidenav.openChat('user1');
-
-			await expect(poHomeChannel.content.btnJoinCall.last()).toBeVisible();
-		});
-	});
-
-	test('expect create video conference in a team', async () => {
+	test('expect create video conference in a "targetTeam"', async () => {
 		await poHomeChannel.sidenav.openChat(targetTeam);
 
 		await poHomeChannel.content.btnCall.click();
 		await poHomeChannel.content.btnStartCall.click();
 		await expect(poHomeChannel.content.btnJoinCall.last()).toBeVisible();
-	});
-
-	test.describe('video conference in a team', async () => {
-		test.use({ storageState: 'user2-session.json' });
-		test('verify if user received from a team', async () => {
-			await poHomeChannel.sidenav.openChat(targetTeam);
-
-			await expect(poHomeChannel.content.btnJoinCall).toBeVisible();
-		});
 	});
 	test('expect create video conference in a multiple', async () => {
 		await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
@@ -68,12 +50,24 @@ test.describe('video conference', () => {
 		await poHomeChannel.content.btnStartCall.click();
 		await expect(poHomeChannel.content.btnJoinCall.last()).toBeVisible();
 	});
-
-	test.describe('video conference in a multiple', async () => {
+	test.describe('verify in user 2 if join call is received', async () => {
 		test.use({ storageState: 'user2-session.json' });
+
+		test('verify if user received a invite call from "targetChannel"', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await expect(poHomeChannel.content.btnJoinCall.last()).toBeVisible();
+		});
+
+		test('verify if user received a call invite in direct', async () => {
+			await poHomeChannel.sidenav.openChat('user1');
+			await expect(poHomeChannel.content.btnJoinCall.last()).toBeVisible();
+		});
+		test('verify if user received from a "targetTeam"', async () => {
+			await poHomeChannel.sidenav.openChat(targetTeam);
+			await expect(poHomeChannel.content.btnJoinCall).toBeVisible();
+		});
 		test('verify if user received from a multiple', async () => {
 			await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user1');
-
 			await expect(poHomeChannel.content.btnJoinCall).toBeVisible();
 		});
 	});
