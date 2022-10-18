@@ -1301,19 +1301,17 @@ describe('[Rooms]', function () {
 		});
 	});
 
-	describe('/rooms.erase:', () => {
+	describe('/rooms.delete', () => {
 		let testChannel;
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
+		before('create an channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
 		});
 		it('should delete a room when the request is correct', (done) => {
 			request
-				.delete(api(`rooms/${testChannel._id}`))
+				.post(api('rooms.delete'))
 				.set(credentials)
-				.send({})
+				.send({ roomId: testChannel._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -1323,9 +1321,9 @@ describe('[Rooms]', function () {
 		});
 		it('should throw an error when the room id doesn exist', (done) => {
 			request
-				.delete(api('rooms/invalid'))
+				.post(api('rooms.delete'))
 				.set(credentials)
-				.send({})
+				.send({ roomId: 'invalid' })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {

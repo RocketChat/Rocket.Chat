@@ -39,15 +39,15 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms/:rid',
+	'rooms.delete',
 	{
 		authRequired: true,
 	},
 	{
-		delete() {
-			const { rid } = this.urlParams;
+		post() {
+			const { roomId } = this.bodyParams;
 
-			Meteor.call('eraseRoom', rid);
+			Meteor.call('eraseRoom', roomId);
 			return API.v1.success();
 		},
 	},

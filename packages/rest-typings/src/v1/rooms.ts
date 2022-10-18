@@ -511,7 +511,7 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms/:rid': {
-		DELETE: () => void;
+	'/v1/rooms.delete': {
+		POST: (params: { roomId: string }) => void;
 	};
 };
