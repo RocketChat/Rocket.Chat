@@ -43,7 +43,7 @@ function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {
 	return (
 		<Box is='section' {...props}>
 			<Subtitle>{t('Cloud_registration_required')}</Subtitle>
-			<Box withRichContent color='default'>
+			<Box withRichContent color='neutral-800'>
 				<p>{t('Cloud_registration_required_description')}</p>
 			</Box>
 			<ButtonGroup>

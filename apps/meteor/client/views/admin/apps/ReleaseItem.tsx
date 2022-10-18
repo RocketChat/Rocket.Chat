@@ -24,7 +24,7 @@ const ReleaseItem = ({ release, ...props }: ReleaseItemProps): JSX.Element => {
 			<Box is='h4' fontWeight='700' fontSize='x16' lineHeight='x24' color='default' mie='x24'>
 				{release.version}
 			</Box>
-			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='annotation'>
+			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='info'>
 				{formatDate(release.createdDate)}
 			</Box>
 		</Box>

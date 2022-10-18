@@ -141,15 +141,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 													<Margins block='neg-x4'>
 														<Box>
 															<Margins block='x4'>
-																<Box color='annotation' fontScale='p1'>
+																<Box color='info' fontScale='p1'>
 																	<LegendSymbol color={colors.w500} />
 																	{t('Private_Chats')}
 																</Box>
-																<Box color='annotation' fontScale='p1'>
+																<Box color='info' fontScale='p1'>
 																	<LegendSymbol color={colors.s500} />
 																	{t('Private_Channels')}
 																</Box>
-																<Box color='annotation' fontScale='p1'>
+																<Box color='info' fontScale='p1'>
 																	<LegendSymbol color={colors.p500} />
 																	{t('Public_Channels')}
 																</Box>
@@ -170,7 +170,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 										{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 									</Margins>
 									{table && !table.length && (
-										<Tile fontScale='p1' color='annotation' style={{ textAlign: 'center' }}>
+										<Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
 											{t('Not_enough_data')}
 										</Tile>
 									)}

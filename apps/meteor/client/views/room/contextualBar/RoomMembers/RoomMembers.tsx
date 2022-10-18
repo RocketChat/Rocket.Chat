@@ -115,11 +115,11 @@ const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<Box pi='x18' pb='x12'>
-						<Box is='span' color='annotation' fontScale='p2'>
+						<Box is='span' color='info' fontScale='p2'>
 							{t('Showing')}: {members.length}
 						</Box>
 
-						<Box is='span' color='annotation' fontScale='p2' mis='x8'>
+						<Box is='span' color='info' fontScale='p2' mis='x8'>
 							{t('Total')}: {total}
 						</Box>
 					</Box>

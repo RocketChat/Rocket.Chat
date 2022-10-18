@@ -14,7 +14,7 @@ const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) 
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Modal.Icon color='on-success' name='circle-check' />
+				<Modal.Icon color='success' name='circle-check' />
 				<Modal.Title>{title}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>

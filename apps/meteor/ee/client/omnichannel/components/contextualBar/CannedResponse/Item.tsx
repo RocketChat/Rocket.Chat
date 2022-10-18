@@ -39,7 +39,7 @@ const Item: FC<{
 					<Box fontScale='p2m' withTruncatedText>
 						!{data.shortcut}
 					</Box>
-					<Box fontScale='c1' color='annotation' withTruncatedText>
+					<Box fontScale='c1' color='info' withTruncatedText>
 						{scope}
 					</Box>
 				</Box>
@@ -56,7 +56,7 @@ const Item: FC<{
 					<Icon name='chevron-left' size={24} color='hint' />
 				</Box>
 			</Box>
-			<Box fontScale='p2' mbs='8px' color='annotation' withTruncatedText>
+			<Box fontScale='p2' mbs='8px' color='info' withTruncatedText>
 				"{data.text}"
 			</Box>
 			{data.tags && data.tags.length > 0 && (

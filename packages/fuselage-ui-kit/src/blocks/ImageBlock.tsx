@@ -80,12 +80,7 @@ const ImageBlock = ({
     >
       <Box overflow='hidden' width={width}>
         {block.title && (
-          <Box
-            fontScale='c1'
-            color='annotation'
-            withTruncatedText
-            marginBlockEnd={4}
-          >
+          <Box fontScale='c1' color='info' withTruncatedText marginBlockEnd={4}>
             {surfaceRenderer.renderTextObject(
               block.title,
               0,

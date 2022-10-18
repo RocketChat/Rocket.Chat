@@ -35,7 +35,7 @@ const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
 					{displayName}
 				</Box>
 			</Box>
-			<Box is='span' fontScale='c1' color='annotation'>
+			<Box is='span' fontScale='c1' color='info'>
 				{formatDateAndTime(ts)}
 			</Box>
 		</Box>

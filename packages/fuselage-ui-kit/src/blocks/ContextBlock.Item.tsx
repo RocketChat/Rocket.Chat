@@ -24,7 +24,7 @@ const Item = ({
     case UiKit.TextObjectType.PLAIN_TEXT:
     case UiKit.TextObjectType.MARKDOWN:
       return (
-        <Box is='span' fontScale='c1' color='annotation' margin={4}>
+        <Box is='span' fontScale='c1' color='info' margin={4}>
           {renderedElement}
         </Box>
       );
