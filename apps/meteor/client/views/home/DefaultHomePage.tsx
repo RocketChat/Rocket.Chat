@@ -24,7 +24,7 @@ const DefaultHomePage = (): ReactElement => {
 	const displayCustomBody = Boolean(useSetting('Layout_Home_Body'));
 
 	return (
-		<Page data-qa='page-home' data-qa-type='default' background='tint'>
+		<Page data-qa='page-home' data-qa-type='default' background='tint' color='default'>
 			<HomePageHeader />
 			<PageScrollableContent>
 				<Box is='h1' fontScale='h1' data-qa-id='homepage-welcome-text'>
@@ -58,7 +58,7 @@ const DefaultHomePage = (): ReactElement => {
 					</HomepageGridItem>
 				</Grid>
 				{displayCustomBody && (
-					<Box mbs='x16'>
+					<Box mb='x16'>
 						<CustomHomePageContent />
 					</Box>
 				)}
