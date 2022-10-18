@@ -52,7 +52,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 	return (
 		<>
 			{users.length === 0 && (
-				<Tile fontScale='p2' elevation='0' color='info' textAlign='center'>
+				<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 			)}
