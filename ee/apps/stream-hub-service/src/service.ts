@@ -40,7 +40,9 @@ const maxDocMs = instancePing * 4; // 4 times the ping interval
 				if (lastDocMs > maxDocMs) {
 					throw new Error('not healthy');
 				}
-			} catch (e) {
+			} catch (err) {
+				console.error('Service not healthy', err);
+
 				res.writeHead(500);
 				res.end('not healthy');
 				return;
