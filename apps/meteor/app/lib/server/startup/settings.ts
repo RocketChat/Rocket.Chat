@@ -1567,20 +1567,12 @@ settingsRegistry.addGroup('Layout', function () {
 			enterprise: true,
 			public: true,
 		});
-		this.add(
-			'Layout_Home_Body',
-			'<p>~~~~ Default html example ~~~~</p>\n<strong>Welcome to (ENTER ORGANIZATION NAME HERE)</strong>\n\n<p>All general communications should be done through #general</p>\n<p>find more information <a href="INSERT LINK" target="_blank" rel="noopener">here</a></p>',
-			{
-				type: 'code',
-				enableQuery: {
-					_id: 'Layout_Custom_Body',
-					value: true,
-				},
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
+		this.add('Layout_Home_Body', '', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
