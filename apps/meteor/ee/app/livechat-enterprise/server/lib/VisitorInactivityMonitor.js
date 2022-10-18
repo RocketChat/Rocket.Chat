@@ -108,7 +108,7 @@ export class VisitorInactivityMonitor {
 			return;
 		}
 		const result = await Promise.allSettled(
-			LivechatRooms.findAbandonedOpenRooms(new Date()).map(async (room) => {
+			LivechatRooms.findAbandonedOpenRooms(new Date()).forEach(async (room) => {
 				switch (action) {
 					case 'close': {
 						await this.closeRooms(room);
