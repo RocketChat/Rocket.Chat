@@ -95,7 +95,7 @@ export const VoipFooter = ({
 								small
 								disabled={paused}
 								icon={muted ? 'mic-off' : 'mic'}
-								color={muted ? 'neutral-500' : 'info'}
+								color={muted ? 'disabled' : 'hint'}
 								data-tooltip={muted ? t('Turn_on_microphone') : t('Turn_off_microphone')}
 								onClick={(e): void => {
 									e.stopPropagation();
@@ -107,7 +107,7 @@ export const VoipFooter = ({
 								data-tooltip={holdTitle}
 								disabled={!isEnterprise}
 								icon={paused ? 'pause' : 'pause-unfilled'}
-								color={paused ? 'neutral-500' : 'info'}
+								color={paused ? 'disabled' : 'hint'}
 								onClick={handleHold}
 							/>
 							{options && <Menu color='neutral-500' data-tooltip={t('More_options')} options={options} />}
