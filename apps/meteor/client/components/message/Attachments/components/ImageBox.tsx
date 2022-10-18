@@ -12,7 +12,7 @@ const ImageBox: FC<ComponentProps<typeof Box>> = (props) => (
 		borderRadius='x2'
 		borderWidth='x2'
 		borderStyle='solid'
-		borderColor='neutral-200'
+		borderColor='extra-light'
 		{...props}
 	/>
 );
