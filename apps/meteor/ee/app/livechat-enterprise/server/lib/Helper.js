@@ -217,18 +217,15 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 	}
 
 	let { ts: estimatedServiceTimeAt } = inquiry;
-	let queueOrder = 1;
 	let estimatedWaitingTimeQueue = 0;
 
 	if (priority) {
 		const { dueTimeInMinutes } = priority;
-		queueOrder = 0;
 		estimatedWaitingTimeQueue = dueTimeInMinutes;
 		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
 	}
 
 	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
-		queueOrder,
 		estimatedWaitingTimeQueue,
 		estimatedServiceTimeAt,
 	});

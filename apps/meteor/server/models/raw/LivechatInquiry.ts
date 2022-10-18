@@ -72,7 +72,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{
 				sort: {
-					queueOrder: 1,
 					estimatedWaitingTimeQueue: 1,
 					estimatedServiceTimeAt: 1,
 				},

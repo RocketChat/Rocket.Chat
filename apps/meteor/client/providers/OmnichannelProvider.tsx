@@ -92,7 +92,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 				},
 				{
 					sort: {
-						queueOrder: 1,
 						estimatedWaitingTimeQueue: 1,
 						estimatedServiceTimeAt: 1,
 					},
