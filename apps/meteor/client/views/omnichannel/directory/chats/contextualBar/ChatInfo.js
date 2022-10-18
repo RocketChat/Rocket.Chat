@@ -44,7 +44,8 @@ function ChatInfo({ id, route }) {
 		topic,
 		waitingResponse,
 		responseBy,
-		priorityId,
+		// priorityId,
+		slaId,
 		livechatData,
 		source,
 		queuedAt,
@@ -177,7 +178,7 @@ function ChatInfo({ id, route }) {
 						Object.keys(livechatData).map(
 							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
-					{priorityId && <PriorityField id={priorityId} />}
+					{slaId && <PriorityField id={slaId} />}
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

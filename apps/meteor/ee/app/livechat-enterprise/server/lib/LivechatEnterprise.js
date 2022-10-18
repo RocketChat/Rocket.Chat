@@ -10,7 +10,7 @@ import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserF
 import {
 	processWaitingQueue,
 	removePriorityFromRooms,
-	updateInquiryQueuePriority,
+	updateInquiryQueueSla,
 	updatePriorityInquiries,
 	updateRoomPriorityHistory,
 } from './Helper';
@@ -183,7 +183,7 @@ export const LivechatEnterprise = {
 	},
 
 	updateRoomPriority(roomId, user, priority) {
-		updateInquiryQueuePriority(roomId, priority);
+		updateInquiryQueueSla(roomId, priority);
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 

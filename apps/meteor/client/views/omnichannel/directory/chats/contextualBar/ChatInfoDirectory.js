@@ -28,7 +28,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData, queuedAt } =
+	const { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, slaId, livechatData, queuedAt } =
 		room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
@@ -155,7 +155,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 						Object.keys(livechatData).map(
 							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
-					{priorityId && <PriorityField id={priorityId} />}
+					{slaId && <PriorityField id={slaId} />}
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

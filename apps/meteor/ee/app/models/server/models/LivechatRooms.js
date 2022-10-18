@@ -68,15 +68,15 @@ LivechatRooms.prototype.unsetAllOnHoldFieldsByRoomId = function (roomId) {
 	);
 };
 
-LivechatRooms.prototype.unsetPriorityById = function (priorityId) {
+LivechatRooms.prototype.unsetSlaById = function (slaId) {
 	return this.update(
 		{
 			open: true,
 			t: 'l',
-			priorityId,
+			slaId,
 		},
 		{
-			$unset: { priorityId: 1 },
+			$unset: { slaId: 1 },
 		},
 		{
 			multi: true,
@@ -84,11 +84,11 @@ LivechatRooms.prototype.unsetPriorityById = function (priorityId) {
 	);
 };
 
-LivechatRooms.prototype.findOpenByPriorityId = function (priorityId, options) {
+LivechatRooms.prototype.findOpenBySlaId = function (slaId, options) {
 	const query = {
 		t: 'l',
 		open: true,
-		priorityId,
+		slaId,
 	};
 
 	return this.find(query, options);

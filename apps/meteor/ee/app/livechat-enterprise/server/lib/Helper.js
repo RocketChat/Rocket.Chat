@@ -210,7 +210,7 @@ export const updateRoomPriorityHistory = (rid, user, priority) => {
 	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
-export const updateInquiryQueuePriority = (roomId, priority) => {
+export const updateInquiryQueueSla = (roomId, sla) => {
 	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
 	if (!inquiry) {
 		return;
@@ -219,8 +219,8 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 	let { ts: estimatedServiceTimeAt } = inquiry;
 	let estimatedWaitingTimeQueue = 0;
 
-	if (priority) {
-		const { dueTimeInMinutes } = priority;
+	if (sla) {
+		const { dueTimeInMinutes } = sla;
 		estimatedWaitingTimeQueue = dueTimeInMinutes;
 		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
 	}
@@ -231,22 +231,22 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 	});
 };
 
-export const removePriorityFromRooms = (priorityId) => {
-	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
-		updateInquiryQueuePriority(room._id);
+export const removePriorityFromRooms = (slaId) => {
+	LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
+		updateInquiryQueueSla(room._id);
 	});
 
-	LivechatRooms.unsetPriorityById(priorityId);
+	LivechatRooms.unsetSlaById(slaId);
 };
 
-export const updatePriorityInquiries = (priority) => {
-	if (!priority) {
+export const updatePriorityInquiries = (sla) => {
+	if (!sla) {
 		return;
 	}
 
-	const { _id: priorityId } = priority;
-	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
-		updateInquiryQueuePriority(room._id, priority);
+	const { _id: slaId } = sla;
+	LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
+		updateInquiryQueueSla(room._id, sla);
 	});
 };
 

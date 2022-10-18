@@ -171,7 +171,10 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	metrics?: any;
 	waitingResponse: any;
 	responseBy: any;
-	priorityId: any;
+	priorityId?: string;
+
+	slaId?: string;
+
 	livechatData: any;
 	queuedAt?: Date;
 

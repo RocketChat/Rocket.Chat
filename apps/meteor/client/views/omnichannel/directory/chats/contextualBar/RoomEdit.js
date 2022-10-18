@@ -17,7 +17,7 @@ const initialValuesRoom = {
 	topic: '',
 	tags: [],
 	livechatData: {},
-	priorityId: '',
+	slaId: '',
 };
 
 const getInitialValuesRoom = (room) => {
@@ -25,13 +25,13 @@ const getInitialValuesRoom = (room) => {
 		return initialValuesRoom;
 	}
 
-	const { topic, tags, livechatData, priorityId } = room;
+	const { topic, tags, livechatData, slaId } = room;
 
 	return {
 		topic: topic ?? '',
 		tags: tags ?? [],
 		livechatData: livechatData ?? {},
-		priorityId: priorityId ?? '',
+		slaId: slaId ?? '',
 	};
 };
 
@@ -41,8 +41,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	const { values: valuesRoom, handlers: handlersRoom, hasUnsavedChanges: hasUnsavedChangesRoom } = useForm(getInitialValuesRoom(room));
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { handleTopic, handleTags, handlePriorityId } = handlersRoom;
-	const { topic, tags, priorityId } = valuesRoom;
+	const { handleTopic, handleTags, handleSlaId } = handlersRoom;
+	const { topic, tags, slaId } = valuesRoom;
 
 	const forms = useFormsSubscription();
 
@@ -101,7 +101,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 			topic,
 			tags: tags.sort(),
 			livechatData,
-			...(priorityId && { priorityId }),
+			...(slaId && { slaId }),
 		};
 
 		try {
@@ -144,7 +144,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 					<Tags tags={tags} handler={handleTags} />
 				</Field>
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
-					<PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />
+					<PrioritiesSelect value={slaId} label={t('Priority')} options={priorities} handler={handleSlaId} />
 				)}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

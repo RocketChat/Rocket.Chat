@@ -10,13 +10,13 @@ callbacks.add(
 			return room;
 		}
 
-		const { priorityId: oldPriorityId = null } = oldRoom;
-		const { priorityId: newPriorityId = null } = room;
-		if (oldPriorityId === newPriorityId) {
+		const { slaId: oldSlaId = null } = oldRoom;
+		const { slaId: newslaId = null } = room;
+		if (oldSlaId === newslaId) {
 			return room;
 		}
 
-		const priority = newPriorityId && Promise.await(OmnichannelServiceLevelAgreements.findOneById(newPriorityId));
+		const priority = newslaId && Promise.await(OmnichannelServiceLevelAgreements.findOneById(newslaId));
 		LivechatEnterprise.updateRoomPriority(room._id, user, priority);
 
 		return room;
