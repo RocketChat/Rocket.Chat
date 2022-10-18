@@ -72,7 +72,7 @@ test.describe('Omnichannel Contact Center', () => {
 
 	test.afterAll(async ({ api }) => {
 		// Disable Omnichannel
-		await saveSetting({ api, id: '67', name: 'Livechat_enabled', value: false });
+		// await saveSetting({ api, id: '67', name: 'Livechat_enabled', value: false });
 		// Remove added contacts
 		await api.delete('/livechat/visitor', { token: EXISTING_CONTACT.token });
 		await api.delete('/livechat/visitor', { token: NEW_CONTACT.token });
