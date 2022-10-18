@@ -43,7 +43,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'oauth-apps.addOAuthApp',
+	'oauth-apps.create',
 	{
 		authRequired: true,
 		validateParams: isOauthAppsAddParams,

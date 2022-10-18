@@ -72,7 +72,7 @@ export type OAuthAppsEndpoint = {
 		};
 	};
 
-	'/v1/oauth-apps.addOAuthApp': {
+	'/v1/oauth-apps.create': {
 		POST: (params: OauthAppsAddParams) => void;
 	};
 };

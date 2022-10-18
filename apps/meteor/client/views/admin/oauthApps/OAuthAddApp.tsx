@@ -22,7 +22,7 @@ const OAuthAddApp = (): ReactElement => {
 		control,
 	} = useForm<OAuthAddAppPayload>();
 
-	const saveApp = useEndpoint('POST', '/v1/oauth-apps.addOAuthApp');
+	const saveApp = useEndpoint('POST', '/v1/oauth-apps.create');
 
 	const router = useRoute('admin-oauth-apps');
 
