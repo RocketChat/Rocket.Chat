@@ -28,3 +28,5 @@ export interface IEmailInbox {
 	};
 	_updatedAt: Date;
 }
+
+export type IEmailInboxPayload = Omit<IEmailInbox, '_createdAt' | '_createdBy' | '_updatedAt'>;

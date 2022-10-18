@@ -26,7 +26,7 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement 
 			<Box is='h4' fontWeight='700' fontSize='x16' lineHeight='x24' color='default' mie='x24'>
 				{release.version}
 			</Box>
-			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='info'>
+			<Box is='p' fontWeight='400' fontSize='x16' lineHeight='x24' color='hint'>
 				{formatDate(release.createdDate)}
 			</Box>
 		</Box>

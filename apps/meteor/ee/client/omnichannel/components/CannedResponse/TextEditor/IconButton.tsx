@@ -11,7 +11,7 @@ const IconButton = ({ name, action, title }: IconButtonProps): ReactElement => (
 	<Icon
 		icon={name}
 		size='24px'
-		color='neutral-700'
+		color='hint'
 		small
 		display='flex'
 		justifyContent='center'

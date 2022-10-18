@@ -780,7 +780,7 @@
   "Call_provider": "Anrufserive-Anbieter",
   "Call_Already_Ended": "Anruf bereits beendet",
   "Call_number": "Rufnummer",
-  "Call_number_enterprise_only": "Rufnummer (Enterprise Edition only)",
+  "Call_number_enterprise_only": "Rufnummer (nur Enterprise Edition)",
   "call-management": "Anrufverwaltung",
   "call-management_description": "Erlaubnis zum Starten einer Besprechung",
   "Call_unavailable_for_federation": "Anruf ist für Verbundräume nicht verfügbar",
