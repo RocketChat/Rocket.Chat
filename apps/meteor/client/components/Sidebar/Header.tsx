@@ -11,7 +11,7 @@ const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => (
 		{(title || onClose) && (
 			<Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1}>
 				{title && (
-					<Box color='neutral-800' fontSize='p2' fontWeight='p2' flexShrink={1} withTruncatedText>
+					<Box color='default' fontSize='p2' fontWeight='p2' flexShrink={1} withTruncatedText>
 						{title}
 					</Box>
 				)}
