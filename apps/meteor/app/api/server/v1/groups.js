@@ -344,7 +344,19 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
+			const thumbnailFilters = {
+				...(!query.typeGroup && { typeGroup: { $nin: ['thumbnail'] } }),
+				name: { ...query.name, $not: /thumb-/ },
+			};
+
+			const ourQuery = Object.assign(
+				{},
+				query,
+				{
+					rid: findResult.rid,
+				},
+				thumbnailFilters,
+			);
 
 			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
