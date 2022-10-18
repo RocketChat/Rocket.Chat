@@ -42,22 +42,36 @@ export abstract class FederationService {
 		if (!insertedUser) {
 			return;
 		}
-		await this.updateUserAvatarInternally(insertedUser);
+		await this.updateUserProfileInternally(
+			insertedUser,
+			externalUserProfileInformation?.avatarUrl,
+			externalUserProfileInformation?.displayName,
+		);
 	}
 
-	protected async updateUserAvatarInternally(federatedUser: FederatedUser): Promise<void> {
-		const externalUserProfileInformation = await this.bridge.getUserProfileInformation(federatedUser.getExternalId());
-		if (!externalUserProfileInformation?.avatarUrl) {
+	protected async updateUserProfileInternally(federatedUser: FederatedUser, avatarUrl?: string, displayName?: string): Promise<void> {
+		if (!avatarUrl && !displayName) {
 			return;
 		}
-		if (!federatedUser.isRemote() || !federatedUser.shouldUpdateFederationAvatar(externalUserProfileInformation.avatarUrl)) {
+		if (!federatedUser.isRemote()) {
 			return;
 		}
-		await this.internalUserAdapter.setAvatar(
-			federatedUser,
-			this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), externalUserProfileInformation.avatarUrl),
-		);
-		await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), externalUserProfileInformation.avatarUrl);
+
+		await this.updateUserAvatarInternally(federatedUser, avatarUrl);
+		await this.updateUserDisplayNameInternally(federatedUser, displayName);
+	}
+
+	private async updateUserAvatarInternally(federatedUser: FederatedUser, avatarUrl?: string): Promise<void> {
+		if (avatarUrl && federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
+			await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl));
+			await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), avatarUrl);
+		}
+	}
+
+	private async updateUserDisplayNameInternally(federatedUser: FederatedUser, displayName?: string): Promise<void> {
+		if (displayName && federatedUser.shouldUpdateDisplayName(displayName)) {
+			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReference(), displayName);
+		}
 	}
 
 	protected async createFederatedUserForInviterUsingLocalInformation(internalInviterId: string): Promise<string> {

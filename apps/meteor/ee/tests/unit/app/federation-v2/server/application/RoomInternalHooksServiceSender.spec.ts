@@ -52,6 +52,9 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getFederatedUserByInternalUsername: sinon.stub(),
 		createLocalUser: sinon.stub(),
 		getInternalUserByUsername: sinon.stub(),
+		updateFederationAvatar: sinon.stub(),
+		setAvatar: sinon.stub(),
+		updateRealName: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -67,6 +70,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getRoomName: sinon.stub(),
 		setRoomTopic: sinon.stub(),
 		getRoomTopic: sinon.stub(),
+		convertMatrixUrlToHttp: sinon.stub().returns('toHttpUrl'),
 	};
 	const fileAdapter = {
 		getBufferForAvatarFile: sinon.stub().resolves(undefined),
@@ -96,11 +100,14 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		roomAdapter.getInternalRoomById.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
-		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
 		userAdapter.createLocalUser.reset();
 		userAdapter.getInternalUserByUsername.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
+		userAdapter.updateFederationAvatar.reset();
+		userAdapter.setAvatar.reset();
+		userAdapter.updateRealName.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();
 		bridge.createRoom.reset();
@@ -109,6 +116,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		bridge.setRoomName.reset();
 		bridge.getRoomName.reset();
 		bridge.getRoomTopic.reset();
+		bridge.getUserProfileInformation.reset();
 	});
 
 	describe('#onRoomCreated()', () => {
@@ -285,19 +293,31 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 	});
 
 	describe('#beforeAddUserToARoom()', () => {
+		const federatedUser = FederatedUserEE.createInstance('externalInviteeId', {
+			name: 'normalizedInviteeId',
+			username: 'normalizedInviteeId',
+			existsOnlyOnProxyServer: false,
+		});
+		const validParams = {
+			invitees: [
+				...invitees,
+				{
+					inviteeUsernameOnly: 'marcos.defendiNotToBeInvited',
+					normalizedInviteeId: 'marcos.defendi:matrix.comNotToBeInvited',
+					rawInviteeId: '@marcos.defendi:matrix.comNotToBeInvited',
+				},
+			],
+		} as any;
+
 		it('should create the invitee locally for each external user', async () => {
+			const spy = sinon.spy(service, 'updateUserProfileInternally');
+
 			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
 			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
-			await service.beforeAddUserToARoom({
-				invitees: [
-					...invitees,
-					{
-						inviteeUsernameOnly: 'marcos.defendiNotToBeInvited',
-						normalizedInviteeId: 'marcos.defendi:matrix.comNotToBeInvited',
-						rawInviteeId: '@marcos.defendi:matrix.comNotToBeInvited',
-					},
-				],
-			} as any);
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: '' });
+			userAdapter.getFederatedUserByExternalId.resolves(federatedUser);
+
+			await service.beforeAddUserToARoom(validParams);
 
 			const invitee = FederatedUserEE.createLocalInstanceOnly({
 				name: invitees[0].normalizedInviteeId,
@@ -306,6 +326,113 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			});
 
 			expect(userAdapter.createLocalUser.calledOnceWithExactly(invitee)).to.be.true;
+			expect(spy.calledWith(federatedUser, '', '')).to.be.true;
+		});
+
+		it('should NOT update the avatar nor the display name if both does not exists', async () => {
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: '' });
+			userAdapter.getFederatedUserByExternalId.resolves(federatedUser);
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.called).to.be.false;
+		});
+
+		it('should NOT update the avatar url nor the display name if the user is from the local home server', async () => {
+			userAdapter.getFederatedUserByExternalId.resolves(
+				FederatedUserEE.createInstance('externalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: true,
+				}),
+			);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.called).to.be.false;
+		});
+
+		it('should NOT update the avatar url if the url received in the event is equal to the one already used', async () => {
+			const existsOnlyOnProxyServer = false;
+			userAdapter.getFederatedUserByExternalId.resolves(
+				FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+					federation: {
+						avatarUrl: 'avatarUrl',
+					},
+				}),
+			);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+		});
+
+		it('should call the functions to update the avatar internally correctly', async () => {
+			const existsOnlyOnProxyServer = false;
+			const userAvatar = FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+				federation: {
+					avatarUrl: 'currentAvatarUrl',
+				},
+				_id: 'userId',
+			});
+			userAdapter.getFederatedUserByExternalId.resolves(userAvatar);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.calledWith(userAvatar, 'toHttpUrl')).to.be.true;
+			expect(userAdapter.updateFederationAvatar.calledWith(userAvatar.getInternalId(), 'avatarUrl')).to.be.true;
+		});
+
+		it('should NOT update the display name if the name received in the event is equal to the one already used', async () => {
+			const existsOnlyOnProxyServer = false;
+			userAdapter.getFederatedUserByExternalId.resolves(
+				FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+					name: 'displayName',
+				}),
+			);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.called).to.be.false;
+		});
+
+		it('should call the functions to update the display name internally correctly', async () => {
+			const existsOnlyOnProxyServer = false;
+			const user = FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+				_id: 'userId',
+				name: 'currentName',
+			});
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.calledWith(user.getInternalReference(), 'displayName')).to.be.true;
 		});
 	});
 

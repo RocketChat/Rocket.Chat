@@ -116,6 +116,10 @@ export class MatrixRoomReceiverConverter {
 		externalEvent: MatrixEventRoomMembershipChanged,
 		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
+		const isUpdatingProfile =
+			externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN &&
+			('avatar_url' in externalEvent.content || 'displayname' in externalEvent.content);
+
 		return new FederationRoomChangeMembershipDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
@@ -133,8 +137,15 @@ export class MatrixRoomReceiverConverter {
 			inviterUsernameOnly: formatExternalUserIdToInternalUsernameFormat(externalEvent.sender),
 			eventOrigin: getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === RoomMembershipChangedEventType.LEAVE,
-			userAvatarUrl:
-				externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN ? externalEvent.content?.avatar_url : undefined,
+			isUpdatingProfile,
+			...(isUpdatingProfile
+				? {
+						userProfile: {
+							avatarUrl: isUpdatingProfile ? externalEvent.content?.avatar_url : undefined,
+							displayName: isUpdatingProfile ? externalEvent.content?.displayname : undefined,
+						},
+				  }
+				: {}),
 		});
 	}
 

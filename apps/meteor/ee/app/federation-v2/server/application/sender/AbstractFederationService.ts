@@ -25,16 +25,30 @@ export abstract class FederationServiceEE extends FederationService {
 				),
 		);
 
-		await Promise.all(
-			externalUsersToBeCreatedLocally.map((invitee) =>
-				this.internalUserAdapter.createLocalUser(
-					FederatedUserEE.createLocalInstanceOnly({
-						username: invitee.normalizedInviteeId,
-						name: invitee.normalizedInviteeId,
-						existsOnlyOnProxyServer: false,
-					}),
-				),
-			),
-		);
+		for await (const invitee of externalUsersToBeCreatedLocally) {
+			const externalUserProfileInformation = await this.bridge.getUserProfileInformation(invitee.rawInviteeId);
+
+			const name = externalUserProfileInformation?.displayName || invitee.normalizedInviteeId;
+			const username = invitee.normalizedInviteeId;
+			const existsOnlyOnProxyServer = false;
+
+			await this.internalUserAdapter.createLocalUser(
+				FederatedUserEE.createLocalInstanceOnly({
+					username,
+					name,
+					existsOnlyOnProxyServer,
+				}),
+			);
+
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(invitee.rawInviteeId);
+			if (!federatedUser) {
+				return;
+			}
+			await this.updateUserProfileInternally(
+				federatedUser,
+				externalUserProfileInformation?.avatarUrl,
+				externalUserProfileInformation?.displayName,
+			);
+		}
 	}
 }

@@ -92,14 +92,15 @@ export class FederationRoomServiceListener extends FederationService {
 			eventOrigin,
 			roomType,
 			leave,
-			userAvatarUrl,
+			isUpdatingProfile,
+			userProfile,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
-		if (userAvatarUrl) {
+		if (isUpdatingProfile) {
 			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
-			federatedUser && (await this.updateUserAvatarInternally(federatedUser));
+			federatedUser && (await this.updateUserProfileInternally(federatedUser, userProfile?.avatarUrl, userProfile?.displayName));
 			return;
 		}
 

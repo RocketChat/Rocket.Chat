@@ -136,6 +136,14 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixUserId;
 	}
 
+	public async setUserDisplayName(externalUserId: string, displayName: string): Promise<void> {
+		try {
+			await this.bridgeInstance.getIntent(externalUserId).setDisplayName(displayName);
+		} catch (e) {
+			// no-op
+		}
+	}
+
 	public async createDirectMessageRoom(
 		externalCreatorId: string,
 		externalInviteeIds: string[],

@@ -34,13 +34,11 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 	}
 	user.name = name;
 
-	if (settings.get('UI_Use_Real_Name') === true) {
-		api.broadcast('user.nameChanged', {
-			_id: user._id,
-			name: user.name,
-			username: user.username,
-		});
-	}
+	api.broadcast('user.nameChanged', {
+		_id: user._id,
+		name: user.name,
+		username: user.username,
+	});
 
 	return user;
 };

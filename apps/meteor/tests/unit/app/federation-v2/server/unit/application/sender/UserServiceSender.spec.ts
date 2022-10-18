@@ -44,6 +44,7 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 	const bridge = {
 		uploadContent: sinon.stub(),
 		setUserAvatar: sinon.stub(),
+		setUserDisplayName: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -59,6 +60,7 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 		fileAdapter.getFileMetadataForAvatarFile.reset();
 		bridge.uploadContent.reset();
 		bridge.setUserAvatar.reset();
+		bridge.setUserDisplayName.reset();
 	});
 
 	describe('#afterUserAvatarChanged()', () => {
@@ -139,6 +141,41 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 
 			expect(userAdapter.updateFederationAvatar.calledWith('_id', 'url')).to.be.true;
 			expect(bridge.setUserAvatar.calledWith('externalInviterId', 'url')).to.be.true;
+		});
+	});
+
+	describe('#afterUserRealNameChanged()', () => {
+		it('should NOT update the name externally if the user does not exists', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			await service.afterUserRealNameChanged('id', 'name');
+
+			expect(bridge.setUserDisplayName.called).to.be.false;
+		});
+
+		it('should NOT update the name externally if the user exists but is from an external home server', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves(
+				FederatedUser.createInstance('externalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: false,
+				}),
+			);
+			await service.afterUserRealNameChanged('id', 'name');
+
+			expect(bridge.setUserDisplayName.called).to.be.false;
+		});
+
+		it('should update the name externally correctly', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves(
+				FederatedUser.createWithInternalReference('externalInviterId', true, {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					_id: '_id',
+				}),
+			);
+			await service.afterUserRealNameChanged('id', 'name');
+
+			expect(bridge.setUserDisplayName.calledWith('externalInviterId', 'name')).to.be.true;
 		});
 	});
 });

@@ -65,6 +65,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		updateFederationAvatar: sinon.stub(),
 		setAvatar: sinon.stub(),
 		getInternalUserByUsername: sinon.stub(),
+		updateRealName: sinon.stub(),
 	};
 	const messageAdapter = {
 		sendMessage: sinon.stub(),
@@ -121,6 +122,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		userAdapter.updateFederationAvatar.reset();
 		userAdapter.setAvatar.reset();
 		userAdapter.getInternalUserByUsername.reset();
+		userAdapter.updateRealName.reset();
 		messageAdapter.sendMessage.reset();
 		messageAdapter.sendFileMessage.reset();
 		messageAdapter.deleteMessage.reset();
@@ -533,8 +535,10 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
 		});
 
-		describe('User avatar changed event', () => {
-			it('should NOT call the function to update the avatar internally if the event is not an avatar update event', async () => {
+		describe('User profile changed event', () => {
+			it('should NOT call the function to update the user profile internally if the event a profile changed', async () => {
+				const spy = sinon.spy(service, 'updateUserProfileInternally');
+
 				await service.onChangeRoomMembership({
 					externalRoomId: 'externalRoomId',
 					normalizedRoomId: 'normalizedRoomId',
@@ -542,13 +546,14 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 					roomType: RoomType.CHANNEL,
 					externalInviteeId: 'externalInviteeId',
 					leave: false,
+					isUpdatingProfile: false,
 					normalizedInviteeId: 'normalizedInviteeId',
 				} as any);
 
-				expect(bridge.getUserProfileInformation.called).to.be.false;
+				expect(spy.called).to.be.false;
 			});
 
-			const eventForAvatarChanges = {
+			const eventForUserProfileChanges = {
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
 				eventOrigin: EVENT_ORIGIN.LOCAL,
@@ -556,26 +561,31 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				externalInviteeId: 'externalInviteeId',
 				leave: false,
 				normalizedInviteeId: 'normalizedInviteeId',
-				userAvatarUrl: 'userAvatarUrl',
+				isUpdatingProfile: true,
+				userProfile: {
+					avatarUrl: 'avatarUrl',
+					displayName: 'displayName',
+				},
 			} as any;
 
 			it('should NOT call the function to update the avatar internally if the user does not exists', async () => {
+				const spy = sinon.spy(service, 'updateUserProfileInternally');
 				userAdapter.getFederatedUserByExternalId.resolves(undefined);
-				await service.onChangeRoomMembership(eventForAvatarChanges);
+				await service.onChangeRoomMembership(eventForUserProfileChanges);
 
-				expect(bridge.getUserProfileInformation.called).to.be.false;
+				expect(spy.called).to.be.false;
 			});
 
-			it('should NOT update the avatar url if the url retrieved from the home server does not exists', async () => {
+			it('should NOT update the avatar nor the display name if both does not exists', async () => {
 				userAdapter.getFederatedUserByExternalId.resolves(user);
-				bridge.getUserProfileInformation.resolves(undefined);
-				await service.onChangeRoomMembership(eventForAvatarChanges);
+				await service.onChangeRoomMembership({ ...eventForUserProfileChanges, userProfile: {} });
 
 				expect(userAdapter.setAvatar.called).to.be.false;
 				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+				expect(userAdapter.updateRealName.called).to.be.false;
 			});
 
-			it('should NOT update the avatar url if the user is from the local home server', async () => {
+			it('should NOT update the avatar url nor the display name if the user is from the local home server', async () => {
 				userAdapter.getFederatedUserByExternalId.resolves(
 					FederatedUser.createInstance('externalInviterId', {
 						name: 'normalizedInviterId',
@@ -583,24 +593,23 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 						existsOnlyOnProxyServer: true,
 					}),
 				);
-				bridge.getUserProfileInformation.resolves({ avatarUrl: 'currentAvatarUrl' });
-				await service.onChangeRoomMembership(eventForAvatarChanges);
+				await service.onChangeRoomMembership(eventForUserProfileChanges);
 
 				expect(userAdapter.setAvatar.called).to.be.false;
 				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+				expect(userAdapter.updateRealName.called).to.be.false;
 			});
 
-			it('should NOT update the avatar url if the url retrieved from the home server is equal to the one already used', async () => {
+			it('should NOT update the avatar url if the url received in the event is equal to the one already used', async () => {
 				const existsOnlyOnProxyServer = false;
-				bridge.getUserProfileInformation.resolves({ avatarUrl: 'currentAvatarUrl' });
 				userAdapter.getFederatedUserByExternalId.resolves(
 					FederatedUser.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
 						federation: {
-							avatarUrl: 'currentAvatarUrl',
+							avatarUrl: 'avatarUrl',
 						},
 					}),
 				);
-				await service.onChangeRoomMembership(eventForAvatarChanges);
+				await service.onChangeRoomMembership({ ...eventForUserProfileChanges, userProfile: { avatarUrl: 'avatarUrl' } });
 
 				expect(userAdapter.setAvatar.called).to.be.false;
 				expect(userAdapter.updateFederationAvatar.called).to.be.false;
@@ -614,12 +623,39 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 					},
 					_id: 'userId',
 				});
-				bridge.getUserProfileInformation.resolves({ avatarUrl: 'newAvatarUrl' });
 				userAdapter.getFederatedUserByExternalId.resolves(userAvatar);
-				await service.onChangeRoomMembership(eventForAvatarChanges);
+				await service.onChangeRoomMembership(eventForUserProfileChanges);
 
 				expect(userAdapter.setAvatar.calledWith(userAvatar, 'toHttpUrl')).to.be.true;
-				expect(userAdapter.updateFederationAvatar.calledWith(userAvatar.getInternalId(), 'newAvatarUrl')).to.be.true;
+				expect(userAdapter.updateFederationAvatar.calledWith(userAvatar.getInternalId(), 'avatarUrl')).to.be.true;
+			});
+
+			it('should NOT update the display name if the name received in the event is equal to the one already used', async () => {
+				const existsOnlyOnProxyServer = false;
+				userAdapter.getFederatedUserByExternalId.resolves(
+					FederatedUser.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+						name: 'displayName',
+					}),
+				);
+				await service.onChangeRoomMembership({ ...eventForUserProfileChanges, userProfile: { displayName: 'displayName' } });
+
+				expect(userAdapter.setAvatar.called).to.be.false;
+				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+				expect(userAdapter.updateRealName.called).to.be.false;
+			});
+
+			it('should call the functions to update the display name internally correctly', async () => {
+				const existsOnlyOnProxyServer = false;
+				const user = FederatedUser.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+					_id: 'userId',
+					name: 'currentName',
+				});
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				await service.onChangeRoomMembership({ ...eventForUserProfileChanges, userProfile: { displayName: 'displayName' } });
+
+				expect(userAdapter.setAvatar.called).to.be.false;
+				expect(userAdapter.updateFederationAvatar.called).to.be.false;
+				expect(userAdapter.updateRealName.calledWith(user.getInternalReference(), 'displayName')).to.be.true;
 			});
 		});
 	});

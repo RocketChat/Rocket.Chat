@@ -89,7 +89,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 
 	describe('#toChangeRoomMembershipDto()', () => {
 		const event = {
-			content: { name: 'roomName', avatar_url: 'avatar_url' },
+			content: { name: 'roomName' },
 			event_id: 'eventId',
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
@@ -196,50 +196,34 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 			expect(result.eventOrigin).to.be.equal(EVENT_ORIGIN.LOCAL);
 		});
 
-		it('should return the avatarUrl if the event is equal to join', () => {
+		it('should return the property "isUpdatingProfile" = true when the membership is equal to JOIN and the content includes avatar_url', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
-				{ ...event, content: { ...event.content, membership: 'join' } } as any,
+				{ ...event, content: { avatar_url: 'avatar_url', membership: 'join' } } as any,
 				'domain',
 			);
-			expect(result).to.be.eql({
-				externalEventId: 'eventId',
-				externalRoomId: '!roomId:matrix.org',
-				normalizedRoomId: 'roomId',
-				externalInviterId: '@marcos.defendi:matrix.org',
-				normalizedInviterId: 'marcos.defendi:matrix.org',
-				externalInviteeId: '@marcos.defendi2:matrix.org',
-				normalizedInviteeId: 'marcos.defendi2:matrix.org',
-				inviteeUsernameOnly: 'marcos.defendi2',
-				inviterUsernameOnly: 'marcos.defendi',
-				eventOrigin: EVENT_ORIGIN.REMOTE,
-				leave: false,
-				externalRoomName: undefined,
-				roomType: undefined,
-				userAvatarUrl: 'avatar_url',
+			expect(result.isUpdatingProfile).to.be.true;
+			expect(result.userProfile).to.be.eql({
+				avatarUrl: 'avatar_url',
+				displayName: undefined,
 			});
 		});
 
-		it('should NOT return the avatarUrl if the event is different from join', () => {
+		it('should return the property "isUpdatingProfile" = true when the membership is equal to JOIN and the content includes displayname', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
-				{ ...event, content: { ...event.content, membership: 'invite' } } as any,
+				{ ...event, content: { displayname: 'displayname', membership: 'join' } } as any,
 				'domain',
 			);
-			expect(result).to.be.eql({
-				externalEventId: 'eventId',
-				externalRoomId: '!roomId:matrix.org',
-				normalizedRoomId: 'roomId',
-				externalInviterId: '@marcos.defendi:matrix.org',
-				normalizedInviterId: 'marcos.defendi:matrix.org',
-				externalInviteeId: '@marcos.defendi2:matrix.org',
-				normalizedInviteeId: 'marcos.defendi2:matrix.org',
-				inviteeUsernameOnly: 'marcos.defendi2',
-				inviterUsernameOnly: 'marcos.defendi',
-				eventOrigin: EVENT_ORIGIN.REMOTE,
-				leave: false,
-				externalRoomName: undefined,
-				roomType: undefined,
-				userAvatarUrl: undefined,
+			expect(result.isUpdatingProfile).to.be.true;
+			expect(result.userProfile).to.be.eql({
+				avatarUrl: undefined,
+				displayName: 'displayname',
 			});
+		});
+
+		it('should return the property "isUpdatingProfile" = false when the membership is equal to JOIN but there is no profile information in content', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ ...event, content: { membership: 'join' } } as any, 'domain');
+			expect(result.isUpdatingProfile).to.be.false;
+			expect(result.userProfile).to.be.undefined;
 		});
 
 		it('should convert the event properly', () => {
@@ -258,7 +242,8 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				leave: false,
 				externalRoomName: undefined,
 				roomType: undefined,
-				userAvatarUrl: undefined,
+				isUpdatingProfile: false,
+				userProfile: undefined,
 			});
 		});
 	});

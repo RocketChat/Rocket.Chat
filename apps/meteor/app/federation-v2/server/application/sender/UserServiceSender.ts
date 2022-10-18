@@ -26,4 +26,17 @@ export class FederationUserServiceSender extends FederationService {
 
 		await this.updateUserAvatarExternally(federatedUser.getInternalReference(), federatedUser);
 	}
+
+	public async afterUserRealNameChanged(internalUserId: string, name: string): Promise<void> {
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+
+		if (federatedUser.isRemote()) {
+			return;
+		}
+
+		await this.bridge.setUserDisplayName(federatedUser.getExternalId(), name);
+	}
 }
