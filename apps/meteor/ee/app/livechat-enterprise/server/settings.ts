@@ -152,6 +152,22 @@ export const createSettings = async (): Promise<void> => {
 				invalidValue: -1,
 				modules: ['livechat-enterprise'],
 			});
+
+			this.add('Omnichannel_sorting_mechanism', 'Timestamp', {
+				type: 'select',
+				values: [
+					{ key: 'Timestamp', i18nLabel: 'Timestamp' },
+					{ key: 'Priority', i18nLabel: 'Priority' },
+					{ key: 'SLAs', i18nLabel: 'Service_level_agreements' },
+				],
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Sorting_mechanism',
+				enableQuery: [omnichannelEnabledQuery],
+				enterprise: true,
+				modules: ['livechat-enterprise'],
+				invalidValue: '',
+			});
 		});
 	});
 
