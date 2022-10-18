@@ -1,13 +1,9 @@
 import faker from '@faker-js/faker';
-import type { APIResponse } from '@playwright/test';
 
 import { OmnichannelContacts } from './page-objects/omnichannel-contacts-list';
 import { OmnichannelSection } from './page-objects/omnichannel-section';
-import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 import { createToken } from '../../client/lib/utils/createToken';
-
-type SettingData = { api: BaseTest['api']; id: string; name: string; value: unknown };
 
 const createContact = (generateToken = false) => ({
 	id: null,
@@ -40,22 +36,6 @@ const ERROR = {
 	existingPhone: 'Phone already exists',
 };
 
-const TWO_FACTOR_DATA = {
-	twoFactorCode: 'b6769a5ae0a6071ecabbe868dbdfa925f856c2bb3d910f93cb39479c64ca221e',
-	twoFactorMethod: 'password',
-};
-
-const saveSetting = ({ api, id, name, value }: SettingData): Promise<APIResponse> => {
-	return api.post('/method.call/saveSettings', {
-		message: JSON.stringify({
-			id,
-			msg: 'method',
-			method: 'saveSettings',
-			params: [[{ _id: name, value }], TWO_FACTOR_DATA],
-		}),
-	});
-};
-
 test.use({ storageState: 'admin-session.json' });
 
 test.describe('Omnichannel Contact Center', () => {
@@ -63,16 +43,12 @@ test.describe('Omnichannel Contact Center', () => {
 	let poOmniSection: OmnichannelSection;
 
 	test.beforeAll(async ({ api }) => {
-		// Enable Omnichannel
-		await saveSetting({ api, id: '67', name: 'Livechat_enabled', value: true });
 		// Add a contact
 		const { id: _, ...data } = EXISTING_CONTACT;
 		await api.post('/omnichannel/contact', data);
 	});
 
 	test.afterAll(async ({ api }) => {
-		// Disable Omnichannel
-		// await saveSetting({ api, id: '67', name: 'Livechat_enabled', value: false });
 		// Remove added contacts
 		await api.delete('/livechat/visitor', { token: EXISTING_CONTACT.token });
 		await api.delete('/livechat/visitor', { token: NEW_CONTACT.token });
