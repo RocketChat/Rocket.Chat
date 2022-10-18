@@ -1,9 +1,10 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import { GenericTableCell } from '../../../components/GenericTable';
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
 
 const RemoveChatButton: FC<{ _id: string }> = ({ _id }) => {
@@ -38,9 +39,9 @@ const RemoveChatButton: FC<{ _id: string }> = ({ _id }) => {
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
+		<GenericTableCell maxHeight='x36' fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
 			<IconButton small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isLoading} onClick={handleDelete} />
-		</Table.Cell>
+		</GenericTableCell>
 	);
 };
 

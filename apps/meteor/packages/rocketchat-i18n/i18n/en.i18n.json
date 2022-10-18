@@ -447,6 +447,7 @@
   "App_Info": "App Info",
   "App_Information": "App Information",
   "App_Installation": "App Installation",
+  "App_not_found": "App not found",
   "App_status_auto_enabled": "Enabled",
   "App_status_constructed": "Constructed",
   "App_status_disabled": "Disabled",
@@ -615,6 +616,7 @@
   "Audio_Notification_Value_Description": "Can be any custom sound or the default ones: beep, chelle, ding, droplet, highbell, seasons",
   "Audio_Notifications_Default_Alert": "Audio Notifications Default Alert",
   "Audio_Notifications_Value": "Default Message Notification Audio",
+  "Audio_record": "Audio record",
   "Audios": "Audios",
   "Audit": "Audit",
   "Auditing": "Auditing",
@@ -5304,7 +5306,7 @@
   "Would_you_like_to_place_chat_on_hold": "Would you like to place this chat On-Hold?",
   "Wrap_up_the_call": "Wrap-up the call",
   "Wrap_Up_Notes": "Wrap-Up Notes",
-  "Workspace_settings": "Workspace settings",
+  "Workspace": "Workspace",
   "Yes": "Yes",
   "Yes_archive_it": "Yes, archive it!",
   "Yes_clear_all": "Yes, clear all!",
@@ -5461,5 +5463,6 @@
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
   "onboarding.form.standaloneServerForm.manuallyIntegrate": "Need to manually integrate with external services",
+  "Something_Went_Wrong": "Something went wrong",
   "Toolbox_room_actions": "Primary Room actions"
 }
