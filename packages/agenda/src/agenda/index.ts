@@ -222,7 +222,7 @@ class Agenda extends EventEmitter {
 				);
 			}
 		} else if (config.db) {
-			this.database(config.db.address, config.db.collection, config.db.options, cb);
+			this.database(config.db.address as string, config.db.collection, config.db.options, cb);
 		}
 	}
 }
