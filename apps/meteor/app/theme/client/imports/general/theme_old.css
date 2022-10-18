@@ -281,12 +281,6 @@ textarea {
 	background-color: var(--success-background);
 }
 
-.messages-container {
-	.footer {
-		background: var(--content-background-color);
-	}
-}
-
 .message.editing {
 	background-color: var(--message-box-editing-color);
 }
