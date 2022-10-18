@@ -315,6 +315,93 @@ const LiveChatRoomForwardSchema = {
 
 export const isLiveChatRoomForwardProps = ajv.compile<LiveChatRoomForward>(LiveChatRoomForwardSchema);
 
+type LiveChatRoomSaveInfo = {
+	guestData: {
+		_id: string;
+		name?: string;
+		email?: string;
+		phone?: string;
+		livechatData?: { [k: string]: string };
+	};
+	roomData: {
+		_id: string;
+		topic?: string;
+		tags?: string[];
+		livechatData?: { [k: string]: string };
+		priorityId?: string;
+	};
+};
+
+const LiveChatRoomSaveInfoSchema = {
+	type: 'object',
+	properties: {
+		guestData: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+				name: {
+					type: 'string',
+					nullable: true,
+				},
+				email: {
+					type: 'string',
+					nullable: true,
+				},
+				phone: {
+					type: 'string',
+					nullable: true,
+				},
+				livechatData: {
+					type: 'object',
+					patternProperties: {
+						'.*': {
+							type: 'string',
+						},
+					},
+					nullable: true,
+				},
+			},
+			required: ['_id'],
+			additionalProperties: false,
+		},
+		roomData: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+				topic: {
+					type: 'string',
+					nullable: true,
+				},
+				tags: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				livechatData: {
+					type: 'object',
+					nullable: true,
+				},
+				priorityId: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['_id'],
+			additionalProperties: false,
+		},
+	},
+	required: ['guestData', 'roomData'],
+	additionalProperties: false,
+};
+
+export const isLiveChatRoomSaveInfoProps = ajv.compile<LiveChatRoomSaveInfo>(LiveChatRoomSaveInfoSchema);
+
 type LivechatMonitorsListProps = PaginatedRequest<{ text: string }>;
 
 const LivechatMonitorsListSchema = {
@@ -2612,6 +2699,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.forward': {
 		POST: (params: LiveChatRoomForward) => void;
+	};
+	'/v1/livechat/room.saveInfo': {
+		POST: (params: LiveChatRoomSaveInfo) => void;
 	};
 	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
