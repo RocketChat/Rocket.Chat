@@ -161,6 +161,14 @@ export class NotificationsModule {
 				return true;
 			}
 
+			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v' | '_id'>>(rid, {
+				projection: { 't': 1, 'v.token': 1 },
+			});
+
+			if (!room) {
+				return false;
+			}
+
 			// typing from livechat widget
 			if (extraData?.token) {
 				// TODO improve this to make a query 'v.token'
@@ -173,9 +181,9 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
+			const canAccess = await Authorization.canAccessRoomId(room._id, this.userId);
 
-			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
-			return subsCount > 0;
+			return canAccess;
 		});
 
 		async function canType({
@@ -289,18 +297,25 @@ export class NotificationsModule {
 			if (e === 'webrtc') {
 				return true;
 			}
-			if (e.startsWith('video-conference.')) {
+			if (e === 'video-conference') {
 				if (!this.userId || !data || typeof data !== 'object') {
 					return false;
 				}
 
-				const callId = 'callId' in data && typeof (data as any).callId === 'string' ? (data as any).callId : '';
-				const uid = 'uid' in data && typeof (data as any).uid === 'string' ? (data as any).uid : '';
-				const rid = 'rid' in data && typeof (data as any).rid === 'string' ? (data as any).rid : '';
+				const { action: videoAction, params } = data as {
+					action: string | undefined;
+					params: { callId?: string; uid?: string; rid?: string };
+				};
 
-				const action = e.replace('video-conference.', '');
+				if (!videoAction || typeof videoAction !== 'string' || !params || typeof params !== 'object') {
+					return false;
+				}
 
-				return VideoConf.validateAction(action, this.userId, {
+				const callId = 'callId' in params && typeof params.callId === 'string' ? params.callId : '';
+				const uid = 'uid' in params && typeof params.uid === 'string' ? params.uid : '';
+				const rid = 'rid' in params && typeof params.rid === 'string' ? params.rid : '';
+
+				return VideoConf.validateAction(videoAction, this.userId, {
 					callId,
 					uid,
 					rid,
