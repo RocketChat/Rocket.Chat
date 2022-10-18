@@ -287,6 +287,7 @@ API.v1.addRoute(
 
 			const thumbnailFilters = {
 				...(!query.typeGroup && { typeGroup: { $nin: ['thumbnail'] } }),
+				name: { ...query.name, $not: /thumb-/ },
 			};
 
 			const ourQuery = Object.assign(
