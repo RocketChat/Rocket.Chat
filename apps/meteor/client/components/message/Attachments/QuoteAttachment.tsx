@@ -45,8 +45,8 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					borderRadius='x2'
 					borderWidth='x2'
 					borderStyle='solid'
-					borderColor='neutral-200'
-					borderInlineStartColor='neutral-500'
+					borderColor='extra-light'
+					borderInlineStartColor='light'
 				>
 					<AttachmentAuthor>
 						<AttachmentAuthorAvatar url={attachment.author_icon} />
