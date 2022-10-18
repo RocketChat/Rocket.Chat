@@ -63,12 +63,12 @@ export const palette = [
 	{
 		description: 'Status Font',
 		list: [
-			{ name: 'status-fonts-on-info', token: 'P600', color: '#095AD2' },
-			{ name: 'status-fonts-on-success', token: 'S800', color: '#148660' },
-			{ name: 'status-fonts-on-warning', token: 'W900', color: '#8E6300' },
-			{ name: 'status-fonts-on-danger', token: 'D800', color: '#9B1325' },
-			{ name: 'status-fonts-on-service-1', token: 'S1-800', color: '#974809' },
-			{ name: 'status-fonts-on-service-2 ', token: 'S2-600', color: '#7F1B9F' },
+			{ name: 'status-font-on-info', token: 'P600', color: '#095AD2' },
+			{ name: 'status-font-on-success', token: 'S800', color: '#148660' },
+			{ name: 'status-font-on-warning', token: 'W900', color: '#8E6300' },
+			{ name: 'status-font-on-danger', token: 'D800', color: '#9B1325' },
+			{ name: 'status-font-on-service-1', token: 'S1-800', color: '#974809' },
+			{ name: 'status-font-on-service-2 ', token: 'S2-600', color: '#7F1B9F' },
 		],
 	},
 	{
