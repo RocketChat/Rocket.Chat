@@ -61,7 +61,7 @@ const AppsRoute: FC = () => {
 		<AppsProvider>
 			{(page === 'list' && <AppsPage isMarketplace={isMarketplace} />) ||
 				(id && page === 'info' && <AppDetailsPage id={id} />) ||
-				(context === 'install' && <AppInstallPage />)}
+				(page === 'install' && <AppInstallPage />)}
 		</AppsProvider>
 	);
 };

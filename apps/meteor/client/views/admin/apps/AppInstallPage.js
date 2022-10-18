@@ -7,6 +7,7 @@ import {
 	useUpload,
 	useTranslation,
 	useCurrentRoute,
+	useRouteParameter,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -32,6 +33,8 @@ function AppInstallPage() {
 		throw new Error('No current route name');
 	}
 	const router = useRoute(currentRouteName);
+
+	const context = useRouteParameter('context');
 
 	const setModal = useSetModal();
 
@@ -146,7 +149,7 @@ function AppInstallPage() {
 	};
 
 	const handleCancel = () => {
-		router.push({ context: 'all', page: 'list' });
+		router.push({ context, page: 'list' });
 	};
 
 	return (

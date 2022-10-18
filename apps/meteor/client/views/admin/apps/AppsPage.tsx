@@ -38,7 +38,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	};
 
 	const handleUploadButtonClick = (): void => {
-		router.push({ context: 'install' });
+		context && router.push({ context, page: 'install' });
 	};
 
 	const handleMarketplaceTabClick = (): void => router.push({ context: 'all', page: 'list' });
