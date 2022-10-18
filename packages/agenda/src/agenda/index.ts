@@ -45,7 +45,7 @@ export interface AgendaConfig {
 	sort?: any;
 	mongo?: MongoDb;
 	db?: {
-		address: string;
+		address?: string;
 		collection?: string;
 		options?: MongoClientOptions;
 	};
