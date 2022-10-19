@@ -1,9 +1,16 @@
+import { LivechatPriority } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
 addMigration({
 	version: 283,
-	up() {
-		upsertPermissions();
+	async up() {
+		try {
+			// remove indexes from livechat_priority collection
+			await LivechatPriority.col.dropIndex('dueTimeInMinutes_1');
+		} catch (error) {
+			// ignore
+			console.log(error);
+		}
 	},
 });
