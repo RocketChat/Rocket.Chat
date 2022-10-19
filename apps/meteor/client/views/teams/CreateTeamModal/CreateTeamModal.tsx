@@ -58,7 +58,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 					<Field>
 						<Field.Label>
 							{t('Teams_New_Description_Label')}{' '}
-							<Box is='span' color='neutral-600'>
+							<Box is='span' color='annotation'>
 								({t('optional')})
 							</Box>
 						</Field.Label>
@@ -111,7 +111,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 					<Field>
 						<Field.Label>
 							{t('Teams_New_Add_members_Label')}{' '}
-							<Box is='span' color='neutral-600'>
+							<Box is='span' color='annotation'>
 								({t('optional')})
 							</Box>
 						</Field.Label>
