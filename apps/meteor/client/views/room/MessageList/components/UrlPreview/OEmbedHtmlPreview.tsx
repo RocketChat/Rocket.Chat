@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import OEmbedCollapseable from './OEmbedCollapseable';
+import OEmbedCollapsible from './OEmbedCollapsible';
 import type { PreviewMetadata } from './PreviewList';
 
 const OEmbedHtmlPreview = ({ html, ...props }: PreviewMetadata): ReactElement => (
-	<OEmbedCollapseable {...props}>{html && <Box withRichContent dangerouslySetInnerHTML={{ __html: html }} />}</OEmbedCollapseable>
+	<OEmbedCollapsible {...props}>{html && <Box withRichContent dangerouslySetInnerHTML={{ __html: html }} />}</OEmbedCollapsible>
 );
 
 export default OEmbedHtmlPreview;
