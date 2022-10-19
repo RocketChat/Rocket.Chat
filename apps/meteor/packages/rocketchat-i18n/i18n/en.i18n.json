@@ -3219,6 +3219,7 @@
   "Message_has_been_edited_by": "Message has been edited by __username__",
   "Message_has_been_edited_by_at": "Message has been edited by __username__ at __date__",
   "Message_has_been_pinned": "Message has been pinned",
+  "Message_has_been_shared": "Message has been shared",
   "Message_has_been_starred": "Message has been starred",
   "Message_has_been_unpinned": "Message has been unpinned",
   "Message_has_been_unstarred": "Message has been unstarred",

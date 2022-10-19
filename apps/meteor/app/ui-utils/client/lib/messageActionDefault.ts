@@ -80,12 +80,14 @@ Meteor.startup(async function () {
 		icon: 'arrow-forward',
 		label: 'Share_Message',
 		context: ['message', 'message-mobile', 'threads'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
+			const permalink = await MessageAction.getPermaLink(message._id);
 			imperativeModal.open({
 				component: ShareMessageModal,
 				props: {
 					message,
+					permalink,
 					onClose: (): void => {
 						imperativeModal.close();
 					},
@@ -95,9 +97,9 @@ Meteor.startup(async function () {
 				},
 			});
 		},
-		condition({ message }) {
-			return message.u._id === Meteor.userId();
-		},
+		// condition({ message }) {
+		// 	return message.u._id === Meteor.userId();
+		// },
 		order: 0,
 		group: ['message', 'menu'],
 	});
