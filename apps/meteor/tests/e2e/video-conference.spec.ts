@@ -4,7 +4,7 @@ import { createTargetChannel, createTargetTeam, createDirectMessage } from './ut
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe('video conference', () => {
+test.describe.serial('video conference', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let targetTeam: string;
