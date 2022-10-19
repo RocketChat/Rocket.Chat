@@ -47,7 +47,6 @@ onLicense('livechat-enterprise', async () => {
 		createSettings();
 		createPermissions();
 		createDefaultPriorities();
-
 	});
 });
 
