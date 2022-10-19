@@ -27,12 +27,18 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const [file, fields] = await getUploadFormData(
+		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
+
+		const file = await getUploadFormData(
 			{
 				request: this.request,
 			},
-			{ field: 'file' },
+			{ field: 'file', sizeLimit: maxFileSize },
 		);
+
+		const fileBuffer = await file.toBuffer();
+
+		const { fields } = file;
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
@@ -40,10 +46,10 @@ API.v1.addRoute('livechat/upload/:rid', {
 			});
 		}
 
-		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
+		const buffLength = fileBuffer.length;
 
 		// -1 maxFileSize means there is no limit
-		if (maxFileSize > -1 && file.fileBuffer.length > maxFileSize) {
+		if (maxFileSize > -1 && buffLength > maxFileSize) {
 			return API.v1.failure({
 				reason: 'error-size-not-allowed',
 				sizeAllowed: filesize(maxFileSize),
@@ -54,13 +60,13 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const details = {
 			name: file.filename,
-			size: file.fileBuffer.length,
+			size: buffLength,
 			type: file.mimetype,
 			rid: this.urlParams.rid,
 			visitorToken,
 		};
 
-		const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
+		const uploadedFile = await fileStore.insert(details, fileBuffer);
 		if (!uploadedFile) {
 			return API.v1.failure('Invalid file');
 		}

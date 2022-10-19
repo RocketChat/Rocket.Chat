@@ -189,14 +189,16 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const [image, fields] = await getUploadFormData(
+			const image = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{
-					field: 'image',
-				},
+				{ field: 'image', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
+
+			const fileBuffer = await image.toBuffer();
+
+			const { fields } = image;
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
@@ -220,7 +222,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
+			setUserAvatar(user, fileBuffer, image.mimetype, 'rest');
 
 			return API.v1.success();
 		},
