@@ -62,7 +62,6 @@ router.use((req: Request, res, next) => {
 
 	if (visitorToken) {
 		req.body.visitor = AppsConverter.convertVistitorByToken(visitorToken as string);
-		// req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
 	}
 
 	if (!req.user && !req.body.visitor) {
@@ -97,7 +96,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => 
 		const { visitor } = req.body;
 		const { user } = req;
 
-		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
+		const room = rid;
 		const message = mid;
 
 		return {
@@ -191,9 +190,6 @@ const appsRoutes =
 				const room = AppsConverter.convertRoomById(rid);
 				const user = AppsConverter.convertUserToApp(req.user);
 				const message = AppsConverter.convertMessageById(mid);
-				// const room = orch.getConverters()?.get('rooms').convertById(rid);
-				// const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				// const message = mid && orch.getConverters()?.get('messages').convertById(mid);
 
 				const action = {
 					type,
@@ -228,7 +224,6 @@ const appsRoutes =
 				} = req.body;
 
 				const user = AppsConverter.convertUserToApp(req.user);
-				// const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -255,7 +250,6 @@ const appsRoutes =
 				const { type, actionId, triggerId, payload } = req.body;
 
 				const user = AppsConverter.convertUserToApp(req.user);
-				// const user = orch.getConverters()?.get('users').convertToApp(req.user);
 
 				const action = {
 					type,
@@ -289,10 +283,6 @@ const appsRoutes =
 				const room = AppsConverter.convertRoomById(rid);
 				const user = AppsConverter.convertUserToApp(req.user);
 				const message = AppsConverter.convertMessageById(mid);
-				// const room = orch.getConverters()?.get('rooms').convertById(rid);
-				// const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				// const message = mid && orch.getConverters()?.get('messages').convertById(mid);
-
 				const action = {
 					type,
 					appId,

@@ -544,7 +544,6 @@ export class AppsRestApi {
 					}
 
 					const user = AppsConverter.convertUserToApp(Meteor.user());
-					// const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
 					Promise.await(AppsManager.remove(prl.getID(), { user }));
 
