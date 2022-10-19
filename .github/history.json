@@ -95026,6 +95026,381 @@
           ]
         }
       ]
+    },
+    "5.3.0-rc.0": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27076",
+          "title": "[FIX] Livechat CurrentChats infinity re-rendering",
+          "userLogin": "tiagoevanp",
+          "milestone": "5.3.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26789",
+          "title": "[NEW] Add new endpoint 'livechat/room.saveInfo' & deprecate 'livechat:saveInfo' meteor method",
+          "userLogin": "murtaza98",
+          "milestone": "5.3.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27091",
+          "title": "[IMPROVE] Better /health response when service not healthy",
+          "userLogin": "sampaiodiego",
+          "description": "Not healthy services will send a HTTP 500 response when not healthy.",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27089",
+          "title": "Chore: Apply correct fuselage color tokens",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26974",
+          "title": "Chore: Tests for EE dashboards",
+          "userLogin": "KevLehman",
+          "milestone": "5.3.0",
+          "contributors": [
+            "KevLehman",
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27012",
+          "title": "Chore: Remove Unused CSS",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.3.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "27050",
+          "title": "[FIX] Preview message not showing when reply direct message",
+          "userLogin": "filipemarins",
+          "milestone": "5.3.0",
+          "contributors": [
+            "filipemarins",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27026",
+          "title": "[NEW] Health check for data stream",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "casalsgh",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26796",
+          "title": "Chore: Email Inbox Sanitization",
+          "userLogin": "dougfabris",
+          "description": "Jira Issue [UFR-3]\r\n\r\n- Rewrite Email Inbox to typescript\r\n- Replace `useForm`\r\n- Fix: return an error if there are no email inboxes in `email-inbox` endpoint \r\n**documentation update**: https://github.com/RocketChat/developer-docs/pull/132\r\n- Add e2e test cases for creating email inboxes and deleting email inboxes",
+          "milestone": "5.3.0",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27020",
+          "title": "[FIX] Uncaught error by listening stream-notify-room without subscription",
+          "userLogin": "tiagoevanp",
+          "description": "fix this:\r\n<img width=\"458\" alt=\"image\" src=\"https://user-images.githubusercontent.com/17487063/194358060-7d0fb534-9d04-4af8-abd9-fa2bd79b66c0.png\">",
+          "milestone": "5.3.0",
+          "contributors": [
+            "tiagoevanp",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27040",
+          "title": "[FIX] check if message block has item to show message body",
+          "userLogin": "filipemarins",
+          "milestone": "5.3.0",
+          "contributors": [
+            "filipemarins",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27068",
+          "title": "Chore: UserCard loader tweaks",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![Kapture 2022-10-14 at 12 47 43](https://user-images.githubusercontent.com/27704687/195888045-6fd900ab-feb1-4dc7-924c-a0fd7634eab6.gif)\r\n\r\n\r\n### after\r\n![Kapture 2022-10-14 at 12 45 30](https://user-images.githubusercontent.com/27704687/195887641-652f388b-cf9f-413d-9c07-c0df9a3f7287.gif)",
+          "milestone": "5.3.0",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27086",
+          "title": "[FIX] Warning about livechat/inquiries.queuedForUser",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.3.0",
+          "contributors": [
+            "MartinSchoeler",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26682",
+          "title": "Chore: Use a single notification listener for all videoconf messages",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Task: [VC-1]",
+          "milestone": "5.3.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27052",
+          "title": "[FIX] Actionable messages are now sent to integrations webhook",
+          "userLogin": "cauefcr",
+          "description": "Actionable messages, with buttons and similar, (saved as blocks internally) were not being sent to external integrations, so CRMs and the like had no visibility on what was the actionable message sent, this PR adds a yaml version of the actions, as well as a proper json object with the same data on the webhook output, so that our clients can have more visibility in their process",
+          "milestone": "5.3.0",
+          "contributors": [
+            "cauefcr",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27035",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-10-10Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "yash-rajpal",
+            "dougfabris",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27053",
+          "title": "[FIX] Remove contact mananger always to support old servers",
+          "userLogin": "KevLehman",
+          "milestone": "5.3.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27082",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-10-17Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26963",
+          "title": "[IMPROVE] Automatically open call info contextual bar when voip room is opened",
+          "userLogin": "aleksandernsilva",
+          "description": "This pull request adds the logic necessary to automatically open the call information contextual bar when entering a voip room. This mirrors the behavior we already have for livechat rooms.\r\n\r\n**Before:**\r\n![before-voip-480p-speed](https://user-images.githubusercontent.com/6494543/192610275-a81ab19e-2b60-4466-9e04-81b2e938afda.gif)\r\n\r\n**After:**\r\n![after-voip-480p-speed](https://user-images.githubusercontent.com/6494543/192610356-896ccd48-8c26-4fb9-8fb4-f792ab63e6d5.gif)",
+          "milestone": "5.3.0",
+          "contributors": [
+            "aleksandernsilva",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26938",
+          "title": "Chore: Refactor AppLogs to TS",
+          "userLogin": "rique223",
+          "description": "Rewrote the AppLogs component to TS. Also, improved some error handling logic.",
+          "milestone": "5.3.0",
+          "contributors": [
+            "rique223",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26960",
+          "title": "[FIX] Remove voip extension when agent is removed or deactivated",
+          "userLogin": "KevLehman",
+          "milestone": "5.3.0",
+          "contributors": [
+            "KevLehman",
+            "cauefcr",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26995",
+          "title": "Chore: Remove default value from custom home content setting",
+          "userLogin": "gabriellsh",
+          "description": "Remove content from `Custom body` setting so that new workspaces don't have initial unstyled HTML in their homepages.",
+          "milestone": "5.3.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "guijun13",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27043",
+          "title": "Chore: remove excess space from html preview",
+          "userLogin": "yash-rajpal",
+          "milestone": "5.3.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "26992",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-10-03Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26850",
+          "title": "[FIX] Email inbox memory leak on connection failure",
+          "userLogin": "cauefcr",
+          "description": "- Properly removing event listeners on re-connection.\r\n - Attachments handling changed from beforeMessageSent to afterMessageSent, as the id of the message was needed, now rocket.cat will send the \"Send Attachment To Email\" button.\r\n - Self-disable email inbox when reaching max re-connection attempts",
+          "milestone": "5.3.0",
+          "contributors": [
+            "cauefcr",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "27013",
+          "title": "[FIX] On hold reactivity for Omnichannel rooms",
+          "userLogin": "tiagoevanp",
+          "description": "- Fix instabilities from room when changed from on-hold to resume\r\n- Fix gray messages when resume from on-hold",
+          "milestone": "5.3.0",
+          "contributors": [
+            "tiagoevanp",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27038",
+          "title": "[IMPROVE] Respect convert ascii to emoji preference for new message template",
+          "userLogin": "yash-rajpal",
+          "milestone": "5.3.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27025",
+          "title": "Chore: Switch deprecated fields for projection",
+          "userLogin": "tiagoevanp",
+          "milestone": "5.3.0",
+          "contributors": [
+            "tiagoevanp",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27030",
+          "title": "Chore: Implement short description for marketplace apps",
+          "userLogin": "rique223",
+          "description": "## Jira task: [MKP-126](https://rocketchat.atlassian.net/browse/MKP-126)\r\nImplemented the shortDescription field in the marketplace app details header. Now apps have either a shorter description or nothing, in case it doesn't have a shortDescription registered, in their headers description section.\r\nDemo image: \r\n![image](https://user-images.githubusercontent.com/43561537/194640492-9942f6d9-66ad-4df9-97e8-98c7d51a724c.png)",
+          "milestone": "5.3.0",
+          "contributors": [
+            "rique223",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27044",
+          "title": "[IMPROVE] Change status/price badge to fuselage tag",
+          "userLogin": "rique223",
+          "description": "## Jira task: [MKP-131](https://rocketchat.atlassian.net/browse/MKP-131?atlOrigin=eyJpIjoiODRjOTk4OGYyZDAwNDIzNmI5N2EyZGRhNTUxOGY2NGEiLCJwIjoiaiJ9)\r\nChanged the custom component that showed prices and statuses to a fuselage Tag component for maintainability reasons since after this PR every general design change to the tag component will be automatically reflected in the marketplace UI.\r\nDemo image (App List):\r\n![image](https://user-images.githubusercontent.com/43561537/194942430-ba4153f1-2315-4117-85e6-01832cc09d91.png)\r\n\r\nDemo Image (App price):\r\n![image](https://user-images.githubusercontent.com/43561537/194942498-5ff64a27-7232-47b8-a686-2fda2289e491.png)",
+          "milestone": "5.3.0",
+          "contributors": [
+            "rique223",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27067",
+          "title": "Merge master into develop & Set version to 5.3.0-develop",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "filipemarins",
+            "tassoevan",
+            "pierre-lehnen-rc",
+            "debdutdeb",
+            "sampaiodiego",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "27059",
+          "title": "Chore: Bump Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "5.2.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
