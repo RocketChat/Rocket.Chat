@@ -1,0 +1,119 @@
+{
+	"name": "@rocket.chat/livechat",
+	"version": "1.13.3",
+	"files": [
+		"/build"
+	],
+	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RocketChat/Rocket.Chat",
+		"directory": "packages/livechat"
+	},
+	"scripts": {
+		"clean": "rimraf dist",
+		"build": "webpack-cli --mode production",
+		"dev": "yarn build",
+		"start": "webpack-dev-server --mode development",
+		"lint": "run-s eslint stylelint",
+		"eslint": "eslint src",
+		"stylelint": "stylelint 'src/**/*.scss'",
+		"storybook": "start-storybook -p 9001 -c .storybook",
+		"build-storybook": "build-storybook"
+	},
+	"devDependencies": {
+		"@babel/eslint-parser": "^7.18.9",
+		"@babel/preset-env": "^7.18.9",
+		"@rocket.chat/eslint-config": "^0.4.0",
+		"@rocket.chat/fuselage-tokens": "next",
+		"@rocket.chat/logo": "next",
+		"@storybook/addon-actions": "~6.5.10",
+		"@storybook/addon-backgrounds": "~6.5.10",
+		"@storybook/addon-essentials": "~6.5.10",
+		"@storybook/addon-knobs": "~6.4.0",
+		"@storybook/addon-postcss": "~2.0.0",
+		"@storybook/addon-viewport": "~6.5.10",
+		"@storybook/react": "~6.5.10",
+		"@storybook/theming": "~6.5.10",
+		"@types/react-dom": "^17.0.17",
+		"autoprefixer": "^9.8.8",
+		"babel-loader": "^8.1.0",
+		"babel-plugin-jsx-pragmatic": "^1.0.2",
+		"cross-env": "^7.0.3",
+		"css-loader": "^4.3.0",
+		"cssnano": "^4.1.11",
+		"desvg-loader": "^0.1.0",
+		"eslint": "^8.20.0",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-react": "^7.30.1",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"file-loader": "^6.2.0",
+		"gh-release": "^3.5.0",
+		"html-webpack-plugin": "^4.4.1",
+		"husky": "^4.3.8",
+		"if-env": "^1.0.4",
+		"image-webpack-loader": "^6.0.0",
+		"lorem-ipsum": "^2.0.8",
+		"mini-css-extract-plugin": "^0.11.3",
+		"npm-run-all": "^4.1.5",
+		"postcss-css-variables": "^0.17.0",
+		"postcss-dir-pseudo-class": "^5.0.0",
+		"postcss-flexbugs-fixes": "^4.2.1",
+		"postcss-ie11-supports": "^0.1.3",
+		"postcss-loader": "^3.0.0",
+		"postcss-logical": "^4.0.2",
+		"postcss-scss": "^4.0.4",
+		"postcss-selector-not": "^4.0.1",
+		"react-dom": "~17.0.2",
+		"rimraf": "^3.0.2",
+		"sass": "^1.49.10",
+		"sass-loader": "^9.0.3",
+		"serve": "^11.3.2",
+		"style-loader": "^1.2.1",
+		"stylelint": "^14.9.1",
+		"stylelint-order": "^5.0.0",
+		"svg-loader": "^0.0.2",
+		"ts-loader": "^8.4.0",
+		"typescript": "~4.5.5",
+		"url-loader": "^4.1.1",
+		"webpack": "^4.44.1",
+		"webpack-cli": "^3.3.12",
+		"webpack-dev-server": "^3.11.0"
+	},
+	"peerDependencies": {
+		"@rocket.chat/fuselage-tokens": "*",
+		"@rocket.chat/logo": "*"
+	},
+	"dependencies": {
+		"@rocket.chat/sdk": "^1.0.0-alpha.42",
+		"@rocket.chat/ui-kit": "next",
+		"crypto-js": "^4.1.1",
+		"css-vars-ponyfill": "^2.4.7",
+		"date-fns": "^2.15.0",
+		"emoji-mart": "^3.0.1",
+		"history": "^5.3.0",
+		"i18next": "^21.8.10",
+		"markdown-it": "^11.0.1",
+		"mem": "^6.1.1",
+		"mitt": "^2.1.0",
+		"preact": "^10.8.2",
+		"preact-router": "^3.2.1",
+		"query-string": "^7.1.1",
+		"react-i18next": "^11.16.9",
+		"whatwg-fetch": "^3.6.2"
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions",
+		"not ie < 11"
+	],
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"houston": {
+		"updateFiles": [
+			"package.json"
+		]
+	}
+}

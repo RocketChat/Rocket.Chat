@@ -1,0 +1,70 @@
+{
+	"name": "rocketchat-services",
+	"private": true,
+	"version": "1.0.0",
+	"description": "Rocket.Chat Authorization service",
+	"main": "index.js",
+	"scripts": {
+		"dev": "pm2 start ecosystem.config.js",
+		"pm2": "pm2",
+		"typecheck": "tsc --noEmit --skipLibCheck",
+		"build": "tsc",
+		"build-containers": "npm run build && docker-compose build && rm -rf ./dist",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"rocketchat"
+	],
+	"author": "Rocket.Chat",
+	"license": "MIT",
+	"dependencies": {
+		"@rocket.chat/apps-engine": "^1.32.0",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/emitter": "next",
+		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/ui-kit": "next",
+		"ajv": "^8.11.0",
+		"bcrypt": "^5.0.1",
+		"body-parser": "^1.20.0",
+		"colorette": "^2.0.19",
+		"cookie": "^0.5.0",
+		"cookie-parser": "^1.4.6",
+		"ejson": "^2.2.2",
+		"eventemitter3": "^4.0.7",
+		"express": "^4.17.3",
+		"fibers": "^5.0.1",
+		"jaeger-client": "^3.19.0",
+		"mem": "^8.1.1",
+		"moleculer": "^0.14.21",
+		"mongodb": "^4.3.1",
+		"nats": "^2.6.1",
+		"pino": "^7.11.0",
+		"sodium-native": "^3.3.0",
+		"sodium-plus": "^0.9.0",
+		"underscore.string": "^3.3.6",
+		"uuid": "^8.3.2",
+		"ws": "^8.8.1"
+	},
+	"devDependencies": {
+		"@rocket.chat/icons": "next",
+		"@types/cookie": "^0.5.1",
+		"@types/cookie-parser": "^1.4.3",
+		"@types/ejson": "^2.2.0",
+		"@types/express": "^4.17.13",
+		"@types/fibers": "^3.1.1",
+		"@types/node": "^14.18.21",
+		"@types/ws": "^8.5.3",
+		"npm-run-all": "^4.1.5",
+		"pino-pretty": "^7.6.1",
+		"pm2": "^5.2.0",
+		"ts-node": "^10.9.1",
+		"typescript": "~4.5.5"
+	},
+	"volta": {
+		"extends": "../../../package.json"
+	}
+}
