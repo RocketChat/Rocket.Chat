@@ -26,11 +26,15 @@ const ColorPalette = (): ReactElement => {
 			{palette.map((paletteItem) => (
 				<Fragment key={paletteItem.category}>
 					{paletteItem.category && (
-						<Box fontScale='h2' mb='x16'>
+						<Box fontScale='h2' mb='x16' color='default'>
 							{paletteItem.category}
 						</Box>
 					)}
-					{paletteItem.description && <Box fontScale='p2'>{paletteItem.description}</Box>}
+					{paletteItem.description && (
+						<Box fontScale='p2' color='default'>
+							{paletteItem.description}
+						</Box>
+					)}
 					<Box display='flex' mb='x8' flexWrap='wrap'>
 						{paletteItem.list.map((tokenItem, i) => (
 							<Controller
