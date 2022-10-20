@@ -22,7 +22,7 @@ const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement
 	return (
 		<HorizontalWizardLayout
 			background={customBackground}
-			logo={customLogo ? <Box is='img' maxHeight={'x40'} src={customLogo} alt='Logo' /> : undefined}
+			logo={customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : undefined}
 		>
 			<HorizontalWizardLayoutAside>
 				<HorizontalWizardLayoutTitle>

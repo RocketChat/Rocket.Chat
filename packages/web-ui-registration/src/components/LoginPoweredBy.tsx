@@ -6,11 +6,7 @@ import React from 'react';
 export const LoginPoweredBy = (): ReactElement => (
 	<Trans i18nKey='registration.page.register.back'>
 		Powered by{' '}
-		<Link
-			href='https://rocket.chat/'
-			// target='_blank'
-			// rel='noopener noreferrer'
-		>
+		<Link href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
 			Rocket.Chat
 		</Link>
 	</Trans>
