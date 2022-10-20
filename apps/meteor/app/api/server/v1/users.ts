@@ -196,13 +196,11 @@ API.v1.addRoute(
 				{ field: 'image', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
-			const fileBuffer = await image.toBuffer();
-
-			const { fields } = image;
-
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
 			}
+
+			const { fields, fileBuffer, mimetype } = image;
 
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
@@ -222,7 +220,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, fileBuffer, image.mimetype, 'rest');
+			setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},

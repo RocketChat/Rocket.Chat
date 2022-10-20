@@ -18,11 +18,11 @@ API.v1.addRoute(
 				{ field: 'asset', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
-			const fileBuffer = await asset.toBuffer();
+			const { fileBuffer, fields, filename, mimetype } = asset;
 
-			const { refreshAllClients, assetName: customName } = asset.fields;
+			const { refreshAllClients, assetName: customName } = fields;
 
-			const assetName = customName || asset.filename;
+			const assetName = customName || filename;
 			const assetsKeys = Object.keys(RocketChatAssets.assets);
 
 			const isValidAsset = assetsKeys.includes(assetName);
@@ -30,7 +30,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}
 
-			Meteor.call('setAsset', fileBuffer, asset.mimetype, assetName);
+			Meteor.call('setAsset', fileBuffer, mimetype, assetName);
 			if (refreshAllClients) {
 				Meteor.call('refreshClients');
 			}

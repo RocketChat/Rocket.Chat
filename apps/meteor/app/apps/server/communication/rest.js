@@ -222,7 +222,7 @@ export class AppsRestApi {
 
 						const { fields: formData } = app;
 
-						buff = await app.toBuffer();
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -509,7 +509,7 @@ export class AppsRestApi {
 
 						const { fields: formData } = app;
 
-						buff = await app.toBuffer();
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');

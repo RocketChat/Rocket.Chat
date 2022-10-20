@@ -12,9 +12,8 @@ type UploadResult<K> = {
 	filename: string;
 	encoding: string;
 	mimetype: string;
-	toBuffer: () => Promise<Buffer>;
+	fileBuffer: Buffer;
 	fields: K;
-	_buf: Buffer | null;
 };
 
 export async function getUploadFormData<
@@ -66,37 +65,31 @@ export async function getUploadFormData<
 		{ filename, encoding, mimeType: mimetype }: { filename: string; encoding: string; mimeType: string },
 	) {
 		if (options.field && fieldname !== options.field) {
+			file.resume();
 			return returnError(new MeteorError('invalid-field'));
 		}
 
-		uploadedFile = {
-			file,
-			filename,
-			encoding,
-			mimetype,
-			fieldname,
-			fields,
-			_buf: null,
-			async toBuffer() {
-				if (this._buf) {
-					return this._buf;
-				}
-				const fileChunks = [];
-				for await (const chunk of this.file) {
-					fileChunks.push(chunk);
-				}
+		const fileChunks: Uint8Array[] = [];
+		file.on('data', function (chunk) {
+			fileChunks.push(chunk);
+		});
 
-				if (this.file.truncated) {
-					fileChunks.length = 0;
-					throw new MeteorError('error-file-too-large');
-				}
+		file.on('end', function () {
+			if (file.truncated) {
+				fileChunks.length = 0;
+				return returnError(new MeteorError('error-file-too-large'));
+			}
 
-				this._buf = Buffer.concat(fileChunks);
-				return this._buf;
-			},
-		};
-
-		returnResult(uploadedFile);
+			uploadedFile = {
+				file,
+				filename,
+				encoding,
+				mimetype,
+				fieldname,
+				fields,
+				fileBuffer: Buffer.concat(fileChunks),
+			};
+		});
 	}
 
 	function cleanup() {
@@ -119,7 +112,7 @@ export async function getUploadFormData<
 		returnError();
 	});
 	bb.on('filesLimit', function () {
-		returnError(new MeteorError('Just 1 file is allowed'));
+		returnError('Just 1 file is allowed');
 	});
 	bb.on('fieldsLimit', function () {
 		returnError();

@@ -98,8 +98,7 @@ API.v1.addRoute(
 			}
 
 			const { fields } = file;
-
-			let fileBuffer = await file.toBuffer();
+			let { fileBuffer } = file;
 
 			const details = {
 				name: file.filename,

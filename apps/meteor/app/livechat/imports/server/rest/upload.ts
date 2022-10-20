@@ -36,11 +36,9 @@ API.v1.addRoute('livechat/upload/:rid', {
 			{ field: 'file', sizeLimit: maxFileSize },
 		);
 
-		const fileBuffer = await file.toBuffer();
+		const { fields, fileBuffer, filename, mimetype } = file;
 
-		const { fields } = file;
-
-		if (!fileUploadIsValidContentType(file.mimetype)) {
+		if (!fileUploadIsValidContentType(mimetype)) {
 			return API.v1.failure({
 				reason: 'error-type-not-allowed',
 			});
@@ -59,9 +57,9 @@ API.v1.addRoute('livechat/upload/:rid', {
 		const fileStore = FileUpload.getStore('Uploads');
 
 		const details = {
-			name: file.filename,
+			name: filename,
 			size: buffLength,
-			type: file.mimetype,
+			type: mimetype,
 			rid: this.urlParams.rid,
 			visitorToken,
 		};
