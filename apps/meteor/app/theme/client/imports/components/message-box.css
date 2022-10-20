@@ -115,6 +115,7 @@
 
 		resize: none;
 
+		color: var(--message-box-color);
 		border: 0;
 		background-color: transparent;
 
@@ -138,6 +139,8 @@
 		height: 21px;
 
 		cursor: pointer;
+
+		color: var(--message-box-color);
 		align-items: center;
 		justify-content: center;
 

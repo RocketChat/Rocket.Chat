@@ -1,7 +1,6 @@
 import { VideoAttachmentProps } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 

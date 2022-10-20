@@ -1,7 +1,6 @@
 import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement } from 'react';
 
 import Attachments from '.';
