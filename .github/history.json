@@ -95401,6 +95401,50 @@
           ]
         }
       ]
+    },
+    "5.3.0-rc.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27107",
+          "title": "[FIX] CSS vars usage",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27100",
+          "title": "Regression: Remove margin-bottom inside UserCard actions",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27019",
+          "title": "Chore: Update Image and link previews",
+          "userLogin": "filipemarins",
+          "description": "- Add message generic cover image preview component to OEmbed Links\r\n- Add new functionalities to URL Image preview, like click to open preview and arrows to move between images in the current chat\r\n- Design changes to keep the original aspect ratio of the image to prevent loss of important image pieces of information \r\n- Add fallback to common issues related to meta tags like `og:image` and others",
+          "milestone": "5.3.0",
+          "contributors": [
+            "filipemarins",
+            "hugocostadev",
+            "web-flow",
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }

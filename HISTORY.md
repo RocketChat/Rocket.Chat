@@ -1,6 +1,38 @@
 
 # 5.3.0 (Under Release Candidate Process)
 
+## 5.3.0-rc.1
+`2022-10-20  ·  1 🐛  ·  2 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- CSS vars usage ([#27107](https://github.com/RocketChat/Rocket.Chat/pull/27107))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Image and link previews ([#27019](https://github.com/RocketChat/Rocket.Chat/pull/27019))
+
+  - Add message generic cover image preview component to OEmbed Links  
+  - Add new functionalities to URL Image preview, like click to open preview and arrows to move between images in the current chat  
+  - Design changes to keep the original aspect ratio of the image to prevent loss of important image pieces of information   
+  - Add fallback to common issues related to meta tags like `og:image` and others
+
+- Regression: Remove margin-bottom inside UserCard actions ([#27100](https://github.com/RocketChat/Rocket.Chat/pull/27100))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+
 ## 5.3.0-rc.0
 `2022-10-18  ·  2 🎉  ·  4 🚀  ·  10 🐛  ·  16 🔍  ·  19 👩‍💻👨‍💻`
 
