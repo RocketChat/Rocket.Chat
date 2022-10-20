@@ -29,6 +29,7 @@ export const palette = [
 			{ name: 'surface-tint', token: 'N100', color: '#F7F8FA' },
 			{ name: 'surface-neutral', token: 'N400', color: '#E4E7EA' },
 			{ name: 'surface-hover', token: 'N400', color: '#E4E7EA' },
+			{ name: 'surface-selected', token: 'N400', color: '#CBCED1' },
 			{ name: 'surface-disabled', token: 'N100', color: '#F7F8FA' },
 			{ name: 'surface-dark', token: 'N900', color: '#1F2329' },
 		],

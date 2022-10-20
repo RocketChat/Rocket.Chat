@@ -75,7 +75,7 @@
 
 			width: 0;
 
-			content: "\2026"; /* ascii code for the ellipsis character */
+			content: '\2026'; /* ascii code for the ellipsis character */
 			animation: ellipsis steps(4, end) 1.5s infinite;
 			vertical-align: bottom;
 		}
@@ -102,6 +102,8 @@
 	}
 
 	&__textarea {
+		color: var(--message-box-color);
+
 		overflow-y: auto;
 
 		width: 100%;
@@ -127,6 +129,7 @@
 	}
 
 	&__icon {
+		color: var(--message-box-color);
 		display: flex;
 		flex: auto 0 0;
 
