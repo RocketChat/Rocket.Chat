@@ -130,12 +130,6 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
-		service.onEvent('message.update', ({ message }) => {
-			if (message.rid) {
-				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
-			}
-		});
-
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;

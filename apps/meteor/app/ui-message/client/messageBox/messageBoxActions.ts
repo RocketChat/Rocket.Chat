@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox } from '../../../ui-utils/client';
@@ -8,6 +9,7 @@ import { fileUpload } from '../../../ui';
 import { settings } from '../../../settings/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ShareLocationModal from '../../../../client/views/room/ShareLocation/ShareLocationModal';
+import { Rooms } from '../../../models/client';
 
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
@@ -51,7 +53,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement | undefined, { rid, tmid });
+			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement, { rid, tmid });
 			$input.remove();
 		});
 
@@ -69,7 +71,13 @@ const canGetGeolocation = new ReactiveVar(false);
 messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
-	condition: () => canGetGeolocation.get(),
+	condition: () => {
+		const room = Rooms.findOne(Session.get('openedRoom'));
+		if (!room) {
+			return false;
+		}
+		return canGetGeolocation.get() && !isRoomFederated(room);
+	},
 	async action({ rid, tmid }) {
 		imperativeModal.open({ component: ShareLocationModal, props: { rid, tmid, onClose: imperativeModal.close } });
 	},

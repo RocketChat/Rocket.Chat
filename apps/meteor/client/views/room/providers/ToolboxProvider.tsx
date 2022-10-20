@@ -1,28 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useContext, useMemo, useState, useLayoutEffect } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 
-import { ToolboxContext, ToolboxContextValue, ToolboxEventHandler } from '../contexts/ToolboxContext';
+import { ToolboxContext, ToolboxContextValue } from '../contexts/ToolboxContext';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
-
-const useToolboxActions = (room: IRoom): { listen: ToolboxEventHandler; actions: Array<[string, ToolboxAction]> } => {
-	const { listen, actions } = useContext(ToolboxContext);
-	const [state, setState] = useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries()));
-
-	useLayoutEffect(() => {
-		const stop = listen((actions) => {
-			setState(Array.from(actions.entries()));
-		});
-		return (): void => {
-			stop();
-		};
-	}, [listen, room, setState]);
-
-	return { listen, actions: state };
-};
+import { useToolboxActions } from './hooks/useToolboxActions';
 
 const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
@@ -69,6 +54,9 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		switch (room.t) {
 			case 'l':
 				open('room-info', username);
+				break;
+			case 'v':
+				open('voip-room-info', username);
 				break;
 			case 'd':
 				(room.uids?.length ?? 0) > 2 ? open('user-info-group', username) : open('user-info', username);
