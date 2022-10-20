@@ -34,7 +34,7 @@ const CannedResponse: FC<{
 						<Box fontScale='p2m' mbe='8px'>
 							{t('Shortcut')}:
 						</Box>
-						<Box fontScale='c1' color='info'>
+						<Box fontScale='c1' color='hint'>
 							!{shortcut}
 						</Box>
 					</Box>
@@ -42,7 +42,7 @@ const CannedResponse: FC<{
 						<Box fontScale='p2m' mbe='8px'>
 							{t('Content')}:
 						</Box>
-						<Box fontScale='c1' color='info'>
+						<Box fontScale='c1' color='hint'>
 							"{text}"
 						</Box>
 					</Box>
@@ -50,7 +50,7 @@ const CannedResponse: FC<{
 						<Box fontScale='p2m' mbe='8px'>
 							{t('Sharing')}:
 						</Box>
-						<Box fontScale='c1' color='info'>
+						<Box fontScale='c1' color='hint'>
 							{scope}
 						</Box>
 					</Box>
