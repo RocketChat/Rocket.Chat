@@ -18,6 +18,10 @@ export class AppsVideoManagerService extends ServiceClass implements IAppsVideoM
 	}
 
 	private getVideoConfProviderManager(): AppVideoConfProviderManager {
+		if (!this.apps.isLoaded()) {
+			throw new Error('apps-engine-not-loaded');
+		}
+
 		const manager = this.apps.getManager()?.getVideoConfProviderManager();
 		if (!manager) {
 			throw new Error('no-videoconf-provider-app');
