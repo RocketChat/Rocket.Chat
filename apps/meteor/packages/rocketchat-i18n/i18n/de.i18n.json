@@ -3144,7 +3144,6 @@
   "mention-here": "Hier erwähnen",
   "mention-here_description": "Berechtigung um Erwähnungen mit @hier zu nutzen",
   "Mentions": "Erwähnungen",
-  "Mentions_unavailable_for_federation": "Erwähnungen sind für Verbundräume nicht verfügbar",
   "Mentions_default": "Erwähnungen (Standard)",
   "Mentions_only": "Nur Erwähnungen",
   "Merge_Channels": "Channels zusammenführen",

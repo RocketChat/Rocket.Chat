@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
+import { setUserAvatar } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
@@ -83,5 +85,15 @@ export class RocketChatUserAdapter {
 		}
 		const { insertedId } = await Users.insertOne(federatedUser.getStorageRepresentation());
 		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.getExternalId(), federatedUser.isRemote());
+	}
+
+	public async setAvatar(federatedUser: FederatedUser, avatarUrl: string): Promise<void> {
+		Meteor.runAsUser(federatedUser.getInternalId(), () => {
+			setUserAvatar(federatedUser.getInternalReference(), avatarUrl, 'image/jpeg', 'url'); // this mimetype is fixed here, but the function when called with a url as source don't use that mimetype
+		});
+	}
+
+	public async updateFederationAvatar(internalUserId: string, externalAvatarUrl: string): Promise<void> {
+		await Users.setFederationAvatarUrlById(internalUserId, externalAvatarUrl);
 	}
 }
