@@ -145,8 +145,3 @@ registerAdminRoute('/upgrade/:type?', {
 	name: 'upgrade',
 	component: lazy(() => import('./upgrade/UpgradePage')),
 });
-
-registerAdminRoute('/color-palette', {
-	name: 'color-palette',
-	component: lazy(() => import('./colorPalette/ColorPaletteRoute')),
-});

@@ -1547,10 +1547,6 @@ settingsRegistry.addGroup('Push', function () {
 });
 
 settingsRegistry.addGroup('Layout', function () {
-	this.add('Layout_Fuselage_Palette', '', {
-		type: 'string',
-	});
-
 	this.section('Content', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
