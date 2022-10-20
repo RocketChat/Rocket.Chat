@@ -1,6 +1,50 @@
 
 # 5.3.0 (Under Release Candidate Process)
 
+## 5.3.0-rc.2
+`2022-10-20  ·  1 🎉  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Matrix federation events coverage expansion (adding support for 3 extra events) ([#26859](https://github.com/RocketChat/Rocket.Chat/pull/26859))
+
+  FED-17
+  FED-25
+  FED-27
+  FED-28
+  FED-30
+  The goal of this PR is to add support for more events on Matrix Federation feature. The new supported events are:
+  
+  - Mentions  
+  - User avatar sync  
+  - Quotes
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Quote colors ([#27110](https://github.com/RocketChat/Rocket.Chat/pull/27110))
+
+  Before
+  ![image](https://user-images.githubusercontent.com/40830821/196947705-f1b2edf9-7341-4d2a-b8e8-4e3720ab7289.png)
+
+
+  After
+  ![image](https://user-images.githubusercontent.com/40830821/196947512-1267f992-11c7-4ff4-b7a2-9f0b3534f69d.png)
+
+- Regression: Toolbox Divider Color ([#27116](https://github.com/RocketChat/Rocket.Chat/pull/27116))
+
+  ![image](https://user-images.githubusercontent.com/27704687/197018407-d591d6bc-e390-4bcd-9b6a-0bf0a1420bc2.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+
 ## 5.3.0-rc.1
 `2022-10-20  ·  1 🐛  ·  2 🔍  ·  6 👩‍💻👨‍💻`
 
