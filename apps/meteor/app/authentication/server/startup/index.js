@@ -205,7 +205,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 			to: destinations,
 			from: settings.get('From_Email'),
 			subject: Accounts.emailTemplates.userToActivate.subject(),
-			html: Accounts.emailTemplates.userToActivate.html(options),
+			html: Accounts.emailTemplates.userToActivate.html({ ...options, name: options.name || options.profile?.name }),
 		};
 
 		Mailer.send(email);
