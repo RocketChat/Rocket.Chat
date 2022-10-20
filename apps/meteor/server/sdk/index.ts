@@ -24,6 +24,7 @@ import { FibersContextStore } from './lib/ContextStore';
 import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import type { IAppsConverterService } from './types/IAppsConverterService';
 import type { IAppsManagerService } from './types/IAppsManagerService';
+import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -48,6 +49,7 @@ export const Apps = proxifyWithWait<IAppsService>('apps');
 export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
 export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
+export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
