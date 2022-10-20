@@ -1,5 +1,6 @@
 import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -13,17 +14,17 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (message && Apps && Apps.isLoaded()) {
+	if (message) {
 		const appMessage = Object.assign({}, originalMessage, message);
 
-		const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', appMessage));
+		const prevent = Promise.await(Apps.triggerEvent(AppInterface.IPreMessageUpdatedPrevent, appMessage));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedExtend', appMessage));
-		result = Promise.await(Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageUpdatedModify', result));
+		result = Promise.await(Apps.triggerEvent(AppInterface.IPreMessageUpdatedExtend, appMessage));
+		result = Promise.await(Apps.triggerEvent(AppInterface.IPreMessageUpdatedModify, result));
 
 		if (typeof result === 'object') {
 			message = Object.assign(appMessage, result);
@@ -56,11 +57,9 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	const room = Rooms.findOneById(message.rid);
 
-	if (Apps?.isLoaded()) {
-		// This returns a promise, but it won't mutate anything about the message
-		// so, we don't really care if it is successful or fails
-		Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
-	}
+	// This returns a promise, but it won't mutate anything about the message
+	// so, we don't really care if it is successful or fails
+	Apps.triggerEvent(AppInterface.IPostMessageUpdated, message);
 
 	Meteor.defer(function () {
 		callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);

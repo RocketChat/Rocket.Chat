@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -14,11 +15,9 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
-	// const bridges = Apps.isLoaded() && Apps.getBridges();
-	const bridges = Apps.getBridges();
 
-	if (deletedMsg && bridges) {
-		const prevent = Promise.await(bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
+	if (deletedMsg) {
+		const prevent = await Apps.triggerEvent(AppInterface.IPreMessageDeletePrevent, deletedMsg);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
@@ -69,7 +68,5 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 		api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
 
-	if (bridges) {
-		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
-	}
+	Apps.triggerEvent(AppInterface.IPostMessageDeleted, [deletedMsg, user]);
 };
