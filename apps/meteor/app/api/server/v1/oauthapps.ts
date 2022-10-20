@@ -50,9 +50,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			Meteor.call('addOAuthApp', this.bodyParams);
+			const application = Meteor.call('addOAuthApp', this.bodyParams);
 
-			return API.v1.success();
+			return API.v1.success({ application });
 		},
 	},
 );
