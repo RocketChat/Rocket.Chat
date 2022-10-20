@@ -104,8 +104,6 @@
 	&__textarea {
 		overflow-y: auto;
 
-		color: var(--message-box-color);
-
 		width: 100%;
 		height: 23px;
 
@@ -132,7 +130,6 @@
 	&__icon {
 		display: flex;
 
-		color: var(--message-box-color);
 		flex: auto 0 0;
 
 		width: 50px;

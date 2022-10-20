@@ -4,7 +4,7 @@ import React, { FC, ComponentProps, ReactElement, ReactNode } from 'react';
 
 import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
 
-type VariantType = 'danger' | 'warning' | 'annotation' | 'success';
+type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
@@ -54,7 +54,7 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 };
 
 const GenericModal: FC<GenericModalProps> = ({
-	variant = 'annotation',
+	variant = 'info',
 	children,
 	cancelText,
 	confirmText,
