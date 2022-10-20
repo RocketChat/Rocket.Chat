@@ -1,10 +1,11 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
+import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
+import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
@@ -21,11 +22,12 @@ export class FederationRoomServiceSender extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
-		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalFileAdapter: RocketChatFileAdapter,
+		protected internalMessageAdapter: RocketChatMessageAdapter,
+		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async createDirectMessageRoomAndInviteUser(roomCreateDMAndInviteUserInput: FederationCreateDMAndInviteUserDto): Promise<void> {
@@ -142,7 +144,7 @@ export class FederationRoomServiceSender extends FederationService {
 		await this.bridge.kickUserFromRoom(federatedRoom.getExternalId(), federatedUser.getExternalId(), byWhom.getExternalId());
 	}
 
-	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<IMessage> {
+	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<void> {
 		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
@@ -153,13 +155,47 @@ export class FederationRoomServiceSender extends FederationService {
 		if (!federatedRoom) {
 			throw new Error(`Could not find room id for ${internalRoomId}`);
 		}
-		await getExternalMessageSender(message, this.bridge, this.internalFileAdapter).sendMessage(
-			federatedRoom.getExternalId(),
-			federatedSender.getExternalId(),
-			message,
-		);
 
-		return message; // this need to be here due to a limitation in the internal API that was expecting the return of the sendMessage function.
+		if (message.federation?.eventId) {
+			return;
+		}
+
+		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+			// TODO: move this to the domain layer in a proper entity
+			const messageLink = (
+				message.attachments.find(
+					(attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link),
+				) as MessageQuoteAttachment
+			).message_link;
+			if (!messageLink) {
+				return;
+			}
+			const messageToReplyToId = messageLink.includes('msg=') && messageLink?.split('msg=').pop();
+			if (!messageToReplyToId) {
+				return;
+			}
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageById(messageToReplyToId);
+			if (!messageToReplyTo) {
+				return;
+			}
+
+			await getExternalMessageSender(
+				message,
+				this.bridge,
+				this.internalFileAdapter,
+				this.internalMessageAdapter,
+				this.internalUserAdapter,
+			).sendQuoteMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message, messageToReplyTo);
+			return;
+		}
+
+		await getExternalMessageSender(
+			message,
+			this.bridge,
+			this.internalFileAdapter,
+			this.internalMessageAdapter,
+			this.internalUserAdapter,
+		).sendMessage(federatedRoom.getExternalId(), federatedSender.getExternalId(), message);
 	}
 
 	public async afterMessageDeleted(internalMessage: IMessage, internalRoomId: string): Promise<void> {

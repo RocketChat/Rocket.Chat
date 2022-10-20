@@ -12,6 +12,7 @@ export interface IMatrixEventContentRoomMembershipChanged extends IBaseEventCont
 	displayname: string;
 	membership: RoomMembershipChangedEventType;
 	is_direct?: boolean;
+	avatar_url?: string;
 }
 
 export class MatrixEventRoomMembershipChanged extends AbstractMatrixEvent {
