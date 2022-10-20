@@ -2,6 +2,11 @@
 	background-color: var(--content-background-color);
 }
 
+:root {
+	--rcx-color-surface-light: var(--content-background-color);
+	--rcx-color-background-light: var(--content-background-color);
+}
+
 .color-content-background-color {
 	color: var(--content-background-color);
 }
@@ -279,12 +284,6 @@ textarea {
 
 .upload-progress-progress {
 	background-color: var(--success-background);
-}
-
-.messages-container {
-	.footer {
-		background: var(--content-background-color);
-	}
 }
 
 .message.editing {
