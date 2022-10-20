@@ -3,7 +3,6 @@ import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { LivechatRooms } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
@@ -72,12 +71,14 @@ class AutoTransferChatSchedulerClass {
 			servedBy: { _id: ignoreAgentId },
 		} = room;
 
-		const comment = TAPi18n.__('Livechat_auto_transfer_unanswered_chats_comment', {
-			duration: settings.get('Livechat_auto_transfer_chat_timeout'),
-		});
+		const timeoutDuration = settings.get<number>('Livechat_auto_transfer_chat_timeout').toString();
 
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			return Livechat.returnRoomAsInquiry(room._id, departmentId, comment);
+			return Livechat.returnRoomAsInquiry(room._id, departmentId, {
+				scope: 'autoTransferUnansweredChatsToQueue',
+				comment: timeoutDuration,
+				transferredBy: schedulerUser,
+			});
 		}
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
@@ -86,7 +87,8 @@ class AutoTransferChatSchedulerClass {
 				userId: agent.agentId,
 				transferredBy: schedulerUser,
 				transferredTo: agent,
-				comment,
+				scope: 'autoTransferUnansweredChatsToAgent',
+				comment: timeoutDuration,
 			});
 		}
 
