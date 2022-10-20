@@ -1,7 +1,6 @@
 import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import Attachments from '.';
@@ -14,18 +13,19 @@ import AttachmentContent from './Attachment/AttachmentContent';
 import AttachmentDetails from './Attachment/AttachmentDetails';
 import AttachmentInner from './Attachment/AttachmentInner';
 
+// TODO: remove this team collaboration
 const quoteStyles = css`
 	.rcx-attachment__details {
 		.rcx-message-body {
-			color: ${colors.n700} !important;
+			color: ${Palette.surface['surface-neutral']};
 		}
 	}
 	&:hover,
 	&:focus {
 		.rcx-attachment__details {
-			background: ${colors.n200} !important;
-			border-color: ${colors.n300} !important;
-			border-inline-start-color: ${colors.n600} !important;
+			background: ${Palette.surface['surface-hover']};
+			border-color: ${Palette.stroke['stroke-light']};
+			border-inline-start-color: ${Palette.stroke['stroke-medium']};
 		}
 	}
 `;
@@ -45,13 +45,13 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					borderRadius='x2'
 					borderWidth='x2'
 					borderStyle='solid'
-					borderColor='neutral-200'
-					borderInlineStartColor='neutral-500'
+					borderColor='extra-light'
+					borderInlineStartColor='light'
 				>
 					<AttachmentAuthor>
 						<AttachmentAuthorAvatar url={attachment.author_icon} />
 						<AttachmentAuthorName
-							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'info' })}
+							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'annotation' })}
 						>
 							{attachment.author_name}
 						</AttachmentAuthorName>
