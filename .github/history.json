@@ -95445,6 +95445,45 @@
           ]
         }
       ]
+    },
+    "5.3.0-rc.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "26859",
+          "title": "[NEW] Matrix federation events coverage expansion (adding support for 3 extra events)",
+          "userLogin": "MarcosSpessatto",
+          "description": "FED-17\r\nFED-25\r\nFED-27\r\nFED-28\r\nFED-30\r\nThe goal of this PR is to add support for more events on Matrix Federation feature. The new supported events are:\r\n\r\n- Mentions\r\n- User avatar sync\r\n- Quotes",
+          "milestone": "5.3.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "27110",
+          "title": "Regression: Quote colors",
+          "userLogin": "gabriellsh",
+          "description": "Before\r\n![image](https://user-images.githubusercontent.com/40830821/196947705-f1b2edf9-7341-4d2a-b8e8-4e3720ab7289.png)\r\n\r\n\r\nAfter\r\n![image](https://user-images.githubusercontent.com/40830821/196947512-1267f992-11c7-4ff4-b7a2-9f0b3534f69d.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "27116",
+          "title": "Regression: Toolbox Divider Color",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/197018407-d591d6bc-e390-4bcd-9b6a-0bf0a1420bc2.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
