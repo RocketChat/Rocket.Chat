@@ -3249,6 +3249,8 @@
   "Message_HideType_user_converted_to_team": "Hide \"User converted channel to a Team\" messages",
   "Message_HideType_user_deleted_room_from_team": "Hide \"User deleted room from Team\" messages",
   "Message_HideType_user_removed_room_from_team": "Hide \"User removed room from Team\" messages",
+  "Message_HideType_changed_description": "Hide \"Room description changed to\" messages",
+  "Message_HideType_changed_announcement": "Hide \"Room announcement changed to\" messages",
   "Message_HideType_ut": "Hide \"User Joined Conversation\" messages",
   "Message_HideType_wm": "Hide \"Welcome\" messages",
   "Message_Id": "Message Id",

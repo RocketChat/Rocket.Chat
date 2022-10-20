@@ -386,4 +386,12 @@ export const MessageTypesValues = [
 		key: 'user-removed-room-from-team',
 		i18nLabel: 'Message_HideType_user_removed_room_from_team',
 	},
+	{
+		key: 'room_changed_announcement',
+		i18nLabel: 'Message_HideType_changed_announcement',
+	},
+	{
+		key: 'room_changed_description',
+		i18nLabel: 'Message_HideType_changed_description',
+	},
 ];

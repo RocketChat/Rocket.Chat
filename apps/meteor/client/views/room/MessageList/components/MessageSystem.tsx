@@ -49,6 +49,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 			isSelected={isSelected}
 			data-qa-selected={isSelected}
 			data-qa='system-message'
+			data-qa-id={message.t}
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
