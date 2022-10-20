@@ -1,8 +1,9 @@
-import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
 
-import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
 
 const query = (
@@ -10,12 +11,14 @@ const query = (
 ): {
 	selector: string;
 } => ({ selector: JSON.stringify({ term }) });
+
 type roomType = {
 	label: string;
 	value: string;
 	_id: string;
 	type: string;
 };
+
 type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
 		onChange: (room: roomType, action: 'remove' | undefined) => void;
@@ -26,22 +29,30 @@ type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoCompl
 const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const { value: usersData } = useEndpointData(
-		'/v1/users.autocomplete',
-		useMemo(() => query(debouncedFilter), [debouncedFilter]),
-	);
-	const { value: roomsData } = useEndpointData(
-		'/v1/rooms.autocomplete.channelAndPrivate',
-		useMemo(() => query(filter), [filter]),
-	);
+	// const { value: usersData } = useEndpointData(
+	// 	'/v1/users.autocomplete',
+	// 	useMemo(() => query(debouncedFilter), [debouncedFilter]),
+	// );
+	// const { value: roomsData } = useEndpointData(
+	// 	'/v1/rooms.autocomplete.channelAndPrivate',
+	// 	useMemo(() => query(filter), [filter]),
+	// );
+
+	const query = useMemo(() => debouncedFilter, [debouncedFilter]);
+
+	const searchSpotlight = useEndpoint('GET', '/v1/spotlight');
+	const { data } = useQuery(['spotlight', query], () => searchSpotlight({ query }));
+
 	const users = useMemo(
-		() => usersData?.items.map((user) => ({ _id: user._id, value: user.username, label: user.name, type: 'U' })) || [],
-		[usersData],
+		() => data?.users.map((user) => ({ _id: user._id, value: user.username, label: user.name, type: 'u' })) || [],
+		[data?.users],
 	);
+
 	const rooms = useMemo(
-		() => roomsData?.items.map((room) => ({ _id: room._id, value: room.name, label: room.name, type: 'C' })) || [],
-		[roomsData],
+		() => data?.rooms.map((room) => ({ _id: room._id, value: room.name, label: room.name, type: 'c' })) || [],
+		[data?.rooms],
 	);
+
 	const options = [...users, ...rooms];
 
 	const onClickRemove = useMutableCallback((e) => {
@@ -76,7 +87,7 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 						<UserAvatar username={value} size='x20' />
 					</OptionAvatar>
 					<OptionContent>
-						{label} <Option.Description>({value})</Option.Description>
+						{label} <OptionDescription>({value})</OptionDescription>
 					</OptionContent>
 				</Option>
 			)}

@@ -45,22 +45,20 @@ const TooltipProvider: FC = ({ children }) => {
 				setTooltip(<TooltipComponent title={title} anchor={anchor} />);
 			}, 300);
 			setTooltip(null);
+
+			target.onclick = (): void => {
+				setTooltip(null);
+				clearTimeout(timeout);
+			};
 		};
 
-		// const handleClick = (): void => {
-		// 	setTooltip(null);
-		// 	clearTimeout(timeout);
-		// };
-
 		document.body.addEventListener('mouseover', handleMouseOver);
-		// document.body.addEventListener('click', handleClick);
 
 		return (): void => {
 			if (timeout) {
 				clearTimeout(timeout);
 			}
 			document.body.removeEventListener('mouseover', handleMouseOver);
-			// document.body.removeEventListener('click', handleClick);
 		};
 	}, [hasHover]);
 
