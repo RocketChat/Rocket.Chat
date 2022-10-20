@@ -63,7 +63,7 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public isTypingStatusEnabled(): boolean {
-		return settings.get('Federation_Matrix_enable_typing_status') === true;
+		return this.getRegistrationFileFromHomeserver()?.enableEphemeralEvents === true;
 	}
 
 	public onFederationEnabledStatusChanged(
@@ -87,7 +87,6 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_homeserver_domain',
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
-				'Federation_Matrix_enable_typing_status',
 			],
 			([enabled]) =>
 				Promise.await(
@@ -137,6 +136,7 @@ export class RocketChatSettingsAdapter {
 
 	private async updateRegistrationFile(): Promise<void> {
 		const registrationFile = this.generateRegistrationFileObject();
+
 		await Settings.updateValueById(
 			'Federation_Matrix_registration_file',
 			yaml.dump({
@@ -161,7 +161,6 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_homeserver_domain',
 				'Federation_Matrix_bridge_url',
 				'Federation_Matrix_bridge_localpart',
-				'Federation_Matrix_enable_typing_status',
 			],
 			this.updateRegistrationFile.bind(this),
 		);
@@ -235,16 +234,30 @@ export class RocketChatSettingsAdapter {
 					type: 'code',
 					i18nLabel: 'Federation_Matrix_registration_file',
 					i18nDescription: 'Federation_Matrix_registration_file_desc',
-				});
-
-				this.add('Federation_Matrix_enable_typing_status', false, {
-					readonly: false,
-					type: 'boolean',
-					i18nLabel: 'Federation_Matrix_enable_typing_status',
-					i18nDescription: 'Federation_Matrix_enable_typing_status_desc',
-					alert: 'Federation_Matrix_enable_typing_status_Alert',
+					alert: 'Federation_Matrix_registration_file_Alert',
 				});
 			});
 		});
+	}
+
+	private getRegistrationFileFromHomeserver(): Record<string, any> | undefined {
+		try {
+			const registrationYaml = Assets.getText('federation/registration.yaml');
+
+			const parsedFile = yaml.load(registrationYaml as string) as Record<string, any>;
+
+			return {
+				applicationServiceToken: parsedFile.as_token,
+				bridgeUrl: parsedFile.url,
+				botName: parsedFile.sender_localpart,
+				homeserverToken: parsedFile.hs_token,
+				id: parsedFile.id,
+				listenTo: parsedFile.namespaces,
+				enableEphemeralEvents: parsedFile['de.sorunome.msc2409.push_ephemeral'],
+				rocketchat: { domainName: parsedFile.rocketchat?.domain_name, homeServerUrl: parsedFile.rocketchat?.homeserver_url },
+			};
+		} catch (e) {
+			// no-op
+		}
 	}
 }
