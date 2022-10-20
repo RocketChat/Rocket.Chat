@@ -31,7 +31,7 @@ export async function getUploadFormData<
 ): Promise<UploadResult<K>> {
 	const limits = {
 		files: 1,
-		...(options.sizeLimit && options.sizeLimit > 0 && { fileSize: options.sizeLimit }),
+		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
 	};
 
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
