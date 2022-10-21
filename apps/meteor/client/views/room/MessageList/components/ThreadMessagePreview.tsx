@@ -14,6 +14,7 @@ import {
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useMessageActions } from '../../contexts/MessageContext';
@@ -35,6 +36,8 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
 
+	const messageType = parentMessage.phase === AsyncStatePhase.RESOLVED ? MessageTypes.getType(parentMessage.value) : null;
+
 	return (
 		<ThreadMessageTemplate
 			{...props}
@@ -49,11 +52,11 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin>
-							{parentMessage.phase === AsyncStatePhase.RESOLVED ? (
+							{parentMessage.phase === AsyncStatePhase.RESOLVED && !messageType && (
 								<ThreadMessagePreviewBody message={{ ...parentMessage.value, msg: body }} />
-							) : (
-								<Skeleton />
 							)}
+							{parentMessage.phase === AsyncStatePhase.LOADING && <Skeleton />}
+							{messageType && t(messageType.message, messageType.data ? messageType.data(message) : {})}
 						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
