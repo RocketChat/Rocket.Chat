@@ -3,10 +3,11 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
-import { SystemLogger } from '../../../lib/logger/system';
-import notifications from '../../../../app/notifications/server/lib/Notifications';
-import type { AppServerOrchestrator } from '../orchestrator';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import notifications from '../../../notifications/server/lib/Notifications';
+import { Apps, AppsManager } from '../../../../server/sdk';
 
 export enum AppEvents {
 	APP_ADDED = 'app/added',
@@ -20,18 +21,14 @@ export enum AppEvents {
 	COMMAND_REMOVED = 'command/removed',
 	ACTIONS_CHANGED = 'actions/changed',
 }
-
 export class AppServerListener {
-	private orch: AppServerOrchestrator;
-
 	engineStreamer: IStreamer;
 
 	clientStreamer: IStreamer;
 
 	received;
 
-	constructor(orch: AppServerOrchestrator, engineStreamer: IStreamer, clientStreamer: IStreamer, received: Map<any, any>) {
-		this.orch = orch;
+	constructor(engineStreamer: IStreamer, clientStreamer: IStreamer, received: Map<any, any>) {
 		this.engineStreamer = engineStreamer;
 		this.clientStreamer = clientStreamer;
 		this.received = received;
@@ -50,12 +47,12 @@ export class AppServerListener {
 	}
 
 	async onAppAdded(appId: string): Promise<void> {
-		await (this.orch.getManager()! as any).loadOne(appId); // TO-DO: fix type
+		await AppsManager.loadOne(appId);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 	}
 
 	async onAppStatusUpdated({ appId, status }: { appId: string; status: AppStatus }): Promise<void> {
-		const app = this.orch.getManager()?.getOneById(appId);
+		const app = await AppsManager.getOneById(appId);
 
 		if (!app || app.getStatus() === status) {
 			return;
@@ -68,10 +65,10 @@ export class AppServerListener {
 		});
 
 		if (AppStatusUtils.isEnabled(status)) {
-			await this.orch.getManager()?.enable(appId).catch(SystemLogger.error);
+			await AppsManager.enable(appId).catch(SystemLogger.error);
 			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		} else if (AppStatusUtils.isDisabled(status)) {
-			await this.orch.getManager()?.disable(appId, status, true).catch(SystemLogger.error);
+			await AppsManager.disable(appId).catch(SystemLogger.error);
 			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		}
 	}
@@ -82,33 +79,30 @@ export class AppServerListener {
 			setting,
 			when: new Date(),
 		});
-		await this.orch
-			.getManager()!
-			.getSettingsManager()
-			.updateAppSetting(appId, setting as any); // TO-DO: fix type of `setting`
+		await AppsManager.updateAppSetting(appId, setting as any);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
 
 	async onAppUpdated(appId: string): Promise<void> {
 		this.received.set(`${AppEvents.APP_UPDATED}_${appId}`, { appId, when: new Date() });
 
-		const storageItem = await this.orch.getStorage()!.retrieveOne(appId);
+		const storageItem = (await Apps.retrieveOneFromStorage(appId)) as IAppStorageItem; // maybe we should verify if items exists?
 
-		const appPackage = await this.orch.getAppSourceStorage()!.fetch(storageItem);
+		const appPackage = (await Apps.fetchAppSourceStorage(storageItem)) as Buffer; // maybe we should verify if items exists?
 
-		await this.orch.getManager()!.updateLocal(storageItem, appPackage);
+		await AppsManager.updateLocal(storageItem, appPackage);
 
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 	}
 
 	async onAppRemoved(appId: string): Promise<void> {
-		const app = this.orch.getManager()!.getOneById(appId);
+		const app = await AppsManager.getOneById(appId);
 
 		if (!app) {
 			return;
 		}
 
-		await this.orch.getManager()!.removeLocal(appId);
+		await AppsManager.removeLocal(appId);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_REMOVED, appId);
 	}
 
@@ -142,14 +136,14 @@ export class AppServerNotifier {
 
 	listener: AppServerListener;
 
-	constructor(orch: AppServerOrchestrator) {
+	constructor() {
 		this.engineStreamer = notifications.streamAppsEngine;
 
 		// This is used to broadcast to the web clients
 		this.clientStreamer = notifications.streamApps;
 
 		this.received = new Map();
-		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);
+		this.listener = new AppServerListener(this.engineStreamer, this.clientStreamer, this.received);
 	}
 
 	async appAdded(appId: string): Promise<void> {

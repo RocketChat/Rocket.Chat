@@ -7,11 +7,9 @@ import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { settings } from '../../../../app/settings/server';
-import type { AppServerOrchestrator } from '../orchestrator';
-import { Apps } from '../orchestrator';
-import { UiKitCoreApp } from '../../../sdk';
-import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
+import { settings } from '../../../settings/server';
+import { UiKitCoreApp, Apps, AppsConverter } from '../../../../server/sdk';
+import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
 
@@ -63,7 +61,7 @@ router.use((req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
-		req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
+		req.body.visitor = AppsConverter.convertVistitorByToken(visitorToken as string);
 	}
 
 	if (!req.user && !req.body.visitor) {
@@ -98,7 +96,7 @@ const getPayloadForType = (type: UIKitIncomingInteractionType, req: Request) => 
 		const { visitor } = req.body;
 		const { user } = req;
 
-		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
+		const room = rid;
 		const message = mid;
 
 		return {
@@ -178,7 +176,7 @@ router.post('/:appId', async (req, res, next) => {
 });
 
 const appsRoutes =
-	(orch: AppServerOrchestrator) =>
+	() =>
 	(req: Request, res: Response): void => {
 		const { appId } = req.params;
 
@@ -189,9 +187,9 @@ const appsRoutes =
 				const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
 				const { visitor } = req.body;
-				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
+				const room = AppsConverter.convertRoomById(rid);
+				const user = AppsConverter.convertUserToApp(req.user);
+				const message = AppsConverter.convertMessageById(mid);
 
 				const action = {
 					type,
@@ -209,7 +207,7 @@ const appsRoutes =
 				try {
 					const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
 
-					const result = Promise.await(orch.triggerEvent(eventInterface, action));
+					const result = Promise.await(Apps.triggerEvent(eventInterface, action));
 
 					res.send(result);
 				} catch (e) {
@@ -225,7 +223,7 @@ const appsRoutes =
 					payload: { view, isCleared },
 				} = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const user = AppsConverter.convertUserToApp(req.user);
 
 				const action = {
 					type,
@@ -239,7 +237,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = Promise.await(Apps.triggerEvent('IUIKitInteractionHandler', action));
 
 					res.send(result);
 				} catch (e) {
@@ -251,7 +249,7 @@ const appsRoutes =
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const { type, actionId, triggerId, payload } = req.body;
 
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const user = AppsConverter.convertUserToApp(req.user);
 
 				const action = {
 					type,
@@ -263,7 +261,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = Promise.await(Apps.triggerEvent('IUIKitInteractionHandler', action));
 
 					res.send(result);
 				} catch (e) {
@@ -282,10 +280,9 @@ const appsRoutes =
 					payload: { context },
 				} = req.body;
 
-				const room = orch.getConverters()?.get('rooms').convertById(rid);
-				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
-
+				const room = AppsConverter.convertRoomById(rid);
+				const user = AppsConverter.convertUserToApp(req.user);
+				const message = AppsConverter.convertMessageById(mid);
 				const action = {
 					type,
 					appId,
@@ -300,7 +297,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = Promise.await(Apps.triggerEvent('IUIKitInteractionHandler', action));
 
 					res.send(result);
 				} catch (e) {
@@ -318,11 +315,7 @@ const appsRoutes =
 	};
 
 export class AppUIKitInteractionApi {
-	orch: AppServerOrchestrator;
-
-	constructor(orch: AppServerOrchestrator) {
-		this.orch = orch;
-
-		router.post('/:appId', appsRoutes(orch));
+	constructor() {
+		router.post('/:appId', appsRoutes());
 	}
 }

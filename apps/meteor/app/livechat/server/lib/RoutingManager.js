@@ -110,7 +110,7 @@ export const RoutingManager = {
 		dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
-		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
+		Apps.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
 	},
 

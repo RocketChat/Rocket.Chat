@@ -7,7 +7,7 @@ import { Logger } from '../../lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from '../../../app/apps/server/communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
