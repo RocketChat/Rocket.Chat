@@ -31,6 +31,14 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 	leave?: boolean;
 	roomType?: RoomType;
 	externalRoomName?: string;
+	userAvatarUrl?: string;
+}
+
+export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
+	externalSenderId: string;
+	normalizedSenderId: string;
+	messageText: string;
+	replyToEventId?: string;
 }
 
 export interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -125,6 +133,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		leave,
 		roomType,
 		externalRoomName,
+		userAvatarUrl,
 		externalEventId,
 	}: IFederationChangeMembershipInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
@@ -138,6 +147,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		this.leave = leave;
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
+		this.userAvatarUrl = userAvatarUrl;
 	}
 
 	externalInviterId: string;
@@ -159,6 +169,8 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 	leave?: boolean;
 
 	externalRoomName?: string;
+
+	userAvatarUrl?: string;
 }
 
 class ExternalMessageBaseDto extends FederationBaseRoomInputDto {
@@ -181,11 +193,14 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 		normalizedSenderId,
 		messageText,
 		externalEventId,
-	}: IFederationSendInternalMessageBaseInputDto & { messageText: string }) {
-		super({ externalRoomId, normalizedRoomId, externalEventId });
+		replyToEventId,
+	}: IFederationSendInternalMessageInputDto) {
+		super({ externalRoomId, normalizedRoomId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
 		this.messageText = messageText;
+		this.replyToEventId = replyToEventId;
+		this.externalEventId = externalEventId;
 	}
 
 	externalSenderId: string;
@@ -193,6 +208,8 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 	normalizedSenderId: string;
 
 	messageText: string;
+
+	replyToEventId?: string;
 }
 
 export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto {
@@ -227,6 +244,7 @@ export interface IFederationFileMessageInputDto {
 	size: number;
 	messageText: string;
 	url: string;
+	replyToEventId?: string;
 }
 
 class FederationFileMessageInputDto {
@@ -261,10 +279,12 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 		messageText,
 		url,
 		externalEventId,
+		replyToEventId,
 	}: IFederationSendInternalMessageBaseInputDto & IFederationFileMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
+		this.replyToEventId = replyToEventId;
 		this.messageBody = new FederationFileMessageInputDto({ filename, mimetype, size, messageText, url });
 	}
 
@@ -273,6 +293,8 @@ export class FederationRoomReceiveExternalFileMessageDto extends ExternalMessage
 	normalizedSenderId: string;
 
 	messageBody: FederationFileMessageInputDto;
+
+	replyToEventId?: string;
 }
 
 export class FederationRoomChangeJoinRulesDto extends FederationBaseRoomInputDto {
