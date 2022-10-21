@@ -62,7 +62,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
 		if (!creatorUser) {
-			await this.createFederatedUser(externalInviterId, normalizedInviterId);
+			await this.createFederatedUserInternallyOnly(externalInviterId, normalizedInviterId);
 		}
 		const creator = creatorUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));
 		if (!creator) {
@@ -130,12 +130,12 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const inviterUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
 		if (!inviterUser) {
-			await this.createFederatedUser(externalInviterId, inviterUsername, isInviterFromTheSameHomeServer);
+			await this.createFederatedUserInternallyOnly(externalInviterId, inviterUsername, isInviterFromTheSameHomeServer);
 		}
 
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
 		if (!inviteeUser) {
-			await this.createFederatedUser(externalInviteeId, inviteeUsername, isInviteeFromTheSameHomeServer);
+			await this.createFederatedUserInternallyOnly(externalInviteeId, inviteeUsername, isInviteeFromTheSameHomeServer);
 		}
 		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId));
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));

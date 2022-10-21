@@ -14,7 +14,7 @@ import type {
 	FederationSetupRoomDto,
 } from '../../input/RoomSenderDto';
 import { FederationServiceEE } from '../AbstractFederationService';
-
+require('util').inspect.defaultOptions.depth = null;
 export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
@@ -138,7 +138,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 		const inviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!inviterUser) {
-			await this.createFederatedUserForInviterUsingLocalInformation(internalInviterId);
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId);
 		}
 
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
@@ -182,7 +182,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(username);
 		if (!inviteeUser) {
 			const existsOnlyOnProxyServer = isInviteeFromTheSameHomeServer;
-			await this.createFederatedUser(rawInviteeId, username, existsOnlyOnProxyServer);
+			await this.createFederatedUserInternallyOnly(rawInviteeId, username, existsOnlyOnProxyServer);
 		}
 
 		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByInternalUsername(username));
@@ -206,5 +206,8 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			federatedInviterUser.getExternalId(),
 			federatedInviteeUser.getExternalId(),
 		);
+		
+		const profile = await this.bridge.getUserProfileInformation(federatedInviteeUser.getExternalId());
+		console.log( {profile})
 	}
 }

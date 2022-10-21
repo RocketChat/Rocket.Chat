@@ -59,7 +59,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 			const existsOnlyOnProxyServer = true;
 			const externalInviterId = await this.bridge.createUser(username, name, this.internalHomeServerDomain);
 
-			await this.createFederatedUser(externalInviterId, username, existsOnlyOnProxyServer, name);
+			await this.createFederatedUserInternallyOnly(externalInviterId, username, existsOnlyOnProxyServer, name);
 		}
 
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
@@ -106,7 +106,7 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		const existsOnlyOnProxyServer = isInviteeFromTheSameHomeServer;
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(username);
 		if (!inviteeUser) {
-			await this.createFederatedUser(rawInviteeId, username, existsOnlyOnProxyServer);
+			await this.createFederatedUserInternallyOnly(rawInviteeId, username, existsOnlyOnProxyServer);
 		}
 
 		if (!isInviteeFromTheSameHomeServer) {

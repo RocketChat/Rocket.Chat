@@ -17,6 +17,11 @@ export class FederationUserServiceSender extends FederationService {
 	public async afterUserAvatarChanged(internalUsername: string): Promise<void> {
 		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(internalUsername);
 		if (!federatedUser) {
+			const internalUser = await this.internalUserAdapter.getInternalUserByUsername(internalUsername);
+			if (!internalUser) {
+				return;
+			}
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalUser._id);
 			return;
 		}
 
@@ -30,10 +35,19 @@ export class FederationUserServiceSender extends FederationService {
 	public async afterUserRealNameChanged(internalUserId: string, name: string): Promise<void> {
 		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
 		if (!federatedUser) {
+			const internalUser = await this.internalUserAdapter.getInternalUserById(internalUserId);
+			if (!internalUser) {
+				return;
+			}
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalUser._id);
 			return;
 		}
 
-		if (federatedUser.isRemote() || !federatedUser.shouldUpdateDisplayName(name)) {
+		if (federatedUser.isRemote()) {
+			return;
+		}
+		const externalUserProfileInformation = await this.bridge.getUserProfileInformation(federatedUser.getExternalId());
+		if (!federatedUser.shouldUpdateDisplayName(externalUserProfileInformation?.displayName || '')) {
 			return;
 		}
 
