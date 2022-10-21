@@ -20,6 +20,7 @@ import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
+import { FederationService } from './federation/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -41,6 +42,7 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
+api.registerService(new FederationService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

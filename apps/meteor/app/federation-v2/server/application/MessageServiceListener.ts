@@ -1,6 +1,7 @@
 import { isMessageFromMatrixFederation } from '@rocket.chat/core-typings';
 
 import type { IFederationBridge } from '../domain/IFederationBridge';
+import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
@@ -13,10 +14,11 @@ export class FederationMessageServiceListener extends FederationService {
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async onMessageReaction(messageReactionEventInput: FederationMessageReactionEventDto): Promise<void> {
