@@ -58,11 +58,6 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 		});
 
 		$input.click();
-
-		// Simple hack for iOS aka codegueira
-		if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-			$input.click();
-		}
 	},
 });
 
