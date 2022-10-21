@@ -263,23 +263,23 @@ Meteor.startup(function () {
 
 export const MessageTypesValues = [
 	{
-		key: 'uj',
+		key: 'uj', // user joined
 		i18nLabel: 'Message_HideType_uj',
 	},
 	{
-		key: 'ujt',
+		key: 'ujt', // user joined team
 		i18nLabel: 'Message_HideType_ujt',
 	},
 	{
-		key: 'ul',
+		key: 'ul', // user left
 		i18nLabel: 'Message_HideType_ul',
 	},
 	{
-		key: 'ult',
+		key: 'ult', // user left team
 		i18nLabel: 'Message_HideType_ult',
 	},
 	{
-		key: 'ru',
+		key: 'ru', // user removed
 		i18nLabel: 'Message_HideType_ru',
 	},
 	{
@@ -287,7 +287,7 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_removed_user_from_team',
 	},
 	{
-		key: 'au',
+		key: 'au', // added user
 		i18nLabel: 'Message_HideType_au',
 	},
 	{
@@ -299,19 +299,19 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_mute_unmute',
 	},
 	{
-		key: 'r',
+		key: 'r', // room name changed
 		i18nLabel: 'Message_HideType_r',
 	},
 	{
-		key: 'ut',
+		key: 'ut', // user joined conversation
 		i18nLabel: 'Message_HideType_ut',
 	},
 	{
-		key: 'wm',
+		key: 'wm', // welcome
 		i18nLabel: 'Message_HideType_wm',
 	},
 	{
-		key: 'rm',
+		key: 'rm', // message removed
 		i18nLabel: 'Message_HideType_rm',
 	},
 	{
