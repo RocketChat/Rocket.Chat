@@ -12,7 +12,9 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			}
 			await federationUserServiceSender.afterUserAvatarChanged(username);
 		});
-		this.onEvent('user.nameChanged', async ({ _id, name }): Promise<void> => {
+		this.onEvent('user.realnameChanged', async ({ _id, name }): Promise<void> => {
+			console.log({ _id, name });
+			// return;
 			if (!name || !_id) {
 				return;
 			}

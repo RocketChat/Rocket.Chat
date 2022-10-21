@@ -44,11 +44,8 @@ export abstract class FederationServiceEE extends FederationService {
 			if (!federatedUser) {
 				return;
 			}
-			await this.updateUserProfileInternally(
-				federatedUser,
-				externalUserProfileInformation?.avatarUrl,
-				externalUserProfileInformation?.displayName,
-			);
+			await this.updateUserAvatarInternally(federatedUser, externalUserProfileInformation?.avatarUrl);
+			await this.updateUserDisplayNameInternally(federatedUser, externalUserProfileInformation?.displayName);
 		}
 	}
 }

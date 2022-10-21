@@ -131,12 +131,13 @@ export class MatrixBridge implements IFederationBridge {
 		}
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
 		const newUser = new MatrixUserInstance(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`, ...(avatarUrl ? { url: avatarUrl } : {}) });
+		await this.bridgeInstance.provisionUser(newUser, { name, ...(avatarUrl ? { url: avatarUrl } : {}) });
 
 		return matrixUserId;
 	}
 
 	public async setUserDisplayName(externalUserId: string, displayName: string): Promise<void> {
+		console.log({ externalUserId, displayName });
 		try {
 			await this.bridgeInstance.getIntent(externalUserId).setDisplayName(displayName);
 		} catch (e) {
@@ -434,6 +435,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+					console.log({ event })
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

@@ -42,11 +42,8 @@ export abstract class FederationService {
 		if (!insertedUser) {
 			return;
 		}
-		await this.updateUserProfileInternally(
-			insertedUser,
-			externalUserProfileInformation?.avatarUrl,
-			externalUserProfileInformation?.displayName,
-		);
+		await this.updateUserAvatarInternally(insertedUser, externalUserProfileInformation?.avatarUrl);
+		await this.updateUserDisplayNameInternally(insertedUser, externalUserProfileInformation?.displayName);
 	}
 
 	protected async updateUserProfileInternally(federatedUser: FederatedUser, avatarUrl?: string, displayName?: string): Promise<void> {
@@ -61,14 +58,26 @@ export abstract class FederationService {
 		await this.updateUserDisplayNameInternally(federatedUser, displayName);
 	}
 
-	private async updateUserAvatarInternally(federatedUser: FederatedUser, avatarUrl?: string): Promise<void> {
+	protected async updateUserAvatarInternally(federatedUser: FederatedUser, avatarUrl?: string): Promise<void> {
+		if (!avatarUrl) {
+			return;
+		}
+		if (!federatedUser.isRemote()) {
+			return;
+		}
 		if (avatarUrl && federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
 			await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl));
 			await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), avatarUrl);
 		}
 	}
 
-	private async updateUserDisplayNameInternally(federatedUser: FederatedUser, displayName?: string): Promise<void> {
+	protected async updateUserDisplayNameInternally(federatedUser: FederatedUser, displayName?: string): Promise<void> {
+		if (!displayName) {
+			return;
+		}
+		if (!federatedUser.isRemote()) {
+			return;
+		}
 		if (displayName && federatedUser.shouldUpdateDisplayName(displayName)) {
 			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReference(), displayName);
 		}

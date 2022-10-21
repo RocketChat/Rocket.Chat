@@ -33,7 +33,7 @@ export class FederationUserServiceSender extends FederationService {
 			return;
 		}
 
-		if (federatedUser.isRemote()) {
+		if (federatedUser.isRemote() || !federatedUser.shouldUpdateDisplayName(name)) {
 			return;
 		}
 

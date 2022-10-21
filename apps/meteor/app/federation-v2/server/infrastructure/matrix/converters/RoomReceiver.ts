@@ -137,15 +137,15 @@ export class MatrixRoomReceiverConverter {
 			inviterUsernameOnly: formatExternalUserIdToInternalUsernameFormat(externalEvent.sender),
 			eventOrigin: getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === RoomMembershipChangedEventType.LEAVE,
-			isUpdatingProfile,
-			...(isUpdatingProfile
-				? {
+			// isUpdatingProfile,
+			// ...(isUpdatingProfile
+			// 	? {
 						userProfile: {
 							avatarUrl: isUpdatingProfile ? externalEvent.content?.avatar_url : undefined,
 							displayName: isUpdatingProfile ? externalEvent.content?.displayname : undefined,
 						},
-				  }
-				: {}),
+				//   }
+				// : {}),
 		});
 	}
 
