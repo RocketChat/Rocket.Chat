@@ -28,7 +28,7 @@ export const ContextElementItem: FC<{
     case ElementType.PLAIN_TEXT:
     case ElementType.MARKDOWN:
       return (
-        <Box is='span' withTruncatedText fontScale='c1' color='info' margin={4}>
+        <Box is='span' withTruncatedText fontScale='c1' color='hint' margin={4}>
           {renderedElement}
         </Box>
       );

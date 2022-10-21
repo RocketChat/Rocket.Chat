@@ -7,18 +7,18 @@ export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapte
 export const queueInstance = FederationFactory.buildFederationQueue();
 rocketSettingsAdapter.initialize();
 export const federationQueueInstance = FederationFactory.buildFederationQueue();
+export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
 const federationBridge = FederationFactory.buildFederationBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 export const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
-export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
 
 const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
-	rocketSettingsAdapter,
 	rocketFileAdapter,
+	rocketSettingsAdapter,
 	federationBridge,
 );
 
@@ -26,6 +26,7 @@ const federationMessageServiceReceiver = FederationFactory.buildMessageServiceRe
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -39,14 +40,23 @@ const federationEventsHandler = FederationFactory.buildFederationEventHandler(
 export let federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 	rocketRoomAdapter,
 	rocketUserAdapter,
-	rocketSettingsAdapter,
 	rocketFileAdapter,
+	rocketMessageAdapter,
+	rocketSettingsAdapter,
 	federationBridge,
 );
 
 const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalHooksValidator(
 	rocketRoomAdapter,
 	rocketUserAdapter,
+	rocketFileAdapter,
+	rocketSettingsAdapter,
+	federationBridge,
+);
+
+export const federationUserServiceSender = FederationFactory.buildUserServiceSender(
+	rocketUserAdapter,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -65,8 +75,9 @@ export const runFederation = async (): Promise<void> => {
 	federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 		rocketRoomAdapter,
 		rocketUserAdapter,
-		rocketSettingsAdapter,
 		rocketFileAdapter,
+		rocketMessageAdapter,
+		rocketSettingsAdapter,
 		federationBridge,
 	);
 	FederationFactory.setupListeners(federationRoomServiceSender, federationRoomInternalHooksValidator, federationMessageServiceSender);

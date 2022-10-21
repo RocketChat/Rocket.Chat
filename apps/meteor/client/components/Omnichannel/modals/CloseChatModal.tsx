@@ -87,7 +87,7 @@ const CloseChatModal = ({
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Box color='neutral-600'>{t('Close_room_description')}</Box>
+				<Box color='annotation'>{t('Close_room_description')}</Box>
 				<Field marginBlock='x15'>
 					<Field.Label required={commentRequired}>{t('Comment')}</Field.Label>
 					<Field.Row>

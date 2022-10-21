@@ -16,14 +16,16 @@ const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
-	rocketSettingsAdapter,
 	rocketFileAdapter,
+	rocketMessageAdapter,
+	rocketSettingsAdapter,
 	federationBridgeEE,
 );
 
 export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	rocketMessageAdapter,
 	federationBridgeEE,
@@ -32,6 +34,7 @@ export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.bu
 export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
