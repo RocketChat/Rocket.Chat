@@ -238,7 +238,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			return;
 		}
 
-		let setting;
+		let setting: any;
 		switch (clientAction) {
 			case 'updated':
 			case 'inserted': {
@@ -256,7 +256,12 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			return;
 		}
 
-		broadcast('watch.settings', { clientAction, setting });
+		const delay = id === 'Cloud_Workspace_Client_Secret' ? 500 : 0;
+
+		setTimeout(() => {
+			console.log('watch.settings', id, delay);
+			broadcast('watch.settings', { clientAction, setting });
+		}, delay);
 	});
 
 	watcher.on<IRoom>(Rooms.getCollectionName(), async ({ clientAction, id, data, diff }) => {

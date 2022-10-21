@@ -18,9 +18,11 @@ function isMode(value: any): value is ModeParam {
 
 function buildConfig(cwd: string): IConfig {
 	const customEnv: IConfig['customEnv'] = {
+		OVERWRITE_SETTING_Cloud_Url: 'https://my.staging.cloud.rocket.chat',
 		INSTANCE_IP: '127.0.0.1',
 		MONGO_URL: 'mongodb://localhost:3001/meteor',
 		MONGO_OPLOG_URL: 'mongodb://localhost:3001/local',
+		REG_TOKEN: '',
 	};
 
 	return {
@@ -54,13 +56,13 @@ async function runMain(config: IConfig): Promise<void> {
 	spawn('meteor', spawnConfig);
 }
 
-async function runInstance(config: IConfig): Promise<void> {
+async function runInstance(config: IConfig, instance: any): Promise<void> {
 	// Desctructuring the unused variables allows us to omit them in the `mainConfig`
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { customEnv, parentEnv, ...mainConfig } = config;
 
 	const env = {
-		PORT: '3030',
+		PORT: `303${instance}`,
 		ROOT_URL: '',
 		...mainConfig.env,
 	};
@@ -75,7 +77,7 @@ async function runInstance(config: IConfig): Promise<void> {
 	spawn('node', ['.meteor/local/build/main.js'], spawnConfig);
 }
 
-async function main(mode: any): Promise<void> {
+async function main(mode: any, instance: any): Promise<void> {
 	if (!isMode(mode)) {
 		mode = 'main';
 	}
@@ -87,12 +89,12 @@ async function main(mode: any): Promise<void> {
 			runMain(config);
 			break;
 		case ModeParam.INSTANCE:
-			runInstance(config);
+			runInstance(config, instance);
 			break;
 	}
 }
 
 // First two parameters are the executable and the path to this script
-const [, , mode] = process.argv;
+const [, , mode, instance] = process.argv;
 
-main(mode);
+main(mode, instance);
