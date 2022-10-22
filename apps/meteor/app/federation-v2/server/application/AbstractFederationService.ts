@@ -53,7 +53,7 @@ export abstract class FederationService {
 		if (!federatedUser.isRemote()) {
 			return;
 		}
-		if (avatarUrl && federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
+		if (federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
 			await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl));
 			await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), avatarUrl);
 		}
@@ -66,7 +66,7 @@ export abstract class FederationService {
 		if (!federatedUser.isRemote()) {
 			return;
 		}
-		if (displayName && federatedUser.shouldUpdateDisplayName(displayName)) {
+		if (federatedUser.shouldUpdateDisplayName(displayName)) {
 			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReference(), displayName);
 		}
 	}
