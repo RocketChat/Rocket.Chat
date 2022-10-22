@@ -515,6 +515,27 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.addUserToRoom.called).to.be.false;
 		});
 
+		it('should NOT add the user to the room if its NOT a LEAVE event but the user is already in the room', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			roomAdapter.isUserAlreadyJoined.resolves(true);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.removeUserFromRoom.called).to.be.false;
+			expect(roomAdapter.removeDirectMessageRoom.called).to.be.false;
+			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
+			expect(bridge.joinRoom.called).to.be.false;
+			expect(roomAdapter.addUserToRoom.called).to.be.false;
+		});
+
 		it('should add the user from room if its NOT a LEAVE event', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
@@ -536,8 +557,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		});
 
 		describe('User profile changed event', () => {
-			it('should NOT call the function to update the user profile internally if the event a profile changed', async () => {
-				const spy = sinon.spy(service, 'updateUserProfileInternally');
+			it('should NOT call the function to update the user avatar if the event does not include an avatarUrl property', async () => {
+				const spy = sinon.spy(service, 'updateUserAvatarInternally');
 
 				await service.onChangeRoomMembership({
 					externalRoomId: 'externalRoomId',
@@ -546,7 +567,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 					roomType: RoomType.CHANNEL,
 					externalInviteeId: 'externalInviteeId',
 					leave: false,
-					isUpdatingProfile: false,
 					normalizedInviteeId: 'normalizedInviteeId',
 				} as any);
 
@@ -561,7 +581,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				externalInviteeId: 'externalInviteeId',
 				leave: false,
 				normalizedInviteeId: 'normalizedInviteeId',
-				isUpdatingProfile: true,
 				userProfile: {
 					avatarUrl: 'avatarUrl',
 					displayName: 'displayName',

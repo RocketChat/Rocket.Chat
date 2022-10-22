@@ -14,7 +14,7 @@ import type {
 	FederationSetupRoomDto,
 } from '../../input/RoomSenderDto';
 import { FederationServiceEE } from '../AbstractFederationService';
-require('util').inspect.defaultOptions.depth = null;
+
 export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
@@ -206,8 +206,5 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			federatedInviterUser.getExternalId(),
 			federatedInviteeUser.getExternalId(),
 		);
-		
-		const profile = await this.bridge.getUserProfileInformation(federatedInviteeUser.getExternalId());
-		console.log( {profile})
 	}
 }

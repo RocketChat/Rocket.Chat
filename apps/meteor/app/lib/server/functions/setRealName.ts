@@ -9,7 +9,6 @@ import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';
 
 export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
-	console.log({ NOMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE: name})
 	name = s.trim(name);
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
@@ -42,12 +41,7 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 			username: user.username,
 		});
 	}
-	console.log({ publishing: {
-		_id: user._id,
-		name,
-		username: user.username,
-	} })
-	api.broadcast('user.realnameChanged', {
+	api.broadcast('user.realNameChanged', {
 		_id: user._id,
 		name,
 		username: user.username,

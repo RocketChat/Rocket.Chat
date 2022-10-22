@@ -310,23 +310,25 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		} as any;
 
 		it('should create the invitee locally for each external user', async () => {
-			const spy = sinon.spy(service, 'updateUserProfileInternally');
+			const avatarSpy = sinon.spy(service, 'updateUserAvatarInternally');
+			const displayNameSpy = sinon.spy(service, 'updateUserDisplayNameInternally');
 
 			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
 			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
-			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: '' });
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
 			userAdapter.getFederatedUserByExternalId.resolves(federatedUser);
 
 			await service.beforeAddUserToARoom(validParams);
 
 			const invitee = FederatedUserEE.createLocalInstanceOnly({
-				name: invitees[0].normalizedInviteeId,
+				name: 'displayName',
 				username: invitees[0].normalizedInviteeId,
 				existsOnlyOnProxyServer: false,
 			});
 
 			expect(userAdapter.createLocalUser.calledOnceWithExactly(invitee)).to.be.true;
-			expect(spy.calledWith(federatedUser, '', '')).to.be.true;
+			expect(avatarSpy.calledWith(federatedUser, 'avatarUrl')).to.be.true;
+			expect(displayNameSpy.calledWith(federatedUser, 'displayName')).to.be.true;
 		});
 
 		it('should NOT update the avatar nor the display name if both does not exists', async () => {

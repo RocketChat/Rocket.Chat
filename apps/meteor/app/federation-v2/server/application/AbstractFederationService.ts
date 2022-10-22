@@ -46,18 +46,6 @@ export abstract class FederationService {
 		await this.updateUserDisplayNameInternally(insertedUser, externalUserProfileInformation?.displayName);
 	}
 
-	protected async updateUserProfileInternally(federatedUser: FederatedUser, avatarUrl?: string, displayName?: string): Promise<void> {
-		if (!avatarUrl && !displayName) {
-			return;
-		}
-		if (!federatedUser.isRemote()) {
-			return;
-		}
-
-		await this.updateUserAvatarInternally(federatedUser, avatarUrl);
-		await this.updateUserDisplayNameInternally(federatedUser, displayName);
-	}
-
 	protected async updateUserAvatarInternally(federatedUser: FederatedUser, avatarUrl?: string): Promise<void> {
 		if (!avatarUrl) {
 			return;

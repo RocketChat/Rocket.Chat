@@ -92,18 +92,11 @@ export class FederationRoomServiceListener extends FederationService {
 			eventOrigin,
 			roomType,
 			leave,
-			isUpdatingProfile,
 			userProfile,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-		// console.log({ roomChangeMembershipInput })
 
-		// if (isUpdatingProfile) {
-		// 	const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
-		// 	federatedUser && (await this.updateUserProfileInternally(federatedUser, userProfile?.avatarUrl, userProfile?.displayName));
-		// 	return;
-		// }
 		if (userProfile?.avatarUrl) {
 			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
 			federatedUser && (await this.updateUserAvatarInternally(federatedUser, userProfile?.avatarUrl));
@@ -176,7 +169,7 @@ export class FederationRoomServiceListener extends FederationService {
 			federatedRoom.getInternalId(),
 			federatedInviteeUser.getInternalId(),
 		);
-		if (inviteeAlreadyJoinedTheInternalRoom) {
+		if (!leave && inviteeAlreadyJoinedTheInternalRoom) {
 			return;
 		}
 

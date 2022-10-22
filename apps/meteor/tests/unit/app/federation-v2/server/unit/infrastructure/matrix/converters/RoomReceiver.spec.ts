@@ -196,34 +196,15 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 			expect(result.eventOrigin).to.be.equal(EVENT_ORIGIN.LOCAL);
 		});
 
-		it('should return the property "isUpdatingProfile" = true when the membership is equal to JOIN and the content includes avatar_url', () => {
+		it('should return the user profile properties when the event contains those infos', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
-				{ ...event, content: { avatar_url: 'avatar_url', membership: 'join' } } as any,
+				{ ...event, content: { avatar_url: 'avatarUrl', displayname: 'displayname', membership: 'join' } } as any,
 				'domain',
 			);
-			expect(result.isUpdatingProfile).to.be.true;
 			expect(result.userProfile).to.be.eql({
-				avatarUrl: 'avatar_url',
-				displayName: undefined,
-			});
-		});
-
-		it('should return the property "isUpdatingProfile" = true when the membership is equal to JOIN and the content includes displayname', () => {
-			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
-				{ ...event, content: { displayname: 'displayname', membership: 'join' } } as any,
-				'domain',
-			);
-			expect(result.isUpdatingProfile).to.be.true;
-			expect(result.userProfile).to.be.eql({
-				avatarUrl: undefined,
+				avatarUrl: 'avatarUrl',
 				displayName: 'displayname',
 			});
-		});
-
-		it('should return the property "isUpdatingProfile" = false when the membership is equal to JOIN but there is no profile information in content', () => {
-			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ ...event, content: { membership: 'join' } } as any, 'domain');
-			expect(result.isUpdatingProfile).to.be.false;
-			expect(result.userProfile).to.be.undefined;
 		});
 
 		it('should convert the event properly', () => {
@@ -242,8 +223,10 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				leave: false,
 				externalRoomName: undefined,
 				roomType: undefined,
-				isUpdatingProfile: false,
-				userProfile: undefined,
+				userProfile: {
+					avatarUrl: undefined,
+					displayName: undefined,
+				},
 			});
 		});
 	});
