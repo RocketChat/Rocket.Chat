@@ -80,4 +80,6 @@ createTemplateForComponent('loggedOutBanner', () => import('../ee/client/compone
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
 });
 
-createTemplateForComponent('AudioMessageRecorder', () => import('./views/composer/AudioMessageRecorder'));
+createTemplateForComponent('AudioMessageRecorder', () => import('./views/composer/AudioMessageRecorder'), {
+	renderContainerView: () =>HTML.DIV({class: "rc-message-box__audio-message-container"})
+});
