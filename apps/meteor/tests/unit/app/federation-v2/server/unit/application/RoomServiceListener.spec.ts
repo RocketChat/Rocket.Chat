@@ -588,7 +588,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			} as any;
 
 			it('should NOT call the function to update the avatar internally if the user does not exists', async () => {
-				const spy = sinon.spy(service, 'updateUserProfileInternally');
+				const spy = sinon.spy(service, 'updateUserAvatarInternally');
 				userAdapter.getFederatedUserByExternalId.resolves(undefined);
 				await service.onChangeRoomMembership(eventForUserProfileChanges);
 
