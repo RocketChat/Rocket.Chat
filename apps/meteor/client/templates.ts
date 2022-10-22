@@ -81,5 +81,5 @@ createTemplateForComponent('loggedOutBanner', () => import('../ee/client/compone
 });
 
 createTemplateForComponent('AudioMessageRecorder', () => import('./views/composer/AudioMessageRecorder'), {
-	renderContainerView: () =>HTML.DIV({class: "rc-message-box__audio-message-container"})
+	renderContainerView: () => HTML.DIV({ class: 'rc-message-box__audio-message-container' }),
 });
