@@ -1813,8 +1813,6 @@
   "error-you-are-last-owner": "Ets l'últim propietari. Si us plau, estableix un nou propietari abans de sortir de la sala.",
   "Errors_and_Warnings": "Errors i advertències",
   "Esc_to": "Esc a",
-  "Estimated_due_time": "Temps estimat despera (temps en minuts)",
-  "Estimated_due_time_in_minutes": "Temps de venciment previst (temps en minuts)",
   "Event_Trigger": "Disparador d'esdeveniments",
   "Event_Trigger_Description": "Selecciona quin tipus d'esdeveniment desencadenarà aquesta integració WebHook de sortida",
   "every_5_minutes": "Una vegada cada 5 minuts",

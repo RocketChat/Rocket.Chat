@@ -1545,8 +1545,6 @@
   "error-you-are-last-owner": "Jste poslední vlastníkem místnosti. Před opuštěním místnosti prosím nastavte nového vlastníka.",
   "Errors_and_Warnings": "Chyby a varování",
   "Esc_to": "Esc",
-  "Estimated_due_time": "Odhadovaný čas (v minutách)",
-  "Estimated_due_time_in_minutes": "Odhadovaný čas v minutách",
   "Event_Trigger": "Vyvolání události",
   "Event_Trigger_Description": "Zvolte jaký typ události vyvolá tuto odchozí webhook integraci",
   "every_5_minutes": "Jednou za 5 minut",

@@ -1112,7 +1112,6 @@
   "error-user-registration-secret": "Lietotāja reģistrācija ir atļauta tikai ar slepenu URL",
   "error-you-are-last-owner": "Jūs esat pēdējais īpašnieks. Pirms atstāt istabu, lūdzu, iestatiet jaunu īpašnieku.",
   "Esc_to": "Esc uz",
-  "Estimated_due_time": "Paredzamais izpildes laiks (laiks minūtēs)",
   "Event_Trigger": "Notikuma trigeris",
   "Event_Trigger_Description": "Izvēlieties, kāda veida notikums trigerēs šo Outgoing WebHook integrāciju",
   "every_5_minutes": "Reizi 5 minūtēs",

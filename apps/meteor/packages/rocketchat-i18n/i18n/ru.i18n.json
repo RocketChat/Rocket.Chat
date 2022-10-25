@@ -1906,8 +1906,6 @@
   "error-you-are-last-owner": "Вы последний владелец комнаты. Пожалуйста, назначьте нового владельца до выхода из этой комнаты.",
   "Errors_and_Warnings": "Ошибки и предупреждения",
   "Esc_to": "Выйти в",
-  "Estimated_due_time": "Предполагаемое время выполнения",
-  "Estimated_due_time_in_minutes": "Предполагаемое время выполнения (время в минутах)",
   "Event_Trigger": "Event Trigger",
   "Event_Trigger_Description": "Выберите тип события, который будет запускать этот исходящий WebHook",
   "every_5_minutes": "Каждые 5 минут",

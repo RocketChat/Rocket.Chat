@@ -1604,8 +1604,6 @@
   "error-you-are-last-owner": "마지막 소유자입니다. 대화방을 나가기 전에 새 소유자를 설정하세요.",
   "Errors_and_Warnings": "오류 및 경고",
   "Esc_to": "Esc: ",
-  "Estimated_due_time": "예상 마감 시간 (분)",
-  "Estimated_due_time_in_minutes": "예상 마감 시간 (분)",
   "Event_Trigger": "이벤트 트리거",
   "Event_Trigger_Description": "이 발신 WebHook 통합을 트리거 할 이벤트 유형 선택",
   "every_5_minutes": "5분마다 한 번",

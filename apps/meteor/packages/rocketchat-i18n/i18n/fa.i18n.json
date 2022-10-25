@@ -1353,7 +1353,6 @@
   "error-user-registration-secret": "ثبت نام کاربران تنها از طریق آدرس مخفی (Secret URL) امکان پذیر است",
   "error-you-are-last-owner": "شما آخرین مالک هستید. لطفا مالک جدیدی قبل از خروج از اتاق مشخص کنید.",
   "Esc_to": "Esc برای",
-  "Estimated_due_time": "زمان برآورد شده (به دقیقه)",
   "Event_Trigger": "تکرار رویداد",
   "Event_Trigger_Description": "انتخاب نوع رویداد این ادغام WebHook خروجی را اجرا می کند",
   "every_5_minutes": "هر 5 دقیقه یکبار",
