@@ -1815,8 +1815,6 @@
   "error-you-are-last-owner": "Vous êtes le dernier propriétaire. Identifiez un nouveau propriétaire avant de quitter le salon.",
   "Errors_and_Warnings": "Erreurs et avertissements",
   "Esc_to": "Échap pour",
-  "Estimated_due_time": "Délai estimé",
-  "Estimated_due_time_in_minutes": "Délai estimé (en minutes)",
   "Event_Trigger": "Déclencheur d'événement",
   "Event_Trigger_Description": "Sélectionnez le type d'événement qui déclenchera cette intégration de webhook sortant",
   "every_5_minutes": "Une fois toutes les 5 minutes",

@@ -1824,8 +1824,6 @@
   "error-you-are-last-owner": "أنت المالك الأخير. يُرجى تعيين مالك جديد قبل مغادرة الغرفة.",
   "Errors_and_Warnings": "الأخطاء والتحذيرات",
   "Esc_to": "خروج إلى",
-  "Estimated_due_time": "وقت الاستحقاق المقدر",
-  "Estimated_due_time_in_minutes": "وقت الاستحقاق المقدر (الوقت بالدقائق)",
   "Event_Trigger": "مشغل الحدث",
   "Event_Trigger_Description": "حدد نوع الحدث الذي سيؤدي إلى تشغيل تكامل خطاف الويب الصادر هذا",
   "every_5_minutes": "مرة كل 5 دقائق",

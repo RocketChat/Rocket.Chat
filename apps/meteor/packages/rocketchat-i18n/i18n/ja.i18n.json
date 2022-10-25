@@ -1808,8 +1808,6 @@
   "error-you-are-last-owner": "あなたは最後の所有者です。ルームを退出する前に新しい所有者を設定してください。",
   "Errors_and_Warnings": "エラーと警告",
   "Esc_to": "Escキーで",
-  "Estimated_due_time": "予測納期",
-  "Estimated_due_time_in_minutes": "予測納期（分単位）",
   "Event_Trigger": "イベントトリガー",
   "Event_Trigger_Description": "この発信Webhook統合をトリガーするイベントのタイプを選択",
   "every_5_minutes": "5分に1回",

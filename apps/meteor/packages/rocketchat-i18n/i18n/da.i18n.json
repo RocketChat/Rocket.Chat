@@ -1555,8 +1555,6 @@
   "error-you-are-last-owner": "Du er den sidste ejer. Angiv en ny ejer før du forlader rummet.",
   "Errors_and_Warnings": "Fejl og advarsler",
   "Esc_to": "Esc til",
-  "Estimated_due_time": "Estimeret forfaldstidspunkt (tid i minutter)",
-  "Estimated_due_time_in_minutes": "Estimeret forfaldstid (tid i minutter)",
   "Event_Trigger": "Event-trigger",
   "Event_Trigger_Description": "Vælg hvilken type event der udløser denne udgående WebHook-Integration",
   "every_5_minutes": "En gang hvert 5. minut",
