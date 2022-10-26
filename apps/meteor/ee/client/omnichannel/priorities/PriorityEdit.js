@@ -23,7 +23,7 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 
 	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
 	const dueTimeInMinutesError = useMemo(
-		() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('The_field_is_required', 'Estimated_due_time_in_minutes') : undefined),
+		() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('The_field_is_required', 'Estimated_wait_time_in_minutes') : undefined),
 		[dueTimeInMinutes, t],
 	);
 
@@ -69,10 +69,10 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 				</Field.Row>
 			</Field>
 			<Field>
-				<Field.Label>{t('Estimated_due_time_in_minutes')}*</Field.Label>
+				<Field.Label>{t('Estimated_wait_time_in_minutes')}*</Field.Label>
 				<Field.Row>
 					<NumberInput
-						placeholder={t('Estimated_due_time_in_minutes')}
+						placeholder={t('Estimated_wait_time_in_minutes')}
 						value={dueTimeInMinutes}
 						onChange={handleDueTimeInMinutes}
 						flexGrow={1}

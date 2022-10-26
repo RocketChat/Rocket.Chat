@@ -85,7 +85,7 @@ function PrioritiesRoute() {
 					onClick={onHeaderClick}
 					sort='dueTimeInMinutes'
 				>
-					{t('Estimated_due_time')}
+					{t('Estimated_wait_time')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell key={'remove'} w='x60'>
 					{t('Remove')}

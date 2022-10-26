@@ -1957,8 +1957,6 @@
   "You_do_not_have_permission_to_do_this": "Nie masz na to pozwolenia",
   "Errors_and_Warnings": "Błędy i ostrzeżenia",
   "Esc_to": "Naciśnij Esc: ",
-  "Estimated_due_time": "Szacowany czas (w minutach)",
-  "Estimated_due_time_in_minutes": "Szacowany termin (czas w minutach)",
   "Event_Trigger": "Event Trigger",
   "Event_Trigger_Description": "Wybierz, który typ zdarzenia uruchomi tę wychodzącą integrację WebHook",
   "every_5_minutes": "Raz na 5 minut",

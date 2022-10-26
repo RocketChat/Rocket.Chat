@@ -1131,7 +1131,6 @@
   "error-user-registration-secret": "ການລົງທະບຽນຜູ້ໃຊ້ອະນຸຍາດໃຫ້ພຽງແຕ່ໂດຍຜ່ານ URL Secret",
   "error-you-are-last-owner": "ທ່ານແມ່ນເຈົ້າຂອງທີ່ຜ່ານມາ. ກະລຸນາຕັ້ງເຈົ້າຂອງໃຫມ່ກ່ອນທີ່ຈະອອກຫ້ອງການ.",
   "Esc_to": "Esc ກັບ",
-  "Estimated_due_time": "ເວລາທີ່ໝົດກຳນົດໂດຍປະມານ (ເວລາເປັນນາທີ)",
   "Event_Trigger": "Event Trigger",
   "Event_Trigger_Description": "ເລືອກປະເພດຂອງເຫດການທີ່ຈະເຮັດໃຫ້ການເຊື່ອມໂຍງ WebHook ນີ້ອອກ",
   "every_5_minutes": "ທຸກໆ 5 ນາທີ",

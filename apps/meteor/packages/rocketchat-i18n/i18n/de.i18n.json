@@ -1939,8 +1939,6 @@
   "You_do_not_have_permission_to_do_this": "Sie haben keine Berechtigung, dies zu tun",
   "Errors_and_Warnings": "Fehler und Warnungen",
   "Esc_to": "Esc: ",
-  "Estimated_due_time": "Geschätzte Fälligkeitszeit",
-  "Estimated_due_time_in_minutes": "Geschätzte Fälligkeitszeit (Zeit in Minuten)",
   "Event_Trigger": "Ereignisauslöser",
   "Event_Trigger_Description": "Bitte wählen Sie aus, welche Ereignistypen diesen ausgehenden Webhook auslösen",
   "every_5_minutes": "Einmal alle 5 Minuten",

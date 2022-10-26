@@ -1807,8 +1807,6 @@
   "error-you-are-last-owner": "Eres el último dueño. Establece un nuevo propietario antes de salir de la sala.",
   "Errors_and_Warnings": "Errores y advertencias",
   "Esc_to": "Esc para",
-  "Estimated_due_time": "Tiempo estimado de vencimiento",
-  "Estimated_due_time_in_minutes": "Tiempo estimado de vencimiento (en minutos)",
   "Event_Trigger": "Activador de eventos",
   "Event_Trigger_Description": "Selecciona qué tipo de evento se activará con esta integración de webhook saliente",
   "every_5_minutes": "Una vez cada 5 minutos",

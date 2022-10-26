@@ -1633,8 +1633,6 @@
   "error-you-are-last-owner": "你是聊天室当前的所有者。请先重设所有者再离开聊天室。",
   "Errors_and_Warnings": "错误和警告",
   "Esc_to": "退出",
-  "Estimated_due_time": "预计到期时间",
-  "Estimated_due_time_in_minutes": "预计到期时间（分钟）",
   "Event_Trigger": "事件触发",
   "Event_Trigger_Description": "选择将触发此出站 WebHook 集成的事件类型",
   "every_5_minutes": "每5分钟一次",

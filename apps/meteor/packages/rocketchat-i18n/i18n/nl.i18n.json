@@ -1815,8 +1815,6 @@
   "error-you-are-last-owner": "U bent de laatste eigenaar. Stel een nieuwe eigenaar in voordat u de kamer verlaat.",
   "Errors_and_Warnings": "Fouten en waarschuwingen",
   "Esc_to": "Esc naar",
-  "Estimated_due_time": "Geschatte tijd",
-  "Estimated_due_time_in_minutes": "Geschatte tijd (tijd in minuten)",
   "Event_Trigger": "Gebeurtenistrigger",
   "Event_Trigger_Description": "Selecteer welk type gebeurtenis deze uitgaande WebHook-integratie zal activeren",
   "every_5_minutes": "Een keer per 5 minuten",

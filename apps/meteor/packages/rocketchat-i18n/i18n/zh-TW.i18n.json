@@ -1799,8 +1799,6 @@
   "error-you-are-last-owner": "你是最後的擁有者。請離開房間之前設置的新的擁有者。",
   "Errors_and_Warnings": "錯誤和警告",
   "Esc_to": "退出至",
-  "Estimated_due_time": "預計到期時間",
-  "Estimated_due_time_in_minutes": "預計到期時間（以分鐘為單位）",
   "Event_Trigger": "事件觸發器",
   "Event_Trigger_Description": "選擇哪種類型的事件將觸發此傳出WebHook集成",
   "every_5_minutes": "每5分鐘一次",
