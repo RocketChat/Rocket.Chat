@@ -46,7 +46,7 @@ const FilterByText = ({
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'} flexGrow='1'>
 			<TextInput
 				placeholder={placeholder ?? t('Search')}
 				ref={inputRef}

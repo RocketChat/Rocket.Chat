@@ -3,6 +3,7 @@ import { useCurrentRoute, useRoute, useRouteParameter, useSetting, useTranslatio
 import React, { useEffect, useCallback, ReactElement } from 'react';
 
 import Page from '../../components/Page';
+import CategoriesTab from './CategoriesTab';
 import ChannelsTab from './ChannelsTab';
 import TeamsTab from './TeamsTab';
 import UserTab from './UserTab';
@@ -41,6 +42,9 @@ function DirectoryPage(): ReactElement {
 				<Tabs.Item selected={tab === 'teams'} onClick={handleTabClick('teams')}>
 					{t('Teams')}
 				</Tabs.Item>
+				<Tabs.Item selected={tab === 'categories'} onClick={handleTabClick('categories')}>
+					Categories
+				</Tabs.Item>
 				{federationEnabled && (
 					<Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>
 						{t('External_Users')}
@@ -51,6 +55,7 @@ function DirectoryPage(): ReactElement {
 				{tab === 'users' && <UserTab />}
 				{tab === 'channels' && <ChannelsTab />}
 				{tab === 'teams' && <TeamsTab />}
+				{tab === 'categories' && <CategoriesTab />}
 				{federationEnabled && tab === 'external' && <UserTab workspace='external' />}
 			</Page.Content>
 		</Page>

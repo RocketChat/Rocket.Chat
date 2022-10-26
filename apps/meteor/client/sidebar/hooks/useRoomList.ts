@@ -12,6 +12,8 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: IRoom[] = [];
 
+const customGroups = ['Antisocial group', 'Design Team', 'Backend Team'];
+
 export const useRoomList = (): Array<ISubscription & IRoom> => {
 	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
 
@@ -46,39 +48,44 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 			const discussion = new Set();
 			const conversation = new Set();
 			const onHold = new Set();
+			const custom = new Set();
 
 			rooms.forEach((room) => {
 				if (incomingCalls.find((call) => call.rid === room.rid)) {
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
-					return unread.add(room);
+				if (room.t !== 'd') {
+					custom.add(room);
 				}
 
-				if (favoritesEnabled && room.f) {
-					return favorite.add(room);
-				}
+				// if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
+				// 	return unread.add(room);
+				// }
 
-				if (sidebarGroupByType && room.teamMain) {
-					return team.add(room);
-				}
+				// if (favoritesEnabled && room.f) {
+				// 	return favorite.add(room);
+				// }
 
-				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
-					return discussion.add(room);
-				}
+				// if (sidebarGroupByType && room.teamMain) {
+				// 	return team.add(room);
+				// }
 
-				if (room.t === 'c' || room.t === 'p') {
-					channels.add(room);
-				}
+				// if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
+				// 	return discussion.add(room);
+				// }
 
-				if (room.t === 'l' && room.onHold) {
-					return showOmnichannel && onHold.add(room);
-				}
+				// if (room.t === 'c' || room.t === 'p') {
+				// 	channels.add(room);
+				// }
 
-				if (room.t === 'l') {
-					return showOmnichannel && omnichannel.add(room);
-				}
+				// if (room.t === 'l' && room.onHold) {
+				// 	return showOmnichannel && onHold.add(room);
+				// }
+
+				// if (room.t === 'l') {
+				// 	return showOmnichannel && omnichannel.add(room);
+				// }
 
 				if (room.t === 'd') {
 					direct.add(room);
@@ -89,6 +96,7 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 
 			const groups = new Map();
 			showOmnichannel && groups.set('Omnichannel', []);
+			custom && customGroups.map((group) => groups.set(group, custom));
 			incomingCall.size && groups.set('Incoming Calls', incomingCall);
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
