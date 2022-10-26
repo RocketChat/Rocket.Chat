@@ -24,7 +24,13 @@ describe('Federation - Application - FederationRoomInternalHooksValidator', () =
 	};
 
 	beforeEach(() => {
-		service = new FederationRoomInternalHooksValidator(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationRoomInternalHooksValidator(
+			roomAdapter as any,
+			userAdapter as any,
+			{} as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
