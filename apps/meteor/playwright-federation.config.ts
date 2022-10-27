@@ -1,6 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
 export default {
+	globalSetup: require.resolve('./tests/e2e/federation/config/global-setup.ts'),
 	use: {
 		headless: true,
 		ignoreHTTPSErrors: true,
