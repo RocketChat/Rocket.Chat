@@ -1,8 +1,10 @@
 import { Box, Table, Avatar, Icon, Button } from '@rocket.chat/fuselage';
-import { useAutoFocus, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState, useCallback, ReactElement } from 'react';
+import { useAutoFocus, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo, useState, useCallback, ReactElement, FC } from 'react';
 
+import { popover } from '../../../app/ui-utils/client';
+import CreateCategory from '../../components/CreateCategory';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
@@ -16,6 +18,21 @@ const style = {
 	whiteSpace: 'nowrap',
 	textOverflow: 'ellipsis',
 	overflow: 'hidden',
+};
+const useReactModal = (Component: FC<any>): ((e: React.MouseEvent<HTMLElement>) => void) => {
+	const setModal = useSetModal();
+
+	return useMutableCallback((e) => {
+		popover.close();
+
+		e.preventDefault();
+
+		const handleClose = (): void => {
+			setModal(null);
+		};
+
+		setModal(() => <Component onClose={handleClose} />);
+	});
 };
 
 const CategoriesTable = (): ReactElement => {
@@ -38,6 +55,8 @@ const CategoriesTable = (): ReactElement => {
 		},
 		[sort],
 	);
+
+	const createCategory = useReactModal(CreateCategory);
 
 	const header = useMemo(
 		() =>
@@ -125,7 +144,7 @@ const CategoriesTable = (): ReactElement => {
 			renderFilter={({ onChange, ...props }) => (
 				<Box display='flex' alignItems='center'>
 					<FilterByText placeholder='Search Groups' inputRef={refAutoFocus} onChange={onChange} {...props} />
-					<Button primary onClick={() => null} mis='x6'>
+					<Button primary onClick={createCategory} mis='x6'>
 						Add Category
 					</Button>
 				</Box>
