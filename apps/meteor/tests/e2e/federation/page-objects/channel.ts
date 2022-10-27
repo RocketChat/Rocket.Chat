@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
-import { FederationHomeFlextab } from './fragments/home-flextab';
 
-import { FederationSidenav } from './fragments/sidenav';
+import { FederationHomeFlextab } from './fragments/home-flextab';
+import { FederationSidenav } from './fragments/home-sidenav';
 
 export class FederationChannel {
 	private readonly page: Page;
@@ -32,7 +32,9 @@ export class FederationChannel {
 		await this.sidenav.checkboxPrivateChannel.click();
 		await this.sidenav.checkboxFederatedChannel.click();
 		await this.sidenav.inputChannelName.type(channelName);
-		await Promise.all(usernamesToInvite.map((user) => this.sidenav.inviteUserToChannel(user)));
+		for await (const username of usernamesToInvite) {
+			await this.sidenav.inviteUserToChannel(username);
+		}
 
 		await this.sidenav.btnCreateChannel.click();
 	}

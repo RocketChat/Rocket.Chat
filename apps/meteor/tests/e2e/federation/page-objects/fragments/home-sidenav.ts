@@ -34,6 +34,11 @@ export class FederationSidenav {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
+	async logout(): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+	}
+
 	async inviteUserToChannel(username: string) {
 		await this.autocompleteUser.click();
 		await this.autocompleteUser.type(username);
@@ -43,18 +48,18 @@ export class FederationSidenav {
 
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
-		await this.page.locator(`li.rcx-option >> text="${ text }"`).click();
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator(`li.rcx-option >> text="${ text }"`).click();
+		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${ name }"`).first().click();
+		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
 	async createPublicChannel(name: string) {
