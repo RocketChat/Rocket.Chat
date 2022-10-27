@@ -1,11 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Icon, Box, Modal, Button, Field, TextInput, FieldGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useState, memo } from 'react';
 
-import { useEndpointActionExperimental } from '../hooks/useEndpointActionExperimental';
-import { goToRoomById } from '../lib/utils/goToRoomById';
 import RoomAutoComplete from './RoomAutoComplete';
 
 type Username = Exclude<IUser['username'], undefined>;
@@ -19,15 +17,16 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const [rooms, setRooms] = useState<Array<Username>>([]);
 	const [name, setName] = useState<string>('');
 
-	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
+	const [category, setCategory] = useLocalStorage('rc-category', {});
 
 	const onCreate = useMutableCallback(async () => {
 		try {
-			const {
-				room: { rid },
-			} = await createDirect({ usernames: users.join(',') });
-
-			goToRoomById(rid);
+			setCategory({
+				...category,
+				...{
+					[name]: rooms,
+				},
+			});
 			onClose();
 		} catch (error) {
 			console.warn(error);
@@ -40,10 +39,8 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 		}
 	};
 
-	const handleNameChange = (value: unknown): void => {
-		if (typeof value === 'string') {
-			setName(value);
-		}
+	const handleNameChange = (e: unknown): void => {
+		setName(e.target.value);
 	};
 
 	return (
