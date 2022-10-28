@@ -417,9 +417,30 @@ Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens) {
 		return;
 	}
+
+	const service = user.services[Object.keys(user.services)[0]];
+
+	const currentUser = await Users.findOne(user._id);
+
+	const currentUserEmailOnRocket = currentUser.emails[0];
+
+	if (currentUserEmailOnRocket !== service.email) {
+		const userEmailsUpdated = [{ email: service.email, virified: true }, ...user.emails.filter((item) => item.email !== service.email)];
+
+		await Users.update(
+			{ _id: user._id },
+			{
+				$set: {
+					emails: userEmailsUpdated,
+				},
+			},
+		);
+	}
+
 	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
 		return;
 	}
+
 	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
 	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
 		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
