@@ -38,4 +38,15 @@ export class FederationChannel {
 
 		await this.sidenav.btnCreateChannel.click();
 	}
+
+	async createPrivateGroupAndInviteUsersUsingCreationModal(channelName: string, usernamesToInvite: string[]) {
+		await this.sidenav.openNewByLabel('Channel');
+		await this.sidenav.checkboxFederatedChannel.click();
+		await this.sidenav.inputChannelName.type(channelName);
+		for await (const username of usernamesToInvite) {
+			await this.sidenav.inviteUserToChannel(username);
+		}
+
+		await this.sidenav.btnCreateChannel.click();
+	}
 }

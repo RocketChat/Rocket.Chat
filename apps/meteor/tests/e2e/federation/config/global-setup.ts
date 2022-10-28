@@ -1,7 +1,4 @@
-import type { Page } from '@playwright/test';
 import { chromium } from '@playwright/test';
-
-require('util').inspect.defaultOptions.depth = null;
 
 export default async function (): Promise<void> {
 	const browser = await chromium.launch();

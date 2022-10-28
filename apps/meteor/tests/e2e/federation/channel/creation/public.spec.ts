@@ -8,8 +8,6 @@ import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat }
 import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
-test.use({ storageState: 'admin-server-ee-session.json' });
-
 test.describe('Federation - Channel Creation', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
@@ -24,7 +22,7 @@ test.describe('Federation - Channel Creation', () => {
 			page,
 			poFederationChannelServer1,
 			userFromServer2UsernameOnly,
-		})
+		});
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -70,16 +68,22 @@ test.describe('Federation - Channel Creation', () => {
 					storeState: false,
 				});
 
-				await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-				await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					usernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
 
-				await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ channelName }`);
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -97,10 +101,7 @@ test.describe('Federation - Channel Creation', () => {
 				await pageForServer2.close();
 			});
 
-			test('expect to create a channel inviting an user from the Server B who already exist in Server A', async ({
-				browser,
-				page,
-			}) => {
+			test('expect to create a channel inviting an user from the Server B who already exist in Server A', async ({ browser, page }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 				const channelName = faker.datatype.uuid();
@@ -115,15 +116,21 @@ test.describe('Federation - Channel Creation', () => {
 					storeState: false,
 				});
 
-				await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-				await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					userFromServer2UsernameOnly,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
 
-				await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ channelName }`);
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -164,17 +171,29 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-					await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 					const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-					const adminUsernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
-					const userCreatedWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(userFromServer1UsernameOnly, constants.RC_SERVER_1.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						createdUsernameFromServer2,
+						constants.RC_SERVER_2.matrixServerName,
+					);
+					const adminUsernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+						constants.RC_SERVER_1.username,
+						constants.RC_SERVER_1.matrixServerName,
+					);
+					const userCreatedWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer1UsernameOnly,
+						constants.RC_SERVER_1.matrixServerName,
+					);
 
-					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, [fullUsernameFromServer2, userFromServer1UsernameOnly]);
+					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, [
+						fullUsernameFromServer2,
+						userFromServer1UsernameOnly,
+					]);
 
-					await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -194,9 +213,7 @@ test.describe('Federation - Channel Creation', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created channel', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created channel', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -210,15 +227,18 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page2.goto(`${ constants.RC_SERVER_1.url }/home`);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 
-					await expect(page2).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						createdUsernameFromServer2,
+						constants.RC_SERVER_2.matrixServerName,
+					);
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -247,16 +267,28 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-					await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
-					const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
-					const usernameOriginalFromServer1OnlyWithDomain = formatUsernameAndDomainIntoMatrixFormat(userFromServer1UsernameOnly, constants.RC_SERVER_1.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer2UsernameOnly,
+						constants.RC_SERVER_2.matrixServerName,
+					);
+					const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+						constants.RC_SERVER_1.username,
+						constants.RC_SERVER_1.matrixServerName,
+					);
+					const usernameOriginalFromServer1OnlyWithDomain = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer1UsernameOnly,
+						constants.RC_SERVER_1.matrixServerName,
+					);
 
-					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, [userFromServer2UsernameOnly, userFromServer1UsernameOnly]);
+					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, [
+						userFromServer2UsernameOnly,
+						userFromServer1UsernameOnly,
+					]);
 
-					await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -273,12 +305,10 @@ test.describe('Federation - Channel Creation', () => {
 					await expect(poFederationChannelServer2.tabs.members.getUserInList(userFromServer2UsernameOnly)).toBeVisible();
 					await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameOriginalFromServer1OnlyWithDomain)).toBeVisible();
 					await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
-					await pageForServer2.close()
+					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created channel', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created channel', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -292,15 +322,18 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page2.goto(`${ constants.RC_SERVER_1.url }/home`);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 
-					await expect(page2).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer2UsernameOnly,
+						constants.RC_SERVER_2.matrixServerName,
+					);
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -312,14 +345,14 @@ test.describe('Federation - Channel Creation', () => {
 			test.describe('With local users only', () => {
 				const createdChannel = faker.datatype.uuid();
 
-				test('Create a channel inviting an user from Server A only (locally)', async ({
-					page,
-				}) => {
-					await page.goto(`${ constants.RC_SERVER_1.url }/home`);
+				test('Create a channel inviting an user from Server A only (locally)', async ({ page }) => {
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, [userFromServer1UsernameOnly]);
+					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, [
+						userFromServer1UsernameOnly,
+					]);
 
-					await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -329,9 +362,7 @@ test.describe('Federation - Channel Creation', () => {
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created channel', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created channel', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -345,11 +376,11 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page2.goto(`${ constants.RC_SERVER_1.url }/home`);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 
-					await expect(page2).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -382,16 +413,22 @@ test.describe('Federation - Channel Creation', () => {
 					storeState: false,
 				});
 
-				await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-				await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					usernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, []);
 
-				await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ channelName }`);
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -429,15 +466,21 @@ test.describe('Federation - Channel Creation', () => {
 					storeState: false,
 				});
 
-				await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-				await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
-				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					userFromServer2UsernameOnly,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
 
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, []);
 
-				await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ channelName }`);
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -480,17 +523,26 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-					await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 					const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
-					const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
-					const userCreatedWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(userFromServer1UsernameOnly, constants.RC_SERVER_1.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						createdUsernameFromServer2,
+						constants.RC_SERVER_2.matrixServerName,
+					);
+					const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+						constants.RC_SERVER_1.username,
+						constants.RC_SERVER_1.matrixServerName,
+					);
+					const userCreatedWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer1UsernameOnly,
+						constants.RC_SERVER_1.matrixServerName,
+					);
 
 					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, []);
 
-					await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -512,9 +564,7 @@ test.describe('Federation - Channel Creation', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created channel', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created channel', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -528,15 +578,18 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page2.goto(`${ constants.RC_SERVER_1.url }/home`);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 
-					await expect(page2).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						createdUsernameFromServer2,
+						constants.RC_SERVER_2.matrixServerName,
+					);
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -565,16 +618,25 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page.goto(`${ constants.RC_SERVER_1.url }/home`);
-					await pageForServer2.goto(`${ constants.RC_SERVER_2.url }/home`);
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
-					const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(constants.RC_SERVER_1.username, constants.RC_SERVER_1.matrixServerName);
-					const usernameOriginalFromServer1OnlyWithDomain = formatUsernameAndDomainIntoMatrixFormat(userFromServer1UsernameOnly, constants.RC_SERVER_1.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer2UsernameOnly,
+						constants.RC_SERVER_2.matrixServerName,
+					);
+					const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+						constants.RC_SERVER_1.username,
+						constants.RC_SERVER_1.matrixServerName,
+					);
+					const usernameOriginalFromServer1OnlyWithDomain = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer1UsernameOnly,
+						constants.RC_SERVER_1.matrixServerName,
+					);
 
 					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, []);
 
-					await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -596,9 +658,7 @@ test.describe('Federation - Channel Creation', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created channel', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created channel', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -612,15 +672,18 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page2.goto(`${ constants.RC_SERVER_1.url }/home`);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 
-					await expect(page2).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
+					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+						userFromServer2UsernameOnly,
+						constants.RC_SERVER_2.matrixServerName,
+					);
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -632,15 +695,12 @@ test.describe('Federation - Channel Creation', () => {
 			test.describe('With local users only', () => {
 				const createdChannel = faker.datatype.uuid();
 
-				test('Create an empty channel, and invite an an user from Server A only (locally)', async ({
-					page,
-				}) => {
-
-					await page.goto(`${ constants.RC_SERVER_1.url }/home`);
+				test('Create an empty channel, and invite an an user from Server A only (locally)', async ({ page }) => {
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(createdChannel, []);
 
-					await expect(page).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
@@ -653,9 +713,7 @@ test.describe('Federation - Channel Creation', () => {
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created channel', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created channel', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -669,11 +727,11 @@ test.describe('Federation - Channel Creation', () => {
 						storeState: false,
 					});
 
-					await page2.goto(`${ constants.RC_SERVER_1.url }/home`);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 
-					await expect(page2).toHaveURL(`${ constants.RC_SERVER_1.url }/channel/${ createdChannel }`);
+					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
