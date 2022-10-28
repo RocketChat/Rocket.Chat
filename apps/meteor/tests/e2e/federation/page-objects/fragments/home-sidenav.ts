@@ -42,7 +42,7 @@ export class FederationSidenav {
 	async inviteUserToChannel(username: string) {
 		await this.autocompleteUser.click();
 		await this.autocompleteUser.type(username);
-		await this.page.waitForTimeout(1000);
+		await this.page.waitForTimeout(2000);
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
 	}
 

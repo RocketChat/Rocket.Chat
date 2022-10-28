@@ -8,14 +8,18 @@ export class FederationHomeFlextabMembers {
 	}
 
 	getUserInList(username: string): Locator {
-		return this.page.locator(`[data-qa="MemberItem-${username}"]`);
+		return this.page.locator(`[data-qa="MemberItem-${ username }"]`);
 	}
 
-	async addUser(username: string) {
+	async addMultipleUsers(usernames: string[]) {
 		await this.page.locator('//button[contains(text(), "Add")]').click();
-		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
-		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
+		for await (const username of usernames) {
+			await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
+			await this.page.waitForTimeout(2000);
+			await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${ username }`).first().click();
+		}
 		await this.page.locator('//button[contains(text(), "Add users")]').click();
+		await this.page.waitForTimeout(2000);
 	}
 
 	async showAllUsers() {

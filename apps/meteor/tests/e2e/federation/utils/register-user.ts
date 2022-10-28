@@ -5,7 +5,7 @@ import type { BaseTest } from '../../utils/test';
 
 export async function registerUser(api: BaseTest['api']): Promise<string> {
 	const username = faker.datatype.uuid();
-
+	
 	await api.post('/users.register', {
 		username,
 		email: `${username}@test-rc.com`,
