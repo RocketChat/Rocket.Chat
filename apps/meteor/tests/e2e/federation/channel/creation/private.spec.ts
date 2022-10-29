@@ -309,7 +309,7 @@ test.describe('Federation - Group Creation', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created https://www.youtube.com/watch?v=HrzmVOkSTg8', async ({
+				test('expect the user from Server A (locally) is able to access the previous created', async ({
 					browser,
 				}) => {
 					const page2 = await browser.newPage();
@@ -401,7 +401,7 @@ test.describe('Federation - Group Creation', () => {
 			}) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const GroupName = faker.datatype.uuid();
+				const groupName = faker.datatype.uuid();
 				const usernameFromServer2 = await registerUser(apiServer2);
 
 				await doLogin({
@@ -427,17 +427,17 @@ test.describe('Federation - Group Creation', () => {
 					constants.RC_SERVER_1.matrixServerName,
 				);
 
-				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(GroupName, []);
+				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, []);
 
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${GroupName}`);
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(GroupName);
+				await poFederationChannelServer1.sidenav.openChat(groupName);
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2]);
 				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
 
-				await poFederationChannelServer2.sidenav.openChat(GroupName);
+				await poFederationChannelServer2.sidenav.openChat(groupName);
 				await poFederationChannelServer2.tabs.btnTabMembers.click();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
