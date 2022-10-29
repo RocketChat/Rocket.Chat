@@ -183,7 +183,7 @@ export class FederationFactory {
 		FederationFactory.setupValidators(roomInternalHooksValidator);
 	}
 
-	private static setupActions(roomServiceSender: FederationRoomServiceSender, messageServiceSender: FederationMessageServiceSender): void {
+	public static setupActions(roomServiceSender: FederationRoomServiceSender, messageServiceSender: FederationMessageServiceSender): void {
 		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);
@@ -207,7 +207,7 @@ export class FederationFactory {
 		);
 	}
 
-	private static setupValidators(roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {
+	public static setupValidators(roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {
 		FederationHooks.canAddFederatedUserToNonFederatedRoom((user: IUser | string, room: IRoom) =>
 			roomInternalHooksValidator.canAddFederatedUserToNonFederatedRoom(user, room),
 		);
@@ -219,7 +219,7 @@ export class FederationFactory {
 		);
 	}
 
-	public static removeListeners(): void {
+	public static removeCEListeners(): void {
 		FederationHooks.removeCEValidation();
 	}
 }
