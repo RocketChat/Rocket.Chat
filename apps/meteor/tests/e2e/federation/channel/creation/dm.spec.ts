@@ -41,12 +41,6 @@ test.describe('Federation - Direct Messages', () => {
     });
 
 
-
-    // test.afterEach(async ({ page }) => {
-    // 	await poFederationChannelServer1.sidenav.logout();
-    // 	await page.close();
-    // });
-
     test.describe('Direct Messages (DMs)', () => {
         test.describe('Inviting users using the creation modal', () => {
             test('expect to create a DM inviting an user from the Server B who does not exist in Server A yet', async ({
@@ -456,14 +450,14 @@ test.describe('Federation - Direct Messages', () => {
                     await poFederationChannel1ForUser2.sidenav.openChat(`${ userFromServer2UsernameOnly }, ${ constants.RC_SERVER_1.username }`);
                     await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
                     await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-    
+
                     await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
                     await poFederationChannel1ForUser2.tabs.members.showAllUsers();
                     const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
                         userFromServer2UsernameOnly,
                         constants.RC_SERVER_2.matrixServerName,
                     );
-    
+
                     await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
                     await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
                     await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
@@ -547,14 +541,14 @@ test.describe('Federation - Direct Messages', () => {
                     await poFederationChannel1ForUser2.sidenav.openChat(`${ userFromServer2UsernameOnly }, ${ constants.RC_SERVER_1.username }`);
                     await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
                     await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-    
+
                     await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
                     await poFederationChannel1ForUser2.tabs.members.showAllUsers();
                     const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
                         userFromServer2UsernameOnly,
                         constants.RC_SERVER_2.matrixServerName,
                     );
-    
+
                     await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
                     await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
                     await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
