@@ -473,7 +473,6 @@ test.describe('Federation - Direct Messages', () => {
 
             // TODO: enable these skipped tests as soon as we have a Synapse environment to test against
             test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
-                const createdGroup = faker.datatype.uuid();
 
                 test('expect to create a DM, and invite an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
                     browser,
