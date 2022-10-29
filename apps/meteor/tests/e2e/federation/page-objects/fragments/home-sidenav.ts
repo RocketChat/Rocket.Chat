@@ -26,6 +26,12 @@ export class FederationSidenav {
 		// return this.page.locator('[data-qa="create-channel-users-autocomplete"]');
 	}
 
+	get autocompleteUserDM(): Locator {
+		// TODO: move this to data-qa, we are using x path here because we don't have a dedicated server to run tests yet
+		return this.page.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full")]/..//input');
+		// return this.page.locator('[data-qa="create-channel-users-autocomplete"]');
+	}
+
 	get inputChannelName(): Locator {
 		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
@@ -67,5 +73,12 @@ export class FederationSidenav {
 		await this.checkboxPrivateChannel.click();
 		await this.inputChannelName.type(name);
 		await this.btnCreateChannel.click();
+	}
+
+	async inviteUserToDM(username: string) {
+		await this.autocompleteUserDM.click();
+		await this.autocompleteUserDM.type(username);
+		await this.page.waitForTimeout(2000);
+		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
 	}
 }

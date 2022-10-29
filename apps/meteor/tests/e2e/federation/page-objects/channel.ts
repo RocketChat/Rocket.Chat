@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { FederationHomeContent } from './fragments/home-content';
 
 import { FederationHomeFlextab } from './fragments/home-flextab';
 import { FederationSidenav } from './fragments/home-sidenav';
@@ -6,7 +7,7 @@ import { FederationSidenav } from './fragments/home-sidenav';
 export class FederationChannel {
 	private readonly page: Page;
 
-	// readonly content: HomeContent;
+	readonly content: FederationHomeContent;
 
 	readonly sidenav: FederationSidenav;
 
@@ -14,7 +15,7 @@ export class FederationChannel {
 
 	constructor(page: Page) {
 		this.page = page;
-		// this.content = new HomeContent(page);
+		this.content = new FederationHomeContent(page);
 		this.sidenav = new FederationSidenav(page);
 		this.tabs = new FederationHomeFlextab(page);
 	}
@@ -47,6 +48,15 @@ export class FederationChannel {
 			await this.sidenav.inviteUserToChannel(username);
 		}
 
+		await this.sidenav.btnCreateChannel.click();
+	}
+
+	async createDirectMessagesUsingModal(usernamesToInvite: string[]) {
+		await this.sidenav.openNewByLabel('Direct Messages');
+		for await (const username of usernamesToInvite) {
+			await this.sidenav.inviteUserToDM(username);
+		}
+		await this.page.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct Messages")]').click();
 		await this.sidenav.btnCreateChannel.click();
 	}
 }
