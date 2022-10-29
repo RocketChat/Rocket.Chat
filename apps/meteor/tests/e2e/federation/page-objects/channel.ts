@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
-import { FederationHomeContent } from './fragments/home-content';
 
+import { FederationHomeContent } from './fragments/home-content';
 import { FederationHomeFlextab } from './fragments/home-flextab';
 import { FederationSidenav } from './fragments/home-sidenav';
 
@@ -56,7 +56,9 @@ export class FederationChannel {
 		for await (const username of usernamesToInvite) {
 			await this.sidenav.inviteUserToDM(username);
 		}
-		await this.page.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct Messages")]').click();
+		await this.page
+			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct Messages")]')
+			.click();
 		await this.sidenav.btnCreateChannel.click();
 	}
 }

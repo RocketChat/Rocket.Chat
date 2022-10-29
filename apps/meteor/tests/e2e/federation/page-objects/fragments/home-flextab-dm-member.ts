@@ -8,6 +8,6 @@ export class FederationHomeFlextabDirectMessageMember {
 	}
 
 	getUserInfoUsername(username: string): Locator {
-		return this.page.locator(`//div[contains(@class, "rcx-box--full") and contains(@title, "${ username }")]`);
+		return this.page.locator(`//div[contains(@class, "rcx-box--full") and contains(@title, "${username}")]`);
 	}
 }

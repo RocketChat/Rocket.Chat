@@ -309,9 +309,7 @@ test.describe('Federation - Group Creation', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created', async ({
-					browser,
-				}) => {
+				test('expect the user from Server A (locally) is able to access the previous created', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
