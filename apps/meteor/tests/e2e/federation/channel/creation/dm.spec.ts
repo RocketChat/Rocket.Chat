@@ -221,7 +221,7 @@ test.describe('Federation - Direct Messages', () => {
 		});
 		// 	// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
 		test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
-			test('expect to create a group inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
+			test('expect to create a DM inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 				browser,
 				page,
 			}) => {
@@ -310,7 +310,7 @@ test.describe('Federation - Direct Messages', () => {
 		});
 
 		test.describe('Using Slash commands', () => {
-			test.only('expect to create a DM inviting an user from the Server B who does not exist in Server A yet', async ({
+			test('expect to create a DM inviting an user from the Server B who does not exist in Server A yet', async ({
 				browser,
 				page,
 				apiServer2,
@@ -344,7 +344,7 @@ test.describe('Federation - Direct Messages', () => {
 
 				await poFederationChannelServer1.sidenav.openChat('general');
 
-				await poFederationChannelServer1.content.sendMessage(`/federation dm ${fullUsernameFromServer2}`);
+				await poFederationChannelServer1.content.dispatchSlashCommand(`/federation dm ${fullUsernameFromServer2}`);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.tabs.btnUserInfo.click();
@@ -398,7 +398,7 @@ test.describe('Federation - Direct Messages', () => {
 						constants.RC_SERVER_1.matrixServerName,
 					);
 
-					await poFederationChannelServer1.content.sendMessage(
+					await poFederationChannelServer1.content.dispatchSlashCommand(
 						`/federation dm ${fullUsernameFromServer2}, @${constants.RC_SERVER_1.username}`,
 					);
 
@@ -490,7 +490,7 @@ test.describe('Federation - Direct Messages', () => {
 						constants.RC_SERVER_1.matrixServerName,
 					);
 
-					await poFederationChannelServer1.content.sendMessage(
+					await poFederationChannelServer1.content.dispatchSlashCommand(
 						`/federation dm @${usernameWithDomainFromServer2}, @${constants.RC_SERVER_1.username}`,
 					);
 

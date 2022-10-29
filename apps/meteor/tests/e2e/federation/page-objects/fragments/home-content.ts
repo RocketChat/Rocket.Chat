@@ -32,8 +32,7 @@ export class FederationHomeContent {
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
-		await this.page.keyboard.press('Enter');
-		await this.page.keyboard.press('Enter');
+		await this.page.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]').click();
 	}
 
 	get btnModalCancel(): Locator {
