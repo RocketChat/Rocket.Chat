@@ -11,14 +11,18 @@ export class FederationHomeFlextabMembers {
 		return this.page.locator(`[data-qa="MemberItem-${username}"]`);
 	}
 
+	get addUsersButton(): Locator {
+		return this.page.locator('//button[contains(text(), "Add")]');
+	}
+
 	async addMultipleUsers(usernames: string[]) {
-		await this.page.locator('//button[contains(text(), "Add")]').click();
+		await this.addUsersButton.click();
 		for await (const username of usernames) {
 			await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
 			await this.page.waitForTimeout(2000);
 			await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
 		}
-		await this.page.locator('//button[contains(text(), "Add users")]').click();
+		await this.addUsersButton.click();
 		await this.page.waitForTimeout(2000);
 	}
 

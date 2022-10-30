@@ -12,13 +12,14 @@ test.describe('Federation - Channel Creation', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
 	let userFromServer1UsernameOnly: string;
+	let createdChannelName: string;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
-		await createChannelAndInviteRemoteUserToCreateLocalUser({
+		createdChannelName = await createChannelAndInviteRemoteUserToCreateLocalUser({
 			page,
 			poFederationChannelServer1,
 			userFromServer2UsernameOnly,
@@ -740,6 +741,146 @@ test.describe('Federation - Channel Creation', () => {
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
 					await page2.close();
 				});
+			});
+		});
+
+		test.describe('Owner rights', () => {
+			test('expect only the owner of the room being able to delete the channel', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/${createdChannelName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer1.tabs.room.btnDelete).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer2.tabs.room.btnDelete).not.toBeVisible();
+
+				await pageForServer2.close();
+			});
+
+			test('expect only the owner of the room being able to add users through the UI', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/${createdChannelName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
+				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer1.tabs.members.addUsersButton).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
+				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer2.tabs.members.addUsersButton).not.toBeVisible();
+
+				await pageForServer2.close();
+			});
+
+			// TODO: skipping this test until we have the Synapse server to test against, this is having some intermittencies
+			test.skip('expect only the owner of the room being able to edit the channel name AND the channel topic', async ({
+				browser,
+				page,
+			}) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/${createdChannelName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer1.tabs.room.btnEdit).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer2.tabs.room.btnEdit).not.toBeVisible();
+
+				await poFederationChannelServer1.tabs.room.btnEdit.click();
+				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdChannelName}`);
+				await poFederationChannelServer1.tabs.room.btnSave.click();
+				await page.waitForTimeout(5000);
+
+				await poFederationChannelServer2.sidenav.openChat(`NAME-EDITED-${createdChannelName}`);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/NAME-EDITED-${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/NAME-EDITED-${createdChannelName}`);
+
+				const nameChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
+					`changed room name to NAME-EDITED-${createdChannelName}`,
+				);
+				await expect(nameChangedSystemMessageServer1).toBeVisible();
+				const nameChangedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
+					`changed room name to NAME-EDITED-${createdChannelName}`,
+				);
+				await expect(nameChangedSystemMessageServer2).toBeVisible();
+
+				await poFederationChannelServer1.tabs.room.btnEdit.click();
+				await poFederationChannelServer1.tabs.room.inputTopic.fill('hello-topic-edited');
+				await poFederationChannelServer1.tabs.room.btnSave.click();
+
+				const topicChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
+					'changed room topic to hello-topic-edited',
+				);
+				await expect(topicChangedSystemMessageServer1).toBeVisible();
+				const topicChangedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
+					'changed room topic to hello-topic-edited',
+				);
+				await expect(topicChangedSystemMessageServer2).toBeVisible();
+
+				await pageForServer2.close();
 			});
 		});
 	});

@@ -11,6 +11,10 @@ export class FederationHomeFlextabRoom {
 		return this.page.locator('//aside//button[contains(text(), "Edit")]');
 	}
 
+	get btnDelete(): Locator {
+		return this.page.locator('//aside//button[contains(text(), "Delete")]');
+	}
+
 	get inputName(): Locator {
 		return this.page.locator('//aside//label[contains(text(), "Name")]/..//input');
 	}

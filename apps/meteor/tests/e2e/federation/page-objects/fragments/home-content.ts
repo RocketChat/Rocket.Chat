@@ -32,7 +32,9 @@ export class FederationHomeContent {
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
-		await this.page.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]').click();
+		await this.page
+			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
+			.click();
 	}
 
 	get btnModalCancel(): Locator {
@@ -168,5 +170,9 @@ export class FederationHomeContent {
 
 	get takeOmnichannelChatButton(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
+	}
+
+	async getSystemMessageByText(text: string): Promise<Locator> {
+		return this.page.locator('div[data-qa="system-message"] div[data-qa-type="system-message-body"]', { hasText: text });
 	}
 }
