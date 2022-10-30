@@ -8,7 +8,7 @@ import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat }
 import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
-test.describe('Federation - Channel Creation', () => {
+test.describe.parallel('Federation - Channel Creation', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
 	let userFromServer1UsernameOnly: string;
@@ -879,6 +879,95 @@ test.describe('Federation - Channel Creation', () => {
 					'changed room topic to hello-topic-edited',
 				);
 				await expect(topicChangedSystemMessageServer2).toBeVisible();
+
+				await pageForServer2.close();
+			});
+		});
+
+		test.describe('Visual Elements', () => {
+			test('expect the calls button to be disabled', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/${createdChannelName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
+				await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
+
+				await pageForServer2.close();
+			});
+
+			test('expect the threads button to be disabled', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/${createdChannelName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnThread).toBeDisabled();
+				await expect(poFederationChannelServer2.tabs.btnThread).toBeDisabled();
+
+				await pageForServer2.close();
+			});
+
+			test('expect the discussion button to be disabled', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/channel/${createdChannelName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnDiscussion).toBeDisabled();
+				await expect(poFederationChannelServer2.tabs.btnDiscussion).toBeDisabled();
 
 				await pageForServer2.close();
 			});

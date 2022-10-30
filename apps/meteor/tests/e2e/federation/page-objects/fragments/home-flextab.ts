@@ -40,6 +40,18 @@ export class FederationHomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
 	}
 
+	get btnCall(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	}
+
+	get btnDiscussion(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-discussion"]');
+	}
+
+	get btnThread(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-thread"]');
+	}
+
 	get btnChannels(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}

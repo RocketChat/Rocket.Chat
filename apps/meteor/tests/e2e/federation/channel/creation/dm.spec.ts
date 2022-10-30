@@ -6,7 +6,7 @@ import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat }
 import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
-test.describe('Federation - Direct Messages', () => {
+test.describe.parallel('Federation - Direct Messages', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
 	let userFromServer1UsernameOnly: string;
@@ -548,7 +548,7 @@ test.describe('Federation - Direct Messages', () => {
 			});
 		});
 
-		test.describe.only('Owner rights', () => {
+		test.describe('DMs', () => {
 			let createdUsernameFromServer2: string;
 			let usernameWithDomainFromServer2: string;
 			let fullUsernameFromServer2: string;
@@ -579,66 +579,154 @@ test.describe('Federation - Direct Messages', () => {
 				await page.close();
 			});
 
-			test('expect neither the owner nor the invitee to be able to edit the channel info (the channel info button should not be visible)', async ({
-				browser,
-				page,
-			}) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+			test.describe('Owner rights', () => {
+				test('expect neither the owner nor the invitee to be able to edit the channel info (the channel info button should not be visible)', async ({
+					browser,
+					page,
+				}) => {
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: userFromServer2UsernameOnly,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
+
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer1.content.sendMessage('hello world');
+
+					await expect(poFederationChannelServer1.tabs.btnRoomInfo).not.toBeVisible();
+
+					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
+					await expect(poFederationChannelServer2.tabs.btnRoomInfo).not.toBeVisible();
+
+					await pageForServer2.close();
 				});
 
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				test('expect the onwer nor the invitee to be able to add users to DMs (the button to add users should not be visible)', async ({
+					browser,
+					page,
+				}) => {
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.content.sendMessage('hello world');
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: userFromServer2UsernameOnly,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
 
-				await expect(poFederationChannelServer1.tabs.btnRoomInfo).not.toBeVisible();
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
-				await expect(poFederationChannelServer2.tabs.btnRoomInfo).not.toBeVisible();
+					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer1.content.sendMessage('hello world');
 
-				await pageForServer2.close();
+					await expect(poFederationChannelServer1.tabs.btnTabMembers).not.toBeVisible();
+
+					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
+					await expect(poFederationChannelServer2.tabs.btnTabMembers).not.toBeVisible();
+
+					await pageForServer2.close();
+				});
 			});
 
-			test('expect the onwer nor the invitee to be able to add users to DMs (the button to add users should not be visible)', async ({
-				browser,
-				page,
-			}) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+			test.describe('Visual Elements', () => {
+				test('expect the calls button to be disabled', async ({ browser, page }) => {
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: userFromServer2UsernameOnly,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
+
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer1.content.sendMessage('hello world');
+
+					await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
+
+					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
+					await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
+
+					await pageForServer2.close();
 				});
 
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				test('expect the threads button to be disabled', async ({ browser, page }) => {
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer1.content.sendMessage('hello world');
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: userFromServer2UsernameOnly,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
 
-				await expect(poFederationChannelServer1.tabs.btnTabMembers).not.toBeVisible();
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
-				await expect(poFederationChannelServer2.tabs.btnTabMembers).not.toBeVisible();
+					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer1.content.sendMessage('hello world');
 
-				await pageForServer2.close();
+					await expect(poFederationChannelServer1.tabs.btnThread).toBeDisabled();
+
+					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
+					await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
+
+					await pageForServer2.close();
+				});
+
+				test('expect the discussion button to be disabled', async ({ browser, page }) => {
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: userFromServer2UsernameOnly,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
+
+					await page.goto(`${constants.RC_SERVER_1.url}/home`);
+					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer1.content.sendMessage('hello world');
+
+					await expect(poFederationChannelServer1.tabs.btnDiscussion).toBeDisabled();
+
+					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
+					await expect(poFederationChannelServer2.tabs.btnDiscussion).toBeDisabled();
+
+					await pageForServer2.close();
+				});
 			});
 		});
 	});
