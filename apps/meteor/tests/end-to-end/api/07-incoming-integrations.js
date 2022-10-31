@@ -208,22 +208,23 @@ describe('[Incoming Integrations]', function () {
 					text: successfulMesssage,
 					channel: [testChannelName],
 				})
-				.expect(200);
-
-			request
-				.get(api('channels.messages'))
-				.set(credentials)
-				.query({
-					roomId: 'GENERAL',
-				})
-				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
-				})
-				.end(done);
+				.end(() => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+						})
+						.end(done);
+				});
 		});
 	});
 
