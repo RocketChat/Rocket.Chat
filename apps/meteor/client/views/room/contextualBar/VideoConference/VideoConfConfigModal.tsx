@@ -15,27 +15,29 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 		<Modal>
 			<Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Tagline>{isAdmin ? t('Missing_configuration') : 'App not enabled'}</Modal.Tagline>
-					<Modal.Title>Configure conference call</Modal.Title>
+					<Modal.Tagline>{isAdmin ? t('Missing_configuration') : t('App_not_enabled')}</Modal.Tagline>
+					<Modal.Title>{t('Configure_video_conference')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
 				<Modal.HeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
-				<Box fontScale='h3'>Enterprise capabilities</Box>
+				<Box fontScale='h3'>{t('Enterprise_capabilities')}</Box>
 				<Box withRichContent>
 					<Box is='ul' pis='x24'>
-						<li>Ringtones and visual indicators notify people of incoming calls.</li>
-						<li>Call history provides a record of when calls took place and who joined.</li>
+						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
+						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>
 				</Box>
-				<Box fontScale='h3'>Conference call apps</Box>
+				<Box fontScale='h3'>{t('Conference_call_apps')}</Box>
 				<Margins blockStart='x12'>
-					<Callout title='Pexip (Enterprise only)'>A secure and highly private self-managed solution for conference calls.</Callout>
-					<Callout title='Google Meet (Enterprise only)'>
-						Secure SaaS solution. A cloud-based platform for those needing a plug-and-play app.
+					<Callout title={t('Pexip_Enterprise_only')}>
+						{t('A_secure_and_highly_private_self-managed_solution_for_conference_calls')}
 					</Callout>
-					<Callout title='Jitsi, included with Community'>Open-souce conference call solution.</Callout>
+					<Callout title={t('Google_Meet_Enterprise_only')}>
+						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
+					</Callout>
+					<Callout icon='team' title={t('Jitsi_included_with_Community')}>{t('Open-souce_conference_call_solution')}</Callout>
 				</Margins>
 
 				<Box fontScale='h3' mbs='x24'>
@@ -43,15 +45,15 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				</Box>
 				<Callout mbs='x12' mbe='x24' title={t('Missing_configuration')} type='warning'>
 					{isAdmin
-						? 'An app needs to be installed and configured.'
-						: 'A workspace admin needs to be install and configure a conference call app.'}
+						? t('An_app_needs_to_be_installed_and_configured')
+						: t('A_workspace_admin_needs_to_be_install_and_configure_a_conference_call_app')}
 				</Callout>
 			</Modal.Content>
 			<Modal.Footer justifyContent='space-between'>
 				<Modal.FooterAnnotation>
 					{isAdmin
-						? 'Configure video conference to make it available on this workspace'
-						: 'Talk to your workspace administrator about enabling video conferencing'}
+						? t('Configure_video_conference_to_make_it_available_on_this_workspace')
+						: t('Talk_to_your_workspace_administrator_about_enabling_video_conferencing')}
 				</Modal.FooterAnnotation>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Close')}</Button>
