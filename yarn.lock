@@ -5480,12 +5480,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/css-in-js@npm:~0.31.20-dev.12":
+  version: 0.31.20-dev.12
+  resolution: "@rocket.chat/css-in-js@npm:0.31.20-dev.12"
+  dependencies:
+    "@emotion/hash": ^0.8.0
+    "@rocket.chat/css-supports": ~0.31.20-dev.12
+    "@rocket.chat/memo": ~0.31.20-dev.12
+    "@rocket.chat/stylis-logical-props-middleware": ~0.31.20-dev.12
+    stylis: ~4.0.13
+  checksum: f03d4071f4e016bb63335c01cbdcdf1cb33c513a3464dad9711ce3253116f5c9b3c2cfd83c5bbc3b00caa3b88273cf17beaa07450d4e2f4a5ad2375214acb1b7
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/css-supports@npm:~0.31.20-dev.11":
   version: 0.31.20-dev.11
   resolution: "@rocket.chat/css-supports@npm:0.31.20-dev.11"
   dependencies:
     "@rocket.chat/memo": ~0.31.20-dev.11
   checksum: c8f6c01cdbb2328755354e5405d9db53a8493ca1555b2b5af3c4da44faae1ef14e5ff39e87eda536aac2714a40218712ae9d8aa561ce9101dcfe122bdd157a49
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/css-supports@npm:~0.31.20-dev.12":
+  version: 0.31.20-dev.12
+  resolution: "@rocket.chat/css-supports@npm:0.31.20-dev.12"
+  dependencies:
+    "@rocket.chat/memo": ~0.31.20-dev.12
+  checksum: da90d5e4dcc23f47a440951ff755fa8b27db2d6dc18db28f233a948cc360b6396bd0bc9db2dc4509555549f21cb3fd3b06c7247871b8134092d224f827f0a0de
   languageName: node
   linkType: hard
 
@@ -5676,10 +5698,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.124":
+"@rocket.chat/fuselage-tokens@npm:next":
   version: 0.32.0-dev.124
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.124"
   checksum: 20800fb4492d92a7bfcf9886ee70bb78261474ad771f4c53f401f8416de71cb1c9e0b61100ec296ece8329edbce6b9242b8aa8c0c804c13fc5e73d08075c4a58
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.125":
+  version: 0.32.0-dev.125
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.125"
+  checksum: 5a05c2238d702e91a75980756cb53cf032ba6683f9ddd30743d093bd9699954bcbacbfa9be13ff189ebb3e9209696e8048b785d6b1d5180bf38e7e5ffc4267e2
   languageName: node
   linkType: hard
 
@@ -5748,14 +5777,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.174
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.174"
+  version: 0.32.0-dev.175
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.175"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.20-dev.11
-    "@rocket.chat/css-supports": ~0.31.20-dev.11
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.124
-    "@rocket.chat/memo": ~0.31.20-dev.11
-    "@rocket.chat/styled": ~0.31.20-dev.11
+    "@rocket.chat/css-in-js": ~0.31.20-dev.12
+    "@rocket.chat/css-supports": ~0.31.20-dev.12
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.125
+    "@rocket.chat/memo": ~0.31.20-dev.12
+    "@rocket.chat/styled": ~0.31.20-dev.12
     invariant: ^2.2.4
     react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
@@ -5767,7 +5796,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 9f91e49d4f65791d749be9ebc37e44013af616ea672fa78049e8bdd1e0a29507e690e9477521f791edf0df8ecf5146e64442d647a17eb40367e4b6c1defabb12
+  checksum: e0e11aa64a8ac9746e82fc48f1c487c84345333f3c5998ebf9d1bcf0c350864979aa66da4359063b9a6424e729dcecd2387705a2b35247e91cf59e33043abe52
   languageName: node
   linkType: hard
 
@@ -5955,6 +5984,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/memo@npm:~0.31.20-dev.12":
+  version: 0.31.20-dev.12
+  resolution: "@rocket.chat/memo@npm:0.31.20-dev.12"
+  checksum: 1dbef16d74f84b0fac950b51c0b23d6d2f600739577c078e3fd10bd3943fd6a0060c3e85c08cfd03fa53ebe029cd2ab094ed767bcba81f88463bd30cd1553713
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/message-parser@npm:next":
   version: 0.32.0-dev.122
   resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.122"
@@ -6088,6 +6124,7 @@ __metadata:
     "@types/react": ~17.0.47
     "@types/react-dom": ~17.0.17
     "@types/rewire": ^2.5.28
+    "@types/sanitize-html": ^2
     "@types/semver": ^7.3.10
     "@types/sharp": ^0.30.4
     "@types/sinon": ^10.0.11
@@ -6252,6 +6289,7 @@ __metadata:
     react-virtuoso: ^1.11.1
     redis: ^4.0.6
     rewire: ^6.0.0
+    sanitize-html: ^2.7.2
     semver: ^7.3.7
     sharp: ^0.30.7
     sinon: ^14.0.0
@@ -6501,6 +6539,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/styled@npm:~0.31.20-dev.12":
+  version: 0.31.20-dev.12
+  resolution: "@rocket.chat/styled@npm:0.31.20-dev.12"
+  dependencies:
+    "@rocket.chat/css-in-js": ~0.31.20-dev.12
+    tslib: ^2.3.1
+  checksum: c326c4a389337cac09db483138d7a3c9493ec514d3afbdb43b35b892261bb48c1b395181eaa16e05f87ba28773846de555c4cd0b0569109d020915493004ccc6
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/stylis-logical-props-middleware@npm:~0.31.20-dev.11":
   version: 0.31.20-dev.11
   resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.20-dev.11"
@@ -6510,6 +6558,18 @@ __metadata:
   peerDependencies:
     stylis: 4.0.10
   checksum: 4201a310b56e257e07bf00e82f16c15a776e8f48bdd0413fd444b9e88420b7d876a0b46fa083e4f79c4b80e38c7e4242293b9c29a8192565ecb3732155496ab3
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.20-dev.12":
+  version: 0.31.20-dev.12
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.20-dev.12"
+  dependencies:
+    "@rocket.chat/css-supports": ~0.31.20-dev.12
+    tslib: ^2.3.1
+  peerDependencies:
+    stylis: 4.0.10
+  checksum: 03e72c0cb92c3c95add691a9e76e3d13962080c94a2dc4b8a44c4215bd4e360d981db273fd53777a04835553e4aee7e16a30bb7f6ecc694d9cb2b8bc4eedb879
   languageName: node
   linkType: hard
 
@@ -9630,6 +9690,15 @@ __metadata:
   version: 2.5.28
   resolution: "@types/rewire@npm:2.5.28"
   checksum: c416a0f30b68c3d7aa7d67fa1297506d7ae890f831363f5e7a2ca704e0d3e2ec564efe1ce1f20a31f4f6408b3dc76a0f6ed79048ef4b7cc38905db31aeaf55df
+  languageName: node
+  linkType: hard
+
+"@types/sanitize-html@npm:^2":
+  version: 2.6.2
+  resolution: "@types/sanitize-html@npm:2.6.2"
+  dependencies:
+    htmlparser2: ^6.0.0
+  checksum: 08b43427427cbd8acd2843bbf9e00576c06e3916fc523d27fd9016f39563f7999f78b632ff473ef83a77f86bdea9286de2f81e3a8f8a05af6721687651c84f1c
   languageName: node
   linkType: hard
 
@@ -30949,6 +31018,20 @@ __metadata:
     parse-srcset: ^1.0.2
     postcss: ^8.3.11
   checksum: 73a4d66f69578bace3506519ca0734279b7117e15c33c7e4d075cdb483b1586261a18acd35934f6c6109f3b2a4a82f82c242171a94d5dc23fba5b09b01ea5b22
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:^2.7.2":
+  version: 2.7.2
+  resolution: "sanitize-html@npm:2.7.2"
+  dependencies:
+    deepmerge: ^4.2.2
+    escape-string-regexp: ^4.0.0
+    htmlparser2: ^6.0.0
+    is-plain-object: ^5.0.0
+    parse-srcset: ^1.0.2
+    postcss: ^8.3.11
+  checksum: 4c15e87a411420d670412de2beb29386c8307210c170ceb716d93b4010dcf6a8ae39408d7d863752ee84cc65f5995633c7089789c5f8c0de478a7023d93a53ec
   languageName: node
   linkType: hard
 

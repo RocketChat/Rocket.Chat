@@ -19,16 +19,25 @@ export class FederationFactoryEE {
 	public static buildRoomServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketFiledapter: RocketChatFileAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSenderEE {
-		return new FederationRoomServiceSenderEE(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, rocketFiledapter, bridge);
+		return new FederationRoomServiceSenderEE(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketMessageAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildRoomInternalHooksServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		bridge: IFederationBridgeEE,
@@ -36,6 +45,7 @@ export class FederationFactoryEE {
 		return new FederationRoomInternalHooksServiceSender(
 			rocketRoomAdapter,
 			rocketUserAdapter,
+			rocketFileAdapter,
 			rocketSettingsAdapter,
 			rocketMessageAdapter,
 			bridge,
@@ -45,10 +55,17 @@ export class FederationFactoryEE {
 	public static buildDMRoomInternalHooksServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationDMRoomInternalHooksServiceSender {
-		return new FederationDMRoomInternalHooksServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+		return new FederationDMRoomInternalHooksServiceSender(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
