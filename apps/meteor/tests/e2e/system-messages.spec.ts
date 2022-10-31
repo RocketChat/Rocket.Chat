@@ -24,7 +24,7 @@ test.describe.serial('System Messages', () => {
 	let user: IUser;
 
 	const findSysMes = (id: string): Locator => {
-		return adminPage.locator(`[data-qa="system-message"][data-qa-id="${id}"]`);
+		return adminPage.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
 	};
 
 	test.beforeAll(async ({ api, browser }) => {
