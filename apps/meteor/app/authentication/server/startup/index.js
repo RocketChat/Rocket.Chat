@@ -425,7 +425,7 @@ Accounts.onLogin(async ({ user }) => {
 	const currentUserEmailOnRocket = currentUser.emails[0];
 
 	if (currentUserEmailOnRocket !== service.email) {
-		const userEmailsUpdated = [{ address: service.email, virified: true }, ...user.emails.filter((item) => item.email !== service.email)];
+		const userEmailsUpdated = [{ address: service.email, verified: true }, ...user.emails.filter((item) => item.email !== service.email)];
 
 		await Users.update(
 			{ _id: user._id },
