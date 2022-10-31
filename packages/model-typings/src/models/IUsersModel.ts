@@ -1,5 +1,5 @@
 import type { Document, UpdateResult, FindCursor, FindOptions } from 'mongodb';
-import type { IUser, IRole, IRoom, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { IUser, IRole, IRoom, ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -153,4 +153,16 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeRoomByRoomId(rid: any): any;
 
 	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
+
+	updateStatusById(
+		userId: string,
+		{
+			statusDefault,
+			status,
+			statusConnection,
+			statusText,
+		}: { statusDefault?: string; status: UserStatus; statusConnection: UserStatus; statusText?: string },
+	): Promise<UpdateResult>;
+
+	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
 }

@@ -12,6 +12,17 @@ const baseMessage = {
 		username: 'userName',
 	},
 	msg: 'message',
+	md: [
+		{
+			type: 'PARAGRAPH',
+			value: [
+				{
+					type: 'PLAIN_TEXT',
+					value: 'message',
+				},
+			],
+		},
+	],
 	rid: 'roomId',
 	_id: 'messageId',
 	_updatedAt: date,
@@ -41,12 +52,20 @@ const MessageContent = proxyquire.noCallThru().load('../../../../../../client/vi
 		useUserData: () => '',
 	},
 	'../../../blocks/MessageBlock': () => '',
+	'../../../../components/message/Attachments': () => '',
 	'./MessageContentBody': () => baseMessage.msg,
 }).default;
 
 describe('MessageContent', () => {
 	it('should render the message when exists', () => {
 		render(<MessageContent message={baseMessage} sequential={false} id={''} />);
+
+		expect(screen.getByText(baseMessage.msg)).to.exist;
+	});
+
+	it('should render the message when has an empty message blocks', () => {
+		const message = { ...baseMessage, blocks: [] };
+		render(<MessageContent message={message} sequential={false} id={''} />);
 
 		expect(screen.getByText(baseMessage.msg)).to.exist;
 	});

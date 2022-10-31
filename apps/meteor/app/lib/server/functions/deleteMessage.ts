@@ -49,7 +49,7 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 		});
 	}
 
-	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
+	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 	callbacks.run('afterDeleteMessage', deletedMsg, room);
 
 	// update last message

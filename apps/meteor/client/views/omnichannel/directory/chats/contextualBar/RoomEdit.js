@@ -1,6 +1,6 @@
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo } from 'react';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
@@ -88,11 +88,11 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveRoom = useMethod('livechat:saveInfo');
+	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
-		const userData = {
+		const guestData = {
 			_id: visitor._id,
 		};
 
@@ -105,7 +105,10 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 		};
 
 		try {
-			saveRoom(userData, roomData);
+			await saveRoom({
+				guestData,
+				roomData,
+			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload && reload();
 			reloadInfo && reloadInfo();

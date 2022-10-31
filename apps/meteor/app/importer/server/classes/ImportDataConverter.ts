@@ -217,7 +217,10 @@ export class ImportDataConverter {
 					continue;
 				}
 
-				updateData.$set[keyPath] = source[key];
+				updateData.$set = {
+					...updateData.$set,
+					...{ [keyPath]: source[key] },
+				};
 			}
 		};
 
@@ -237,16 +240,16 @@ export class ImportDataConverter {
 		}
 
 		// #ToDo: #TODO: Move this to the model class
-		const updateData: Record<string, any> = {
-			$set: {
+		const updateData: Record<string, any> = Object.assign(Object.create(null), {
+			$set: Object.assign(Object.create(null), {
 				...(userData.roles && { roles: userData.roles }),
 				...(userData.type && { type: userData.type }),
 				...(userData.statusText && { statusText: userData.statusText }),
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-			},
-		};
+			}),
+		});
 
 		this.addCustomFields(updateData, userData);
 		this.addUserServices(updateData, userData);

@@ -6,7 +6,10 @@ import {
 	FederationRoomChangeNameDto,
 	FederationRoomChangeTopicDto,
 	FederationRoomCreateInputDto,
+	FederationRoomEditExternalMessageDto,
+	FederationRoomReceiveExternalFileMessageDto,
 	FederationRoomReceiveExternalMessageDto,
+	FederationRoomRedactEventDto,
 } from '../../../application/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
@@ -19,6 +22,8 @@ import type { MatrixEventRoomJoinRulesChanged } from '../definitions/events/Room
 import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
+import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
+import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '');
@@ -38,7 +43,7 @@ export const extractServerNameFromExternalIdentifier = (identifier = ''): string
 	return splitted.length > 1 ? splitted[1] : '';
 };
 
-const convertExternalRoomIdToInternalRoomIdFormat = (matrixRoomId = ''): string => {
+export const convertExternalRoomIdToInternalRoomIdFormat = (matrixRoomId = ''): string => {
 	const prefixedRoomIdOnly = matrixRoomId.split(':')[0];
 	const prefix = '!';
 
@@ -95,6 +100,7 @@ const tryToExtractAndConvertRoomTypeFromTheRoomState = (
 export class MatrixRoomReceiverConverter {
 	public static toRoomCreateDto(externalEvent: MatrixEventRoomCreated): FederationRoomCreateInputDto {
 		return new FederationRoomCreateInputDto({
+			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			...tryToExtractExternalRoomNameFromTheRoomState(externalEvent.invite_room_state || externalEvent.unsigned?.invite_room_state),
@@ -111,6 +117,7 @@ export class MatrixRoomReceiverConverter {
 		homeServerDomain: string,
 	): FederationRoomChangeMembershipDto {
 		return new FederationRoomChangeMembershipDto({
+			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			...tryToExtractExternalRoomNameFromTheRoomState(externalEvent.invite_room_state || externalEvent.unsigned?.invite_room_state),
@@ -126,21 +133,79 @@ export class MatrixRoomReceiverConverter {
 			inviterUsernameOnly: formatExternalUserIdToInternalUsernameFormat(externalEvent.sender),
 			eventOrigin: getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === RoomMembershipChangedEventType.LEAVE,
+			userAvatarUrl:
+				externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN ? externalEvent.content?.avatar_url : undefined,
 		});
 	}
 
-	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
+	public static toSendRoomMessageDto(
+		externalEvent: MatrixEventRoomMessageSent,
+		homeServerDomain: string,
+	): FederationRoomReceiveExternalMessageDto {
+		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
 		return new FederationRoomReceiveExternalMessageDto({
+			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: externalEvent.content?.body,
+			messageText: toInternalMessageFormat({
+				message: externalEvent.content.formatted_body || externalEvent.content.body,
+				homeServerDomain,
+				isAReplyToAMessage,
+			}),
+			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
+		});
+	}
+
+	public static toEditRoomMessageDto(
+		externalEvent: MatrixEventRoomMessageSent,
+		homeServerDomain: string,
+	): FederationRoomEditExternalMessageDto {
+		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+		return new FederationRoomEditExternalMessageDto({
+			externalEventId: externalEvent.event_id,
+			externalRoomId: externalEvent.room_id,
+			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
+			newMessageText: toInternalMessageFormat({
+				message: (externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
+				homeServerDomain,
+				isAReplyToAMessage,
+			}),
+			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
+		});
+	}
+
+	public static toSendRoomFileMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalFileMessageDto {
+		if (!externalEvent.content.url) {
+			throw new Error('Missing url in the file message');
+		}
+		if (!externalEvent.content.info?.mimetype) {
+			throw new Error('Missing mimetype in the file message info');
+		}
+		if (!externalEvent.content.info?.size) {
+			throw new Error('Missing size in the file message info');
+		}
+		return new FederationRoomReceiveExternalFileMessageDto({
+			externalEventId: externalEvent.event_id,
+			externalRoomId: externalEvent.room_id,
+			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
+			filename: externalEvent.content.body,
+			url: externalEvent.content.url,
+			mimetype: externalEvent.content.info.mimetype,
+			size: externalEvent.content.info.size,
+			messageText: externalEvent.content.body,
+			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 
 	public static toRoomChangeJoinRulesDto(externalEvent: MatrixEventRoomJoinRulesChanged): FederationRoomChangeJoinRulesDto {
 		return new FederationRoomChangeJoinRulesDto({
+			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			roomType: convertExternalJoinRuleToInternalRoomType(externalEvent.content?.join_rule),
@@ -149,6 +214,7 @@ export class MatrixRoomReceiverConverter {
 
 	public static toRoomChangeNameDto(externalEvent: MatrixEventRoomNameChanged): FederationRoomChangeNameDto {
 		return new FederationRoomChangeNameDto({
+			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
@@ -158,10 +224,21 @@ export class MatrixRoomReceiverConverter {
 
 	public static toRoomChangeTopicDto(externalEvent: MatrixEventRoomTopicChanged): FederationRoomChangeTopicDto {
 		return new FederationRoomChangeTopicDto({
+			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			roomTopic: externalEvent.content?.topic,
+		});
+	}
+
+	public static toRoomRedactEventDto(externalEvent: MatrixEventRoomRedacted): FederationRoomRedactEventDto {
+		return new FederationRoomRedactEventDto({
+			externalEventId: externalEvent.event_id,
+			externalRoomId: externalEvent.room_id,
+			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			redactsEvent: externalEvent.redacts as string,
 		});
 	}
 }

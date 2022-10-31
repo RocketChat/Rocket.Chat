@@ -7,7 +7,7 @@ import { ModalManager } from '../../components/Modal';
 import { debounce, getAvatarUrl, canRenderMessage, throttle, upsert } from '../../components/helpers';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
-import { loadConfig } from '../../lib/main';
+import { loadConfig, processUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
@@ -190,7 +190,8 @@ class ChatContainer extends Component {
 			return;
 		}
 
-		const { alerts, dispatch, room: { _id: rid } = {} } = this.props;
+		const { alerts, dispatch, room } = this.props;
+		const { _id: rid } = room || {};
 
 		await dispatch({ loading: true });
 		try {
@@ -315,7 +316,8 @@ class ChatContainer extends Component {
 
 	async componentDidMount() {
 		await this.checkConnectingAgent();
-		loadMessages();
+		await loadMessages();
+		processUnread();
 	}
 
 	async componentDidUpdate(prevProps) {
