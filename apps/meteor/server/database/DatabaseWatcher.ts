@@ -9,6 +9,10 @@ import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
 import { watchCollections } from './watchCollections';
 
+const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
+
+const maxDocMs = instancePing * 4; // 4 times the ping interval
+
 export type RealTimeData<T> = {
 	id: string;
 	action: 'insert' | 'update' | 'remove';
@@ -194,5 +198,12 @@ export class DatabaseWatcher extends EventEmitter {
 	 */
 	getLastDocDelta(): number {
 		return this.lastDocTS ? Date.now() - this.lastDocTS.getTime() : Infinity;
+	}
+
+	/**
+	 * @returns Indicates if the last document received is older than it should be. If that happens, it means that the oplog is not working properly
+	 */
+	isLastDocDelayed(): boolean {
+		return this.getLastDocDelta() > maxDocMs;
 	}
 }
