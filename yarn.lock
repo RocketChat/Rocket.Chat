@@ -6124,6 +6124,7 @@ __metadata:
     "@types/react": ~17.0.47
     "@types/react-dom": ~17.0.17
     "@types/rewire": ^2.5.28
+    "@types/sanitize-html": ^2
     "@types/semver": ^7.3.10
     "@types/sharp": ^0.30.4
     "@types/sinon": ^10.0.11
@@ -6288,6 +6289,7 @@ __metadata:
     react-virtuoso: ^1.11.1
     redis: ^4.0.6
     rewire: ^6.0.0
+    sanitize-html: ^2.7.2
     semver: ^7.3.7
     sharp: ^0.30.7
     sinon: ^14.0.0
@@ -9688,6 +9690,15 @@ __metadata:
   version: 2.5.28
   resolution: "@types/rewire@npm:2.5.28"
   checksum: c416a0f30b68c3d7aa7d67fa1297506d7ae890f831363f5e7a2ca704e0d3e2ec564efe1ce1f20a31f4f6408b3dc76a0f6ed79048ef4b7cc38905db31aeaf55df
+  languageName: node
+  linkType: hard
+
+"@types/sanitize-html@npm:^2":
+  version: 2.6.2
+  resolution: "@types/sanitize-html@npm:2.6.2"
+  dependencies:
+    htmlparser2: ^6.0.0
+  checksum: 08b43427427cbd8acd2843bbf9e00576c06e3916fc523d27fd9016f39563f7999f78b632ff473ef83a77f86bdea9286de2f81e3a8f8a05af6721687651c84f1c
   languageName: node
   linkType: hard
 
@@ -23509,7 +23520,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
+  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
   languageName: node
   linkType: hard
 
@@ -31007,6 +31018,20 @@ __metadata:
     parse-srcset: ^1.0.2
     postcss: ^8.3.11
   checksum: 73a4d66f69578bace3506519ca0734279b7117e15c33c7e4d075cdb483b1586261a18acd35934f6c6109f3b2a4a82f82c242171a94d5dc23fba5b09b01ea5b22
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:^2.7.2":
+  version: 2.7.2
+  resolution: "sanitize-html@npm:2.7.2"
+  dependencies:
+    deepmerge: ^4.2.2
+    escape-string-regexp: ^4.0.0
+    htmlparser2: ^6.0.0
+    is-plain-object: ^5.0.0
+    parse-srcset: ^1.0.2
+    postcss: ^8.3.11
+  checksum: 4c15e87a411420d670412de2beb29386c8307210c170ceb716d93b4010dcf6a8ae39408d7d863752ee84cc65f5995633c7089789c5f8c0de478a7023d93a53ec
   languageName: node
   linkType: hard
 
