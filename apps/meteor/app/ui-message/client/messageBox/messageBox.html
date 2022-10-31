@@ -32,7 +32,6 @@
 					{{> Template.dynamic template=customAction.template data=customAction.data }}
 				{{ else }}
 					{{#if canSend}}
-						{{> AudioMessageRecorder rid=rid tmid=tmid }}
 						<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true" data-qa-id="menu-more-actions">
 							{{#if actions}}
 								<span class="rc-message-box__icon">
@@ -55,7 +54,11 @@
 					</span>
 				{{/each}}
 			</span>
-
+			{{#if canSend}}
+			<div class="rc-message-box__audio-message">
+				{{> AudioMessageRecorder rid=rid tmid=tmid }}
+			</div>
+			{{/if}}
 			<span class="rc-message-box__send js-message-action js-send" disabled="{{isSendIconDisabled}}" data-small>
 				{{> icon block="rc-message-box__action" icon="send"}}
 			</span>

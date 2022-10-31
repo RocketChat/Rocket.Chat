@@ -305,6 +305,8 @@
 			border-width: 0;
 			border-top-width: 1px;
 			flex-wrap: wrap;
+
+			justify-content: center;
 		}
 
 		& [data-desktop] {
