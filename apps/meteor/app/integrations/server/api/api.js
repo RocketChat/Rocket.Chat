@@ -274,7 +274,11 @@ function executeIntegrationRest() {
 		delete this.bodyParams.channel;
 		delete this.bodyParams.roomId;
 
-		processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
+
+		if (_.isEmpty(message)) {
+			return API.v1.failure('unknown-error');
+		}
 
 		if (this.scriptResponse) {
 			incomingLogger.debug({ msg: 'response', response: this.scriptResponse });

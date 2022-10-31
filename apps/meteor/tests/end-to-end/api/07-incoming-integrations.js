@@ -200,6 +200,31 @@ describe('[Incoming Integrations]', function () {
 				})
 				.end(done);
 		});
+		it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
+			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
+			request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: successfulMesssage,
+					channel: [testChannelName],
+				})
+				.expect(200);
+
+			request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/integrations.history]', () => {
