@@ -5,6 +5,9 @@ import type { ReactElement } from 'react';
 import '@rocket.chat/icons/dist/rocketchat.css';
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageAction from './VideoConfMessageAction';
+import VideoConfMessageActions from './VideoConfMessageActions';
+import VideoConfMessageButton from './VideoConfMessageButton';
+import VideoConfMessageContent from './VideoConfMessageContent';
 import VideoConfMessageFooter from './VideoConfMessageFooter';
 import VideoConfMessageFooterText from './VideoConfMessageFooterText';
 import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
@@ -46,11 +49,16 @@ const avatarUrl =
 export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon variant='incoming' />
-			<VideoConfMessageText>Calling...</VideoConfMessageText>
+			<VideoConfMessageContent>
+				<VideoConfMessageIcon variant='incoming' />
+				<VideoConfMessageText>Calling...</VideoConfMessageText>
+			</VideoConfMessageContent>
+			<VideoConfMessageActions>
+				<VideoConfMessageAction icon='info' />
+			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
-			<VideoConfMessageAction primary>Join</VideoConfMessageAction>
+			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
 			<VideoConfMessageFooterText>Waiting for answer</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
@@ -59,11 +67,16 @@ export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
 export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon />
-			<VideoConfMessageText>Call ended</VideoConfMessageText>
+			<VideoConfMessageContent>
+				<VideoConfMessageIcon />
+				<VideoConfMessageText>Call ended</VideoConfMessageText>
+			</VideoConfMessageContent>
+			<VideoConfMessageActions>
+				<VideoConfMessageAction icon='info' />
+			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
-			<VideoConfMessageAction>Call Back</VideoConfMessageAction>
+			<VideoConfMessageButton>Call Back</VideoConfMessageButton>
 			<VideoConfMessageFooterText>Call was not answered</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
@@ -72,11 +85,16 @@ export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
 export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon variant='outgoing' />
-			<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+			<VideoConfMessageContent>
+				<VideoConfMessageIcon variant='outgoing' />
+				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+			</VideoConfMessageContent>
+			<VideoConfMessageActions>
+				<VideoConfMessageAction icon='info' />
+			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
-			<VideoConfMessageAction primary>Join</VideoConfMessageAction>
+			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
 			<VideoConfMessageUserStack>
 				{Array(3)
 					.fill('')
@@ -92,8 +110,13 @@ export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
 export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
-			<VideoConfMessageIcon />
-			<VideoConfMessageText>Call ended</VideoConfMessageText>
+			<VideoConfMessageContent>
+				<VideoConfMessageIcon />
+				<VideoConfMessageText>Call ended</VideoConfMessageText>
+			</VideoConfMessageContent>
+			<VideoConfMessageActions>
+				<VideoConfMessageAction icon='info' />
+			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
 			<VideoConfMessageUserStack>
@@ -103,6 +126,7 @@ export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 						<Avatar key={index} size='x28' url={avatarUrl} />
 					))}
 			</VideoConfMessageUserStack>
+			<VideoConfMessageFooterText>Joined</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
