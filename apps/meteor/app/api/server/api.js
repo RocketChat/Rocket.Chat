@@ -325,6 +325,7 @@ export class APIClass extends Restivus {
 		if (!_.isArray(routes)) {
 			routes = [routes];
 		}
+
 		const { version } = this._config;
 		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
@@ -334,6 +335,7 @@ export class APIClass extends Restivus {
 				apiVersion: version,
 			});
 		}
+
 		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(endpoints).forEach((method) => {
@@ -346,6 +348,7 @@ export class APIClass extends Restivus {
 					delete extraOptions.action;
 					Object.assign(_options, extraOptions);
 				}
+				
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				const api = this;
@@ -487,7 +490,6 @@ export class APIClass extends Restivus {
 					rocketchatRestApiEnd({
 						status: result.statusCode,
 					});
-
 					return result;
 				};
 
@@ -535,10 +537,12 @@ export class APIClass extends Restivus {
 			if (typeof user === 'string') {
 				auth.user = user.includes('@') ? { email: user } : { username: user };
 				usernameToLDAPLogin = user;
-			} else if (username) {
+			} 
+			else if (username) {
 				auth.user = { username };
 				usernameToLDAPLogin = username;
-			} else if (email) {
+			} 
+			else if (email) {
 				auth.user = { email };
 				usernameToLDAPLogin = email;
 			}
@@ -560,6 +564,7 @@ export class APIClass extends Restivus {
 				ldapPass: auth.password,
 				ldapOptions: {},
 			};
+
 			if (settings.get('LDAP_Enable') && !code) {
 				return objectToLDAPLogin;
 			}
@@ -819,12 +824,13 @@ const createApis = function _createApis() {
 	API.v1 = createApi(API.v1, {
 		version: 'v1',
 	});
-
 	API.default = createApi(API.default);
 };
 
+
 // also create the API immediately
 createApis();
+
 
 // register the API to be re-created once the CORS-setting changes.
 settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
