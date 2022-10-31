@@ -221,7 +221,7 @@ describe('[Incoming Integrations]', function () {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+							expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
 						})
 						.end(done);
 				});
