@@ -30949,21 +30949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:^2.6.1":
-  version: 2.7.0
-  resolution: "sanitize-html@npm:2.7.0"
-  dependencies:
-    deepmerge: ^4.2.2
-    escape-string-regexp: ^4.0.0
-    htmlparser2: ^6.0.0
-    is-plain-object: ^5.0.0
-    parse-srcset: ^1.0.2
-    postcss: ^8.3.11
-  checksum: 73a4d66f69578bace3506519ca0734279b7117e15c33c7e4d075cdb483b1586261a18acd35934f6c6109f3b2a4a82f82c242171a94d5dc23fba5b09b01ea5b22
-  languageName: node
-  linkType: hard
-
-"sanitize-html@npm:^2.7.2":
+"sanitize-html@npm:^2.6.1, sanitize-html@npm:^2.7.2":
   version: 2.7.2
   resolution: "sanitize-html@npm:2.7.2"
   dependencies:
