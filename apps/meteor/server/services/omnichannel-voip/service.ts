@@ -115,9 +115,16 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		 */
 
 		// Use latest queue caller join event
+		const numericPhone = guest?.phone?.[0]?.phoneNumber.replace(/\D/g, '');
 		const callStartPbxEvent = await PbxEvents.findOne(
 			{
-				phone: guest?.phone?.[0]?.phoneNumber,
+				$or: [
+					{
+						phone: numericPhone, // Incoming calls will have phone number (connectedlinenum) without any symbol
+					},
+					{ phone: `*${numericPhone}` }, // Outgoing calls will have phone number (connectedlinenum) with * prefix
+					{ phone: `+${numericPhone}` }, // Just in case
+				],
 				event: {
 					$in: ['QueueCallerJoin', 'DialEnd', 'DialState'],
 				},
