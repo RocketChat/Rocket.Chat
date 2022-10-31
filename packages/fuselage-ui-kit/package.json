@@ -56,10 +56,10 @@
   "devDependencies": {
     "@rocket.chat/apps-engine": "~1.30.0",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "next",
-    "@rocket.chat/fuselage-hooks": "next",
-    "@rocket.chat/fuselage-polyfills": "next",
-    "@rocket.chat/icons": "next",
+    "@rocket.chat/fuselage": "0.31.20",
+    "@rocket.chat/fuselage-hooks": "0.31.20",
+    "@rocket.chat/fuselage-polyfills": "0.31.20",
+    "@rocket.chat/icons": "0.31.20",
     "@rocket.chat/prettier-config": "next",
     "@rocket.chat/styled": "next",
     "@rocket.chat/ui-contexts": "workspace:^",
@@ -87,5 +87,9 @@
     "tslib": "^2.3.1",
     "typescript": "~4.3.5",
     "webpack": "~5.68.0"
+  },
+  "dependencies": {
+    "@rocket.chat/ui-kit": "0.31.20",
+    "tslib": "^2.3.1"
   }
 }
