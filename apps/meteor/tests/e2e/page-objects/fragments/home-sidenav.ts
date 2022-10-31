@@ -47,6 +47,14 @@ export class HomeSidenav {
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
+	async openDisplayOptions(): Promise<void> {
+		await this.page.locator('[title="Display"]').click();
+	}
+
+	async selectOrderByName(): Promise<void> {
+		await this.page.locator('text=⦇Name >> label').click();
+	}
+
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
 	async openQueuedOmnichannelChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
