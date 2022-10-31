@@ -27,7 +27,7 @@
   "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "A new owner will be assigned automatically to the <span style=\"font-weight: bold;\">__roomName__</span> room.",
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "A new owner will be assigned automatically to those <span style=\"font-weight: bold;\">__count__</span> rooms:<br/> __rooms__.",
   "A_secure_and_highly_private_self-managed_solution_for_conference_calls": "A secure and highly private self-managed solution for conference calls.",
-  "A_workspace_admin_needs_to_be_install_and_configure_a_conference_call_app.": "A workspace admin needs to be install and configure a conference call app.",
+  "A_workspace_admin_needs_to_be_install_and_configure_a_conference_call_app": "A workspace admin needs to be install and configure a conference call app.",
   "An_app_needs_to_be_installed_and_configured": "An app needs to be installed and configured",
   "Accept_Call": "Accept Call",
   "Accept": "Accept",
