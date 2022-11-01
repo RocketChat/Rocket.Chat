@@ -1,6 +1,45 @@
 
 # 5.3.0 (Under Release Candidate Process)
 
+## 5.3.0-rc.3
+`2022-10-31  ·  2 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Microphone icon alignment issue (# 27073) ([#27123](https://github.com/RocketChat/Rocket.Chat/pull/27123) by [@mani-rsg](https://github.com/mani-rsg))
+
+  Aligned microphone icon to its respective position on  screen widths <= 500 (mobile screens)
+
+  <img width="360" alt="image" src="https://user-images.githubusercontent.com/72298612/197343254-1506125f-06f4-43d1-b42b-e36071862254.png">
+  <img width="439" alt="image" src="https://user-images.githubusercontent.com/72298612/197343268-d7f0e294-4b76-4e5b-9874-0b41586b0487.png">
+
+- starting conferences with mic and cam on their default states do not sync the state with the provider ([#26966](https://github.com/RocketChat/Rocket.Chat/pull/26966))
+
+  Task: [VC-3]
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: bump fuselage packages ([#27157](https://github.com/RocketChat/Rocket.Chat/pull/27157))
+
+- Chore: bump fuselage packages ([#27122](https://github.com/RocketChat/Rocket.Chat/pull/27122))
+
+- Regression: Unify `isLastDocDelayed` logic ([#27120](https://github.com/RocketChat/Rocket.Chat/pull/27120))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mani-rsg](https://github.com/mani-rsg)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 5.3.0-rc.2
 `2022-10-20  ·  1 🎉  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 

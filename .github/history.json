@@ -95484,6 +95484,61 @@
           ]
         }
       ]
+    },
+    "5.3.0-rc.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27157",
+          "title": "Chore: bump fuselage packages",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "27122",
+          "title": "Chore: bump fuselage packages",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27123",
+          "title": "[FIX] Microphone icon alignment issue (# 27073)",
+          "userLogin": "mani-rsg",
+          "description": "Aligned microphone icon to its respective position on  screen widths <= 500 (mobile screens)\r\n\r\n<img width=\"360\" alt=\"image\" src=\"https://user-images.githubusercontent.com/72298612/197343254-1506125f-06f4-43d1-b42b-e36071862254.png\">\r\n<img width=\"439\" alt=\"image\" src=\"https://user-images.githubusercontent.com/72298612/197343268-d7f0e294-4b76-4e5b-9874-0b41586b0487.png\">",
+          "contributors": [
+            "mani-rsg"
+          ]
+        },
+        {
+          "pr": "27120",
+          "title": "Regression: Unify `isLastDocDelayed` logic",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "26966",
+          "title": "[FIX] starting conferences with mic and cam on their default states do not sync the state with the provider",
+          "userLogin": "dougfabris",
+          "description": "Task: [VC-3]",
+          "milestone": "5.4.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
