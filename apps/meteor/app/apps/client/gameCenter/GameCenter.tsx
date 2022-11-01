@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import type { ReactElement, SyntheticEvent } from 'react';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
+import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
 import { useTabBarClose } from '../../../../client/views/room/contexts/ToolboxContext';
 
 export type IGame = IExternalComponent;
@@ -24,10 +23,7 @@ const GameCenter = (): ReactElement => {
 
 	const closeTabBar = useTabBarClose();
 
-	const getGamesEndpoint = useEndpoint('GET', '/apps/externalComponents');
-	const result = useQuery(['gameCenter'], async () => {
-		return (await getGamesEndpoint()).externalComponents;
-	});
+	const result = useExternalComponentsQuery();
 
 	const handleClose = useMutableCallback((e) => {
 		prevent(e);

@@ -1,14 +1,12 @@
 import { Avatar, Icon, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
-import type { FC, ReactElement } from 'react';
-import React from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
-import { popover } from '../../../ui-utils/client';
 
 interface IGameCenterListProps {
 	handleClose: (e: any) => void;
@@ -17,24 +15,18 @@ interface IGameCenterListProps {
 	isLoading: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const useReactModal = (Component: FC<any>): ((game: IGame) => void) => {
-	const setModal = useSetModal();
-
-	return useMutableCallback((game) => {
-		popover.close();
-
-		const handleClose = (): void => {
-			setModal(null);
-		};
-
-		setModal(() => <Component onClose={handleClose} game={game} />);
-	});
-};
-
 const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGameCenterListProps): ReactElement => {
 	const t = useTranslation();
-	const handleInvitePlayer = useReactModal(GameCenterInvitePlayersModal);
+	const setModal = useSetModal();
+	const handleInvitePlayer = useCallback(
+		(game) => {
+			const handleClose = (): void => {
+				setModal(null);
+			};
+			setModal(() => <GameCenterInvitePlayersModal onClose={handleClose} game={game} />);
+		},
+		[setModal],
+	);
 
 	return (
 		<div>
@@ -57,17 +49,21 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 								</TableHead>
 								<TableBody>
 									{games.map((game, key) => (
-										<TableRow key={key} action>
+										<TableRow key={key} action onKeyDown={() => handleOpenGame(game)} onClick={() => handleOpenGame(game)}>
 											<TableCell>
-												<Avatar onKeyDown={() => handleOpenGame(game)} onClick={() => handleOpenGame(game)} url={game.icon} /> {game.name}
+												<Avatar url={game.icon} /> {game.name}
 											</TableCell>
-											<TableCell onKeyDown={() => handleOpenGame(game)} onClick={() => handleOpenGame(game)}>
-												{game.description}
-											</TableCell>
+											<TableCell>{game.description}</TableCell>
 											<TableCell>
 												<Icon
-													onKeyDown={() => handleInvitePlayer(game)}
-													onClick={() => handleInvitePlayer(game)}
+													onKeyDown={(e) => {
+														e.stopPropagation();
+														handleInvitePlayer(game);
+													}}
+													onClick={(e) => {
+														e.stopPropagation();
+														handleInvitePlayer(game);
+													}}
 													name='plus'
 													title={t('Apps_Game_Center_Invite_Friends')}
 												></Icon>
