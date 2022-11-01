@@ -8,9 +8,10 @@ import {
   VideoConfMessageIcon,
   VideoConfMessageText,
   VideoConfMessageFooter,
-  VideoConfMessageAction,
   VideoConfMessageUserStack,
   VideoConfMessageFooterText,
+  VideoConfMessageButton,
+  VideoConfMessageContent,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { useContext, memo } from 'react';
@@ -77,15 +78,17 @@ const VideoConferenceBlock = ({
       return (
         <VideoConfMessage>
           <VideoConfMessageRow>
-            <VideoConfMessageIcon />
-            <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
+            <VideoConfMessageContent>
+              <VideoConfMessageIcon />
+              <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
+            </VideoConfMessageContent>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
             {data.type === 'direct' && (
               <>
-                <VideoConfMessageAction onClick={callAgainHandler}>
+                <VideoConfMessageButton onClick={callAgainHandler}>
                   {t('Call_back')}
-                </VideoConfMessageAction>
+                </VideoConfMessageButton>
                 <VideoConfMessageFooterText>
                   {t('Call_was_not_answered')}
                 </VideoConfMessageFooterText>
@@ -128,13 +131,15 @@ const VideoConferenceBlock = ({
       return (
         <VideoConfMessage>
           <VideoConfMessageRow>
-            <VideoConfMessageIcon variant='incoming' />
-            <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
+            <VideoConfMessageContent>
+              <VideoConfMessageIcon variant='incoming' />
+              <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
+            </VideoConfMessageContent>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
-            <VideoConfMessageAction primary onClick={joinHandler}>
+            <VideoConfMessageButton primary onClick={joinHandler}>
               {t('Join')}
-            </VideoConfMessageAction>
+            </VideoConfMessageButton>
             <VideoConfMessageFooterText>
               {t('Waiting_for_answer')}
             </VideoConfMessageFooterText>
@@ -146,13 +151,15 @@ const VideoConferenceBlock = ({
     return (
       <VideoConfMessage>
         <VideoConfMessageRow>
-          <VideoConfMessageIcon variant='outgoing' />
-          <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
+          <VideoConfMessageContent>
+            <VideoConfMessageIcon variant='outgoing' />
+            <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
+          </VideoConfMessageContent>
         </VideoConfMessageRow>
         <VideoConfMessageFooter>
-          <VideoConfMessageAction primary onClick={joinHandler}>
+          <VideoConfMessageButton primary onClick={joinHandler}>
             {t('Join')}
-          </VideoConfMessageAction>
+          </VideoConfMessageButton>
           <VideoConfMessageUserStack>
             {data.users.map(({ username }, index) =>
               data.users.length <= MAX_USERS ? (
