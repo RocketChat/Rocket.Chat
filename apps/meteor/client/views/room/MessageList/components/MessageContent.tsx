@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { IMessage, isDiscussionMessage, isThreadMainMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
+import { MessageBlock } from '@rocket.chat/fuselage';
 import { useTranslation, useUserId, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
@@ -54,14 +54,13 @@ const MessageContent: FC<{
 
 	return (
 		<>
-			{!message.blocks?.length && !!message.md?.length && (
-				<MessageBody data-qa-type='message-body'>
-					{!isEncryptedMessage && <MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />}
-					{isEncryptedMessage && message.e2e === 'done' && (
+			{!message.blocks?.length && message.md?.length && (
+				<>
+					{(!isEncryptedMessage || message.e2e === 'done') && (
 						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 					)}
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
-				</MessageBody>
+				</>
 			)}
 
 			{message.blocks && (
