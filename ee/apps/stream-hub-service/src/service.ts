@@ -19,14 +19,30 @@ const PORT = process.env.PORT || 3035;
 
 	// need to import service after models are registered
 	const { StreamHub } = await import('./StreamHub');
+	const { DatabaseWatcher } = await import('../../../../apps/meteor/server/database/DatabaseWatcher');
 
-	api.registerService(new StreamHub(db));
+	const watcher = new DatabaseWatcher({ db });
+
+	api.registerService(new StreamHub(watcher));
 
 	await api.start();
 
 	polka()
 		.get('/health', async function (_req, res) {
-			await api.nodeList();
+			try {
+				await api.nodeList();
+
+				if (watcher.isLastDocDelayed()) {
+					throw new Error('not healthy');
+				}
+			} catch (err) {
+				console.error('Service not healthy', err);
+
+				res.writeHead(500);
+				res.end('not healthy');
+				return;
+			}
+
 			res.end('ok');
 		})
 		.listen(PORT);

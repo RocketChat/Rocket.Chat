@@ -49,11 +49,12 @@ export async function configureEmailInboxes(): Promise<void> {
 			},
 			{
 				deleteAfterRead: false,
-				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
-				rejectBeforeTS: emailInboxRecord._updatedAt,
+				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._createdAt]],
+				rejectBeforeTS: emailInboxRecord._createdAt,
 				markSeen: true,
 				maxRetries: emailInboxRecord.imap.maxRetries,
 			},
+			emailInboxRecord._id,
 		);
 
 		imap.on(
