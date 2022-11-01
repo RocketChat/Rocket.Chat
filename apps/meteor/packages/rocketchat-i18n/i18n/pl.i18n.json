@@ -3111,7 +3111,6 @@
   "mention-here": "Wzmianka @here",
   "mention-here_description": "Zezwolenie na użycie wzmianki @here",
   "Mentions": "Wzmianki o tobie",
-  "Mentions_unavailable_for_federation": "Wzmianki są niedostępne dla pokoi skonfederowanych",
   "Mentions_default": "Wzmianki (domyślnie)",
   "Mentions_only": "Tylko wzmianki",
   "Merge_Channels": "Scal kanały",
