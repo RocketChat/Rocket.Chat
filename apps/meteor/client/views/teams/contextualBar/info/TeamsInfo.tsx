@@ -1,25 +1,38 @@
-import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
+import { IRoom } from '@rocket.chat/core-typings';
+import { Box, Button, Callout, Option, Menu, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo, ComponentProps } from 'react';
 
 import InfoPanel from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
+import MarkdownText from '../../../../components/MarkdownText';
 import VerticalBar from '../../../../components/VerticalBar';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { useActionSpread } from '../../../hooks/useActionSpread';
+import { useActionSpread, Action } from '../../../hooks/useActionSpread';
+
+type RetentionPolicy = {
+	retentionPolicyEnabled: boolean;
+	maxAgeDefault: number;
+	retentionEnabledDefault: boolean;
+	excludePinnedDefault: boolean;
+	filesOnlyDefault: boolean;
+};
+
+type TeamsInfoProps = {
+	room: IRoom;
+	retentionPolicy: RetentionPolicy;
+	onClickHide: () => void;
+	onClickClose: () => void;
+	onClickLeave: () => void;
+	onClickEdit: () => void;
+	onClickDelete: () => void;
+	onClickViewChannels: () => void;
+	onClickConvertToChannel?: () => void;
+};
 
 const TeamsInfo = ({
-	name,
-	fname,
-	description,
-	archived,
-	broadcast,
-	announcement,
-	topic,
-	type,
-	rid,
-	icon,
-	retentionPolicy = {},
+	room,
+	retentionPolicy,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -27,7 +40,7 @@ const TeamsInfo = ({
 	onClickDelete,
 	onClickViewChannels,
 	onClickConvertToChannel,
-}) => {
+}: TeamsInfoProps): ReactElement => {
 	const t = useTranslation();
 
 	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault } = retentionPolicy;
@@ -88,14 +101,16 @@ const TeamsInfo = ({
 				key='menu'
 				maxHeight='initial'
 				secondary
-				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
+		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
+			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon as ComponentProps<typeof Icon>['name']} />
+		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
@@ -109,15 +124,15 @@ const TeamsInfo = ({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<InfoPanel flexGrow={1}>
+				<InfoPanel>
 					<InfoPanel.Avatar>
-						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type }} />
+						<RoomAvatar size={'x332'} room={room} />
 					</InfoPanel.Avatar>
 
 					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
 
 					<InfoPanel.Section>
-						{archived && (
+						{room.archived && (
 							<Box mb='x16'>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
@@ -125,11 +140,11 @@ const TeamsInfo = ({
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
-						<InfoPanel.Title title={fname || name} icon={icon} />
+						<InfoPanel.Title title={room.fname || room.name || ''} icon={'team'} />
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
-						{broadcast && broadcast !== '' && (
+						{room.broadcast && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
@@ -137,24 +152,24 @@ const TeamsInfo = ({
 							</InfoPanel.Field>
 						)}
 
-						{description && description !== '' && (
+						{room.description && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>{<MarkdownText variant='inline' content={room.description} />}</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
-						{announcement && announcement !== '' && (
+						{room.announcement && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>{<MarkdownText variant='inline' content={room.announcement} />}</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
-						{topic && topic !== '' && (
+						{room.topic && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>{<MarkdownText variant='inline' content={room.topic} />}</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
