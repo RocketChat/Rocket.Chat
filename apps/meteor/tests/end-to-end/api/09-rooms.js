@@ -1307,6 +1307,19 @@ describe('[Rooms]', function () {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 		});
+		it('should throw an error when roomId is not provided', (done) => {
+			request
+				.post(api('rooms.delete'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', "The 'roomId' param is required");
+				})
+				.end(done);
+		});
 		it('should delete a room when the request is correct', (done) => {
 			request
 				.post(api('rooms.delete'))
