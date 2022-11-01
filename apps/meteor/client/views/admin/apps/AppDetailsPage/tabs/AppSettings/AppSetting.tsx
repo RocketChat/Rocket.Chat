@@ -3,13 +3,14 @@ import { ISettingBase, SettingValue } from '@rocket.chat/core-typings';
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, ReactElement } from 'react';
 
-import MarkdownText from '../../../components/MarkdownText';
-import MemoizedSetting from '../settings/MemoizedSetting';
+import MarkdownText from '../../../../../../components/MarkdownText';
+import MemoizedSetting from '../../../../settings/MemoizedSetting';
 
 type AppTranslationFunction = {
 	(key: string, ...replaces: unknown[]): string;
 	has: (key: string | undefined) => boolean;
 };
+
 const useAppTranslation = (appId: string): AppTranslationFunction => {
 	const t = useTranslation();
 
@@ -57,7 +58,7 @@ type AppSettingProps = {
 	onChange: (value: SettingValue) => void;
 	value: SettingValue;
 };
-function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps): ReactElement {
+const AppSetting = ({ appSetting, onChange, value, ...props }: AppSettingProps): ReactElement => {
 	const appId = useRouteParameter('id');
 	const tApp = useAppTranslation(appId || '');
 
@@ -94,6 +95,6 @@ function AppSetting({ appSetting, onChange, value, ...props }: AppSettingProps):
 			{...props}
 		/>
 	);
-}
+};
 
 export default AppSetting;

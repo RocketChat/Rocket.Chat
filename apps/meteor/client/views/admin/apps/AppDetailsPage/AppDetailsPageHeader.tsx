@@ -1,15 +1,15 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement } from 'react';
 
-import AppAvatar from '../../../components/avatar/AppAvatar';
-import AppMenu from './AppMenu';
-import AppStatus from './AppStatus';
-import BundleChips from './BundleChips';
-import { App } from './types';
+import AppAvatar from '../../../../components/avatar/AppAvatar';
+import AppMenu from '../AppMenu';
+import BundleChips from '../BundleChips';
+import AppStatus from './tabs/AppStatus';
 
-const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
+const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
 	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn } = app;
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
@@ -26,9 +26,7 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 				</Box>
 				{app?.shortDescription && <Box mbe='x16'>{app.shortDescription}</Box>}
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
-					<Box display='flex' flexDirection='row' alignItems='center'>
-						<AppStatus app={app} installed={installed} isAppDetailsPage={true} isSubscribed={isSubscribed} />
-					</Box>
+					<AppStatus app={app} installed={installed} isAppDetailsPage={true} isSubscribed={isSubscribed} />
 					{(installed || isSubscribed) && <AppMenu app={app} mis='x8' />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
@@ -53,4 +51,4 @@ const AppDetailsHeader = ({ app }: { app: App }): ReactElement => {
 	);
 };
 
-export default AppDetailsHeader;
+export default AppDetailsPageHeader;
