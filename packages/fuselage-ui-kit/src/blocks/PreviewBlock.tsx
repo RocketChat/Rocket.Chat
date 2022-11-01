@@ -2,7 +2,7 @@ import {
   MessageGenericPreview,
   MessageGenericPreviewContent,
   MessageGenericPreviewDescription,
-  MessageGenericPreviewImage,
+  MessageGenericPreviewCoverImage,
   MessageGenericPreviewTitle,
   MessageGenericPreviewFooter,
   MessageGenericPreviewThumb,
@@ -28,7 +28,7 @@ const PreviewBlock = ({
   <Box>
     <MessageGenericPreview>
       {isPreviewBlockWithPreview(block) && block.preview?.dimensions && (
-        <MessageGenericPreviewImage
+        <MessageGenericPreviewCoverImage
           width={block.preview.dimensions.width}
           height={block.preview.dimensions.height}
           url={block.preview.url}
@@ -38,7 +38,7 @@ const PreviewBlock = ({
         thumb={
           isPreviewBlockWithThumb(block) ? (
             <MessageGenericPreviewThumb>
-              <MessageGenericPreviewImage
+              <MessageGenericPreviewCoverImage
                 height={192}
                 width={368}
                 url={block.thumb.url}

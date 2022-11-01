@@ -163,4 +163,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			statusText,
 		}: { statusDefault?: string; status: UserStatus; statusConnection: UserStatus; statusText?: string },
 	): Promise<UpdateResult>;
+
+	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
 }

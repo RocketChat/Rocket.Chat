@@ -3,10 +3,10 @@ import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRoute
 import React, { useMemo, useCallback, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
+import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import WarningModal from './WarningModal';
 import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError } from './helpers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
@@ -285,7 +285,7 @@ function AppMenu({ app, ...props }) {
 		t,
 		handleSubscription,
 		app.installed,
-		button.label,
+		button?.label,
 		handleAcquireApp,
 		context,
 		handleViewLogs,

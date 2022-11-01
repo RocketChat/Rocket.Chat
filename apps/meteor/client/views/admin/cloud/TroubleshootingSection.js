@@ -37,7 +37,7 @@ function TroubleshootingSection({ onRegisterStatusChange, ...props }) {
 		<Box is='section' {...props}>
 			<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
 
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>{t('Cloud_workspace_support')}</p>
 			</Box>
 
@@ -47,7 +47,7 @@ function TroubleshootingSection({ onRegisterStatusChange, ...props }) {
 				</Button>
 			</ButtonGroup>
 
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>
 					{t('Cloud_status_page_description')}:{' '}
 					<a href={statusPageUrl} target='_blank' rel='noopener noreferrer'>
