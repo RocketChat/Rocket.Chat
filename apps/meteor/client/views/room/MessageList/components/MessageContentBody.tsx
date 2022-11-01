@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, MessageBody, Palette } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -126,23 +126,21 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
 	return (
-		<MessageBody>
-			<Box className={messageBodyAdditionalStyles}>
-				<MarkupInteractionContext.Provider
-					value={{
-						detectEmoji,
-						highlightRegex,
-						resolveUserMention,
-						onUserMentionClick,
-						resolveChannelMention,
-						onChannelMentionClick,
-						convertAsciiToEmoji,
-					}}
-				>
-					<Markup tokens={md} />
-				</MarkupInteractionContext.Provider>
-			</Box>
-		</MessageBody>
+		<Box className={messageBodyAdditionalStyles}>
+			<MarkupInteractionContext.Provider
+				value={{
+					detectEmoji,
+					highlightRegex,
+					resolveUserMention,
+					onUserMentionClick,
+					resolveChannelMention,
+					onChannelMentionClick,
+					convertAsciiToEmoji,
+				}}
+			>
+				<Markup tokens={md} />
+			</MarkupInteractionContext.Provider>
+		</Box>
 	);
 };
 
