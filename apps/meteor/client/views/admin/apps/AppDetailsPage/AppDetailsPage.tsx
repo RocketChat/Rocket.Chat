@@ -1,23 +1,24 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import { App } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, FC } from 'react';
+import React, { useState, useCallback, useRef, ReactElement } from 'react';
 
-import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
-import { Apps } from '../../../../app/apps/client/orchestrator';
-import Page from '../../../components/Page';
-import AppDetails from './AppDetails';
-import AppDetailsHeader from './AppDetailsHeader';
-import AppLogs from './AppLogs';
-import AppReleases from './AppReleases';
-import AppSecurity from './AppSecurity';
-import LoadingDetails from './LoadingDetails';
-import SettingsDisplay from './SettingsDisplay';
-import { handleAPIError } from './helpers';
-import { useAppInfo } from './hooks/useAppInfo';
+import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
+import { Apps } from '../../../../../app/apps/client/orchestrator';
+import Page from '../../../../components/Page';
+import { handleAPIError } from '../helpers';
+import { useAppInfo } from '../hooks/useAppInfo';
+import AppDetailsPageHeader from './AppDetailsPageHeader';
+import AppDetailsPageLoading from './AppDetailsPageLoading';
+import AppDetails from './tabs/AppDetails';
+import AppLogs from './tabs/AppLogs';
+import AppReleases from './tabs/AppReleases';
+import AppSecurity from './tabs/AppSecurity';
+import AppSettings from './tabs/AppSettings';
 
-const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
+const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -81,11 +82,10 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow padding='x24'>
 				<Box w='full' alignSelf='center'>
-					{!appData && <LoadingDetails />}
+					{!appData && <AppDetailsPageLoading />}
 					{appData && (
 						<>
-							<AppDetailsHeader app={appData} />
-
+							<AppDetailsPageHeader app={appData} />
 							<Tabs>
 								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 									{t('Details')}
@@ -111,9 +111,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									</Tabs.Item>
 								)}
 							</Tabs>
-
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
-
 							{tab === 'security' && isSecurityVisible && (
 								<AppSecurity
 									privacyPolicySummary={privacyPolicySummary}
@@ -122,17 +120,14 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 									privacyLink={privacyLink}
 								/>
 							)}
-
 							{tab === 'releases' && <AppReleases id={id} />}
-
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
-								<SettingsDisplay
+								<AppSettings
 									settings={settings || ({} as ISettings)}
 									setHasUnsavedChanges={setHasUnsavedChanges}
 									settingsRef={settingsRef}
 								/>
 							)}
-
 							{tab === 'logs' && <AppLogs id={id} />}
 						</>
 					)}

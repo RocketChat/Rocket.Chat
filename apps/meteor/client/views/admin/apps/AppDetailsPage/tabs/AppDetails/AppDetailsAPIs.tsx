@@ -3,13 +3,13 @@ import { Box } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, Fragment } from 'react';
 
-import { apiCurlGetter } from './helpers';
+import { apiCurlGetter } from '../../../helpers';
 
-type APIsDisplayProps = {
+type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];
 };
 
-const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
+const AppDetailsAPIs: FC<AppDetailsAPIsProps> = ({ apis }) => {
 	const t = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 	const getApiCurl = apiCurlGetter(absoluteUrl);
@@ -48,4 +48,4 @@ const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {
 	);
 };
 
-export default APIsDisplay;
+export default AppDetailsAPIs;

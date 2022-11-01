@@ -2,12 +2,12 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
-import CategoryDropDown from './components/CategoryFilter/CategoryDropDown';
-import TagList from './components/CategoryFilter/TagList';
-import RadioDropDown from './components/RadioDropDown/RadioDropDown';
-import { CategoryDropdownItem, CategoryOnSelected, selectedCategoriesList } from './definitions/CategoryDropdownDefinitions';
-import { RadioDropDownGroup, RadioDropDownOnSelected } from './definitions/RadioDropDownDefinitions';
+import FilterByText from '../../../../components/FilterByText';
+import CategoryDropDown from '../components/CategoryFilter/CategoryDropDown';
+import TagList from '../components/CategoryFilter/TagList';
+import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
+import { CategoryDropdownItem, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
+import { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
 
 type AppsFiltersProps = {
 	setText: React.Dispatch<React.SetStateAction<string>> & {
