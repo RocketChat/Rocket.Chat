@@ -17,7 +17,7 @@ import AttachmentInner from './Attachment/AttachmentInner';
 const quoteStyles = css`
 	.rcx-attachment__details {
 		.rcx-message-body {
-			color: ${Palette.surface['surface-neutral']};
+			color: ${Palette.text['font-hint']};
 		}
 	}
 	&:hover,
@@ -51,7 +51,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					<AttachmentAuthor>
 						<AttachmentAuthorAvatar url={attachment.author_icon} />
 						<AttachmentAuthorName
-							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'annotation' })}
+							{...(attachment.author_name && { is: 'a', href: attachment.author_link, target: '_blank', color: 'hint' })}
 						>
 							{attachment.author_name}
 						</AttachmentAuthorName>
