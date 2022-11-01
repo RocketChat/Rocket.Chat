@@ -6,10 +6,10 @@ import React, { FC } from 'react';
 import HumanizedPermissions from '../../components/HumanizedPermissionsList';
 
 type AppSecurityProps = {
-	privacyPolicySummary: string | undefined;
-	appPermissions: AppPermission[] | undefined;
-	tosLink: string | undefined;
-	privacyLink: string | undefined;
+	privacyPolicySummary?: string;
+	appPermissions?: AppPermission[];
+	tosLink?: string;
+	privacyLink?: string;
 };
 
 const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }) => {

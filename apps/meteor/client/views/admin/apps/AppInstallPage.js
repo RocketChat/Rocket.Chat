@@ -65,21 +65,17 @@ function AppInstallPage() {
 			try {
 				await uploadUpdateApp(fileData);
 			} catch (error) {
-				let message = t('Unknown_error');
-
-				if (error instanceof Error) message = error.message;
-
-				dispatchToastMessage({ type: 'error', message });
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
 			}
 		} else {
 			try {
 				app = await uploadApp(fileData);
 			} catch (error) {
-				let message = t('Unknown_error');
-
-				if (error instanceof Error) message = error.message;
-
-				dispatchToastMessage({ type: 'error', message });
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
 			}
 		}
 
@@ -105,8 +101,8 @@ function AppInstallPage() {
 		setModal(
 			<AppPermissionsReviewModal
 				appPermissions={permissions}
-				cancel={cancelAction}
-				confirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
+				onCancel={cancelAction}
+				onConfirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
 			/>,
 		);
 	};
