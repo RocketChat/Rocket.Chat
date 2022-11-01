@@ -34,10 +34,10 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					<Callout icon='team' title={t('Jitsi_included_with_Community')}>
 						{t('Open-souce_conference_call_solution')}
 					</Callout>
-					<Callout title={t('Pexip_Enterprise_only')}>
+					<Callout icon='lightning' title={t('Pexip_Enterprise_only')}>
 						{t('A_secure_and_highly_private_self-managed_solution_for_conference_calls')}
 					</Callout>
-					<Callout title={t('Google_Meet_Enterprise_only')}>
+					<Callout icon='lightning' title={t('Google_Meet_Enterprise_only')}>
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
 				</Margins>
