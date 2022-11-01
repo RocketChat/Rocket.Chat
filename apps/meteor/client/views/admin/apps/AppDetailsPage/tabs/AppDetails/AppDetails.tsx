@@ -1,17 +1,14 @@
 import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
-import APIsDisplay from './APIsDisplay';
-import ScreenshotCarouselAnchor from './components/ScreenshotCarouselAnchor';
-import { AppInfo } from './definitions/AppInfo';
+import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
+import { AppInfo } from '../../../definitions/AppInfo';
+import AppDetailsAPIs from './AppDetailsAPIs';
 
-type AppDetailsProps = {
-	app: AppInfo;
-};
-
-const AppDetails: FC<AppDetailsProps> = ({ app }) => {
+const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
+	const t = useTranslation();
 	const {
 		author: { homepage, support },
 		detailedDescription,
@@ -20,8 +17,6 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 		screenshots,
 		apis,
 	} = app;
-
-	const t = useTranslation();
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
@@ -90,7 +85,7 @@ const AppDetails: FC<AppDetailsProps> = ({ app }) => {
 
 					{apis?.length ? (
 						<Box is='section'>
-							<APIsDisplay apis={apis || []} />
+							<AppDetailsAPIs apis={apis || []} />
 						</Box>
 					) : null}
 				</Margins>

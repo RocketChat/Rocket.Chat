@@ -3,12 +3,12 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, memo } from 'react';
 
-import { Apps } from '../../../../app/apps/client/orchestrator';
-import AppPermissionsReviewModal from './AppPermissionsReviewModal';
-import CloudLoginModal from './CloudLoginModal';
-import IframeModal from './IframeModal';
-import PriceDisplay from './PriceDisplay';
-import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from './helpers';
+import { Apps } from '../../../../../../../app/apps/client/orchestrator';
+import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
+import CloudLoginModal from '../../../CloudLoginModal';
+import IframeModal from '../../../IframeModal';
+import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from '../../../helpers';
+import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
@@ -139,8 +139,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						)}
 					</Button>
 					{shouldShowPriceDisplay && !installed && (
-						<Box>
-							<PriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
+						<Box mis='x8'>
+							<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 						</Box>
 					)}
 				</Box>
