@@ -8,7 +8,7 @@ import { callbackLogger } from '../lib/callbackLogger';
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
-		callbackLogger.debug('afterSaveMessage', message, room);
+		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
 		// check if room is livechat
 		if (!isOmnichannelRoom(room)) {
 			return message;
@@ -42,9 +42,8 @@ callbacks.add(
 		const isResponseTt = room.metrics && room.metrics.response && room.metrics.response.tt;
 		const isResponseTotal = room.metrics && room.metrics.response && room.metrics.response.total;
 
-		callbackLogger.debug({ visitorLastQuery, agentLastReply, agentJoinTime, isResponseTt, isResponseTotal });
 		if (agentLastReply === room.ts) {
-			callbackLogger.debug('afterSaveMessage: first message from agent');
+			callbackLogger.debug('Calculating: first message from agent');
 			// first response
 			const firstResponseDate = now;
 			const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
@@ -66,7 +65,7 @@ callbacks.add(
 				reactionTime,
 			};
 		} else if (visitorLastQuery > agentLastReply) {
-			callbackLogger.debug('afterSaveMessage: visitor sent a message after agent');
+			callbackLogger.debug('Calculating: visitor sent a message after agent');
 			// response, not first
 			const responseTime = (now.getTime() - visitorLastQuery) / 1000;
 			const avgResponseTime =
@@ -81,7 +80,6 @@ callbacks.add(
 			};
 		} // ignore, its continuing response
 
-		callbackLogger.debug('afterSaveMessage: analyticsData', analyticsData);
 		LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 		return message;
 	},
