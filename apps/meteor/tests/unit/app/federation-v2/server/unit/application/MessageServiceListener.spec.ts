@@ -49,6 +49,7 @@ describe('Federation - Application - FederationMessageServiceListener', () => {
 			roomAdapter as any,
 			userAdapter as any,
 			messageAdapter as any,
+			{} as any,
 			settingsAdapter as any,
 			{} as any,
 		);

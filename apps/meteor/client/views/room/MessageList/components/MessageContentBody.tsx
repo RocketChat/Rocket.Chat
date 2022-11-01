@@ -1,9 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, MessageBody } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, MessageBody, Palette } from '@rocket.chat/fuselage';
 import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement, UIEvent, useCallback, useMemo } from 'react';
 
@@ -19,7 +18,6 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 	const html = Object.values(emoji.packages)
 		.reverse()
 		.reduce((html, { render }) => render(html), text);
-
 	const div = document.createElement('div');
 	div.innerHTML = html;
 	return Array.from(div.querySelectorAll('span')).map((span) => ({
@@ -99,15 +97,15 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 			border-radius: 2px;
 			border-width: 2px;
 			border-style: solid;
-			background-color: var(--rcx-color-neutral-100, ${colors.n100});
-			border-color: var(--rcx-color-neutral-200, ${colors.n200});
-			border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+			background-color: ${Palette.surface['surface-tint']};
+			border-color: ${Palette.stroke['stroke-extra-light']};
+			border-inline-start-color: ${Palette.stroke['stroke-medium']};
 
 			&:hover,
 			&:focus {
-				background-color: var(--rcx-color-neutral-200, ${colors.n200});
-				border-color: var(--rcx-color-neutral-300, ${colors.n300});
-				border-inline-start-color: var(--rcx-color-neutral-600, ${colors.n600});
+				background-color: ${Palette.surface['surface-hover']};
+				border-color: ${Palette.stroke['stroke-light']};
+				border-inline-start-color: ${Palette.stroke['stroke-medium']};
 			}
 		}
 		> ul.task-list {
@@ -125,6 +123,8 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 		}
 	`;
 
+	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
+
 	return (
 		<MessageBody>
 			<Box className={messageBodyAdditionalStyles}>
@@ -136,6 +136,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 						onUserMentionClick,
 						resolveChannelMention,
 						onChannelMentionClick,
+						convertAsciiToEmoji,
 					}}
 				>
 					<Markup tokens={md} />
