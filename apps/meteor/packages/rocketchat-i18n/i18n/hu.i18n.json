@@ -1557,8 +1557,6 @@
   "error-you-are-last-owner": "Te vagy az utolsó tulajdonos. Kérjük, állítsd be az új tulajdonost, mielőtt elhagyod a szobát.",
   "Errors_and_Warnings": "Hibák és figyelmeztetések",
   "Esc_to": "Esc, hogy",
-  "Estimated_due_time": "Becsült esedékességi idő",
-  "Estimated_due_time_in_minutes": "Becsült esedékességi idő (percben kifejezve)",
   "Event_Trigger": "Esemény trigger",
   "Event_Trigger_Description": "Válassza ki, hogy az esemény típusa melyik kimenő webhook integrációt fogja indítani",
   "every_5_minutes": "5 percenként",
