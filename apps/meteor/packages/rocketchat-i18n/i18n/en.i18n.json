@@ -5400,6 +5400,7 @@
   "registration.page.emailVerification.subTitle": "This server requires verified email addresses. Please check your email inbox for a verification link.",
   "registration.page.emailVerification.sent": "Verification email sent, please check your inbox.",
   "registration.page.resetPassword.sent": "If this email is registered, we'll send instructions on how to reset your password. If you do not receive an email shortly, please come back and try again.",
+  "registration.page.poweredBy": "Powered by <1>RocketChat</1>",
   "registration.component.welcome": "Welcome to <1>Rocket.chat</1>",
   "registration.component.login": "Login",
   "registration.component.switchLanguage": "Switch to <1>en</1>",

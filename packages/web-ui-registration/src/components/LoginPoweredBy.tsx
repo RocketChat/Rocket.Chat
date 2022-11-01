@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 export const LoginPoweredBy = (): ReactElement => (
-	<Trans i18nKey='registration.page.register.back'>
-		Powered by{' '}
+	<Trans i18nKey='registration.page.poweredBy'>
+		Powered by
 		<Link href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
 			Rocket.Chat
 		</Link>

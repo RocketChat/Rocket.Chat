@@ -73,7 +73,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 						onBackToLogin();
 					}}
 				>
-					Back to login
+					{t('registration.page.register.back')}
 				</ActionLink>
 			</Form.Footer>
 		</Form>
