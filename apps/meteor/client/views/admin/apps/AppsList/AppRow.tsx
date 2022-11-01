@@ -4,14 +4,16 @@ import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
+import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 
-const AppRow: FC<App> = (props) => {
+type AppRowProps = App & { isMarketplace: boolean };
+
+const AppRow = (props: AppRowProps): ReactElement => {
 	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, bundledIn } = props;
 
 	const breakpoints = useBreakpoints();
