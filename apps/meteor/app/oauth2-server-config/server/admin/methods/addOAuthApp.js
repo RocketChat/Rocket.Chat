@@ -1,15 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
-import { OAuthApps } from '@rocket.chat/models';
+import { OAuthApps, Users } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization/server';
-import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
-export async function addOAuthApp(application) {
-	if (!hasPermission(this.userId, 'manage-oauth-apps')) {
+export async function addOAuthApp(application, uid) {
+	if (!hasPermission(uid, 'manage-oauth-apps')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 	}
 	if (!_.isString(application.name) || application.name.trim() === '') {
@@ -37,7 +36,7 @@ export async function addOAuthApp(application) {
 	application.clientId = Random.id();
 	application.clientSecret = Random.secret();
 	application._createdAt = new Date();
-	application._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+	application._createdBy = await Users.findOne(uid, { projection: { username: 1 } });
 	application._id = (await OAuthApps.insertOne(application)).insertedId;
 	return application;
 }
@@ -46,6 +45,6 @@ Meteor.methods({
 	async addOAuthApp(application) {
 		methodDeprecationLogger.warn('addOAuthApp is deprecated and will be removed in future versions of Rocket.Chat');
 
-		return addOAuthApp(application);
+		return addOAuthApp(application, this.userId);
 	},
 });

@@ -51,7 +51,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const application = await addOAuthApp(this.bodyParams);
+			const application = await addOAuthApp(this.bodyParams, this.userId);
 
 			return API.v1.success({ application });
 		},
