@@ -1,3 +1,4 @@
+import faker from '@faker-js/faker';
 import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
@@ -154,6 +155,35 @@ export const makeAgentAvailable = (overrideCredentials?: { 'X-Auth-Token': strin
 		});
 	});
 
+export const makeAgentUnavailable = (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<unknown> =>
+	new Promise((resolve, reject) => {
+		request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
+			message: '',
+			status: 'offline',
+		}).end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
+			if (err) {
+				return reject(err);
+			}
+			request
+			.post(methodCall('livechat/changeLivechatStatus'))
+			.set(overrideCredentials || credentials)
+			.send({
+				message: JSON.stringify({
+					method: 'livechat/changeLivechatStatus',
+					params: ['not-available'],
+					id: 'id',
+					msg: 'method',
+				}),
+			})
+			.end((err: Error, res: DummyResponse<unknown, 'unwrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body);
+			});
+		});
+	});
+
 
 export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve /* , reject*/) => {
@@ -188,6 +218,29 @@ export const sendMessage = (roomId: string, message: string, visitorToken: strin
 	});
 }
 
+// Sends a message using sendMessage method from agent
+export const sendAgentMessage = (roomId: string): Promise<IMessage> => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(methodCall('sendMessage'))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					method: 'sendMessage',
+					params: [{ rid: roomId, msg: faker.lorem.sentence() }],
+					id: 'id',
+					msg: 'method',
+				}),
+			})
+			.end((err: Error, res: DummyResponse<IMessage, 'wrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.result);
+			});
+	});
+}
+
 export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMessage[]> => {
 	return new Promise((resolve, reject) => {
 		request
@@ -203,4 +256,27 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 				resolve(res.body.messages);
 			});
 	});
-} 
+}
+
+// Closes room using methodCall
+export const closeRoom = (roomId: string): Promise<boolean> => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(methodCall('livechat:closeRoom'))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					method: 'livechat:closeRoom',
+					params: [roomId, faker.lorem.sentence(), { clientAction: true}],
+					id: 'id',
+					msg: 'method',
+				}),
+			})
+			.end((err: Error, res: DummyResponse<boolean, 'wrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.result);
+			});
+	});
+}
