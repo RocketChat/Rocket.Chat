@@ -2,16 +2,16 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
+import { useHighlightedCode } from '../../../../../../hooks/useHighlightedCode';
 
-type LogEntryProps = {
+type AppLogsItemEntryProps = {
 	severity: string;
 	timestamp: string;
 	caller: string;
 	args: unknown;
 };
 
-const LogEntry: FC<LogEntryProps> = ({ severity, timestamp, caller, args }) => {
+const AppLogsItemEntry: FC<AppLogsItemEntryProps> = ({ severity, timestamp, caller, args }) => {
 	const t = useTranslation();
 
 	return (
@@ -32,4 +32,4 @@ const LogEntry: FC<LogEntryProps> = ({ severity, timestamp, caller, args }) => {
 	);
 };
 
-export default LogEntry;
+export default AppLogsItemEntry;

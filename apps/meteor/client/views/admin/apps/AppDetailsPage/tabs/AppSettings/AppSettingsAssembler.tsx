@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import React, { ReactElement } from 'react';
 
-import { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
+import { ISettings } from '../../../../../../../app/apps/client/@types/IOrchestrator';
 import AppSetting from './AppSetting';
 
 type AppSettingsAssemblerProps = {
