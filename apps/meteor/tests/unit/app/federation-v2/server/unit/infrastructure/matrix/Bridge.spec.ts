@@ -1,10 +1,16 @@
+/* eslint-disable import/first */
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 
-import { MatrixBridge } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
+const { MatrixBridge } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge', {
+	'meteor/fetch': {
+		'@global': true,
+	},
+});
 
 describe('Federation - Infrastructure - Matrix - Bridge', () => {
 	const defaultProxyDomain = 'server.com';
-	const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => {}); // eslint-disable-line
+	const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => { }); // eslint-disable-line
 
 	describe('#isUserIdFromTheSameHomeserver()', () => {
 		it('should return true if the userId is from the same homeserver', () => {

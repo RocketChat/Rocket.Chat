@@ -34,9 +34,6 @@ export class NetworkBroker implements IBroker {
 		this.broker = broker;
 
 		this.metrics = broker.metrics;
-
-		// TODO move this to a proper startup method?
-		this.started = this.broker.start();
 	}
 
 	async call(method: string, data: any): Promise<any> {
@@ -85,11 +82,6 @@ export class NetworkBroker implements IBroker {
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
 		).filter((name) => name !== 'constructor');
 
-		const instanceEvents = instance.getEvents();
-		if (!instanceEvents && !methods.length) {
-			return;
-		}
-
 		const serviceInstance = instance as any;
 
 		const name = instance.getName();
@@ -97,12 +89,17 @@ export class NetworkBroker implements IBroker {
 		if (!instance.isInternal()) {
 			instance.onEvent('shutdown', async (services) => {
 				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.debug({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
+					this.broker.logger.info({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
 					return;
 				}
 				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
 				this.destroyService(instance);
 			});
+		}
+
+		const instanceEvents = instance.getEvents();
+		if (!instanceEvents && !methods.length) {
+			return;
 		}
 
 		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
@@ -184,5 +181,9 @@ export class NetworkBroker implements IBroker {
 
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
+	}
+
+	async start(): Promise<void> {
+		this.started = this.broker.start();
 	}
 }

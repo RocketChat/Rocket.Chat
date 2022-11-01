@@ -6,9 +6,11 @@ import type { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
 import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
 import type { MatrixEventRoomJoinRulesChanged } from '../definitions/events/RoomJoinRulesChanged';
 import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
-import type { MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
+import type { IMatrixEventContentRoomMessageSent, MatrixEventRoomMessageSent } from '../definitions/events/RoomMessageSent';
+import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from '../definitions/events/RoomMessageSent';
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import { MatrixEventType } from '../definitions/MatrixEventType';
+import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
 
 export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_CREATED;
@@ -39,12 +41,53 @@ export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_MESSAGE_SENT;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceListener, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
 		super();
 	}
 
+	private executeTextMessageHandler(eventContent: IMatrixEventContentRoomMessageSent, externalEvent: MatrixEventRoomMessageSent): any {
+		const isAnEditionEvent =
+			eventContent['m.new_content'] &&
+			eventContent['m.relates_to'] &&
+			eventContent['m.relates_to'].rel_type === MatrixEnumRelatesToRelType.REPLACE;
+		return isAnEditionEvent
+			? this.roomService.onExternalMessageEditedReceived(
+					MatrixRoomReceiverConverter.toEditRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			  )
+			: this.roomService.onExternalMessageReceived(
+					MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			  );
+	}
+
 	public async handle(externalEvent: MatrixEventRoomMessageSent): Promise<void> {
-		await this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
+		const handlers = {
+			[MatrixEnumSendMessageType.TEXT]: () => this.executeTextMessageHandler(externalEvent.content, externalEvent),
+			[MatrixEnumSendMessageType.AUDIO]: () =>
+				this.roomService.onExternalFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.FILE]: () =>
+				this.roomService.onExternalFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.IMAGE]: () =>
+				this.roomService.onExternalFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.NOTICE]: () =>
+				this.roomService.onExternalMessageReceived(
+					MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+				),
+			[MatrixEnumSendMessageType.VIDEO]: () =>
+				this.roomService.onExternalFileMessageReceived(MatrixRoomReceiverConverter.toSendRoomFileMessageDto(externalEvent)),
+			[MatrixEnumSendMessageType.EMOTE]: () =>
+				this.roomService.onExternalMessageReceived(
+					MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+				),
+			[MatrixEnumSendMessageType.LOCATION]: () => {
+				throw new Error('Location events are not supported yet');
+			},
+		};
+		const defaultHandler = () =>
+			this.roomService.onExternalMessageReceived(
+				MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
+			);
+
+		await (handlers[externalEvent.content.msgtype as MatrixEnumSendMessageType] || defaultHandler)();
 	}
 }
 
@@ -81,5 +124,17 @@ export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandler {
 
 	public async handle(externalEvent: MatrixEventRoomTopicChanged): Promise<void> {
 		await this.roomService.onChangeRoomTopic(MatrixRoomReceiverConverter.toRoomChangeTopicDto(externalEvent));
+	}
+}
+
+export class MatrixRoomEventRedactedHandler extends MatrixBaseEventHandler {
+	public eventType: string = MatrixEventType.ROOM_EVENT_REDACTED;
+
+	constructor(private roomService: FederationRoomServiceListener) {
+		super();
+	}
+
+	public async handle(externalEvent: MatrixEventRoomRedacted): Promise<void> {
+		await this.roomService.onRedactEvent(MatrixRoomReceiverConverter.toRoomRedactEventDto(externalEvent));
 	}
 }
