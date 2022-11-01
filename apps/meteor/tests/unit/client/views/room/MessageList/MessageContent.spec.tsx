@@ -63,6 +63,13 @@ describe('MessageContent', () => {
 		expect(screen.getByText(baseMessage.msg)).to.exist;
 	});
 
+	it('should render the message when has an empty message blocks', () => {
+		const message = { ...baseMessage, blocks: [] };
+		render(<MessageContent message={message} sequential={false} id={''} />);
+
+		expect(screen.getByText(baseMessage.msg)).to.exist;
+	});
+
 	it('should render the message when replies is undefined', () => {
 		render(<MessageContent message={{ ...baseMessage, replies: undefined, tcount: 0, tlm: date }} sequential={false} id={''} />);
 

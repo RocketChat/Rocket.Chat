@@ -45,7 +45,7 @@ const updateCollection = (inquiry) => {
 };
 
 const getInquiriesFromAPI = async () => {
-	const { inquiries } = await APIClient.get('/v1/livechat/inquiries.queuedForUser?sort={"ts": 1}');
+	const { inquiries } = await APIClient.get('/v1/livechat/inquiries.queuedForUser', { sort: JSON.stringify({ ts: 1 }) });
 	return inquiries;
 };
 

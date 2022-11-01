@@ -6,9 +6,16 @@ import { hasPermission } from '../../../authorization';
 import { LivechatRooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
+/**
+ * @deprecated Will be removed in future versions.
+ */
 Meteor.methods({
 	async 'livechat:saveInfo'(guestData, roomData) {
+		methodDeprecationLogger.warn(
+			'livechat:saveInfo method will be deprecated in future versions of Rocket.Chat. Use "livechat/room.saveInfo" endpoint instead.',
+		);
 		const userId = Meteor.userId();
 
 		if (!userId || !hasPermission(userId, 'view-l-room')) {
