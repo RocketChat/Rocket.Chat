@@ -49,8 +49,8 @@ function ThreadListMessage({
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
-		<Box className={[className, !following && followStyle].flat()} pb='x8'>
-			<Message {...props}>
+		<Box className={[className, !following && followStyle].flat()}>
+			<Box is={Message} pbs='x16' {...props}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>
@@ -95,7 +95,7 @@ function ThreadListMessage({
 						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
 					</Box>
 				</Message.ContainerFixed>
-			</Message>
+			</Box>
 		</Box>
 	);
 }
