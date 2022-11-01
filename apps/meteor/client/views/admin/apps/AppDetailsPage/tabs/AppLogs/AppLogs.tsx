@@ -2,10 +2,10 @@ import { Accordion, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import AccordionLoading from './AccordionLoading';
-import LogItem from './LogItem';
-import { useLogs } from './hooks/useLogs';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
+import AccordionLoading from '../../../AccordionLoading';
+import { useLogs } from '../../../hooks/useLogs';
+import AppLogsItem from './AppLogsItem';
 
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const t = useTranslation();
@@ -23,7 +23,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			{isSuccess && (
 				<Accordion width='100%' alignSelf='center'>
 					{data?.logs?.map((log) => (
-						<LogItem
+						<AppLogsItem
 							key={log._createdAt}
 							title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
 							instanceId={log.instanceId}

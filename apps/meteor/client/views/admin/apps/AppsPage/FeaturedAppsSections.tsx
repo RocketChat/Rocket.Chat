@@ -2,9 +2,9 @@ import { App } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import AppsList from './AppsList';
-import normalizeFeaturedApps from './helpers/normalizeFeaturedApps';
-import { useFeaturedApps } from './hooks/useFeaturedApps';
+import AppsList from '../AppsList';
+import normalizeFeaturedApps from '../helpers/normalizeFeaturedApps';
+import { useFeaturedApps } from '../hooks/useFeaturedApps';
 
 type FeaturedSectionsProps = {
 	appsResult: App[];

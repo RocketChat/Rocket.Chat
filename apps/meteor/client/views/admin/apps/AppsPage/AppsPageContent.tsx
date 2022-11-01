@@ -3,21 +3,21 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useState } from 'react';
 
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { AsyncStatePhase } from '../../../lib/asyncState';
-import { useAppsReload, useAppsResult } from './AppsContext';
+import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+import { AsyncStatePhase } from '../../../../lib/asyncState';
+import { useAppsReload, useAppsResult } from '../AppsContext';
+import AppsList from '../AppsList';
+import { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+import { useCategories } from '../hooks/useCategories';
+import { useFilteredApps } from '../hooks/useFilteredApps';
+import { useRadioToggle } from '../hooks/useRadioToggle';
 import AppsFilters from './AppsFilters';
-import AppsList from './AppsList';
+import AppsPageConnectionError from './AppsPageConnectionError';
 import AppsPageContentSkeleton from './AppsPageContentSkeleton';
-import ConnectionErrorEmptyState from './ConnectionErrorEmptyState';
 import FeaturedAppsSections from './FeaturedAppsSections';
 import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
 import NoInstalledAppsFoundEmptyState from './NoInstalledAppsFoundEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
-import { RadioDropDownGroup } from './definitions/RadioDropDownDefinitions';
-import { useCategories } from './hooks/useCategories';
-import { useFilteredApps } from './hooks/useFilteredApps';
-import { useRadioToggle } from './hooks/useRadioToggle';
 
 const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactElement => {
 	const t = useTranslation();
@@ -134,7 +134,7 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 				/>
 			)}
 			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={(): void => marketplaceRoute.push({ context: '' })} />}
-			{appsResult.phase === AsyncStatePhase.REJECTED && <ConnectionErrorEmptyState onButtonClick={reload} />}
+			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
 };
