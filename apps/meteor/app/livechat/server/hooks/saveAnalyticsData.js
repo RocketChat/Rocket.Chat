@@ -3,10 +3,12 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms } from '../../../models/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
+import { callbackLogger } from '../lib/callbackLogger';
 
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
+		callbackLogger.debug('afterSaveMessage', message, room);
 		// check if room is livechat
 		if (!isOmnichannelRoom(room)) {
 			return message;
@@ -19,6 +21,10 @@ callbacks.add(
 
 		// if the message has a token, it was sent by the visitor
 		if (message.token) {
+			// When visitor sends a mesage, most metrics wont be calculated/served.
+			// But, v.lq (last query) will be updated to the message time. This has to be done
+			// As not doing it will cause the metrics to be crazy and not have real values.
+			LivechatRooms.saveAnalyticsDataByRoomId(room, message);
 			return message;
 		}
 
@@ -36,7 +42,9 @@ callbacks.add(
 		const isResponseTt = room.metrics && room.metrics.response && room.metrics.response.tt;
 		const isResponseTotal = room.metrics && room.metrics.response && room.metrics.response.total;
 
+		callbackLogger.debug({ visitorLastQuery, agentLastReply, agentJoinTime, isResponseTt, isResponseTotal });
 		if (agentLastReply === room.ts) {
+			callbackLogger.debug('afterSaveMessage: first message from agent');
 			// first response
 			const firstResponseDate = now;
 			const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
@@ -58,6 +66,7 @@ callbacks.add(
 				reactionTime,
 			};
 		} else if (visitorLastQuery > agentLastReply) {
+			callbackLogger.debug('afterSaveMessage: visitor sent a message after agent');
 			// response, not first
 			const responseTime = (now.getTime() - visitorLastQuery) / 1000;
 			const avgResponseTime =
@@ -72,6 +81,7 @@ callbacks.add(
 			};
 		} // ignore, its continuing response
 
+		callbackLogger.debug('afterSaveMessage: analyticsData', analyticsData);
 		LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 		return message;
 	},
