@@ -12,6 +12,8 @@ import {
   VideoConfMessageFooterText,
   VideoConfMessageButton,
   VideoConfMessageContent,
+  VideoConfMessageActions,
+  VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { useContext, memo } from 'react';
@@ -71,6 +73,19 @@ const VideoConferenceBlock = ({
     );
   };
 
+  const openCallInfo: MouseEventHandler<HTMLButtonElement> = (e) => {
+    action(
+      {
+        blockId: rid || '',
+        appId,
+        actionId: 'info',
+        value: rid || '',
+        viewId,
+      },
+      e
+    );
+  };
+
   if (result.isSuccess) {
     const { data } = result;
 
@@ -82,6 +97,9 @@ const VideoConferenceBlock = ({
               <VideoConfMessageIcon />
               <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
             </VideoConfMessageContent>
+            <VideoConfMessageActions>
+              <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+            </VideoConfMessageActions>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
             {data.type === 'direct' && (
@@ -135,6 +153,9 @@ const VideoConferenceBlock = ({
               <VideoConfMessageIcon variant='incoming' />
               <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
             </VideoConfMessageContent>
+            <VideoConfMessageActions>
+              <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+            </VideoConfMessageActions>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
             <VideoConfMessageButton primary onClick={joinHandler}>
@@ -155,6 +176,9 @@ const VideoConferenceBlock = ({
             <VideoConfMessageIcon variant='outgoing' />
             <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
           </VideoConfMessageContent>
+          <VideoConfMessageActions>
+            <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+          </VideoConfMessageActions>
         </VideoConfMessageRow>
         <VideoConfMessageFooter>
           <VideoConfMessageButton primary onClick={joinHandler}>
