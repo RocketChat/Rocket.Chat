@@ -1,3 +1,4 @@
+import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
@@ -5,13 +6,15 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
 
-import AppAvatar from '../../../components/avatar/AppAvatar';
-import AppMenu from './AppMenu';
-import AppStatus from './AppStatus';
-import BundleChips from './BundleChips';
-import { App } from './types';
+import AppAvatar from '../../../../components/avatar/AppAvatar';
+import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
+import AppMenu from '../AppMenu';
+import BundleChips from '../BundleChips';
 
-const AppRow: FC<App & { isMarketplace: boolean }> = (props) => {
+type AppRowProps = App & { isMarketplace: boolean };
+
+// TODO: org props
+const AppRow: FC<AppRowProps> = (props) => {
 	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
 		props;
 

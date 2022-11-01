@@ -2,7 +2,7 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, St
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-const ConnectionErrorEmptyState = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
+const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
 	const t = useTranslation();
 
 	return (
@@ -22,4 +22,4 @@ const ConnectionErrorEmptyState = ({ onButtonClick }: { onButtonClick: () => voi
 	);
 };
 
-export default ConnectionErrorEmptyState;
+export default AppsPageContentError;
