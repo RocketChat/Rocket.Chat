@@ -8,7 +8,7 @@ export class VideoConfModule implements IUiKitCoreApp {
 		const {
 			triggerId,
 			actionId,
-			payload: { blockId: callId, id },
+			payload: { blockId: callId },
 			user: { _id: userId },
 		} = payload;
 
@@ -24,7 +24,7 @@ export class VideoConfModule implements IUiKitCoreApp {
 				view: {
 					appId: this.appId,
 					type: 'modal',
-					id,
+					id: `${callId}-info`,
 					title: {
 						type: 'plain_text',
 						text: 'We_appreciate_your_feedback',
@@ -54,14 +54,9 @@ export class VideoConfModule implements IUiKitCoreApp {
 							type: 'actions',
 							elements: [
 								{
-									type: 'linear_scale',
-									initialValue: 'score',
-									actionId: 'nps-score',
-									preLabel: { type: 'plain_text', text: 'Not_likely' },
-									postLabel: {
-										type: 'plain_text',
-										text: 'Extremely_likely',
-									},
+									type: 'plain_text',
+									text: 'Send',
+									emoji: false,
 								},
 							],
 							label: {
