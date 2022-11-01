@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, FC } from 'react';
 
@@ -16,7 +15,7 @@ const Load: FC<LoadProps> = ({ load, ...props }) => {
 
 		&:hover,
 		&:focus {
-			background: var(--rxc-color-neutral-300, ${colors.n300}) !important;
+			background: ${Palette.surface['surface-hover']};
 		}
 	`;
 	return (
