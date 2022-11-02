@@ -140,6 +140,41 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+		it('chunked upload to room', (done) => {
+			updateSetting('FileUpload_Chunked_Enabled', true).then(() => {
+				updateSetting('FileUpload_Chunked_MaxSize', 2.5e7).then(() => {
+					request
+						.post(api(`rooms.upload/${testChannel._id}`))
+						.set(credentials)
+						.set({ 'Content-Range': 'bytes 0-25000000/50000000' })
+						.attach('file', new Buffer(2.5e7), { filename: 'too-large-entity.bin', contentType: 'application/octet-stream' })
+						.expect('Content-Type', 'application/json')
+						.expect(202)
+						.expect((res) => {
+							expect(res.body).to.have.property('message', 'chunk received');
+						})
+						.end(() => {
+							request
+								.post(api(`rooms.upload/${testChannel._id}`))
+								.set(credentials)
+								.set({ 'Content-Range': 'bytes 25000000-50000000/50000000' })
+								.attach('file', new Buffer(2.5e7), { filename: 'too-large-entity.bin', contentType: 'application/octet-stream' })
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									const { message } = res.body;
+
+									expect(res.body).to.have.property('success', true);
+									expect(res.body).to.have.nested.property('message._id', message._id);
+									expect(res.body).to.have.nested.property('message.rid', testChannel._id);
+									expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+									expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+								})
+								.end(done);
+						});
+				});
+			});
+		});
 	});
 
 	describe('/rooms.favorite', () => {
