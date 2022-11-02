@@ -29,11 +29,11 @@ export class FederationRoomServiceListener extends FederationService {
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
-		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalFileAdapter: RocketChatFileAdapter,
+		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected bridge: IFederationBridge,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async onCreateRoom(roomCreateInput: FederationRoomCreateInputDto): Promise<void> {
@@ -92,12 +92,19 @@ export class FederationRoomServiceListener extends FederationService {
 			eventOrigin,
 			roomType,
 			leave,
+			userAvatarUrl,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 
+		if (userAvatarUrl) {
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
+			federatedUser && (await this.updateUserAvatarInternally(federatedUser));
+			return;
+		}
+
 		if (wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
-			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
+			return;
 		}
 
 		const isInviterFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
@@ -152,7 +159,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
 		if (!federatedRoom) {
-			throw new Error(`Could not find room with external room id: ${externalRoomId}`);
+			return;
 		}
 
 		if (leave) {
@@ -186,7 +193,7 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageText, externalEventId } = roomReceiveExternalMessageInput;
+		const { externalRoomId, externalSenderId, messageText, externalEventId, replyToEventId } = roomReceiveExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -195,6 +202,26 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
 		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
+			return;
+		}
+
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendQuoteMessage(
+				senderUser,
+				federatedRoom,
+				messageText,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+			);
 			return;
 		}
 
@@ -227,7 +254,7 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalFileMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageBody, externalEventId } = roomReceiveExternalMessageInput;
+		const { externalRoomId, externalSenderId, messageBody, externalEventId, replyToEventId } = roomReceiveExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -236,6 +263,10 @@ export class FederationRoomServiceListener extends FederationService {
 
 		const senderUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
 		if (!senderUser) {
+			return;
+		}
+		const message = await this.internalMessageAdapter.getMessageByFederationId(externalEventId);
+		if (message) {
 			return;
 		}
 		const fileDetails = {
@@ -252,6 +283,23 @@ export class FederationRoomServiceListener extends FederationService {
 			senderUser.getInternalReference(),
 			fileDetails,
 		);
+
+		if (replyToEventId) {
+			const messageToReplyTo = await this.internalMessageAdapter.getMessageByFederationId(replyToEventId);
+			if (!messageToReplyTo) {
+				return;
+			}
+			await this.internalMessageAdapter.sendQuoteFileMessage(
+				senderUser,
+				federatedRoom,
+				files,
+				attachments,
+				externalEventId,
+				messageToReplyTo,
+				this.internalHomeServerDomain,
+			);
+			return;
+		}
 
 		await this.internalMessageAdapter.sendFileMessage(senderUser, federatedRoom, files, attachments, externalEventId);
 	}
