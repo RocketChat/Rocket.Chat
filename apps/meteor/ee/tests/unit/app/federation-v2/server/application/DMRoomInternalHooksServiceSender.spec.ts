@@ -26,7 +26,7 @@ const { FederatedUserEE } = proxyquire.noCallThru().load('../../../../../../app/
 });
 const { FederationDMRoomInternalHooksServiceSender } = proxyquire
 	.noCallThru()
-	.load('../../../../../../app/federation-v2/server/application/sender/DMRoomInternalHooksServiceSender', {
+	.load('../../../../../../app/federation-v2/server/application/sender/room/DMRoomInternalHooksServiceSender', {
 		mongodb: {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -44,11 +44,13 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
 		getFederatedUserByInternalUsername: sinon.stub(),
 		createLocalUser: sinon.stub(),
+		getInternalUserByUsername: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -68,7 +70,13 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 	];
 
 	beforeEach(() => {
-		service = new FederationDMRoomInternalHooksServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationDMRoomInternalHooksServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			{} as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -78,7 +86,9 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createLocalUser.reset();
+		userAdapter.getInternalUserByUsername.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();
 		bridge.createDirectMessageRoom.reset();
@@ -121,7 +131,6 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 				username: 'username',
 				existsOnlyOnProxyServer: true,
 			});
-			console.log({ inviter });
 			expect(bridge.createUser.calledWith('username', 'name', 'localDomain')).to.be.true;
 			expect(userAdapter.createFederatedUser.calledWith(inviter)).to.be.true;
 		});

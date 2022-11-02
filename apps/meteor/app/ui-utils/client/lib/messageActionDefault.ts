@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -78,7 +79,7 @@ Meteor.startup(async function () {
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const { input } = getChatMessagesFrom(message);
@@ -150,7 +151,7 @@ Meteor.startup(async function () {
 		id: 'edit-message',
 		icon: 'edit',
 		label: 'Edit',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
@@ -159,9 +160,12 @@ Meteor.startup(async function () {
 			}
 			getChatMessagesFrom(message).edit(element);
 		},
-		condition({ message, subscription, settings }) {
+		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
 				return false;
+			}
+			if (isRoomFederated(room)) {
+				return message.u._id === Meteor.userId();
 			}
 			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.Message_AllowEditing;
@@ -191,7 +195,7 @@ Meteor.startup(async function () {
 		id: 'delete-message',
 		icon: 'trash',
 		label: 'Delete',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
@@ -200,6 +204,9 @@ Meteor.startup(async function () {
 		condition({ message, subscription, room }) {
 			if (!subscription) {
 				return false;
+			}
+			if (isRoomFederated(room)) {
+				return message.u._id === Meteor.userId();
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {

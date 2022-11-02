@@ -15,18 +15,16 @@ export const createReactiveSubscriptionFactory =
 
 		const reactiveFn = (): void => {
 			currentValue = computeCurrentValueWith(...args);
-			callbacks.forEach((callback) => {
-				queueMicrotask(callback);
+			queueMicrotask(() => {
+				callbacks.forEach((callback) => {
+					callback();
+				});
 			});
 		};
 
 		let computation: Tracker.Computation | undefined;
 
 		queueMicrotask(() => {
-			if (Tracker.currentComputation) {
-				throw new Error('Cannot call createReactiveSubscriptionFactory inside a Tracker computation');
-			}
-
 			computation = Tracker.autorun(reactiveFn);
 		});
 

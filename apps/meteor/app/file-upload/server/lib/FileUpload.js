@@ -292,6 +292,10 @@ export const FileUpload = {
 		return result;
 	},
 
+	async extractMetadata(file) {
+		return sharp(FileUpload.getBufferSync(file)).metadata();
+	},
+
 	createImageThumbnail(file) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;

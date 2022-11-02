@@ -25,7 +25,6 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
-import './messageBoxAudioMessage.ts';
 import './messageBox.html';
 
 type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
@@ -279,6 +278,7 @@ Template.messageBox.helpers({
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
+
 		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
 	formattingButtons() {

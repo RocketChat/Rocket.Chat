@@ -106,6 +106,10 @@ export class FederatedUser {
 		return !this.existsOnlyOnProxyServer;
 	}
 
+	public shouldUpdateFederationAvatar(federationAvatarUrl: string): boolean {
+		return this.internalReference.federation?.avatarUrl !== federationAvatarUrl;
+	}
+
 	public getInternalId(): string {
 		return this.internalId;
 	}
