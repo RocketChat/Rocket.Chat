@@ -147,6 +147,9 @@ export interface IUser extends IRocketChatRecord {
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
+	federation?: {
+		avatarUrl?: string;
+	};
 }
 
 export interface IRegisterUser extends IUser {

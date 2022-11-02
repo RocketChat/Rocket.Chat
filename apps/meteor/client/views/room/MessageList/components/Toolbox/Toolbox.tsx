@@ -39,6 +39,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 			{messageActions.map((action) => (
 				<MessageToolboxItem
 					onClick={(e): void => {
+						e.stopPropagation();
 						action.action(e, { message, tabbar: toolbox, room });
 					}}
 					key={action.id}
@@ -53,6 +54,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 					options={menuActions.map((action) => ({
 						...action,
 						action: (e): void => {
+							e.stopPropagation();
 							action.action(e, { message, tabbar: toolbox, room });
 						},
 					}))}
