@@ -67,10 +67,12 @@ export interface RestClientInterface {
 		params: void extends OperationParams<'POST', MatchPathPattern<TPath>> ? void : OperationParams<'POST', MatchPathPattern<TPath>>,
 		events?: {
 			load?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
-			progress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+			progress?: (event: ProgressEvent<XMLHttpRequestEventTarget> | { lengthComputable: boolean; loaded: number; total: number }) => void;
 			abort?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 			error?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 		},
+		chunkCapability?: boolean,
+		chunkMaxSize?: number,
 	): XMLHttpRequest;
 
 	getCredentials():

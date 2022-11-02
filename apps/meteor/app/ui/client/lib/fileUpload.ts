@@ -55,6 +55,9 @@ export const uploadFileWithMessage = async (
 	uploads.push(upload);
 	Session.set('uploading', uploads);
 
+	const chunkCapability = settings.get('FileUpload_Chunked_Enabled');
+	const chunkMaxSize = settings.get('FileUpload_Chunked_MaxSize');
+
 	try {
 		await new Promise((resolve, reject) => {
 			const xhr = APIClient.upload(
@@ -99,6 +102,8 @@ export const uploadFileWithMessage = async (
 						reject(error);
 					},
 				},
+				chunkCapability,
+				chunkMaxSize,
 			);
 
 			if (Session.get('uploading').length) {

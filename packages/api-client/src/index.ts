@@ -224,25 +224,94 @@ export class RestClient implements RestClientInterface {
 		return data ? stringify(data, { arrayFormat: 'bracket' }) : '';
 	}
 
-	upload: RestClientInterface['upload'] = (endpoint, params, events) => {
+	upload: RestClientInterface['upload'] = (endpoint, params, events, chunkCapability = false, chunkMaxSize = 5e7) => {
 		if (!params) {
 			throw new Error('Missing params');
 		}
 		const xhr = new XMLHttpRequest();
-		const data = new FormData();
+		const path = `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`;
+		const credentials = this.getCredentialsAsHeaders();
 
-		Object.entries(params as any).forEach(([key, value]) => {
-			if (value instanceof File) {
-				data.append(key, value, value.name);
-				return;
+		let chunkSeekOffset = 0;
+		let chunkEndOffset = 0;
+		let useProxyLoad = false;
+		let useProxyProgress = false;
+
+		const iterUpload = function () {
+			const data = new FormData();
+			const shouldChunk = chunkCapability && params.file.size > chunkMaxSize;
+
+			xhr.open('POST', path, true);
+
+			Object.entries(credentials).forEach(([key, value]) => {
+				xhr.setRequestHeader(key, value);
+			});
+
+			if (shouldChunk) {
+				const nextEndOffset = chunkSeekOffset + chunkMaxSize;
+				chunkEndOffset = nextEndOffset > params.file.size ? params.file.size : nextEndOffset;
+
+				xhr.overrideMimeType('application/octet-stream');
+				xhr.setRequestHeader('Content-Range', `bytes ${chunkSeekOffset}-${chunkEndOffset}/${params.file.size}`);
 			}
-			value && data.append(key, value as any);
-		});
 
-		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
-		Object.entries(this.getCredentialsAsHeaders()).forEach(([key, value]) => {
-			xhr.setRequestHeader(key, value);
-		});
+			Object.entries(params as any).forEach(([key, value]) => {
+				if (value instanceof File) {
+					data.append(key, shouldChunk ? value.slice(chunkSeekOffset, chunkEndOffset) : value, value.name);
+					return;
+				}
+				value && data.append(key, value as any);
+			});
+
+			// we need to add a bridge/proxy on xhr.upload.onLoad and xhr.upload.onProgress
+			if (shouldChunk && events?.load && !useProxyLoad) {
+				xhr.upload.removeEventListener('load', events.load);
+				// chunk end upload does not mean that the full upload is complete
+				xhr.upload.addEventListener('load', function (evt) {
+					const remainingSize = params.file.size - chunkEndOffset;
+
+					// a bit of a hack
+					// XMLHttpRequest when reused does not fire onprogress anymore
+					const proxyProgress = {
+						lengthComputable: true,
+						loaded: chunkEndOffset,
+						total: params.file.size,
+					};
+
+					if (events.progress) {
+						events.progress(proxyProgress);
+					}
+
+					if (remainingSize === 0) {
+						if (events.load) {
+							events.load(evt);
+						}
+						return;
+					}
+					chunkSeekOffset = chunkEndOffset;
+					iterUpload();
+				});
+				useProxyLoad = true;
+			}
+
+			if (shouldChunk && events?.progress && !useProxyProgress) {
+				xhr.upload.removeEventListener('progress', events.progress);
+				xhr.upload.addEventListener('progress', function (evt) {
+					const proxyProgress = {
+						lengthComputable: true,
+						loaded: chunkSeekOffset + evt.loaded,
+						total: params.file.size,
+					};
+
+					if (events.progress) {
+						events.progress(proxyProgress);
+					}
+				});
+				useProxyProgress = true;
+			}
+
+			xhr.send(data);
+		};
 
 		if (events?.load) {
 			xhr.upload.addEventListener('load', events.load);
@@ -257,7 +326,7 @@ export class RestClient implements RestClientInterface {
 			xhr.addEventListener('abort', events.abort);
 		}
 
-		xhr.send(data);
+		iterUpload();
 
 		return xhr;
 	};

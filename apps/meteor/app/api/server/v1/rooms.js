@@ -1,3 +1,6 @@
+import fs from 'fs';
+import crypto from 'crypto';
+
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
@@ -97,6 +100,61 @@ API.v1.addRoute(
 
 			if (!file) {
 				throw new Meteor.Error('invalid-field');
+			}
+
+			const chunkCapability = settings.get('FileUpload_Chunked_Enabled');
+			const chunkMaxSize = settings.get('FileUpload_Chunked_MaxSize');
+
+			if (!chunkCapability && file.chunk) {
+				throw new Meteor.Error('chunked-upload-disallowed');
+			}
+
+			if (file.chunk) {
+				if (file.fileBuffer.length > chunkMaxSize) {
+					throw new Meteor.Error('chunk-size-max-reached');
+				}
+				if (file.fileBuffer.length !== file.chunk.end - file.chunk.start) {
+					throw new Meteor.Error('chunk-invalid');
+				}
+			}
+
+			if (file.chunk) {
+				const tmpFileAppend = `${crypto
+					.createHash('sha256')
+					.update(`${this.userId}-${this.urlParams.rid}-${file.filename}`)
+					.digest('hex')}.tmp`;
+
+				const tmpPath = `/tmp/${tmpFileAppend}`;
+				const tmpFileExists = fs.existsSync(tmpPath);
+
+				if (file.chunk.start !== 0 && tmpFileExists) {
+					const stats = fs.statSync(tmpPath);
+
+					if (file.chunk.start !== stats.size) {
+						throw new Meteor.Error('chunk-invalid');
+					}
+				} else if (file.chunk.start !== 0) {
+					throw new Meteor.Error('chunk-invalid');
+				}
+
+				if (file.chunk.start === 0 && tmpFileExists) {
+					fs.unlinkSync(tmpPath);
+				}
+
+				fs.writeFileSync(tmpPath, file.fileBuffer, { flag: 'a+' });
+
+				// end
+				if (file.chunk.end !== file.chunk.size) {
+					return API.v1.success({
+						message: 'chunk received',
+						statusCode: 202,
+					});
+				}
+				// replace the buffer using the whole assembled file
+				file.fileBuffer = fs.readFileSync(tmpPath);
+				file.chunk = undefined;
+
+				fs.unlinkSync(tmpPath);
 			}
 
 			const details = {

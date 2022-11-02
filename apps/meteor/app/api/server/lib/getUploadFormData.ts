@@ -11,6 +11,7 @@ type UploadResult = {
 	encoding: string;
 	mimetype: string;
 	fileBuffer: Buffer;
+	chunk?: { unit: string; start: number; end: number; size: number };
 };
 
 export const getUploadFormData = async <
@@ -31,6 +32,14 @@ export const getUploadFormData = async <
 		let uploadedFile: UploadResult | undefined;
 
 		let assetName: T | undefined;
+
+		// Check if this is a chunked-upload
+		const contentRangeRegExp = new RegExp(/^(bytes) ((\d+)-(\d+)|\*)\/(\d+)$/);
+		const isChunked = typeof request.headers['content-range'] === 'string';
+
+		if (isChunked && !contentRangeRegExp.exec(<string>request.headers['content-range'])) {
+			reject('invalid content-range given');
+		}
 
 		bb.on(
 			'file',
@@ -70,6 +79,17 @@ export const getUploadFormData = async <
 		bb.on('finish', () => {
 			if (!uploadedFile || !assetName) {
 				return reject('No file uploaded');
+			}
+			if (isChunked) {
+				const matches = (<string>request.headers['content-range']).match(contentRangeRegExp)!;
+
+				if (!matches) {
+					reject('malformed content-range');
+				}
+
+				const [, unit, , start, end, size] = matches;
+
+				uploadedFile.chunk = { unit, start: Number(start), end: Number(end), size: Number(size) };
 			}
 			if (options.validate === undefined) {
 				return resolve([uploadedFile, fields, assetName]);
