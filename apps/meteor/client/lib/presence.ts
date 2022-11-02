@@ -27,11 +27,6 @@ export type UserPresence = Readonly<
 	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
 >;
 
-type UsersPresencePayload = {
-	users: UserPresence[];
-	full: boolean;
-};
-
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
 	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
 
@@ -50,15 +45,6 @@ const notify = (presence: UserPresence): void => {
 		emitter.emit(presence._id, store.get(presence._id));
 	}
 };
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
-	export interface Endpoints {
-		'/v1/users.presence': {
-			GET: (params: { ids: string[] }) => UsersPresencePayload;
-		};
-	}
-}
 
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;

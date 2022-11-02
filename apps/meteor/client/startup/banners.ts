@@ -1,4 +1,5 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -54,6 +55,16 @@ Meteor.startup(() => {
 		unwatchBanners?.();
 
 		if (!Meteor.userId()) {
+			return;
+		}
+
+		if (Tracker.nonreactive(() => FlowRouter.getRouteName()) === 'setup-wizard') {
+			Tracker.autorun((c) => {
+				if (FlowRouter.getRouteName() !== 'setup-wizard') {
+					unwatchBanners = Tracker.nonreactive(watchBanners);
+					c.stop();
+				}
+			});
 			return;
 		}
 

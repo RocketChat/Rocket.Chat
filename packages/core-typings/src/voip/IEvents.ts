@@ -1,18 +1,5 @@
 export interface IEventBase {
 	event: string;
-}
-/**  Not all events will contain following
- * fields. In the minimal, every event will contain
- * event name.
- *
- * As we move further in handling different events, we will
- * refactor this class. For the time being, we will take a simple
- * of everything deriving from IEventBase.
- *
- * IQueueEvent represents all the queue events which have the parameters
- * listed below.
- */
-export interface IQueueEvent extends IEventBase {
 	privilege: string;
 	systemname: string;
 	channel: string;
@@ -42,9 +29,31 @@ export interface IQueueEvent extends IEventBase {
 	destpriority: string;
 	destuniqueid: string;
 	destlinkedid: string;
+}
+/**  Not all events will contain following
+ * fields. In the minimal, every event will contain
+ * event name.
+ *
+ * As we move further in handling different events, we will
+ * refactor this class. For the time being, we will take a simple
+ * of everything deriving from IEventBase.
+ *
+ * IQueueEvent represents all the queue events which have the parameters
+ * listed below.
+ */
+export interface IQueueEvent extends IEventBase {
 	membername: string;
 	queue: string;
 	interface: string;
+}
+
+export type DialStatus = 'ringing' | 'answer';
+export interface IDialingEvent extends IEventBase {
+	dialstatus: DialStatus;
+}
+
+export interface IDialBegin extends IEventBase {
+	dialstring: string;
 }
 
 export type ContactStatuses = 'NonQualified' | 'Reachable' | 'Removed';
@@ -115,3 +124,4 @@ export const isICallOnHoldEvent = (v: any): v is ICallOnHold => v?.event === 'Ho
 export const isICallUnHoldEvent = (v: any): v is ICallUnHold => v?.event === 'Unhold';
 export const isIContactStatusEvent = (v: any): v is IContactStatus => v?.event === 'ContactStatus';
 export const isICallHangupEvent = (v: any): v is ICallHangup => v?.event === 'Hangup';
+export const isIDialingEvent = (v: any): v is IDialingEvent => v?.event === 'DialState' || v?.event === 'DialEnd';

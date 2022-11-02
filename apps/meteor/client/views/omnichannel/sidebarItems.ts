@@ -4,7 +4,8 @@ import { createSidebarItems } from '../../lib/createSidebarItems';
 export const {
 	registerSidebarItem: registerOmnichannelSidebarItem,
 	unregisterSidebarItem,
-	itemsSubscription,
+	getSidebarItems: getOmnichannelSidebarItems,
+	subscribeToSidebarItems: subscribeToOmnichannelSidebarItems,
 } = createSidebarItems([
 	{
 		href: 'omnichannel/current',

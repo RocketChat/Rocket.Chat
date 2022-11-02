@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatDepartment } from '../../../../../app/models/server/raw';
 
 export const findAllDepartmentsAvailable = async (uid, unitId, offset, count, text, onlyMyDepartments = false) => {
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
@@ -16,24 +16,22 @@ export const findAllDepartmentsAvailable = async (uid, unitId, offset, count, te
 		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
 	}
 
-	const cursor = LivechatDepartment.find(query, { limit: count, offset });
+	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset });
 
-	const departments = await cursor.toArray();
-	const total = await cursor.count();
+	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return { departments, total };
 };
 
 export const findAllDepartmentsByUnit = async (unitId, offset, count) => {
-	const cursor = LivechatDepartment.find(
+	const { cursor, totalCount } = LivechatDepartment.findPaginated(
 		{
 			ancestors: { $in: [unitId] },
 		},
 		{ limit: count, offset },
 	);
 
-	const total = await cursor.count();
-	const departments = await cursor.toArray();
+	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return { departments, total };
 };

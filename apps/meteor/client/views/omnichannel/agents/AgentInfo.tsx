@@ -3,11 +3,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { HTMLAttributes, memo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
+import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import UserInfo from '../../room/contextualBar/UserInfo';
 import { useFormsSubscription } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
 
@@ -36,9 +36,11 @@ export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
-			<Box alignSelf='center'>
-				<UserInfo.Avatar size='x332' username={username} />
-			</Box>
+			{username && (
+				<Box alignSelf='center'>
+					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
+				</Box>
+			)}
 
 			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
 				{children}
@@ -46,12 +48,12 @@ export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children
 
 			<Margins block='x4'>
 				<Box mb='x2'>
-					<UserInfo.Username username={username} status={<UserStatus status={userStatus} />} />
+					<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
 				</Box>
 
 				{statusLivechat && (
 					<>
-						<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
+						<UserInfo.Label data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfo.Label>
 						<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
 					</>
 				)}

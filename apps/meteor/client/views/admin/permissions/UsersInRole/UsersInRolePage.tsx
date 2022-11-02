@@ -38,7 +38,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
 			setUser('');
 			reload.current?.();
-		} catch (error) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});

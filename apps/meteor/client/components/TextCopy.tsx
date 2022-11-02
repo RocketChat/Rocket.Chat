@@ -39,7 +39,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			{...props}
 		>
 			<Scrollable vertical>{wrapper(text)}</Scrollable>
-			<Button ghost square small flexShrink={0} onClick={onClick} title={t('Copy')}>
+			<Button secondary square small flexShrink={0} onClick={onClick} title={t('Copy')}>
 				<Icon name='copy' size='x20' />
 			</Button>
 		</Box>

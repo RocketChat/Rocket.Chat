@@ -1,4 +1,4 @@
-import { Box, ActionButton } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentProps, ReactElement } from 'react';
 
@@ -44,7 +44,8 @@ const DownloadDataButton = <H extends readonly string[]>({
 	};
 
 	return (
-		<ActionButton
+		<IconButton
+			secondary
 			small
 			mis='x16'
 			disabled={!dataAvailable}

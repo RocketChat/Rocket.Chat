@@ -34,7 +34,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 			try {
 				await removeUser({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
-			} catch (error) {
+			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				closeModal();
@@ -52,7 +52,7 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 	return (
 		<>
 			{users.length === 0 && (
-				<Tile fontScale='p2' elevation='0' color='info' textAlign='center'>
+				<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 			)}

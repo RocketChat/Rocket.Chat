@@ -11,7 +11,7 @@ const Directory: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 		directoryRoute.push({});
 	});
 
-	return <Sidebar.TopBar.Action {...props} icon='globe' onClick={handleDirectory} />;
+	return <Sidebar.TopBar.Action {...props} icon='notebook-hashtag' onClick={handleDirectory} />;
 };
 
 export default Directory;

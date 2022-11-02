@@ -17,7 +17,7 @@ const SettingsPage = (): ReactElement => {
 	const isLoadingGroups = useIsSettingsContextLoading();
 
 	return (
-		<Page backgroundColor='neutral-100'>
+		<Page background='tint'>
 			<Page.Header title={t('Settings')} borderBlockEndColor='' />
 
 			<PageBlockWithBorder>
@@ -26,7 +26,7 @@ const SettingsPage = (): ReactElement => {
 
 			<Page.ScrollableContentWithShadow p='0'>
 				{isLoadingGroups && <Skeleton />}
-				<Grid mi='x16'>
+				<Grid mi='x16' mbe='x18'>
 					{!isLoadingGroups &&
 						!!groups.length &&
 						groups.map((group) => (

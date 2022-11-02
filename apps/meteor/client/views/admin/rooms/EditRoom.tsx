@@ -1,15 +1,7 @@
 import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	usePermission,
-	useEndpoint,
-	useMethod,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useMemo, ReactElement } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
@@ -148,7 +140,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
 	});
 
-	const eraseRoom = useMethod('eraseRoom');
+	const deleteRoom = useEndpoint('POST', '/v1/rooms.delete');
 	const deleteTeam = useEndpoint('POST', '/v1/teams.delete');
 
 	const handleDelete = useMutableCallback(() => {
@@ -165,7 +157,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 							dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
 							roomsRoute.push({});
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: String(error) });
+							dispatchToastMessage({ type: 'error', message: error });
 							setDeleting(false);
 						} finally {
 							onDelete();
@@ -186,11 +178,11 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 					try {
 						setDeleting(true);
 						setModal(null);
-						await eraseRoom(room._id);
+						await deleteRoom({ roomId: room._id });
 						dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
 						roomsRoute.push({});
 					} catch (error) {
-						dispatchToastMessage({ type: 'error', message: String(error) });
+						dispatchToastMessage({ type: 'error', message: error });
 						setDeleting(false);
 					} finally {
 						onDelete();
@@ -322,7 +314,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button primary flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
+					<Button flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>

@@ -75,9 +75,7 @@ let currentGallery: PhotoSwipe<PhotoSwipe.Options> | null = null;
 const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise<void> => {
 	const [{ default: PhotoSwipe }] = await Promise.all([
 		import('photoswipe'),
-		// @ts-ignore
 		import('photoswipe/dist/photoswipe.css'),
-		// @ts-ignore
 		import('./photoswipeContent.html'),
 	]);
 
@@ -102,6 +100,7 @@ const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise
 
 const defaultGalleryOptions = {
 	bgOpacity: 0.7,
+	counterEl: false,
 	index: 0,
 	wheelToZoom: true,
 	padding: { top: 20, bottom: 40, left: 100, right: 100 },

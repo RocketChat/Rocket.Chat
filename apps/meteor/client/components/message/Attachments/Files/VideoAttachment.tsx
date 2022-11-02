@@ -1,11 +1,26 @@
 import { VideoAttachmentProps } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
+import AttachmentContent from '../Attachment/AttachmentContent';
+import AttachmentDetails from '../Attachment/AttachmentDetails';
+import AttachmentDownload from '../Attachment/AttachmentDownload';
+import AttachmentRow from '../Attachment/AttachmentRow';
+import AttachmentSize from '../Attachment/AttachmentSize';
+import AttachmentTitle from '../Attachment/AttachmentTitle';
 import { useCollapse } from '../hooks/useCollapse';
+
+const videoAttachmentCss = css`
+	border: 2px solid ${Palette.stroke['stroke-extra-light']} !important;
+	border-radius: 2px;
+	display: flex;
+	flex-direction: column;
+`;
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	title,
@@ -22,23 +37,23 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 
 	return (
 		<Attachment>
-			<Attachment.Row>
-				<Attachment.Title>{title}</Attachment.Title>
-				{size && <Attachment.Size size={size} />}
+			<AttachmentRow>
+				<AttachmentTitle>{title}</AttachmentTitle>
+				{size && <AttachmentSize size={size} />}
 				{collapse}
-				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
-			</Attachment.Row>
+				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
+			</AttachmentRow>
 			{!collapsed && (
-				<Attachment.Content width='full'>
+				<AttachmentContent width='full' className={videoAttachmentCss}>
 					<Box is='video' width='full' controls preload='metadata'>
-						<source src={getURL(url)} type={type} />
+						<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />
 					</Box>
 					{description && (
-						<Attachment.Details is='figcaption'>
+						<AttachmentDetails is='figcaption'>
 							<MarkdownText parseEmoji variant='inline' content={description} />
-						</Attachment.Details>
+						</AttachmentDetails>
 					)}
-				</Attachment.Content>
+				</AttachmentContent>
 			)}
 		</Attachment>
 	);

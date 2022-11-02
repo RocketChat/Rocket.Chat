@@ -4,7 +4,8 @@ import { createSidebarItems } from '../../lib/createSidebarItems';
 export const {
 	registerSidebarItem: registerAdminSidebarItem,
 	unregisterSidebarItem,
-	itemsSubscription,
+	getSidebarItems: getAdminSidebarItems,
+	subscribeToSidebarItems: subscribeToAdminSidebarItems,
 } = createSidebarItems([
 	{
 		href: 'admin-info',

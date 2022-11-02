@@ -6,9 +6,9 @@ import { settings } from '../../settings/server';
 import { api } from '../../../server/sdk/api';
 import { Users } from '../../models/server';
 
-slashCommands.add(
-	'status',
-	function Status(_command: 'status', params, item): void {
+slashCommands.add({
+	command: 'status',
+	callback: function Status(_command: 'status', params, item): void {
 		const userId = Meteor.userId() as string;
 
 		Meteor.call('setUserStatus', null, params, (err: Meteor.Error) => {
@@ -30,8 +30,8 @@ slashCommands.add(
 			}
 		});
 	},
-	{
+	options: {
 		description: 'Slash_Status_Description',
 		params: 'Slash_Status_Params',
 	},
-);
+});

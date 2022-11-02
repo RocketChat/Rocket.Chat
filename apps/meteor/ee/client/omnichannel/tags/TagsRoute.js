@@ -59,7 +59,7 @@ function TagsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/tags.list', query);
+	const { value: data = {}, reload } = useEndpointData('/v1/livechat/tags', query);
 
 	const header = useMemo(
 		() =>

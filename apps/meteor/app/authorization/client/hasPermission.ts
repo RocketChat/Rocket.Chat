@@ -35,7 +35,7 @@ const createPermissionValidator =
 				}
 
 				const model = Models[roleScope as keyof typeof Models];
-				return model.isUserInRole && model.isUserInRole(userId, roleId, scope);
+				return model.isUserInRole?.(userId, roleId, scope);
 			});
 		});
 	};

@@ -3,9 +3,14 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { hasPermission } from '../../../authorization/server';
 import { TranslationProviderRegistry } from '..';
+import { settings } from '../../../settings/server';
 
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
+		if (!settings.get('AutoTranslate_Enabled')) {
+			throw new Meteor.Error('error-autotranslate-disabled', 'Auto-Translate is disabled');
+		}
+
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

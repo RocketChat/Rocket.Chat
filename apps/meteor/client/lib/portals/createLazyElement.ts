@@ -1,7 +1,8 @@
-import { Tracker } from 'meteor/tracker';
-import { ComponentType, ReactElement, PropsWithoutRef, createElement, lazy, useEffect, useState, Suspense, FC } from 'react';
+import { ComponentType, ReactElement, PropsWithoutRef, createElement, lazy, Suspense, FC } from 'react';
 
-export const createLazyElement = <Props extends {} = {}>(
+import { useReactiveValue } from '../../hooks/useReactiveValue';
+
+export const createLazyElement = <Props>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	getProps?: () => PropsWithoutRef<Props> | undefined,
 ): ReactElement => {
@@ -12,17 +13,7 @@ export const createLazyElement = <Props extends {} = {}>(
 	}
 
 	const WrappedComponent: FC = () => {
-		const [props, setProps] = useState(() => Tracker.nonreactive(getProps));
-
-		useEffect(() => {
-			const computation = Tracker.autorun(() => {
-				setProps(getProps());
-			});
-
-			return (): void => {
-				computation.stop();
-			};
-		}, []);
+		const props = useReactiveValue(getProps);
 		return createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
 	};
 

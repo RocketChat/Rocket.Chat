@@ -5,8 +5,8 @@ import {
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../../models/server/raw';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -49,14 +49,14 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { roomId }: { [roomId: string]: {} } | Record<string, string> = this.queryParams;
+			const { roomId } = this.queryParams;
 
 			if (!roomId) {
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
 			return API.v1.success({
-				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId as string, this.userId),
+				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
 			});
 		},
 	},

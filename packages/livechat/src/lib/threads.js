@@ -1,5 +1,5 @@
 import { Livechat } from '../api';
-import { upsert } from '../components/helpers';
+import { parse, upsert } from '../components/helpers';
 import { store } from '../store';
 import { createToken } from './random';
 
@@ -9,7 +9,14 @@ const addParentMessage = async (parentMessage) => {
 	const { tmid } = parentMessage;
 
 	if (!parentMessages.find((msg) => msg._id === tmid)) {
-		await store.setState({ parentMessages: upsert(parentMessages, parentMessage, ({ _id }) => _id === parentMessage._id, ({ ts }) => ts) });
+		await store.setState({
+			parentMessages: upsert(
+				parentMessages,
+				parentMessage,
+				({ _id }) => _id === parentMessage._id,
+				({ ts }) => ts,
+			),
+		});
 	}
 };
 
@@ -33,7 +40,9 @@ const findParentMessage = async (tmid) => {
 			parentMessage = await Livechat.message(tmid, { rid });
 			await addParentMessage(parentMessage);
 		} catch (error) {
-			const { data: { error: reason } } = error;
+			const {
+				data: { error: reason },
+			} = error;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await store.setState({ alerts: (alerts.push(alert), alerts) });
 		}
@@ -60,6 +69,8 @@ export const normalizeMessage = async (message) => {
 		return null;
 	}
 
+	message.msg = parse(message.msg);
+
 	if (message && message.tmid && !message.threadMsg) {
 		return normalizeThreadMessage(message);
 	}
@@ -69,10 +80,8 @@ export const normalizeMessage = async (message) => {
 
 export const normalizeMessages = (messages = []) =>
 	Promise.all(
-		messages.filter(
-			async (message) => {
-				const result = await normalizeMessage(message);
-				return result;
-			},
-		),
+		messages.filter(async (message) => {
+			const result = await normalizeMessage(message);
+			return result;
+		}),
 	);

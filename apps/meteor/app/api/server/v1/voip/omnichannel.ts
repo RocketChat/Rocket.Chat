@@ -1,9 +1,8 @@
 import { Match, check } from 'meteor/check';
-import { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
+import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { API } from '../../api';
-import { Users } from '../../../../models/server/raw/index';
-import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
 
@@ -31,44 +30,9 @@ const isUserIdndTypeParams = (p: any): p is { userId: string; type: 'free' | 'al
 
 API.v1.addRoute(
 	'omnichannel/agent/extension',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
-		// Get the extensions associated with the agent passed as request params.
-		async get() {
-			if (!hasPermission(this.userId, 'view-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
-			check(
-				this.requestParams(),
-				Match.ObjectIncluding({
-					username: String,
-				}),
-			);
-			const { username } = this.requestParams();
-			const user = await Users.findOneByAgentUsername(username, {
-				projection: { _id: 1 },
-			});
-			if (!user) {
-				return API.v1.notFound('User not found');
-			}
-			const extension = await Users.getVoipExtensionByUserId(user._id, {
-				projection: {
-					_id: 1,
-					username: 1,
-					extension: 1,
-				},
-			});
-			if (!extension) {
-				return API.v1.notFound('Extension not found');
-			}
-			return API.v1.success({ extension });
-		},
-
-		// Create agent-extension association.
 		async post() {
-			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -121,18 +85,55 @@ API.v1.addRoute(
 				return API.v1.failure(`extension already in use ${extension}`);
 			}
 		},
+	},
+);
 
-		async delete() {
-			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
+API.v1.addRoute(
+	'omnichannel/agent/extension/:username',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: ['view-agent-extension-association'],
+			DELETE: ['manage-agent-extension-association'],
+		},
+	},
+	{
+		// Get the extensions associated with the agent passed as request params.
+		async get() {
 			check(
-				this.requestParams(),
+				this.urlParams,
 				Match.ObjectIncluding({
 					username: String,
 				}),
 			);
-			const { username } = this.requestParams();
+			const { username } = this.urlParams;
+			const user = await Users.findOneByAgentUsername(username, {
+				projection: { _id: 1 },
+			});
+			if (!user) {
+				return API.v1.notFound('User not found');
+			}
+			const extension = await Users.getVoipExtensionByUserId(user._id, {
+				projection: {
+					_id: 1,
+					username: 1,
+					extension: 1,
+				},
+			});
+			if (!extension) {
+				return API.v1.notFound('Extension not found');
+			}
+			return API.v1.success({ extension });
+		},
+
+		async delete() {
+			check(
+				this.urlParams,
+				Match.ObjectIncluding({
+					username: String,
+				}),
+			);
+			const { username } = this.urlParams;
 			const user = await Users.findOneByAgentUsername(username, {
 				projection: {
 					_id: 1,

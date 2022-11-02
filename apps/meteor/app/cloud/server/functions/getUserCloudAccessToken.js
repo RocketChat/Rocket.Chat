@@ -4,8 +4,8 @@ import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
 import { userLoggedOut } from './userLoggedOut';
-import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { Users } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
@@ -61,20 +61,23 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 				redirect_uri: redirectUri,
 			},
 		});
-	} catch (e) {
-		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to get User AccessToken from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
+	} catch (err) {
+		SystemLogger.error({
+			msg: 'Failed to get User AccessToken from Rocket.Chat Cloud',
+			url: '/api/oauth/token',
+			...(err.response?.data && { cloudError: err.response.data }),
+			err,
+		});
 
-			if (e.response.data.error === 'oauth_invalid_client_credentials') {
+		if (err.response?.data?.error) {
+			if (err.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');
 				unregisterWorkspace();
 			}
 
-			if (e.response.data.error === 'unauthorized') {
+			if (err.response.data.error === 'unauthorized') {
 				userLoggedOut(userId);
 			}
-		} else {
-			SystemLogger.error(e);
 		}
 
 		return '';

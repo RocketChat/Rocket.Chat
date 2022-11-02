@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users, Rooms } from '../../../../models';
+import { Users, Rooms } from '../../../../models/server';
 
 export default function handleOnCreateUser(newUser) {
 	if (!newUser) {
