@@ -42,7 +42,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 - [ ] Check if the release Pull Request was created and contains the history
 - [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
 - [ ] When the build is passing ask for Pull Request approval
-- [ ] When approved merge it!
+- [ ] When approved, merge it!
 - [ ] Ensure the **Tag** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
 - [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
 - [ ] After all edit the release/tag and publish it
