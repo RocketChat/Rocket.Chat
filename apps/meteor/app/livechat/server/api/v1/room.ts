@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
@@ -12,6 +12,7 @@ import {
 	isPOSTLivechatRoomSurveyParams,
 	isLiveChatRoomJoinProps,
 	isPUTLivechatRoomVisitorParams,
+	isLiveChatRoomSaveInfoProps,
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
@@ -21,10 +22,11 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { canAccessRoom } from '../../../../authorization/server';
+import { canAccessRoom, hasPermission } from '../../../../authorization/server';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
+import { callbacks } from '../../../../../lib/callbacks';
 
 API.v1.addRoute('livechat/room', {
 	async get() {
@@ -288,6 +290,37 @@ API.v1.addRoute(
 			}
 
 			addUserToRoom(roomId, user);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/room.saveInfo',
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLiveChatRoomSaveInfoProps },
+	{
+		async post() {
+			const { roomData, guestData } = this.bodyParams;
+			const room = await LivechatRooms.findOneById(roomData._id);
+			if (!room || !isOmnichannelRoom(room)) {
+				throw new Error('error-invalid-room');
+			}
+
+			if ((!room.servedBy || room.servedBy._id !== this.userId) && !hasPermission(this.userId, 'save-others-livechat-room-info')) {
+				return API.v1.unauthorized();
+			}
+
+			if (room.sms) {
+				delete guestData.phone;
+			}
+
+			await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
+
+			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id), {
+				user: this.user,
+				oldRoom: room,
+			});
 
 			return API.v1.success();
 		},
