@@ -55,7 +55,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
-				<MessageSystemBlock>
+				<MessageSystemBlock style={{ alignItems: 'flex-start' }}>
 					<MessageSystemName onClick={user.username !== undefined ? openUserCard(user.username) : undefined} style={{ cursor: 'pointer' }}>
 						{getUserDisplayName(user.name, user.username, showRealName)}
 					</MessageSystemName>
@@ -70,6 +70,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 					)}
 					{messageType && (
 						<MessageSystemBody
+							style={{ whiteSpace: 'pre-wrap' }}
 							data-qa-type='system-message-body'
 							dangerouslySetInnerHTML={{
 								__html: messageType.render

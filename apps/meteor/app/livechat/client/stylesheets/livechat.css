@@ -146,11 +146,3 @@
 .contact-chat-history-search-empty {
 	padding-left: 24px;
 }
-
-.rcx-message-system__block {
-	align-items: flex-start !important;
-}
-
-.rcx-message-system__body {
-	white-space: pre-wrap !important;
-}
