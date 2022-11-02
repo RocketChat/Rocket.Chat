@@ -1,4 +1,5 @@
 import { AppPermission } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Fragment, ReactElement } from 'react';
 
@@ -42,7 +43,7 @@ const HumanizedPermissionsList = ({ appPermissions }: { appPermissions: AppPermi
 				{appPermissions.map((permission) => (
 					<Fragment key={permission.name}>
 						<li>{handleHumanizePermission(permission.name)}</li>
-						{permission.required && <span style={{ color: 'red' }}> ({t('required')})</span>}
+						{permission.required && <Box color='font-danger'>({t('required')})</Box>}
 					</Fragment>
 				))}
 			</>
