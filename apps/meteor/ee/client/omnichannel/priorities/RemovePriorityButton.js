@@ -6,7 +6,7 @@ import React from 'react';
 import GenericModal from '../../../../client/components/GenericModal';
 
 function RemovePriorityButton({ _id, reload }) {
-	const removePriority = useMethod('livechat:removePriority');
+	const removePriority = useMethod('livechat:removeSLA');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();

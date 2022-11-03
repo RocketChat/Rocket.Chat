@@ -10,19 +10,19 @@ callbacks.add(
 			return roomInfo;
 		}
 
-		const { priority: searchTerm } = extraData;
+		const { sla: searchTerm } = extraData;
 		if (!searchTerm) {
 			return roomInfo;
 		}
 
-		const priority = Promise.await(OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm));
-		if (!priority) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
+		const sla = Promise.await(OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm));
+		if (!sla) {
+			throw new Meteor.Error('error-invalid-priority', 'Invalid sla', {
 				function: 'livechat.beforeRoom',
 			});
 		}
 
-		const { _id: slaId } = priority;
+		const { _id: slaId } = sla;
 		return Object.assign({ ...roomInfo }, { slaId });
 	},
 	callbacks.priority.MEDIUM,

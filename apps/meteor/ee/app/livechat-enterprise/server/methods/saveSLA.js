@@ -4,13 +4,13 @@ import { hasPermission } from '../../../../../app/authorization';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 Meteor.methods({
-	'livechat:removePriority'(id) {
+	'livechat:saveSLA'(_id, slaData) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-priorities')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'livechat:removePriority',
+				method: 'livechat:saveSLA',
 			});
 		}
 
-		return LivechatEnterprise.removePriority(id);
+		return LivechatEnterprise.saveSLA(_id, slaData);
 	},
 });

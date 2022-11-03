@@ -46,6 +46,7 @@ type TeamMessageTypes =
 type LivechatMessageTypes =
 	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
+	| 'livechat_priority_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
 	| 'livechat_webrtc_video_call';

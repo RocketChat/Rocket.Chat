@@ -4,16 +4,11 @@ import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rock
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Messages } from '../../../../../app/models/server';
+import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
-import {
-	processWaitingQueue,
-	removePriorityFromRooms,
-	updateInquiryQueueSla,
-	updatePriorityInquiries,
-	updateRoomPriorityHistory,
-} from './Helper';
+import { processWaitingQueue, removeSLAFromRooms, updateInquiryQueueSla, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
@@ -140,42 +135,87 @@ export const LivechatEnterprise = {
 	},
 
 	// make async
-	savePriority(_id, priorityData) {
+	saveSLA(_id, slaData) {
 		check(_id, Match.Maybe(String));
 
-		check(priorityData, {
+		check(slaData, {
 			name: String,
 			description: Match.Optional(String),
 			dueTimeInMinutes: String,
 		});
 
-		const oldPriority = _id && Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
-		const priority = Promise.await(OmnichannelServiceLevelAgreements.createOrUpdatePriority(priorityData, _id));
+		const oldSLA = _id && Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const sla = Promise.await(OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id));
+		if (!oldSLA) {
+			return sla;
+		}
+
+		const { dueTimeInMinutes: oldDueTimeInMinutes } = oldSLA;
+		const { dueTimeInMinutes } = sla;
+
+		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
+			updateSLAInquiries(sla);
+		}
+
+		return sla;
+	},
+
+	removeSLA(_id) {
+		check(_id, String);
+
+		const sla = Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } }));
+
+		if (!sla) {
+			throw new Meteor.Error('error-invalid-priority', 'Invalid sla', {
+				method: 'livechat:removeSLA',
+			});
+		}
+		const removed = Promise.await(OmnichannelServiceLevelAgreements.removeById(_id));
+		if (removed) {
+			removeSLAFromRooms(_id);
+		}
+		return removed;
+	},
+
+	updateRoomSLA(roomId, user, sla) {
+		updateInquiryQueueSla(roomId, sla);
+		updateRoomSLAHistory(roomId, user, sla);
+	},
+	savePriority(_id, priorityData) {
+		check(_id, Match.Maybe(String));
+
+		check(priorityData, {
+			name: String,
+			level: String,
+		});
+
+		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { level: 1 } });
+		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
 		if (!oldPriority) {
 			return priority;
 		}
 
-		const { dueTimeInMinutes: oldDueTimeInMinutes } = oldPriority;
-		const { dueTimeInMinutes } = priority;
+		// const { level: oldlevel } = oldPriority;
+		// const { level } = priority;
 
-		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			updatePriorityInquiries(priority);
-		}
+		// if (oldlevel !== level) {
+		// 	updatePriorityInquiries(priority);
+		// }
 
-		return priority;
+		// return priority;
 	},
 
 	removePriority(_id) {
 		check(_id, String);
 
-		const priority = Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } }));
+		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!priority) {
 			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
 				method: 'livechat:removePriority',
 			});
 		}
-		const removed = Promise.await(OmnichannelServiceLevelAgreements.removeById(_id));
+		const removed = LivechatPriority.removeById(_id);
 		if (removed) {
 			removePriorityFromRooms(_id);
 		}
@@ -183,7 +223,7 @@ export const LivechatEnterprise = {
 	},
 
 	updateRoomPriority(roomId, user, priority) {
-		updateInquiryQueueSla(roomId, priority);
+		updateInquiryQueuePriority(roomId, priority);
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
@@ -195,6 +235,7 @@ export const LivechatEnterprise = {
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
+		Subscriptions.setOnHold(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
@@ -213,6 +254,7 @@ export const LivechatEnterprise = {
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
+		Subscriptions.unsetOnHold(roomId);
 	},
 };
 

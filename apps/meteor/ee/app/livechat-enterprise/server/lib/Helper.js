@@ -199,15 +199,15 @@ export const updateQueueInactivityTimeout = () => {
 	});
 };
 
-export const updateRoomPriorityHistory = (rid, user, priority) => {
+export const updateRoomSLAHistory = (rid, user, sla) => {
 	const history = {
-		priorityData: {
+		slaData: {
 			definedBy: user,
-			priority: priority || {},
+			sla: sla || {},
 		},
 	};
 
-	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
+	Messages.createSLAHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
 export const updateInquiryQueueSla = (roomId, sla) => {
@@ -231,7 +231,7 @@ export const updateInquiryQueueSla = (roomId, sla) => {
 	});
 };
 
-export const removePriorityFromRooms = (slaId) => {
+export const removeSLAFromRooms = (slaId) => {
 	LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
 		updateInquiryQueueSla(room._id);
 	});
@@ -239,7 +239,7 @@ export const removePriorityFromRooms = (slaId) => {
 	LivechatRooms.unsetSlaById(slaId);
 };
 
-export const updatePriorityInquiries = (sla) => {
+export const updateSLAInquiries = (sla) => {
 	if (!sla) {
 		return;
 	}

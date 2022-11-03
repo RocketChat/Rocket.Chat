@@ -1,9 +1,12 @@
 import { API } from '../../../../../app/api/server';
-import { findPriorities, findPriorityById } from './lib/priorities';
+import { findPriority, findPriorityById, createPriority } from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/priorities',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } },
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -11,7 +14,7 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			return API.v1.success(
-				await findPriorities({
+				await findPriority({
 					text,
 					pagination: {
 						offset,
@@ -25,12 +28,48 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/priorities/:priorityId',
+	'livechat/priority',
+	{
+		authRequired: true,
+		permissionsRequired: { POST: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' } },
+	},
+	{
+		async post() {
+			const { name, level } = this.bodyParams;
+			console.error('livechat/priority', name, level);
+			check(name, String);
+			check(level, String);
+			const insert = await createPriority({ name, level });
+			if (insert !== false) {
+				return API.v1.success({ priorities: insert });
+			}
+			return API.v1.failure();
+		},
+		async put() {
+			const { priorityId } = this.urlParams;
+			const { name, level } = this.bodyParams;
+			console.error('livechat/priority', priorityId, name, level);
+			check(priorityId, String);
+			check(name, String);
+			check(level, String);
+			const update = await LivechatPriority.updateOneById(priorityId, { name, level });
+			if (update !== false) {
+				return API.v1.success({ priorities: update });
+			}
+			return API.v1.failure();
+		}
+	},
+);
+
+API.v1.addRoute(
+	'livechat/priority/:priorityId',
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
+			check(this.urlParams, {
+				priorityId: String,
+			});
 			const { priorityId } = this.urlParams;
-
 			const priority = await findPriorityById({
 				priorityId,
 			});
