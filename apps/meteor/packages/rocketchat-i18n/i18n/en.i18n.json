@@ -2157,6 +2157,7 @@
   "FileUpload_Enabled": "File Uploads Enabled",
   "FileUpload_Enabled_Direct": "File Uploads Enabled in Direct Messages ",
   "FileUpload_Chunked_Enabled": "Chunk Upload Capability",
+  "FileUpload_ChunkDescription": "Allow clients to upload files in parts instead of sending everything in a single request. Note that if you choose anything else than GridFs and run Rocket.Chat on multiple instances you will have to configure proper volume sharing.",
   "FileUpload_Chunked_MaxSize": "Configure max size per chunk",
   "FileUpload_MaxChunkSizeDescription": "In some cases, e.g. restrictive reverse-proxy like Cloudflare, you may need to adjust manually the maximum size per chunk upload. Fix commonly seen \"413 Request Entity Too Large\".",
   "FileUpload_Error": "File Upload Error",

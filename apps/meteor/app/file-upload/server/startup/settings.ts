@@ -15,6 +15,7 @@ settingsRegistry.addGroup('FileUpload', function () {
 	this.add('FileUpload_Chunked_Enabled', false, {
 		type: 'boolean',
 		public: true,
+		i18nDescription: 'FileUpload_ChunkDescription',
 	});
 
 	this.add('FileUpload_Chunked_MaxSize', 2e7, {
