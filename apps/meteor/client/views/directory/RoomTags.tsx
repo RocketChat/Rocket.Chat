@@ -1,8 +1,9 @@
+import { IRoom } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-function RoomTags({ room }) {
+function RoomTags({ room }: { room: IRoom }): ReactElement {
 	const t = useTranslation();
 	return (
 		<Box mi='x4' alignItems='center' display='flex'>
