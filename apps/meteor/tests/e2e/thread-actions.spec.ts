@@ -45,7 +45,7 @@ test.describe.serial('message-actions', () => {
 		await expect(page).toHaveURL(/.*thread/);
 	});
 
-	test('expect edit the thead message', async ({ page }) => {
+	test('expect edit the thread message', async ({ page }) => {
 		await poHomeChannel.content.openLastThreadMessageMenu();
 		await page.locator('[data-qa-id="edit-message"]').click();
 		await page.locator('[name="msg"]').last().fill('this message was edited');
