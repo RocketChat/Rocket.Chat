@@ -24,7 +24,7 @@ type ThreadListMessageProps = {
 	all: boolean;
 	tlm: number;
 	className?: string | string[];
-} & Omit<ComponentProps<typeof Message>, 'className'>;
+} & Omit<ComponentProps<typeof Message>, 'className' | 'is'>;
 
 function ThreadListMessage({
 	_id,
@@ -50,7 +50,7 @@ function ThreadListMessage({
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
 		<Box className={[className, !following && followStyle].flat()}>
-			<Box is={Message} pbs='x16' {...props}>
+			<Box pbs='x16' is={Message} {...props}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>
