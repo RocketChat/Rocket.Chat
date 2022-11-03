@@ -170,7 +170,7 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			return JSON.parse(json);
 		} catch (err) {
-			logger.error(`Unexpected error : ${err instanceof Error ? err.message : String(err)}`);
+			logger.error({ msg: 'Unexpected error', err });
 		}
 	}
 
