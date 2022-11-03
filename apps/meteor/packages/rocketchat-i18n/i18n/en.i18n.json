@@ -3058,6 +3058,8 @@
   "manage-livechat-monitors_description": "Permission to manage omnichannel monitors",
   "manage-livechat-priorities": "Manage Omnichannel Priorities",
   "manage-livechat-priorities_description": "Permission to manage omnichannel priorities",
+  "manage-livechat-sla": "Manage Omnichannel SLA",
+  "manage-livechat-sla_description": "Permission to manage omnichannel SLA",
   "manage-livechat-tags": "Manage Omnichannel Tags",
   "manage-livechat-tags_description": "Permission to manage omnichannel tags",
   "manage-livechat-units": "Manage Omnichannel Units",

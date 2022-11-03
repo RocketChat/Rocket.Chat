@@ -5,7 +5,7 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 Meteor.methods({
 	'livechat:removeSLA'(id) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-priorities')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-sla')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:removeSLA',
 			});

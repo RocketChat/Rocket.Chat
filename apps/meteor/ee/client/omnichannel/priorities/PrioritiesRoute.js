@@ -31,7 +31,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 
 function PrioritiesRoute() {
 	const t = useTranslation();
-	const canViewPriorities = usePermission('manage-livechat-priorities');
+	const canViewPriorities = usePermission('manage-livechat-sla');
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);

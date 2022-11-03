@@ -36,11 +36,11 @@ export async function findPriority({ text, pagination: { offset, count, sort } }
 		limit: count,
 	});
 
-	const [priority, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const [priorities, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
-		priorities: priority,
-		count: priority.length,
+		priorities,
+		count: priorities.length,
 		offset,
 		total,
 	};

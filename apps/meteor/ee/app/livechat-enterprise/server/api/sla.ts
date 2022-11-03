@@ -3,7 +3,7 @@ import { findSLA, findSLAById } from './lib/sla';
 
 API.v1.addRoute(
 	'livechat/sla',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-sla', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -26,7 +26,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/sla/:slaId',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-sla', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { slaId } = this.urlParams;

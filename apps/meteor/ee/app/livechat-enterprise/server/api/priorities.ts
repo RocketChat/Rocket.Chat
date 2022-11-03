@@ -36,7 +36,6 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { name, level } = this.bodyParams;
-			console.error('livechat/priority', name, level);
 			check(name, String);
 			check(level, String);
 			const insert = await createPriority({ name, level });
@@ -48,7 +47,6 @@ API.v1.addRoute(
 		async put() {
 			const { priorityId } = this.urlParams;
 			const { name, level } = this.bodyParams;
-			console.error('livechat/priority', priorityId, name, level);
 			check(priorityId, String);
 			check(name, String);
 			check(level, String);
