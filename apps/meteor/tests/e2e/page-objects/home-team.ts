@@ -32,6 +32,6 @@ export class HomeTeam {
 	}
 
 	get fieldError() {
-		return this.page.locator('.rcx-field__error');
+		return this.page.locator('input[aria-invalid="true"]');
 	}
 }

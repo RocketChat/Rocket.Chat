@@ -134,6 +134,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						<Field.Row>
 							<TextInput
 								autoFocus
+								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
 									validate: (value) => validateTeamName(value),
