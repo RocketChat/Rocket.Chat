@@ -1,0 +1,8 @@
+{
+  "name": "Rocket.Chat.Livechat",
+  "short_name": "Rocket.Chat.Livechat",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff"
+}

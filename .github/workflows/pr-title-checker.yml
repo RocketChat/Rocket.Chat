@@ -1,6 +1,6 @@
-name: "PR Title Checker"
+name: 'PR Title Checker'
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited]
 
 jobs:
@@ -9,4 +9,4 @@ jobs:
     steps:
       - uses: thehanimo/pr-title-checker@v1.3.4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RC_TITLE_CHECKER }}
