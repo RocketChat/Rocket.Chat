@@ -137,7 +137,8 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on two params with different ids', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: testDM._id,
@@ -146,7 +147,10 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Params reference to different rooms, use only one param or both params with the same room id');
+					expect(res.body).to.have.property(
+						'error',
+						'Params reference to different rooms, use only one param or both params with the same room id',
+					);
 				})
 				.end(done);
 		});
