@@ -21,7 +21,7 @@ import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { MongoInternals } from 'meteor/mongo';
-import type { GridFSBucket, GridFSBucketWriteStream } from 'mongodb';
+import { GridFSBucket } from 'mongodb';
 import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
