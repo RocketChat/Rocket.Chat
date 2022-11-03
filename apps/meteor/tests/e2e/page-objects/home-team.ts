@@ -30,8 +30,4 @@ export class HomeTeam {
 	get btnTeamCreate(): Locator {
 		return this.page.locator('#modal-root button:has-text("Create")');
 	}
-
-	get fieldError() {
-		return this.page.locator('input[aria-invalid="true"]');
-	}
 }

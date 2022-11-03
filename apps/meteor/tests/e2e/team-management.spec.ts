@@ -35,7 +35,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.inputTeamName.type(targetTeam);
 		await poHomeTeam.btnTeamCreate.click();
 
-		await expect(poHomeTeam.fieldError).toBeVisible();
+		await expect(poHomeTeam.inputTeamName).toHaveAttribute('aria-invalid', 'true');
 	});
 
 	test('expect send hello in the "targetTeam" and reply in a thread', async ({ page }) => {
