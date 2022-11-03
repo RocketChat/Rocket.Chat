@@ -102,26 +102,27 @@ API.v1.addRoute(
 				throw new Meteor.Error('invalid-field');
 			}
 
+			const uploadMaxSize = settings.get('FileUpload_MaxFileSize');
 			const chunkCapability = settings.get('FileUpload_Chunked_Enabled');
 			const chunkMaxSize = settings.get('FileUpload_Chunked_MaxSize');
 
 			if (!chunkCapability && file.chunk) {
-				throw new Meteor.Error('chunked-upload-disallowed');
+				throw new Meteor.Error('error-chunk-upload-disabled');
 			}
 
 			if (file.chunk) {
 				if (file.fileBuffer.length > chunkMaxSize) {
-					throw new Meteor.Error('chunk-size-max-reached');
+					throw new Meteor.Error('error-chunk-too-large');
 				}
 				if (file.fileBuffer.length !== file.chunk.end - file.chunk.start) {
-					throw new Meteor.Error('chunk-invalid');
+					throw new Meteor.Error('error-invalid-chunk');
 				}
 			}
 
 			if (file.chunk) {
 				const tmpFileAppend = `${crypto
 					.createHash('sha256')
-					.update(`${this.userId}-${this.urlParams.rid}-${file.filename}`)
+					.update(`${this.userId}-${this.urlParams.rid}-${file.filename}-${file.chunk.size}`)
 					.digest('hex')}.tmp`;
 
 				const tmpPath = `/tmp/${tmpFileAppend}`;
@@ -131,14 +132,19 @@ API.v1.addRoute(
 					const stats = fs.statSync(tmpPath);
 
 					if (file.chunk.start !== stats.size) {
-						throw new Meteor.Error('chunk-invalid');
+						throw new Meteor.Error('error-invalid-chunk');
 					}
 				} else if (file.chunk.start !== 0) {
-					throw new Meteor.Error('chunk-invalid');
+					throw new Meteor.Error('error-invalid-chunk');
 				}
 
-				if (file.chunk.start === 0 && tmpFileExists) {
-					fs.unlinkSync(tmpPath);
+				if (file.chunk.start === 0) {
+					if (tmpFileExists) {
+						fs.unlinkSync(tmpPath);
+					}
+					if (uploadMaxSize > -1 && file.chunk.size > uploadMaxSize) {
+						throw new Meteor.Error('error-file-too-large');
+					}
 				}
 
 				fs.writeFileSync(tmpPath, file.fileBuffer, { flag: 'a+' });
