@@ -140,8 +140,8 @@ jobs:
         run: yarn
 
       - name: TurboRepo local server
-        if: "${{ secrets.RC_TURBO_GH_TOKEN != '' }}"
         uses: felixmosh/turborepo-gh-artifacts@v1
+        if: "${{ TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
