@@ -1,5 +1,6 @@
 import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
 import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
@@ -71,7 +72,7 @@ API.v1.addRoute(
 
 			const agentId = inputAgentId || this.userId;
 
-			const agent = await Users.findOneAgentById(agentId, {
+			const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(agentId, {
 				projection: {
 					status: 1,
 					statusLivechat: 1,

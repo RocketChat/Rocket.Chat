@@ -8,7 +8,7 @@ import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarn
 Meteor.methods({
 	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
 		methodDeprecationLogger.warn(
-			'livechat:changeLivechatStatus will be deprecated in future versions of Rocket.Chat. Use livechat/agent.status API instead.',
+			'livechat:changeLivechatStatus is deprecated and will be removed in future versions of Rocket.Chat. Use /api/v1/livechat/agent.status REST API instead.',
 		);
 
 		const uid = Meteor.userId();
