@@ -1,4 +1,5 @@
 import { Markdown } from '../../../markdown/server';
+import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex.ts';
 
 export const parseUrlsInMessage = (message) => {
 	if (message.parseUrls === false) {
@@ -8,10 +9,7 @@ export const parseUrlsInMessage = (message) => {
 	message.html = message.msg;
 	message = Markdown.code(message);
 
-	const urls =
-		message.html.match(
-			/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g,
-		) || [];
+	const urls = message.html.match(getMessageUrlRegex()) || [];
 	if (urls) {
 		message.urls = [...new Set(urls)].map((url) => ({ url }));
 	}

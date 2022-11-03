@@ -19,9 +19,9 @@ import React, { memo, ReactElement, useMemo } from 'react';
 import { RoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields: Fields = {
 	f: true,
