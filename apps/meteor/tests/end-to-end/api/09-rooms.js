@@ -149,7 +149,7 @@ describe('[Rooms]', function () {
 						.set({ 'Content-Range': 'bytes 0-25000000/50000000' })
 						.attach('file', new Buffer(2.5e7), { filename: 'too-large-entity.bin', contentType: 'application/octet-stream' })
 						.expect('Content-Type', 'application/json')
-						.expect(202)
+						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('message', 'chunk received');
 						})
