@@ -1,0 +1,15 @@
+{
+    "translation": {
+        "are_you_sure_you_want_to_switch_the_department": "Departmanı değiştirmek istediğinden emin misin?",
+        "cancel": "Vazgeç",
+        "conversation_finished": "Konuşma bitti",
+        "department_switched": "Bölüm değiştirildi",
+        "no": "Hayır",
+        "options": "Seçenekler",
+        "send": "Gönder",
+        "user_joined": "Kullanıcı katıldı",
+        "user_left": "Kullanıcı ayrıldı",
+        "we_are_not_online_right_now_please_leave_a_message": "Şu anda çevrimiçi değiliz. Lütfen mesaj bırakın.",
+        "yes": "Evet"
+    }
+}

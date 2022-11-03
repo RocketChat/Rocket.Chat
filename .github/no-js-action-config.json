@@ -1,8 +1,13 @@
 {
 	"added": {
 		"ignore": [
+			"packages/node-poplib/**/*",
 			"packages/accounts-linkedin/**/*",
-			"packages/linkedin-oauth/**/*"
+			"packages/linkedin-oauth/**/*",
+			"tests/cypress/integration/08-resolutions.spec.js",
+			"**/.eslintrc.js",
+			"packages/eslint-config/**",
+			"**/babel.config.js"
 		]
 	}
 }
