@@ -7,13 +7,13 @@ import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
-import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from '../../../helpers';
+import { appButtonProps, appStatusSpanProps, handleAPIError, warnAppInstall, warnStatusChange, handleInstallError } from '../../../helpers';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
 		const { status } = await Apps.installApp(id, version, permissionsGranted);
-		warnStatusChange(name, status);
+		warnAppInstall(name, status);
 	} catch (error) {
 		handleAPIError(error);
 	}

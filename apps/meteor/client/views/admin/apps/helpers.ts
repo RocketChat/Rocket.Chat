@@ -100,6 +100,10 @@ export const handleAPIError = (error: {
 	dispatchToastMessage({ type: 'error', message });
 };
 
+export const warnAppInstall = (appName: string): void => {
+	dispatchToastMessage({ type: 'success', message: `${appName} installed` });
+};
+
 export const warnStatusChange = (appName: string, status: AppStatus): void => {
 	if (appErroredStatuses.includes(status)) {
 		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
