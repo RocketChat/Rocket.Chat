@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import HumanizedPermissionsList from './components/HumanizedPermissionsList';
+import AppPermissionsList from './components/AppPermissionsList';
 
 type AppPermissionsReviewModalProps = {
 	appPermissions: Array<{ name: string; required?: boolean }>;
@@ -27,7 +27,7 @@ const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppP
 				{t('Apps_Permissions_Review_Modal_Subtitle')}
 			</Box>
 			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
-				<HumanizedPermissionsList appPermissions={appPermissions} />
+				<AppPermissionsList appPermissions={appPermissions} />
 			</Box>
 		</GenericModal>
 	);

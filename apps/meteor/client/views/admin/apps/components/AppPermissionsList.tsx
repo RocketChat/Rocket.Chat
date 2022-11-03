@@ -33,17 +33,21 @@ const defaultPermissions = [
 	'api',
 ];
 
-const HumanizedPermissionsList = ({ appPermissions }: { appPermissions: AppPermission[] | undefined }): ReactElement => {
+const AppPermissionsList = ({ appPermissions }: { appPermissions: AppPermission[] | undefined }): ReactElement => {
 	const t = useTranslation();
-	const handleHumanizePermission = (permission: string): string => t(`Apps_Permissions_${permission.replace('.', '_')}` as TranslationKey);
+	const handleAppPermissions = (permission: string): string => t(`Apps_Permissions_${permission.replace('.', '_')}` as TranslationKey);
 
 	if (appPermissions?.length) {
 		return (
 			<>
 				{appPermissions.map((permission) => (
 					<Fragment key={permission.name}>
-						<li>{handleHumanizePermission(permission.name)}</li>
-						{permission.required && <Box color='font-danger'>({t('required')})</Box>}
+						<li>{handleAppPermissions(permission.name)}</li>
+						{permission.required && (
+							<Box is='span' color='danger'>
+								({t('required')})
+							</Box>
+						)}
 					</Fragment>
 				))}
 			</>
@@ -54,11 +58,11 @@ const HumanizedPermissionsList = ({ appPermissions }: { appPermissions: AppPermi
 		<>
 			{defaultPermissions.map((permission) => (
 				<Fragment key={permission}>
-					<li>{handleHumanizePermission(permission)}</li>
+					<li>{handleAppPermissions(permission)}</li>
 				</Fragment>
 			))}
 		</>
 	);
 };
 
-export default HumanizedPermissionsList;
+export default AppPermissionsList;

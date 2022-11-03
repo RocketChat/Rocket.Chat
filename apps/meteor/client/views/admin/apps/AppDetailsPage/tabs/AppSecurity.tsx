@@ -3,7 +3,7 @@ import { Box, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import HumanizedPermissions from '../../components/HumanizedPermissionsList';
+import AppPermissionsList from '../../components/AppPermissionsList';
 
 type AppSecurityProps = {
 	privacyPolicySummary?: string;
@@ -33,7 +33,7 @@ const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermission
 							{t('Permissions')}
 						</Box>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
-							<HumanizedPermissions appPermissions={appPermissions} />
+							<AppPermissionsList appPermissions={appPermissions} />
 						</Box>
 					</Box>
 
