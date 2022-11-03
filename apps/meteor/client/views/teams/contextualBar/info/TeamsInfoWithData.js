@@ -13,7 +13,6 @@ import React, { useCallback } from 'react';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
-import MarkdownText from '../../../../components/MarkdownText';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -40,10 +39,6 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const openTabbar = useTabBarOpen();
 	const t = useTranslation();
 	const userId = useUserId();
-
-	room.type = room.t;
-	room.rid = room._id;
-	const { /* type, fname, */ broadcast, archived /* , joined = true */ } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -173,10 +168,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	return (
 		<TeamsInfo
-			{...room}
-			archived={archived}
-			broadcast={broadcast}
-			icon={'team'}
+			room={room}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
 			onClickClose={onClickClose}
@@ -185,9 +177,6 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
 			onClickConvertToChannel={canEdit && onClickConvertToChannel}
-			announcement={room.announcement && <MarkdownText variant='inline' content={room.announcement} />}
-			description={room.description && <MarkdownText variant='inline' content={room.description} />}
-			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
 		/>
 	);
 };
