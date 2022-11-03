@@ -57,7 +57,7 @@ API.v1.addRoute(
 				return API.v1.success({ priorities: update });
 			}
 			return API.v1.failure();
-		}
+		},
 	},
 );
 

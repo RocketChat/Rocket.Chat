@@ -194,15 +194,6 @@ export const LivechatEnterprise = {
 		if (!oldPriority) {
 			return priority;
 		}
-
-		// const { level: oldlevel } = oldPriority;
-		// const { level } = priority;
-
-		// if (oldlevel !== level) {
-		// 	updatePriorityInquiries(priority);
-		// }
-
-		// return priority;
 	},
 
 	removePriority(_id) {
@@ -216,15 +207,10 @@ export const LivechatEnterprise = {
 			});
 		}
 		const removed = LivechatPriority.removeById(_id);
-		if (removed) {
-			removePriorityFromRooms(_id);
-		}
+		// if (removed) {
+		// removePriorityFromRooms(_id);
+		// }
 		return removed;
-	},
-
-	updateRoomPriority(roomId, user, priority) {
-		updateInquiryQueuePriority(roomId, priority);
-		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {
