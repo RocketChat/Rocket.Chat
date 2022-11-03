@@ -147,9 +147,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 			)}
 			{status && (
 				<>
-					<Tag small variant={status.label === 'Disabled' ? 'secondary-danger' : ''}>
-						{status.label}
-					</Tag>
+					<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : ''}>{status.label}</Tag>
 				</>
 			)}
 		</Box>
