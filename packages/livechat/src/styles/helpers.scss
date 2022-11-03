@@ -1,0 +1,69 @@
+$breakpoints: (
+	'small':  ( min-width:  767px ),
+	'medium': ( min-width:  992px ),
+	'large':  ( min-width: 1200px )
+) !default;
+
+@mixin md($breakpoint) {
+	// If the key exists in the map
+	@if map-has-key($breakpoints, $breakpoint) {
+		// Prints a media query based on the value
+		@media (#{inspect(map-get($breakpoints, $breakpoint))}) {
+			@content;
+		}
+	}
+
+	// If the key doesn't exist in the map
+	@else {
+		@warn "Unfortunately, there are no value to `#{$breakpoint}` breakpoints. "
+			+ "Available breakpoints are: #{map-keys($breakpoints)}.";
+	}
+}
+
+@mixin keyframes( $animationName ) {
+	@-webkit-keyframes #{$animationName} {
+		@content;
+	}
+
+	@-moz-keyframes #{$animationName} {
+		@content;
+	}
+
+	@-o-keyframes #{$animationName} {
+		@content;
+	}
+
+	@keyframes #{$animationName} {
+		@content;
+	}
+}
+
+@mixin pressable-button($displacement: 2px, $border-width: 0) {
+	position: relative;
+
+	&:active,
+	&:focus:hover {
+		outline: none;
+	}
+
+	&:active {
+		transform: translateY($displacement);
+
+		opacity: 0.9;
+	}
+
+	&:active::before {
+		top: (-($border-width + $displacement));
+	}
+
+	&::before {
+		position: absolute;
+		top: (-$border-width);
+		right: (-$border-width);
+		bottom: (-$border-width);
+		left: (-$border-width);
+
+		content: "";
+		cursor: pointer;
+	}
+}
