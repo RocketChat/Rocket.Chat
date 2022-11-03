@@ -117,7 +117,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 
 		setModal(
 			<WarningModal
-				text={t(warnText, name)}
+				text={t(warnText, fname | name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
 				cancel={closeModal}
