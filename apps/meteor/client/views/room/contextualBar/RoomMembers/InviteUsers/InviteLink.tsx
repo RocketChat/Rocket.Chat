@@ -23,7 +23,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): Re
 					{linkText && <UrlInput value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />}
 				</Field.Row>
 				{captionText && (
-					<Box pb='x8' color='neutral-600' fontScale='c2'>
+					<Box pb='x8' color='annotation' fontScale='c2'>
 						{captionText}
 					</Box>
 				)}

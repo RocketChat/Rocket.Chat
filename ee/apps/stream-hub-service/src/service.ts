@@ -8,10 +8,6 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 
 const PORT = process.env.PORT || 3035;
 
-const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
-
-const maxDocMs = instancePing * 4; // 4 times the ping interval
-
 (async () => {
 	const db = await getConnection();
 
@@ -36,11 +32,12 @@ const maxDocMs = instancePing * 4; // 4 times the ping interval
 			try {
 				await api.nodeList();
 
-				const lastDocMs = watcher.getLastDocDelta();
-				if (lastDocMs > maxDocMs) {
+				if (watcher.isLastDocDelayed()) {
 					throw new Error('not healthy');
 				}
-			} catch (e) {
+			} catch (err) {
+				console.error('Service not healthy', err);
+
 				res.writeHead(500);
 				res.end('not healthy');
 				return;

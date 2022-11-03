@@ -73,7 +73,7 @@ const UserCard = forwardRef(function UserCard(
 				) : (
 					<Skeleton borderRadius='x4' width='x124' height='x124' variant='rect' />
 				)}
-				<Box flexGrow={0} display='flex' mb='x12' alignItems='center' justifyContent='center'>
+				<Box flexGrow={0} display='flex' mbs='x12' alignItems='center' justifyContent='center'>
 					{isLoading ? (
 						<>
 							<Skeleton variant='rect' height='x28' width='x28' borderRadius='x4' mi='x2' />
