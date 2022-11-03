@@ -97,7 +97,8 @@ export class VisitorInactivityMonitor {
 		]);
 		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
 		if (rejected.length) {
-			logger.error('Error placing room on hold. Detail: ', rejected);
+			logger.error({ msg: 'Error placing room on hold', error: rejected });
+
 			throw new Error('Error placing room on hold. Please check logs for more details.');
 		}
 	}
@@ -123,7 +124,8 @@ export class VisitorInactivityMonitor {
 		);
 		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
 		if (rejected.length) {
-			logger.error('Failed to handle abandoned omnichannel rooms. Detail: ', rejected);
+			logger.error({ msg: `Error while removing priority from ${rejected.length} rooms`, reason: rejected[0] });
+			logger.debug({ msg: 'Rejection results', rejected });
 		}
 
 		this._initializeMessageCache();

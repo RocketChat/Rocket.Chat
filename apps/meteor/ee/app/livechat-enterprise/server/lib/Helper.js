@@ -242,7 +242,8 @@ export const removePriorityFromRooms = async (priorityId) => {
 	);
 	const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
 	if (rejected.length) {
-		logger.error(`Error while removing priority from ${rejected.length} rooms. Detail: `, rejected);
+		logger.error({ msg: `Error while removing priority from ${rejected.length} rooms`, reason: rejected[0] });
+		logger.debug({ msg: 'Rejection results', rejected });
 	}
 
 	await LivechatRoomsRaw.unsetPriorityByIdFromAllOpenRooms(priorityId);
