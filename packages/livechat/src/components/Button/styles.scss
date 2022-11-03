@@ -1,0 +1,217 @@
+@use 'sass:math';
+
+@import '../../styles/colors';
+@import '../../styles/helpers';
+@import '../../styles/variables';
+
+$button-border-width: $default-border;
+$button-border-radius: $default-border-radius;
+$button-padding: (0.75 * $default-gap - $default-border) (1.5 * $default-gap - $default-border);
+$button-small-padding: (0.25 * $default-gap - math.div($default-border, 2)) (1.5 * $default-gap - $default-border);
+
+$button-active-displacement: 2px;
+
+$button-color: $color-text-lighter;
+$button-background-color: $color-blue;
+$button-danger-background-color: $color-dark-red;
+$button-secondary-background-color: $color-text-grey;
+
+$button-font-family: $font-family;
+$button-font-size: 0.875rem;
+$button-font-weight: 500;
+$button-line-height: 1.25rem;
+
+$button-disabled-opacity: $disabled-opacity;
+
+$button-loading-border-width: (2 * $default-border);
+$button-loading-gap: math.div($default-gap, 2);
+$button-loading-size: $button-line-height;
+$button-loading-color: #ffffff;
+
+$button-badge-size: 1.5rem;
+$button-badge-background-color: $color-red;
+$button-badge-color: $color-text-lighter;
+$button-badge-font-family: $font-family;
+$button-badge-font-size: 0.8125rem;
+$button-badge-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+
+$button-icon-size: 54px;
+$button-icon-border-radius: 4px;
+$button-icon-padding: 10px;
+
+.button {
+	@mixin state($color, $alpha-color: rgba($color, 0.5)) {
+		border-color: $color;
+		background: $color;
+
+		&.button--outline,
+		&.button--nude {
+			color: $color;
+
+			&.button--loading::after {
+				border-color: $color $alpha-color $alpha-color $alpha-color;
+			}
+		}
+	}
+
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+
+	box-sizing: border-box;
+	padding: $button-padding;
+
+	cursor: pointer;
+	user-select: none;
+	transition:
+		color $default-time-animation,
+		background-color $default-time-animation,
+		border-color $default-time-animation,
+		transform math.div($default-time-animation, 2);
+	white-space: nowrap;
+	text-decoration: none;
+
+	color: var(--font-color, $button-color);
+	border: $button-border-width solid;
+	border-radius: $button-border-radius;
+
+	font-family: $button-font-family;
+	font-size: $button-font-size;
+	font-weight: $button-font-weight;
+	line-height: $button-line-height;
+	justify-content: center;
+
+	@include state(var(--color, $button-background-color), transparent);
+	@include pressable-button($button-active-displacement, $button-border-width);
+
+	&:focus {
+		box-shadow: 0 0 5px rgba(#000000, 0.5);
+	}
+
+	&--danger {
+		color: $button-color;
+
+		@include state($button-danger-background-color);
+	}
+
+	&--secondary {
+		color: $button-color;
+
+		@include state($button-secondary-background-color);
+	}
+
+	&--outline {
+		background: none;
+	}
+
+	&--nude {
+		border-color: transparent;
+		background: none;
+
+		&:focus {
+			box-shadow: none;
+		}
+	}
+
+	&--img {
+		border: 0;
+		background-position: center;
+		background-size: cover;
+		box-shadow: 0 0 5px rgba(#000000, 0.5) !important;
+
+		&:focus {
+			box-shadow: none;
+		}
+	}
+
+	&--stack {
+		width: 100%;
+	}
+
+	&--small {
+		padding: $button-small-padding;
+	}
+
+	&--disabled {
+		cursor: not-allowed;
+
+		opacity: $button-disabled-opacity;
+	}
+
+	&--loading {
+		&::after {
+			position: relative;
+			left: $button-loading-gap;
+
+			display: inline-flex;
+
+			box-sizing: border-box;
+			width: $button-line-height;
+			height: $button-line-height;
+
+			content: "";
+			animation: button-loading-rotation 1s linear infinite;
+
+			border: $button-loading-border-width solid;
+
+			border-color: var(--font-color, $button-loading-color) transparent transparent transparent;
+			border-radius: 50%;
+		}
+
+		&.button--danger::after,
+		&.button--secondary::after {
+			border-color:
+				$button-loading-color
+				rgba($button-loading-color, 0.5)
+				rgba($button-loading-color, 0.5)
+				rgba($button-loading-color, 0.5);
+		}
+	}
+
+	&--icon {
+		width: $button-icon-size;
+		height: $button-icon-size;
+		padding: $button-icon-padding;
+
+		border-radius: $button-icon-border-radius;
+	}
+
+	&__badge {
+		position: absolute;
+		top: math.div(-$button-badge-size, 3);
+		right: math.div(-$button-badge-size, 3);
+
+		min-width: $button-badge-size;
+		height: $button-badge-size;
+		padding: 0 math.div($button-badge-font-size, 2);
+
+		text-align: center;
+		letter-spacing: 0;
+
+		color: $button-badge-color;
+		border-radius: math.div($button-badge-size, 2);
+
+		background-color: $button-badge-background-color;
+		box-shadow: $button-badge-shadow;
+
+		font-family: $button-badge-font-family;
+		font-size: $button-badge-font-size;
+		font-weight: bold;
+		line-height: $button-badge-size;
+	}
+
+	svg {
+		flex: 1;
+	}
+}
+
+@keyframes button-loading-rotation {
+	0% {
+		transform: rotate(0);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}

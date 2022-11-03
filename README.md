@@ -33,7 +33,7 @@ Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install yo
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#Support](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
 Join [#Dev](https://open.rocket.chat/channel/dev) for needing help from the community to develop new features.
-Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.youtube.com/watch?v=RdbqOdUb3Wk), held monthly.  Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call?type=detailed).
+Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.youtube.com/playlist?list=PLee3gqXJQrFVaxryc0OKTKc92yqQX9U-5), held monthly.  Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call?type=detailed).
 
 ## Contributions
 
@@ -53,7 +53,7 @@ In addition to the web interface, you can also download Rocket.Chat clients for:
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)  [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android)
 
 ## Learn More
-* [API](https://developer.rocket.chat)
+* [API](https://developer.rocket.chat/reference/api)
 * [See who's using Rocket.Chat](https://rocket.chat/customer-stories)
 
 ## Become a Rocketeer
@@ -68,6 +68,6 @@ We're hiring developers, support people, and product managers all the time. Plea
 * [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
 * [Email Newsletter](https://rocket.chat/newsletter)
 
-Any other questions, reach out to us at [contact@rocket.chat](contact@rocket.chat). We’d happy to help!
+Any other questions, reach out to us at [our website](https://rocket.chat/contact) or you can email us directly at [contact@rocket.chat](mailto:contact@rocket.chat). We’d be happy to help!
 
 

@@ -1,0 +1,18 @@
+@use 'sass:math';
+
+@import '../../styles/variables';
+
+$button-group-margin: math.div($default-gap, 4);
+
+.button-group {
+	display: flex;
+
+	margin: -$button-group-margin;
+	align-items: center;
+	flex-flow: row wrap;
+
+	&__item {
+		margin: $button-group-margin;
+		flex-grow: 1;
+	}
+}
