@@ -79,18 +79,9 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			const { rid, roomId } = this.bodyParams;
-			if (!rid && !roomId) {
-				return API.v1.failure('At least one of "rid" or "roomId" params is required');
-			}
+			const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
 
-			if (rid && roomId && rid !== roomId) {
-				return API.v1.failure('Params reference to different rooms, use only one param or both params with the same room id');
-			}
-
-			const finalRoomId = rid || roomId;
-
-			Meteor.call('readMessages', finalRoomId);
+			Meteor.call('readMessages', roomId);
 
 			return API.v1.success();
 		},

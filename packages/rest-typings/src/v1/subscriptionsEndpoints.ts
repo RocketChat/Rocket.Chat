@@ -41,14 +41,28 @@ const SubscriptionsGetOneSchema = {
 export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+			},
+			required: ['rid'],
+			additionalProperties: false,
 		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isSubscriptionsReadProps = ajv.compile<SubscriptionsRead>(SubscriptionsReadSchema);
