@@ -9,6 +9,7 @@ import {
 	MessageSystemBlock,
 	CheckBox,
 	MessageUsername,
+	MessageNames,
 } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
@@ -57,18 +58,26 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageSystemName onClick={user.username !== undefined ? openUserCard(user.username) : undefined} style={{ cursor: 'pointer' }}>
-						{getUserDisplayName(user.name, user.username, showRealName)}
-					</MessageSystemName>
-					{showUsername && (
-						<MessageUsername
-							data-username={user.username}
+					<MessageNames>
+						<MessageSystemName
 							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 							style={{ cursor: 'pointer' }}
 						>
-							@{user.username}
-						</MessageUsername>
-					)}
+							{getUserDisplayName(user.name, user.username, showRealName)}
+						</MessageSystemName>
+						{showUsername && (
+							<>
+								{' '}
+								<MessageUsername
+									data-username={user.username}
+									onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+									style={{ cursor: 'pointer' }}
+								>
+									@{user.username}
+								</MessageUsername>
+							</>
+						)}
+					</MessageNames>
 					{messageType && (
 						<MessageSystemBody
 							data-qa-type='system-message-body'
