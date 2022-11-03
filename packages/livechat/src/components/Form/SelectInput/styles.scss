@@ -1,0 +1,56 @@
+@import '../mixins';
+
+$form-input-select-arrow-size: $form-input-padding;
+$form-input-select-arrow-padding: $form-input-padding;
+$form-input-select-arrow-color: $color-text-light;
+
+.select-input {
+	position: relative;
+
+	display: flex;
+	flex: 1;
+
+	&__select {
+		@include form__input-box;
+
+		flex: 1;
+
+		padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
+
+		color: $form-input-color;
+
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+
+		&::-ms-expand {
+			display: none;
+		}
+
+		&--placeholder {
+			color: $form-input-placeholder-color;
+		}
+
+		&--small {
+			padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
+		}
+	}
+
+	&__option {
+		color: $form-input-color;
+	}
+
+	&__arrow {
+		position: absolute;
+		top: 50%;
+		right: $form-input-select-arrow-padding;
+
+		width: $form-input-select-arrow-size;
+		height: $form-input-select-arrow-size;
+
+		transform: translateY(-50%) translateY(2px);
+		pointer-events: none;
+
+		color: $form-input-select-arrow-color;
+	}
+}
