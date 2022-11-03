@@ -29,7 +29,7 @@ function CustomSoundsRoute(): ReactElement {
 
 	const t = useTranslation();
 	const customSound = useCustomSound();
-	const [currentSound, setcurrentSound] = useState({ id: '', state: '' });
+	const [currentSound, setcurrentSound] = useState<{ id?: string; state: 'play' | 'pause' }>({ id, state: 'play' });
 
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -146,7 +146,7 @@ function CustomSoundsRoute(): ReactElement {
 										</GenericTableCell>
 										<GenericTableCell>
 											<IconButton
-												name={currentSound.id === sound._id ? currentSound.state : 'play'}
+												icon={currentSound.id === sound._id ? currentSound.state : 'play'}
 												small
 												aria-label={t('Play')}
 												onClick={(e): void => {
