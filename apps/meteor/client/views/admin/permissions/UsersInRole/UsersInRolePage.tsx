@@ -3,11 +3,11 @@ import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useRef, ReactElement } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import Page from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import { useForm } from '../../../../hooks/useForm';
 import UsersInRoleTable from './UsersInRoleTable';
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
@@ -15,12 +15,16 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const reload = useRef<() => void>(() => undefined);
 
 	const [rid, setRid] = useState<string>('');
-	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers } = useForm({ users: [] });
-	const { users } = values as { users: string[] };
-	const { handleUsers } = handlers;
+	const {
+		control,
+		handleSubmit,
+		formState: { isDirty },
+		reset,
+	} = useForm<{ users: string[] }>({ defaultValues: { users: [] } });
+
+	const isButtonEnabled = isDirty;
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
@@ -33,32 +37,19 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async () => {
-		if (users.length === 0) {
-			return setUserError(t('User_cant_be_empty'));
-		}
-
+	const handleAdd = useMutableCallback(async ({ users }: { users: string[] }) => {
 		try {
-			users.map(async (u) => {
-				await addUser({ roleName: _id, username: u, roomId: rid });
-				dispatchToastMessage({ type: 'success', message: t('User_added') });
-				reload.current();
-				handleUsers([]);
-			});
+			await Promise.all(
+				users.map(async (u) => {
+					await addUser({ roleName: _id, username: u, roomId: rid });
+					dispatchToastMessage({ type: 'success', message: t('User_added') });
+					reload.current();
+					reset();
+				}),
+			);
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	});
-
-	const handleUserChange = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-
-		handleUsers(users.filter((current) => current !== value));
 	});
 
 	const handleChange = (value: unknown): void => {
@@ -88,15 +79,33 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 						<Field>
 							<Field.Label>{t('Add_users')}</Field.Label>
 							<Field.Row>
-								<UserAutoCompleteMultiple value={users} onChange={handleUserChange} placeholder={t('User')} />
+								<Controller
+									control={control}
+									name='users'
+									render={({ field: { onChange, value } }): ReactElement => (
+										<UserAutoCompleteMultiple
+											value={value}
+											placeholder={t('User')}
+											onChange={(member, action): void => {
+												if (!action && value) {
+													if (value.includes(member)) {
+														return;
+													}
+													return onChange([...value, member]);
+												}
+
+												onChange(value?.filter((current) => current !== member));
+											}}
+										/>
+									)}
+								/>
 
 								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleAdd} disabled={!users.length}>
+									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isButtonEnabled}>
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
 							</Field.Row>
-							<Field.Error>{userError}</Field.Error>
 						</Field>
 					</Margins>
 				</Box>
