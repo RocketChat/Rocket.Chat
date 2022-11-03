@@ -111,8 +111,8 @@ const CustomSoundsRoute = (): ReactElement => {
 			{context && (
 				<VerticalBar flexShrink={0}>
 					<VerticalBar.Header>
-						{context === 'edit' && t('Custom_Sound_Edit')}
-						{context === 'new' && t('Custom_Sound_Add')}
+						{context === 'edit' && <VerticalBar.Text>{t('Custom_Sound_Edit')}</VerticalBar.Text>}
+						{context === 'new' && <VerticalBar.Text>{t('Custom_Sound_Add')}</VerticalBar.Text>}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
 					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleChange} />}

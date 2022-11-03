@@ -6,7 +6,7 @@ import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTab
 import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
 
 type CustomSoundRowProps = {
-	onClick: (soundId: string) => void;
+	onClick: (soundId: string) => () => void;
 	sound: {
 		name: string;
 		_id: string;
@@ -29,43 +29,25 @@ const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps): ReactElement =
 		},
 		[customSound, isPlay],
 	);
-	// return (
-	// 	<TableRow key={_id} onKeyDown={onClick(_id, sound)} onClick={onClick(_id, sound)} tabIndex={0} role='link' action qa-user-id={_id}>
-	// 		<TableCell fontScale='p2' color='default'>
-	// 			<Box withTruncatedText>{name}</Box>
-	// 		</TableCell>
-	// 		<TableCell alignItems={'end'}>
-	// 			{!isPlay ? (
-	// 				<Button ghost small square aria-label={t('Play')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handleToggle(_id)}>
-	// 					<Icon name='play' size='x20' />
-	// 				</Button>
-	// 			) : (
-	// 				<Button ghost small square aria-label={t('Pause')} onClick={(e) => e.preventDefault() & e.stopPropagation() & handleToggle(_id)}>
-	// 					<Icon name='pause' size='x20' />
-	// 				</Button>
-	// 			)}
-	// 		</TableCell>
-	// 	</TableRow>
-	// );
 
 	return (
 		<GenericTableRow
 			key={sound._id}
-			onKeyDown={(): void => onClick(sound._id)}
-			onClick={(): void => onClick(sound._id)}
+			onKeyDown={onClick(sound._id)}
+			onClick={onClick(sound._id)}
 			tabIndex={0}
 			role='link'
 			action
 			qa-emoji-id={sound._id}
 		>
-			<GenericTableCell fontScale='p1' color='default'>
+			<GenericTableCell>
 				<Box withTruncatedText>{sound.name}</Box>
 			</GenericTableCell>
 			<GenericTableCell>
 				<IconButton
-					icon={!isPlay ? 'pause' : 'play'}
+					icon={!isPlay ? 'play' : 'pause'}
 					small
-					aria-label={!isPlay ? t('Pause') : t('Play')}
+					aria-label={!isPlay ? t('Play') : t('Pause')}
 					onClick={(e): void => {
 						e.preventDefault();
 						e.stopPropagation();
