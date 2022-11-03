@@ -1,9 +1,17 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+import URL from 'url';
+import QueryString from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
+import type { IE2EEMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 
+import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
 	toString,
@@ -20,6 +28,7 @@ import {
 	generateMnemonicPhrase,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
+import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import './events.js';
 import './tabbar';
@@ -29,10 +38,27 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
+import { APIClient } from '../../utils/client';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
+import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 
 let failedToDecodeKey = false;
 
 class E2E extends Emitter {
+	private started: boolean;
+
+	public enabled: ReactiveVarType<boolean>;
+
+	private _ready: ReactiveVarType<boolean>;
+
+	private instancesByRoomId: Record<IRoom['_id'], E2ERoom>;
+
+	private db_public_key: string | null;
+
+	private db_private_key: string | null;
+
+	private privateKey: CryptoKey | undefined;
+
 	constructor() {
 		super();
 		this.started = false;
@@ -50,23 +76,23 @@ class E2E extends Emitter {
 		});
 	}
 
-	log(...msg) {
+	log(...msg: unknown[]) {
 		log('E2E', ...msg);
 	}
 
-	error(...msg) {
+	error(...msg: unknown[]) {
 		logError('E2E', ...msg);
 	}
 
-	isEnabled() {
+	isEnabled(): boolean {
 		return this.enabled.get();
 	}
 
-	isReady() {
+	isReady(): boolean {
 		return this.enabled.get() && this._ready.get();
 	}
 
-	async getInstanceByRoomId(rid) {
+	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
 		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
@@ -84,11 +110,26 @@ class E2E extends Emitter {
 		return this.instancesByRoomId[rid];
 	}
 
-	removeInstanceByRoomId(rid) {
+	removeInstanceByRoomId(rid: IRoom['_id']): void {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async startClient() {
+	async persistKeys(public_key: string | null, private_key: string | null): Promise<void> {
+		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
+			throw new Error('Failed to persist keys as they are not strings.');
+		}
+
+		await APIClient.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+			public_key,
+			private_key,
+		});
+	}
+
+	getKeysFromLocalStorage(): [public_key: string | null, private_key: string | null] {
+		return [Meteor._localStorage.getItem('public_key'), Meteor._localStorage.getItem('private_key')];
+	}
+
+	async startClient(): Promise<void> {
 		if (this.started) {
 			return;
 		}
@@ -96,8 +137,10 @@ class E2E extends Emitter {
 		this.log('startClient -> STARTED');
 
 		this.started = true;
-		let public_key = Meteor._localStorage.getItem('public_key');
-		let private_key = Meteor._localStorage.getItem('private_key');
+
+		const [localPublicKey, localPrivateKey] = this.getKeysFromLocalStorage();
+		let public_key = localPublicKey;
+		let private_key = localPrivateKey;
 
 		await this.loadKeysFromDB();
 
@@ -132,12 +175,8 @@ class E2E extends Emitter {
 			await this.createAndLoadKeys();
 		}
 
-		// TODO: Split in 2 methods to persist keys
 		if (!this.db_public_key || !this.db_private_key) {
-			await call('e2e.setUserPublicAndPrivateKeys', {
-				public_key: Meteor._localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), await this.createRandomPassword()),
-			});
+			this.persistKeys(...this.getKeysFromLocalStorage());
 		}
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
@@ -176,33 +215,30 @@ class E2E extends Emitter {
 		this.emit('ready');
 	}
 
-	async stopClient() {
+	async stopClient(): Promise<void> {
 		this.log('-> Stop Client');
 		this.closeAlert();
 
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
-		this.privateKey = null;
+		this.privateKey = undefined;
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
 	}
 
-	async changePassword(newPassword) {
-		await call('e2e.setUserPublicAndPrivateKeys', {
-			public_key: Meteor._localStorage.getItem('public_key'),
-			private_key: await this.encodePrivateKey(Meteor._localStorage.getItem('private_key'), newPassword),
-		});
+	async changePassword(newPassword: string): Promise<void> {
+		await this.persistKeys(...this.getKeysFromLocalStorage());
 
 		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
 			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);
 		}
 	}
 
-	async loadKeysFromDB() {
+	async loadKeysFromDB(): Promise<void> {
 		try {
-			const { public_key, private_key } = await call('e2e.fetchMyKeys');
+			const { public_key, private_key } = await APIClient.get('/v1/e2e.fetchMyKeys');
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
@@ -211,7 +247,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	async loadKeys({ public_key, private_key }) {
+	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		Meteor._localStorage.setItem('public_key', public_key);
 
 		try {
@@ -223,7 +259,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	async createAndLoadKeys() {
+	async createAndLoadKeys(): Promise<void> {
 		// Could not obtain public-private keypair from server.
 		let key;
 		try {
@@ -252,17 +288,17 @@ class E2E extends Emitter {
 		this.requestSubscriptionKeys();
 	}
 
-	async requestSubscriptionKeys() {
+	async requestSubscriptionKeys(): Promise<void> {
 		call('e2e.requestSubscriptionKeys');
 	}
 
-	async createRandomPassword() {
+	async createRandomPassword(): Promise<string> {
 		const randomPassword = await generateMnemonicPhrase(5);
 		Meteor._localStorage.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
 
-	async encodePrivateKey(private_key, password) {
+	async encodePrivateKey(private_key: string, password: string): Promise<string | void> {
 		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
@@ -275,7 +311,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	async getMasterKey(password) {
+	async getMasterKey(password: string): Promise<void | CryptoKey> {
 		if (password == null) {
 			alert('You should provide a password');
 		}
@@ -296,7 +332,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	async requestPassword() {
+	async requestPassword(): Promise<string> {
 		return new Promise((resolve) => {
 			const showModal = () => {
 				imperativeModal.open({
@@ -338,7 +374,7 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decodePrivateKey(private_key) {
+	async decodePrivateKey(private_key: string): Promise<string> {
 		const password = await this.requestPassword();
 
 		const masterKey = await this.getMasterKey(password);
@@ -353,8 +389,8 @@ class E2E extends Emitter {
 		}
 	}
 
-	async decryptMessage(message) {
-		if (message.t !== 'e2e' || message.e2e === 'done') {
+	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
+		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
 		}
 
@@ -370,37 +406,85 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		return {
+		const decryptedMessage: IE2EEMessage = {
 			...message,
 			msg: data.text,
 			e2e: 'done',
 		};
+
+		console.log('before quote', decryptedMessage);
+
+		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
+		console.log('after quote', decryptedMessageWithQuote);
+
+		return decryptedMessageWithQuote;
 	}
 
-	async decryptPendingMessages() {
-		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg));
+	async decryptPendingMessages(): Promise<void> {
+		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
+			Messages.direct.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
 		});
 	}
 
-	async decryptSubscription(rid) {
+	async decryptSubscription(rid: IRoom['_id']): Promise<void> {
 		const e2eRoom = await this.getInstanceByRoomId(rid);
 		this.log('decryptSubscription ->', rid);
 		e2eRoom?.decryptSubscription();
 	}
 
-	async decryptSubscriptions() {
+	async decryptSubscriptions(): Promise<void> {
 		Subscriptions.find({
 			encrypted: true,
-		}).forEach((room) => this.decryptSubscription(room._id));
+		}).forEach((room: IRoom) => this.decryptSubscription(room._id));
 	}
 
-	openAlert(config) {
+	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {
 		banners.open({ id: 'e2e', ...config });
 	}
 
-	closeAlert() {
+	closeAlert(): void {
 		banners.closeById('e2e');
+	}
+
+	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
+		const urls = message.msg.match(getMessageUrlRegex()) || [];
+
+		await Promise.all(
+			urls.map(async (url) => {
+				if (!url.includes(Meteor.absoluteUrl())) {
+					return;
+				}
+
+				const urlObj = URL.parse(url);
+				// if the URL doesn't have query params (doesn't reference message) skip
+				if (!urlObj.query) {
+					return;
+				}
+
+				const { msg: msgId } = QueryString.parse(urlObj.query);
+
+				if (!msgId || Array.isArray(msgId)) {
+					return;
+				}
+
+				const getQuotedMessage = await APIClient.get('/v1/chat.getMessage', { msgId });
+				const quotedMessage = getQuotedMessage?.message;
+
+				if (!quotedMessage) {
+					return;
+				}
+
+				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
+
+				message.attachments = message.attachments || [];
+
+				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+
+				message.attachments.push(quoteAttachment);
+			}),
+		);
+
+		return message;
 	}
 }
 
