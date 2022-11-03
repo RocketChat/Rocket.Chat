@@ -1,0 +1,22 @@
+http:
+  routers:
+    router2:
+      rule: Host(`localhost`) && PathPrefix(`/sockjs/`, `/websocket/`)
+      # service: ddp-streamer-service@docker
+      service: ecdh-proxy-socket-service@docker
+      priority: 2
+      entryPoints:
+        - web
+    router1:
+      rule: Host(`localhost`)
+      service: ecdh-proxy-http-service@docker
+      # service: service1
+      priority: 1
+      entryPoints:
+        - web
+
+  services:
+    service1:
+      loadBalancer:
+        servers:
+          - url: http://host.docker.internal:3000
