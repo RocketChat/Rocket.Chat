@@ -1,12 +1,7 @@
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatTrigger } from '../../../../models/server/raw';
+import { LivechatTrigger } from '@rocket.chat/models';
 
-export async function findTriggers({ userId, pagination: { offset, count, sort } }) {
-	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
-		throw new Error('error-not-authorized');
-	}
-
-	const cursor = await LivechatTrigger.find(
+export async function findTriggers({ pagination: { offset, count, sort } }) {
+	const { cursor, totalCount } = LivechatTrigger.findPaginated(
 		{},
 		{
 			sort: sort || { name: 1 },
@@ -15,9 +10,7 @@ export async function findTriggers({ userId, pagination: { offset, count, sort }
 		},
 	);
 
-	const total = await cursor.count();
-
-	const triggers = await cursor.toArray();
+	const [triggers, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		triggers,
@@ -27,10 +20,6 @@ export async function findTriggers({ userId, pagination: { offset, count, sort }
 	};
 }
 
-export async function findTriggerById({ userId, triggerId }) {
-	if (!(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
-		throw new Error('error-not-authorized');
-	}
-
+export async function findTriggerById({ triggerId }) {
 	return LivechatTrigger.findOneById(triggerId);
 }

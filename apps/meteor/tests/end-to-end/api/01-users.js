@@ -28,7 +28,7 @@ function createTestUser() {
 		request
 			.post(api('users.create'))
 			.set(credentials)
-			.send({ email, name: username, username, password })
+			.send({ email, name: username, username, password, joinDefaultChannels: false })
 			.end((err, res) => resolve(res.body.user));
 	});
 }
@@ -65,35 +65,57 @@ function deleteTestUser(user) {
 	});
 }
 
+async function createChannel(userCredentials, name) {
+	const res = await request.post(api('channels.create')).set(userCredentials).send({
+		name,
+	});
+
+	return res.body.channel._id;
+}
+
+async function joinChannel(userCredentials, roomId) {
+	return request.post(api('channels.join')).set(userCredentials).send({
+		roomId,
+	});
+}
+
 describe('[Users]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	it('enabling E2E in server and generating keys to user...', (done) => {
-		updateSetting('E2E_Enable', true).then(() => {
-			request
-				.post(api('e2e.setUserPublicAndPrivateKeys'))
-				.set(credentials)
-				.send({
-					private_key: 'test',
-					public_key: 'test',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
+	it('enabling E2E in server and generating keys to user...', async () => {
+		await updateSetting('E2E_Enable', true);
+		await request
+			.post(api('e2e.setUserPublicAndPrivateKeys'))
+			.set(credentials)
+			.send({
+				private_key: 'test',
+				public_key: 'test',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
+		await request
+			.get(api('e2e.fetchMyKeys'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('public_key', 'test');
+				expect(res.body).to.have.property('private_key', 'test');
+			});
 	});
 
 	describe('[/users.create]', () => {
 		before((done) => clearCustomFields(done));
 		after((done) => clearCustomFields(done));
 
-		it('should create a new user', (done) => {
-			request
+		it('should create a new user', async () => {
+			await request
 				.post(api('users.create'))
 				.set(credentials)
 				.send({
@@ -120,8 +142,16 @@ describe('[Users]', function () {
 
 					targetUser._id = res.body.user._id;
 					targetUser.username = res.body.user.username;
+				});
+
+			await request
+				.post(api('login'))
+				.send({
+					user: apiUsername,
+					password,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should create a new user with custom fields', (done) => {
@@ -328,6 +358,7 @@ describe('[Users]', function () {
 					email,
 					name: 'name',
 					username,
+					pass: 'test',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -447,7 +478,7 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
-		it("should NOT return some services fields when request to another user's info even if the user has the necessary permission", (done) => {
+		it("should NOT return any services fields when request to another user's info even if the user has the necessary permission", (done) => {
 			updatePermission('view-full-other-user-info', ['admin']).then(() => {
 				request
 					.get(api('users.info'))
@@ -460,12 +491,7 @@ describe('[Users]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.not.have.nested.property('user.services.emailCode');
-						expect(res.body).to.not.have.nested.property('user.services.cloud');
-						expect(res.body).to.not.have.nested.property('user.services.email2fa');
-						expect(res.body).to.not.have.nested.property('user.services.totp');
-						expect(res.body).to.not.have.nested.property('user.services.password');
-						expect(res.body).to.not.have.nested.property('user.services.email');
-						expect(res.body).to.not.have.nested.property('user.services.resume');
+						expect(res.body).to.not.have.nested.property('user.services');
 					})
 					.end(done);
 			});
@@ -2059,22 +2085,9 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.delete]', () => {
-		const updatePermission = (permission, roles) =>
-			new Promise((resolve) => {
-				request
-					.post(api('permissions.update'))
-					.set(credentials)
-					.send({ permissions: [{ _id: permission, roles }] })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(resolve);
-			});
-		const testUsername = `testuserdelete${+new Date()}`;
 		let targetUser;
 		beforeEach((done) => {
+			const testUsername = `testuserdelete${+new Date()}`;
 			request
 				.post(api('users.register'))
 				.set(credentials)
@@ -3093,11 +3106,35 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.autocomplete]', () => {
-		it('should return an empty list when the user does not have the necessary permission', (done) => {
-			updatePermission('view-outside-room', []).then(() => {
+		after(() => {
+			updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+		});
+
+		describe('[without permission]', () => {
+			let user;
+			let userCredentials;
+			let user2;
+			let user2Credentials;
+			let roomId;
+
+			this.timeout(20000);
+
+			before(async () => {
+				user = await createTestUser();
+				user2 = await createTestUser();
+
+				userCredentials = await loginTestUser(user);
+				user2Credentials = await loginTestUser(user2);
+
+				await updatePermission('view-outside-room', []);
+
+				roomId = await createChannel(userCredentials, `channel.autocomplete.${Date.now()}`);
+			});
+
+			it('should return an empty list when the user does not have any subscription', (done) => {
 				request
 					.get(api('users.autocomplete?selector={}'))
-					.set(credentials)
+					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -3106,9 +3143,28 @@ describe('[Users]', function () {
 					})
 					.end(done);
 			});
+
+			it('should return users that are subscribed to the same rooms as the requester', async () => {
+				await joinChannel(user2Credentials, roomId);
+
+				request
+					.get(api('users.autocomplete?selector={}'))
+					.set(userCredentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
+					});
+			});
 		});
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+
+		describe('[with permission]', () => {
+			before(() => {
+				updatePermission('view-outside-room', ['admin', 'user']);
+			});
+
+			it('should return an error when the required parameter "selector" is not provided', () => {
 				request
 					.get(api('users.autocomplete'))
 					.set(credentials)
@@ -3117,22 +3173,77 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
+					});
+			});
+			it('should return the users to fill auto complete', (done) => {
+				request
+					.get(api('users.autocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array');
 					})
 					.end(done);
 			});
-		});
-		it('should return the users to fill auto complete', (done) => {
-			request
-				.get(api('users.autocomplete?selector={}'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('items').and.to.be.an('array');
-				})
-				.end(done);
+
+			it('should filter results when using allowed operators', (done) => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({
+						selector: JSON.stringify({
+							conditions: {
+								$and: [
+									{
+										active: false,
+									},
+									{
+										status: 'online',
+									},
+								],
+							},
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
+					})
+					.end(done);
+			});
+
+			it('should return an error when using forbidden operators', (done) => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({
+						selector: JSON.stringify({
+							conditions: {
+								$nor: [
+									{
+										username: {
+											$exists: false,
+										},
+									},
+									{
+										status: {
+											$exists: false,
+										},
+									},
+								],
+							},
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -3287,6 +3398,19 @@ describe('[Users]', function () {
 				});
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
+		it('should return an error when the payload is missing all supported fields', (done) => {
+			request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+				})
+				.end(done);
 		});
 	});
 

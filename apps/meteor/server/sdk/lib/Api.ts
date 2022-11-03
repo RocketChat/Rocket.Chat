@@ -1,13 +1,12 @@
-// import { BaseBroker } from './BaseBroker';
-import { IBroker } from '../types/IBroker';
-import { ServiceClass } from '../types/ServiceClass';
-import { EventSignatures } from './Events';
-import { LocalBroker } from './LocalBroker';
+import type { IApiService } from '../types/IApiService';
+import type { IBroker, IBrokerNode } from '../types/IBroker';
+import type { IServiceClass } from '../types/ServiceClass';
+import type { EventSignatures } from './Events';
 
-export class Api {
-	private services = new Set<ServiceClass>();
+export class Api implements IApiService {
+	private services: Set<IServiceClass> = new Set<IServiceClass>();
 
-	private broker: IBroker = new LocalBroker();
+	private broker: IBroker;
 
 	// set a broker for the API and registers all services in the broker
 	setBroker(broker: IBroker): void {
@@ -16,7 +15,7 @@ export class Api {
 		this.services.forEach((service) => this.broker.createService(service));
 	}
 
-	destroyService(instance: ServiceClass): void {
+	destroyService(instance: IServiceClass): void {
 		if (!this.services.has(instance)) {
 			return;
 		}
@@ -28,8 +27,10 @@ export class Api {
 		this.services.delete(instance);
 	}
 
-	registerService(instance: ServiceClass): void {
+	registerService(instance: IServiceClass): void {
 		this.services.add(instance);
+
+		instance.setApi(this);
 
 		if (this.broker) {
 			this.broker.createService(instance);
@@ -58,5 +59,16 @@ export class Api {
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		return this.broker.broadcastLocal(event, ...args);
+	}
+
+	nodeList(): Promise<IBrokerNode[]> {
+		return this.broker.nodeList();
+	}
+
+	async start(): Promise<void> {
+		if (!this.broker) {
+			throw new Error('No broker set to start.');
+		}
+		await this.broker.start();
 	}
 }

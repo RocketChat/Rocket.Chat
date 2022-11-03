@@ -1,7 +1,6 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import type { ObjectId, FilterQuery } from 'mongodb';
+import type { ObjectId, Filter } from 'mongodb';
 import { createContext } from 'react';
-import type { Subscription, Unsubscribe } from 'use-subscription';
 
 export type SubscriptionQuery =
 	| {
@@ -33,10 +32,24 @@ export type UserContextValue = {
 	user: IUser | null;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	logout: () => Promise<void>;
-	queryPreference: <T>(key: string | ObjectId, defaultValue?: T) => Subscription<T | undefined>;
-	querySubscription: (query: FilterQuery<ISubscription>, fields?: Fields, sort?: Sort) => Subscription<ISubscription | undefined>;
-	queryRoom: (query: FilterQuery<IRoom>, fields?: Fields, sort?: Sort) => Subscription<IRoom | undefined>;
-	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription<Array<ISubscription> | []>;
+	queryPreference: <T>(
+		key: string | ObjectId,
+		defaultValue?: T,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined];
+	querySubscription: (
+		query: Filter<Pick<ISubscription, 'rid' | 'name'>>,
+		fields?: Fields,
+		sort?: Sort,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISubscription | undefined];
+	queryRoom: (
+		query: Filter<Pick<IRoom, '_id'>>,
+		fields?: Fields,
+		sort?: Sort,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IRoom | undefined];
+	querySubscriptions: (
+		query: SubscriptionQuery,
+		options?: FindOptions,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => Array<ISubscription> | []];
 };
 
 export const UserContext = createContext<UserContextValue>({
@@ -44,20 +57,8 @@ export const UserContext = createContext<UserContextValue>({
 	user: null,
 	loginWithPassword: async () => undefined,
 	logout: () => Promise.resolve(),
-	queryPreference: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	querySubscription: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	queryRoom: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	querySubscriptions: () => ({
-		getCurrentValue: (): [] => [],
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
+	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
+	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],
+	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],
+	querySubscriptions: () => [() => (): void => undefined, (): [] => []],
 });

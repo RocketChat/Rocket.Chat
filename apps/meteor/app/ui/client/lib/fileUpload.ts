@@ -2,16 +2,19 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/client';
-import { UserAction, USER_ACTIVITIES } from '../index';
+import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { chatMessages } from '../views/app/room';
+import { chatMessages } from './ChatMessages';
+import { getErrorMessage } from '../../../../client/lib/errorHandling';
+import { Rooms } from '../../../models/client';
 
-type Uploading = {
+export type Uploading = {
 	id: string;
 	name: string;
 	percentage: number;
@@ -19,7 +22,6 @@ type Uploading = {
 };
 
 declare module 'meteor/session' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Session {
 		function get(key: 'uploading'): Uploading[];
@@ -130,12 +132,12 @@ export const uploadFileWithMessage = async (
 		if (!Session.get('uploading').length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
-	} catch (error) {
+	} catch (error: unknown) {
 		const uploads = Session.get('uploading');
 		uploads
 			.filter((u) => u.id === upload.id)
 			.forEach((u) => {
-				u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				u.error = new Error(getErrorMessage(error));
 				u.percentage = 0;
 			});
 		if (!uploads.length) {
@@ -147,7 +149,8 @@ export const uploadFileWithMessage = async (
 
 type SingleOrArray<T> = T | T[];
 
-type FileUploadProp = SingleOrArray<{
+/* @deprecated */
+export type FileUploadProp = SingleOrArray<{
 	file: File;
 	name: string;
 }>;
@@ -155,7 +158,7 @@ type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLInputElement,
+	input: HTMLInputElement | ArrayLike<HTMLInputElement> | HTMLTextAreaElement,
 	{
 		rid,
 		tmid,
@@ -172,8 +175,8 @@ export const fileUpload = async (
 
 	const files = Array.isArray(f) ? f : [f];
 
-	const replies = $(input).data('reply') || [];
-	const mention = $(input).data('mention-user') || false;
+	const replies = input ? $(input).data('reply') : [];
+	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';
 
@@ -187,6 +190,7 @@ export const fileUpload = async (
 
 	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
 	const messageBoxText = Meteor._localStorage.getItem(key) || '';
+	const room = Rooms.findOne({ _id: rid });
 
 	const uploadNextFile = (): void => {
 		const file = files.pop();
@@ -200,6 +204,7 @@ export const fileUpload = async (
 				file: file.file,
 				fileName: file.name,
 				fileDescription: messageBoxText,
+				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();
@@ -221,8 +226,10 @@ export const fileUpload = async (
 					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
 					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
 					const { input } = chatMessages[chatMessageKey];
-					input.value = null;
-					$(input).trigger('input');
+					if (input) {
+						input.value = '';
+						$(input).trigger('input');
+					}
 					Meteor._localStorage.removeItem(localStorageKey);
 					imperativeModal.close();
 					uploadNextFile();

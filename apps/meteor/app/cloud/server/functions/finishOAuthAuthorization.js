@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
 import { getRedirectUri } from './getRedirectUri';
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users } from '../../../models/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
@@ -33,12 +33,13 @@ export function finishOAuthAuthorization(code, state) {
 				redirect_uri: getRedirectUri(),
 			},
 		});
-	} catch (e) {
-		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
-		}
+	} catch (err) {
+		SystemLogger.error({
+			msg: 'Failed to finish OAuth authorization with Rocket.Chat Cloud',
+			url: '/api/oauth/token',
+			...(err.response?.data && { cloudError: err.response.data }),
+			err,
+		});
 
 		return false;
 	}

@@ -1,4 +1,4 @@
-import { Icon, Button } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -32,7 +32,7 @@ const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElemen
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal();
 		};
@@ -42,9 +42,7 @@ const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElemen
 
 	return (
 		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
+			<IconButton icon='trash' mini small title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };

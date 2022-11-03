@@ -1,28 +1,28 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
 import { ReactElement } from 'react';
-import { Unsubscribe, useSubscription, Subscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+/* eslint-disable @typescript-eslint/no-empty-interface */
 export interface EEFormHooks {}
 
 const createFormSubscription = (): {
 	registerForm: (form: EEFormHooks) => void;
 	unregisterForm: (form: keyof EEFormHooks) => void;
-	formsSubscription: Subscription<EEFormHooks>;
+	formsSubscription: readonly [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => EEFormHooks];
 	getForm: (form: keyof EEFormHooks) => () => ReactElement;
 } => {
 	let forms = {} as EEFormHooks;
 	let updateCb = (): void => undefined;
 
-	const formsSubscription: Subscription<EEFormHooks> = {
-		subscribe: (cb: () => void): Unsubscribe => {
+	const formsSubscription = [
+		(cb: () => void): (() => void) => {
 			updateCb = cb;
 			return (): void => {
 				updateCb = (): void => undefined;
 			};
 		},
-		getCurrentValue: (): EEFormHooks => forms,
-	};
+		(): EEFormHooks => forms,
+	] as const;
+
 	const registerForm = (newForm: EEFormHooks): void => {
 		forms = { ...forms, ...newForm };
 		updateCb();
@@ -37,6 +37,8 @@ const createFormSubscription = (): {
 	return { registerForm, unregisterForm, formsSubscription, getForm };
 };
 
-export const { registerForm, unregisterForm, formsSubscription, getForm } = createFormSubscription();
+const { registerForm, unregisterForm, formsSubscription, getForm } = createFormSubscription();
 
-export const useFormsSubscription = (): EEFormHooks => useSubscription(formsSubscription);
+export { registerForm, unregisterForm, getForm };
+
+export const useFormsSubscription = (): EEFormHooks => useSyncExternalStore(...formsSubscription);

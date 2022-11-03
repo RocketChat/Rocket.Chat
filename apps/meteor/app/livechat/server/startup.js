@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
-import { LivechatRooms } from '../../models';
+import { LivechatRooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';

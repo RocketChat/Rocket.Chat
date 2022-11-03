@@ -1,10 +1,13 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Icon, SidebarFooter } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { ReactElement, MouseEvent, ReactNode } from 'react';
 
+import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import { CallActionsType } from '../../../contexts/CallContext';
+import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 
 type VoipFooterPropsType = {
 	caller: ICallerInfo;
@@ -16,19 +19,14 @@ type VoipFooterPropsType = {
 	paused: boolean;
 	toggleMic: (state: boolean) => void;
 	togglePause: (state: boolean) => void;
-	tooltips: {
-		mute: string;
-		holdCall: string;
-		acceptCall: string;
-		endCall: string;
-	};
 	callsInQueue: string;
-
-	createRoom: (caller: ICallerInfo) => IVoipRoom['_id'];
+	createRoom: (caller: ICallerInfo, callDirection?: IVoipRoom['direction']) => Promise<IVoipRoom['_id']>;
 	openRoom: (rid: IVoipRoom['_id']) => void;
 	dispatchEvent: (params: { event: VoipClientEvents; rid: string; comment?: string }) => void;
 	openedRoomInfo: { v: { token?: string | undefined }; rid: string };
-	anonymousText: string;
+	isEnterprise: boolean;
+	children?: ReactNode;
+	options: VoipFooterMenuOptions;
 };
 
 export const VoipFooter = ({
@@ -41,20 +39,38 @@ export const VoipFooter = ({
 	paused,
 	toggleMic,
 	togglePause,
-	tooltips,
 	createRoom,
 	openRoom,
 	callsInQueue,
 	dispatchEvent,
 	openedRoomInfo,
-	anonymousText,
+	isEnterprise = false,
+	children,
+	options,
 }: VoipFooterPropsType): ReactElement => {
+	const contactLabel = useOmnichannelContactLabel(caller);
+	const t = useTranslation();
+
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
 			? css`
 					cursor: pointer;
 			  `
 			: '';
+
+	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {
+		e.stopPropagation();
+		const eventName = paused ? 'VOIP-CALL-UNHOLD' : 'VOIP-CALL-ON-HOLD';
+		dispatchEvent({ event: VoipClientEvents[eventName], rid: openedRoomInfo.rid });
+		togglePause(!paused);
+	};
+
+	const holdTitle = ((): string => {
+		if (!isEnterprise) {
+			return t('Hold_EE_only');
+		}
+		return paused ? t('Resume') : t('Hold');
+	})();
 
 	return (
 		<SidebarFooter elevated>
@@ -74,48 +90,34 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium>
-							<Button
-								disabled={paused}
-								title={tooltips.mute}
+						<ButtonGroup medium className='sidebar--custom-colors' onClick={(e): void => e.stopPropagation()}>
+							<IconButton
 								small
-								square
-								nude
+								disabled={paused}
+								icon={muted ? 'mic-off' : 'mic'}
+								color={muted ? 'disabled' : 'hint'}
+								data-tooltip={muted ? t('Turn_on_microphone') : t('Turn_off_microphone')}
 								onClick={(e): void => {
 									e.stopPropagation();
 									toggleMic(!muted);
 								}}
-							>
-								{muted ? <Icon name='mic' color='neutral-500' size='x24' /> : <Icon name='mic' color='info' size='x24' />}
-							</Button>
-							<Button
-								title={tooltips.holdCall}
+							/>
+							<IconButton
 								small
-								square
-								nude
-								onClick={(e): void => {
-									e.stopPropagation();
-									if (paused) {
-										dispatchEvent({ event: VoipClientEvents['VOIP-CALL-UNHOLD'], rid: openedRoomInfo.rid });
-									} else {
-										dispatchEvent({ event: VoipClientEvents['VOIP-CALL-ON-HOLD'], rid: openedRoomInfo.rid });
-									}
-									togglePause(!paused);
-								}}
-							>
-								{paused ? (
-									<Icon name='pause-unfilled' color='neutral-500' size='x24' />
-								) : (
-									<Icon name='pause-unfilled' color='info' size='x24' />
-								)}
-							</Button>
+								data-tooltip={holdTitle}
+								disabled={!isEnterprise}
+								icon={paused ? 'pause' : 'pause-unfilled'}
+								color={paused ? 'disabled' : 'hint'}
+								onClick={handleHold}
+							/>
+							{options && <Menu color='neutral-500' data-tooltip={t('More_options')} options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>
 				<Box display='flex' flexDirection='row' mi='16px' mbe='12px' justifyContent='space-between' alignItems='center'>
 					<Box>
 						<Box color='white' fontScale='p2' withTruncatedText>
-							{caller.callerName || caller.callerId || anonymousText}
+							{contactLabel || t('Anonymous')}
 						</Box>
 						<Box color='hint' fontScale='c1' withTruncatedText>
 							{subtitle}
@@ -123,18 +125,18 @@ export const VoipFooter = ({
 					</Box>
 
 					<ButtonGroup medium>
-						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
+						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD' || callerState === 'OFFER_SENT') && (
 							<Button
-								title={tooltips.endCall}
-								disabled={paused}
 								small
 								square
 								danger
-								primary
+								disabled={paused}
+								aria-label={t('End_call')}
+								data-tooltip={t('End_Call')}
 								onClick={(e): unknown => {
 									e.stopPropagation();
-									toggleMic(false);
-									togglePause(false);
+									muted && toggleMic(false);
+									paused && togglePause(false);
 									return callActions.end();
 								}}
 							>
@@ -142,17 +144,16 @@ export const VoipFooter = ({
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
-							<Button title={tooltips.endCall} small square danger primary onClick={callActions.reject}>
+							<Button data-tooltip={t('Decline')} aria-label={t('Decline')} small square danger onClick={callActions.reject}>
 								<Icon name='phone-off' size='x16' />
 							</Button>
 						)}
 						{callerState === 'OFFER_RECEIVED' && (
 							<Button
-								title={tooltips.acceptCall}
 								small
 								square
 								success
-								primary
+								data-tooltip={t('Accept')}
 								onClick={async (): Promise<void> => {
 									callActions.pickUp();
 									const rid = await createRoom(caller);
@@ -165,6 +166,7 @@ export const VoipFooter = ({
 					</ButtonGroup>
 				</Box>
 			</Box>
+			{children}
 		</SidebarFooter>
 	);
 };

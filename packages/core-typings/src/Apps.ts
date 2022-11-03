@@ -55,6 +55,10 @@ export type AppSubscriptionInfo = {
 	isSubscribedViaBundle: boolean;
 };
 
+export type AppPermission = {
+	name: string;
+};
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -65,6 +69,8 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	shortDescription?: string;
+	privacyPolicySummary: string;
 	detailedDescription: {
 		raw: string;
 		rendered: string;
@@ -97,8 +103,11 @@ export type App = {
 		errors: { [key: string]: string };
 		warnings: { [key: string]: string };
 	};
-	marketplace: unknown;
+	tosLink: string;
+	privacyLink: string;
+	marketplace?: unknown;
 	modifiedAt: string;
-	permissions: unknown[];
+	permissions: AppPermission[];
 	languages: string[];
+	createdDate: string;
 };

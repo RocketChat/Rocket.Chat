@@ -1,10 +1,15 @@
 import { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import Item from './Item';
 
-const Attachments: FC<{ attachments: Array<MessageAttachmentBase>; file?: FileProp }> = ({ attachments = null, file }): any => {
+type AttachmentsProps = {
+	file?: FileProp;
+	attachments: MessageAttachmentBase[];
+};
+
+const Attachments = ({ attachments, file }: AttachmentsProps): ReactElement => {
 	const { className, ref } = useBlockRendered<HTMLDivElement>();
 	return (
 		<>

@@ -2,6 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
+import type { IVisitor } from './IInquiry';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
@@ -24,6 +25,10 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
+	joinCodeRequired?: boolean;
+	announcementDetails?: {
+		style?: string;
+	};
 	encrypted?: boolean;
 	topic?: string;
 
@@ -37,7 +42,6 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	jitsiTimeout?: Date;
 	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
@@ -77,13 +81,21 @@ export interface IRoom extends IRocketChatRecord {
 	description?: string;
 	createdOTR?: boolean;
 	e2eKeyId?: string;
+
+	/* @deprecated */
 	federated?: boolean;
 
 	channel?: { _id: string };
 }
 
+export interface IRoomFederated extends IRoom {
+	federated: true;
+}
+
+export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
 export interface ICreatedRoom extends IRoom {
 	rid: string;
+	inserted: boolean;
 }
 
 export interface ITeamRoom extends IRoom {
@@ -105,7 +117,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
-export const isDirectMessageRoom = (room: IRoom | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
+export const isDirectMessageRoom = (room: Partial<IRoom> | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
 export const isMultipleDirectMessageRoom = (room: IRoom | IDirectMessageRoom): room is IDirectMessageRoom =>
 	isDirectMessageRoom(room) && room.uids.length > 2;
 
@@ -120,15 +132,11 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: {
-		_id?: string;
-		token?: string;
-		status: 'online' | 'busy' | 'away' | 'offline';
-	};
+	v: IVisitor;
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
-		thread: string;
+		thread: string[];
 		replyTo: string;
 		subject: string;
 	};
@@ -166,7 +174,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
-	status?: 'queued'; // TODO: missing types for this
+
+	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;
@@ -182,10 +191,18 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	t: 'l';
+	omnichannel?: {
+		predictedVisitorAbandonmentAt: Date;
+	};
+	// sms field is used when the room is created from one of the internal SMS integrations (e.g. Twilio)
+	sms?: {
+		from: string;
+	};
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
 	t: 'v';
+	name: string;
 	// The timestamp when call was started
 	callStarted: Date;
 	// The amount of time the call lasted, in milliseconds
@@ -198,12 +215,9 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: {
-		_id?: string;
-		token?: string;
-		status: 'online' | 'busy' | 'away' | 'offline';
-		phone?: string | null;
-	};
+	v: IVisitor;
+	// Outbound means the call was initiated from Rocket.Chat and vise versa
+	direction: 'inbound' | 'outbound';
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
@@ -262,9 +276,11 @@ export type RoomAdminFieldsType =
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
+		enabled?: boolean;
 		maxAge: number;
 		filesOnly: boolean;
 		excludePinned: boolean;
 		ignoreThreads: boolean;
+		overrideGlobal?: boolean;
 	};
 }

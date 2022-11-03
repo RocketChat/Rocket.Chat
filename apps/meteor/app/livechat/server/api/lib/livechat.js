@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
-import { EmojiCustom, LivechatTrigger } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
@@ -40,7 +40,7 @@ export function findDepartments(businessUnit) {
 
 export function findGuest(token) {
 	return LivechatVisitors.getVisitorByToken(token, {
-		fields: {
+		projection: {
 			name: 1,
 			username: 1,
 			token: 1,
@@ -121,7 +121,7 @@ export async function settings({ businessUnit = '' } = {}) {
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,
-			videoCall: initSettings.Omnichannel_call_provider === 'Jitsi' && initSettings.Jitsi_Enabled === true,
+			videoCall: initSettings.Omnichannel_call_provider === 'Jitsi',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
@@ -155,8 +155,8 @@ export async function settings({ businessUnit = '' } = {}) {
 					},
 				],
 				jitsi: [
-					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall' },
-					{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall' },
+					{ icon: 'icon-videocam', i18nLabel: 'Accept' },
+					{ icon: 'icon-cancel', i18nLabel: 'Decline' },
 				],
 			},
 		},

@@ -1,66 +1,29 @@
-import http, { IncomingMessage, RequestOptions, ServerResponse } from 'http';
-import url from 'url';
+import crypto from 'crypto';
 
+import polka from 'polka';
 import WebSocket from 'ws';
 
+import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
-import { MeteorService } from '../../../../apps/meteor/server/sdk';
+import { MeteorService, Presence } from '../../../../apps/meteor/server/sdk';
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
-import { notifications } from './streams';
+import { proxy } from './proxy';
 
-const { PORT: port = 4000 } = process.env;
-
-const proxy = function (req: IncomingMessage, res: ServerResponse): void {
-	req.pause();
-	const options: RequestOptions = url.parse(req.url || '');
-	options.headers = req.headers;
-	options.method = req.method;
-	options.agent = false;
-	options.hostname = 'localhost';
-	options.port = 3000;
-
-	const connector = http.request(options, function (serverResponse) {
-		serverResponse.pause();
-		if (serverResponse.statusCode) {
-			res.writeHead(serverResponse.statusCode, serverResponse.headers);
-		}
-		serverResponse.pipe(res);
-		serverResponse.resume();
-	});
-	req.pipe(connector);
-	req.resume();
-};
-
-const httpServer = http.createServer((req, res) => {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-
-	if (process.env.NODE_ENV !== 'production' && !/^\/sockjs\/info\?cb=/.test(req.url || '')) {
-		return proxy(req, res);
-
-		// res.writeHead(404);
-		// return res.end();
-	}
-
-	res.writeHead(200, { 'Content-Type': 'text/plain' });
-
-	res.end('{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":666}');
-});
-
-httpServer.listen(port);
-
-const wss = new WebSocket.Server({ server: httpServer });
-
-wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+const { PORT = 4000 } = process.env;
 
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
-	constructor() {
+	private app?: polka.Polka;
+
+	private wss?: WebSocket.Server;
+
+	constructor(notifications: NotificationsModule) {
 		super();
 
 		new ListenersModule(this, notifications);
@@ -88,22 +51,13 @@ export class DDPStreamer extends ServiceClass {
 		});
 	}
 
-	async started(): Promise<void> {
-		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
-		const versions = await MeteorService.getAutoUpdateClientVersions();
-
-		Object.keys(versions).forEach((key) => {
-			Autoupdate.updateVersion(versions[key]);
-		});
-	}
-
 	async created(): Promise<void> {
 		if (!this.context) {
 			return;
 		}
 
 		const { broker, nodeID } = this.context;
-		if (!broker) {
+		if (!broker || !nodeID) {
 			return;
 		}
 
@@ -140,5 +94,83 @@ export class DDPStreamer extends ServiceClass {
 				metrics.decrement('users_logged', { nodeID }, 1);
 			}
 		});
+
+		server.on(DDP_EVENTS.LOGGED, (info) => {
+			const { userId, connection } = info;
+
+			Presence.newConnection(userId, connection.id, nodeID);
+			this.api.broadcast('accounts.login', { userId, connection });
+		});
+
+		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
+			const { userId, connection } = info;
+
+			this.api.broadcast('accounts.logout', { userId, connection });
+
+			if (!userId) {
+				return;
+			}
+			Presence.removeConnection(userId, connection.id, nodeID);
+		});
+
+		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
+			const { userId, connection } = info;
+
+			this.api.broadcast('socket.disconnected', connection);
+
+			if (!userId) {
+				return;
+			}
+			Presence.removeConnection(userId, connection.id, nodeID);
+		});
+
+		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
+			this.api.broadcast('socket.connected', connection);
+		});
+	}
+
+	async started(): Promise<void> {
+		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
+		const versions = await MeteorService.getAutoUpdateClientVersions();
+
+		Object.keys(versions).forEach((key) => {
+			Autoupdate.updateVersion(versions[key]);
+		});
+
+		this.app = polka()
+			.use(proxy())
+			.get('/health', async (_req, res) => {
+				try {
+					await this.api.nodeList();
+					res.end('ok');
+				} catch (err) {
+					console.error('Service not healthy', err);
+
+					res.writeHead(500);
+					res.end('not healthy');
+				}
+			})
+			.get('*', function (_req, res) {
+				res.setHeader('Access-Control-Allow-Origin', '*');
+				res.setHeader('Content-Type', 'application/json');
+
+				res.writeHead(200);
+
+				res.end(`{"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":${crypto.randomBytes(4).readUInt32LE(0)},"ms":true}`);
+			})
+			.listen(PORT);
+
+		this.wss = new WebSocket.Server({ server: this.app.server });
+
+		this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+	}
+
+	async stopped(): Promise<void> {
+		this.wss?.clients.forEach(function (client) {
+			client.terminate();
+		});
+
+		this.app?.server?.close();
+		this.wss?.close();
 	}
 }

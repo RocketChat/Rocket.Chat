@@ -1,20 +1,20 @@
-import { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { BulkWriteOperation, Cursor } from 'mongodb';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { AnyBulkWriteOperation, FindCursor } from 'mongodb';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
-import { LivechatVisitors, Users } from '../../../app/models/server';
-import { LivechatVisitors as VisitorsRaw } from '../../../app/models/server/raw';
+import { Users } from '../../../app/models/server';
 
-const getNextPageCursor = (skip: number, limit: number): Cursor<ILivechatVisitor> => {
+const getNextPageCursor = (skip: number, limit: number): FindCursor<ILivechatVisitor> => {
 	return LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }, { skip, limit, sort: { _id: 1 } });
 };
 
 // Convert all visitor emails to lowercase
 addMigration({
 	version: 260,
-	up() {
-		const updates: BulkWriteOperation<ILivechatVisitor>[] = [];
-		const count = LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }).count();
+	async up() {
+		const updates: AnyBulkWriteOperation<ILivechatVisitor>[] = [];
+		const count = await LivechatVisitors.find({ 'visitorEmails.address': /[A-Z]/ }).count();
 		const limit = 5000;
 		let skip = 0;
 
@@ -32,7 +32,8 @@ addMigration({
 			});
 
 			if (updates.length) {
-				Promise.await(VisitorsRaw.col.bulkWrite(updates));
+				// eslint-disable-next-line no-await-in-loop
+				await LivechatVisitors.col.bulkWrite(updates);
 			}
 
 			incrementSkip(limit);

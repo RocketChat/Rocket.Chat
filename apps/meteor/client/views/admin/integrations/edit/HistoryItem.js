@@ -56,7 +56,7 @@ function HistoryItem({ data, ...props }) {
 						<Icon name='info-circled' size='x16' mie='x4' />
 						{formatDateAndTime(_createdAt)}
 					</Box>
-					<Button ghost onClick={handleClickReplay}>
+					<Button secondary onClick={handleClickReplay}>
 						{t('Replay')}
 					</Button>
 				</Box>

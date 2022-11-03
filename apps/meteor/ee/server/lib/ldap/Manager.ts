@@ -1,21 +1,19 @@
-import _ from 'underscore';
 import type ldapjs from 'ldapjs';
-import { ILDAPEntry } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import type { ILDAPEntry, IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
-import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
+import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Rooms } from '../../../../app/models/server';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
-import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { syncUserRoles } from '../syncUserRoles';
 import { Team } from '../../../../server/sdk';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -152,7 +150,7 @@ export class LDAPEEManager extends LDAPManager {
 			filter: filter
 				.replace(/#{username}/g, username)
 				.replace(/#{groupName}/g, groupName)
-				.replace(/#{userdn}/g, dn),
+				.replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
 			scope: 'sub',
 		};
 
@@ -172,7 +170,7 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			return JSON.parse(json);
 		} catch (err) {
-			logger.error(`Unexpected error : ${err.message}`);
+			logger.error(`Unexpected error : ${err instanceof Error ? err.message : String(err)}`);
 		}
 	}
 
@@ -402,7 +400,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const searchOptions = {
-			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn),
+			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
 			scope: ldap.options.userSearchScope || 'sub',
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
@@ -507,76 +505,16 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		if (!settings.get<boolean>('LDAP_Sync_Custom_Fields')) {
-			return;
-		}
-
-		const customFieldsSettings = settings.get<string>('Accounts_CustomFields');
-		const customFieldsMap = settings.get<string>('LDAP_CustomFieldMap');
-
-		if (!customFieldsMap || !customFieldsSettings) {
-			if (customFieldsMap) {
-				logger.debug('Skipping LDAP custom fields because there are no custom fields configured.');
-			}
-			return;
-		}
-
-		let map: Record<string, string>;
-		try {
-			map = JSON.parse(customFieldsMap) as Record<string, string>;
-		} catch (error) {
-			logger.error('Failed to parse LDAP Custom Fields mapping');
-			logger.error(error);
-			return;
-		}
-
-		let customFields: Record<string, any>;
-		try {
-			customFields = JSON.parse(customFieldsSettings) as Record<string, any>;
-		} catch (error) {
-			logger.error('Failed to parse Custom Fields');
-			logger.error(error);
-			return;
-		}
-
-		_.map(map, (userField, ldapField) => {
-			if (!this.getCustomField(customFields, userField)) {
-				logger.debug(`User attribute does not exist: ${userField}`);
-				return;
-			}
-
-			if (!userData.customFields) {
-				userData.customFields = {};
-			}
-
-			const value = templateVarHandler(ldapField, ldapUser);
-
-			if (value) {
-				let ref: Record<string, any> = userData.customFields;
-				const attributeNames = userField.split('.');
-				let previousKey: string | undefined;
-
-				for (const key of attributeNames) {
-					if (previousKey) {
-						if (ref[previousKey] === undefined) {
-							ref[previousKey] = {};
-						} else if (typeof ref[previousKey] !== 'object') {
-							logger.error(`Failed to assign custom field: ${userField}`);
-							return;
-						}
-
-						ref = ref[previousKey];
-					}
-
-					previousKey = key;
-				}
-
-				if (previousKey) {
-					ref[previousKey] = value;
-					logger.debug(`user.customFields.${userField} changed to: ${value}`);
-				}
-			}
-		});
+		return copyCustomFieldsLDAP(
+			{
+				ldapUser,
+				userData,
+				customFieldsSettings: settings.get<string>('Accounts_CustomFields'),
+				customFieldsMap: settings.get<string>('LDAP_CustomFieldMap'),
+				syncCustomFields: settings.get<boolean>('LDAP_Sync_Custom_Fields'),
+			},
+			logger,
+		);
 	}
 
 	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
@@ -659,14 +597,6 @@ export class LDAPEEManager extends LDAPManager {
 			if (this.isUserDeactivated(ldapUser)) {
 				UsersRaw.unsetLoginTokens(user._id);
 			}
-		}
-	}
-
-	private static getCustomField(customFields: Record<string, any>, property: string): any {
-		try {
-			return _.reduce(property.split('.'), (acc, el) => acc[el], customFields);
-		} catch {
-			// ignore errors
 		}
 	}
 }

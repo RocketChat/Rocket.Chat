@@ -1,4 +1,4 @@
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 export async function findRooms({
 	agents,
@@ -12,7 +12,7 @@ export async function findRooms({
 	onhold,
 	options: { offset, count, fields, sort },
 }) {
-	const cursor = LivechatRooms.findRoomsWithCriteria({
+	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,
 		departmentId,
@@ -30,14 +30,12 @@ export async function findRooms({
 		},
 	});
 
-	const total = await cursor.count();
-
-	const rooms = await cursor.toArray();
+	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(Boolean))];
 	if (departmentsIds.length) {
 		const departments = await LivechatDepartment.findInIds(departmentsIds, {
-			fields: { name: 1 },
+			projection: { name: 1 },
 		}).toArray();
 
 		rooms.forEach((room) => {

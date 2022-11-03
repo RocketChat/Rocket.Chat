@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings';
-import { Users, LivechatDepartmentAgents } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users, LivechatDepartmentAgents } from '../../../models/server';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
@@ -14,10 +14,10 @@ callbacks.add(
 		}
 
 		if (department) {
-			return LivechatDepartmentAgents.getNextBotForDepartment(department);
+			return Promise.await(LivechatDepartmentAgents.getNextBotForDepartment(department));
 		}
 
-		return Users.getNextBotAgent();
+		return Promise.await(Users.getNextBotAgent());
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-delegate-agent',

@@ -1,18 +1,18 @@
-import { ServiceClass } from './ServiceClass';
-import { EventSignatures } from '../lib/Events';
+import type { IServiceClass } from './ServiceClass';
+import type { EventSignatures } from '../lib/Events';
 
 export interface IBrokerNode {
 	id: string;
-	instanceID: string;
+	instanceID?: string;
 	available: boolean;
-	local: boolean;
+	local?: boolean;
 	// lastHeartbeatTime: 16,
 	// config: {},
 	// client: { type: 'nodejs', version: '0.14.10', langVersion: 'v12.18.3' },
 	// metadata: {},
 	// ipList: [ '192.168.0.100', '192.168.1.25' ],
 	// port: 59989,
-	// hostname: 'RocketChats-MacBook-Pro-Rodrigo-Nascimento.local',
+	// hostname: 'service.local-1',
 	// udpAddress: null,
 	// cpu: 25,
 	// cpuSeq: 1,
@@ -47,8 +47,8 @@ export interface IServiceMetrics {
 
 export interface IBroker {
 	metrics?: IServiceMetrics;
-	destroyService(service: ServiceClass): void;
-	createService(service: ServiceClass): void;
+	destroyService(service: IServiceClass): void;
+	createService(service: IServiceClass): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;
 	broadcastToServices<T extends keyof EventSignatures>(
@@ -59,4 +59,5 @@ export interface IBroker {
 	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 	nodeList(): Promise<IBrokerNode[]>;
+	start(): Promise<void>;
 }

@@ -7,7 +7,8 @@ import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { callbacks } from '../../lib/callbacks';
 import { useReactiveValue } from '../hooks/useReactiveValue';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+import { call } from '../lib/utils/call';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -26,7 +27,7 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 	});
 
 const logout = (): Promise<void> =>
-	new Promise((resolve) => {
+	new Promise((resolve, reject) => {
 		const user = getUser();
 
 		if (!user) {
@@ -35,7 +36,7 @@ const logout = (): Promise<void> =>
 
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user, resolve);
+			call('logoutCleanUp', user).then(resolve, reject);
 		});
 	});
 
@@ -48,7 +49,9 @@ const UserProvider: FC = ({ children }) => {
 			user,
 			loginWithPassword,
 			logout,
-			queryPreference: createReactiveSubscriptionFactory((key, defaultValue) => getUserPreference(userId, key, defaultValue)),
+			queryPreference: createReactiveSubscriptionFactory(
+				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
+			),
 			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) =>
 				Subscriptions.findOne(query, { fields }),
 			),

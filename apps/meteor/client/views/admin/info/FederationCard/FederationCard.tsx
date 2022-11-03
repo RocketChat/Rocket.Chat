@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting, useSettingSetValue, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import Card from '../../../../components/Card';
 import SettingsProvider from '../../../../providers/SettingsProvider';
 import { CardHeader, Section } from './components';
 import { FederationModal } from './components/FederationModal';
@@ -77,7 +77,7 @@ const FederationCard: FC = () => {
 				</Box>
 			</CardHeader>
 			<Card.Body>
-				<Card.Col span={2}>
+				<Card.Col>
 					<Section status={federationEnabledStatus} title={t('Federation_Enable')} subtitle={t('Federation_Is_working_correctly')} />
 					<Section status={federationSetupStatus} title={t('Federation_Adding_to_your_server')} subtitle={t('Federation_Changes_needed')}>
 						{!federationHealthy && <a onClick={handleModal}>{t('Federation_Fix_now')}</a>}

@@ -1,17 +1,17 @@
 import { IMessage } from '@rocket.chat/core-typings';
+import { PreviewMarkup } from '@rocket.chat/gazzodown';
 import React, { ReactElement } from 'react';
 
-import PreviewMarkup from '../../../../components/gazzodown/PreviewMarkup';
-import { useParsedMessage } from '../hooks/useParsedMessage';
+import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
 
 type ThreadMessagePreviewBodyProps = {
 	message: IMessage;
 };
 
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement => {
-	const tokens = useParsedMessage(message);
+	const parsedMessage = parseMessageTextToAstMarkdown(message, { colors: true, emoticons: true });
 
-	return <PreviewMarkup tokens={tokens} />;
+	return parsedMessage.md ? <PreviewMarkup tokens={parsedMessage.md} /> : <></>;
 };
 
 export default ThreadMessagePreviewBody;

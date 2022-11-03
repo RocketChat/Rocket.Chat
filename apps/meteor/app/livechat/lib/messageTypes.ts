@@ -2,7 +2,7 @@ import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
@@ -108,7 +108,7 @@ MessageTypes.registerType({
 		}
 		return escapeHTML(message.msg);
 	},
-	message: 'room_changed_privacy',
+	message: 'room_changed_type',
 });
 
 MessageTypes.registerType({

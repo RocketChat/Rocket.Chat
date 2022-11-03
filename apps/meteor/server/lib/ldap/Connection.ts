@@ -499,7 +499,7 @@ export class LDAPConnection {
 	}
 
 	private processSearchPage<T>(
-		{ entries, title, end, next }: { entries: T[]; title: string; end: boolean; next?: Function },
+		{ entries, title, end, next }: { entries: T[]; title: string; end: boolean; next?: () => void },
 		callback: ILDAPPageCallback,
 	): void {
 		searchLogger.info(title);

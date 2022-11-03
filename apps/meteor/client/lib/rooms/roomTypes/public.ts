@@ -1,4 +1,4 @@
-import type { AtLeast } from '@rocket.chat/core-typings';
+import { AtLeast, IRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
@@ -9,6 +9,7 @@ import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
+import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PublicRoomType = getPublicRoomType(roomCoordinator);
@@ -31,6 +32,9 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	allowMemberAction(_room, action) {
+		if (isRoomFederated(_room as IRoom)) {
+			return Federation.actionAllowed(_room, action);
+		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
 				return false;

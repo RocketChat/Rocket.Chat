@@ -1,4 +1,4 @@
-import { Base } from '../../../models';
+import { Base } from '../../../models/server';
 
 class RawImportsModel extends Base {
 	constructor() {

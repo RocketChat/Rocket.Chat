@@ -32,7 +32,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button primary danger disabled>
+					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>
