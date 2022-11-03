@@ -6,16 +6,21 @@ import React, { useState, useRef, ReactElement } from 'react';
 
 import Page from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
-import UserAutoComplete from '../../../../components/UserAutoComplete';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
+import { useForm } from '../../../../hooks/useForm';
 import UsersInRoleTable from './UsersInRoleTable';
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
-	const [user, setUser] = useState<string>('');
+
 	const [rid, setRid] = useState<string>('');
 	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { values, handlers } = useForm({ users: [] });
+	const { users } = values as { users: string[] };
+	const { handleUsers } = handlers;
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
@@ -29,26 +34,31 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	});
 
 	const handleAdd = useMutableCallback(async () => {
-		if (!user) {
+		if (users.length === 0) {
 			return setUserError(t('User_cant_be_empty'));
 		}
 
 		try {
-			await addUser({ roleId: _id, username: user, roomId: rid });
-			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser('');
-			reload.current?.();
+			users.map(async (u) => {
+				await addUser({ roleName: _id, username: u, roomId: rid });
+				dispatchToastMessage({ type: 'success', message: t('User_added') });
+				reload.current();
+				handleUsers([]);
+			});
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handleUserChange = useMutableCallback((user) => {
-		if (user !== '') {
-			setUserError(undefined);
+	const handleUserChange = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
 		}
 
-		return setUser(user);
+		handleUsers(users.filter((current) => current !== value));
 	});
 
 	const handleChange = (value: unknown): void => {
@@ -76,12 +86,12 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							</Field>
 						)}
 						<Field>
-							<Field.Label>{t('Add_user')}</Field.Label>
+							<Field.Label>{t('Add_users')}</Field.Label>
 							<Field.Row>
-								<UserAutoComplete value={user} onChange={handleUserChange} placeholder={t('User')} />
+								<UserAutoCompleteMultiple value={users} onChange={handleUserChange} placeholder={t('User')} />
 
 								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleAdd}>
+									<Button primary onClick={handleAdd} disabled={!users.length}>
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
