@@ -1,0 +1,41 @@
+.Off {
+	color: #ffffff !important;
+	border-color: #2f343d !important;
+	background-color: #2f343d !important;
+}
+
+.On {
+	color: #000000 !important;
+	border-color: #ffffff !important;
+	background-color: #ffffff !important;
+}
+
+.Self_Video {
+	display: flex;
+
+	width: 15%;
+	height: 17.5%;
+
+	justify-content: center;
+}
+
+@media (max-width: 900px) and (min-height: 500px) {
+	.Self_Video {
+		width: 30%;
+		height: 20%;
+	}
+}
+
+@media (max-width: 900px) and (max-height: 500px) {
+	.Self_Video {
+		width: 30%;
+		height: 35%;
+	}
+}
+
+@media (min-width: 901px) and (max-width: 1300px) and (max-height: 500px) {
+	.Self_Video {
+		width: 20%;
+		height: 40%;
+	}
+}
