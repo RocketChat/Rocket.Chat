@@ -3,6 +3,8 @@ import crypto from 'crypto';
 
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
+import { GridFSBucket } from 'mongodb';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -20,8 +22,6 @@ import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authoriz
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { MongoInternals } from 'meteor/mongo';
-import { GridFSBucket } from 'mongodb';
 import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
@@ -168,7 +168,8 @@ API.v1.addRoute(
 					file.chunk = undefined;
 
 					fs.unlinkSync(tmpPath);
-				} else {  // We also support chunk saving in GridFs, this will work by default in a distributed environment
+				} else {
+					// We also support chunk saving in GridFs, this will work by default in a distributed environment
 					const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
 					const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -177,7 +178,7 @@ API.v1.addRoute(
 						chunkSizeBytes: 1024 * 512,
 					});
 
-					let expectedOffsets = Array.from({ length: (file.chunk.size) / chunkMaxSize + 1}, (_, i) => (i * chunkMaxSize));
+					const expectedOffsets = Array.from({ length: file.chunk.size / chunkMaxSize + 1 }, (_, i) => i * chunkMaxSize);
 
 					if (expectedOffsets[expectedOffsets.length - 1] === file.chunk.size) {
 						expectedOffsets.pop();
@@ -187,28 +188,21 @@ API.v1.addRoute(
 						throw new Meteor.Error('error-file-too-large');
 					}
 
-					const uploadStream = bucket.openUploadStream(
-						`${tmpFileAppend}.${file.chunk.start}`,
-						{ contentType: 'application/octet-stream' }
-					);
+					const uploadStream = bucket.openUploadStream(`${tmpFileAppend}.${file.chunk.start}`, { contentType: 'application/octet-stream' });
 
 					Promise.await(
 						new Promise((resolve, reject) => {
-							uploadStream.on(
-								'finish',
-								() => {
+							uploadStream
+								.on('finish', () => {
 									resolve();
-								}
-							).on(
-								'error',
-								(err) => {
+								})
+								.on('error', (err) => {
 									reject(err);
-								}
-							);
+								});
 
 							uploadStream.write(file.fileBuffer);
 							uploadStream.end();
-						})
+						}),
 					);
 
 					uploadStream.destroy();
@@ -220,13 +214,12 @@ API.v1.addRoute(
 						});
 					}
 
-					let buffers = [];
+					const buffers = [];
 
 					for (const startOffset of expectedOffsets) {
-						const downloadStream = bucket.openDownloadStreamByName(
-							`${tmpFileAppend}.${startOffset}`,
-							{ contentType: 'application/octet-stream' }
-						);
+						const downloadStream = bucket.openDownloadStreamByName(`${tmpFileAppend}.${startOffset}`, {
+							contentType: 'application/octet-stream',
+						});
 
 						const buffer = Promise.await(streamToBuffer(downloadStream));
 
