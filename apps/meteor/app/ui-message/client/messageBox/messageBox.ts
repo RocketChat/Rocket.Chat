@@ -14,6 +14,7 @@ import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji/client';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
+import type { ChatMessages } from '../../../ui/client';
 import { fileUpload, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
 import { t, getUserPreference } from '../../../utils/client';
@@ -42,6 +43,7 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	) => void;
 	tshow: IMessage['tshow'];
 	subscription: ISubscription & IRoom;
+	chatMessagesInstance: ChatMessages;
 }> & {
 	state: ReactiveDict<{
 		mustJoinWithCode?: boolean;
@@ -131,6 +133,12 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 			input.focus();
 		});
 	};
+
+	const { chatMessagesInstance } = this.data;
+
+	chatMessagesInstance.quotedMessages.subscribe(() => {
+		this.replyMessageData.set(chatMessagesInstance.quotedMessages.get());
+	});
 });
 
 Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
@@ -146,10 +154,6 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			if (this.source) {
 				inputSetup = true;
 			}
-			$input.on('dataChange', () => {
-				const messages = $input.data('reply') || [];
-				this.replyMessageData.set(messages);
-			});
 		}
 
 		if (!room) {
@@ -258,6 +262,10 @@ Template.messageBox.helpers({
 	},
 	replyMessageData() {
 		return (Template.instance() as MessageBoxTemplateInstance).replyMessageData.get();
+	},
+	onDismissReply() {
+		const { chatMessagesInstance } = (Template.instance() as MessageBoxTemplateInstance).data;
+		return (mid: IMessage['_id']) => chatMessagesInstance.quotedMessages.remove(mid);
 	},
 	isEmojiEnabled() {
 		return getUserPreference(Meteor.userId(), 'useEmojis');

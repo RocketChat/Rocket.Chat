@@ -1,13 +1,13 @@
-import moment from 'moment';
+import { Emitter } from '@rocket.chat/emitter';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import moment from 'moment';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
-import $ from 'jquery';
 
 import { KonchatNotification } from './notification';
 import { fileUpload } from './fileUpload';
@@ -15,7 +15,7 @@ import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
@@ -32,7 +32,42 @@ import { messageBoxState } from './messageBoxState';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 
+class QuotedMessages {
+	private emitter = new Emitter<{ update: void }>();
+
+	private messages: IMessage[] = [];
+
+	public get(): IMessage[] {
+		return this.messages;
+	}
+
+	public add(message: IMessage): void {
+		this.messages = [...this.messages.filter((_message) => _message._id !== message._id), message];
+		this.emitter.emit('update');
+	}
+
+	public remove(mid: IMessage['_id']): void {
+		this.messages = this.messages.filter((message) => message._id !== mid);
+		this.emitter.emit('update');
+	}
+
+	public clear(): void {
+		this.messages = [];
+		this.emitter.emit('update');
+	}
+
+	public subscribe(callback: () => void): () => void {
+		return this.emitter.on('update', callback);
+	}
+}
+
+type ChatMessagesParams =
+	| { rid: IRoom['_id']; tmid?: IMessage['_id']; input?: never }
+	| { rid?: never; tmid?: never; input: HTMLInputElement | HTMLTextAreaElement };
+
 export class ChatMessages {
+	public quotedMessages = new QuotedMessages();
+
 	private editing: {
 		element?: HTMLElement;
 		id?: string;
@@ -52,7 +87,11 @@ export class ChatMessages {
 
 	public input: HTMLTextAreaElement | undefined;
 
-	public constructor(public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage) {}
+	public constructor(public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage) {
+		this.quotedMessages.subscribe(() => {
+			if (this.input) $(this.input).trigger('dataChange');
+		});
+	}
 
 	public initializeWrapper(wrapper: HTMLElement) {
 		this.wrapper = wrapper;
@@ -66,22 +105,7 @@ export class ChatMessages {
 		}
 
 		messageBoxState.restore({ rid, tmid }, input);
-		this.restoreReplies();
 		this.requestInputFocus();
-	}
-
-	public async restoreReplies() {
-		const mid = FlowRouter.getQueryParam('reply');
-		if (!mid) {
-			return;
-		}
-
-		const message = Messages.findOne(mid) || (await callWithErrorHandling('getSingleMessage', mid));
-		if (!message) {
-			return;
-		}
-
-		if (this.input) $(this.input).data('reply', [message]).trigger('dataChange');
 	}
 
 	private requestInputFocus() {
@@ -285,7 +309,7 @@ export class ChatMessages {
 		let msg = value.trim();
 		if (msg) {
 			const mention = $(this.input).data('mention-user') ?? false;
-			const replies = $(this.input).data('reply') ?? [];
+			const replies = this.quotedMessages.get();
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);
 			}
@@ -317,7 +341,7 @@ export class ChatMessages {
 			try {
 				// @ts-ignore
 				await this.processMessageSend(message);
-				$(this.input).removeData('reply').trigger('dataChange');
+				this.quotedMessages.clear();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -654,16 +678,23 @@ export class ChatMessages {
 
 	private static instances: Record<string, ChatMessages> = {};
 
-	private static getID({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+	private static getID({ rid, tmid, input }: ChatMessagesParams): string {
+		if (input) {
+			const id = Object.entries(this.instances).find(([, instance]) => instance.input === input)?.[0];
+			if (!id) throw new Error('ChatMessages: input not found');
+
+			return id;
+		}
+
 		return `${rid}${tmid ? `-${tmid}` : ''}`;
 	}
 
-	public static get({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): ChatMessages | undefined {
-		return this.instances[this.getID({ rid, tmid })];
+	public static get(params: ChatMessagesParams): ChatMessages | undefined {
+		return this.instances[this.getID(params)];
 	}
 
-	public static set({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }, instance: ChatMessages) {
-		this.instances[this.getID({ rid, tmid })] = instance;
+	public static set(params: ChatMessagesParams, instance: ChatMessages) {
+		this.instances[this.getID(params)] = instance;
 	}
 
 	public static delete({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {

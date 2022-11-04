@@ -30,6 +30,7 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 			isEmbedded: isLayoutEmbedded,
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
 			onResize,
+			chatMessagesInstance,
 		}),
 	);
 
@@ -40,8 +41,9 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 			isEmbedded: isLayoutEmbedded,
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
 			onResize,
+			chatMessagesInstance,
 		});
-	}, [isLayoutEmbedded, onResize, rid, showFormattingTips, subscription]);
+	}, [isLayoutEmbedded, onResize, rid, showFormattingTips, subscription, chatMessagesInstance]);
 
 	const footerRef = useCallback(
 		(footer: HTMLElement | null) => {

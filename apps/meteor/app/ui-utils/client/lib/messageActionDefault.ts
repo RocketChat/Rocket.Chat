@@ -82,18 +82,16 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const input = getChatMessagesFrom(message)?.input;
+			const chatMessagesInstance = getChatMessagesFrom(message);
+			const input = chatMessagesInstance?.input;
 			if (!input) {
 				return;
 			}
 
 			const $input = $(input);
 
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message);
-
-			$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
+			$input.focus().data('mention-user', false).trigger('dataChange');
+			chatMessagesInstance.quotedMessages.add(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {

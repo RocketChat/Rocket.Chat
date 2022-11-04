@@ -6,7 +6,6 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
-import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
@@ -208,7 +207,8 @@ function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, tem
 function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
 	const { rid } = template.data;
 	const { id: msgId } = event.currentTarget;
-	const input = ChatMessages.get({ rid })?.input;
+	const chatMessagesInstance = ChatMessages.get({ rid });
+	const input = chatMessagesInstance?.input;
 
 	if (!msgId || !input) {
 		return;
@@ -216,10 +216,9 @@ function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEven
 
 	const message = Messages.findOne({ _id: msgId });
 
-	let messages = $(input)?.data('reply') || [];
-	messages = addMessageToList(messages, message);
+	chatMessagesInstance.quotedMessages.add(message);
 
-	$(input)?.trigger('focus').data('mention-user', false).data('reply', messages).trigger('dataChange');
+	$(input)?.trigger('focus').data('mention-user', false).trigger('dataChange');
 }
 
 async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {

@@ -1,16 +1,27 @@
-import { ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
+import { Messages } from '../../../app/models/client';
 import { ChatMessages } from '../../../app/ui/client';
 import { callbacks } from '../../../lib/callbacks';
+import { callWithErrorHandling } from '../../lib/utils/callWithErrorHandling';
 
-callbacks.add('enter-room', (sub?: ISubscription) => {
+callbacks.add('enter-room', async (sub?: ISubscription) => {
 	if (!sub) {
 		return;
 	}
 
-	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
-	if (isAReplyInDMFromChannel) {
-		ChatMessages.get({ rid: sub.rid })?.restoreReplies();
+	const mid = FlowRouter.getQueryParam('reply');
+	if (!mid) {
+		return;
 	}
+
+	const getSingleMessage = (mid: IMessage['_id']): Promise<IMessage> => callWithErrorHandling('getSingleMessage', mid);
+
+	const message = (Messages as Mongo.Collection<IMessage>).findOne(mid) ?? (await getSingleMessage(mid));
+	if (!message) {
+		return;
+	}
+
+	ChatMessages.get({ rid: sub.rid })?.quotedMessages.add(message);
 });

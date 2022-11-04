@@ -158,7 +158,7 @@ export type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLInputElement | ArrayLike<HTMLInputElement> | HTMLTextAreaElement,
+	input: HTMLInputElement | HTMLTextAreaElement | undefined,
 	{
 		rid,
 		tmid,
@@ -175,7 +175,9 @@ export const fileUpload = async (
 
 	const files = Array.isArray(f) ? f : [f];
 
-	const replies = input ? $(input).data('reply') : [];
+	const chatMessagesInstance = input ? ChatMessages.get({ input }) : undefined;
+
+	const replies = chatMessagesInstance?.quotedMessages.get() ?? [];
 	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';

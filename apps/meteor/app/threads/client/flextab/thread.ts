@@ -25,6 +25,7 @@ import './thread.html';
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
+	subscription: ISubscription;
 }> & {
 	firstNode: HTMLElement;
 	Threads: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
@@ -101,12 +102,13 @@ Template.thread.helpers({
 		const {
 			mainMessage: { rid, _id: tmid },
 			subscription,
-		} = Template.currentData() as { mainMessage: IMessage; subscription: ISubscription };
+		} = Template.currentData() as ThreadTemplateInstance['data'];
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
 		return {
+			chatMessagesInstance: instance.chatMessages,
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
@@ -212,6 +214,8 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 			this.state.set('loading', false);
 		});
 	};
+
+	this.chatMessages = new ChatMessages(this.Threads);
 });
 
 Template.thread.onRendered(function (this: ThreadTemplateInstance) {
@@ -223,7 +227,6 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
 
-	this.chatMessages = new ChatMessages(this.Threads);
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message') as HTMLTextAreaElement, { rid, tmid });
 
