@@ -2516,6 +2516,54 @@ const POSTLivechatFacebookParamsSchema = {
 
 export const isPOSTLivechatFacebookParams = ajv.compile<POSTLivechatFacebookParams>(POSTLivechatFacebookParamsSchema);
 
+type GETLivechatPrioritiesParams = PaginatedRequest<{text?: string}>;
+
+const GETLivechatPrioritiesParamsSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isGETLivechatPrioritiesParams = ajv.compile<GETLivechatPrioritiesParams>(GETLivechatPrioritiesParamsSchema);
+
+type POSTLivechatPriorityParams = {name: string, level: string};
+
+const POSTLivechatPriorityParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+			nullable: false,
+		},
+		level: {
+			type: 'string',
+			nullable: false,
+		},
+	},
+	required: ["name", "level"],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatPriorityParams = ajv.compile<POSTLivechatPriorityParams>(POSTLivechatPriorityParamsSchema);
+
 type GETLivechatInquiriesListParams = PaginatedRequest<{ department?: string }>;
 
 const GETLivechatInquiriesListParamsSchema = {
@@ -2908,7 +2956,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities': {
-		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
+		GET: (params: GETLivechatPrioritiesParams) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
 	};
 
 	'/v1/livechat/priority/:priorityId': {
@@ -2916,7 +2964,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priority': {
-		POST: (params: ILivechatPriorityData) => ILivechatPriority | void;
+		POST: (params: POSTLivechatPriorityParams) => ILivechatPriority | void;
 	};
 
 	'/v1/livechat/visitors.search': {

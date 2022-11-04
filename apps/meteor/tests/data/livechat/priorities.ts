@@ -12,11 +12,11 @@ export const savePriority = (override:ILivechatPriorityData={name:"",level:""}):
 				name: override.name || faker.name.firstName(),
 				level: override.level || faker.name.lastName(),
 			})
-			.end((err: Error, res: DummyResponse<ILivechatPriority, 'wrapped'>) => {
+			.end((err: Error, res: DummyResponse<ILivechatPriority,'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(res.body.priorities as ILivechatPriority);
+				resolve(res.body as ILivechatPriority);
 			});
 	});
 };

@@ -74,7 +74,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-priorities', []);
 			await updatePermission('view-l-room', []);
 			const priority = await savePriority();
-			expect(priority).to.be.undefined;
+			expect(priority).to.have.property('success', false);
+			expect(priority).to.have.property('error');
+			expect((priority as any)?.error).to.contain('error-unauthorized');
 		});
 		it('should create a priority with a POST request', async () => {
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
@@ -115,7 +117,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['livechat-agent']);
 			priority = await savePriority({ name: priority.name, level: priority.level });
-			expect(priority).to.be.undefined;
+			expect(priority).to.have.property('success', false);
 		});
 	});
 
@@ -125,6 +127,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('view-l-room', []);
 			const response = await request.get(api('livechat/priority/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect((response.body as any)?.error).to.contain('error-unauthorized');
 		});
 		it('should return a priority', async () => {
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
