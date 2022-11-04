@@ -5,8 +5,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
-import { ChatMessages } from '../../../../../../app/ui';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
+import { ChatMessages } from '../../../../../../app/ui/client';
 import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { messageBoxState } from '../../../app/ui/client/lib/messageBoxState';
+import { messageBoxState } from '../../../app/ui/client';
 import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {

@@ -7,6 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
+import $ from 'jquery';
 
 import { KonchatNotification } from './notification';
 import { fileUpload } from './fileUpload';
@@ -32,14 +33,14 @@ import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 
 export class ChatMessages {
-	editing: {
+	private editing: {
 		element?: HTMLElement;
 		id?: string;
 		saved?: string;
 		savedCursor?: number;
 	} = {};
 
-	records: Record<
+	private records: Record<
 		IMessage['_id'],
 		| {
 				draft: string;
@@ -47,26 +48,18 @@ export class ChatMessages {
 		| undefined
 	> = {};
 
-	wrapper: HTMLElement | undefined;
+	public wrapper: HTMLElement | undefined;
 
-	input: HTMLTextAreaElement | undefined;
+	public input: HTMLTextAreaElement | undefined;
 
-	$input: JQuery<HTMLTextAreaElement> | undefined;
+	public constructor(public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage) {}
 
-	constructor(
-		public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
-			direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
-			queries: unknown[];
-		} = ChatMessage,
-	) {}
-
-	initializeWrapper(wrapper: HTMLElement) {
+	public initializeWrapper(wrapper: HTMLElement) {
 		this.wrapper = wrapper;
 	}
 
-	initializeInput(input: HTMLTextAreaElement, { rid, tmid }: Pick<IMessage, 'rid' | 'tmid'>) {
+	public initializeInput(input: HTMLTextAreaElement, { rid, tmid }: Pick<IMessage, 'rid' | 'tmid'>) {
 		this.input = input;
-		this.$input = $(this.input);
 
 		if (!input || !rid) {
 			return;
@@ -77,7 +70,7 @@ export class ChatMessages {
 		this.requestInputFocus();
 	}
 
-	async restoreReplies() {
+	public async restoreReplies() {
 		const mid = FlowRouter.getQueryParam('reply');
 		if (!mid) {
 			return;
@@ -88,10 +81,10 @@ export class ChatMessages {
 			return;
 		}
 
-		this.$input?.data('reply', [message]).trigger('dataChange');
+		if (this.input) $(this.input).data('reply', [message]).trigger('dataChange');
 	}
 
-	requestInputFocus() {
+	private requestInputFocus() {
 		setTimeout(() => {
 			if (this.input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
 				this.input.focus();
@@ -99,7 +92,7 @@ export class ChatMessages {
 		}, 200);
 	}
 
-	recordInputAsDraft() {
+	private recordInputAsDraft() {
 		const { input } = this;
 		if (!input) {
 			return;
@@ -126,7 +119,7 @@ export class ChatMessages {
 		this.records[id] = record;
 	}
 
-	clearCurrentDraft() {
+	private clearCurrentDraft() {
 		const { id } = this.editing;
 		if (!id) {
 			return;
@@ -137,7 +130,7 @@ export class ChatMessages {
 		return !!hasValue;
 	}
 
-	resetToDraft(id: string) {
+	private resetToDraft(id: string) {
 		const { input } = this;
 		if (!input) {
 			return;
@@ -153,7 +146,7 @@ export class ChatMessages {
 		return oldValue !== message.msg;
 	}
 
-	toPrevMessage() {
+	private toPrevMessage() {
 		const { element } = this.editing;
 		if (!element) {
 			const messages = Array.from(this.wrapper?.querySelectorAll('[data-own="true"]') ?? []);
@@ -169,7 +162,7 @@ export class ChatMessages {
 		this.clearEditing();
 	}
 
-	toNextMessage() {
+	private toNextMessage() {
 		const { element } = this.editing;
 		if (element) {
 			let next;
@@ -185,7 +178,7 @@ export class ChatMessages {
 		}
 	}
 
-	edit(element: HTMLElement, isEditingTheNextOne?: boolean) {
+	public edit(element: HTMLElement, isEditingTheNextOne?: boolean) {
 		const message = this.collection.findOne(element.dataset.id);
 		if (!message) {
 			throw new Error('Message not found');
@@ -245,7 +238,7 @@ export class ChatMessages {
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
-	clearEditing() {
+	private clearEditing() {
 		const { input } = this;
 
 		if (!input) {
@@ -270,7 +263,7 @@ export class ChatMessages {
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
-	async send(
+	public async send(
 		_event: Event,
 		{ rid, tmid, value, tshow }: { rid: string; tmid?: string; value: string; tshow?: boolean },
 		done: () => void = () => undefined,
@@ -291,8 +284,8 @@ export class ChatMessages {
 
 		let msg = value.trim();
 		if (msg) {
-			const mention = this.$input?.data('mention-user') ?? false;
-			const replies = this.$input?.data('reply') ?? [];
+			const mention = $(this.input).data('mention-user') ?? false;
+			const replies = $(this.input).data('reply') ?? [];
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);
 			}
@@ -324,7 +317,7 @@ export class ChatMessages {
 			try {
 				// @ts-ignore
 				await this.processMessageSend(message);
-				this.$input?.removeData('reply').trigger('dataChange');
+				$(this.input).removeData('reply').trigger('dataChange');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -355,7 +348,7 @@ export class ChatMessages {
 		return done();
 	}
 
-	async processMessageSend(message: IMessage) {
+	private async processMessageSend(message: IMessage) {
 		if (await this.processSetReaction(message)) {
 			return;
 		}
@@ -379,7 +372,7 @@ export class ChatMessages {
 		await callWithErrorHandling('sendMessage', message);
 	}
 
-	async processSetReaction({ rid, tmid, msg }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
+	private async processSetReaction({ rid, tmid, msg }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
 		if (msg.slice(0, 2) !== '+:') {
 			return false;
 		}
@@ -397,7 +390,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	async processTooLongMessage({ msg, rid, tmid }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
+	private async processTooLongMessage({ msg, rid, tmid }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
 		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
 			return false;
@@ -446,7 +439,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	async processMessageEditing(message: IMessage) {
+	private async processMessageEditing(message: IMessage) {
 		if (!message._id) {
 			return false;
 		}
@@ -460,7 +453,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	async processSlashCommand(msgObject: IMessage) {
+	public async processSlashCommand(msgObject: IMessage) {
 		if (msgObject.msg[0] === '/') {
 			const match = msgObject.msg.match(/^\/([^\s]+)/m);
 			if (match) {
@@ -514,7 +507,7 @@ export class ChatMessages {
 		return false;
 	}
 
-	confirmDeleteMsg(message: IMessage, done: () => void = () => undefined) {
+	public confirmDeleteMsg(message: IMessage, done: () => void = () => undefined) {
 		if (MessageTypes.isSystemMessage(message)) {
 			return done();
 		}
@@ -563,7 +556,7 @@ export class ChatMessages {
 		});
 	}
 
-	async deleteMsg({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
+	public async deleteMsg({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
 		const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
@@ -579,7 +572,7 @@ export class ChatMessages {
 		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
-	keydown(event: KeyboardEvent) {
+	public keydown(event: KeyboardEvent) {
 		const input = event.currentTarget as HTMLTextAreaElement;
 		const keyCode = event.which;
 		const { id } = this.editing;
@@ -631,7 +624,7 @@ export class ChatMessages {
 		}
 	}
 
-	keyup(event: KeyboardEvent, { rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+	public keyup(event: KeyboardEvent, { rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		const input = event.currentTarget as HTMLTextAreaElement;
 		const keyCode = event.which;
 
@@ -646,7 +639,7 @@ export class ChatMessages {
 		messageBoxState.save({ rid, tmid }, input);
 	}
 
-	onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {
+	public onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {
 		UserAction.cancel(rid);
 		// TODO: check why we need too many ?. here :(
 		if (this.input?.parentElement?.classList.contains('editing') === true) {
@@ -658,6 +651,24 @@ export class ChatMessages {
 			messageBoxState.save({ rid, tmid }, this.input);
 		}
 	}
-}
 
-export const chatMessages: Record<IRoom['_id'], ChatMessages> = {};
+	private static instances: Record<string, ChatMessages> = {};
+
+	private static getID({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+		return `${rid}${tmid ? `-${tmid}` : ''}`;
+	}
+
+	public static get({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): ChatMessages | undefined {
+		return this.instances[this.getID({ rid, tmid })];
+	}
+
+	public static set({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }, instance: ChatMessages) {
+		this.instances[this.getID({ rid, tmid })] = instance;
+	}
+
+	public static delete({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+		const id = this.getID({ rid, tmid });
+		this.instances[id].onDestroyed(rid, tmid);
+		delete this.instances[id];
+	}
+}

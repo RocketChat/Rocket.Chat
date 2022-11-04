@@ -13,7 +13,7 @@ import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { ChatMessage, Rooms, Messages } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
-import { chatMessages } from '../../../lib/ChatMessages';
+import { ChatMessages } from '../../../lib/ChatMessages';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
@@ -198,7 +198,7 @@ function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, tem
 		return;
 	}
 
-	const { input } = chatMessages[rid];
+	const input = ChatMessages.get({ rid })?.input;
 	if (input) {
 		input.value = msg;
 		input.focus();
@@ -208,7 +208,7 @@ function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, tem
 function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
 	const { rid } = template.data;
 	const { id: msgId } = event.currentTarget;
-	const { input } = chatMessages[rid];
+	const input = ChatMessages.get({ rid })?.input;
 
 	if (!msgId || !input) {
 		return;
@@ -232,7 +232,7 @@ async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, temp
 
 	msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
 
-	const _chatMessages = chatMessages[rid];
+	const _chatMessages = ChatMessages.get({ rid });
 	if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
 		return;
 	}

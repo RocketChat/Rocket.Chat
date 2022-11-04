@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
 
-import { ChatMessages, chatMessages, chatMessages as allChatMessages } from '../../../ui';
+import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
@@ -329,7 +329,7 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 
 		this.chatMessages.initializeInput(input as HTMLTextAreaElement, { rid, tmid });
 		if (rid && tmid) {
-			chatMessages[`${rid}-${tmid}`] = this.chatMessages;
+			ChatMessages.set({ rid, tmid }, this.chatMessages);
 		}
 	});
 
@@ -369,7 +369,7 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 });
 
 Template.thread.onDestroyed(function (this: ThreadTemplateInstance) {
-	const { Threads, threadsObserve, callbackRemove, state, chatMessages } = this;
+	const { Threads, threadsObserve, callbackRemove, state } = this;
 	Threads.remove({});
 	threadsObserve?.stop();
 
@@ -378,7 +378,6 @@ Template.thread.onDestroyed(function (this: ThreadTemplateInstance) {
 	const tmid = state.get('tmid');
 	const rid = state.get('rid');
 	if (rid && tmid) {
-		chatMessages.onDestroyed(rid, tmid);
-		delete allChatMessages[`${rid}-${tmid}`];
+		ChatMessages.delete({ rid, tmid });
 	}
 });

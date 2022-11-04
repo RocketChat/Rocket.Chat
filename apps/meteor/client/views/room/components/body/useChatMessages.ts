@@ -1,12 +1,12 @@
 import { IRoom } from '@rocket.chat/core-typings';
 import { RefObject, useEffect, useMemo } from 'react';
 
-import { ChatMessages, chatMessages } from '../../../../../app/ui';
+import { ChatMessages } from '../../../../../app/ui/client';
 
 export const useChatMessages = (rid: IRoom['_id'], wrapperRef: RefObject<HTMLElement | null>): ChatMessages => {
 	const chatMessagesInstance = useMemo(() => {
-		const instance = chatMessages[rid] ?? new ChatMessages();
-		chatMessages[rid] = instance;
+		const instance = ChatMessages.get({ rid }) ?? new ChatMessages();
+		ChatMessages.set({ rid }, instance);
 		return instance;
 	}, [rid]);
 
