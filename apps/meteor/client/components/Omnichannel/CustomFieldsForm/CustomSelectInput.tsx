@@ -20,7 +20,7 @@ export const CustomSelectInput = forwardRef<
 	const mappedOptions = useMemo(() => data.options.split(',').map<[string, string]>((value: string) => [value, value]), [data.options]);
 
 	const errorMessage = useMemo(() => {
-		if (errors?.livechatData && errors?.livechatData[data._id]?.type === 'required') {
+		if (errors?.livechatData?.[data._id]?.type === 'required') {
 			return t('The_field_is_required', data.label);
 		}
 	}, [data._id, data.label, errors?.livechatData, t]);
