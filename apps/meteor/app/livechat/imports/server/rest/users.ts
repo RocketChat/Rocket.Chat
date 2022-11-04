@@ -1,7 +1,6 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
@@ -40,14 +39,14 @@ API.v1.addRoute(
 				}
 
 				return API.v1.success(
-					(await findAgents({
+					await findAgents({
 						text,
 						pagination: {
 							offset,
 							count,
 							sort,
 						},
-					})) as { users: ILivechatAgent[]; count: number; offset: number; total: number },
+					}),
 				);
 			}
 			if (this.urlParams.type === 'manager') {
@@ -56,14 +55,14 @@ API.v1.addRoute(
 				}
 
 				return API.v1.success(
-					(await findManagers({
+					await findManagers({
 						text,
 						pagination: {
 							offset,
 							count,
 							sort,
 						},
-					})) as { users: ILivechatAgent[]; count: number; offset: number; total: number },
+					}),
 				);
 			}
 			throw new Error('Invalid type');

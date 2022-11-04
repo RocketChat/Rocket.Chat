@@ -21,6 +21,7 @@ import type {
 	ILivechatTrigger,
 	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
 
@@ -1182,7 +1183,7 @@ const POSTLivechatAgentStatusPropsSchema = {
 	properties: {
 		status: {
 			type: 'string',
-			enum: ['available', 'not-available'],
+			enum: Object.values(ILivechatAgentStatus),
 			nullable: true,
 		},
 		agentId: {
