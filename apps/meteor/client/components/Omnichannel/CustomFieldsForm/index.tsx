@@ -16,7 +16,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 	}
 
 	if (isError) {
-		dispatchToastMessage({ type: 'error', message: error.message });
+		dispatchToastMessage({ type: 'error', message: error?.message });
 		return null;
 	}
 
