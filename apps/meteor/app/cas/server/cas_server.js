@@ -93,7 +93,7 @@ const middleware = function (req, res, next) {
 			closePopup(res);
 		});
 	} catch (err) {
-		logger.error(`Unexpected error : ${err.message}`);
+		logger.error({ msg: 'Unexpected error', err });
 		closePopup(res);
 	}
 };
