@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { dispatchToastMessage } from '../../../lib/toast';
 import { CustomSelectInput } from './CustomSelectInput';
 import { CustomTextInput } from './CustomTextInput';
 import { useCustomFields } from './hooks/useCustomFields';
@@ -15,7 +16,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 	}
 
 	if (isError) {
-		throw error;
+		dispatchToastMessage({ type: 'error', message: error.message });
 	}
 
 	return (
@@ -35,8 +36,8 @@ const CustomFieldsForm = (): ReactElement | null => {
 									data={customField}
 									{...register(`livechatData.${customField._id}`, {
 										validate: {
-											required: (value) => !!value,
 											regexp: (value) => !!String(value).match(new RegExp(customField.regexp)),
+											...(customField.required && { required: (value) => !!value }),
 										},
 									})}
 								/>
@@ -48,11 +49,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 									control={control}
 									name={`livechatData.${customField._id}`}
 									render={({ field }): ReactElement => <CustomSelectInput data={customField} {...field} />}
-									rules={{
-										validate: {
-											required: (value) => !!value,
-										},
-									}}
+									rules={customField.required && { validate: { required: (value) => !!value } }}
 								/>
 							);
 						default:
