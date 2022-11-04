@@ -4,7 +4,6 @@ import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
-import { GridFSBucket } from 'mongodb';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
