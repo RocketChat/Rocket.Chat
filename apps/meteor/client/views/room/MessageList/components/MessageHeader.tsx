@@ -5,7 +5,7 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 	MessageStatusPrivateIndicator,
-	MessageNames,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
@@ -37,7 +37,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 
 	return (
 		<MessageHeaderTemplate>
-			<MessageNames>
+			<MessageNameContainer>
 				<MessageName
 					{...(!showUsername && { 'data-qa-type': 'username' })}
 					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
@@ -60,7 +60,7 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 						</MessageUsername>
 					</>
 				)}
-			</MessageNames>
+			</MessageNameContainer>
 
 			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
