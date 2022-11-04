@@ -10,7 +10,7 @@ export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string;
 
 	const slaData = sla && (await OmnichannelServiceLevelAgreements.findOneByIdOrName(sla));
 	if (!slaData) {
-		throw new Error('error-invalid-priority');
+		throw new Error('error-invalid-sla');
 	}
 
 	LivechatEnterprise.updateRoomSLA(roomId, await Users.findOneById(userId, { projection: { username: 1 } }), slaData);

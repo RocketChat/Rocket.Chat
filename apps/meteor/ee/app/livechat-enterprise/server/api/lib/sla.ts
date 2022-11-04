@@ -49,3 +49,13 @@ export async function findSLA({ text, pagination: { offset, count, sort } }: Fin
 export async function findSLAById({ slaId }: FindSLAByIdParams): Promise<FindSLAByIdResult> {
 	return OmnichannelServiceLevelAgreements.findOneById(slaId);
 }
+
+export async function deleteSLA(slaId: string): Promise<void> {
+	const result = await OmnichannelServiceLevelAgreements.removeById(slaId);
+	if (!result.acknowledged) {
+		throw new Error(`error-deleting-priority`);
+	}
+	if (result.deletedCount < 1) {
+		throw new Error(`priority-not-found`);
+	}
+}

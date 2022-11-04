@@ -4,7 +4,7 @@ import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@roc
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { savePriority, saveSLA } from '../../../data/livechat/priorities';
+import { savePriority, deletePriority, saveSLA, deleteSLA } from '../../../data/livechat/priorities';
 import { createAgent, createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -45,6 +45,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(current).to.have.property('name', sla.name);
 			expect(current).to.have.property('description', sla.description);
 			expect(current).to.have.property('dueTimeInMinutes', sla.dueTimeInMinutes);
+			const deleteResponse = deleteSLA(sla._id);
+			expect(deleteResponse).to.not.be.rejected;
 		});
 	});
 
@@ -55,7 +57,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
-		it('should return a sla', async () => {
+		it('should create, find and delete an sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin']);
 			await updatePermission('view-l-room', ['livechat-agent']);
 			const sla = await saveSLA();
@@ -67,6 +69,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(sla._id);
+			const deleteResponse = deleteSLA(sla._id);
+			expect(deleteResponse).to.not.be.rejected;
 		});
 	});
 	describe('livechat/priority', () => {
@@ -111,13 +115,17 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.length.greaterThan(0);
-			expect(response.body.priorities.find((p: ILivechatPriority) => !!p && p?._id === priority._id)).to.be.an('object');
+			expect(response.body.priorities.find((p: ILivechatPriority) => !!p && p?._id === priority._id)).to.have.property('_id', priority._id);
 		});
 		it('should not create the same priority twice', async () => {
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['livechat-agent']);
-			priority = await savePriority({ name: priority.name, level: priority.level });
-			expect(priority).to.have.property('success', false);
+			const newPriority = await savePriority({ name: priority.name, level: priority.level });
+			expect(newPriority).not.to.have.property('_id', priority._id);
+			expect(newPriority).not.to.have.property('name', priority.name);
+			expect(newPriority).not.to.have.property('level', priority.level);
+			expect(newPriority).to.have.property('success', false);
+			expect(newPriority).to.have.property('error');
 		});
 	});
 
@@ -130,7 +138,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('error');
 			expect((response.body as any)?.error).to.contain('error-unauthorized');
 		});
-		it('should return a priority', async () => {
+		it('should create, find and delete a priority', async () => {
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['livechat-agent']);
 			const priority = await savePriority();
@@ -142,16 +150,18 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(priority._id);
+			const deletable = deletePriority(priority._id);
+			expect(deletable).to.not.rejected;
 		});
 	});
 
-	describe('livechat/inquiry.prioritize', () => {
+	describe('livechat/inquiry.setSLA', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-priorities', []);
 			await updatePermission('manage-livechat-sla', []);
 			await updatePermission('view-l-room', []);
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					roomId: '123',
@@ -166,7 +176,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['livechat-agent']);
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					sla: '123',
@@ -177,7 +187,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should fail if roomId is invalid', async () => {
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					roomId: '123',
@@ -189,7 +199,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should fail if sla is not in request body', async () => {
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					roomId: '123',
@@ -204,7 +214,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await createAgent();
 
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					roomId: room._id,
@@ -220,7 +230,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await takeInquiry(room._id);
 
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					roomId: room._id,
@@ -235,7 +245,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const room = await createLivechatRoom(visitor.token);
 			const sla = await saveSLA();
 			const response = await request
-				.put(api('livechat/inquiry.prioritize'))
+				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
 				.send({
 					roomId: room._id,

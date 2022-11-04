@@ -2,6 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatPriority } from '@rocket.chat/models';
 import type { ILivechatPriority, ILivechatPriorityData } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 type FindPriorityParams = {
 	text?: string;
@@ -50,15 +51,27 @@ export async function findPriorityById({ priorityId }: FindPriorityByIdParams): 
 	return LivechatPriority.findOneById(priorityId);
 }
 
-export async function createPriority(data: ILivechatPriorityData): Promise<ILivechatPriority | false> {
-	const exists = await LivechatPriority.findOneByIdOrName(data.name);
-	if (exists) {
-		return false;
+export async function createPriority(data: ILivechatPriorityData): Promise<ILivechatPriority> {
+	const query = {
+		name: data.name,
+	};
+	const created = await LivechatPriority.findOneAndUpdate(
+		query,
+		{ $setOnInsert: { ...data, _id: new ObjectId().toString() } },
+		{ upsert: true, returnDocument: 'after' },
+	);
+	if (created.value != null && created.lastErrorObject?.updatedExisting === true) {
+		throw new Error(`priority-already exists`);
 	}
-	const insert = await LivechatPriority.insertOne(data);
-	if (!insert.acknowledged) {
-		return false;
+	return created.value as ILivechatPriority;
+}
+
+export async function deletePriorityById(priorityId: string): Promise<void> {
+	const result = await LivechatPriority.removeById(priorityId);
+	if (!result.acknowledged) {
+		throw new Error(`error-deleting-priority`);
 	}
-	Object.assign(data, { _id: insert.insertedId });
-	return data as ILivechatPriority;
+	if (result.deletedCount < 1) {
+		throw new Error(`priority-not-found`);
+	}
 }

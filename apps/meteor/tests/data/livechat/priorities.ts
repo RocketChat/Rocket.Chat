@@ -21,6 +21,19 @@ export const savePriority = (override:ILivechatPriorityData={name:"",level:""}):
 	});
 };
 
+export const deletePriority = (id: string): Promise<void> => {
+	return new Promise((resolve, reject) => {
+		request
+			.delete(api(`livechat/priority/${id}`))
+			.set(credentials)
+			.end((err: Error, _res: DummyResponse<void,'not-wrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve();
+			});
+	});
+};
 
 export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
     return new Promise((resolve, reject) => {
@@ -43,3 +56,25 @@ export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
 			});
 	});
 };
+
+export const deleteSLA = (id: string): Promise<void> => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(methodCall(`livechat:removeSLA`))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					method: 'livechat:removeSLA',
+					params: [id],
+					id: '101',
+					msg: 'method',
+				}),
+			})
+			.end((err: Error, _res: DummyResponse<void,'not-wrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve();
+			});
+	});
+}

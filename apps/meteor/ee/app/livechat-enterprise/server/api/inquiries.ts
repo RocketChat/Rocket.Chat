@@ -2,7 +2,7 @@ import { API } from '../../../../../app/api/server';
 import { setSLAToInquiry } from './lib/inquiries';
 
 API.v1.addRoute(
-	'livechat/inquiry.prioritize',
+	'livechat/inquiry.setSLA',
 	{
 		authRequired: true,
 		permissionsRequired: {

@@ -17,7 +17,7 @@ callbacks.add(
 
 		const sla = Promise.await(OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm));
 		if (!sla) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid sla', {
+			throw new Meteor.Error('error-invalid-sla', 'Invalid sla', {
 				function: 'livechat.beforeRoom',
 			});
 		}
