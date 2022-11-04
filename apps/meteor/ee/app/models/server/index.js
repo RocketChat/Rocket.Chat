@@ -10,4 +10,4 @@ import './models/Messages';
 import './models/Users';
 import './raw/LivechatDepartmentAgents';
 
-export { CannedResponse, LivechatTag, LivechatUnit, LivechatUnitMonitors, LivechatPriority };
+export { CannedResponse, LivechatTag, LivechatUnit, LivechatUnitMonitors };
