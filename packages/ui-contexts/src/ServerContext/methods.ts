@@ -181,6 +181,7 @@ export interface ServerMethods {
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
+	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
 	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;

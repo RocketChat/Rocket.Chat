@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button, Select } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useAtLeastOnePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 
@@ -57,7 +57,7 @@ const RoomEdit = ({
 	const isEnterprise = useIsEnterprise();
 	const viewCustomFields = useAtLeastOnePermission(CUSTOM_FIELDS_PERMISSION);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const saveRoom = useMethod('livechat:saveInfo');
+	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
 	const methods = useForm({ defaultValues: getInitialValuesRoom(room), mode: 'onChange' });
 
@@ -83,7 +83,10 @@ const RoomEdit = ({
 		};
 
 		try {
-			saveRoom(guestData, roomData);
+			await saveRoom({
+				guestData,
+				roomData,
+			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 
