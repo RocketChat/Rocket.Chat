@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+// const { expect } = require('chai');
+
 import proxyquire from 'proxyquire';
 
 import { AuthorizeRequest } from '../../../../app/meteor-accounts-saml/server/lib/generators/AuthorizeRequest';
