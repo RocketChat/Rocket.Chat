@@ -2,7 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button, Select } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useAtLeastOnePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useController, useForm } from 'react-hook-form';
 
 import CustomFieldsForm from '../../../../../components/Omnichannel/CustomFieldsForm';
 import Tags from '../../../../../components/Omnichannel/Tags';
@@ -68,6 +68,20 @@ const RoomEdit = ({
 		formState: { isDirty, isValid },
 	} = methods;
 
+	const {
+		field: { name: tagsName, value: tagsValue, onChange: tagsOnChange },
+	} = useController({
+		name: 'tags',
+		control,
+	});
+
+	const {
+		field: { name: priorityName, value: priorityValue, onChange: priorityOnChange },
+	} = useController({
+		name: 'priorityId',
+		control,
+	});
+
 	const { data: prioritiesData, isError: prioritiesError, isLoading: prioritiesLoading } = usePriorities();
 
 	const handleSubmit = useCallback(async () => {
@@ -114,27 +128,17 @@ const RoomEdit = ({
 					</Field.Row>
 				</Field>
 				<Field>
-					<Controller
-						control={control}
-						name='tags'
-						render={({ field: { name, value, onChange } }): ReactElement => <Tags name={name} tags={value} handler={onChange} />}
-					/>
+					<Tags name={tagsName} tags={tagsValue} handler={tagsOnChange} />
 				</Field>
 				{isEnterprise && (
 					<Field>
 						<Field.Label>{t('Priority')}</Field.Label>
 						<Field.Row>
-							<Controller
-								control={control}
-								name='priorityId'
-								render={({ field: { name, value, onChange } }): ReactElement => (
-									<Select
-										name={name}
-										value={value}
-										options={prioritiesData.priorities.map((priority) => [priority._id, priority.name])}
-										onChange={onChange}
-									/>
-								)}
+							<Select
+								name={priorityName}
+								value={priorityValue}
+								options={prioritiesData.priorities.map((priority) => [priority._id, priority.name])}
+								onChange={priorityOnChange}
 							/>
 						</Field.Row>
 					</Field>
