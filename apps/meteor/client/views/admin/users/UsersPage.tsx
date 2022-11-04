@@ -58,11 +58,11 @@ const UsersPage = (): ReactElement => {
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
 						<ButtonGroup>
-							{/* {canCreateUser && ( */}
+							{canCreateUser && (
 								<Button onClick={handleNewUser}>
 									<Icon size='x20' name='user-plus' /> {t('New')}
 								</Button>
-							{/* )} */}
+							)}
 							{canBulkCreateUser && (
 								<Button onClick={handleInviteUser}>
 									<Icon size='x20' name='mail' /> {t('Invite')}
