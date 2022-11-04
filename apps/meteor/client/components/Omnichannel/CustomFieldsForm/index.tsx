@@ -17,6 +17,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 
 	if (isError) {
 		dispatchToastMessage({ type: 'error', message: error.message });
+		return null;
 	}
 
 	return (
@@ -49,7 +50,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 									control={control}
 									name={`livechatData.${customField._id}`}
 									render={({ field }): ReactElement => <CustomSelectInput data={customField} {...field} />}
-									rules={customField.required && { validate: { required: (value) => !!value } }}
+									rules={customField.required ? { validate: { required: (value) => !!value } } : undefined}
 								/>
 							);
 						default:
