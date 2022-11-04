@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, ReactElement, useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
@@ -19,6 +19,9 @@ const UsersPage = (): ReactElement => {
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
 	const usersRoute = useRoute('admin-users');
+
+	const canCreateUser = usePermission('create-user');
+	const canBulkCreateUser = usePermission('bulk-register-user');
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -55,12 +58,16 @@ const UsersPage = (): ReactElement => {
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
 						<ButtonGroup>
-							<Button onClick={handleNewUser}>
-								<Icon size='x20' name='user-plus' /> {t('New')}
-							</Button>
-							<Button onClick={handleInviteUser}>
-								<Icon size='x20' name='mail' /> {t('Invite')}
-							</Button>
+							{/* {canCreateUser && ( */}
+								<Button onClick={handleNewUser}>
+									<Icon size='x20' name='user-plus' /> {t('New')}
+								</Button>
+							{/* )} */}
+							{canBulkCreateUser && (
+								<Button onClick={handleInviteUser}>
+									<Icon size='x20' name='mail' /> {t('Invite')}
+								</Button>
+							)}
 						</ButtonGroup>
 					)}
 				</Page.Header>
