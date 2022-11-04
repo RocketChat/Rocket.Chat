@@ -197,6 +197,7 @@ export const fileUpload = async (
 	const uploadNextFile = (): void => {
 		const file = files.pop();
 		if (!file) {
+			chatMessagesInstance?.quotedMessages.clear();
 			return;
 		}
 
