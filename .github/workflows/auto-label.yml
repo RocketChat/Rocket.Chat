@@ -1,6 +1,6 @@
 name: 'Auto label QA'
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, labeled, unlabeled]
 jobs:
   build:
