@@ -21,7 +21,6 @@ import type {
 	ILivechatInquiryRecord,
 	IOmnichannelServiceLevelAgreements,
 	ILivechatPriority,
-	ILivechatPriorityData,
 } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
