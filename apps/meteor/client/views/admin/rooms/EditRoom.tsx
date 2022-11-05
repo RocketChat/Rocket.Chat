@@ -27,6 +27,7 @@ type EditRoomFormValues = {
 	isDefault: boolean;
 	favorite: boolean;
 	featured: boolean;
+	reactWhenReadOnly: boolean;
 	roomDescription: string;
 	roomAnnouncement: string;
 	roomAvatar: IRoom['avatarETag'];
@@ -41,6 +42,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 	isDefault: !!room.default,
 	favorite: !!room.favorite,
 	featured: !!room.featured,
+	reactWhenReadOnly: !!room.reactWhenReadOnly,
 	roomTopic: room.topic ?? '',
 	roomDescription: room.description ?? '',
 	roomAnnouncement: room.announcement ?? '',
@@ -68,6 +70,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				isAllowed?.(room, RoomSettingsEnum.DESCRIPTION),
 				isAllowed?.(room, RoomSettingsEnum.TYPE),
 				isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
+				isAllowed?.(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
 			];
 		}, [room]);
 
@@ -75,6 +78,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		roomName,
 		roomType,
 		readOnly,
+		reactWhenReadOnly,
 		archived,
 		isDefault,
 		favorite,
@@ -92,6 +96,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		handleRoomName,
 		handleRoomType,
 		handleReadOnly,
+		handleReactWhenReadOnly,
 		handleArchived,
 		handleRoomAvatar,
 		handleRoomTopic,
@@ -122,6 +127,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				featured,
+				reactWhenReadOnly,
 				roomDescription,
 				roomAnnouncement,
 				roomAvatar,
@@ -244,59 +250,72 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 					)}
 					{canViewType && (
 						<Field>
-							<Field.Row>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('Private')}</Field.Label>
-								<ToggleSwitch disabled={deleting} checked={roomType === 'p'} onChange={changeRoomType} />
-							</Field.Row>
+								<Field.Row>
+									<ToggleSwitch disabled={deleting} checked={roomType === 'p'} onChange={changeRoomType} />
+								</Field.Row>
+							</Box>
 							<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
 						</Field>
 					)}
 					{canViewReadOnly && (
 						<Field>
-							<Field.Row>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<Field.Label>{t('Read_only')}</Field.Label>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('Read_only')}</Field.Label>
+								<Field.Row>
 									<ToggleSwitch disabled={deleting} checked={readOnly} onChange={handleReadOnly} />
-								</Box>
-							</Field.Row>
+								</Field.Row>
+							</Box>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						</Field>
+					)}
+					{readOnly && (
+						<Field>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('React_when_read_only')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly} />
+								</Field.Row>
+							</Box>
+							<Field.Hint>{t('React_when_read_only_changed_successfully')}</Field.Hint>
 						</Field>
 					)}
 					{canViewArchived && (
 						<Field>
-							<Field.Row>
-								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
+								<Field.Row>
 									<ToggleSwitch disabled={deleting} checked={archived} onChange={handleArchived} />
-								</Box>
-							</Field.Row>
+								</Field.Row>
+							</Box>
 						</Field>
 					)}
 				</>
 			)}
 			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Default')}</Field.Label>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Default')}</Field.Label>
+					<Field.Row>
 						<ToggleSwitch disabled={deleting} checked={isDefault} onChange={handleIsDefault} />
-					</Box>
-				</Field.Row>
+					</Field.Row>
+				</Box>
 			</Field>
 			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Favorite')}</Field.Label>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Favorite')}</Field.Label>
+					<Field.Row>
 						<ToggleSwitch disabled={deleting} checked={favorite} onChange={handleFavorite} />
-					</Box>
-				</Field.Row>
+					</Field.Row>
+				</Box>
 			</Field>
 			<Field>
-				<Field.Row>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-						<Field.Label>{t('Featured')}</Field.Label>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+					<Field.Label>{t('Featured')}</Field.Label>
+					<Field.Row>
 						<ToggleSwitch disabled={deleting} checked={featured} onChange={handleFeatured} />
-					</Box>
-				</Field.Row>
+					</Field.Row>
+				</Box>
 			</Field>
 			<Field>
 				<Field.Row>
