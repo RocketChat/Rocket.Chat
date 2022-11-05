@@ -19,7 +19,7 @@ import React, { useCallback, ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
 
@@ -47,7 +47,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 			email: inboxData?.email,
 			description: inboxData?.description,
 			senderInfo: inboxData?.senderInfo,
-			department: inboxData?.department,
+			department: inboxData?.department || '',
 			// SMTP
 			smtpServer: inboxData?.smtp.server,
 			smtpPort: inboxData?.smtp.port ?? 587,

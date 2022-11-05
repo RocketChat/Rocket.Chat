@@ -5,7 +5,7 @@ import moment from 'moment';
 import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import { useFormsSubscription } from '../additionalForms';
 import Label from './Label';
@@ -149,7 +149,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (

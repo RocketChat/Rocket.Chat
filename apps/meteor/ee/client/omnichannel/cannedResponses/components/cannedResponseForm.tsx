@@ -3,7 +3,7 @@ import { Box, Field, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import AutoCompleteDepartment from '../../../../../client/components/AutoCompleteDepartment';
+import { AutoCompleteDepartment } from '../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../client/components/Omnichannel/Tags';
 import MarkdownTextEditor from '../../components/CannedResponse/MarkdownTextEditor';
 import PreviewText from '../../components/CannedResponse/modals/CreateCannedResponse/PreviewText';
@@ -75,7 +75,6 @@ const CannedResponseForm: FC<{
 								{...(isMonitor && { onlyMyDepartments: isMonitor })}
 								value={departmentId}
 								onChange={handleDepartmentId}
-								error={errors.departmentId}
 							/>
 							<Field.Error>{errors.departmentId}</Field.Error>
 						</Field>

@@ -1,18 +1,29 @@
-// Cannot convert this file to ts because PaginatedSelectFiltered is not typed yet
-// Next release we'll add required types and convert this file, since a new
-// fuselage release is OoS of this regression
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, ReactElement, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
-const AutoCompleteDepartment = (props) => {
-	const { value, excludeDepartmentId, onlyMyDepartments = false, onChange = () => {}, haveAll = false, haveNone = false } = props;
+type AutoCompleteDepartmentProps = {
+	value: { value: string; label: string } | string;
+	onChange: (value: string) => void;
+	excludeDepartmentId?: string;
+	onlyMyDepartments?: boolean;
+	haveAll?: boolean;
+	haveNone?: boolean;
+};
 
+export const AutoCompleteDepartment = ({
+	value,
+	excludeDepartmentId,
+	onlyMyDepartments,
+	onChange,
+	haveAll,
+	haveNone,
+}: AutoCompleteDepartmentProps): ReactElement | null /* null added to satisfy register type condition */ => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
@@ -48,10 +59,9 @@ const AutoCompleteDepartment = (props) => {
 		return 0;
 	});
 
-	const findValue = value !== undefined && value !== null ? value : '';
-	const department = sortedByName.find(
-		(dep) => dep._id === (typeof findValue !== 'object' && findValue ? findValue : findValue.value),
-	)?.value;
+	const findValue = value || '';
+
+	const department = sortedByName.find((dep) => dep._id === (typeof findValue === 'string' ? findValue : findValue.value))?.value;
 
 	return (
 		<PaginatedSelectFiltered
@@ -59,12 +69,15 @@ const AutoCompleteDepartment = (props) => {
 			value={department}
 			onChange={onChange}
 			filter={departmentsFilter}
-			setFilter={setDepartmentsFilter}
-			options={sortedByName}
+			// Workaround for setFilter weird typing
+			setFilter={setDepartmentsFilter as (value: string | number | undefined) => void}
+			options={sortedByName.map((dep) => ({ value: dep._id, label: dep.name }))}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+				departmentsPhase === AsyncStatePhase.LOADING
+					? (): void => undefined
+					: (start): void => loadMoreDepartments(start, Math.min(50, departmentsTotal))
 			}
 		/>
 	);

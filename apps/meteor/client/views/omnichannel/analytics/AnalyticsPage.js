@@ -2,7 +2,7 @@ import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
