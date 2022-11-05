@@ -149,7 +149,7 @@ const RoomEdit = ({
 					<Button flexGrow={1} onClick={close}>
 						{t('Cancel')}
 					</Button>
-					<Button role='saveRoomEditInfo' mie='none' flexGrow={1} onClick={handleSubmit} disabled={!isDirty || !isValid} primary>
+					<Button mie='none' flexGrow={1} onClick={handleSubmit} disabled={!isDirty || !isValid} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
