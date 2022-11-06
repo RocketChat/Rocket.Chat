@@ -540,6 +540,10 @@ API.v1.addRoute(
 				dateTo = new Date(dateTo);
 				dateTo.setDate(dateTo.getDate() + 1);
 
+				if (dateFrom > dateTo) {
+					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
+				}
+
 				sendFile(
 					{
 						rid,
