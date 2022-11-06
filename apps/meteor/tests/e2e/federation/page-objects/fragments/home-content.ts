@@ -175,4 +175,8 @@ export class FederationHomeContent {
 	async getSystemMessageByText(text: string): Promise<Locator> {
 		return this.page.locator('div[data-qa="system-message"] div[data-qa-type="system-message-body"]', { hasText: text });
 	}
+
+	async getLastSystemMessageName(): Promise<Locator> {
+		return this.page.locator('div[data-qa="system-message"]:last-child span.rcx-message-system__name');
+	}
 }

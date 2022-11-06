@@ -745,146 +745,6 @@ test.describe.parallel('Federation - Group Creation', () => {
 			});
 		});
 
-		test.describe('Owner rights', () => {
-			test('expect only the owner of the room being able to delete the channel', async ({ browser, page }) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
-				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
-
-				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer1.tabs.btnRoomInfo.click();
-				await expect(poFederationChannelServer1.tabs.room.btnDelete).toBeVisible();
-
-				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer2.tabs.btnRoomInfo.click();
-				await expect(poFederationChannelServer2.tabs.room.btnDelete).not.toBeVisible();
-
-				await pageForServer2.close();
-			});
-
-			test('expect only the owner of the room being able to add users through the UI', async ({ browser, page }) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
-				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
-
-				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
-				await expect(poFederationChannelServer1.tabs.members.addUsersButton).toBeVisible();
-
-				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
-				await expect(poFederationChannelServer2.tabs.members.addUsersButton).not.toBeVisible();
-
-				await pageForServer2.close();
-			});
-
-			// TODO: skipping this test until we have the Synapse server to test against, this is having some intermittencies
-			test.skip('expect only the owner of the room being able to edit the channel name AND the channel topic', async ({
-				browser,
-				page,
-			}) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
-				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
-
-				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer1.tabs.btnRoomInfo.click();
-				await expect(poFederationChannelServer1.tabs.room.btnEdit).toBeVisible();
-
-				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer2.tabs.btnRoomInfo.click();
-				await expect(poFederationChannelServer2.tabs.room.btnEdit).not.toBeVisible();
-
-				await poFederationChannelServer1.tabs.room.btnEdit.click();
-				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdGroupName}`);
-				await poFederationChannelServer1.tabs.room.btnSave.click();
-				await page.waitForTimeout(5000);
-
-				await poFederationChannelServer2.sidenav.openChat(`NAME-EDITED-${createdGroupName}`);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/NAME-EDITED-${createdGroupName}`);
-				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/NAME-EDITED-${createdGroupName}`);
-
-				const nameChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
-					`changed room name to NAME-EDITED-${createdGroupName}`,
-				);
-				await expect(nameChangedSystemMessageServer1).toBeVisible();
-				const nameChangedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
-					`changed room name to NAME-EDITED-${createdGroupName}`,
-				);
-				await expect(nameChangedSystemMessageServer2).toBeVisible();
-
-				await poFederationChannelServer1.tabs.room.btnEdit.click();
-				await poFederationChannelServer1.tabs.room.inputTopic.fill('hello-topic-edited');
-				await poFederationChannelServer1.tabs.room.btnSave.click();
-
-				const topicChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
-					'changed room topic to hello-topic-edited',
-				);
-				await expect(topicChangedSystemMessageServer1).toBeVisible();
-				const topicChangedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
-					'changed room topic to hello-topic-edited',
-				);
-				await expect(topicChangedSystemMessageServer2).toBeVisible();
-
-				await pageForServer2.close();
-			});
-		});
-
 		test.describe('Visual Elements', () => {
 			test('expect the calls button to be disabled', async ({ browser, page }) => {
 				const pageForServer2 = await browser.newPage();
@@ -969,6 +829,299 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(poFederationChannelServer1.tabs.btnDiscussion).toBeDisabled();
 				await expect(poFederationChannelServer2.tabs.btnDiscussion).toBeDisabled();
+
+				await pageForServer2.close();
+			});
+		});
+
+		test.describe('Owner rights', () => {
+			test('expect only the owner of the room being able to delete the channel', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer1.tabs.room.btnDelete).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer2.tabs.room.btnDelete).not.toBeVisible();
+
+				await pageForServer2.close();
+			});
+
+			test('expect only the owner of the room being able to add users through the UI', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
+				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer1.tabs.members.addUsersButton).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
+				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer2.tabs.members.addUsersButton).not.toBeVisible();
+
+				await pageForServer2.close();
+			});
+
+			test('expect only the room owner being able remove users from the room (user info page)', async ({ browser, page }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					userFromServer2UsernameOnly,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
+				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await (await poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).click();
+				await expect(poFederationChannelServer1.tabs.members.btnRemoveUserFromRoom).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
+				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await (await poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).click();
+				await expect(poFederationChannelServer2.tabs.members.btnRemoveUserFromRoom).not.toBeVisible();
+
+				await pageForServer2.close();
+			});
+
+			// TODO: skipping this test until we have the Synapse server to test against, this is having some intermittencies
+			test.skip('expect only the owner of the room being able to edit the channel name AND the channel topic', async ({
+				browser,
+				page,
+			}) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/${createdGroupName}`);
+
+				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer1.tabs.room.btnEdit).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer2.tabs.room.btnEdit).not.toBeVisible();
+
+				await poFederationChannelServer1.tabs.room.btnEdit.click();
+				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdGroupName}`);
+				await poFederationChannelServer1.tabs.room.btnSave.click();
+				await page.waitForTimeout(5000);
+
+				await poFederationChannelServer2.sidenav.openChat(`NAME-EDITED-${createdGroupName}`);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/NAME-EDITED-${createdGroupName}`);
+				await expect(pageForServer2).toHaveURL(`${constants.RC_SERVER_2.url}/group/NAME-EDITED-${createdGroupName}`);
+
+				const nameChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
+					`changed room name to NAME-EDITED-${createdGroupName}`,
+				);
+				await expect(nameChangedSystemMessageServer1).toBeVisible();
+				const nameChangedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
+					`changed room name to NAME-EDITED-${createdGroupName}`,
+				);
+				await expect(nameChangedSystemMessageServer2).toBeVisible();
+
+				await poFederationChannelServer1.tabs.room.btnEdit.click();
+				await poFederationChannelServer1.tabs.room.inputTopic.fill('hello-topic-edited');
+				await poFederationChannelServer1.tabs.room.btnSave.click();
+
+				const topicChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
+					'changed room topic to hello-topic-edited',
+				);
+				await expect(topicChangedSystemMessageServer1).toBeVisible();
+				const topicChangedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
+					'changed room topic to hello-topic-edited',
+				);
+				await expect(topicChangedSystemMessageServer2).toBeVisible();
+
+				await pageForServer2.close();
+			});
+		});
+
+		test.describe('Removing users from room', () => {
+			test('expect to remove the invitee from the room', async ({ browser, page, apiServer2 }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const groupName = faker.datatype.uuid();
+				const usernameFromServer2 = await registerUser(apiServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: usernameFromServer2,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					usernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
+
+				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [fullUsernameFromServer2]);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
+
+				await poFederationChannelServer1.sidenav.openChat(groupName);
+				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.tabs.members.showAllUsers();
+
+				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.tabs.members.showAllUsers();
+
+				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
+				await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
+
+				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameFromServer2)).toBeVisible();
+				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
+
+				await poFederationChannelServer1.tabs.members.removeUserFromRoom(usernameWithDomainFromServer2);
+				const removedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
+					`removed ${usernameWithDomainFromServer2}`,
+				);
+				await expect(removedSystemMessageServer1).toBeVisible();
+				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).not.toBeVisible();
+				await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
+
+				// TODO: double check if the user is removed from the room in the external server + check the system message there
+
+				await pageForServer2.close();
+			});
+		});
+
+		test.describe('Leaving the room', () => {
+			test('expect the invitee to be able to leave the room', async ({ browser, page, apiServer2 }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const groupName = faker.datatype.uuid();
+				const usernameFromServer2 = await registerUser(apiServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: usernameFromServer2,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					usernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+
+				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [fullUsernameFromServer2]);
+
+				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
+
+				await poFederationChannelServer2.sidenav.openChat(groupName);
+				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer2.tabs.room.btnLeave).toBeVisible();
+
+				await poFederationChannelServer2.tabs.room.btnLeave.click();
+				await poFederationChannelServer2.tabs.room.btnModalConfirm.click();
+
+				const leftChannelSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText('left the channel');
+				await expect(leftChannelSystemMessageServer1).toBeVisible();
+				await expect(await (await poFederationChannelServer1.content.getLastSystemMessageName()).textContent()).toBe(
+					usernameWithDomainFromServer2,
+				);
 
 				await pageForServer2.close();
 			});

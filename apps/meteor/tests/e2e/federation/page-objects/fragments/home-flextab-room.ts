@@ -11,6 +11,10 @@ export class FederationHomeFlextabRoom {
 		return this.page.locator('//aside//button[contains(text(), "Edit")]');
 	}
 
+	get btnLeave(): Locator {
+		return this.page.locator('//aside//button[contains(text(), "Leave")]');
+	}
+
 	get btnDelete(): Locator {
 		return this.page.locator('//aside//button[contains(text(), "Delete")]');
 	}
@@ -37,5 +41,9 @@ export class FederationHomeFlextabRoom {
 
 	get btnSave(): Locator {
 		return this.page.locator('//aside//button[contains(text(), "Save")]');
+	}
+
+	get btnModalConfirm(): Locator {
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
 	}
 }

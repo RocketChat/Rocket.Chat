@@ -15,6 +15,25 @@ export class FederationHomeFlextabMembers {
 		return this.page.locator('//button[contains(text(), "Add")]');
 	}
 
+	get btnRemoveUserFromRoom(): Locator {
+		return this.page.locator('button >> text="Remove from room"');
+	}
+
+	getKebabMenuForUser(username: string): Locator {
+		return this.page.locator(`[data-username="${username}"] [data-testid="menu"]`);
+	}
+
+	async getOptionFromKebabMenuForUser(optionName: string): Promise<Locator> {
+		return this.page.locator(`ol li[value="${optionName}"].rcx-option`);
+	}
+
+	async removeUserFromRoom(username: string): Promise<void> {
+		await this.getUserInList(username).hover();
+		await this.getKebabMenuForUser(username).click();
+		await (await this.getOptionFromKebabMenuForUser('removeUser')).click();
+		await this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger').click();
+	}
+
 	async addMultipleUsers(usernames: string[]) {
 		await this.addUsersButton.click();
 		for await (const username of usernames) {
