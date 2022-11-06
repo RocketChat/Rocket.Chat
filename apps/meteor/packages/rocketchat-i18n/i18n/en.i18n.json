@@ -4578,7 +4578,7 @@
   "Teams_move_channel_to_team_confirm_description": "After reading the previous instructions about this behavior, do you want to move forward with this action?",
   "Teams_New_Title": "Create Team",
   "Teams_New_Name_Label": "Name",
-  "Teams_Info": "Team's Information",
+  "Teams_Info": "Team Information",
   "Teams_kept_channels": "You did not select the following Channels so they will be moved to the Workspace:",
   "Teams_kept__username__channels": "You did not select the following Channels so __username__ will be kept on them:",
   "Teams_leave_channels": "Select the Team’s Channels you would like to leave.",
