@@ -1948,6 +1948,7 @@
   "error-returning-inquiry": "Error returning inquiry to the queue",
   "error-role-in-use": "Cannot delete role because it's in use",
   "error-role-name-required": "Role name is required",
+  "error-room-does-not-exist": "This room does not exist",
   "error-role-already-present": "A role with this name already exists",
   "error-room-is-not-closed": "Room is not closed",
   "error-room-onHold": "Error! Room is On Hold",
