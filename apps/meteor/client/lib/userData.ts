@@ -1,4 +1,4 @@
-import type { IUser, IUserDataEvent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -29,12 +29,11 @@ type RawUserData = Serialized<
 		| 'active'
 		| 'defaultRoom'
 		| 'customFields'
-		| 'statusLivechat'
 		| 'oauth'
 		| 'createdAt'
 		| '_updatedAt'
 		| 'avatarETag'
-	>
+	> & { statusLivechat?: ILivechatAgent['statusLivechat'] }
 >;
 
 const updateUser = (userData: IUser): void => {
