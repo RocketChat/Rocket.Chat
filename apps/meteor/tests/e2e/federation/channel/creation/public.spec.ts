@@ -1131,8 +1131,6 @@ test.describe.parallel('Federation - Channel Creation', () => {
 					usernameWithDomainFromServer1,
 				);
 
-				// TODO: double check if the user is removed from the room in the external server + check the system message there
-
 				await pageForServer2.close();
 			});
 		});

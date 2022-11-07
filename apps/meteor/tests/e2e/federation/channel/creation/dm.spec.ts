@@ -218,7 +218,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await page2.close();
 				});
 			});
-			// 	// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
+			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
 			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
 				test('expect to create a DM inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
