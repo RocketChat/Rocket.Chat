@@ -36,14 +36,14 @@ export async function getUploadFormData<
 
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
-  
-  // Check if this is a chunked-upload
-  const contentRangeRegExp = new RegExp(/^(bytes) ((\d+)-(\d+)|\*)\/(\d+)$/);
-  const isChunked = typeof request.headers['content-range'] === 'string';
 
-  if (isChunked && !contentRangeRegExp.exec(<string>request.headers['content-range'])) {
-    reject('invalid content-range given');
-  }
+	// Check if this is a chunked-upload
+	const contentRangeRegExp = new RegExp(/^(bytes) ((\d+)-(\d+)|\*)\/(\d+)$/);
+	const isChunked = typeof request.headers['content-range'] === 'string';
+
+	if (isChunked && !contentRangeRegExp.exec(<string>request.headers['content-range'])) {
+		reject('invalid content-range given');
+	}
 
 	let uploadedFile: UploadResult<K> | undefined;
 
@@ -65,17 +65,17 @@ export async function getUploadFormData<
 		if (options.validate !== undefined && !options.validate(fields)) {
 			return returnError(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
 		}
-    if (isChunked) {
-      const matches = (<string>request.headers['content-range']).match(contentRangeRegExp)!;
+		if (isChunked) {
+			const matches = (<string>request.headers['content-range']).match(contentRangeRegExp)!;
 
-      if (!matches) {
-        reject('malformed content-range');
-      }
+			if (!matches) {
+				reject('malformed content-range');
+			}
 
-      const [, unit, , start, end, size] = matches;
+			const [, unit, , start, end, size] = matches;
 
-      uploadedFile.chunk = { unit, start: Number(start), end: Number(end), size: Number(size) };
-    }
+			uploadedFile.chunk = { unit, start: Number(start), end: Number(end), size: Number(size) };
+		}
 		return returnResult(uploadedFile);
 	}
 

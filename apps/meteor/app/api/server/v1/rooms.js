@@ -90,8 +90,8 @@ API.v1.addRoute(
 			if (!canAccessRoomId(this.urlParams.rid, this.userId)) {
 				return API.v1.unauthorized();
 			}
-      
-      const uploadMaxSize = settings.get('FileUpload_MaxFileSize');
+
+			const uploadMaxSize = settings.get('FileUpload_MaxFileSize');
 
 			const file = await getUploadFormData(
 				{
