@@ -6,9 +6,9 @@ import { useController, useForm } from 'react-hook-form';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 
-type PriorityEditProps = {
-	isNew: boolean;
-	priorityId: string;
+type SlaEditProps = {
+	isNew?: boolean;
+	slaId?: string;
 	reload: () => void;
 	data?: {
 		name: string;
@@ -17,9 +17,9 @@ type PriorityEditProps = {
 	};
 };
 
-function PriorityEdit({ data, isNew, priorityId, reload, ...props }: PriorityEditProps): ReactElement {
-	const prioritiesRoute = useRoute('omnichannel-priorities');
-	const savePriority = useMethod('livechat:savePriority');
+function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
+	const slasRoute = useRoute('omnichannel-sla-policies');
+	const saveSLA = useMethod('livechat:saveSLA');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -64,7 +64,7 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }: PriorityEdi
 		}
 
 		try {
-			await savePriority(priorityId, {
+			await saveSLA(slaId, {
 				name,
 				description,
 				dueTimeInMinutes,
@@ -72,7 +72,7 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }: PriorityEdi
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
-			prioritiesRoute.push({});
+			slasRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -124,4 +124,4 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }: PriorityEdi
 	);
 }
 
-export default PriorityEdit;
+export default SlaEdit;

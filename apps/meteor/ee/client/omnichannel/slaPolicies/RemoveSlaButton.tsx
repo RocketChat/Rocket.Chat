@@ -1,20 +1,25 @@
 import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
 
-function RemovePriorityButton({ _id, reload }) {
-	const removePriority = useMethod('livechat:removeSLA');
+type Props = {
+	_id: string;
+	reload: () => void;
+};
+
+function RemoveSlaButton({ _id, reload }: Props): ReactElement {
+	const removeSLA = useMethod('livechat:removeSLA');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
-	const prioritiesRoute = useRoute('omnichannel-priorities');
+	const prioritiesRoute = useRoute('omnichannel-sla-policies');
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
-			await removePriority(_id);
+			await removeSLA(_id);
 		} catch (error) {
 			console.log(error);
 		}
@@ -23,7 +28,7 @@ function RemovePriorityButton({ _id, reload }) {
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
-		const onDeleteAgent = async () => {
+		const onDeleteAgent = async (): Promise<void> => {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Priority_removed') });
@@ -34,7 +39,7 @@ function RemovePriorityButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={(): void => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return (
@@ -44,4 +49,4 @@ function RemovePriorityButton({ _id, reload }) {
 	);
 }
 
-export default RemovePriorityButton;
+export default RemoveSlaButton;

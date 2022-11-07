@@ -1,15 +1,19 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import PriorityEdit from './PriorityEdit';
+import SlaEdit from './SlaEdit';
 
-function PriorityEditWithData({ priorityId, reload }) {
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/sla/${priorityId}`);
+type SlaEditProps = {
+	slaId: string;
+	reload: () => void;
+};
 
+function SlaEditWithData({ slaId, reload }: SlaEditProps): ReactElement {
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/sla/${slaId}`);
 	const t = useTranslation();
 
 	if (state === AsyncStatePhase.LOADING) {
@@ -24,7 +28,7 @@ function PriorityEditWithData({ priorityId, reload }) {
 		);
 	}
 
-	return <PriorityEdit priorityId={priorityId} data={data} reload={reload} />;
+	return <SlaEdit slaId={slaId} data={data} reload={reload} />;
 }
 
-export default PriorityEditWithData;
+export default SlaEditWithData;
