@@ -110,9 +110,9 @@ API.v1.addRoute(
 					// @ts-expect-error - Typings on Livechat.sendMessage are wrong
 					message: await Livechat.sendMessage(sendMessage),
 				});
-			} catch (e) {
-				Livechat.logger.error('Error using Facebook ->', e);
-				return API.v1.failure(e);
+			} catch (err) {
+				Livechat.logger.error({ msg: 'Error using Facebook ->', err });
+				return API.v1.failure(err);
 			}
 		},
 	},
