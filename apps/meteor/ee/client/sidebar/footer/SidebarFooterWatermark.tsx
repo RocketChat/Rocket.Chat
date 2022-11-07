@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
@@ -21,7 +20,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 				<Box fontScale='micro' color='hint' pbe='x4'>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color={colors.n100} pbe='x4'>
+				<Box fontScale='micro' color='neutral-100' pbe='x4'>
 					{t('Free_Edition')}
 				</Box>
 			</Box>

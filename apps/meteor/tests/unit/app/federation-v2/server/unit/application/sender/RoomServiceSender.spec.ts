@@ -3,7 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
-const stub = sinon.stub();
+const sendMessageStub = sinon.stub();
+const sendQuoteMessageStub = sinon.stub();
 const { FederationRoomServiceSender } = proxyquire
 	.noCallThru()
 	.load('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
@@ -16,7 +17,7 @@ const { FederationRoomServiceSender } = proxyquire
 			'@global': true,
 		},
 		'./MessageSenders': {
-			getExternalMessageSender: () => ({ sendMessage: stub }),
+			getExternalMessageSender: () => ({ sendMessage: sendMessageStub, sendQuoteMessage: sendQuoteMessageStub }),
 		},
 	});
 
@@ -54,6 +55,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		createFederatedRoom: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
@@ -63,7 +65,13 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 	};
-	const fileAdapter = {};
+	const fileAdapter = {
+		getBufferForAvatarFile: sinon.stub().resolves(undefined),
+	};
+	const messageAdapter = {
+		getMessageById: sinon.stub(),
+		setExternalFederationEventOnMessage: sinon.stub(),
+	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub(),
@@ -82,8 +90,9 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		service = new FederationRoomServiceSender(
 			roomAdapter as any,
 			userAdapter as any,
-			settingsAdapter as any,
 			fileAdapter as any,
+			messageAdapter as any,
+			settingsAdapter as any,
 			bridge as any,
 		);
 	});
@@ -95,6 +104,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.createFederatedRoom.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
@@ -109,6 +119,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.kickUserFromRoom.reset();
 		bridge.redactEvent.reset();
 		bridge.updateMessage.reset();
+		messageAdapter.getMessageById.reset();
+		messageAdapter.setExternalFederationEventOnMessage.reset();
+		sendMessageStub.reset();
+		sendQuoteMessageStub.reset();
 	});
 
 	describe('#createDirectMessageRoomAndInviteUser()', () => {
@@ -411,6 +425,16 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			);
 		});
 
+		it('should NOT send any message if the message was already sent through federation', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves({});
+			roomAdapter.getFederatedRoomByInternalId.resolves({});
+
+			await service.sendExternalMessage({ internalRoomId: 'internalRoomId', message: { federation: { eventId: 'eventId' } } } as any);
+
+			expect(sendMessageStub.called).to.be.false;
+			expect(sendQuoteMessageStub.called).to.be.false;
+		});
+
 		it('should send the message through the bridge', async () => {
 			const user = FederatedUser.createInstance('externalInviterId', {
 				name: 'normalizedInviterId',
@@ -422,7 +446,53 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			await service.sendExternalMessage({ message: { msg: 'text' } } as any);
 
-			expect(stub.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
+			expect(sendMessageStub.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if the current attachment does not have a valid message_link (with a valid msg to reply to)', async () => {
+				userAdapter.getFederatedUserByInternalId.resolves({});
+				roomAdapter.getFederatedRoomByInternalId.resolves({});
+
+				await service.sendExternalMessage({
+					internalRoomId: 'internalRoomId',
+					message: { attachments: [{ message_link: 'http://localhost:3000/group/1' }] },
+				} as any);
+
+				expect(sendMessageStub.called).to.be.false;
+				expect(sendQuoteMessageStub.called).to.be.false;
+			});
+
+			it('should send a quote message if the current attachment is valid', async () => {
+				const user = FederatedUser.createInstance('externalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: true,
+				});
+				const originalSender = FederatedUser.createInstance('originalSenderExternalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: true,
+				});
+				const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+				userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+				userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(originalSender);
+				roomAdapter.getFederatedRoomByInternalId.resolves(room);
+				messageAdapter.getMessageById.resolves({ federation: { eventId: 'eventId' } });
+				const message = {
+					_id: '_id',
+					msg: 'message',
+					attachments: [{ message_link: 'http://localhost:3000/group/1?msg=1' }],
+				};
+				await service.sendExternalMessage({
+					internalRoomId: 'internalRoomId',
+					message,
+				} as any);
+
+				expect(sendQuoteMessageStub.calledWith(room.getExternalId(), user.getExternalId(), message, { federation: { eventId: 'eventId' } }))
+					.to.be.true;
+				expect(sendMessageStub.called).to.be.false;
+			});
 		});
 	});
 
