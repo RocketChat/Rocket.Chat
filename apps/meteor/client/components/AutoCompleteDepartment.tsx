@@ -44,24 +44,28 @@ export const AutoCompleteDepartment = ({
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const sortedByName = departmentsItems.sort((a, b) => {
-		if (a.value.value === 'all') {
-			return -1;
-		}
+	const findValue = useMemo<string>(() => (typeof value === 'string' ? value : value.value || ''), [value]);
 
-		if (a.name > b.name) {
-			return 1;
-		}
-		if (a.name < b.name) {
-			return -1;
-		}
+	const sortedByName = useMemo(
+		() =>
+			departmentsItems.sort((a, b) => {
+				if (a.value.value === 'all') {
+					return -1;
+				}
 
-		return 0;
-	});
+				if (a.name > b.name) {
+					return 1;
+				}
+				if (a.name < b.name) {
+					return -1;
+				}
 
-	const findValue = value || '';
+				return 0;
+			}),
+		[departmentsItems],
+	);
 
-	const department = sortedByName.find((dep) => dep._id === (typeof findValue === 'string' ? findValue : findValue.value))?.value;
+	const department = useMemo(() => sortedByName.find((dep) => dep._id === findValue)?.value, [sortedByName, findValue]);
 
 	return (
 		<PaginatedSelectFiltered
