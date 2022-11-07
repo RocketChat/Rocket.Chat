@@ -6,7 +6,7 @@ import { API_PREFIX } from '../../config/constants';
 
 export type AnyObj = { [key: string]: any };
 
-type API = {
+export type API = {
 	get(uri: string, prefix?: string): Promise<APIResponse>;
 	post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 	put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
