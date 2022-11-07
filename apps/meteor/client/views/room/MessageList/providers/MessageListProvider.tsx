@@ -30,7 +30,7 @@ export const MessageListProvider: FC<{
 
 	const { isMobile } = useLayout();
 
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
