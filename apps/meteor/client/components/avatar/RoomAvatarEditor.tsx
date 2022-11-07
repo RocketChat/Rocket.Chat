@@ -1,4 +1,4 @@
-import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import { IRoom, isRoomFederated, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -59,12 +59,19 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar }: RoomAvatarEditor
 				m='x12'
 			>
 				<ButtonGroup>
-					<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>
+					<Button disabled={isRoomFederated(room)} small title={t('Upload_user_avatar')} onClick={clickUpload}>
 						<Icon name='upload' size='x16' />
 						{t('Upload')}
 					</Button>
 
-					<Button primary small danger title={t('Accounts_SetDefaultAvatar')} disabled={roomAvatar === null} onClick={clickReset}>
+					<Button
+						primary
+						small
+						danger
+						title={t('Accounts_SetDefaultAvatar')}
+						disabled={roomAvatar === null || isRoomFederated(room)}
+						onClick={clickReset}
+					>
 						<Icon name='trash' size='x16' />
 					</Button>
 				</ButtonGroup>

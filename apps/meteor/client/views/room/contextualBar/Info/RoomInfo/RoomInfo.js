@@ -1,3 +1,4 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -25,6 +26,7 @@ const RoomInfo = ({
 }) => {
 	const t = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
+	const isFederated = isRoomFederated(room);
 
 	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault, retentionEnabledDefault } = retentionPolicy;
 
@@ -44,13 +46,14 @@ const RoomInfo = ({
 					action: onClickEdit,
 				},
 			}),
-			...(onClickDelete && {
-				delete: {
-					label: t('Delete'),
-					icon: 'trash',
-					action: onClickDelete,
-				},
-			}),
+			...(!isFederated &&
+				onClickDelete && {
+					delete: {
+						label: t('Delete'),
+						icon: 'trash',
+						action: onClickDelete,
+					},
+				}),
 			...(onClickMoveToTeam && {
 				move: {
 					label: t('Teams_move_channel_to_team'),
