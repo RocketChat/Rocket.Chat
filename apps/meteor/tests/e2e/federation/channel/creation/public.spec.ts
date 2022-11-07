@@ -1107,6 +1107,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameFromServer2)).toBeVisible();
 				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
+				await poFederationChannelServer2.tabs.btnTabMembers.click();
 
 				await poFederationChannelServer1.tabs.members.removeUserFromRoom(usernameWithDomainFromServer2);
 				const removedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
@@ -1115,6 +1116,20 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await expect(removedSystemMessageServer1).toBeVisible();
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).not.toBeVisible();
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
+				await expect(await (await poFederationChannelServer1.content.getLastSystemMessageName()).textContent()).toBe(
+					constants.RC_SERVER_1.username,
+				);
+
+				const removedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
+					`removed ${usernameFromServer2}`,
+				);
+				await expect(removedSystemMessageServer2).toBeVisible();
+				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameFromServer2)).not.toBeVisible();
+				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
+				await expect(await (await poFederationChannelServer2.content.getLastSystemMessageName()).textContent()).toBe(
+					usernameWithDomainFromServer1,
+				);
 
 				// TODO: double check if the user is removed from the room in the external server + check the system message there
 

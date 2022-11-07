@@ -1074,8 +1074,6 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).not.toBeVisible();
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
 
-				// TODO: double check if the user is removed from the room in the external server + check the system message there
-
 				await pageForServer2.close();
 			});
 		});
