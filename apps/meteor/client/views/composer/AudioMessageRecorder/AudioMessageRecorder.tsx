@@ -146,7 +146,7 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
-		await fileUpload([{ file, name: fileName }], [], { rid, tmid });
+		await fileUpload([{ file, name: fileName }], undefined, { rid, tmid });
 	});
 
 	if (!isAllowed) {
