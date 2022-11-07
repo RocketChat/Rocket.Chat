@@ -31,10 +31,9 @@ const RoomsPage = (): ReactElement => {
 			{context && (
 				<VerticalBar>
 					<VerticalBar.Header>
-						{t('Room_Info')}
+						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
-
 					<EditRoomContextBar rid={id} onReload={reloadRef.current} />
 				</VerticalBar>
 			)}
