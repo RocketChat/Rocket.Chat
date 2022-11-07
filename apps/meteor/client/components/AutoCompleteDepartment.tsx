@@ -23,7 +23,7 @@ export const AutoCompleteDepartment = ({
 	onChange,
 	haveAll,
 	haveNone,
-}: AutoCompleteDepartmentProps): ReactElement | null /* null added to satisfy register type condition */ => {
+}: AutoCompleteDepartmentProps): ReactElement | null => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
