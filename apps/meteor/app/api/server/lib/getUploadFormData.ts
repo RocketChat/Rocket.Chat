@@ -1,20 +1,23 @@
 import type { Readable } from 'stream';
 
-import { Meteor } from 'meteor/meteor';
 import type { Request } from 'express';
 import busboy from 'busboy';
 import type { ValidateFunction } from 'ajv';
 
-type UploadResult = {
-	file: Readable;
+import { MeteorError } from '../../../../server/sdk/errors';
+
+type UploadResult<K> = {
+	file: Readable & { truncated: boolean };
+	fieldname: string;
 	filename: string;
 	encoding: string;
 	mimetype: string;
 	fileBuffer: Buffer;
 	chunk?: { unit: string; start: number; end: number; size: number };
+	fields: K;
 };
 
-export const getUploadFormData = async <
+export async function getUploadFormData<
 	T extends string,
 	K extends Record<string, string> = Record<string, string>,
 	V extends ValidateFunction<K> = ValidateFunction<K>,
@@ -23,82 +26,122 @@ export const getUploadFormData = async <
 	options: {
 		field?: T;
 		validate?: V;
+		sizeLimit?: number;
 	} = {},
-): Promise<[UploadResult, K, T]> =>
-	new Promise((resolve, reject) => {
-		const bb = busboy({ headers: request.headers, defParamCharset: 'utf8' });
-		const fields = Object.create(null) as K;
+): Promise<UploadResult<K>> {
+	const limits = {
+		files: 1,
+		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
+	};
 
-		let uploadedFile: UploadResult | undefined;
+	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
+	const fields = Object.create(null) as K;
+  
+  // Check if this is a chunked-upload
+  const contentRangeRegExp = new RegExp(/^(bytes) ((\d+)-(\d+)|\*)\/(\d+)$/);
+  const isChunked = typeof request.headers['content-range'] === 'string';
 
-		let assetName: T | undefined;
+  if (isChunked && !contentRangeRegExp.exec(<string>request.headers['content-range'])) {
+    reject('invalid content-range given');
+  }
 
-		// Check if this is a chunked-upload
-		const contentRangeRegExp = new RegExp(/^(bytes) ((\d+)-(\d+)|\*)\/(\d+)$/);
-		const isChunked = typeof request.headers['content-range'] === 'string';
+	let uploadedFile: UploadResult<K> | undefined;
 
-		if (isChunked && !contentRangeRegExp.exec(<string>request.headers['content-range'])) {
-			reject('invalid content-range given');
+	let returnResult = (_value: UploadResult<K>) => {
+		// noop
+	};
+	let returnError = (_error?: Error | string | null | undefined) => {
+		// noop
+	};
+
+	function onField(fieldname: keyof K, value: K[keyof K]) {
+		fields[fieldname] = value;
+	}
+
+	function onEnd() {
+		if (!uploadedFile) {
+			return returnError(new MeteorError('No file uploaded'));
+		}
+		if (options.validate !== undefined && !options.validate(fields)) {
+			return returnError(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
+		}
+    if (isChunked) {
+      const matches = (<string>request.headers['content-range']).match(contentRangeRegExp)!;
+
+      if (!matches) {
+        reject('malformed content-range');
+      }
+
+      const [, unit, , start, end, size] = matches;
+
+      uploadedFile.chunk = { unit, start: Number(start), end: Number(end), size: Number(size) };
+    }
+		return returnResult(uploadedFile);
+	}
+
+	function onFile(
+		fieldname: string,
+		file: Readable & { truncated: boolean },
+		{ filename, encoding, mimeType: mimetype }: { filename: string; encoding: string; mimeType: string },
+	) {
+		if (options.field && fieldname !== options.field) {
+			file.resume();
+			return returnError(new MeteorError('invalid-field'));
 		}
 
-		bb.on(
-			'file',
-			(
-				fieldname: string,
-				file: Readable,
-				{ filename, encoding, mimeType: mimetype }: { filename: string; encoding: string; mimeType: string },
-			) => {
-				const fileData: Uint8Array[] = [];
-
-				file.on('data', (data: any) => fileData.push(data));
-
-				file.on('end', () => {
-					if (uploadedFile) {
-						return reject('Just 1 file is allowed');
-					}
-					if (options.field && fieldname !== options.field) {
-						return reject(new Meteor.Error('invalid-field'));
-					}
-					uploadedFile = {
-						file,
-						filename,
-						encoding,
-						mimetype,
-						fileBuffer: Buffer.concat(fileData),
-					};
-
-					assetName = fieldname as T;
-				});
-			},
-		);
-
-		bb.on('field', (fieldname: keyof K, value: K[keyof K]) => {
-			fields[fieldname] = value;
+		const fileChunks: Uint8Array[] = [];
+		file.on('data', function (chunk) {
+			fileChunks.push(chunk);
 		});
 
-		bb.on('finish', () => {
-			if (!uploadedFile || !assetName) {
-				return reject('No file uploaded');
+		file.on('end', function () {
+			if (file.truncated) {
+				fileChunks.length = 0;
+				return returnError(new MeteorError('error-file-too-large'));
 			}
-			if (isChunked) {
-				const matches = (<string>request.headers['content-range']).match(contentRangeRegExp)!;
 
-				if (!matches) {
-					reject('malformed content-range');
-				}
-
-				const [, unit, , start, end, size] = matches;
-
-				uploadedFile.chunk = { unit, start: Number(start), end: Number(end), size: Number(size) };
-			}
-			if (options.validate === undefined) {
-				return resolve([uploadedFile, fields, assetName]);
-			}
-			if (!options.validate(fields)) {
-				return reject(`Invalid fields${options.validate.errors?.join(', ')}`);
-			}
-			return resolve([uploadedFile, fields, assetName]);
+			uploadedFile = {
+				file,
+				filename,
+				encoding,
+				mimetype,
+				fieldname,
+				fields,
+				fileBuffer: Buffer.concat(fileChunks),
+			};
 		});
+	}
 
-		request.pipe(bb);
+	function cleanup() {
+		request.unpipe(bb);
+		request.on('readable', request.read.bind(request));
+		bb.removeAllListeners();
+	}
+
+	bb.on('field', onField);
+	bb.on('file', onFile);
+	bb.on('close', cleanup);
+	bb.on('end', onEnd);
+	bb.on('finish', onEnd);
+
+	bb.on('error', function (err: Error) {
+		returnError(err);
 	});
+
+	bb.on('partsLimit', function () {
+		returnError();
+	});
+	bb.on('filesLimit', function () {
+		returnError('Just 1 file is allowed');
+	});
+	bb.on('fieldsLimit', function () {
+		returnError();
+	});
+
+	request.pipe(bb);
+
+	return new Promise((resolve, reject) => {
+		returnResult = resolve;
+		returnError = reject;
+	});
+}

@@ -10,7 +10,7 @@ import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { chatMessages } from './ChatMessages';
+import { ChatMessages } from './ChatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import { Rooms } from '../../../models/client';
 
@@ -163,7 +163,7 @@ export type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLInputElement | ArrayLike<HTMLInputElement> | HTMLTextAreaElement,
+	input: HTMLInputElement | HTMLTextAreaElement | undefined,
 	{
 		rid,
 		tmid,
@@ -180,7 +180,9 @@ export const fileUpload = async (
 
 	const files = Array.isArray(f) ? f : [f];
 
-	const replies = input ? $(input).data('reply') : [];
+	const chatMessagesInstance = input ? ChatMessages.get({ input }) : undefined;
+
+	const replies = chatMessagesInstance?.quotedMessages.get() ?? [];
 	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';
@@ -200,6 +202,7 @@ export const fileUpload = async (
 	const uploadNextFile = (): void => {
 		const file = files.pop();
 		if (!file) {
+			chatMessagesInstance?.quotedMessages.clear();
 			return;
 		}
 
@@ -229,8 +232,7 @@ export const fileUpload = async (
 						tmid,
 					);
 					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
-					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
-					const { input } = chatMessages[chatMessageKey];
+					const input = ChatMessages.get({ rid, tmid })?.input;
 					if (input) {
 						input.value = '';
 						$(input).trigger('input');

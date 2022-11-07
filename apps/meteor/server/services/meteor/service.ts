@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { MongoInternals } from 'meteor/mongo';
-import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
@@ -190,7 +190,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			switch (clientAction) {
 				case 'updated':
 				case 'inserted':
-					const agent: IUser | undefined = await Users.findOneAgentById(id, {
+					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(id, {
 						projection: {
 							status: 1,
 							statusLivechat: 1,

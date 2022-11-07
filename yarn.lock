@@ -6471,6 +6471,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": 0.31.21
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ^8
