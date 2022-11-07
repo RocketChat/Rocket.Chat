@@ -275,7 +275,6 @@ function executeIntegrationRest() {
 		delete this.bodyParams.roomId;
 
 		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
-
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}
