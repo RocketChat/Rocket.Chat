@@ -4,7 +4,7 @@ export class MeteorError extends Error {
 	public readonly errorType = 'Meteor.Error';
 
 	public constructor(public readonly error: string | number, public readonly reason?: string, public readonly details?: any) {
-		super(String(error));
+		super(`${reason ? `${reason} ` : ''}[${String(error)}]`);
 	}
 
 	public toJSON(): any {
@@ -13,7 +13,7 @@ export class MeteorError extends Error {
 			errorType: this.errorType,
 			error: this.error,
 			reason: this.reason,
-			message: `${this.reason ? `${this.reason} ` : ''}[${this.error}]`,
+			message: this.message,
 			...(this.details && { details: this.details }),
 		};
 	}
