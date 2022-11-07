@@ -38,7 +38,7 @@ const doLoginAndReturnFullUsername = async (page: Page, usernameOnly: string) =>
 	await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
 	return formatIntoFullMatrixUsername(usernameOnly, constants.RC_SERVER_2.matrixServerName);
-}
+};
 
 export const createGroupAndInviteRemoteUserToCreateLocalUser = async ({
 	page,
