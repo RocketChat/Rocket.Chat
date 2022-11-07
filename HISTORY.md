@@ -1,4 +1,230 @@
 
+# 5.3.0
+`2022-10-31  ·  3 🎉  ·  4 🚀  ·  13 🐛  ·  23 🔍  ·  23 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🎉 New features
+
+
+- Add new endpoint 'livechat/room.saveInfo' & deprecate 'livechat:saveInfo' meteor method ([#26789](https://github.com/RocketChat/Rocket.Chat/pull/26789))
+
+- Health check for data stream ([#27026](https://github.com/RocketChat/Rocket.Chat/pull/27026))
+
+- Matrix federation events coverage expansion (adding support for 3 extra events) ([#26859](https://github.com/RocketChat/Rocket.Chat/pull/26859))
+
+  FED-17
+  FED-25
+  FED-27
+  FED-28
+  FED-30
+  The goal of this PR is to add support for more events on Matrix Federation feature. The new supported events are:
+  
+  - Mentions  
+  - User avatar sync  
+  - Quotes
+
+### 🚀 Improvements
+
+
+- Automatically open call info contextual bar when voip room is opened ([#26963](https://github.com/RocketChat/Rocket.Chat/pull/26963))
+
+  This pull request adds the logic necessary to automatically open the call information contextual bar when entering a voip room. This mirrors the behavior we already have for livechat rooms.
+
+  **Before:**
+  ![before-voip-480p-speed](https://user-images.githubusercontent.com/6494543/192610275-a81ab19e-2b60-4466-9e04-81b2e938afda.gif)
+
+  **After:**
+  ![after-voip-480p-speed](https://user-images.githubusercontent.com/6494543/192610356-896ccd48-8c26-4fb9-8fb4-f792ab63e6d5.gif)
+
+- Better /health response when service not healthy ([#27091](https://github.com/RocketChat/Rocket.Chat/pull/27091))
+
+  Not healthy services will send a HTTP 500 response when not healthy.
+
+- Change status/price badge to fuselage tag ([#27044](https://github.com/RocketChat/Rocket.Chat/pull/27044))
+
+  ## Jira task: [MKP-131](https://rocketchat.atlassian.net/browse/MKP-131?atlOrigin=eyJpIjoiODRjOTk4OGYyZDAwNDIzNmI5N2EyZGRhNTUxOGY2NGEiLCJwIjoiaiJ9)
+  Changed the custom component that showed prices and statuses to a fuselage Tag component for maintainability reasons since after this PR every general design change to the tag component will be automatically reflected in the marketplace UI.
+  Demo image (App List):
+  ![image](https://user-images.githubusercontent.com/43561537/194942430-ba4153f1-2315-4117-85e6-01832cc09d91.png)
+
+  Demo Image (App price):
+  ![image](https://user-images.githubusercontent.com/43561537/194942498-5ff64a27-7232-47b8-a686-2fda2289e491.png)
+
+- Respect convert ascii to emoji preference for new message template ([#27038](https://github.com/RocketChat/Rocket.Chat/pull/27038))
+
+### 🐛 Bug fixes
+
+
+- Actionable messages are now sent to integrations webhook ([#27052](https://github.com/RocketChat/Rocket.Chat/pull/27052))
+
+  Actionable messages, with buttons and similar, (saved as blocks internally) were not being sent to external integrations, so CRMs and the like had no visibility on what was the actionable message sent, this PR adds a yaml version of the actions, as well as a proper json object with the same data on the webhook output, so that our clients can have more visibility in their process
+
+- check if message block has item to show message body ([#27040](https://github.com/RocketChat/Rocket.Chat/pull/27040))
+
+- CSS vars usage ([#27107](https://github.com/RocketChat/Rocket.Chat/pull/27107))
+
+- Email inbox memory leak on connection failure ([#26850](https://github.com/RocketChat/Rocket.Chat/pull/26850))
+
+  - Properly removing event listeners on re-connection.
+   - Attachments handling changed from beforeMessageSent to afterMessageSent, as the id of the message was needed, now rocket.cat will send the "Send Attachment To Email" button.
+   - Self-disable email inbox when reaching max re-connection attempts
+
+- Livechat CurrentChats infinity re-rendering ([#27076](https://github.com/RocketChat/Rocket.Chat/pull/27076))
+
+- Microphone icon alignment issue (# 27073) ([#27123](https://github.com/RocketChat/Rocket.Chat/pull/27123) by [@mani-rsg](https://github.com/mani-rsg))
+
+  Aligned microphone icon to its respective position on  screen widths <= 500 (mobile screens)
+
+  <img width="360" alt="image" src="https://user-images.githubusercontent.com/72298612/197343254-1506125f-06f4-43d1-b42b-e36071862254.png">
+  <img width="439" alt="image" src="https://user-images.githubusercontent.com/72298612/197343268-d7f0e294-4b76-4e5b-9874-0b41586b0487.png">
+
+- On hold reactivity for Omnichannel rooms ([#27013](https://github.com/RocketChat/Rocket.Chat/pull/27013))
+
+  - Fix instabilities from room when changed from on-hold to resume  
+  - Fix gray messages when resume from on-hold
+
+- Preview message not showing when reply direct message ([#27050](https://github.com/RocketChat/Rocket.Chat/pull/27050))
+
+- Remove contact mananger always to support old servers ([#27053](https://github.com/RocketChat/Rocket.Chat/pull/27053))
+
+- Remove voip extension when agent is removed or deactivated ([#26960](https://github.com/RocketChat/Rocket.Chat/pull/26960))
+
+- starting conferences with mic and cam on their default states do not sync the state with the provider ([#26966](https://github.com/RocketChat/Rocket.Chat/pull/26966))
+
+  Task: [VC-3]
+
+- Uncaught error by listening stream-notify-room without subscription ([#27020](https://github.com/RocketChat/Rocket.Chat/pull/27020))
+
+  fix this:
+  <img width="458" alt="image" src="https://user-images.githubusercontent.com/17487063/194358060-7d0fb534-9d04-4af8-abd9-fa2bd79b66c0.png">
+
+- Warning about livechat/inquiries.queuedForUser ([#27086](https://github.com/RocketChat/Rocket.Chat/pull/27086))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Apply correct fuselage color tokens ([#27089](https://github.com/RocketChat/Rocket.Chat/pull/27089))
+
+- Chore: Bump Apps-Engine version ([#27059](https://github.com/RocketChat/Rocket.Chat/pull/27059))
+
+- Chore: bump fuselage packages ([#27157](https://github.com/RocketChat/Rocket.Chat/pull/27157))
+
+- Chore: bump fuselage packages ([#27122](https://github.com/RocketChat/Rocket.Chat/pull/27122))
+
+- Chore: Email Inbox Sanitization ([#26796](https://github.com/RocketChat/Rocket.Chat/pull/26796))
+
+  Jira Issue [UFR-3]
+  
+  - Rewrite Email Inbox to typescript  
+  - Replace `useForm`  
+  - Fix: return an error if there are no email inboxes in `email-inbox` endpoint 
+  **documentation update**: https://github.com/RocketChat/developer-docs/pull/132  
+  - Add e2e test cases for creating email inboxes and deleting email inboxes
+
+- Chore: Implement short description for marketplace apps ([#27030](https://github.com/RocketChat/Rocket.Chat/pull/27030))
+
+  ## Jira task: [MKP-126](https://rocketchat.atlassian.net/browse/MKP-126)
+  Implemented the shortDescription field in the marketplace app details header. Now apps have either a shorter description or nothing, in case it doesn't have a shortDescription registered, in their headers description section.
+  Demo image: 
+  ![image](https://user-images.githubusercontent.com/43561537/194640492-9942f6d9-66ad-4df9-97e8-98c7d51a724c.png)
+
+- Chore: Refactor AppLogs to TS ([#26938](https://github.com/RocketChat/Rocket.Chat/pull/26938))
+
+  Rewrote the AppLogs component to TS. Also, improved some error handling logic.
+
+- Chore: Remove default value from custom home content setting ([#26995](https://github.com/RocketChat/Rocket.Chat/pull/26995))
+
+  Remove content from `Custom body` setting so that new workspaces don't have initial unstyled HTML in their homepages.
+
+- Chore: remove excess space from html preview ([#27043](https://github.com/RocketChat/Rocket.Chat/pull/27043))
+
+- Chore: Remove Unused CSS ([#27012](https://github.com/RocketChat/Rocket.Chat/pull/27012))
+
+- Chore: Switch deprecated fields for projection ([#27025](https://github.com/RocketChat/Rocket.Chat/pull/27025))
+
+- Chore: Tests for EE dashboards ([#26974](https://github.com/RocketChat/Rocket.Chat/pull/26974))
+
+- Chore: Update Image and link previews ([#27019](https://github.com/RocketChat/Rocket.Chat/pull/27019))
+
+  - Add message generic cover image preview component to OEmbed Links  
+  - Add new functionalities to URL Image preview, like click to open preview and arrows to move between images in the current chat  
+  - Design changes to keep the original aspect ratio of the image to prevent loss of important image pieces of information   
+  - Add fallback to common issues related to meta tags like `og:image` and others
+
+- Chore: Use a single notification listener for all videoconf messages ([#26682](https://github.com/RocketChat/Rocket.Chat/pull/26682))
+
+  Task: [VC-1]
+
+- Chore: UserCard loader tweaks ([#27068](https://github.com/RocketChat/Rocket.Chat/pull/27068))
+
+  ### before
+  ![Kapture 2022-10-14 at 12 47 43](https://user-images.githubusercontent.com/27704687/195888045-6fd900ab-feb1-4dc7-924c-a0fd7634eab6.gif)
+
+
+  ### after
+  ![Kapture 2022-10-14 at 12 45 30](https://user-images.githubusercontent.com/27704687/195887641-652f388b-cf9f-413d-9c07-c0df9a3f7287.gif)
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-03Z ([#26992](https://github.com/RocketChat/Rocket.Chat/pull/26992))
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-10Z ([#27035](https://github.com/RocketChat/Rocket.Chat/pull/27035))
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-17Z ([#27082](https://github.com/RocketChat/Rocket.Chat/pull/27082))
+
+- Merge master into develop & Set version to 5.3.0-develop ([#27067](https://github.com/RocketChat/Rocket.Chat/pull/27067))
+
+- Regression: Quote colors ([#27110](https://github.com/RocketChat/Rocket.Chat/pull/27110))
+
+  Before
+  ![image](https://user-images.githubusercontent.com/40830821/196947705-f1b2edf9-7341-4d2a-b8e8-4e3720ab7289.png)
+
+
+  After
+  ![image](https://user-images.githubusercontent.com/40830821/196947512-1267f992-11c7-4ff4-b7a2-9f0b3534f69d.png)
+
+- Regression: Remove margin-bottom inside UserCard actions ([#27100](https://github.com/RocketChat/Rocket.Chat/pull/27100))
+
+- Regression: Toolbox Divider Color ([#27116](https://github.com/RocketChat/Rocket.Chat/pull/27116))
+
+  ![image](https://user-images.githubusercontent.com/27704687/197018407-d591d6bc-e390-4bcd-9b6a-0bf0a1420bc2.png)
+
+- Regression: Unify `isLastDocDelayed` logic ([#27120](https://github.com/RocketChat/Rocket.Chat/pull/27120))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mani-rsg](https://github.com/mani-rsg)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@cauefcr](https://github.com/cauefcr)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 # 5.2.0
 `2022-10-13  ·  5 🎉  ·  13 🚀  ·  19 🐛  ·  62 🔍  ·  28 👩‍💻👨‍💻`
 
@@ -10429,7 +10655,7 @@
 - [@ggazzo](https://github.com/ggazzo)
 
 # 3.18.6
-`2022-05-26  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2022-05-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - MongoDB: `3.4, 3.6, 4.0, 4.2`
