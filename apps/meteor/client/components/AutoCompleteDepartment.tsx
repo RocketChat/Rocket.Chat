@@ -44,8 +44,6 @@ export const AutoCompleteDepartment = ({
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const findValue = useMemo<string>(() => (typeof value === 'string' ? value : value.value || ''), [value]);
-
 	const sortedByName = useMemo(
 		() =>
 			departmentsItems.sort((a, b) => {
@@ -65,7 +63,10 @@ export const AutoCompleteDepartment = ({
 		[departmentsItems],
 	);
 
-	const department = useMemo(() => sortedByName.find((dep) => dep._id === findValue)?.value, [sortedByName, findValue]);
+	const department = useMemo(() => {
+		const findValue = typeof value === 'string' ? value : value.value || '';
+		return sortedByName.find((dep) => dep._id === findValue)?.value;
+	}, [sortedByName, value]);
 
 	return (
 		<PaginatedSelectFiltered
