@@ -172,7 +172,7 @@ function AppMenu({ app, ...props }) {
 			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
+		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
 	}, [app.permissions, cancelAction, confirmAction, isAppPurchased, setModal, setPurchased]);
 
 	const handleAcquireApp = useCallback(async () => {
