@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { messageBoxState } from '../../../app/ui/client';
+import { ChatMessages } from '../../../app/ui/client';
 import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {
-	callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+	callbacks.add('afterLogoutCleanUp', ChatMessages.purgeAllDrafts, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 });

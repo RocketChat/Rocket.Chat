@@ -34,13 +34,10 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	onSend: (
 		event: Event,
 		params: {
-			rid: string;
-			tmid?: string;
 			value: string;
 			tshow?: boolean;
 		},
-		done?: () => void,
-	) => void;
+	) => Promise<void>;
 	tshow: IMessage['tshow'];
 	subscription: ISubscription & IRoom;
 	chatMessagesInstance: ChatMessages;
@@ -119,16 +116,12 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 
 		const {
 			autogrow,
-			data: { rid, tmid, onSend, tshow },
+			data: { onSend, tshow },
 		} = this;
 		const { value } = input;
 		this.set('');
 
-		if (!onSend) {
-			return;
-		}
-
-		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
+		onSend?.call(this.data, event, { value, tshow }).then(() => {
 			autogrow?.update();
 			input.focus();
 		});

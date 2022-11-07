@@ -28,9 +28,9 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { messageBoxState } from './messageBoxState';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 class QuotedMessages {
 	private emitter = new Emitter<{ update: void }>();
@@ -61,12 +61,56 @@ class QuotedMessages {
 	}
 }
 
+class ComposerState {
+	private emitter = new Emitter<{ update: void }>();
+
+	private key: string;
+
+	private state: string | undefined;
+
+	public constructor(id: string) {
+		this.key = `messagebox_${id}`;
+		this.state = Meteor._localStorage.getItem(this.key) ?? undefined;
+	}
+
+	public get() {
+		return this.state;
+	}
+
+	private persist = withDebouncing({ wait: 1000 })(() => {
+		if (this.state) {
+			Meteor._localStorage.setItem(this.key, this.state);
+			return;
+		}
+
+		Meteor._localStorage.removeItem(this.key);
+	});
+
+	public update(value: string | undefined) {
+		this.state = value;
+		this.persist();
+		this.emitter.emit('update');
+	}
+
+	public subscribe(callback: () => void): () => void {
+		return this.emitter.on('update', callback);
+	}
+
+	public static purgeAll() {
+		Object.keys(Meteor._localStorage)
+			.filter((key) => key.indexOf('messagebox_') === 0)
+			.forEach((key) => Meteor._localStorage.removeItem(key));
+	}
+}
+
 type ChatMessagesParams =
 	| { rid: IRoom['_id']; tmid?: IMessage['_id']; input?: never }
 	| { rid?: never; tmid?: never; input: HTMLInputElement | HTMLTextAreaElement };
 
 export class ChatMessages {
-	public quotedMessages = new QuotedMessages();
+	public quotedMessages: QuotedMessages = new QuotedMessages();
+
+	public composerState: ComposerState;
 
 	private editing: {
 		element?: HTMLElement;
@@ -87,33 +131,35 @@ export class ChatMessages {
 
 	public input: HTMLTextAreaElement | undefined;
 
-	public constructor(public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage) {
+	public constructor(
+		private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] },
+		private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage,
+	) {
 		this.quotedMessages.subscribe(() => {
 			if (this.input) $(this.input).trigger('dataChange');
 		});
+
+		this.composerState = new ComposerState(params.rid + (params.tmid ? `-${params.tmid}` : ''));
+	}
+
+	private setDraftAndUpdateInput(value: string | undefined) {
+		this.composerState.update(value);
+
+		if (value === undefined) return;
+
+		if (!this.input) return;
+
+		this.input.value = value;
+		$(this.input).trigger('change').trigger('input');
 	}
 
 	public initializeWrapper(wrapper: HTMLElement) {
 		this.wrapper = wrapper;
 	}
 
-	public initializeInput(input: HTMLTextAreaElement, { rid, tmid }: Pick<IMessage, 'rid' | 'tmid'>) {
+	public initializeInput(input: HTMLTextAreaElement) {
 		this.input = input;
-
-		if (!input || !rid) {
-			return;
-		}
-
-		messageBoxState.restore({ rid, tmid }, input);
-		this.requestInputFocus();
-	}
-
-	private requestInputFocus() {
-		setTimeout(() => {
-			if (this.input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
-				this.input.focus();
-			}
-		}, 200);
+		this.setDraftAndUpdateInput(this.composerState.get());
 	}
 
 	private recordInputAsDraft() {
@@ -166,7 +212,7 @@ export class ChatMessages {
 		}
 
 		const oldValue = input.value;
-		messageBoxState.set(input, message.msg);
+		this.setDraftAndUpdateInput(message.msg);
 		return oldValue !== message.msg;
 	}
 
@@ -254,8 +300,10 @@ export class ChatMessages {
 		setHighlightMessage(message._id);
 
 		if (message.attachments?.[0].description) {
-			messageBoxState.set(input, message.attachments[0].description);
-		} else if (msg) messageBoxState.set(input, msg);
+			this.setDraftAndUpdateInput(message.attachments[0].description);
+		} else if (msg) {
+			this.setDraftAndUpdateInput(msg);
+		}
 
 		const cursorPosition = isEditingTheNextOne ? 0 : input.value.length;
 		input.focus();
@@ -282,16 +330,19 @@ export class ChatMessages {
 		delete this.editing.element;
 		clearHighlightMessage();
 
-		messageBoxState.set(input, this.editing.saved || '');
+		this.setDraftAndUpdateInput(this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : input.value.length;
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
-	public async send(
-		_event: Event,
-		{ rid, tmid, value, tshow }: { rid: string; tmid?: string; value: string; tshow?: boolean },
-		done: () => void = () => undefined,
-	) {
+	public async send({ value, tshow }: { value: string; tshow?: boolean }) {
+		const { rid } = this.params;
+		let { tmid } = this.params;
+
+		if (!rid) {
+			throw new Error('Room ID is required');
+		}
+
 		const threadsEnabled = settings.get('Threads_enabled');
 
 		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
@@ -303,8 +354,6 @@ export class ChatMessages {
 		if (!this.input) {
 			throw new Error('Input is not defined');
 		}
-
-		messageBoxState.save({ rid, tmid }, this.input);
 
 		let msg = value.trim();
 		if (msg) {
@@ -345,7 +394,7 @@ export class ChatMessages {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			return done();
+			return;
 		}
 
 		if (this.editing.id) {
@@ -358,18 +407,16 @@ export class ChatMessages {
 				if (message.attachments && message.attachments?.length > 0) {
 					// @ts-ignore
 					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
-					return done();
+					return;
 				}
 
 				this.resetToDraft(this.editing.id);
-				this.confirmDeleteMsg(message, done);
+				await this.confirmDeleteMsg(message);
 				return;
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		}
-
-		return done();
 	}
 
 	private async processMessageSend(message: IMessage) {
@@ -444,7 +491,7 @@ export class ChatMessages {
 		};
 
 		const onClose = () => {
-			messageBoxState.set(input, msg);
+			this.setDraftAndUpdateInput(msg);
 			imperativeModal.close();
 		};
 
@@ -531,9 +578,9 @@ export class ChatMessages {
 		return false;
 	}
 
-	public confirmDeleteMsg(message: IMessage, done: () => void = () => undefined) {
+	public async confirmDeleteMsg(message: IMessage) {
 		if (MessageTypes.isSystemMessage(message)) {
-			return done();
+			return;
 		}
 
 		const room =
@@ -543,40 +590,42 @@ export class ChatMessages {
 				prid: { $exists: true },
 			});
 
-		const onConfirm = () => {
-			if (this.editing.id === message._id) {
-				this.clearEditing();
-			}
+		await new Promise<void>((resolve) => {
+			const onConfirm = () => {
+				if (this.editing.id === message._id) {
+					this.clearEditing();
+				}
 
-			this.deleteMsg(message);
+				this.deleteMsg(message);
 
-			this.input?.focus();
-			done();
+				this.input?.focus();
+				resolve();
 
-			imperativeModal.close();
-			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
-		};
+				imperativeModal.close();
+				dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+			};
 
-		const onCloseModal = () => {
-			imperativeModal.close();
-			if (this.editing.id === message._id) {
-				this.clearEditing();
-			}
-			this.input?.focus();
-			done();
-		};
+			const onCloseModal = () => {
+				imperativeModal.close();
+				if (this.editing.id === message._id) {
+					this.clearEditing();
+				}
+				this.input?.focus();
+				resolve();
+			};
 
-		imperativeModal.open({
-			component: GenericModal,
-			props: {
-				title: t('Are_you_sure'),
-				children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
-				variant: 'danger',
-				confirmText: t('Yes_delete_it'),
-				onConfirm,
-				onClose: onCloseModal,
-				onCancel: onCloseModal,
-			},
+			imperativeModal.open({
+				component: GenericModal,
+				props: {
+					title: t('Are_you_sure'),
+					children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
+					variant: 'danger',
+					confirmText: t('Yes_delete_it'),
+					onConfirm,
+					onClose: onCloseModal,
+					onCancel: onCloseModal,
+				},
+			});
 		});
 	}
 
@@ -660,7 +709,7 @@ export class ChatMessages {
 			}
 		}
 
-		messageBoxState.save({ rid, tmid }, input);
+		this.setDraftAndUpdateInput(input.value);
 	}
 
 	public onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {
@@ -671,8 +720,7 @@ export class ChatMessages {
 				this.clearCurrentDraft();
 				this.clearEditing();
 			}
-			messageBoxState.set(this.input, '');
-			messageBoxState.save({ rid, tmid }, this.input);
+			this.setDraftAndUpdateInput('');
 		}
 	}
 
@@ -701,5 +749,9 @@ export class ChatMessages {
 		const id = this.getID({ rid, tmid });
 		this.instances[id].onDestroyed(rid, tmid);
 		delete this.instances[id];
+	}
+
+	public static purgeAllDrafts() {
+		ComposerState.purgeAll();
 	}
 }

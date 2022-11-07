@@ -53,7 +53,13 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 					() => ({
 						...messageBoxViewDataRef.current.get(),
 						onInputChanged: (input: HTMLTextAreaElement): void => {
-							chatMessagesInstance.initializeInput(input, { rid });
+							chatMessagesInstance.initializeInput(input);
+
+							setTimeout(() => {
+								if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
+									input.focus();
+								}
+							}, 200);
 						},
 						onKeyUp: (
 							event: KeyboardEvent,
@@ -67,15 +73,12 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 						) => chatMessagesInstance.keyup(event, { rid, tmid }),
 						onKeyDown: (event: KeyboardEvent) => chatMessagesInstance.keydown(event),
 						onSend: (
-							event: Event,
+							_event: Event,
 							params: {
-								rid: string;
-								tmid?: string;
 								value: string;
 								tshow?: boolean;
 							},
-							done?: () => void,
-						) => chatMessagesInstance.send(event, params, done),
+						) => chatMessagesInstance.send(params),
 					}),
 					footer,
 				);
@@ -87,7 +90,7 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 				messageBoxViewRef.current = undefined;
 			}
 		},
-		[rid, chatMessagesInstance],
+		[chatMessagesInstance],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
