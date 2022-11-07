@@ -13,7 +13,7 @@
 		"eslint-plugin-react": "^7.30.1",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"jest": "^27.5.1",
-		"ts-jest": "^27.1.4",
+		"ts-jest": "^27.1.5",
 		"typescript": "~4.5.5"
 	},
 	"peerDependencies": {

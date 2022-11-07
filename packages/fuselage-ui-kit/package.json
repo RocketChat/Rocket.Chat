@@ -67,7 +67,7 @@
     "babel-loader": "~8.2.3",
     "cross-env": "^7.0.3",
     "eslint": "~8.8.0",
-    "lint-staged": "~12.3.3",
+    "lint-staged": "~12.3.8",
     "normalize.css": "^8.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "~2.5.1",
