@@ -478,6 +478,15 @@ API.v1.addRoute(
 			const subs = await SubscriptionsRaw.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
 			const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
+			if (rids.length === 0) {
+				return API.v1.success({
+					channels: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
+			}
+
 			const { cursor, totalCount } = RoomsRaw.findPaginatedByTypeAndIds('c', rids, {
 				sort: sort || { name: 1 },
 				skip: offset,
