@@ -58,7 +58,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
-					open: open && open === 'true',
+					open: !!open && open === 'true',
 					createdAt: createdAtParam,
 					closedAt: closedAtParam,
 					tags,

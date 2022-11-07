@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 import {
@@ -28,6 +28,8 @@ import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarn
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
 
+const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
+
 API.v1.addRoute('livechat/room', {
 	async get() {
 		// I'll temporary use check for validation, as validateParams doesnt support what's being done here
@@ -41,7 +43,7 @@ API.v1.addRoute('livechat/room', {
 
 		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
-		const guest = await findGuest(token);
+		const guest = token && (await findGuest(token));
 		if (!guest) {
 			throw new Error('invalid-token');
 		}
@@ -55,9 +57,11 @@ API.v1.addRoute('livechat/room', {
 
 			let agent;
 			const agentObj = agentId && findAgent(agentId);
-			if (agentObj) {
-				const { username } = agentObj;
+			if (agentObj && isAgentWithInfo(agentObj)) {
+				const { username = undefined } = agentObj;
 				agent = { agentId, username };
+			} else {
+				agent = { agentId };
 			}
 
 			const rid = Random.id();
