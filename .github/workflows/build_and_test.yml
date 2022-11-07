@@ -140,7 +140,7 @@ jobs:
         run: yarn
 
       - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
+        uses: felixmosh/turborepo-gh-artifacts@v2
         if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
@@ -267,7 +267,7 @@ jobs:
         run: yarn
 
       - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
+        uses: felixmosh/turborepo-gh-artifacts@v2
         if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
@@ -442,7 +442,7 @@ jobs:
           cache: 'yarn'
 
       - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
+        uses: felixmosh/turborepo-gh-artifacts@v2
         if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
