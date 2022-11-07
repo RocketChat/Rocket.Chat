@@ -168,4 +168,22 @@ describe('Federation - Domain - FederatedUser', () => {
 			expect(federatedUser.isRemote()).to.be.equal(true);
 		});
 	});
+
+	describe('#shouldUpdateFederationAvatar()', () => {
+		it('should return false if the current avatar url is equal to the desired one', () => {
+			const federatedUser = FederatedUser.createWithInternalReference('externalId', true, {
+				name: 'name',
+				federation: { avatarUrl: 'url' },
+			} as any);
+			expect(federatedUser.shouldUpdateFederationAvatar('url')).to.be.equal(false);
+		});
+
+		it('should return true if the current avatar url is different to the desired one', () => {
+			const federatedUser = FederatedUser.createWithInternalReference('externalId', true, {
+				name: 'name',
+				federation: { avatarUrl: 'url' },
+			} as any);
+			expect(federatedUser.shouldUpdateFederationAvatar('url2')).to.be.equal(true);
+		});
+	});
 });

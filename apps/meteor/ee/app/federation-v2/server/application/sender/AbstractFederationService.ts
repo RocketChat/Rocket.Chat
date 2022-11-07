@@ -1,4 +1,5 @@
 import { FederationService } from '../../../../../../app/federation-v2/server/application/AbstractFederationService';
+import type { RocketChatFileAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
@@ -9,9 +10,10 @@ export abstract class FederationServiceEE extends FederationService {
 	constructor(
 		protected bridge: IFederationBridgeEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	protected async createUsersLocallyOnly(invitees: IFederationInviteeDto[]): Promise<void> {
