@@ -73,7 +73,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
+		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
 	};
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
