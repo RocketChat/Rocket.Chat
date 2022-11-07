@@ -153,8 +153,8 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				} else {
 					attachment.title_link_download = true;
 				}
-			} catch (e) {
-				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
+			} catch (err) {
+				Livechat.logger.error({ msg: 'Attachment upload failed', err });
 				attachment = {
 					fields: [
 						{

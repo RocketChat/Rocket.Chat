@@ -66,8 +66,8 @@ export class MatrixBridge implements IFederationBridge {
 				await this.bridgeInstance.run(this.bridgePort);
 				this.isRunning = true;
 			}
-		} catch (e) {
-			federationBridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
+		} catch (err) {
+			federationBridgeLogger.error({ msg: 'Failed to initialize the matrix-appservice-bridge.', err });
 		} finally {
 			this.isUpdatingBridgeStatus = false;
 		}

@@ -347,7 +347,7 @@
 			order: 3;
 		}
 
-		&__audio-message {
+		&__audio-message-container {
 			order: 4;
 		}
 
@@ -357,6 +357,10 @@
 			font-size: 20px;
 			order: 5;
 		}
+	}
+
+	.js-message-action {
+		cursor: pointer;
 	}
 }
 

@@ -1809,6 +1809,7 @@
   "error-returning-inquiry": "Erro ao retornar a pesquisa para a fila",
   "error-role-in-use": "Não é possível remover a função pois ela está em uso",
   "error-role-name-required": "Nome do papel é obrigatório",
+  "error-room-does-not-exist": "Essa sala não existe",
   "error-role-already-present": "Já existe uma função com este nome",
   "error-room-is-not-closed": "Sala não está fechada",
   "error-room-onHold": "Erro! Sala está em espera",
