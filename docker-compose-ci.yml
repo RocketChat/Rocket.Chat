@@ -26,9 +26,9 @@ services:
 
   authorization-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/authorization-service/Dockerfile
       args:
-        SERVICE: authorization
+        SERVICE: authorization-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
       - 'MONGO_URL=${MONGO_URL}'
@@ -41,9 +41,9 @@ services:
 
   account-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/account-service/Dockerfile
       args:
-        SERVICE: account
+        SERVICE: account-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
@@ -56,9 +56,9 @@ services:
 
   presence-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/presence-service/Dockerfile
       args:
-        SERVICE: presence
+        SERVICE: presence-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
@@ -92,9 +92,9 @@ services:
 
   stream-hub-service:
     build:
-      dockerfile: apps/meteor/ee/server/services/Dockerfile
+      dockerfile: ee/apps/stream-hub-service/Dockerfile
       args:
-        SERVICE: stream-hub
+        SERVICE: stream-hub-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
@@ -107,10 +107,6 @@ services:
 
   nats:
     image: nats:2.6-alpine
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    ports:
-      - '4222:4222'
 
   traefik:
     image: traefik:v2.8

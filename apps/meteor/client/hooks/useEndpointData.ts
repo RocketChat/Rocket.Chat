@@ -8,7 +8,7 @@ import { AsyncState, useAsyncState } from './useAsyncState';
 
 const log = (name: string): Console['log'] =>
 	process.env.NODE_ENV !== 'production' || getConfig('debug') === 'true'
-		? (...args): void => console.log(name, ...args)
+		? (...args): void => console.warn(name, ...args)
 		: (): void => undefined;
 
 const deprecationWarning = log('useEndpointData is deprecated, use @tanstack/react-query instead');

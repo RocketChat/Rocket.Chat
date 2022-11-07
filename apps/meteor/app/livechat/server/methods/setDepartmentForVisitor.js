@@ -5,9 +5,12 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { LivechatRooms, Messages } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async 'livechat:setDepartmentForVisitor'({ roomId, visitorToken, departmentId } = {}) {
+		methodDeprecationLogger.warn('livechat:setDepartmentForVisitor will be deprecated in future versions of Rocket.Chat');
+
 		check(roomId, String);
 		check(visitorToken, String);
 		check(departmentId, String);

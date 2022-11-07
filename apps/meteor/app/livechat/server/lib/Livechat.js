@@ -55,7 +55,7 @@ export const Livechat = {
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
-			fields: {
+			projection: {
 				name: 1,
 				username: 1,
 				token: 1,
@@ -376,7 +376,8 @@ export const Livechat = {
 		return false;
 	},
 
-	async saveGuest({ _id, name, email, phone, livechatData = {} }, userId) {
+	async saveGuest(guestData, userId) {
+		const { _id, name, email, phone, livechatData = {} } = guestData;
 		Livechat.logger.debug(`Saving data for visitor ${_id}`);
 		const updateData = {};
 
@@ -591,7 +592,7 @@ export const Livechat = {
 			const fields = LivechatCustomField.findByScope('room');
 			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
-					return;
+					continue;
 				}
 				const value = s.trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
@@ -818,8 +819,8 @@ export const Livechat = {
 		};
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
-		} catch (e) {
-			Livechat.webhookLogger.error(`Response error on ${11 - attempts} try ->`, e);
+		} catch (err) {
+			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 10 seconds each
 			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
 			setTimeout(
@@ -945,7 +946,7 @@ export const Livechat = {
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
 			LivechatDepartmentAgents.removeByAgentId(_id);
-			Promise.await(LivechatVisitors.removeContactManagerByUsername(username));
+			Promise.await(Promise.all([LivechatVisitors.removeContactManagerByUsername(username), UsersRaw.unsetExtension(_id)]));
 			return true;
 		}
 

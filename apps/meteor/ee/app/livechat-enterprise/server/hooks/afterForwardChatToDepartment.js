@@ -1,5 +1,6 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { cbLogger } from '../lib/logger';
 
@@ -8,12 +9,12 @@ callbacks.add(
 	(options) => {
 		const { rid, newDepartmentId } = options;
 
-		const room = LivechatRooms.findOneById(rid);
+		const room = Promise.await(LivechatRooms.findOneById(rid));
 		if (!room) {
 			cbLogger.debug('Skipping callback. No room found');
 			return options;
 		}
-		LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		Promise.await(LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id));
 
 		const department = LivechatDepartment.findOneById(newDepartmentId, {
 			fields: { ancestors: 1 },
@@ -31,7 +32,7 @@ callbacks.add(
 		}
 
 		cbLogger.debug(`Updating department ${newDepartmentId} ancestors for room ${rid}`);
-		LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
+		Promise.await(LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors));
 
 		return options;
 	},
