@@ -22,6 +22,10 @@ settingsRegistry.addGroup('FileUpload', function () {
 		type: 'int',
 		public: true,
 		i18nDescription: 'FileUpload_MaxChunkSizeDescription',
+		enableQuery: {
+			_id: 'FileUpload_Chunked_Enabled',
+			value: true,
+		},
 	});
 
 	this.add('FileUpload_MediaTypeWhiteList', '', {
