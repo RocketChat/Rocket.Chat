@@ -48,17 +48,23 @@ type NotFoundResult = {
 	};
 };
 
+export type TOperation = 'hasAll' | 'hasAny';
 export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
 	forceTwoFactorAuthenticationForNonEnterprise: true;
 	twoFactorRequired: true;
-	permissionsRequired?: string[];
+	permissionsRequired?: string[] | { [key in Method]: string[] } | { [key in Method]: { operation: TOperation; permissions: string[] } };
 	twoFactorOptions: ITwoFactorOptions;
 };
 
 type Options = (
 	| {
-			permissionsRequired?: string[];
+			permissionsRequired?:
+				| string[]
+				| ({ [key in Method]?: string[] } & { '*'?: string[] })
+				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+						'*'?: { operation: TOperation; permissions: string[] };
+				  });
 			authRequired?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 	  }
@@ -133,6 +139,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		me: IUser,
 	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
 	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
+	isWidget(): boolean;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

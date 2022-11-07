@@ -12,23 +12,19 @@ import { isRTL } from '../../lib/isRTL';
 import { parentCall } from '../../lib/parentCall';
 import userPresence from '../../lib/userPresence';
 import { visibility, isActiveSession } from '../helpers';
-import { handleDisableNotifications, handleDismissAlert, handleEnableNotifications, handleMinimize, handleOpenWindow, handleRestore, handleRoute, handleTriggers, handleVisibilityChange } from './handlers';
+import {
+	handleDisableNotifications,
+	handleDismissAlert,
+	handleEnableNotifications,
+	handleMinimize,
+	handleOpenWindow,
+	handleRestore,
+	handleRoute,
+	handleTriggers,
+	handleVisibilityChange,
+} from './handlers';
 
-
-export const App = ({
-	config,
-	gdpr,
-	triggered,
-	user,
-	sound,
-	undocked,
-	minimized,
-	expanded,
-	alerts,
-	modal,
-	dispatch,
-	iframe,
-}) => {
+export const App = ({ config, gdpr, triggered, user, sound, undocked, minimized, expanded, alerts, modal, dispatch, iframe }) => {
 	const { t } = useTranslation();
 	const [state, setState] = useState(() => ({ initialized: false, poppedOut: false }));
 

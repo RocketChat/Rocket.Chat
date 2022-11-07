@@ -33,7 +33,8 @@ const InformationPage = memo(function InformationPage({
 		return null;
 	}
 
-	const alertOplogForMultipleInstances = statistics && statistics.instanceCount > 1 && !statistics.oplogEnabled;
+	const warningMultipleInstances = !statistics?.msEnabled && statistics?.instanceCount > 1;
+	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (
 		<Page data-qa='admin-info'>
@@ -52,6 +53,9 @@ const InformationPage = memo(function InformationPage({
 
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full'>
+					{warningMultipleInstances && (
+						<Callout type='danger' title={t('Multiple_monolith_instances_alert')} marginBlockEnd='x16'></Callout>
+					)}
 					{alertOplogForMultipleInstances && (
 						<Callout
 							type='danger'

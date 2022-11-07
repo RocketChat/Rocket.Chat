@@ -35,7 +35,7 @@ export const initialState = () => ({
 	minimized: true,
 	unread: null,
 	incomingCallAlert: null,
-	ongoingCall: null,	// TODO: store call info like url, startTime, timeout, etc here
+	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 });
 
@@ -86,11 +86,7 @@ export class Provider extends Component {
 		store.off('change', this.handleStoreChange);
 	}
 
-	render = ({ children }) => (
-		<StoreContext.Provider value={this.state}>
-			{children}
-		</StoreContext.Provider>
-	);
+	render = ({ children }) => <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
 }
 
 export const { Consumer } = StoreContext;
