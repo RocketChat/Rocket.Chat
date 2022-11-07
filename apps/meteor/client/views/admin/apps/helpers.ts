@@ -25,7 +25,7 @@ type appButtonResponseProps = {
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
 };
 
 type PlanType = 'Subscription' | 'Paid' | 'Free';
@@ -180,9 +180,22 @@ export const appButtonProps = ({
 	};
 };
 
-export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
+export const appIncompatibleStatus = (versionIncompatible: boolean): appStatusSpanResponseProps | undefined => {
+	if (versionIncompatible) {
+		return {
+			icon: 'check',
+			label: 'Incompatible',
+		};
+	}
+};
+
+export const appStatusSpanProps = ({ installed, status, subscriptionInfo, versionIncompatible }: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
 		return;
+	}
+
+	if (versionIncompatible) {
+		return appIncompatibleStatus(versionIncompatible);
 	}
 
 	const isFailed = status && appErroredStatuses.includes(status);
