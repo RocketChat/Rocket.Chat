@@ -86,10 +86,7 @@ const shouldHandleErrorAsWarning = (message: string): boolean => {
 	return warnings.includes(message);
 };
 
-export const handleAPIError = (error: {
-	xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } };
-	message: string;
-}): void => {
+export const handleAPIError = (error: any): void => {
 	const message = error.xhr?.responseJSON?.error ?? error.message;
 
 	if (shouldHandleErrorAsWarning(message)) {
