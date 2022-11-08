@@ -75,13 +75,13 @@ const UserAutoCompleteMultipleFederated = ({
 				filter={filter}
 				setFilter={setFilter}
 				renderSelected={({ value, onMouseDown }: { value: string; onMouseDown: () => void }): ReactElement => {
-					const currentCachedOption = selectedCache[value];
+					const currentCachedOption = selectedCache[value] || {};
 
 					return (
 						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie='x4' mb='x2'>
 							{currentCachedOption._federated ? <Icon size='x20' name='globe' /> : <UserAvatar size='x20' username={value} />}
 							<Box is='span' margin='none' mis='x4'>
-								{currentCachedOption.name || currentCachedOption.username}
+								{currentCachedOption.name || currentCachedOption.username || value}
 							</Box>
 						</Chip>
 					);
