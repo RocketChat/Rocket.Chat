@@ -1,8 +1,8 @@
-import { IRole } from '@rocket.chat/core-typings';
+import { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useRef, ReactElement } from 'react';
+import React, { useRef, ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import Page from '../../../../components/Page';
@@ -13,8 +13,6 @@ import UsersInRoleTable from './UsersInRoleTable';
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
-
-	const [rid, setRid] = useState<string>('');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -22,13 +20,14 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		handleSubmit,
 		formState: { isDirty },
 		reset,
-	} = useForm<{ users: string[] }>({ defaultValues: { users: [] } });
-
-	const isButtonEnabled = isDirty;
+		getValues,
+	} = useForm<{ rid?: IRoom['_id']; users: IUser['username'][] }>({ defaultValues: { users: [] } });
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
 	const addUser = useEndpoint('POST', '/v1/roles.addUserToRole');
+
+	const rid = getValues('rid');
 
 	const handleReturn = useMutableCallback(() => {
 		router.push({
@@ -37,26 +36,22 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async ({ users }: { users: string[] }) => {
+	const handleAdd = useMutableCallback(async ({ users, rid }: { users: IUser['username'][]; rid?: IRoom['_id'] }) => {
 		try {
 			await Promise.all(
-				users.map(async (u) => {
-					await addUser({ roleName: _id, username: u, roomId: rid });
-					dispatchToastMessage({ type: 'success', message: t('User_added') });
-					reload.current();
-					reset();
+				users.map(async (user) => {
+					if (user) {
+						await addUser({ roleName: _id, username: user, roomId: rid });
+					}
 				}),
 			);
-		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			reload.current();
+			reset();
+		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
-
-	const handleChange = (value: unknown): void => {
-		if (typeof value === 'string') {
-			setRid(value);
-		}
-	};
 
 	return (
 		<Page>
@@ -72,7 +67,13 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							<Field mbe='x4'>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
-									<RoomAutoComplete value={rid} onChange={handleChange} placeholder={t('User')} />
+									<Controller
+										control={control}
+										name='rid'
+										render={({ field: { onChange, value } }): ReactElement => (
+											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
+										)}
+									/>
 								</Field.Row>
 							</Field>
 						)}
@@ -99,9 +100,8 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										/>
 									)}
 								/>
-
 								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isButtonEnabled}>
+									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
