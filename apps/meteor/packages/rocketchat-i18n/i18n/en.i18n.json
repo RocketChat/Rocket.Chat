@@ -1884,7 +1884,7 @@
   "error-invalid-custom-field-name": "Invalid custom field name. Use only letters, numbers, hyphens and underscores.",
   "error-invalid-custom-field-value": "Invalid value for __field__ field",
   "error-invalid-date": "Invalid date provided.",
-  "error-invalid-dates":"From date cannot be after To date",
+  "error-invalid-dates": "From date cannot be after To date",
   "error-invalid-description": "Invalid description",
   "error-invalid-domain": "Invalid domain",
   "error-invalid-email": "Invalid email __email__",
