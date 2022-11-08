@@ -47,7 +47,14 @@ const LeaveTeamModal = ({ rooms, onCancel, onConfirm }: LeaveTeamModalProps): Re
 	});
 
 	if (step === LEAVE_TEAM_STEPS.CONFIRM_LEAVE) {
-		return <LeaveTeamModalConfirmation onConfirm={onConfirm} onClose={onCancel} onCancel={rooms.length > 0 ? handleReturn : undefined} />;
+		return (
+			<LeaveTeamModalConfirmation
+				selectedRooms={selectedRooms}
+				onConfirm={onConfirm}
+				onClose={onCancel}
+				onCancel={rooms.length > 0 ? handleReturn : undefined}
+			/>
+		);
 	}
 
 	return (

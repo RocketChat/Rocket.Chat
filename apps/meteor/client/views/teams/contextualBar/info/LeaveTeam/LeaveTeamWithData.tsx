@@ -18,7 +18,7 @@ const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataPro
 	const userId = useUserId();
 
 	const getRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
-	const { data, isLoading } = useQuery(['teams.listRoomsOfUser'], () => getRoomsOfUser({ teamId, userId }));
+	const { data, isLoading } = useQuery(['teams.listRoomsOfUser'], () => getRoomsOfUser({ teamId, userId: userId || '' }));
 
 	if (isLoading) {
 		return (

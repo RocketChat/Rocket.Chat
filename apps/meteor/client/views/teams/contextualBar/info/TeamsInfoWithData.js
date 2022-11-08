@@ -88,6 +88,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
+			roomsLeft = Object.keys(roomsLeft);
 			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : [];
 
 			try {
