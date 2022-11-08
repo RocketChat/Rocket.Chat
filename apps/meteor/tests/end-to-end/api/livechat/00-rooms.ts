@@ -660,7 +660,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe.only('livechat/:rid/messages', () => {
+	describe('livechat/:rid/messages', () => {
 		it('should fail if room provided is invalid', (done) => {
 			request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400).end(done);
 		});

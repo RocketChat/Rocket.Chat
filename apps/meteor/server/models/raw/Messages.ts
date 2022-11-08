@@ -221,7 +221,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		return this.findPaginated(
 			{
 				rid,
