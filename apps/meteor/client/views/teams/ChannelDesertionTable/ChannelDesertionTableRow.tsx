@@ -3,7 +3,6 @@ import { CheckBox, TableRow, TableCell, Icon, Margins } from '@rocket.chat/fusel
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
-import { RoomIcon } from '../../../components/RoomIcon';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type ChannelDesertionTableRowProps = {
@@ -23,7 +22,7 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 			<TableCell maxWidth='x300' withTruncatedText>
 				<CheckBox checked={selected} onChange={handleChange} disabled={room.isLastOwner} />
 				<Margins inline='x8'>
-					<RoomIcon placement='default' room={room} />
+					<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
 					{fname ?? name}
 					{isLastOwner && <Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />}
 				</Margins>
