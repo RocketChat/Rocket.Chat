@@ -53,7 +53,6 @@ const defaultConfig = {
 
 describe('ThreadMessagePreview', () => {
 	it('should render the message when exists', () => {
-		// console.log(ThreadMessagePreview, screen.debug(), 'dsadasdasdasdas');
 		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, defaultConfig).default;
 
 		render(<ThreadMessagePreview message={baseMessage} sequential={true} />);
