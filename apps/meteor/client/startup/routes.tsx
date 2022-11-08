@@ -12,6 +12,7 @@ import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
+import UnreadsPage from '../views/unreads/UnreadsPage';
 
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
@@ -131,6 +132,17 @@ FlowRouter.route('/directory/:tab?', {
 		appLayout.render(
 			<MainLayout>
 				<DirectoryPage />
+			</MainLayout>,
+		);
+	},
+});
+
+FlowRouter.route('/unreads', {
+	name: 'unreads',
+	action: () => {
+		appLayout.render(
+			<MainLayout>
+				<UnreadsPage />
 			</MainLayout>,
 		);
 	},
