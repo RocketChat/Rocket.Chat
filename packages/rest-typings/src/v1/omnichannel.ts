@@ -2631,6 +2631,26 @@ const POSTLivechatPriorityParamsSchema = {
 
 export const isPOSTLivechatPriorityParams = ajv.compile<POSTLivechatPriorityParams>(POSTLivechatPriorityParamsSchema);
 
+type PUTLivechatPriorityParams = { name: string; _id: string };
+
+const PUTLivechatPriorityParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+			nullable: false,
+		},
+		_id: {
+			type: 'string',
+			nullable: false,
+		},
+	},
+	required: ['name', '_id'],
+	additionalProperties: false,
+};
+
+export const isPUTLivechatPriorityParams = ajv.compile<PUTLivechatPriorityParams>(PUTLivechatPriorityParamsSchema);
+
 type GETLivechatInquiriesListParams = PaginatedRequest<{ department?: string }>;
 
 const GETLivechatInquiriesListParamsSchema = {
@@ -3034,6 +3054,12 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/priority': {
 		POST: (params: POSTLivechatPriorityParams) => ILivechatPriority | void;
+		PUT: (params: PUTLivechatPriorityParams) => ILivechatPriority | void;
+	};
+
+	'/v1/livechat/priority/reset': {
+		GET: () => { reset: boolean };
+		POST: () => void;
 	};
 
 	'/v1/livechat/visitors.search': {

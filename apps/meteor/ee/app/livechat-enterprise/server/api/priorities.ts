@@ -1,12 +1,21 @@
 import {
+	isGETLivechatPriorityParams,
 	isGETLivechatPrioritiesParams,
 	isPOSTLivechatPriorityParams,
-	isGETLivechatPriorityParams,
+	isPUTLivechatPriorityParams,
 	isDELETELivechatPriorityParams,
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
-import { findPriority, findPriorityById, createPriority, deletePriorityById } from './lib/priorities';
+import {
+	findPriority,
+	findPriorityById,
+	createPriority,
+	deletePriorityById,
+	updatePriority,
+	arePrioritiesResettable,
+	resetPriorities,
+} from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/priorities',
@@ -39,8 +48,14 @@ API.v1.addRoute(
 	'livechat/priority',
 	{
 		authRequired: true,
-		validateParams: isPOSTLivechatPriorityParams,
-		permissionsRequired: { POST: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' } },
+		validateParams: {
+			POST: isPOSTLivechatPriorityParams,
+			PUT: isPUTLivechatPriorityParams,
+		},
+		permissionsRequired: {
+			POST: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+			PUT: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+		},
 	},
 	{
 		async post() {
@@ -48,6 +63,15 @@ API.v1.addRoute(
 			try {
 				const insert = await createPriority({ name, level });
 
+				return API.v1.success(insert);
+			} catch (e) {
+				return API.v1.notFound(String(e));
+			}
+		},
+		async put() {
+			const { _id, name } = this.bodyParams;
+			try {
+				const insert = await updatePriority({ _id, name });
 				return API.v1.success(insert);
 			} catch (e) {
 				return API.v1.notFound(String(e));
@@ -91,8 +115,33 @@ API.v1.addRoute(
 			try {
 				const result = await deletePriorityById(priorityId);
 				return API.v1.success(result);
-			} catch (e) {
-				return API.v1.failure(e);
+			} catch (_e) {
+				return API.v1.failure();
+			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/priority/reset',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+		},
+	},
+	{
+		async get() {
+			const canReset = await arePrioritiesResettable();
+			return API.v1.success({ reset: canReset });
+		},
+		async post() {
+			try {
+				await resetPriorities();
+				return API.v1.success();
+			} catch (_e) {
+				return API.v1.failure();
 			}
 		},
 	},
