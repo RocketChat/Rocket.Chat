@@ -18,7 +18,7 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
-			<Box w='full' pb='x24'>
+			<Box w='full' p='x24'>
 				<Skeleton mbe='x4' />
 				<Skeleton mbe='x8' />
 				<Skeleton mbe='x4' />
