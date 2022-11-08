@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,8 +8,8 @@ import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
 
-export type RoomHeaderProps = {
-	room: ISubscription & IRoom & RoomType;
+type RoomHeaderProps = {
+	room: ISubscription & IRoom;
 	messagesCount: number;
 	isUnread: boolean;
 	handleToggleRead: (rid: string) => void;
@@ -64,7 +64,7 @@ const UnreadAccordionHeader: FC<RoomHeaderProps> = ({ room, messagesCount, isUnr
 				{slots?.toolbox?.content}
 				{messagesCount > 0 && (
 					<Button
-						onClick={() => {
+						onClick={(): void => {
 							handleToggleRead(room.rid);
 						}}
 					>

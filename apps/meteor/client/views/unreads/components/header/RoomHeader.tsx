@@ -63,7 +63,7 @@ const RoomHeader: FC<RoomHeaderProps> = ({ totalUnread, totalThreads, isAllUnrea
 				{slots?.toolbox?.pre}
 				{slots?.toolbox?.content}
 				{totalUnread > 0 && (
-					<Button onClick={() => handleToggleReadAll()}>
+					<Button onClick={(): void => handleToggleReadAll()}>
 						<Icon name={'flag'} size='x20' margin='4x' />
 						<span style={{ marginLeft: '10px' }}>{isAllUnread ? `Mark All Read` : 'Mark All Unread'}</span>
 					</Button>
