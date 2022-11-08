@@ -41,7 +41,12 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 				{isCallEnabled && <OmnichannelCallToggle />}
 				<OmnichannelLivechatToggle />
 				{hasPermissionToSeeContactCenter && (
-					<Sidebar.TopBar.Action data-tooltip={t('Contact_Center')} icon='address-book' onClick={(): void => handleRoute('directory')} />
+					<Sidebar.TopBar.Action
+						data-tooltip={t('Contact_Center')}
+						aria-label={t('Contact_Center')}
+						icon='address-book'
+						onClick={(): void => handleRoute('directory')}
+					/>
 				)}
 				{isCallReady && <OmniChannelCallDialPad />}
 			</Sidebar.TopBar.Actions>

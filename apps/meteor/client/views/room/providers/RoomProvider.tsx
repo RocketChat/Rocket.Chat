@@ -2,8 +2,8 @@ import { IRoom } from '@rocket.chat/core-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
 
-import { UserAction } from '../../../../app/ui';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { UserAction } from '../../../../app/ui/client';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
