@@ -1,0 +1,60 @@
+import { Box, Field, Flex, TextInput } from '@rocket.chat/fuselage';
+import React, { FormEventHandler, ReactElement } from 'react';
+
+import ResetSettingButton from '../ResetSettingButton';
+
+type FontSettingInputProps = {
+	_id: string;
+	label: string;
+	value: string;
+	placeholder?: string;
+	readonly?: boolean;
+	autocomplete?: boolean;
+	disabled?: boolean;
+	hasResetButton?: boolean;
+	onChangeValue?: (value: string) => void;
+	onResetButtonClick?: () => void;
+};
+function FontSettingInput({
+	_id,
+	label,
+	value,
+	placeholder,
+	readonly,
+	autocomplete,
+	disabled,
+	hasResetButton,
+	onChangeValue,
+	onResetButtonClick,
+}: FontSettingInputProps): ReactElement {
+	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
+		onChangeValue?.(event.currentTarget.value);
+	};
+
+	return (
+		<>
+			<Flex.Container>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
+					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				</Box>
+			</Flex.Container>
+			<Field.Row>
+				<TextInput
+					data-qa-setting-id={_id}
+					id={_id}
+					value={value}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+				/>
+			</Field.Row>
+		</>
+	);
+}
+
+export default FontSettingInput;

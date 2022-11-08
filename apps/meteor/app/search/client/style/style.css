@@ -1,0 +1,70 @@
+.rocket-search {
+	display: flex;
+	flex: 1;
+
+	padding: 0 !important;
+}
+
+.rocket-search-tab {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.rocket-default-search-results {
+	overflow: auto;
+	overflow-x: hidden;
+}
+
+.rocket-search-result {
+	display: flex;
+	overflow-x: hidden;
+	flex-direction: column;
+	flex: 1 1 0;
+}
+
+.rocket-default-search-settings {
+	padding-bottom: 20px;
+}
+
+.rocket-default-search-results .list .message {
+	padding-right: 8px !important;
+	padding-left: 70px !important;
+}
+
+.rocket-search-error {
+	padding: 0 24px;
+}
+
+.rocket-default-search-results .js-list {
+	overflow: hidden;
+}
+
+#rocket-search-suggestions {
+	position: absolute;
+	z-index: 1000;
+	top: 58px;
+
+	right: 24px;
+	left: 24px;
+
+	padding: 10px 0;
+
+	border-radius: 0;
+
+	background-color: white;
+
+	box-shadow: 0 1px 10px #aaaaaa;
+}
+
+.rocket-search-suggestion-item {
+	width: 100%;
+
+	cursor: pointer;
+}
+
+.rocket-search-suggestion-item.active,
+.rocket-search-suggestion-item:hover {
+	color: white;
+	background-color: var(--button-primary-background);
+}

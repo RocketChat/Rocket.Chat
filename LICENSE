@@ -1,9 +1,10 @@
-Copyright (c) 2015-2020 Rocket.Chat Technologies Corp.
+Copyright (c) 2015-2022 Rocket.Chat Technologies Corp.
 
 Portions of this software are licensed as follows:
 
-* All content that resides under the "ee/" directory of this repository, if
-  that directory exists, is licensed under the license defined in "ee/LICENSE".
+* All content that resides under the "apps/meteor/ee/" and "ee/" directories
+  of this repository, if that directory exists, is licensed under the license
+  defined in "apps/meteor/ee/LICENSE".
 * All third-party components incorporated into the Rocket.Chat Software are
   licensed under the original license provided by the owner of the applicable
   component.
