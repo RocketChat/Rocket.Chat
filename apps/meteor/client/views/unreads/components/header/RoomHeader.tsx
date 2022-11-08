@@ -1,62 +1,23 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-// import { Badge, Button, Icon } from '@rocket.chat/fuselage';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
-// import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
-// import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import RoomTitle from './RoomTitle';
-// import MarkdownText from '../../../components/MarkdownText';
-// import ParentRoomWithData from './ParentRoomWithData';
-// import ParentTeam from './ParentTeam';
-// import ToolBox from './ToolBox';
-// import Encrypted from './icons/Encrypted';
-// import Favorite from './icons/Favorite';
-// import Translate from './icons/Translate';
+import { useRoomIcon } from '../../../../hooks/useRoomIcon';
+import { headerRoomData } from './headerRoomData';
 
-// export type RoomHeaderProps = {
-// 	room: IRoom;
-// 	topic?: string;
-// 	slots: {
-// 		start?: unknown;
-// 		preContent?: unknown;
-// 		insideContent?: unknown;
-// 		posContent?: unknown;
-// 		end?: unknown;
-// 		toolbox?: {
-// 			pre?: unknown;
-// 			content?: unknown;
-// 			pos?: unknown;
-// 		};
-// 	};
-// };
 type RoomHeaderProps = {
-	room: ISubscription & IRoom;
 	isAllUnread: boolean;
 	totalUnread: number;
 	totalThreads: number;
 	handleToggleReadAll: () => void;
 };
 
-// type HeaderProps<T> = {
-// 	room: T;
-// };
-
-// const Header = ({ room }: HeaderProps<IRoom >): ReactElement  => {
-
-// const UnreadRoomHeader = ({ room, totalUnread, isAllUnread, topic='', handleToggleReadAll }: RoomHeaderProps): ReactElement => {
-const UnreadRoomHeader: FC<RoomHeaderProps> = ({ room, totalUnread, totalThreads, isAllUnread, handleToggleReadAll }) => {
+const RoomHeader: FC<RoomHeaderProps> = ({ totalUnread, totalThreads, isAllUnread, handleToggleReadAll }) => {
 	const t = useTranslation();
-
-	// const badgeStyle = {
-	// 	backgroundColor: isAllUnread ? '#ff0000' : '#1c860e',
-	// 	color: 'var(--rcx-color-surface, white)',
-	// 	flexShrink: 0,
-	// };
+	const icon = useRoomIcon(headerRoomData);
 
 	const slots = {
 		start: true,
@@ -77,12 +38,13 @@ const UnreadRoomHeader: FC<RoomHeaderProps> = ({ room, totalUnread, totalThreads
 		<Header>
 			{slots?.start}
 			<Header.Avatar>
-				<RoomAvatar room={room} />
+				<RoomAvatar room={headerRoomData} />
 			</Header.Avatar>
 			{slots?.preContent}
 			<Header.Content>
 				<Header.Content.Row>
-					<RoomTitle room={room} />
+					<Header.Icon icon={icon} />
+					<Header.Title is='h1'>{headerRoomData.name}</Header.Title>
 					{slots?.insideContent}
 				</Header.Content.Row>
 				<Header.Content.Row>
@@ -113,4 +75,4 @@ const UnreadRoomHeader: FC<RoomHeaderProps> = ({ room, totalUnread, totalThreads
 	);
 };
 
-export default UnreadRoomHeader;
+export default memo(RoomHeader);

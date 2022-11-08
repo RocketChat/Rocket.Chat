@@ -2,37 +2,12 @@ import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
-// import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import RoomTitle from './RoomTitle';
+import { useRoomIcon } from '../../../../hooks/useRoomIcon';
 
-// import MarkdownText from '../../../components/MarkdownText';
-// import ParentRoomWithData from './ParentRoomWithData';
-// import ParentTeam from './ParentTeam';
-// import ToolBox from './ToolBox';
-// import Encrypted from './icons/Encrypted';
-// import Favorite from './icons/Favorite';
-// import Translate from './icons/Translate';
-
-// export type RoomHeaderProps = {
-// 	room: IRoom;
-// 	topic?: string;
-// 	slots: {
-// 		start?: unknown;
-// 		preContent?: unknown;
-// 		insideContent?: unknown;
-// 		posContent?: unknown;
-// 		end?: unknown;
-// 		toolbox?: {
-// 			pre?: unknown;
-// 			content?: unknown;
-// 			pos?: unknown;
-// 		};
-// 	};
-// };
 export type RoomHeaderProps = {
 	room: ISubscription & IRoom & RoomType;
 	messagesCount: number;
@@ -40,7 +15,6 @@ export type RoomHeaderProps = {
 	handleToggleRead: (rid: string) => void;
 };
 
-// const UnreadsRoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 const UnreadAccordionHeader: FC<RoomHeaderProps> = ({ room, messagesCount, isUnread, handleToggleRead }) => {
 	const slots = {
 		start: true,
@@ -55,7 +29,7 @@ const UnreadAccordionHeader: FC<RoomHeaderProps> = ({ room, messagesCount, isUnr
 		},
 	};
 
-	console.log('UnreadAccordionHeader');
+	const icon = useRoomIcon(room);
 
 	const t = useTranslation();
 	return (
@@ -67,12 +41,8 @@ const UnreadAccordionHeader: FC<RoomHeaderProps> = ({ room, messagesCount, isUnr
 			{slots?.preContent}
 			<Header.Content>
 				<Header.Content.Row>
-					<RoomTitle room={room} />
-					{/* <Favorite room={room} /> */}
-					{/* {room.prid && <ParentRoomWithData room={room} />} */}
-					{/* {room.teamId && !room.teamMain && <ParentTeam room={room} />} */}
-					{/* <Encrypted room={room} /> */}
-					{/* <Translate room={room} /> */}
+					<Header.Icon icon={icon} />
+					<Header.Title is='h1'>{room.name}</Header.Title>
 					{slots?.insideContent}
 				</Header.Content.Row>
 				{messagesCount && (
@@ -93,7 +63,11 @@ const UnreadAccordionHeader: FC<RoomHeaderProps> = ({ room, messagesCount, isUnr
 				{slots?.toolbox?.pre}
 				{slots?.toolbox?.content}
 				{messagesCount > 0 && (
-					<Button onClick={() => handleToggleRead(room.rid)}>
+					<Button
+						onClick={() => {
+							handleToggleRead(room.rid);
+						}}
+					>
 						<Icon name={'flag'} size='x20' margin='4x' />
 						<span style={{ marginLeft: '10px' }}>{isUnread ? 'Mark Read' : 'Mark Unread'}</span>
 					</Button>
@@ -105,4 +79,4 @@ const UnreadAccordionHeader: FC<RoomHeaderProps> = ({ room, messagesCount, isUnr
 	);
 };
 
-export default UnreadAccordionHeader;
+export default memo(UnreadAccordionHeader);
