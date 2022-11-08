@@ -107,7 +107,6 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 						console.error(error);
 					}
 				}
-				Session.set('roomNotFound', { type, name, error });
 				appLayout.render(
 					<MainLayout>
 						<RoomNotFound />

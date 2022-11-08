@@ -5,20 +5,25 @@ import { RocketChatAssets } from '../../../assets/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
 	'assets.setAsset',
 	{ authRequired: true },
 	{
 		async post() {
-			const [asset, { refreshAllClients, assetName: customName }, fileName] = await getUploadFormData(
+			const asset = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{ field: 'asset' },
+				{ field: 'asset', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
-			const assetName = customName || fileName;
+			const { fileBuffer, fields, filename, mimetype } = asset;
+
+			const { refreshAllClients, assetName: customName } = fields;
+
+			const assetName = customName || filename;
 			const assetsKeys = Object.keys(RocketChatAssets.assets);
 
 			const isValidAsset = assetsKeys.includes(assetName);
@@ -26,7 +31,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-asset', 'Invalid asset');
 			}
 
-			Meteor.call('setAsset', asset.fileBuffer, asset.mimetype, assetName);
+			Meteor.call('setAsset', fileBuffer, mimetype, assetName);
 			if (refreshAllClients) {
 				Meteor.call('refreshClients');
 			}

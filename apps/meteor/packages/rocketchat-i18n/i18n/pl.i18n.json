@@ -92,7 +92,7 @@
   "Accounts_EmailVerification_Description": "Upewnij się, że masz odpowiednie ustawienia SMTP, by korzystać z tej funkcji",
   "Accounts_Enrollment_Email": "Adres e-mail do rejestracji",
   "Accounts_Enrollment_Email_Default": "<h1>Witamy w <strong>[Site_Name]</strong></h1><p>Przejdź na stronę <a href=\"[Site_URL]\">[Site_URL]</a> i wypróbuj dziś najlepsze dostępne otwarte rozwiązanie czatu! </p>",
-  "Accounts_Enrollment_Email_Description": "Możesz użyć znaczników: <ul><li>[name], [fname], [lname], aby wstawić odpowiednio pełną nazwę użytkownika, jego imię lub nazwisko.</li><li>[email], aby wstawić adres e-mail użytkownika.</li><li>[Site_Name] i [Site_URL], aby wstawić nazwę aplikacji lub adres URL.</li></ul><br/>",
+  "Accounts_Enrollment_Email_Description": "Możesz użyć znaczników: <br/><ul><li>[name], [fname], [lname], aby wstawić odpowiednio pełną nazwę użytkownika, jego imię lub nazwisko.</li><li>[email], aby wstawić adres e-mail użytkownika.</li><li>[Site_Name] i [Site_URL], aby wstawić nazwę aplikacji lub adres URL.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Witamy w [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Zapomnij sesję użytkownika przy zamykaniu okna",
   "Accounts_Iframe_api_method": "Metoda API",
@@ -3111,7 +3111,6 @@
   "mention-here": "Wzmianka @here",
   "mention-here_description": "Zezwolenie na użycie wzmianki @here",
   "Mentions": "Wzmianki o tobie",
-  "Mentions_unavailable_for_federation": "Wzmianki są niedostępne dla pokoi skonfederowanych",
   "Mentions_default": "Wzmianki (domyślnie)",
   "Mentions_only": "Tylko wzmianki",
   "Merge_Channels": "Scal kanały",
@@ -5384,5 +5383,6 @@
   "onboarding.form.standaloneServerForm.title": "Potwierdzenie serwera standalone",
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Niektóre z usług będą niedostępne lub będą wymagały ręcznej konfiguracji",
   "onboarding.form.standaloneServerForm.publishOwnApp": "W celu wysyłania powiadomień push należy skompilować i opublikować własną aplikację w Google Play i App Store",
-  "onboarding.form.standaloneServerForm.manuallyIntegrate": "Konieczność ręcznej integracji z usługami zewnętrznymi"
+  "onboarding.form.standaloneServerForm.manuallyIntegrate": "Konieczność ręcznej integracji z usługami zewnętrznymi",
+  "Something_Went_Wrong": "Coś poszło nie tak"
 }
