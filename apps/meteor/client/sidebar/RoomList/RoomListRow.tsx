@@ -7,12 +7,14 @@ import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfInc
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import OmnichannelSection from '../sections/OmnichannelSection';
+import UnreadsSection from '../sections/UnreadsSection';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
 const sections: {
 	[key: string]: ComponentType<any>;
 } = {
 	Omnichannel: OmnichannelSection,
+	Unreads: UnreadsSection,
 };
 
 type RoomListRowProps = {
