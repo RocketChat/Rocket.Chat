@@ -11,7 +11,7 @@ import { t } from '../../../utils/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-type UsernameTemplateInstance = Blaze.TemplateInstance<{}> & {
+type UsernameTemplateInstance = Blaze.TemplateInstance<Record<string, never>> & {
 	customFields: ReactiveVar<Record<
 		string,
 		{
