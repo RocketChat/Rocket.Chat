@@ -4,6 +4,7 @@ import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 import { RocketChatAssets } from '../../../assets/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 API.v1.addRoute(
 	'assets.setAsset',
@@ -64,6 +65,7 @@ API.v1.addRoute(
 	},
 	{
 		post() {
+			methodDeprecationLogger.warn('assets.refreshClients will be deprecated in future versions of Rocket.Chat');
 			Meteor.call('refreshClients');
 			return API.v1.success();
 		},

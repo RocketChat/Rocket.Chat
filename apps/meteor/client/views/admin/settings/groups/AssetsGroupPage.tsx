@@ -1,6 +1,4 @@
 import { ISetting } from '@rocket.chat/core-typings';
-import { Button } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
@@ -12,33 +10,9 @@ type AssetsGroupPageProps = ISetting;
 function AssetsGroupPage({ _id, ...group }: AssetsGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
-	const t = useTranslation();
-
-	const refreshClients = useEndpoint('POST', '/v1/assets.refreshClients');
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const handleApplyAndRefreshAllClientsButtonClick = async (): Promise<void> => {
-		try {
-			await refreshClients();
-			dispatchToastMessage({
-				type: 'success',
-				message: t('Clients_will_refresh_in_a_few_seconds'),
-			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
 
 	return (
-		<GroupPage
-			_id={_id}
-			{...group}
-			headerButtons={
-				<>
-					<Button onClick={handleApplyAndRefreshAllClientsButtonClick}>{t('Apply_and_refresh_all_clients')}</Button>
-				</>
-			}
-		>
+		<GroupPage _id={_id} {...group} headerButtons={<></>}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName} groupId={_id} hasReset={false} sectionName={sectionName} solo={solo} />
 			))}

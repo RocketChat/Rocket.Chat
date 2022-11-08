@@ -15,6 +15,7 @@ export type AssetsEndpoints = {
 		POST: (params: AssetsUnsetAssetProps) => void;
 	};
 
+	/** @deprecated */
 	'/v1/assets.refreshClients': {
 		POST: () => void;
 	};
