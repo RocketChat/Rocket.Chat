@@ -1,3 +1,4 @@
+import { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Accordion, Box, Divider, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -16,8 +17,7 @@ import Message from './components/Message';
 import UnreadAccordionHeader from './components/headers/UnreadAccordionHeader';
 import UnreadRoomHeader from './components/headers/UnreadRoomHeader';
 import { useUnreads } from './hooks/useUnreads';
-import { mockRoom, headerRoomData } from './mockRoom';
-import { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
+import { headerRoomData } from './mockRoom';
 // import { IRoom } from '@rocket.chat/core-typings';
 
 // import RoomListRow from '../../sidebar/RoomList/RoomListRow';
@@ -51,15 +51,15 @@ const UnreadsPage: FC = () => {
 		console.log('Unreads', unreadRooms, Date.now());
 	}
 
-	function isArrayValid(array: any[]): boolean {
-		return Array.isArray(array) && array.length > 0;
-	}
+	// function isArrayValid(array: any[]): boolean {
+	// 	return Array.isArray(array) && array.length > 0;
+	// }
 
-	function isRoomValid(room: ISubscription & IRoom): boolean {
-		// if (typeof room === 'object' && room?.rid && room?.name && room?.unread) return true;
-		if (typeof room === 'object') return true;
-		return false;
-	}
+	// function isRoomValid(room: ISubscription & IRoom): boolean {
+	// 	// if (typeof room === 'object' && room?.rid && room?.name && room?.unread) return true;
+	// 	if (typeof room === 'object') return true;
+	// 	return false;
+	// }
 
 	// const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
 
@@ -93,7 +93,7 @@ const UnreadsPage: FC = () => {
 		}
 	});
 
-	// TODO: Change func of read status for all room
+	// TODO: Change func of read status for all rooms
 	const handleToggleReadAll = useMutableCallback(async () => {
 		setIsAllUnread(!isAllUnread);
 		setTotalUnread(10);
@@ -126,10 +126,14 @@ const UnreadsPage: FC = () => {
 	// 	flexShrink: 0,
 	// };
 
+	function isNonEmptyArray(array: any[]): boolean {
+		return Array.isArray(array) && array.length > 0;
+	}
+
 	function calculateTotals() {
 		unreadRooms.forEach((room) => {
-			if (typeof room?.messages === 'array') setTotalUnread(room.messages.length);
-			if (typeof room?.threads === 'array') setTotalThreads(room.threads.length);
+			if (isNonEmptyArray(room?.messages)) setTotalUnread(room.messages.length);
+			if (isNonEmptyArray(room?.threads)) setTotalThreads(room.threads.length);
 
 			console.log('room.messages.length', room.messages.length);
 			console.log('room.threads.length', room.threads.length);
