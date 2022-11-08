@@ -17,8 +17,12 @@
 	},
 	"devDependencies": {
 		"@types/chart.js": "^2.9.37",
+		"@types/jest": "^29.2.2",
 		"@types/js-yaml": "^4.0.5",
+		"@types/mocha": "^10.0.0",
 		"husky": "^7.0.4",
+		"jest": "^29.3.0",
+		"mocha": "^10.1.0",
 		"turbo": "~1.2.16"
 	},
 	"workspaces": [
