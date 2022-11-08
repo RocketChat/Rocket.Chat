@@ -23,6 +23,7 @@ import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameC
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
+import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '');
@@ -132,28 +133,47 @@ export class MatrixRoomReceiverConverter {
 			inviterUsernameOnly: formatExternalUserIdToInternalUsernameFormat(externalEvent.sender),
 			eventOrigin: getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === RoomMembershipChangedEventType.LEAVE,
+			userAvatarUrl:
+				externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN ? externalEvent.content?.avatar_url : undefined,
 		});
 	}
 
-	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
+	public static toSendRoomMessageDto(
+		externalEvent: MatrixEventRoomMessageSent,
+		homeServerDomain: string,
+	): FederationRoomReceiveExternalMessageDto {
+		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
 		return new FederationRoomReceiveExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: externalEvent.content.body,
+			messageText: toInternalMessageFormat({
+				message: externalEvent.content.formatted_body || externalEvent.content.body,
+				homeServerDomain,
+				isAReplyToAMessage,
+			}),
+			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 
-	public static toEditRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomEditExternalMessageDto {
+	public static toEditRoomMessageDto(
+		externalEvent: MatrixEventRoomMessageSent,
+		homeServerDomain: string,
+	): FederationRoomEditExternalMessageDto {
+		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
 		return new FederationRoomEditExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			newMessageText: externalEvent.content['m.new_content']?.body as string,
+			newMessageText: toInternalMessageFormat({
+				message: (externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
+				homeServerDomain,
+				isAReplyToAMessage,
+			}),
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
 		});
 	}
@@ -168,7 +188,6 @@ export class MatrixRoomReceiverConverter {
 		if (!externalEvent.content.info?.size) {
 			throw new Error('Missing size in the file message info');
 		}
-
 		return new FederationRoomReceiveExternalFileMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
@@ -180,6 +199,7 @@ export class MatrixRoomReceiverConverter {
 			mimetype: externalEvent.content.info.mimetype,
 			size: externalEvent.content.info.size,
 			messageText: externalEvent.content.body,
+			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 

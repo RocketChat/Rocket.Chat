@@ -553,14 +553,13 @@ API.v1.addRoute(
 
 				const result = Meteor.call(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
-			} catch (error) {
-				if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
-				else SystemLogger.error(`Exception while invoking method ${method}`, error);
+			} catch (err) {
+				SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
 
 				if (settings.get('Log_Level') === '2') {
-					Meteor._debug(`Exception while invoking method ${method}`, error);
+					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error }));
+				return API.v1.success(mountResult({ id, error: err }));
 			}
 		},
 	},
@@ -612,14 +611,13 @@ API.v1.addRoute(
 
 				const result = Meteor.call(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
-			} catch (error) {
-				if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
-				else SystemLogger.error(`Exception while invoking method ${method}`, error);
+			} catch (err) {
+				SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
 
 				if (settings.get('Log_Level') === '2') {
-					Meteor._debug(`Exception while invoking method ${method}`, error);
+					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error }));
+				return API.v1.success(mountResult({ id, error: err }));
 			}
 		},
 	},

@@ -39,8 +39,8 @@ describe('Federation - Application - FederationMessageServiceSender', () => {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 	};
 	const messageAdapter = {
-		setExternalFederationEventOnMessage: sinon.stub(),
-		unsetExternalFederationEventOnMessage: sinon.stub(),
+		setExternalFederationEventOnMessageReaction: sinon.stub(),
+		unsetExternalFederationEventOnMessageReaction: sinon.stub(),
 	};
 	const bridge = {
 		extractHomeserverOrigin: sinon.stub(),
@@ -62,8 +62,8 @@ describe('Federation - Application - FederationMessageServiceSender', () => {
 		roomAdapter.getFederatedRoomByInternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		bridge.extractHomeserverOrigin.reset();
-		messageAdapter.setExternalFederationEventOnMessage.reset();
-		messageAdapter.unsetExternalFederationEventOnMessage.reset();
+		messageAdapter.setExternalFederationEventOnMessageReaction.reset();
+		messageAdapter.unsetExternalFederationEventOnMessageReaction.reset();
 		bridge.sendMessageReaction.reset();
 		bridge.redactEvent.reset();
 	});
@@ -153,7 +153,7 @@ describe('Federation - Application - FederationMessageServiceSender', () => {
 
 			expect(bridge.sendMessageReaction.calledWith(room.getExternalId(), user.getExternalId(), 'eventId', 'reaction')).to.be.true;
 			expect(
-				messageAdapter.setExternalFederationEventOnMessage.calledWith(
+				messageAdapter.setExternalFederationEventOnMessageReaction.calledWith(
 					user.getUsername(),
 					{ rid: 'roomId', federation: { eventId: 'eventId' } },
 					'reaction',
@@ -280,7 +280,7 @@ describe('Federation - Application - FederationMessageServiceSender', () => {
 			await service.sendExternalMessageUnReaction(message, { _id: 'id', username: user.getUsername() } as any, 'reaction');
 
 			expect(bridge.redactEvent.calledWith(room.getExternalId(), user.getExternalId(), 'eventId')).to.be.true;
-			expect(messageAdapter.unsetExternalFederationEventOnMessage.calledWith('eventId', message, 'reaction')).to.be.true;
+			expect(messageAdapter.unsetExternalFederationEventOnMessageReaction.calledWith('eventId', message, 'reaction')).to.be.true;
 		});
 	});
 });

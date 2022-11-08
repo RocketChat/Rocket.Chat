@@ -6,6 +6,7 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
+import { logger } from './logger';
 
 export class VisitorInactivityMonitor {
 	constructor() {
@@ -29,7 +30,7 @@ export class VisitorInactivityMonitor {
 			name: this._name,
 			schedule: (parser) => parser.cron(everyMinute),
 			job: () => {
-				this.handleAbandonedRooms();
+				Promise.await(this.handleAbandonedRooms());
 			},
 		});
 		this._started = true;
@@ -90,28 +91,43 @@ export class VisitorInactivityMonitor {
 		const guest = visitor.name || visitor.username;
 		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
-		LivechatEnterprise.placeRoomOnHold(room, comment, this.user) &&
-			(await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id));
+		const result = await Promise.allSettled([
+			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
+			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
+		]);
+		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+		if (rejected.length) {
+			logger.error({ msg: 'Error placing room on hold', error: rejected });
+
+			throw new Error('Error placing room on hold. Please check logs for more details.');
+		}
 	}
 
-	handleAbandonedRooms() {
+	async handleAbandonedRooms() {
 		const action = settings.get('Livechat_abandoned_rooms_action');
 		if (!action || action === 'none') {
 			return;
 		}
-		// TODO: change this to an async map or reduce
-		Promise.await(LivechatRooms.findAbandonedOpenRooms(new Date())).forEach((room) => {
-			switch (action) {
-				case 'close': {
-					Promise.await(this.closeRooms(room));
-					break;
+		const result = await Promise.allSettled(
+			LivechatRooms.findAbandonedOpenRooms(new Date()).forEach(async (room) => {
+				switch (action) {
+					case 'close': {
+						await this.closeRooms(room);
+						break;
+					}
+					case 'on-hold': {
+						await this.placeRoomOnHold(room);
+						break;
+					}
 				}
-				case 'on-hold': {
-					Promise.await(this.placeRoomOnHold(room));
-					break;
-				}
-			}
-		});
+			}),
+		);
+		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+		if (rejected.length) {
+			logger.error({ msg: `Error while removing priority from ${rejected.length} rooms`, reason: rejected[0] });
+			logger.debug({ msg: 'Rejection results', rejected });
+		}
+
 		this._initializeMessageCache();
 	}
 }
