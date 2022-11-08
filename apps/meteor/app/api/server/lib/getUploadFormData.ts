@@ -69,7 +69,7 @@ export async function getUploadFormData<
 			const matches = (<string>request.headers['content-range']).match(contentRangeRegExp)!;
 
 			if (!matches) {
-				reject('malformed content-range');
+				return returnError(new MeteorError('error-invalid-chunk'));
 			}
 
 			const [, unit, , start, end, size] = matches;
