@@ -153,6 +153,7 @@ export interface ServerMethods {
 		limit?: number,
 		ls?: number,
 		showThreadMessages?: boolean,
+		unreadOnly?: boolean,
 	) => {
 		messages: IMessage[];
 		firstUnread: IMessage;
