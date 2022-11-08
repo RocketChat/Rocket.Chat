@@ -660,7 +660,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('livechat/:rid/messages', () => {
+	describe.only('livechat/:rid/messages', () => {
 		it('should fail if room provided is invalid', (done) => {
 			request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400).end(done);
 		});
@@ -686,6 +686,44 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages).to.be.an('array');
 			expect(body.total).to.be.an('number').equal(1);
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
+		});
+		it('should return the messages of the room matching by searchTerm', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+			await sendMessage(room._id, 'Random', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/${room._id}/messages`))
+				.query({ searchTerm: 'Ran' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages');
+			expect(body.messages).to.be.an('array');
+			expect(body.total).to.be.an('number').equal(1);
+			expect(body.messages[0]).to.have.property('msg', 'Random');
+		});
+		it('should return the messages of the room matching by partial searchTerm', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+			await sendMessage(room._id, 'Random', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/${room._id}/messages`))
+				.query({ searchTerm: 'ndo' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages');
+			expect(body.messages).to.be.an('array');
+			expect(body.total).to.be.an('number').equal(1);
+			expect(body.messages[0]).to.have.property('msg', 'Random');
 		});
 	});
 
