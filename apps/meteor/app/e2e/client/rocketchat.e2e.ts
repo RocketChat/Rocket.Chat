@@ -412,10 +412,7 @@ class E2E extends Emitter {
 			e2e: 'done',
 		};
 
-		console.log('before quote', decryptedMessage);
-
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
-		console.log('after quote', decryptedMessageWithQuote);
 
 		return decryptedMessageWithQuote;
 	}
