@@ -1,3 +1,5 @@
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
+import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Tooltip } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -10,6 +12,20 @@ import IframeModal from '../../../IframeModal';
 import { appButtonProps, appStatusSpanProps, handleAPIError, handleInstallError, warnStatusChange } from '../../../helpers';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { TooltipOnHover } from './TooltipOnHover';
+
+type AppStatusProps = {
+	app: App;
+	showStatus?: boolean;
+	isAppDetailsPage: boolean;
+	installed: boolean;
+};
+
+type UpdateProps = {
+	id: string;
+	name: string;
+	marketplaceVersion: string;
+	permissionsGranted: IPermission[];
+};
 
 const installApp = async ({ id, name, version, permissionsGranted }: any): Promise<void> => {
 	try {
@@ -27,7 +43,7 @@ const installApp = async ({ id, name, version, permissionsGranted }: any): Promi
 const actions = {
 	purchase: installApp,
 	install: installApp,
-	update: async ({ id, name, marketplaceVersion, permissionsGranted }: any): Promise<void> => {
+	update: async ({ id, name, marketplaceVersion, permissionsGranted }: UpdateProps): Promise<void> => {
 		try {
 			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
 			if (!status) {
@@ -41,7 +57,7 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: any): ReactElement => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
@@ -91,7 +107,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
-	const handleClick = async (e: any) => {
+	const handleClick = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -105,7 +121,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			return;
 		}
 
-		if (action === 'purchase' && !isAppPurchased) {
+		if (action !== undefined && action === 'purchase' && !isAppPurchased) {
 			try {
 				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
 				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
