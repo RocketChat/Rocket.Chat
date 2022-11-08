@@ -152,10 +152,17 @@ export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> =
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
 
-	await ServerEvents.insertOne({
-		ip: getClientAddress(login.connection),
-		t: ServerEventType.LOGIN,
-		ts: new Date(),
-		u: user,
-	});
+	await Promise.all([
+		ServerEvents.insertOne({
+			ip: getClientAddress(login.connection),
+			t: ServerEventType.LOGIN,
+			ts: new Date(),
+			u: user,
+		}),
+		ServerEvents.deleteMany({
+			ip: getClientAddress(login.connection),
+			t: ServerEventType.FAILED_LOGIN_ATTEMPT,
+			u: user,
+		}),
+	]);
 };
