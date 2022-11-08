@@ -7,7 +7,7 @@ import { settings } from '../../app/settings/server';
 import { loadMessageHistory } from '../../app/lib/server';
 
 Meteor.methods({
-	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
+	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true, unreadOnly = false) {
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
@@ -34,6 +34,6 @@ Meteor.methods({
 			return false;
 		}
 
-		return loadMessageHistory({ userId: fromId, rid, end, limit, ls, showThreadMessages });
+		return loadMessageHistory({ userId: fromId, rid, end, limit, ls, showThreadMessages, unreadOnly });
 	},
 });

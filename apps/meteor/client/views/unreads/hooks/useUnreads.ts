@@ -1,5 +1,5 @@
 import { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useRoomList } from '../../../sidebar/hooks/useRoomList';
@@ -20,25 +20,17 @@ export const useUnreads = (): [IUnreadState, any, any[]] => {
 	const [error, setError] = useState<unknown>(null);
 
 	const getSubscriptions = useRoomList();
-	const getChannelHistory = useEndpoint('GET', '/v1/channels.history');
-	const getDMHistory = useEndpoint('GET', '/v1/im.history');
 	const getThreads = useEndpoint('GET', '/v1/chat.getThreadsList');
 	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
+	const getMessages = useMethod('loadHistory');
 
 	const fetchMessagesData = useCallback(
 		async (room): Promise<IMessage[]> => {
 			let unreadMessages: any[] = [];
 			try {
-				if (room?.t === 'c') {
-					const { messages } = await getChannelHistory({ roomId: room.rid, oldest: room?.ls, unreads: 'true' });
+				const { messages } = await getMessages(room.rid, undefined, 0, room?.ls, true, true);
 
-					unreadMessages = messages;
-				}
-				if (room?.t === 'd') {
-					const { messages } = await getDMHistory({ roomId: room.rid, oldest: room?.ls, unreads: 'true' });
-
-					unreadMessages = messages;
-				}
+				unreadMessages = messages;
 			} catch (err) {
 				console.error(err);
 			}
@@ -50,23 +42,29 @@ export const useUnreads = (): [IUnreadState, any, any[]] => {
 
 			return unreadMessages;
 		},
-		[getChannelHistory, getDMHistory],
+		[getMessages],
 	);
 
 	const fetchThreadsMessages = useCallback(
 		async (room) => {
-			const { threads }: { threads: any[] } = await getThreads({ rid: room.rid, type: 'unread', offset: 0, count: 0 });
-			const messagesForAllThreads = await Promise.all(threads.map((thread: any) => getThreadMessages({ tmid: thread._id })));
+			try {
+				const { threads }: { threads: any[] } = await getThreads({ rid: room.rid, type: 'unread', offset: 0, count: 0 });
+				const messagesForAllThreads = await Promise.all(threads.map((thread: any) => getThreadMessages({ tmid: thread._id })));
 
-			(messagesForAllThreads || []).forEach((messages, index) => {
-				messages.messages.forEach((message: any) => {
-					message.ts = new Date(message.ts);
-					message._updatedAt = new Date(message._updatedAt);
+				(messagesForAllThreads || []).forEach((messages, index) => {
+					messages.messages.forEach((message: any) => {
+						message.ts = new Date(message.ts);
+						message._updatedAt = new Date(message._updatedAt);
+					});
+					threads[index].messages = messages.messages.filter((message: any) => !message?.t);
 				});
-				threads[index].messages = messages.messages.filter((message: any) => !message?.t);
-			});
 
-			return threads;
+				return threads;
+			} catch (err) {
+				console.error(err);
+			}
+
+			return [];
 		},
 		[getThreadMessages, getThreads],
 	);
