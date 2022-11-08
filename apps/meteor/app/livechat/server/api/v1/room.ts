@@ -63,7 +63,6 @@ API.v1.addRoute('livechat/room', {
 					agent = { agentId, username };
 				} else {
 					agent = { agentId };
-					
 				}
 			}
 
