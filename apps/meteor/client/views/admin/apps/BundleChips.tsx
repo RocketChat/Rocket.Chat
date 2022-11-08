@@ -1,7 +1,8 @@
-import { Box, PositionAnimated, AnimatedVisibility, Tooltip, Tag } from '@rocket.chat/fuselage';
+import { Tooltip, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { RefObject, useRef, useState, ReactElement, Fragment } from 'react';
+import React, { ReactElement } from 'react';
 
+import { TooltipOnHover } from './AppDetailsPage/tabs/AppStatus/TooltipOnHover';
 import { App } from './types';
 
 type BundleChipsProps = {
@@ -15,29 +16,19 @@ type BundleChipsProps = {
 const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 	const t = useTranslation();
 
-	const bundleRef = useRef<Element>();
-	const [isHovered, setIsHovered] = useState(false);
-
 	return (
 		<>
 			{bundledIn.map((bundle) => (
-				<Fragment key={bundle.bundleId}>
-					<Box ref={bundleRef} onMouseEnter={(): void => setIsHovered(true)} onMouseLeave={(): void => setIsHovered(false)}>
-						<Tag variant='primary'>{bundle.bundleName}</Tag>
-					</Box>
-					<PositionAnimated
-						anchor={bundleRef as RefObject<Element>}
-						placement='top-middle'
-						margin={8}
-						visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
-					>
+				<TooltipOnHover
+					element={<Tag variant='primary'>{bundle.bundleName}</Tag>}
+					tooltip={
 						<Tooltip>
 							{t('this_app_is_included_with_subscription', {
 								bundleName: bundle.bundleName,
 							})}
 						</Tooltip>
-					</PositionAnimated>
-				</Fragment>
+					}
+				></TooltipOnHover>
 			))}
 		</>
 	);

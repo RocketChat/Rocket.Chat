@@ -26,6 +26,7 @@ type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
 	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
+	tooltipText?: string;
 };
 
 type PlanType = 'Subscription' | 'Paid' | 'Free';
@@ -185,6 +186,7 @@ export const appIncompatibleStatus = (versionIncompatible: boolean): appStatusSp
 		return {
 			icon: 'check',
 			label: 'Incompatible',
+			tooltipText: t('App_version_incompatible'),
 		};
 	}
 };

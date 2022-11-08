@@ -1,20 +1,25 @@
-import { Box, Button, Icon, Throbber, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Throbber, Tag, Tooltip } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo } from 'react';
+import { useSetModal, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import React, { useCallback, useState, memo, ReactElement } from 'react';
 
 import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
-import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from '../../../helpers';
+import { appButtonProps, appStatusSpanProps, handleAPIError, handleInstallError, warnStatusChange } from '../../../helpers';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+import { TooltipOnHover } from './TooltipOnHover';
 
-const installApp = async ({ id, name, version, permissionsGranted }) => {
+const installApp = async ({ id, name, version, permissionsGranted }: any): Promise<void> => {
 	try {
 		const { status } = await Apps.installApp(id, version, permissionsGranted);
+		if (!status) {
+			throw new Error('status must not be empty');
+		}
+
 		warnStatusChange(name, status);
-	} catch (error) {
+	} catch (error: any) {
 		handleAPIError(error);
 	}
 };
@@ -22,19 +27,23 @@ const installApp = async ({ id, name, version, permissionsGranted }) => {
 const actions = {
 	purchase: installApp,
 	install: installApp,
-	update: async ({ id, name, marketplaceVersion, permissionsGranted }) => {
+	update: async ({ id, name, marketplaceVersion, permissionsGranted }: any): Promise<void> => {
 		try {
 			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
+			if (!status) {
+				throw new Error('status must not be empty');
+			}
+
 			warnStatusChange(name, status);
-		} catch (error) {
+		} catch (error: any) {
 			handleAPIError(error);
 		}
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: any): ReactElement => {
 	const t = useTranslation();
-	const [loading, setLoading] = useSafely(useState());
+	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
 
@@ -43,7 +52,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 	const button = appButtonProps(app || {});
 	const status = !button && appStatusSpanProps(app);
 
-	const action = button?.action || '';
+	if (button?.action === undefined && button?.action) {
+		throw new Error('action must not be null');
+	}
+
+	const action = button?.action;
 	const confirmAction = useCallback(
 		(permissionsGranted) => {
 			setModal(null);
@@ -78,7 +91,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
-	const handleClick = async (e) => {
+	const handleClick = async (e: any) => {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -134,7 +147,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 						) : (
 							<>
 								{button.icon && <Icon name={button.icon} mie='x8' />}
-								{t(button.label.replace(' ', '_'))}
+								{t(button.label.replace(' ', '_') as TranslationKey)}
 							</>
 						)}
 					</Button>
@@ -147,9 +160,20 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 			)}
 			{status && (
 				<>
-					<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : ''}>
-						{status.label}
-					</Tag>
+					{status.tooltipText ? (
+						<TooltipOnHover
+							element={
+								<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
+									{status.label}
+								</Tag>
+							}
+							tooltip={<Tooltip>{status.tooltipText}</Tooltip>}
+						></TooltipOnHover>
+					) : (
+						<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
+							{status.label}
+						</Tag>
+					)}
 				</>
 			)}
 		</Box>
