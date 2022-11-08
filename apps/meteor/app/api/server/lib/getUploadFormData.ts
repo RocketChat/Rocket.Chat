@@ -41,10 +41,6 @@ export async function getUploadFormData<
 	const contentRangeRegExp = new RegExp(/^(bytes) ((\d+)-(\d+)|\*)\/(\d+)$/);
 	const isChunked = typeof request.headers['content-range'] === 'string';
 
-	if (isChunked && !contentRangeRegExp.exec(<string>request.headers['content-range'])) {
-		reject('invalid content-range given');
-	}
-
 	let uploadedFile: UploadResult<K> | undefined;
 
 	let returnResult = (_value: UploadResult<K>) => {
