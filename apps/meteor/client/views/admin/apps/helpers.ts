@@ -1,6 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { App, AppPricingPlan } from '@rocket.chat/core-typings';
+import { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
@@ -191,12 +191,17 @@ export const appIncompatibleStatus = (versionIncompatible: boolean): appStatusSp
 	}
 };
 
-export const appStatusSpanProps = ({ installed, status, subscriptionInfo, versionIncompatible }: App): appStatusSpanResponseProps | undefined => {
+export const appStatusSpanProps = ({
+	installed,
+	status,
+	subscriptionInfo,
+	versionIncompatible,
+}: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
 		return;
 	}
 
-	if (versionIncompatible) {
+	if (!isAppDetailsPage && versionIncompatible) {
 		return appIncompatibleStatus(versionIncompatible);
 	}
 
@@ -253,7 +258,11 @@ export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: Ap
 	});
 };
 
-export const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: AppPricingPlan[], price: number): FormattedPriceAndPlan => {
+export const formatPriceAndPurchaseType = (
+	purchaseType: PurchaseType,
+	pricingPlans: AppPricingPlan[],
+	price: number,
+): FormattedPriceAndPlan => {
 	if (purchaseType === 'subscription') {
 		const type = 'Subscription';
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
