@@ -1,5 +1,6 @@
 import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import type { WithId } from 'mongodb';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -444,6 +445,14 @@ export type ChatEndpoints = {
 	'/v1/chat.getThreadsList': {
 		GET: (params: ChatGetThreadsList) => {
 			threads: IMessage[];
+			total: number;
+		};
+	};
+	'/v1/chat.getThreadMessages': {
+		GET: (params: { tmid: string }) => {
+			messages: WithId<IMessage>[];
+			count: number;
+			offset: number;
 			total: number;
 		};
 	};
