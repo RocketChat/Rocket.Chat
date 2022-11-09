@@ -1,12 +1,13 @@
-import { Accordion, Box, Divider, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Divider, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useEffect } from 'react';
 
 import EmptyRoomBody from './components/body/EmptyRoomBody';
-import UnreadAccordionHeader from './components/body/UnreadAccordionHeader';
+import RoomBodyError from './components/body/RoomBodyError';
+import RoomBodyLoading from './components/body/RoomBodyLoading';
+import UnreadAccordion from './components/body/UnreadAccordion';
 import RoomHeader from './components/header/RoomHeader';
-import Message from './components/messages/Message';
 import { useUnreads } from './hooks/useUnreads';
 
 const UnreadsPage: FC = () => {
@@ -41,12 +42,6 @@ const UnreadsPage: FC = () => {
 			}
 			setIsUnread(true);
 			await unreadMessages(null, rid);
-			// if (subscription == null) {
-			// 	return;
-			// }
-			// RoomManager.close(subscription.t + subscription.name);
-
-			// router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -63,13 +58,6 @@ const UnreadsPage: FC = () => {
 				return;
 			}
 			setIsUnread(true);
-			// await unreadMessages(null, rid);
-			// if (subscription == null) {
-			// 	return;
-			// }
-			// RoomManager.close(subscription.t + subscription.name);
-
-			// router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -79,37 +67,24 @@ const UnreadsPage: FC = () => {
 		return Array.isArray(array) && array.length > 0;
 	}
 
-	function calculateTotals() {
-		unreadRooms.forEach((room) => {
-			if (isNonEmptyArray(room?.messages)) setTotalUnread(room.messages.length);
-			if (isNonEmptyArray(room?.threads)) setTotalThreads(room.threads.length);
-
-			console.log('room.messages.length', room.messages.length);
-			console.log('room.threads.length', room.threads.length);
-		});
-	}
-
 	useEffect(() => {
+		function calculateTotals(): void {
+			unreadRooms.forEach((room) => {
+				if (isNonEmptyArray(room?.messages)) setTotalUnread(room.messages.length);
+				if (isNonEmptyArray(room?.threads)) setTotalThreads(room.threads.length);
+
+				console.log('room.messages.length', room.messages.length);
+				console.log('room.threads.length', room.threads.length);
+			});
+		}
 		console.log('unreadRooms', unreadRooms);
 		calculateTotals();
 	}, [unreadRooms]);
 
 	// TODO: Add spinner for loading
-	if (loading) {
-		return (
-			<Box display='flex' flexDirection='column' justifyContent='center' alignItems='center' height='100%'>
-				<span style={{ fontSize: '20px', fontWeight: 'bold' }}>Loading...</span>
-			</Box>
-		);
-	}
+	if (loading) return <RoomBodyLoading />;
 
-	if (error) {
-		return (
-			<Box display='flex' flexDirection='column' justifyContent='center' alignItems='center' height='100%'>
-				<span style={{ fontSize: '20px', fontWeight: 'bold' }}>Error...</span>
-			</Box>
-		);
-	}
+	if (error) return <RoomBodyError />;
 
 	return (
 		<Box width='full' minHeight='sh' alignItems='center' overflow='scroll' position='relative'>
@@ -125,43 +100,7 @@ const UnreadsPage: FC = () => {
 						<>
 							{index > 0 && <Divider />}
 							<li key={exchRoom.rid} style={{ width: '100%', padding: '10px 0' }}>
-								<Box
-									border='1px solid'
-									borderColor='neutral-500'
-									borderRadius='x4'
-									margin='x4'
-									elevation='2'
-									position='relative'
-									key={index}
-								>
-									<Accordion.Item
-										{...({
-											style: {
-												padding: '0 !important',
-											},
-										} as any)}
-										defaultExpanded
-										title={
-											<>
-												<UnreadAccordionHeader
-													room={exchRoom}
-													messagesCount={exchRoom.messages.length}
-													isUnread={false}
-													handleToggleRead={handleToggleRead}
-												/>
-											</>
-										}
-										data-qa-id={`${exchRoom.rid}-unread-messages`}
-									>
-										<Box borderRadius='x4' padding='x1' backgroundColor='neutral-400'>
-											<FieldGroup>
-												{exchRoom.messages.map((msg: any, msgIndex: number) => (
-													<Message key={msgIndex} id={msg._id} message={msg} sequential={true} all={true} mention={false} unread={true} />
-												))}
-											</FieldGroup>
-										</Box>
-									</Accordion.Item>
-								</Box>
+								<UnreadAccordion room={exchRoom} handleToggleRead={handleToggleRead} />
 							</li>
 						</>
 					))}
