@@ -1,7 +1,6 @@
 import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
 import { Rooms, ServerEvents, Sessions, Users } from '@rocket.chat/models';
-import moment from 'moment';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -88,14 +87,13 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
-	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 	await saveBlockedLogin(login, willBeBlockedUntil);
 
-	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
+	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
 		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
 	}
 
-	return isValid;
+	return false;
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
@@ -138,14 +136,13 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
-	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 	await saveBlockedLogin(login, willBeBlockedUntil);
 
-	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
+	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
 		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
 	}
 
-	return isValid;
+	return false;
 };
 
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {
