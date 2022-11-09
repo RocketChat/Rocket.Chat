@@ -1,5 +1,6 @@
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class LivechatRoomsRaw extends BaseRaw {
 	constructor(db, trash) {
@@ -105,7 +106,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	async findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -149,7 +150,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	async findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -209,7 +210,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -253,7 +254,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findAllAverageWaitingTime({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -299,7 +300,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findAllRooms({ start, end, answered, departmentId, onlyCount = false, options = {} }) {
@@ -342,7 +343,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findAllServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -386,7 +387,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
@@ -505,7 +506,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true }).toArray();
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
@@ -594,7 +595,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group]).toArray();
+		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }) {
@@ -619,7 +620,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group]).toArray();
+		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }) {
@@ -641,7 +642,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group]).toArray();
+		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }) {
@@ -687,7 +688,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }) {
@@ -733,7 +734,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	calculateResponseTimingsBetweenDates({ start, end, departmentId }) {
@@ -776,7 +777,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group, project]).toArray();
+		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	calculateReactionTimingsBetweenDates({ start, end, departmentId }) {
@@ -819,7 +820,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group, project]).toArray();
+		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	calculateDurationTimingsBetweenDates({ start, end, departmentId }) {
@@ -863,7 +864,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group, project]).toArray();
+		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	findAllAverageOfServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -910,7 +911,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findByVisitorId(visitorId, options) {
@@ -996,7 +997,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			params.push({ $limit: options.limit });
 		}
 
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findRoomsWithCriteria({
@@ -1139,7 +1140,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	findAllAverageServiceTimeByAgents({ start, end, onlyCount = false, options = {} }) {
@@ -1186,7 +1187,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	setDepartmentByRoomId(roomId, departmentId) {
