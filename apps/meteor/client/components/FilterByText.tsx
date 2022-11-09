@@ -2,12 +2,14 @@ import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState, ReactElement } from 'react';
 
+import { GenericTableParams } from './GenericTable/GenericTable';
+
 type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
 	placeholder?: string;
 	inputRef?: () => void;
 	shouldFiltersStack?: boolean;
-	onChange: (filter: { text: string }) => void;
+	onChange: (filter: GenericTableParams) => void;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {

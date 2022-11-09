@@ -13,7 +13,7 @@ import Page from '../../../../client/components/Page';
 type RowData = Partial<{ _id?: number | string; name: string; description: string; dueTimeInMinutes: number }>;
 
 type SlasPageProps = {
-	data: PaginatedResult<{ sla: ILivechatPriority[] }>;
+	data?: PaginatedResult<{ sla: ILivechatPriority[] }>;
 	header: ReactElement[];
 	setParams: (params: GenericTableParams) => void;
 	params: GenericTableParams;
@@ -51,7 +51,7 @@ function SlasPage({ data, header, setParams, params, title, renderRow, children 
 						total={data?.total}
 						setParams={setParams}
 						params={params}
-						renderFilter={({ onChange, ...props }): ReactElement => <FilterByText onChange={onChange} {...props} />}
+						renderFilter={({ onChange = (): void => undefined, ...props }): ReactElement => <FilterByText onChange={onChange} {...props} />}
 					/>
 				</Page.Content>
 			</Page>
