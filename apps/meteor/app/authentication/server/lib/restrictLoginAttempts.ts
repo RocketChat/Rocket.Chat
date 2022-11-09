@@ -46,7 +46,8 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 	await sendMessage(rocketCat, message, room, false);
 };
 
-export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
+export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boolean> => {
+	const ip = getClientAddress(login.connection);
 	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
 
 	if (
@@ -78,9 +79,17 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
+	const lastBlockAt = (await ServerEvents.findLastBlockByIp(ip as string))?.ts;
+	const failedAttemptsSinceLastBlock = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastBlockAt));
+
+	if (lastBlockAt && lastBlockAt < new Date() && attemptsUntilBlock && failedAttemptsSinceLastBlock < attemptsUntilBlock) {
+		return true;
+	}
+
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
-	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
+	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+	await saveBlockedLogin(login, willBeBlockedUntil);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
 		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
@@ -121,9 +130,16 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		return true;
 	}
 
+	const lastBlockAt = (await ServerEvents.findLastBlockByUsername(user.username as string))?.ts;
+	const failedAttemptsSinceLastBlock = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(lastBlockAt));
+	if (lastBlockAt && lastBlockAt < new Date() && attemptsUntilBlock && failedAttemptsSinceLastBlock < attemptsUntilBlock) {
+		return true;
+	}
+
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
-	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
+	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+	await saveBlockedLogin(login, willBeBlockedUntil);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
 		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
@@ -142,6 +158,20 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 		ip: getClientAddress(login.connection),
 		t: ServerEventType.FAILED_LOGIN_ATTEMPT,
 		ts: new Date(),
+		u: user,
+	});
+};
+
+export const saveBlockedLogin = async (login: ILoginAttempt, blockedUntil: Date): Promise<void> => {
+	const user: IServerEvent['u'] = {
+		_id: login.user?._id,
+		username: login.user?.username || login.methodArguments[0].user?.username,
+	};
+
+	await ServerEvents.insertOne({
+		ip: getClientAddress(login.connection),
+		t: ServerEventType.BLOCKED_AT,
+		ts: blockedUntil,
 		u: user,
 	});
 };

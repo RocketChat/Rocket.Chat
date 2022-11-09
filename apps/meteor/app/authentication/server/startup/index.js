@@ -15,7 +15,6 @@ import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAva
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 import './settings';
-import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
@@ -307,7 +306,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 Accounts.validateLoginAttempt(function (login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
-	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
+	if (!Promise.await(isValidLoginAttemptByIp(login))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});

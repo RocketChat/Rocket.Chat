@@ -4,7 +4,9 @@ import type { IBaseModel } from './IBaseModel';
 
 export interface IServerEventsModel extends IBaseModel<IServerEvent> {
 	findLastFailedAttemptByIp(ip: string): Promise<IServerEvent | null>;
+	findLastBlockByIp(ip: string): Promise<IServerEvent | null>;
 	findLastFailedAttemptByUsername(username: string): Promise<IServerEvent | null>;
+	findLastBlockByUsername(username: string): Promise<IServerEvent | null>;
 	countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number>;
 	countFailedAttemptsByIpSince(ip: string, since: Date): Promise<number>;
 	countFailedAttemptsByIp(ip: string): Promise<number>;
