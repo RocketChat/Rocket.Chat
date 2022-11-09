@@ -1,6 +1,10 @@
-import { Box, Flex } from '@rocket.chat/fuselage';
+import { Accordion } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
+import Page from '../../components/Page';
+import { MessageWithMdEnforced } from '../room/MessageList/lib/parseMessageTextToAstMarkdown';
+import Header from './components/Header';
+import MessageList from './components/MessageList';
 import { useUnreads } from './hooks/useUnreads';
 
 const UnreadsPage: FC = () => {
@@ -14,36 +18,27 @@ const UnreadsPage: FC = () => {
 		console.log('Unreads', unreads, Date.now());
 	}
 
+	function getTotalMessages(unread: any): any {
+		const lastThread = unread?.threads?.length ? unread?.threads[0]?.messages.slice(-1)[0] : {};
+		const messages = unread?.messages
+			? unread.messages?.map((msg: MessageWithMdEnforced) => {
+					if (msg._id === lastThread?._id) {
+						return { ...lastThread, isThreadMessage: true };
+					}
+					return { ...msg, isThreadMessage: false };
+			  })
+			: [];
+		return messages;
+	}
+
 	return (
-		<Flex.Container direction='column' justifyContent='center'>
-			<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
-				<Box
-					position='absolute'
-					style={{
-						top: '5%',
-						right: '2%',
-					}}
-					className='Self_Video'
-					backgroundColor='#2F343D'
-					alignItems='center'
-				>
-					<div>kalimera</div>
-				</Box>
-				<Box
-					position='absolute'
-					zIndex={1}
-					style={{
-						top: '20%',
-						display: 'flex',
-						justifyContent: 'center',
-						flexDirection: 'column',
-					}}
-					alignItems='center'
-				>
-					<div>kalimera</div>
-				</Box>
-			</Box>
-		</Flex.Container>
+		<Page.ScrollableContentWithShadow>
+			{unreads.map((unread) => (
+				<Accordion.Item key={unread._id} title={<Header room={unread} />}>
+					<MessageList rid={unread._id} messages={getTotalMessages(unread)} />
+				</Accordion.Item>
+			))}
+		</Page.ScrollableContentWithShadow>
 	);
 };
 

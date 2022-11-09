@@ -22,7 +22,8 @@ const Message: FC<{
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
-}> = ({ message, sequential, all, mention, unread, ...props }) => {
+	unreadSection?: boolean;
+}> = ({ message, sequential, all, mention, unread, unreadSection = false, ...props }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
 	const [isMessageIgnored, toggleMessageIgnored] = useToggle((message as { ignored?: boolean }).ignored ?? false);
 	const {
@@ -71,7 +72,7 @@ const Message: FC<{
 					</MessageBody>
 				)}
 			</MessageContainer>
-			{!message.private && <Toolbox message={message} />}
+			{!message.private && !unreadSection && <Toolbox message={message} />}
 		</MessageTemplate>
 	);
 };
