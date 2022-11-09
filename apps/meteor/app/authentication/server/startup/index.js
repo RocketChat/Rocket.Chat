@@ -418,25 +418,6 @@ Accounts.onLogin(async ({ user }) => {
 		return;
 	}
 
-	const service = user.services[Object.keys(user.services)[0]];
-
-	const currentUser = await Users.findOne(user._id);
-
-	const currentUserEmailOnRocket = currentUser.emails[0];
-
-	if (currentUserEmailOnRocket !== service.email) {
-		const userEmailsUpdated = [{ address: service.email, verified: true }, ...user.emails.filter((item) => item.email !== service.email)];
-
-		await Users.update(
-			{ _id: user._id },
-			{
-				$set: {
-					emails: userEmailsUpdated,
-				},
-			},
-		);
-	}
-
 	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
 		return;
 	}

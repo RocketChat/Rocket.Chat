@@ -362,6 +362,7 @@ export class CustomOAuth {
 				const update = {
 					$set: {
 						name: serviceData.name,
+						email: serviceData.email,
 						[serviceIdKey]: serviceData.id,
 					},
 				};
