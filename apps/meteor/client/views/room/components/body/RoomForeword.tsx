@@ -1,5 +1,5 @@
 import { IRoom, isVoipRoom, isDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
-import { Avatar, Margins, Flex, Box, Tag, Icon } from '@rocket.chat/fuselage';
+import { Flex, Box, Tag, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
