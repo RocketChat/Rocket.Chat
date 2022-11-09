@@ -1,5 +1,5 @@
 import { LivechatPriority } from '@rocket.chat/models';
-import { isGETLivechatPrioritiesParams, isPUTLivechatPriority, isGETLivechatPriorityParams } from '@rocket.chat/rest-typings';
+import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
 import { findPriority, updatePriority } from './lib/priorities';
@@ -37,9 +37,9 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' },
-			DELETE: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+			PUT: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
 		},
-		validateParams: { GET: isGETLivechatPriorityParams, PUT: isPUTLivechatPriority },
+		validateParams: { PUT: isPUTLivechatPriority },
 	},
 	{
 		async get() {

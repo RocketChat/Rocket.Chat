@@ -1,39 +1,7 @@
 import faker from '@faker-js/faker';
-import { ILivechatPriority, ILivechatPriorityData, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
-import { api, credentials, methodCall, request } from '../api-data';
+import { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { credentials, methodCall, request } from '../api-data';
 import { DummyResponse } from './utils';
-
-export const savePriority = (override:ILivechatPriorityData={name:"",level:""}): Promise<ILivechatPriority> => {
-    return new Promise((resolve, reject) => {
-		request
-			.post(api(`livechat/priority`))
-			.set(credentials)
-			.send({
-				name: override.name || faker.name.firstName(),
-				level: override.level || faker.name.lastName(),
-			})
-			.end((err: Error, res: DummyResponse<ILivechatPriority,'not-wrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body as ILivechatPriority);
-			});
-	});
-};
-
-export const deletePriority = (id: string): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		request
-			.delete(api(`livechat/priority/${id}`))
-			.set(credentials)
-			.end((err: Error, _res: DummyResponse<void,'not-wrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve();
-			});
-	});
-};
 
 export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
     return new Promise((resolve, reject) => {

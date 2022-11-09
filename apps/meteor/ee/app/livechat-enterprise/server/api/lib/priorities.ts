@@ -41,7 +41,7 @@ export async function updatePriority(_id: string, data: Pick<ILivechatPriority, 
 	const query = {
 		_id,
 	};
-	// Set dirty: true
-	const created = await LivechatPriority.findOneAndUpdate(query, { $set: { ...data } }, { returnDocument: 'after' });
+
+	const created = await LivechatPriority.findOneAndUpdate(query, { $set: { ...data, dirty: true } }, { returnDocument: 'after' });
 	return created.value as ILivechatPriority;
 }

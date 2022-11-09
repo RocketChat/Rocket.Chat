@@ -1,4 +1,4 @@
-import { isGETslaParams, isDELETEslaParams, isLivechatPrioritiesProps } from '@rocket.chat/rest-typings';
+import { isLivechatPrioritiesProps } from '@rocket.chat/rest-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
@@ -39,7 +39,6 @@ API.v1.addRoute(
 			GET: { permissions: ['manage-livechat-sla', 'view-l-room'], operation: 'hasAny' },
 			DELETE: { permissions: ['manage-livechat-sla'], operation: 'hasAny' },
 		},
-		validateParams: { GET: isGETslaParams, DELETE: isDELETEslaParams },
 	},
 	{
 		async get() {

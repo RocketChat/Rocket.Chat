@@ -2543,23 +2543,6 @@ const GETLivechatPrioritiesParamsSchema = {
 
 export const isGETLivechatPrioritiesParams = ajv.compile<GETLivechatPrioritiesParams>(GETLivechatPrioritiesParamsSchema);
 
-type GETLivechatPriorityParams = {
-	priorityId: string;
-};
-
-const GETLivechatPriorityParamsSchema = {
-	type: 'object',
-	properties: {
-		priorityId: {
-			type: 'string',
-		},
-	},
-	required: ['priorityId'],
-	additionalProperties: false,
-};
-
-export const isGETLivechatPriorityParams = ajv.compile<GETLivechatPriorityParams>(GETLivechatPriorityParamsSchema);
-
 type DELETELivechatPriorityParams = {
 	priorityId: string;
 };
@@ -2576,40 +2559,6 @@ const DELETELivechatPriorityParamsSchema = {
 };
 
 export const isDELETELivechatPriorityParams = ajv.compile<DELETELivechatPriorityParams>(DELETELivechatPriorityParamsSchema);
-
-type GETslaParams = {
-	slaId: string;
-};
-
-const GETslaParamsSchema = {
-	type: 'object',
-	properties: {
-		slaId: {
-			type: 'string',
-		},
-	},
-	required: ['slaId'],
-	additionalProperties: false,
-};
-
-export const isGETslaParams = ajv.compile<GETslaParams>(GETslaParamsSchema);
-
-type DELETEslaParams = {
-	slaId: string;
-};
-
-const DELETEslaParamsSchema = {
-	type: 'object',
-	properties: {
-		slaId: {
-			type: 'string',
-		},
-	},
-	required: ['slaId'],
-	additionalProperties: false,
-};
-
-export const isDELETEslaParams = ajv.compile<DELETEslaParams>(DELETEslaParamsSchema);
 
 type POSTLivechatPriorityParams = { name: string; level: string };
 
