@@ -18,7 +18,7 @@
 		"dev": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"dsv": "meteor npm run dev",
 		"ha": "meteor npm run ha:start",
-		"ms": "TRANSPORTER=TCP meteor npm run dev",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} meteor npm run dev",
 		"ha:start": "ts-node .scripts/run-ha.ts main",
 		"ha:add": "ts-node .scripts/run-ha.ts instance",
 		"migration:add": "ts-node-transpile-only --skip-project .scripts/make-migration.ts",
