@@ -11,6 +11,8 @@
   "__username__was_set__role__by__user_by_": "__username__ foi definido como __role__ por __user_by__",
   "This_room_encryption_has_been_enabled_by__username_": "A criptografia desta sala foi ativada por __username__",
   "This_room_encryption_has_been_disabled_by__username_": "A criptografia desta sala foi desativada por __username__",
+  "Enabled_E2E_Encryption_for_this_room": "Encriptação E2E habilitada para essa sala",
+  "Disabled_E2E_Encryption_for_this_room": "Encriptação E2E desabilitada para essa sala",
   "@username": "@username",
   "@username_message": "@username <message>",
   "#channel": "#canal",
