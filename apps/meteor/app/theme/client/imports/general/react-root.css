@@ -1,0 +1,13 @@
+#react-root {
+	position: relative;
+
+	display: flex;
+	overflow: visible;
+	flex-direction: column;
+
+	width: 100vw;
+	height: 100vh;
+	padding: 0;
+
+	block-size: -webkit-fill-available;
+}
