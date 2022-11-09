@@ -1,4 +1,4 @@
-import { ILivechatPriority } from '@rocket.chat/core-typings';
+import { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -13,7 +13,7 @@ import Page from '../../../../client/components/Page';
 type RowData = Partial<{ _id?: number | string; name: string; description: string; dueTimeInMinutes: number }>;
 
 type SlasPageProps = {
-	data?: PaginatedResult<{ sla: ILivechatPriority[] }>;
+	data?: Serialized<PaginatedResult<{ sla: IOmnichannelServiceLevelAgreements[] }>>;
 	header: ReactElement[];
 	setParams: (params: GenericTableParams) => void;
 	params: GenericTableParams;

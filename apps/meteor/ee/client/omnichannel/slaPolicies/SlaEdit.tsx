@@ -1,3 +1,4 @@
+import { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -10,11 +11,7 @@ type SlaEditProps = {
 	isNew?: boolean;
 	slaId?: string;
 	reload: () => void;
-	data?: {
-		name: string;
-		description?: string;
-		dueTimeInMinutes: string;
-	};
+	data?: Serialized<IOmnichannelServiceLevelAgreements>;
 };
 
 function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
