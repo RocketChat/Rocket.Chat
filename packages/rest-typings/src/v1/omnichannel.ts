@@ -2802,6 +2802,23 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
+type PUTLivechatPriority = {
+	name: string;
+};
+
+const PUTLivechatPrioritySchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['name'],
+};
+
+export const isPUTLivechatPriority = ajv.compile<PUTLivechatPriority>(PUTLivechatPrioritySchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3029,11 +3046,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/priority/:priorityId': {
 		GET: () => ILivechatPriority | void;
-		DELETE: () => void;
-	};
-
-	'/v1/livechat/priority': {
-		POST: (params: POSTLivechatPriorityParams) => ILivechatPriority | void;
+		PUT: (params: PUTLivechatPriority) => void;
 	};
 
 	'/v1/livechat/visitors.search': {

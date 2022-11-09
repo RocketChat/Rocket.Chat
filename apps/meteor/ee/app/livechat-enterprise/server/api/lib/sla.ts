@@ -2,6 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 type FindSLAParams = {
 	text?: string;
@@ -12,20 +13,10 @@ type FindSLAParams = {
 	};
 };
 
-type FindSLAResult = {
-	sla: IOmnichannelServiceLevelAgreements[];
-	count: number;
-	offset: number;
-	total: number;
-};
-
-type FindSLAByIdParams = {
-	slaId: string;
-};
-
-type FindSLAByIdResult = IOmnichannelServiceLevelAgreements | null;
-
-export async function findSLA({ text, pagination: { offset, count, sort } }: FindSLAParams): Promise<FindSLAResult> {
+export async function findSLA({
+	text,
+	pagination: { offset, count, sort },
+}: FindSLAParams): Promise<PaginatedResult<{ sla: IOmnichannelServiceLevelAgreements[] }>> {
 	const query = {
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
@@ -44,18 +35,4 @@ export async function findSLA({ text, pagination: { offset, count, sort } }: Fin
 		offset,
 		total,
 	};
-}
-
-export async function findSLAById({ slaId }: FindSLAByIdParams): Promise<FindSLAByIdResult> {
-	return OmnichannelServiceLevelAgreements.findOneById(slaId);
-}
-
-export async function deleteSLA(slaId: string): Promise<void> {
-	const result = await OmnichannelServiceLevelAgreements.removeById(slaId);
-	if (!result.acknowledged) {
-		throw new Error(`error-deleting-priority`);
-	}
-	if (result.deletedCount < 1) {
-		throw new Error(`priority-not-found`);
-	}
 }
