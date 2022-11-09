@@ -1,4 +1,5 @@
 import { Header } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
@@ -6,9 +7,8 @@ import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
 
 const AccordionHeader: FC<{ room: any }> = ({ room }) => {
+	const t = useTranslation();
 	const icon = useRoomIcon(room);
-
-	const threadsText = room.threads.length === 1 ? ` and ${room.threads.length} thread` : ` and ${room.threads.length} threads`;
 
 	return (
 		<Header borderBlockStyle='unset'>
@@ -26,7 +26,7 @@ const AccordionHeader: FC<{ room: any }> = ({ room }) => {
 							parseEmoji={true}
 							variant='inlineWithoutBreaks'
 							withTruncatedText
-							content={`Total ${room.messages.length} unread messages ${room.threads.length > 0 ? threadsText : ''}`}
+							content={t('Total_unreads').replace('{messages}', room?.messages?.length)}
 						/>
 					</Header.Subtitle>
 				</Header.Content.Row>

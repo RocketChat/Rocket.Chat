@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, FieldGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
@@ -6,9 +6,8 @@ import React, { FC, useMemo } from 'react';
 import MarkdownText from '../../components/MarkdownText';
 import Page from '../../components/Page';
 import AccordionHeader from './components/body/AccordionHeader';
-import BodyError from './components/body/BodyError';
-import EmptyBody from './components/body/EmptyBody';
-import Message from './components/messages/Message';
+import ResultMessage from './components/body/ResultMessage';
+import MessageList from './components/messages/MessageList';
 import { useUnreads } from './hooks/useUnreads';
 
 const UnreadsPage: FC = () => {
@@ -16,18 +15,14 @@ const UnreadsPage: FC = () => {
 
 	const [loading, error, unreads] = useUnreads();
 
-	const totals = useMemo(() => {
-		const totals = {
-			messages: 0,
-			threads: 0,
-		};
+	const totalMessages = useMemo(() => {
+		let total = 0;
 
 		unreads.forEach((room) => {
-			totals.messages += room?.messages?.length || 0;
-			totals.threads += room?.threads?.length || 0;
+			total += room?.messages?.length || 0;
 		});
 
-		return totals;
+		return total;
 	}, [unreads]);
 
 	return (
@@ -44,9 +39,7 @@ const UnreadsPage: FC = () => {
 									parseEmoji={true}
 									variant='inlineWithoutBreaks'
 									withTruncatedText
-									content={t('Total_unreads')
-										.replace('{messages}', totals.messages.toString())
-										.replace('{threads}', totals.threads.toString())}
+									content={t('Total_unreads').replace('{messages}', totalMessages.toString())}
 								/>
 							</Header.Subtitle>
 						</Header.Content.Row>
@@ -66,53 +59,27 @@ const UnreadsPage: FC = () => {
 			</Page.Header>
 
 			<Page.Content>
-				<Box marginBlock='none' marginInline='auto' width='full'>
-					{error && !loading && <BodyError />}
-					{!unreads.length && !loading && <EmptyBody />}
-					{unreads.length && !loading ? (
-						unreads.map((room) => (
-							<Box key={room.rid} color='hint' fontScale='p2'>
-								<Accordion borderBlockStyle='unset'>
-									<Accordion.Item title={<AccordionHeader room={room} />}>
-										<Box color='hint' fontScale='p2'>
-											{room.messages && (
-												<FieldGroup>
-													{room.messages.map((msg: any) => (
-														<Message key={msg._id} id={msg._id} message={msg} sequential={true} all={true} mention={false} unread={true} />
-													))}
-												</FieldGroup>
-											)}
-											{room?.threads.map(
-												(thread: any) =>
-													thread?.messages && (
-														<FieldGroup key={thread._id}>
-															{thread.messages.map((msg: any) => (
-																<Message
-																	key={msg._id}
-																	id={msg._id}
-																	message={msg}
-																	sequential={true}
-																	all={true}
-																	mention={false}
-																	unread={true}
-																/>
-															))}
-														</FieldGroup>
-													),
-											)}
-										</Box>
+				<Page.ScrollableContentWithShadow>
+					<Box marginBlock='none' marginInline='auto' width='full'>
+						{error && !loading && <ResultMessage />}
+						{!unreads.length && !loading && <ResultMessage empty />}
+						{unreads.length && !loading ? (
+							<Accordion borderBlockStyle='unset'>
+								{unreads.map((room) => (
+									<Accordion.Item key={room._id} title={<AccordionHeader room={room} />}>
+										<MessageList rid={room._id} messages={room.messages} />
 									</Accordion.Item>
-								</Accordion>
+								))}
+							</Accordion>
+						) : (
+							<Box is='p' color='hint' fontScale='p2'>
+								<Skeleton />
+								<Skeleton />
+								<Skeleton width='75%' />
 							</Box>
-						))
-					) : (
-						<Box is='p' color='hint' fontScale='p2'>
-							<Skeleton />
-							<Skeleton />
-							<Skeleton width='75%' />
-						</Box>
-					)}
-				</Box>
+						)}
+					</Box>
+				</Page.ScrollableContentWithShadow>
 			</Page.Content>
 		</Page>
 	);
