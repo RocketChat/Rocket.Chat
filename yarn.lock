@@ -5622,7 +5622,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:^1.32.0, @rocket.chat/apps-engine@npm:latest":
+"@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
+  version: 1.35.0-alpha
+  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=158538&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.11
+  checksum: 73e605dc88c037f921ca14206f1ae822f422b8636c339f36918079201a80c049cbce6617674aa9a4cf97b8f3f37eaca313d35e2147330700dec935553bc8da01
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.35.0
   resolution: "@rocket.chat/apps-engine@npm:1.35.0"
   dependencies:
@@ -6361,7 +6376,7 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": latest
+    "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": 0.31.21

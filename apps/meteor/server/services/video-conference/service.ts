@@ -10,6 +10,7 @@ import type {
 	LivechatInstructions,
 	AtLeast,
 	IGroupVideoConference,
+	IVideoConferenceUser,
 	IMessage,
 	IStats,
 	VideoConference,
@@ -25,6 +26,7 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
@@ -130,6 +132,50 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return this.joinCall(call, user || undefined, options);
 	}
 
+	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<IBlock[]> {
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (!call) {
+			throw new Error('invalid-call');
+		}
+
+		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
+			throw new Error('video-conf-provider-unavailable');
+		}
+
+		let user: Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> | null = null;
+
+		if (uid) {
+			user = await Users.findOneById<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>>(uid, {
+				projection: { name: 1, username: 1, avatarETag: 1 },
+			});
+			if (!user) {
+				throw new Error('failed-to-load-own-data');
+			}
+		}
+
+		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
+			throw new Error(e);
+		});
+
+		if (blocks?.length) {
+			return blocks;
+		}
+
+		return [
+			{
+				blockId: 'id',
+				type: 'context',
+				elements: [
+					{
+						type: 'plain_text',
+						text: `${TAPi18n.__('Video_Conference_Url')}: ${call.url}`,
+						emoji: false,
+					},
+				],
+			},
+		];
+	}
+
 	public async cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call || !isDirectVideoConference(call)) {
@@ -153,10 +199,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			endedAt: new Date(),
 			endedBy: {
 				_id: user._id,
-				name: user.name,
-				username: user.username,
+				name: user.name as string,
+				username: user.username as string,
 			},
 		});
+
+		await this.runVideoConferenceChangedEvent(call);
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
@@ -379,6 +427,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
 		this.notifyVideoConfUpdate(call.rid, call._id);
+		await this.runVideoConferenceChangedEvent(call);
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
@@ -547,8 +596,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			rid,
 			createdBy: {
 				_id: user._id,
-				name: user.name,
-				username: user.username,
+				name: user.name as string,
+				username: user.username as string,
 			},
 			providerName,
 		});
@@ -557,11 +606,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-direct-call');
 		}
 
+		await this.runNewVideoConferenceEvent(call);
+
 		const url = await this.generateNewUrl(call);
 		VideoConferenceModel.setUrlById(callId, url);
 
 		const messageId = await this.createMessage(call, user);
-
+		call.messages.started = messageId;
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
@@ -608,8 +659,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			title,
 			createdBy: {
 				_id: user._id,
-				name: user.name,
-				username: user.username,
+				name: user.name as string,
+				username: user.username as string,
 			},
 			providerName,
 		});
@@ -618,12 +669,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-group-call');
 		}
 
+		await this.runNewVideoConferenceEvent(call);
+
 		const url = await this.generateNewUrl(call);
 		VideoConferenceModel.setUrlById(callId, url);
 
 		call.url = url;
 
 		const messageId = await this.createMessage(call, useAppUser ? undefined : user);
+		call.messages.started = messageId;
 		VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		if (call.ringing) {
@@ -642,8 +696,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			rid,
 			createdBy: {
 				_id: user._id,
-				name: user.name,
-				username: user.username,
+				name: user.name as string,
+				username: user.username as string,
 			},
 			providerName,
 		});
@@ -653,9 +707,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-livechat-call');
 		}
 
+		await this.runNewVideoConferenceEvent(call);
+
 		const joinUrl = await this.getUrl(call);
 		const messageId = await this.createLivechatMessage(call, user, joinUrl);
-
+		call.messages.started = messageId;
 		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		return {
@@ -670,6 +726,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
 		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
+
+		console.log('join event');
+		await this.runOnUserJoinEvent(call, user);
 
 		return this.getUrl(call, user, options);
 	}
@@ -791,6 +850,36 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
+	private async runNewVideoConferenceEvent(call: VideoConference): Promise<void> {
+		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
+			throw new Error('video-conf-provider-unavailable');
+		}
+
+		(await this.getProviderManager()).onNewVideoConference(call.providerName, call).catch((e) => {
+			throw new Error(e);
+		});
+	}
+
+	private async runVideoConferenceChangedEvent(call: VideoConference): Promise<void> {
+		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
+			throw new Error('video-conf-provider-unavailable');
+		}
+
+		(await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call).catch((e) => {
+			throw new Error(e);
+		});
+	}
+
+	private async runOnUserJoinEvent(call: VideoConference, user?: IVideoConferenceUser): Promise<void> {
+		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
+			throw new Error('video-conf-provider-unavailable');
+		}
+
+		(await this.getProviderManager()).onUserJoin(call.providerName, call, user).catch((e) => {
+			throw new Error(e);
+		});
+	}
+
 	private async addUserToCall(
 		call: Optional<VideoConference, 'providerData'>,
 		{ _id, username, name, avatarETag, ts }: AtLeast<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
@@ -827,5 +916,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
 		this.notifyVideoConfUpdate(call.rid, call._id);
+
+		await this.runVideoConferenceChangedEvent(call);
 	}
 }

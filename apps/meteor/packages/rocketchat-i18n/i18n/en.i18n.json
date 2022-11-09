@@ -5071,6 +5071,8 @@
   "Video_Conference": "Conference Call",
   "Video_Call_unavailable_for_federation": "Video Call is unavailable for Federated rooms",
   "Video_Conferences": "Conference Calls",
+  "Video_Conference_Info": "Meeting Information",
+  "Video_Conference_Url": "Meeting URL",
   "video-conf-provider-not-configured": "**Conference call not enabled**: A workspace admin needs to enable the conference calls feature first.",
   "Video_conference_app_required": "Conference call app required",
   "Video_conference_apps_available": "Conference call apps are available on the Rocket.Chat marketplace.",

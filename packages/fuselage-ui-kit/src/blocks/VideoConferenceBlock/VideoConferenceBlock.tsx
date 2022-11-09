@@ -76,10 +76,10 @@ const VideoConferenceBlock = ({
   const openCallInfo: MouseEventHandler<HTMLButtonElement> = (e) => {
     action(
       {
-        blockId: rid || '',
+        blockId: callId,
         appId,
         actionId: 'info',
-        value: rid || '',
+        value: rid,
         viewId,
       },
       e

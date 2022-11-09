@@ -1,3 +1,5 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
 import { VideoConf } from '../../sdk';
 
@@ -17,6 +19,8 @@ export class VideoConfModule implements IUiKitCoreApp {
 		}
 
 		if (actionId === 'info') {
+			const blocks = await VideoConf.getInfo(callId, userId);
+
 			return {
 				type: 'modal.open',
 				triggerId,
@@ -27,45 +31,19 @@ export class VideoConfModule implements IUiKitCoreApp {
 					id: `${callId}-info`,
 					title: {
 						type: 'plain_text',
-						text: 'We_appreciate_your_feedback',
+						text: TAPi18n.__('Video_Conference_Info'),
 						emoji: false,
-					},
-					submit: {
-						type: 'button',
-						text: {
-							type: 'plain_text',
-							text: 'Send',
-							emoji: false,
-						},
-						actionId: 'send-vote',
 					},
 					close: {
 						type: 'button',
 						text: {
 							type: 'plain_text',
-							text: 'Cancel',
+							text: TAPi18n.__('Close'),
 							emoji: false,
 						},
 						actionId: 'cancel',
 					},
-					blocks: [
-						{
-							blockId: 'id',
-							type: 'actions',
-							elements: [
-								{
-									type: 'plain_text',
-									text: 'Send',
-									emoji: false,
-								},
-							],
-							label: {
-								type: 'plain_text',
-								text: 'Score',
-								emoji: false,
-							},
-						},
-					],
+					blocks,
 				},
 			};
 		}
