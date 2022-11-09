@@ -1,114 +1,120 @@
-import { Box, Divider, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useEffect } from 'react';
+import { Accordion, Box, Button, ButtonGroup, FieldGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Header } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import React, { FC, useMemo } from 'react';
 
-import EmptyRoomBody from './components/body/EmptyRoomBody';
-import RoomBodyError from './components/body/RoomBodyError';
-import RoomBodyLoading from './components/body/RoomBodyLoading';
-import UnreadAccordion from './components/body/UnreadAccordion';
-import RoomHeader from './components/header/RoomHeader';
+import MarkdownText from '../../components/MarkdownText';
+import Page from '../../components/Page';
+import AccordionHeader from './components/body/AccordionHeader';
+import BodyError from './components/body/BodyError';
+import EmptyBody from './components/body/EmptyBody';
+import Message from './components/messages/Message';
 import { useUnreads } from './hooks/useUnreads';
 
 const UnreadsPage: FC = () => {
 	const t = useTranslation();
-	console.log('t', t('Enable'));
 
-	const [loading, error, unreadRooms] = useUnreads();
+	const [loading, error, unreads] = useUnreads();
 
-	if (loading) {
-		console.log('loading...', Date.now());
-	} else if (error) {
-		console.error(error);
-	} else {
-		console.log('Unreads', unreadRooms, Date.now());
-	}
+	const totals = useMemo(() => {
+		const totals = {
+			messages: 0,
+			threads: 0,
+		};
 
-	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
-	const unreadMessages = useMethod('unreadMessages');
-	const dispatchToastMessage = useToastMessageDispatch();
+		unreads.forEach((room) => {
+			totals.messages += room?.messages?.length || 0;
+			totals.threads += room?.threads?.length || 0;
+		});
 
-	const [isUnread, setIsUnread] = React.useState(false);
-	const [isAllUnread, setIsAllUnread] = React.useState(false);
-	const [totalUnread, setTotalUnread] = React.useState(0);
-	const [totalThreads, setTotalThreads] = React.useState(0);
-
-	const handleToggleRead = useMutableCallback(async (rid) => {
-		try {
-			if (isUnread) {
-				setIsUnread(false);
-				await readMessages({ rid });
-				return;
-			}
-			setIsUnread(true);
-			await unreadMessages(null, rid);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	// TODO: Change func of read status for all rooms
-	const handleToggleReadAll = useMutableCallback(async () => {
-		setIsAllUnread(!isAllUnread);
-		setTotalUnread(10);
-		try {
-			if (isUnread) {
-				setIsUnread(false);
-				// await readMessages({ rid });
-				return;
-			}
-			setIsUnread(true);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	function isNonEmptyArray(array: any[]): boolean {
-		return Array.isArray(array) && array.length > 0;
-	}
-
-	useEffect(() => {
-		function calculateTotals(): void {
-			unreadRooms.forEach((room) => {
-				if (isNonEmptyArray(room?.messages)) setTotalUnread(room.messages.length);
-				if (isNonEmptyArray(room?.threads)) setTotalThreads(room.threads.length);
-
-				console.log('room.messages.length', room.messages.length);
-				console.log('room.threads.length', room.threads.length);
-			});
-		}
-		console.log('unreadRooms', unreadRooms);
-		calculateTotals();
-	}, [unreadRooms]);
-
-	// TODO: Add spinner for loading
-	if (loading) return <RoomBodyLoading />;
-
-	if (error) return <RoomBodyError />;
+		return totals;
+	}, [unreads]);
 
 	return (
-		<Box width='full' minHeight='sh' alignItems='center' overflow='scroll' position='relative'>
-			<RoomHeader
-				totalUnread={totalUnread}
-				totalThreads={totalThreads}
-				isAllUnread={isAllUnread}
-				handleToggleReadAll={handleToggleReadAll}
-			/>
-			{totalUnread > 0 ? (
-				<ul className='messages-list' aria-live='polite'>
-					{unreadRooms.map((exchRoom: any, index: number) => (
-						<>
-							{index > 0 && <Divider />}
-							<li key={exchRoom.rid} style={{ width: '100%', padding: '10px 0' }}>
-								<UnreadAccordion room={exchRoom} handleToggleRead={handleToggleRead} />
-							</li>
-						</>
-					))}
-				</ul>
-			) : (
-				<EmptyRoomBody />
-			)}
-		</Box>
+		<Page>
+			<Page.Header
+				title={
+					<>
+						<Header.Content.Row>
+							<Header.Title is='h1'>{t('Unread_Messages')}</Header.Title>
+						</Header.Content.Row>
+						<Header.Content.Row>
+							<Header.Subtitle is='h2'>
+								<MarkdownText
+									parseEmoji={true}
+									variant='inlineWithoutBreaks'
+									withTruncatedText
+									content={t('Total_unreads')
+										.replace('{messages}', totals.messages.toString())
+										.replace('{threads}', totals.threads.toString())}
+								/>
+							</Header.Subtitle>
+						</Header.Content.Row>
+					</>
+				}
+			>
+				<ButtonGroup>
+					<Button
+						onClick={(): void => {
+							console.log('test');
+						}}
+					>
+						<Icon name={'flag'} size='x20' margin='4x' />
+						<span style={{ marginLeft: '10px' }}>{'Mark All Unread'}</span>
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+
+			<Page.Content>
+				<Box marginBlock='none' marginInline='auto' width='full'>
+					{error && !loading && <BodyError />}
+					{!unreads.length && !loading && <EmptyBody />}
+					{unreads.length && !loading ? (
+						unreads.map((room) => (
+							<Box key={room.rid} color='hint' fontScale='p2'>
+								<Accordion borderBlockStyle='unset'>
+									<Accordion.Item title={<AccordionHeader room={room} />}>
+										<Box color='hint' fontScale='p2'>
+											{room.messages && (
+												<FieldGroup>
+													{room.messages.map((msg: any) => (
+														<Message key={msg._id} id={msg._id} message={msg} sequential={true} all={true} mention={false} unread={true} />
+													))}
+												</FieldGroup>
+											)}
+											{room?.threads.map(
+												(thread: any) =>
+													thread?.messages && (
+														<FieldGroup key={thread._id}>
+															{thread.messages.map((msg: any) => (
+																<Message
+																	key={msg._id}
+																	id={msg._id}
+																	message={msg}
+																	sequential={true}
+																	all={true}
+																	mention={false}
+																	unread={true}
+																/>
+															))}
+														</FieldGroup>
+													),
+											)}
+										</Box>
+									</Accordion.Item>
+								</Accordion>
+							</Box>
+						))
+					) : (
+						<Box is='p' color='hint' fontScale='p2'>
+							<Skeleton />
+							<Skeleton />
+							<Skeleton width='75%' />
+						</Box>
+					)}
+				</Box>
+			</Page.Content>
+		</Page>
 	);
 };
 

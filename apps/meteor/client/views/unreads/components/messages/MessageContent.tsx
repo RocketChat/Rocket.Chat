@@ -9,11 +9,7 @@ const MessageContent: FC<{
 }> = ({ message }) => {
 	console.log('MessageContent');
 
-	return (
-		<>
-			<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
-		</>
-	);
+	return <MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />;
 };
 
 export default memo(MessageContent);

@@ -1,15 +1,15 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-const EmptyRoomBody: FC = () => (
+const BodyError: FC = () => (
 	<Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' width='full' height='80%'>
-		<Icon name='check' size='x60' color='green' />
+		<Icon name='warning' size='x80' color='danger' />
 		<Box marginBlock='x4'>
-			<Box is='h3' color='default' fontScale='h3'>
-				You have no unread messages at the moment!
+			<Box is='h3' color='default' fontScale='h3' padding={20}>
+				An error occurred while loading the unread messages!
 			</Box>
 		</Box>
 	</Box>
 );
 
-export default memo(EmptyRoomBody);
+export default memo(BodyError);

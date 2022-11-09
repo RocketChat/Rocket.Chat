@@ -18,11 +18,9 @@ const Message: FC<{
 	useCountSelected();
 
 	return (
-		<>
-			<MessageContainer>
-				<MessageContent message={message} />
-			</MessageContainer>
-		</>
+		<MessageContainer>
+			<MessageContent message={message} />
+		</MessageContainer>
 	);
 };
 

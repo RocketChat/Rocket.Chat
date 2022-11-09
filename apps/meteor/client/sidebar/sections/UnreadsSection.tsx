@@ -1,14 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Sidebar, Badge } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useCurrentRoute, useLayout, useRoute } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { useRoomList } from '../hooks/useRoomList';
 
 const UnreadsSection = (props: typeof Box): ReactElement => {
+	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('unreads');
 	const handleRoute = useMutableCallback(() => {
+		sidebar.toggle();
 		directoryRoute.push({});
 	});
 
