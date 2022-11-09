@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { v4 as uuid } from 'uuid';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
@@ -38,7 +38,7 @@ export class AppUserBridge extends UserBridge {
 		const user = this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
 
 		if (!user._id) {
-			user._id = Random.id();
+			user._id = uuid();
 		}
 
 		if (!user.createdAt) {
