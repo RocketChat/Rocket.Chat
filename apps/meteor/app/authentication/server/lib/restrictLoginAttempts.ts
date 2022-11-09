@@ -1,6 +1,6 @@
 import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
-import { Rooms, ServerEvents, Sessions, Users } from '@rocket.chat/models';
+import { Rooms, ServerEvents, Users } from '@rocket.chat/models';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -57,18 +57,19 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 		return true;
 	}
 
-	const lastLogin = await Sessions.findLastLoginByIp(ip);
-	let failedAttemptsSinceLastLogin;
+	const lastLoginOrBlock = await ServerEvents.findLastLoginOrBlockByIp(ip);
+	let failedAttemptsSinceLastLoginOrBlock;
+	const lastTs = lastLoginOrBlock?.blockedUntil || lastLoginOrBlock?.ts;
 
-	if (!lastLogin || !lastLogin.loginAt) {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIp(ip);
+	if (!lastLoginOrBlock || !lastTs) {
+		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByIp(ip);
 	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));
+		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastTs));
 	}
 
 	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
 
-	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
+	if (attemptsUntilBlock && failedAttemptsSinceLastLoginOrBlock < attemptsUntilBlock) {
 		return true;
 	}
 
@@ -78,19 +79,12 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 		return true;
 	}
 
-	const lastBlockAt = (await ServerEvents.findLastBlockByIp(ip as string))?.ts;
-	const failedAttemptsSinceLastBlock = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastBlockAt));
-
-	if (lastBlockAt && lastBlockAt < new Date() && attemptsUntilBlock && failedAttemptsSinceLastBlock < attemptsUntilBlock) {
-		return true;
-	}
-
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
 	await saveBlockedLogin(login, willBeBlockedUntil);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
-		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
 	}
 
 	return false;
@@ -108,17 +102,21 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		return true;
 	}
 
-	let failedAttemptsSinceLastLogin;
+	const lastLoginOrBlock = await ServerEvents.findLastLoginOrBlockByUsername(user.username);
 
-	if (!user?.lastLogin) {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsername(user.username);
+	let failedAttemptsSinceLastLoginOrBlock;
+
+	const lastTs = lastLoginOrBlock?.blockedUntil || lastLoginOrBlock?.ts;
+
+	if (!lastTs) {
+		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByUsername(user.username);
 	} else {
-		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(user.lastLogin));
+		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(lastTs));
 	}
 
 	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
 
-	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
+	if (attemptsUntilBlock && failedAttemptsSinceLastLoginOrBlock < attemptsUntilBlock) {
 		return true;
 	}
 
@@ -128,18 +126,12 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		return true;
 	}
 
-	const lastBlockAt = (await ServerEvents.findLastBlockByUsername(user.username as string))?.ts;
-	const failedAttemptsSinceLastBlock = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(lastBlockAt));
-	if (lastBlockAt && lastBlockAt < new Date() && attemptsUntilBlock && failedAttemptsSinceLastBlock < attemptsUntilBlock) {
-		return true;
-	}
-
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
 	await saveBlockedLogin(login, willBeBlockedUntil);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
-		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
 	}
 
 	return false;
@@ -168,7 +160,8 @@ export const saveBlockedLogin = async (login: ILoginAttempt, blockedUntil: Date)
 	await ServerEvents.insertOne({
 		ip: getClientAddress(login.connection),
 		t: ServerEventType.BLOCKED_AT,
-		ts: blockedUntil,
+		ts: new Date(),
+		blockedUntil,
 		u: user,
 	});
 };

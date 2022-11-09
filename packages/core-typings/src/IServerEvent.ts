@@ -11,5 +11,6 @@ export interface IServerEvent {
 	t: ServerEventType;
 	ts: Date;
 	ip: string;
+	blockedUntil?: Date;
 	u?: Partial<Pick<IUser, '_id' | 'username'>>;
 }
