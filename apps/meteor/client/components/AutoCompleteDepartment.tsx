@@ -64,8 +64,8 @@ export const AutoCompleteDepartment = ({
 	);
 
 	const department = useMemo(() => {
-		const findValue = typeof value === 'string' ? value : value.value || '';
-		return sortedByName.find((dep) => dep._id === findValue)?.value;
+		const valueFound = typeof value !== 'object' ? value : value.value || '';
+		return sortedByName.find((dep) => dep.value.value === valueFound)?.value;
 	}, [sortedByName, value]);
 
 	return (
@@ -76,7 +76,9 @@ export const AutoCompleteDepartment = ({
 			filter={departmentsFilter}
 			// Workaround for setFilter weird typing
 			setFilter={setDepartmentsFilter as (value: string | number | undefined) => void}
-			options={sortedByName.map((dep) => ({ value: dep._id, label: dep.name }))}
+			// TODO: Fix typing on fuselage
+			// Workaround for options wrong typing
+			options={sortedByName as any}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={
