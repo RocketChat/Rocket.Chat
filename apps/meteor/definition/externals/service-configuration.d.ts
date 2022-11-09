@@ -11,3 +11,13 @@ declare module 'meteor/service-configuration' {
 		clientConfig: unknown;
 	}
 }
+
+declare module 'meteor' {
+	interface Configuration {
+		appId: string;
+		secret: string;
+	}
+	const ServiceConfiguration: {
+		configurations: Mongo.Collection<Configuration>;
+	};
+}

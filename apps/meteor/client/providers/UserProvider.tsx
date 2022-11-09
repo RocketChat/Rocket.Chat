@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ILoginServiceConfiguration, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { UserContext, LoginService, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { FC, useEffect, useMemo } from 'react';
@@ -141,11 +141,14 @@ const UserProvider: FC = ({ children }) => {
 						},
 					)
 					.fetch()
-					.map(({ appId: _, ...service }) => ({
-						title: capitalize(String(service.service || '')),
-						...service,
-						...(config[service.service] ?? {}),
-					})),
+					.map(
+						({ appId: _, ...service }) =>
+							({
+								title: capitalize(String((service as any).service || '')),
+								...service,
+								...(config[(service as any).service] ?? {}),
+							} as any),
+					),
 			),
 		}),
 		[userId, user, loginMethod],
