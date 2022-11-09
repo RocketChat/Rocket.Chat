@@ -27,7 +27,7 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		[dueTimeInMinutes, t],
 	);
 
-	const savePriority = useMethod('livechat:savePriority');
+	const savePriority = useMethod('livechat:saveSLA');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

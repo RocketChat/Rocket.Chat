@@ -19,6 +19,7 @@ export const createPermissions = async (): Promise<void> => {
 		Permissions.create('manage-livechat-monitors', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]),
+		Permissions.create('manage-livechat-sla', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]),
 		Permissions.create('spy-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]),
 		Permissions.create('outbound-voip-calls', [adminRole, livechatManagerRole]),

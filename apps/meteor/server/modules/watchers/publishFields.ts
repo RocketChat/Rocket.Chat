@@ -94,6 +94,7 @@ export const roomFields = {
 	// Omnichannel fields
 	livechatData: 1,
 	priorityId: 1,
+	slaId: 1,
 	v: 1,
 	departmentId: 1,
 	servedBy: 1,

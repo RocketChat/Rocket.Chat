@@ -32,7 +32,7 @@ function PrioritiesPage({ data, header, setParams, params, title, renderRow, chi
 					<GenericTable
 						header={header}
 						renderRow={renderRow}
-						results={data && data.priorities}
+						results={data && data.sla}
 						total={data && data.total}
 						setParams={setParams}
 						params={params}

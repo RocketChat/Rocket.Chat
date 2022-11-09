@@ -17,6 +17,7 @@ type EEOnlyStats = {
 	livechatTags: number;
 	cannedResponses: number;
 	priorities: number;
+	slas: number;
 	businessUnits: number;
 };
 
@@ -66,7 +67,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 	// Number of Service Level Agreements
 	statsPms.push(
 		OmnichannelServiceLevelAgreements.col.count().then((count) => {
-			statistics.priorities = count;
+			statistics.slas = count;
 			return true;
 		}),
 	);

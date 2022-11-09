@@ -64,6 +64,21 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
+		it('should fail to create the same channel twice', (done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.contain('error-duplicate-channel-name');
+				})
+				.end(done);
+		});
 		it('should return channel basic structure', (done) => {
 			request
 				.get(api('channels.info'))
@@ -631,6 +646,36 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	it('/channels.addModerator should fail with missing room Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.addModerator should fail with missing user Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
 	it('/channels.removeModerator', (done) => {
 		request
 			.post(api('channels.removeModerator'))
@@ -643,6 +688,36 @@ describe('[Channels]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid room id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid user id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
 			})
 			.end(done);
 	});

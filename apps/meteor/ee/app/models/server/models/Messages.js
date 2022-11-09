@@ -1,7 +1,7 @@
 import { Messages } from '../../../../../app/models/server/models/Messages';
 import { settings } from '../../../../../app/settings/server';
 
-Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function (roomId, message, user, extraData) {
+Messages.prototype.createSLAHistoryWithRoomIdMessageAndUser = function (roomId, message, user, extraData) {
 	const type = 'livechat_priority_history';
 	const record = {
 		t: type,

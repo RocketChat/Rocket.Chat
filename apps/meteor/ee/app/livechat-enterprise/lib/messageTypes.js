@@ -7,16 +7,17 @@ MessageTypes.registerType({
 	system: true,
 	message: 'New_chat_priority',
 	data(message) {
-		if (!message.priorityData) {
+		if (!message.slaData) {
 			return;
 		}
 		const {
 			definedBy: { username },
-			priority: { name = null } = {},
-		} = message.priorityData;
+			priority: { name: priorityName = null } = {},
+			sla: { name: slaName = null } = {},
+		} = message.slaData;
 		return {
 			user: username,
-			priority: name || TAPi18n.__('Without_priority'),
+			priority: priorityName || slaName || TAPi18n.__('Without_priority'),
 		};
 	},
 });
