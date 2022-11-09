@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
+import type { Blaze } from 'meteor/blaze';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings/client';
 import { Button } from '../../../ui/client';
@@ -10,14 +11,38 @@ import { t } from '../../../utils/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-Template.username.onCreated(function () {
-	const self = this;
-	self.customFields = new ReactiveVar();
-	self.username = new ReactiveVar();
+type UsernameTemplateInstance = Blaze.TemplateInstance<Record<string, never>> & {
+	customFields: ReactiveVar<Record<
+		string,
+		{
+			required?: boolean;
+			maxLength?: number;
+			minLength?: number;
+		}
+	> | null>;
+	username: ReactiveVar<{
+		ready: boolean;
+		username: string;
+		empty?: boolean;
+		error?: boolean;
+		invalid?: boolean;
+		escaped?: string;
+		blocked?: boolean;
+		unavailable?: boolean;
+	}>;
+	validate: () => unknown;
+};
+
+Template.username.onCreated(function (this: UsernameTemplateInstance) {
+	this.customFields = new ReactiveVar(null);
+	this.username = new ReactiveVar({
+		ready: false,
+		username: '',
+	});
 
 	Tracker.autorun(() => {
-		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
-		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
+		const accountsCustomFields = settings.get('Accounts_CustomFields');
+		if (typeof accountsCustomFields === 'string' && accountsCustomFields.trim() !== '') {
 			try {
 				return this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
 			} catch (error1) {
@@ -28,8 +53,8 @@ Template.username.onCreated(function () {
 		}
 	});
 
-	const validateCustomFields = function (formObj, validationObj) {
-		const customFields = self.customFields.get();
+	const validateCustomFields = (formObj: Record<string, string>, validationObj: Record<string, string>) => {
+		const customFields = this.customFields.get();
 		if (!customFields) {
 			return;
 		}
@@ -37,7 +62,7 @@ Template.username.onCreated(function () {
 		for (const field in formObj) {
 			if (formObj.hasOwnProperty(field)) {
 				const value = formObj[field];
-				if (customFields[field] == null) {
+				if (!customFields[field]) {
 					continue;
 				}
 				const customField = customFields[field];
@@ -45,11 +70,11 @@ Template.username.onCreated(function () {
 					validationObj[field] = t('Field_required');
 					return validationObj[field];
 				}
-				if (customField.maxLength != null && value.length > customField.maxLength) {
+				if (customField.maxLength && value.length > customField.maxLength) {
 					validationObj[field] = t('Max_length_is', customField.maxLength);
 					return validationObj[field];
 				}
-				if (customField.minLength != null && value.length < customField.minLength) {
+				if (customField.minLength && value.length < customField.minLength) {
 					validationObj[field] = t('Min_length_is', customField.minLength);
 					return validationObj[field];
 				}
@@ -57,19 +82,19 @@ Template.username.onCreated(function () {
 		}
 	};
 
-	this.validate = function () {
+	this.validate = () => {
 		const formData = $('#login-card').serializeArray();
-		const formObj = {};
-		const validationObj = {};
-		formData.forEach((field) => {
-			formObj[field.name] = field.value;
-		});
+		const formObj = formData.reduce((formObj, { name, value }) => {
+			formObj[name] = value;
+			return formObj;
+		}, {} as Record<string, string>);
+		const validationObj = {} as Record<string, string>;
 
 		$('#login-card h2').removeClass('error');
 		$('#login-card input.error, #login-card select.error').removeClass('error');
 		$('#login-card .input-error').text('');
 		validateCustomFields(formObj, validationObj);
-		if (!_.isEmpty(validationObj)) {
+		if (Object.keys(validationObj).length > 0) {
 			$('#login-card h2').addClass('error');
 
 			Object.keys(validationObj).forEach((key) => {
@@ -83,23 +108,23 @@ Template.username.onCreated(function () {
 		return formObj;
 	};
 
-	return Meteor.call('getUsernameSuggestion', function (error, username) {
-		self.username.set({
+	Meteor.call('getUsernameSuggestion', (_error: Error, username: string) => {
+		this.username.set({
 			ready: true,
 			username,
 		});
-		return Meteor.defer(() => self.find('input').focus());
+		return Meteor.defer(() => this.find('input').focus());
 	});
 });
 
 Template.username.helpers({
 	username() {
-		return Template.instance().username.get();
+		return (Template.instance() as UsernameTemplateInstance).username.get();
 	},
 
 	backgroundUrl() {
 		const asset = settings.get('Assets_background');
-		const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		const prefix = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 		if (asset && (asset.url || asset.defaultUrl)) {
 			return `${prefix}/${asset.url || asset.defaultUrl}`;
 		}
@@ -107,11 +132,11 @@ Template.username.helpers({
 });
 
 Template.username.events({
-	'focus .input-text input'(event) {
+	'focus .input-text input'(event: JQuery.FocusEvent<HTMLInputElement>) {
 		return $(event.currentTarget).parents('.input-text').addClass('focus');
 	},
 
-	'blur .input-text input'(event) {
+	'blur .input-text input'(event: JQuery.BlurEvent<HTMLInputElement>) {
 		if (event.currentTarget.value === '') {
 			return $(event.currentTarget).parents('.input-text').removeClass('focus');
 		}
@@ -119,7 +144,7 @@ Template.username.events({
 	'reset #login-card'() {
 		Meteor.logout();
 	},
-	'submit #login-card'(event, instance) {
+	'submit #login-card'(event: JQuery.SubmitEvent<HTMLFormElement>, instance: UsernameTemplateInstance) {
 		event.preventDefault();
 
 		const formData = instance.validate();
@@ -138,7 +163,7 @@ Template.username.events({
 			return;
 		}
 
-		const usernameValue = $('#username').val().trim();
+		const usernameValue = ($('#username').val() as string | undefined)?.trim();
 		if (usernameValue === '') {
 			username.empty = true;
 			instance.username.set(username);
@@ -146,14 +171,14 @@ Template.username.events({
 			return;
 		}
 
-		Meteor.call('saveCustomFields', formData, function (error) {
+		Meteor.call('saveCustomFields', formData, (error: Meteor.Error) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		});
 
-		Meteor.call('setUsername', usernameValue, function (err) {
-			if (err != null) {
+		Meteor.call('setUsername', usernameValue, (err: Meteor.Error) => {
+			if (err) {
 				if (err.error === 'username-invalid') {
 					username.invalid = true;
 				} else if (err.error === 'error-blocked-username') {
@@ -161,8 +186,8 @@ Template.username.events({
 				} else {
 					username.unavailable = true;
 				}
-				username.username = usernameValue;
-				username.escaped = _.escape(usernameValue);
+				username.username = usernameValue ?? '';
+				username.escaped = escapeHTML(usernameValue ?? '');
 			}
 
 			Button.reset(button);

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { Notifications } from '../../../notifications/client';
+import { Notifications } from '../../app/notifications/client';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
