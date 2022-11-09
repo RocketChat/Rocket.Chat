@@ -2,11 +2,11 @@ import { useContext } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useRoute } from './useRoute';
-import { LoginContext } from '..';
+import { UserContext } from '..';
 
 export const useLogout = (): (() => void) => {
 	const router = useRoute('home');
-	const { logout } = useContext(LoginContext);
+	const { logout } = useContext(UserContext);
 
 	const handleLogout = useMutableCallback(() => {
 		logout();

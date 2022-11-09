@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { LoginContext } from '../LoginContext';
+import { UserContext } from '../UserContext';
 
 export const useLoginWithPassword = (): ((user: string | object, password: string) => Promise<void>) =>
-	useContext(LoginContext).loginWithPassword;
+	useContext(UserContext).loginWithPassword;

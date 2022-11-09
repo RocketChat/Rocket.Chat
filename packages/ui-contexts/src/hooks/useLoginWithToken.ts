@@ -1,5 +1,5 @@
 import { useContext } from 'react';
 
-import { LoginContext } from '../LoginContext';
+import { UserContext } from '../UserContext';
 
-export const useLoginWithToken = (): ((token: string) => Promise<void>) => useContext(LoginContext).loginWithToken;
+export const useLoginWithToken = (): ((token: string) => Promise<void>) => useContext(UserContext).loginWithToken;

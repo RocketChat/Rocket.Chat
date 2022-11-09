@@ -30,29 +30,27 @@ const MeteorProvider: FC = ({ children }) => (
 						<TooltipProvider>
 							<ToastMessagesProvider>
 								<SettingsProvider>
-									<LoginProvider>
-										<LayoutProvider>
-											<AvatarUrlProvider>
-												<CustomSoundProvider>
-													<UserProvider>
-														<DeviceProvider>
-															<ModalProvider>
-																<AuthorizationProvider>
-																	<VideoConfProvider>
-																		<CallProvider>
-																			<OmnichannelProvider>
-																				<AttachmentProvider>{children}</AttachmentProvider>
-																			</OmnichannelProvider>
-																		</CallProvider>
-																	</VideoConfProvider>
-																</AuthorizationProvider>
-															</ModalProvider>
-														</DeviceProvider>
-													</UserProvider>
-												</CustomSoundProvider>
-											</AvatarUrlProvider>
-										</LayoutProvider>
-									</LoginProvider>
+									<LayoutProvider>
+										<AvatarUrlProvider>
+											<CustomSoundProvider>
+												<UserProvider>
+													<DeviceProvider>
+														<ModalProvider>
+															<AuthorizationProvider>
+																<VideoConfProvider>
+																	<CallProvider>
+																		<OmnichannelProvider>
+																			<AttachmentProvider>{children}</AttachmentProvider>
+																		</OmnichannelProvider>
+																	</CallProvider>
+																</VideoConfProvider>
+															</AuthorizationProvider>
+														</ModalProvider>
+													</DeviceProvider>
+												</UserProvider>
+											</CustomSoundProvider>
+										</AvatarUrlProvider>
+									</LayoutProvider>
 								</SettingsProvider>
 							</ToastMessagesProvider>
 						</TooltipProvider>
