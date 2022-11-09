@@ -1,12 +1,8 @@
-import {
-	isGETLivechatPrioritiesParams,
-	isPOSTLivechatPriorityParams,
-	isGETLivechatPriorityParams,
-	isDELETELivechatPriorityParams,
-} from '@rocket.chat/rest-typings';
+import { LivechatPriority } from '@rocket.chat/models';
+import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
-import { findPriority, findPriorityById, createPriority, deletePriorityById } from './lib/priorities';
+import { findPriority, updatePriority } from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/priorities',
@@ -36,45 +32,19 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/priority',
-	{
-		authRequired: true,
-		validateParams: isPOSTLivechatPriorityParams,
-		permissionsRequired: { POST: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' } },
-	},
-	{
-		async post() {
-			const { name, level } = this.bodyParams;
-			try {
-				const insert = await createPriority({ name, level });
-
-				return API.v1.success(insert);
-			} catch (e) {
-				return API.v1.notFound(String(e));
-			}
-		},
-	},
-);
-
-API.v1.addRoute(
 	'livechat/priority/:priorityId',
 	{
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' },
-			DELETE: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+			PUT: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
 		},
+		validateParams: { PUT: isPUTLivechatPriority },
 	},
 	{
 		async get() {
-			// todo: make urlParams work with validateParams
-			if (!isGETLivechatPriorityParams(this.urlParams)) {
-				return API.v1.failure('Invalid URL params');
-			}
 			const { priorityId } = this.urlParams;
-			const priority = await findPriorityById({
-				priorityId,
-			});
+			const priority = await LivechatPriority.findOneById(priorityId);
 
 			if (!priority) {
 				return API.v1.notFound(`Priority with id ${priorityId} not found`);
@@ -82,18 +52,15 @@ API.v1.addRoute(
 
 			return API.v1.success(priority);
 		},
-		async delete() {
-			// todo: make urlParams work with validateParams
-			if (!isDELETELivechatPriorityParams(this.urlParams)) {
-				return API.v1.failure('Invalid URL params');
-			}
+		async put() {
 			const { priorityId } = this.urlParams;
-			try {
-				const result = await deletePriorityById(priorityId);
-				return API.v1.success(result);
-			} catch (e) {
-				return API.v1.failure(e);
-			}
+			const { name } = this.requestParams();
+
+			await updatePriority(priorityId, {
+				name,
+			});
+
+			return API.v1.success();
 		},
 	},
 );

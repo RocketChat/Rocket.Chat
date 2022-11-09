@@ -57,7 +57,9 @@ addMigration({
 
 		// Since priorityId holds the "SLA ID" at this point, we need to rename the property so it doesnt conflict with current priorities
 		// Typing of the prop will be kept as will be reused by the new priorities feature
+		// @ts-ignore - rooms has ref to messages :(
 		await LivechatRooms.updateMany({ priorityId: { $exists: true } }, { $rename: { priorityId: 'slaId' } });
+		// Since we updated the typings of the model
 		await OmnichannelServiceLevelAgreements.insertMany(currentPriorities);
 	},
 });

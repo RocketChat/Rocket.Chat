@@ -2543,23 +2543,6 @@ const GETLivechatPrioritiesParamsSchema = {
 
 export const isGETLivechatPrioritiesParams = ajv.compile<GETLivechatPrioritiesParams>(GETLivechatPrioritiesParamsSchema);
 
-type GETLivechatPriorityParams = {
-	priorityId: string;
-};
-
-const GETLivechatPriorityParamsSchema = {
-	type: 'object',
-	properties: {
-		priorityId: {
-			type: 'string',
-		},
-	},
-	required: ['priorityId'],
-	additionalProperties: false,
-};
-
-export const isGETLivechatPriorityParams = ajv.compile<GETLivechatPriorityParams>(GETLivechatPriorityParamsSchema);
-
 type DELETELivechatPriorityParams = {
 	priorityId: string;
 };
@@ -2576,40 +2559,6 @@ const DELETELivechatPriorityParamsSchema = {
 };
 
 export const isDELETELivechatPriorityParams = ajv.compile<DELETELivechatPriorityParams>(DELETELivechatPriorityParamsSchema);
-
-type GETslaParams = {
-	slaId: string;
-};
-
-const GETslaParamsSchema = {
-	type: 'object',
-	properties: {
-		slaId: {
-			type: 'string',
-		},
-	},
-	required: ['slaId'],
-	additionalProperties: false,
-};
-
-export const isGETslaParams = ajv.compile<GETslaParams>(GETslaParamsSchema);
-
-type DELETEslaParams = {
-	slaId: string;
-};
-
-const DELETEslaParamsSchema = {
-	type: 'object',
-	properties: {
-		slaId: {
-			type: 'string',
-		},
-	},
-	required: ['slaId'],
-	additionalProperties: false,
-};
-
-export const isDELETEslaParams = ajv.compile<DELETEslaParams>(DELETEslaParamsSchema);
 
 type POSTLivechatPriorityParams = { name: string; level: string };
 
@@ -2801,6 +2750,23 @@ const GETLivechatAnalyticsDashboardsAgentStatusParamsSchema = {
 export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentStatusParams>(
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
+
+type PUTLivechatPriority = {
+	name: string;
+};
+
+const PUTLivechatPrioritySchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['name'],
+};
+
+export const isPUTLivechatPriority = ajv.compile<PUTLivechatPriority>(PUTLivechatPrioritySchema);
 
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
@@ -3029,11 +2995,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/priority/:priorityId': {
 		GET: () => ILivechatPriority | void;
-		DELETE: () => void;
-	};
-
-	'/v1/livechat/priority': {
-		POST: (params: POSTLivechatPriorityParams) => ILivechatPriority | void;
+		PUT: (params: PUTLivechatPriority) => void;
 	};
 
 	'/v1/livechat/visitors.search': {

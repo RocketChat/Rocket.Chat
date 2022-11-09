@@ -206,9 +206,6 @@ export const LivechatEnterprise = {
 			});
 		}
 		const removed = LivechatPriority.removeById(_id);
-		// if (removed) {
-		// removePriorityFromRooms(_id);
-		// }
 		return removed;
 	},
 

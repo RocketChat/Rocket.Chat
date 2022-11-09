@@ -6,7 +6,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: {
-			PUT: { permissions: ['manage-livechat-priorities', 'view-l-room', 'manage-livechat-sla'], operation: 'hasAny' },
+			PUT: { permissions: ['view-l-room', 'manage-livechat-sla'], operation: 'hasAny' },
 		},
 	},
 	{

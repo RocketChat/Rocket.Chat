@@ -35,16 +35,18 @@ import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
+import { createDefaultPriorities } from './priorities';
 
-onLicense('livechat-enterprise', () => {
+onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
-	const { createPermissions } = require('./permissions');
-	const { createSettings } = require('./settings');
+	const { createPermissions } = await import('./permissions');
+	const { createSettings } = await import('./settings');
 
 	Meteor.startup(function () {
 		createSettings();
 		createPermissions();
+		createDefaultPriorities();
 	});
 });
 

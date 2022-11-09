@@ -1,11 +1,16 @@
-import { isGETslaParams, isDELETEslaParams } from '@rocket.chat/rest-typings';
+import { isLivechatPrioritiesProps } from '@rocket.chat/rest-typings';
+import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
-import { deleteSLA, findSLA, findSLAById } from './lib/sla';
+import { findSLA } from './lib/sla';
 
 API.v1.addRoute(
 	'livechat/sla',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['manage-livechat-sla', 'view-l-room'], operation: 'hasAny' } } },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: { permissions: ['manage-livechat-sla', 'view-l-room'], operation: 'hasAny' } },
+		validateParams: isLivechatPrioritiesProps,
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -37,14 +42,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!isGETslaParams(this.urlParams)) {
-				return API.v1.failure('Invalid URL params');
-			}
 			const { slaId } = this.urlParams;
 
-			const sla = await findSLAById({
-				slaId,
-			});
+			const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId);
 
 			if (!sla) {
 				return API.v1.notFound(`SLA with id ${slaId} not found`);
@@ -52,16 +52,10 @@ API.v1.addRoute(
 			return API.v1.success(sla);
 		},
 		async delete() {
-			if (!isDELETEslaParams(this.urlParams)) {
-				return API.v1.failure('Invalid URL params');
-			}
 			const { slaId } = this.urlParams;
-			try {
-				await deleteSLA(slaId);
-				return API.v1.success();
-			} catch (e) {
-				return API.v1.failure(e);
-			}
+			await OmnichannelServiceLevelAgreements.removeById(slaId);
+
+			return API.v1.success();
 		},
 	},
 );
