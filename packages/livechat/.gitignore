@@ -1,0 +1,10 @@
+/node_modules
+/build
+/storybook-static
+/*.log
+/.vscode
+/size-plugin.json
+coverage
+package-lock.json
+build.tar.gz
+.DS_Store
