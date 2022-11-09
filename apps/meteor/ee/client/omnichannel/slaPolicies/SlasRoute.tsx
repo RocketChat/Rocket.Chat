@@ -1,13 +1,13 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import VerticalBar from '../../../../client/components/VerticalBar';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
+import VerticalBar from '../../../../client/components/VerticalBar';
+import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveSlaButton from './RemoveSlaButton';
 import SlaEditWithData from './SlaEditWithData';
 import SlaNew from './SlaNew';
@@ -15,7 +15,7 @@ import SlasPage from './SlasPage';
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = (
+const useEndpointQuery = (
 	{ text, itemsPerPage, current }: GenericTableParams,
 	[column, direction]: [string, 'asc' | 'desc'],
 ): {
@@ -47,7 +47,7 @@ function SlasRoute(): ReactElement {
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useEndpointQuery(debouncedParams, debouncedSort);
 	const SlasRoute = useRoute('omnichannel-sla-policies');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id') || '';
@@ -71,7 +71,8 @@ function SlasRoute(): ReactElement {
 			}),
 	);
 
-	const { value: data, reload } = useEndpointData('/v1/livechat/sla', query);
+	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
+	const { data, refetch } = useQuery(['/v1/livechat/sla'], () => getSlaData(query));
 
 	const header = useMemo(
 		() =>
@@ -112,10 +113,10 @@ function SlasRoute(): ReactElement {
 				<Table.Cell withTruncatedText>
 					{dueTimeInMinutes} {t('minutes')}
 				</Table.Cell>
-				<RemoveSlaButton _id={_id} reload={reload} />
+				<RemoveSlaButton _id={_id} reload={refetch} />
 			</Table.Row>
 		),
-		[reload, onRowClick, t],
+		[refetch, onRowClick, t],
 	);
 
 	const EditSlasTab = useCallback((): ReactElement | null => {
@@ -135,11 +136,11 @@ function SlasRoute(): ReactElement {
 					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 				</VerticalBar.Header>
 
-				{context === 'edit' && <SlaEditWithData slaId={id || ''} reload={reload} />}
-				{context === 'new' && <SlaNew reload={reload} />}
+				{context === 'edit' && <SlaEditWithData slaId={id || ''} reload={refetch} />}
+				{context === 'new' && <SlaNew reload={refetch} />}
 			</VerticalBar>
 		);
-	}, [t, context, id, SlasRoute, reload]);
+	}, [t, context, id, SlasRoute, refetch]);
 
 	if (!canViewSlas) {
 		return <NotAuthorizedPage />;
