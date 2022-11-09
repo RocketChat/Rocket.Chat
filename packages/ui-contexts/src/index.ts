@@ -12,7 +12,7 @@ export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './S
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
-export { UserContext, UserContextValue } from './UserContext';
+export { UserContext, UserContextValue, LoginService } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
