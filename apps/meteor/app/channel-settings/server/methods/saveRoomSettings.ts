@@ -315,7 +315,7 @@ Meteor.methods({
 		}
 
 		if (!hasPermission(userId, 'edit-room', rid)) {
-			if (!(keys.includes('encrypted') && room.t === 'd')) {
+			if (!('encrypted' in settings && room.t === 'd')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
 					method: 'saveRoomSettings',
 					action: 'Editing_room',
@@ -324,7 +324,7 @@ Meteor.methods({
 			settings = { encrypted: settings.encrypted };
 		}
 
-		const checkReadOnly = keys.includes('readOnly') || keys.includes('reactWhenReadOnly');
+		const checkReadOnly = 'readOnly' in settings || 'reactWhenReadOnly' in settings;
 		if (room.broadcast && checkReadOnly) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 				method: 'saveRoomSettings',

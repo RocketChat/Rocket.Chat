@@ -97,7 +97,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
-		if (toUsers === undefined || (toUsers?.length === 0 && additionalEmails === '')) {
+		if (!toUsers || (toUsers.length === 0 && !additionalEmails)) {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}

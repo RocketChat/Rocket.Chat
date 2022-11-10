@@ -24,8 +24,8 @@ import { DataExport } from '../../app/user-data-download/server/DataExport';
 
 type ExportEmail = {
 	rid: string;
-	toUsers: string[];
-	toEmails: string[];
+	toUsers?: string[];
+	toEmails?: string[];
 	subject: string;
 	messages: string[];
 	language?: string;
@@ -53,9 +53,9 @@ type ISentViaEmail = {
 };
 
 export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
-	const emails = data.toEmails.map((email) => email.trim()).filter(Boolean) || [];
+	const emails = data.toEmails?.map((email) => email.trim()).filter(Boolean) ?? [];
 
-	const missing = [...data.toUsers].filter(Boolean);
+	const missing = data.toUsers?.filter(Boolean) ?? [];
 
 	Users.findUsersByUsernames(data.toUsers, {
 		fields: { 'username': 1, 'emails.address': 1 },
