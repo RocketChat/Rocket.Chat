@@ -2,14 +2,17 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { TooltipWrapper } from '@rocket.chat/layout';
-import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useCurrentRoute, useLayout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
 import { useUnreads } from '../../views/unreads/hooks/useUnreads';
 
 const UnreadsSection = (props: typeof Box): ReactElement => {
+	const t = useTranslation();
+	const { sidebar } = useLayout();
 	const directoryRoute = useRoute('unreads');
 	const handleRoute = useMutableCallback(() => {
+		sidebar.toggle();
 		directoryRoute.push({});
 	});
 
@@ -21,7 +24,6 @@ const UnreadsSection = (props: typeof Box): ReactElement => {
 	const isActive = currentRouteName === 'unreads';
 
 	const color = hasUnreadMessages ? '#ffffff' : '#9ea2a8';
-	const title = 'Unread messages';
 	const tooltip = 'You have new messages!';
 
 	// TODO import colors from useSidebarPaletteColor
@@ -38,7 +40,7 @@ const UnreadsSection = (props: typeof Box): ReactElement => {
 		<Box className={sidebarItemStyles} onClick={(): void => handleRoute()}>
 			<Sidebar.TopBar.ToolBox {...props}>
 				<Sidebar.TopBar.Title>
-					<Box color={color}>{title}</Box>
+					<Box color={color}>{t('Unread_Messages')}</Box>
 				</Sidebar.TopBar.Title>
 				{hasUnreadMessages && (
 					<Sidebar.TopBar.Actions>

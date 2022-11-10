@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
-import { MessageListContext, MessageListContextValue } from '../../room/MessageList/contexts/MessageListContext';
+import { MessageListContext, MessageListContextValue } from '../../../room/MessageList/contexts/MessageListContext';
 
 export const MessageListProvider = memo(function MessageListProvider({ ...props }) {
 	const context: MessageListContextValue = useMemo(

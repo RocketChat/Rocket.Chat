@@ -3,26 +3,22 @@ import { Box, MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { Fragment, memo, ReactElement } from 'react';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
-import { useFormatDate } from '../../../hooks/useFormatDate';
-import Message from '../../room/MessageList/components/Message';
-import MessageSystem from '../../room/MessageList/components/MessageSystem';
-import { ThreadMessagePreview } from '../../room/MessageList/components/ThreadMessagePreview';
-import { isMessageNewDay } from '../../room/MessageList/lib/isMessageNewDay';
-import { isMessageSequential } from '../../room/MessageList/lib/isMessageSequential';
-import { MessageWithMdEnforced } from '../../room/MessageList/lib/parseMessageTextToAstMarkdown';
-import MessageHighlightProvider from '../../room/MessageList/providers/MessageHighlightProvider';
-import { MessageProvider } from '../../room/providers/MessageProvider';
-import { SelectedMessagesProvider } from '../../room/providers/SelectedMessagesProvider';
+import { MessageTypes } from '../../../../../app/ui-utils/client';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import Message from '../../../room/MessageList/components/Message';
+import MessageSystem from '../../../room/MessageList/components/MessageSystem';
+import { ThreadMessagePreview } from '../../../room/MessageList/components/ThreadMessagePreview';
+import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
+import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
+import { MessageWithMdEnforced } from '../../../room/MessageList/lib/parseMessageTextToAstMarkdown';
+import MessageHighlightProvider from '../../../room/MessageList/providers/MessageHighlightProvider';
+import { MessageProvider } from '../../../room/providers/MessageProvider';
+import { SelectedMessagesProvider } from '../../../room/providers/SelectedMessagesProvider';
 import { MessageListProvider } from './MessagesListProvider';
-
-type ThreadType = {
-	isThreadMessage: boolean;
-};
 
 type MessageListProps = {
 	rid: IRoom['_id'];
-	messages: Array<MessageWithMdEnforced & ThreadType>;
+	messages: Array<MessageWithMdEnforced>;
 };
 
 export const MessageList = ({ messages, rid }: MessageListProps): ReactElement => {
@@ -37,7 +33,7 @@ export const MessageList = ({ messages, rid }: MessageListProps): ReactElement =
 						<MessageHighlightProvider>
 							{messages.map((message, index, arr) => {
 								const previous = arr[index - 1];
-								const { isThreadMessage } = message;
+								const { tmid } = message;
 
 								const isSequential = isMessageSequential(message, previous, messageGroupingPeriod);
 
@@ -47,14 +43,14 @@ export const MessageList = ({ messages, rid }: MessageListProps): ReactElement =
 								const shouldShowAsSequential = isSequential && !isNewDay;
 
 								const isSystemMessage = MessageTypes.isSystemMessage(message);
-								const shouldShowMessage = !isThreadMessage && !isSystemMessage;
+								const shouldShowMessage = !tmid && !isSystemMessage;
 
 								return (
 									<Fragment key={index}>
 										{shouldShowDivider && (
 											<MessageDivider>
 												{isNewDay && format(message.ts)}
-												{isThreadMessage && <Box fontWeight={400}>{'Reply from thread'}</Box>}
+												{tmid && <Box fontWeight={400}>{'Reply from thread'}</Box>}
 											</MessageDivider>
 										)}
 
@@ -77,7 +73,7 @@ export const MessageList = ({ messages, rid }: MessageListProps): ReactElement =
 											/>
 										)}
 
-										{isThreadMessage && (
+										{message.tmid && (
 											<ThreadMessagePreview
 												data-system-message={Boolean(message.t)}
 												data-mid={message._id}
