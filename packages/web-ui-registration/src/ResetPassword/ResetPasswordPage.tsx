@@ -24,7 +24,7 @@ const ResetPasswordPage = (): ReactElement => {
 		token: user ? undefined : token,
 	});
 
-	const router = useRoute('home');
+	const homeRouter = useRoute('home');
 
 	const changePasswordReason = getChangePasswordReason(user || {});
 
@@ -47,7 +47,7 @@ const ResetPasswordPage = (): ReactElement => {
 			if (token) {
 				const result = await resetPassword(token, data.password);
 				await loginWithToken(result.token);
-				router.push({});
+				homeRouter.push({});
 			} else {
 				await setUserPassword(data.password);
 			}

@@ -6,13 +6,13 @@ import RegistrationI18nProvider from '../root/providers/RegistrationI18nProvider
 
 const SecretURLPage = (): ReactElement => {
 	const uid = useUserId();
-	const router = useRoute('home');
+	const homeRouter = useRoute('home');
 
 	useEffect(() => {
 		if (uid) {
-			router.replace();
+			homeRouter.replace();
 		}
-	}, [uid, router]);
+	}, [uid, homeRouter]);
 
 	if (uid) {
 		return <></>;

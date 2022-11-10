@@ -1,3 +1,5 @@
+import type { UseMutationResult } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
@@ -46,6 +48,34 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const login = useLoginWithPassword();
 
+	const loginMutation: UseMutationResult<
+		void,
+		Error,
+		{
+			username: string;
+			password: string;
+			email?: string;
+		}
+	> = useMutation({
+		mutationFn: (formData) => {
+			return login(formData.username, formData.password);
+		},
+		onError: (error: any) => {
+			if ([error.error, error.errorType].includes('error-invalid-email')) {
+				setError('email', { type: 'invalid-email', message: t('Invalid_email') });
+			}
+
+			if ('error' in error && error.error !== 403) {
+				setErrorOnSubmit(error.error);
+				return;
+			}
+
+			setErrorOnSubmit('user-not-found');
+			setError('username', { type: 'user-not-found', message: t('User_not_found') });
+			setError('password', { type: 'user-not-found', message: t('User_not_found') });
+		},
+	});
+
 	if (errors.email?.type === 'invalid-email') {
 		return (
 			<EmailConfirmationForm
@@ -59,30 +89,19 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		<Form
 			aria-labelledby={formLabelId}
 			onSubmit={handleSubmit(async (data) => {
-				try {
-					await login(data.username, data.password);
-				} catch (error: any) {
-					if ([error.error, error.errorType].includes('error-invalid-email')) {
-						setError('email', { type: 'invalid-email', message: t('Invalid_email') });
-					}
-
-					if ('error' in error && error.error !== 403) {
-						setErrorOnSubmit(error.error);
-						return;
-					}
-
-					setErrorOnSubmit('user-not-found');
-					setError('username', { type: 'user-not-found', message: t('User_not_found') });
-					setError('password', { type: 'user-not-found', message: t('User_not_found') });
+				if (loginMutation.isLoading) {
+					return;
 				}
+
+				loginMutation.mutate(data);
 			})}
 		>
 			<Form.Header>
 				<Form.Title id={formLabelId}>{t('registration.component.login')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
-				<Services />
-				<FieldGroup>
+				<Services disabled={loginMutation.isLoading} />
+				<FieldGroup disabled={loginMutation.isLoading}>
 					<Field>
 						<Field.Label htmlFor='username'>{t('registration.component.form.emailOrUsername')}</Field.Label>
 						<Field.Row>
@@ -138,7 +157,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						)}
 					</Field>
 				</FieldGroup>
-				<FieldGroup>
+				<FieldGroup disabled={loginMutation.isLoading}>
 					{errorOnSubmit === 'error-user-is-not-activated' && (
 						<Callout type='warning'>{t('registration.page.registration.waitActivationWarning')}</Callout>
 					)}

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ServicesButton from './ServicesButton';
 
-const Services = (): ReactElement | null => {
+const Services = ({ disabled }: { disabled?: boolean }): ReactElement | null => {
 	const services = useLoginServices();
 	const { t } = useTranslation();
 	if (services.length === 0) {
@@ -16,7 +16,7 @@ const Services = (): ReactElement | null => {
 		<>
 			<ButtonGroup vertical stretch small>
 				{services.map((service) => (
-					<ServicesButton key={service.service} {...service} />
+					<ServicesButton disabled={disabled} key={service.service} {...service} />
 				))}
 			</ButtonGroup>
 			<Divider children={t('registration.component.form.divider')} />

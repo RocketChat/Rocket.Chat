@@ -11,9 +11,11 @@ const ServicesButton = <T extends LoginService>({
 	clientConfig,
 	service,
 	className,
+	disabled,
 	...props
 }: T & {
 	className?: string;
+	disabled?: boolean;
 }): ReactElement => {
 	const handler = useLoginWithService({ service, buttonLabelColor, buttonColor, buttonLabelText, title, clientConfig, ...props });
 	return (
@@ -25,6 +27,7 @@ const ServicesButton = <T extends LoginService>({
 			backgroundColor={buttonColor}
 			borderColor={buttonColor}
 			color={buttonLabelColor}
+			disabled={disabled}
 		>
 			{buttonLabelText || title}
 		</Button>
