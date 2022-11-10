@@ -3,9 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { Livechat } from '../lib/Livechat';
 import { hasPermission } from '../../../authorization';
 import Users from '../../../models/server/models/Users';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
+		methodDeprecationLogger.warn(
+			'livechat:changeLivechatStatus is deprecated and will be removed in future versions of Rocket.Chat. Use /api/v1/livechat/agent.status REST API instead.',
+		);
+
 		const uid = Meteor.userId();
 
 		if (!uid || !agentId) {
@@ -22,8 +27,14 @@ Meteor.methods({
 		});
 
 		if (!agent) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'livechat:saveAgentInfo',
+			throw new Meteor.Error('error-not-allowed', 'Invalid Agent Id', {
+				method: 'livechat:changeLivechatStatus',
+			});
+		}
+
+		if (status && !['available', 'not-available'].includes(status)) {
+			throw new Meteor.Error('error-not-allowed', 'Invalid Status', {
+				method: 'livechat:changeLivechatStatus',
 			});
 		}
 

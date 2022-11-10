@@ -420,6 +420,7 @@ export type RoomsEndpoints = {
 			success: boolean;
 		};
 	};
+
 	'/v1/rooms.favorite': {
 		POST: (
 			params:
@@ -433,9 +434,14 @@ export type RoomsEndpoints = {
 				  },
 		) => void;
 	};
+
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
 			exists: boolean;
 		};
+	};
+
+	'/v1/rooms.delete': {
+		POST: (params: { roomId: string }) => void;
 	};
 };

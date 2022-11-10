@@ -161,11 +161,17 @@ const settingSavers = {
 		}
 	},
 	roomTopic({ value, room, rid, user }) {
+		if (!value && !room.topic) {
+			return;
+		}
 		if (value !== room.topic) {
 			saveRoomTopic(rid, value, user);
 		}
 	},
 	roomAnnouncement({ value, room, rid, user }) {
+		if (!value && !room.announcement) {
+			return;
+		}
 		if (value !== room.announcement) {
 			saveRoomAnnouncement(rid, value, user);
 		}
@@ -176,6 +182,9 @@ const settingSavers = {
 		}
 	},
 	roomDescription({ value, room, rid, user }) {
+		if (!value && !room.description) {
+			return;
+		}
 		if (value !== room.description) {
 			saveRoomDescription(rid, value, user);
 		}
