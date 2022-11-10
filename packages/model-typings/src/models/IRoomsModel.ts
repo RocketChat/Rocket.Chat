@@ -48,6 +48,20 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateResult>;
 
+	saveFeaturedById(rid: IRoom['_id'], featured: boolean): Promise<UpdateResult>;
+
+	saveRetentionEnabledById(rid: IRoom['_id'], featured: boolean): Promise<UpdateResult>;
+
+	saveRetentionMaxAgeById(rid: IRoom['_id'], maxAge: number): Promise<UpdateResult>;
+
+	saveRetentionExcludePinnedById(rid: IRoom['_id'], excludePinned: boolean): Promise<UpdateResult>;
+
+	saveRetentionFilesOnlyById(rid: IRoom['_id'], filesOnly: boolean): Promise<UpdateResult>;
+
+	saveRetentionIgnoreThreadsById(rid: IRoom['_id'], ignoreThreads: boolean): Promise<UpdateResult>;
+
+	saveRetentionOverrideGlobalById(rid: IRoom['_id'], overrideGlobal: boolean): Promise<UpdateResult>;
+
 	findChannelsWithNumberOfMessagesBetweenDate(params: {
 		start: any;
 		end: any;

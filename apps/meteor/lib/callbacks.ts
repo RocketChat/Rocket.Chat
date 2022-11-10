@@ -40,6 +40,7 @@ type EventLikeCallbackSignatures = {
 	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
 	'afterDeactivateUser': (user: IUser) => void;
 	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
+	'afterSaveRoomSettings': (room: IRoom) => void;
 	'validateUserRoles': (userData: Partial<IUser>) => void;
 	'workspaceLicenseChanged': (license: string) => void;
 	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
