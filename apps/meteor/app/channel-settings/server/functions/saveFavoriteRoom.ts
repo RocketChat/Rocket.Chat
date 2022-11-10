@@ -8,9 +8,6 @@ export const saveFavoriteRoom = function (rid: IRoom['_id'], uid: IUser['_id'], 
 			rid,
 			'u._id': uid,
 		},
-		{
-			...(favorite && { $set: { f: true } }),
-			...(!favorite && { $unset: { f: '' } }),
-		},
+		favorite ? { $set: { f: true } } : { $unset: { f: '' } },
 	);
 };
