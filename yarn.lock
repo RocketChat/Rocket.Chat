@@ -5465,7 +5465,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": 0.31.21
     eslint: ^8.20.0
     mongodb: ^4.3.1
@@ -5788,7 +5788,7 @@ __metadata:
     "@rocket.chat/css-in-js": 0.31.21
     "@rocket.chat/fuselage": 0.31.21
     "@rocket.chat/fuselage-tokens": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/styled": 0.31.21
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -5961,10 +5961,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@npm:0.31.21":
-  version: 0.31.21
-  resolution: "@rocket.chat/message-parser@npm:0.31.21"
-  checksum: 396f69a9b8f24c06f0912c21ec8a447cc8ee67ade323a07accea8d536f827ef66d57a798c9d69591bb0b72ffa90c29749990702b8c3834d822d98afddda7ba1c
+"@rocket.chat/message-parser@npm:next":
+  version: 0.32.0-dev.145
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.145"
+  checksum: 72f0f1a6cf7d5ec2fd1fd7e0916e46e3f38a714ba8c0b90a378a1591eda3aa2e69f86bb6a11a5b642db8be78a2650d634f8cb2b883e78ca5f7bc6c211b7470c0
   languageName: node
   linkType: hard
 
@@ -6013,7 +6013,7 @@ __metadata:
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": 0.31.21
     "@rocket.chat/memo": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
@@ -6436,7 +6436,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": 0.31.21
     "@types/jest": ^27.4.1
     ajv: ^8.11.0
@@ -23469,7 +23469,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
   languageName: node
   linkType: hard
 
@@ -30787,7 +30787,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.21
     "@rocket.chat/icons": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
