@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Tag, Tooltip } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement } from 'react';
@@ -7,12 +7,15 @@ import React, { ReactElement } from 'react';
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
+import { appIncompatibleStatusProps } from '../helpers';
 import AppStatus from './tabs/AppStatus';
+import { TooltipOnHover } from './tabs/AppStatus/TooltipOnHover';
 
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn } = app;
+	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, versionIncompatible } = app;
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
+	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -26,7 +29,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 				</Box>
 				{app?.shortDescription && <Box mbe='x16'>{app.shortDescription}</Box>}
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
-					<AppStatus app={app} installed={installed} isAppDetailsPage={true} isSubscribed={isSubscribed} />
+					<AppStatus app={app} installed={installed} isAppDetailsPage={true} />
 					{(installed || isSubscribed) && <AppMenu app={app} mis='x8' />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
@@ -34,7 +37,26 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 						{t('By_author', { author: author?.name })}
 					</Box>
 					<Box is='span'> | </Box>
-					<Box mi='x16'>{t('Version_version', { version })}</Box>
+
+					<Box marginInlineStart={'16px'} marginInlineEnd={'4px'}>
+						{t('Version_version', { version })}
+					</Box>
+
+					<Box is={'span'} marginInlineEnd={'16px'}>
+						{versionIncompatible && (
+							<>
+								<TooltipOnHover
+									element={
+										<Tag medium variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
+											{incompatibleStatus?.label}
+										</Tag>
+									}
+									tooltip={<Tooltip>{incompatibleStatus?.tooltipText}</Tooltip>}
+								/>
+							</>
+						)}
+					</Box>
+
 					{lastUpdated && (
 						<>
 							<Box is='span'> | </Box>

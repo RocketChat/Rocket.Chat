@@ -181,30 +181,16 @@ export const appButtonProps = ({
 	};
 };
 
-export const appIncompatibleStatus = (versionIncompatible: boolean): appStatusSpanResponseProps | undefined => {
-	if (versionIncompatible) {
-		return {
-			icon: 'check',
-			label: 'Incompatible',
-			tooltipText: t('App_version_incompatible'),
-		};
-	}
-};
+export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
+	icon: 'check',
+	label: 'Incompatible',
+	tooltipText: t('App_version_incompatible'),
+});
 
-export const appStatusSpanProps = ({
-	installed,
-	status,
-	subscriptionInfo,
-	versionIncompatible,
-}: App): appStatusSpanResponseProps | undefined => {
+export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
 		return;
 	}
-
-	if (!isAppDetailsPage && versionIncompatible) {
-		return appIncompatibleStatus(versionIncompatible);
-	}
-
 	const isFailed = status && appErroredStatuses.includes(status);
 	if (isFailed) {
 		return {
@@ -235,6 +221,21 @@ export const appStatusSpanProps = ({
 		icon: 'check',
 		label: 'Installed',
 	};
+};
+
+export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean): appStatusSpanResponseProps[] => {
+	const status = appStatusSpanProps(app);
+	const statuses = [];
+
+	if (app.versionIncompatible && !isAppDetailsPage) {
+		statuses.push(appIncompatibleStatusProps());
+	}
+
+	if (status) {
+		statuses.push(status);
+	}
+
+	return statuses;
 };
 
 export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;

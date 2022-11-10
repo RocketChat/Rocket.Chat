@@ -1,15 +1,15 @@
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Icon, Throbber, Tag, Tooltip } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Throbber, Tag, Tooltip, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo, ReactElement } from 'react';
+import React, { useCallback, useState, memo, ReactElement, Fragment } from 'react';
 
 import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
-import { appButtonProps, appStatusSpanProps, handleAPIError, handleInstallError, warnStatusChange } from '../../../helpers';
+import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError, warnStatusChange } from '../../../helpers';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { TooltipOnHover } from './TooltipOnHover';
 
@@ -66,7 +66,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const { price, purchaseType, pricingPlans } = app;
 
 	const button = appButtonProps(app || {});
-	const status = !button && appStatusSpanProps(app);
+	const statuses = appMultiStatusProps(app, isAppDetailsPage);
 
 	if (button?.action === undefined && button?.action) {
 		throw new Error('action must not be null');
@@ -89,7 +89,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setModal(null);
 	}, [setLoading, setModal]);
 
-	const showAppPermissionsReviewModal = () => {
+	const showAppPermissionsReviewModal = (): void => {
 		if (!isAppPurchased) {
 			setPurchased(true);
 		}
@@ -137,7 +137,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
 
 	return (
-		<Box {...props}>
+		<Box {...props} display='flex' flexDirection='row'>
 			{button && (
 				<Box
 					display='flex'
@@ -167,6 +167,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 							</>
 						)}
 					</Button>
+
 					{shouldShowPriceDisplay && !installed && (
 						<Box mis='x8'>
 							<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
@@ -174,10 +175,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					)}
 				</Box>
 			)}
-			{status && (
-				<>
+
+			{statuses?.map((status, index) => (
+				<Margins inlineStart='x8' key={index}>
 					{status.tooltipText ? (
 						<TooltipOnHover
+							key={index}
 							element={
 								<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
 									{status.label}
@@ -190,8 +193,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 							{status.label}
 						</Tag>
 					)}
-				</>
-			)}
+				</Margins>
+			))}
 		</Box>
 	);
 };

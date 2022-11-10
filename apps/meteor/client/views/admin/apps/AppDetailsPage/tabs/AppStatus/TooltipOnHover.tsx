@@ -15,6 +15,7 @@ export const TooltipOnHover = ({ element, tooltip }: TooltipOnHoverProps): React
 			<Box ref={ref} onMouseEnter={(): void => setIsHovered(true)} onMouseLeave={(): void => setIsHovered(false)}>
 				{element}
 			</Box>
+
 			<PositionAnimated
 				anchor={ref as RefObject<Element>}
 				placement='top-middle'

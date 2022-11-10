@@ -20,6 +20,7 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 		<>
 			{bundledIn.map((bundle) => (
 				<TooltipOnHover
+					key={bundle.bundleId}
 					element={<Tag variant='primary'>{bundle.bundleName}</Tag>}
 					tooltip={
 						<Tooltip>
