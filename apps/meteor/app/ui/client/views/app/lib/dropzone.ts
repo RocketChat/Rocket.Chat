@@ -6,7 +6,7 @@ import { Users } from '../../../../../models/client';
 import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
 import { settings } from '../../../../../settings/client';
 import { RoomManager } from '../../../../../ui-utils/client';
-import { chatMessages } from '../../../lib/ChatMessages';
+import { ChatMessages } from '../../../lib/ChatMessages';
 
 const userCanDrop = (rid: IRoom['_id']) =>
 	!roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
@@ -33,7 +33,7 @@ async function createFileFromUrl(url: string): Promise<File> {
 }
 
 function addToInput(text: string): void {
-	const input = RoomManager.openedRoom ? chatMessages[RoomManager.openedRoom].input : undefined;
+	const input = RoomManager.openedRoom ? ChatMessages.get({ rid: RoomManager.openedRoom })?.input : undefined;
 	if (!input) {
 		return;
 	}
