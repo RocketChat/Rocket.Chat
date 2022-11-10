@@ -35,7 +35,7 @@ const AccordionHeader: FC<{ room: any; handleMark: any }> = ({ room, handleMark 
 			<ButtonGroup>
 				<Button onClick={handleMark}>
 					<Icon name={'flag'} size='x20' margin='4x' />
-					<span style={{ marginLeft: '10px' }}>{t('Mark_as_read')}</span>
+					<span style={{ marginLeft: '10px' }}>{t('Mark_read')}</span>
 				</Button>
 			</ButtonGroup>
 		</Header>
