@@ -19,14 +19,12 @@ const useEndpointQuery = (
 	{ text, itemsPerPage, current }: GenericTableParams,
 	[column, direction]: [string, 'asc' | 'desc'],
 ): {
-	fields: string;
 	sort: string;
 	count?: number;
 	current?: number;
 } =>
 	useMemo(
 		() => ({
-			fields: JSON.stringify({ name: 1 }),
 			text,
 			sort: JSON.stringify({
 				[column]: sortDir(direction),
