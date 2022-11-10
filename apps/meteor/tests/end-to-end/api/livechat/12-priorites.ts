@@ -21,6 +21,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			.then(done);
 	});
 
+	this.afterAll(async () => {
+		await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
+		await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+		await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
+	});
+
 	describe('livechat/sla', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-sla', []);
@@ -226,7 +232,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const response = await request.get(api('livechat/priority/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
-			expect((response.body as any)?.error).to.contain('error-unauthorized');
+			expect(response.body?.error).to.contain('error-unauthorized');
 		});
 		it('should return a priority by id', async () => {
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
@@ -269,6 +275,80 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', true);
+		});
+	});
+
+	describe('livechat/priority.reset', () => {
+		let priority: ILivechatPriority;
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('manage-livechat-priorities', []);
+			const response = await request.post(api('livechat/priority.reset')).set(credentials).expect(403);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('error-unauthorized');
+		});
+		it('should respond reset:true when a priority has been changed', async () => {
+			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
+			const {
+				body: { priorities },
+			} = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			priority = priorities[0];
+
+			priority.name = faker.random.word();
+			const responseChange = await request
+				.put(api(`livechat/priority/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: priority.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(responseChange.body).to.have.property('success', true);
+
+			const response = await request
+				.get(api('livechat/priority.reset'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body).to.have.property('reset', true);
+		});
+		it('should reset all priorities', async () => {
+			const resetRespose = await request
+				.post(api('livechat/priority.reset'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(resetRespose.body).to.have.property('success', true);
+		});
+		it('should return reset: false after all priorities have been reset', async () => {
+			const response = await request
+				.get(api('livechat/priority.reset'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body).to.have.property('reset', false);
+		});
+		it('should change the priority name and dirty status when reset', async () => {
+			const response = await request
+				.get(api(`livechat/priority/${priority._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body).to.have.property('dirty', false);
+			expect(response.body.name).not.eq(priority.name);
+			expect(response.body.name).to.eq(priority.defaultValue);
+		});
+		it('should fail to reset when lacking permissions', async () => {
+			await updatePermission('manage-livechat-priorities', []);
+			const response = await request.post(api('livechat/priority.reset')).set(credentials).expect(403);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('error-unauthorized');
 		});
 	});
 });

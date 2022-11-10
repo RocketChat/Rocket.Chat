@@ -3031,6 +3031,11 @@ export type OmnichannelEndpoints = {
 		PUT: (params: PUTLivechatPriority) => void;
 	};
 
+	'/v1/livechat/priority.reset': {
+		POST: () => void;
+		GET: () => { reset: boolean };
+	};
+
 	'/v1/livechat/visitors.search': {
 		GET: (params: GETLivechatVisitorsSearch) => PaginatedResult<{ visitors: (ILivechatVisitor & { fname?: string })[] }>;
 	};

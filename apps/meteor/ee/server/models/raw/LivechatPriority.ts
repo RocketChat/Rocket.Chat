@@ -24,4 +24,12 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 
 		return this.findOne(query, options);
 	}
+
+	async canResetPriorities(): Promise<boolean> {
+		return Boolean(await this.findOne({ dirty: true }));
+	}
+
+	async resetPriorities(): Promise<void> {
+		await this.updateMany({ dirty: true }, [{ $set: { dirty: false, name: '$defaultValue' } }]);
+	}
 }
