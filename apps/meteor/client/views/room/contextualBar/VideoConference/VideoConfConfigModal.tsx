@@ -16,7 +16,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 			<Modal.Header>
 				<Modal.HeaderText>
 					<Modal.Tagline>{isAdmin ? t('Missing_configuration') : t('App_not_enabled')}</Modal.Tagline>
-					<Modal.Title>{t('Configure_video_conference')}</Modal.Title>
+					<Modal.Title>{isAdmin ? t('Configure_video_conference') : t('Video_Conference')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
@@ -31,8 +31,8 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				</Box>
 				<Box fontScale='h3'>{t('Conference_call_apps')}</Box>
 				<Margins blockStart='x12'>
-					<Callout icon='team' title={t('Jitsi_included_with_Community')}>
-						{t('Open-souce_conference_call_solution')}
+					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
+						{t('Open-source_conference_call_solution')}
 					</Callout>
 					<Callout icon='lightning' title={t('Pexip_Enterprise_only')}>
 						{t('A_secure_and_highly_private_self-managed_solution_for_conference_calls')}
@@ -47,7 +47,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<Callout mbs='x12' mbe='x24' title={t('Missing_configuration')} type='warning'>
 					{isAdmin
 						? t('An_app_needs_to_be_installed_and_configured')
-						: t('A_workspace_admin_needs_to_be_install_and_configure_a_conference_call_app')}
+						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}
 				</Callout>
 			</Modal.Content>
 			<Modal.Footer justifyContent='space-between'>
