@@ -64,7 +64,7 @@ export const AutoCompleteDepartment = ({
 	);
 
 	const department = useMemo(() => {
-		const valueFound = typeof value !== 'object' ? value : value.value || '';
+		const valueFound = value && (typeof value !== 'object' ? value : value.value || '');
 		return sortedByName.find((dep) => dep.value.value === valueFound)?.value;
 	}, [sortedByName, value]);
 
