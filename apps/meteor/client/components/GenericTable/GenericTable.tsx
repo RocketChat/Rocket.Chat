@@ -15,8 +15,8 @@ const defaultSetParamsValue = (): void => undefined;
 
 export type GenericTableParams = {
 	text?: string;
-	current?: number;
-	itemsPerPage?: 25 | 50 | 100;
+	current: number;
+	itemsPerPage: 25 | 50 | 100;
 };
 
 type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps> = {
