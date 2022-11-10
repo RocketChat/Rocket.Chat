@@ -21,12 +21,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			.then(done);
 	});
 
-	this.afterAll(async () => {
-		await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-		await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-		await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
-	});
-
 	describe('livechat/sla', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-sla', []);
@@ -35,8 +29,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of slas', async () => {
-			await updatePermission('manage-livechat-sla', ['admin']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+			await updatePermission('view-l-room', ['livechat-agent', 'admin', 'livechat-manager']);
 			const sla = await saveSLA();
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 			expect(response.body).to.have.property('success', true);
@@ -46,8 +40,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(current).to.have.property('name', sla.name);
 			expect(current).to.have.property('description', sla.description);
 			expect(current).to.have.property('dueTimeInMinutes', sla.dueTimeInMinutes);
-			const deleteResponse = deleteSLA(sla._id);
-			expect(deleteResponse).to.not.be.rejected;
+			await deleteSLA(sla._id);
 		});
 	});
 

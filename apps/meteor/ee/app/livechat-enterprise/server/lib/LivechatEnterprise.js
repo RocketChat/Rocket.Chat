@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users, LivechatRooms, OmnichannelServiceLevelAgreements, LivechatPriority } from '@rocket.chat/models';
+import { LivechatInquiry, Users, LivechatRooms, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
@@ -153,7 +153,7 @@ export const LivechatEnterprise = {
 		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			updateSLAInquiries(sla);
+			Promise.await(updateSLAInquiries(sla));
 		}
 
 		return sla;
@@ -179,37 +179,6 @@ export const LivechatEnterprise = {
 	updateRoomSLA(roomId, user, sla) {
 		updateInquiryQueueSla(roomId, sla);
 		updateRoomSLAHistory(roomId, user, sla);
-	},
-	savePriority(_id, priorityData) {
-		check(_id, Match.Maybe(String));
-
-		check(priorityData, {
-			name: String,
-			level: String,
-		});
-
-		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { level: 1 } });
-		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
-		if (!oldPriority) {
-			return priority;
-		}
-	},
-
-	async removePriority(_id) {
-		check(_id, String);
-
-		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
-
-		if (!priority) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
-				method: 'livechat:removePriority',
-			});
-		}
-		const removed = LivechatPriority.removeById(_id);
-		if (removed) {
-			await removePriorityFromRooms(_id);
-		}
-		return removed;
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {

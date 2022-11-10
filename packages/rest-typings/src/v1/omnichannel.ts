@@ -1051,6 +1051,10 @@ const LivechatPrioritiesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: [],
 	additionalProperties: false,

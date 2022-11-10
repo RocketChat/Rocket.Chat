@@ -18,7 +18,6 @@ declare module '@rocket.chat/model-typings' {
 		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
-		unsetPriorityByIdFromAllOpenRooms(priorityId: string): Promise<void>;
 		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
 		unsetSlaById(slaId: string): Promise<UpdateResult | Document>;
 		findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
@@ -83,19 +82,6 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		};
 
 		return this.find(query, options);
-	}
-
-	async unsetPriorityByIdFromAllOpenRooms(priorityId: string): Promise<void> {
-		return this.updateMany(
-			{
-				open: true,
-				t: 'l',
-				priorityId,
-			},
-			{
-				$unset: { priorityId: 1 },
-			},
-		).then();
 	}
 
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {

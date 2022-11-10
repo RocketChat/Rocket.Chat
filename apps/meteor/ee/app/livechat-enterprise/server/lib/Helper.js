@@ -231,30 +231,27 @@ export const updateInquiryQueueSla = (roomId, sla) => {
 	});
 };
 
-export const removeSLAFromRooms = async (priorityId) => {
-	const result = await Promise.allSettled(
-		LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
-			updateInquiryQueueSla(room._id);
-		});
-	);
-	const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
-	if (rejected.length) {
-		logger.error({ msg: `Error while removing sla from ${rejected.length} rooms`, reason: rejected[0] });
-		logger.debug({ msg: 'Rejection results', rejected });
-	}
+export const removeSLAFromRooms = async (slaId) => {
+	const result = await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
+		updateInquiryQueueSla(room._id);
+	});
 
-	LivechatRooms.unsetSlaById(slaId);
+	console.log('result', result);
+
+	await LivechatRoomsRaw.unsetSlaById(slaId);
 };
 
-export const updateSLAInquiries = (sla) => {
+export const updateSLAInquiries = async (sla) => {
 	if (!sla) {
 		return;
 	}
 
 	const { _id: slaId } = sla;
-	LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
-		updateInquiryQueueSla(room._id, sla);
-	});
+	await Promise.allSettled(
+		LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
+			updateInquiryQueueSla(room._id, sla);
+		}),
+	);
 };
 
 export const getLivechatCustomFields = async () => {
