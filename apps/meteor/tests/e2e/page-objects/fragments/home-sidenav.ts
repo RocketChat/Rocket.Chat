@@ -52,7 +52,51 @@ export class HomeSidenav {
 	}
 
 	async selectOrderByName(): Promise<void> {
-		await this.page.locator('text=⦇Name >> label').click();
+		const label = this.page.locator('text=⦇Name >> label')
+
+		if (!await label.locator('input').isChecked()) {
+			await label.click()
+
+			// Wait for child change
+			await this.page.locator('.rooms-list .rc-scrollbars-view > div > div').evaluate(div => {
+				return new Promise<void>(resolve => {
+					new window.MutationObserver(() => {
+						resolve();
+					}).observe(div, { childList: true });
+				});
+			});
+		}
+	}
+
+	async selectOrderByActivity(): Promise<void> {
+		await this.page.locator('text=Activity >> label').click();
+	}
+
+	async getChannels(): Promise<string[]> {
+		const items = await this.page.$$('.rc-scrollbars-view div[data-index]')
+		const channels: string[] = []
+
+		let inChannels = false
+		for (const item of items) {
+			if (!inChannels) {
+				const sidebar = await item.$('.rcx-sidebar-section .rcx-sidebar-title')
+				if (!sidebar) continue
+
+				const sidebarText = await sidebar.textContent()
+				if (sidebarText === 'Channels') {
+					inChannels = true
+				}
+
+				continue
+			}
+
+			const channel = await item.$('.rcx-sidebar-item .rcx-sidebar-item__title')
+			const channelName = await channel?.textContent()
+
+			if (channelName) channels.push(channelName)
+		}
+
+		return channels;
 	}
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(

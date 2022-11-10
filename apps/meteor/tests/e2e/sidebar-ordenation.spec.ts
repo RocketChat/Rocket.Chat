@@ -18,8 +18,11 @@ test.describe.serial('sidebar', () => {
 		await page.goto('/home');
 	});
 
-	test('expect to sort the sidebar by Name', async ({ page }) => {
+	test('expect to sort the sidebar by Name', async () => {
 		await poHomeChannel.sidenav.openDisplayOptions();
 		await poHomeChannel.sidenav.selectOrderByName();
+
+		const channels = await poHomeChannel.sidenav.getChannels()
+		expect(channels, 'Channels are not sorted by name').toEqual([...channels].sort())
 	});
 });
