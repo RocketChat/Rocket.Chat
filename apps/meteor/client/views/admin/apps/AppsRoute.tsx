@@ -1,5 +1,5 @@
 import { useRouteParameter, useRoute, usePermission, useMethod } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 
 import PageSkeleton from '../../../components/PageSkeleton';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -8,7 +8,7 @@ import AppInstallPage from './AppInstallPage';
 import AppsPage from './AppsPage/AppsPage';
 import AppsProvider from './AppsProvider';
 
-const AppsRoute: FC = () => {
+const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const canManageApps = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
