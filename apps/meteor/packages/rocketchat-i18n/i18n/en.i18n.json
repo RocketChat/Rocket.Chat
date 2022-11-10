@@ -3101,6 +3101,7 @@
   "MapView_GMapsAPIKey": "Google Static Maps API Key",
   "MapView_GMapsAPIKey_Description": "This can be obtained from the Google Developers Console for free.",
   "Mark_all_as_read": "Mark all messages (in all channels) as read",
+  "Mark_all_as_read_short": "Mark All As Read",
   "Mark_as_read": "Mark As Read",
   "Mark_as_unread": "Mark As Unread",
   "Mark_read": "Mark Read",
