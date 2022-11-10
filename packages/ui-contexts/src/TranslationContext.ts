@@ -18,7 +18,12 @@ export type TranslationContextValue = {
 	loadLanguage: (language: TranslationLanguage['key']) => Promise<void>;
 	translate: {
 		(key: TranslationKey, ...replaces: unknown[]): string;
-		has: (key: string | undefined, ...replaces: unknown[]) => key is TranslationKey;
+		has: (
+			key: string | undefined,
+			options?: {
+				lng?: string;
+			},
+		) => key is TranslationKey;
 	};
 };
 

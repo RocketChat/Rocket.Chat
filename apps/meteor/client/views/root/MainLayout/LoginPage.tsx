@@ -3,7 +3,6 @@ import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import React, { ReactElement } from 'react';
 
 import LoggedOutBanner from '../../../../ee/client/components/deviceManagement/LoggedOutBanner';
-import RegistrationI18nProvider from '../providers/RegistrationI18nProvider';
 import { useIframeLogin } from './useIframeLogin';
 
 const LoginPage = (): ReactElement => {
@@ -17,9 +16,7 @@ const LoginPage = (): ReactElement => {
 	return (
 		<>
 			{showForcedLogoutBanner && <LoggedOutBanner />}
-			<RegistrationI18nProvider>
-				<RegistrationRoute />
-			</RegistrationI18nProvider>
+			<RegistrationRoute />
 		</>
 	);
 };
