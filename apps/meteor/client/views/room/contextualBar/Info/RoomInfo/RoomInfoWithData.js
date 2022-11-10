@@ -47,7 +47,6 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	room.rid = rid;
 
 	const { type, fname, prid, joined = true } = room; // TODO implement joined
-
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
 		retentionPolicyEnabled,
