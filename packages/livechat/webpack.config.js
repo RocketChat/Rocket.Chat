@@ -44,7 +44,7 @@ module.exports = (env, argv) => [
 				},
 				{
 					test: /\.tsx?$/,
-					use: 'ts-loader',
+					use: 'babel-loader',
 					exclude: ['/node_modules/'],
 				},
 				{
@@ -234,7 +234,7 @@ module.exports = (env, argv) => [
 				},
 				{
 					test: /\.tsx?$/,
-					use: 'ts-loader',
+					use: 'babel-loader',
 					exclude: ['/node_modules/'],
 				},
 			],
