@@ -213,13 +213,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -497,13 +500,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
