@@ -2,7 +2,7 @@ import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box, Select
 import { useUserPreference, useSetting, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState, useMemo, ReactElement } from 'react';
 
-import { KonchatNotification } from '../../../../app/ui';
+import { KonchatNotification } from '../../../../app/ui/client';
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';
 

@@ -92,7 +92,7 @@ const AppsPageContent = (): ReactElement => {
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
 
-	const handleEmptyStateCTAClick = (): void => {
+	const handleReturn = (): void => {
 		router.push({ context: 'all', page: 'list' });
 	};
 
@@ -141,10 +141,10 @@ const AppsPageContent = (): ReactElement => {
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}
 					text={text}
-					onButtonClick={handleEmptyStateCTAClick}
+					onButtonClick={handleReturn}
 				/>
 			)}
-			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={handleEmptyStateCTAClick} />}
+			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={handleReturn} />}
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
