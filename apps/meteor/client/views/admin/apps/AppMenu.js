@@ -2,9 +2,9 @@ import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
+import WarningModal from '../../../components/WarningModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import WarningModal from './WarningModal';
 import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers';
 
 function AppMenu({ app, ...props }) {
