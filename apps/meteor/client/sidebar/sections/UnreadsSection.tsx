@@ -5,7 +5,7 @@ import { TooltipWrapper } from '@rocket.chat/layout';
 import { useCurrentRoute, useLayout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useUnreads } from '../../views/unreads/hooks/useUnreads';
+import { useRoomList } from '../hooks/useRoomList';
 
 const UnreadsSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
@@ -16,8 +16,8 @@ const UnreadsSection = (props: typeof Box): ReactElement => {
 		directoryRoute.push({});
 	});
 
-	const [loading, error, unreads] = useUnreads();
-	const hasUnreadMessages = !loading && !error && unreads?.length > 0;
+	const rooms = useRoomList();
+	const hasUnreadMessages = rooms.filter((room) => room?.unread || room?.tunread?.length)?.length > 0;
 
 	const currentRoute = useCurrentRoute();
 	const [currentRouteName] = currentRoute;

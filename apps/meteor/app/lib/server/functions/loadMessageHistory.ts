@@ -36,7 +36,7 @@ export function loadMessageHistory({
 			{
 				limit,
 				sort: {
-					ts: -1,
+					ts: 1,
 				},
 			},
 			showThreadMessages,
