@@ -2,7 +2,7 @@ import { FieldGroup, TextInput, Field, ButtonGroup, Button, Callout } from '@roc
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';
@@ -10,7 +10,6 @@ import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirma
 export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }): ReactElement => {
 	const t = useTranslation();
 
-	const [sent, setSent] = useState<boolean>(false);
 	const {
 		register,
 		handleSubmit,
@@ -28,8 +27,10 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 	return (
 		<Form
 			onSubmit={handleSubmit((data) => {
-				sendEmail({ email: data.email });
-				setSent(true);
+				if (sendEmail.isLoading) {
+					return;
+				}
+				sendEmail.mutate({ email: data.email });
 			})}
 		>
 			<Form.Header>
@@ -37,7 +38,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 				<Form.Subtitle>{t('registration.page.emailVerification.subTitle')}</Form.Subtitle>
 			</Form.Header>
 			<Form.Container>
-				<FieldGroup>
+				<FieldGroup disabled={sendEmail.isLoading || sendEmail.isSuccess}>
 					<Field>
 						<Field.Label htmlFor='email'>{t('Email')}*</Field.Label>
 						<Field.Row>
@@ -55,7 +56,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 						{errors.email && <Field.Error>{t('onboarding.component.form.requiredField')}</Field.Error>}
 					</Field>
 				</FieldGroup>
-				{sent && (
+				{sendEmail.isSuccess && (
 					<FieldGroup>
 						<Callout type='success'>{t('registration.page.emailVerification.sent')}</Callout>
 					</FieldGroup>
