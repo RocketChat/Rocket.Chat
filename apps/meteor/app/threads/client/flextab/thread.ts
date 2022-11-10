@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
 
-import { ChatMessages, chatMessages, chatMessages as allChatMessages } from '../../../ui';
+import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
@@ -25,6 +25,7 @@ import './thread.html';
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
+	subscription: ISubscription;
 }> & {
 	firstNode: HTMLElement;
 	Threads: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
@@ -101,32 +102,30 @@ Template.thread.helpers({
 		const {
 			mainMessage: { rid, _id: tmid },
 			subscription,
-		} = Template.currentData() as { mainMessage: IMessage; subscription: ISubscription };
+		} = Template.currentData() as ThreadTemplateInstance['data'];
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
 		return {
+			chatMessagesInstance: instance.chatMessages,
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
 			rid,
 			tmid,
 			onSend: (
-				event: Event,
+				_event: Event,
 				params: {
-					rid: string;
-					tmid?: string | undefined;
 					value: string;
 					tshow?: boolean;
 				},
-				done?: () => void,
 			) => {
 				instance.sendToBottom();
 				if (alsoSendPreferenceState === 'default') {
 					instance.state.set('sendToChannel', false);
 				}
-				return instance.chatMessages?.send(event, params, done);
+				return instance.chatMessages?.send(params);
 			},
 			onKeyUp: (
 				event: KeyboardEvent,
@@ -212,6 +211,8 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 			this.state.set('loading', false);
 		});
 	};
+
+	this.chatMessages = new ChatMessages({ rid: mainMessage.rid, tmid: mainMessage._id }, this.Threads);
 });
 
 Template.thread.onRendered(function (this: ThreadTemplateInstance) {
@@ -220,18 +221,17 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		throw new Error('No rid found');
 	}
 
-	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
 
-	this.chatMessages = new ChatMessages(this.Threads);
-	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
-	this.chatMessages.initializeInput(this.find('.js-input-message') as HTMLTextAreaElement, { rid, tmid });
+	const wrapper = this.find('.js-scroll-thread');
+	const input = this.find('.js-input-message') as HTMLTextAreaElement;
+
+	this.chatMessages.initializeWrapper(wrapper);
+	this.chatMessages.initializeInput(input);
 
 	this.sendToBottom = _.throttle(() => {
 		this.atBottom = true;
-		if (this.chatMessages.wrapper) {
-			this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
-		}
+		wrapper.scrollTop = wrapper.scrollHeight;
 	}, 300);
 
 	this.sendToBottomIfNecessary = () => {
@@ -318,18 +318,21 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		const tmid = this.state.get('tmid');
-		const input = this.find('.js-input-message');
+		const input = this.find('.js-input-message') as HTMLTextAreaElement | null;
 		if (!input) {
 			throw new Error('Could not find input element');
 		}
 
-		if (!rid) {
-			throw new Error('No rid found');
-		}
+		this.chatMessages.initializeInput(input);
 
-		this.chatMessages.initializeInput(input as HTMLTextAreaElement, { rid, tmid });
+		setTimeout(() => {
+			if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
+				input.focus();
+			}
+		}, 200);
+
 		if (rid && tmid) {
-			chatMessages[`${rid}-${tmid}`] = this.chatMessages;
+			ChatMessages.set({ rid, tmid }, this.chatMessages);
 		}
 	});
 
@@ -369,7 +372,7 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 });
 
 Template.thread.onDestroyed(function (this: ThreadTemplateInstance) {
-	const { Threads, threadsObserve, callbackRemove, state, chatMessages } = this;
+	const { Threads, threadsObserve, callbackRemove, state } = this;
 	Threads.remove({});
 	threadsObserve?.stop();
 
@@ -378,7 +381,6 @@ Template.thread.onDestroyed(function (this: ThreadTemplateInstance) {
 	const tmid = state.get('tmid');
 	const rid = state.get('rid');
 	if (rid && tmid) {
-		chatMessages.onDestroyed(rid, tmid);
-		delete allChatMessages[`${rid}-${tmid}`];
+		ChatMessages.delete({ rid, tmid });
 	}
 });
