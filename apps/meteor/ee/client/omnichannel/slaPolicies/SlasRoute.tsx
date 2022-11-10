@@ -70,7 +70,7 @@ function SlasRoute(): ReactElement {
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, refetch } = useQuery(['/v1/livechat/sla'], () => getSlaData(query));
+	const { data, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query));
 
 	const header = useMemo(
 		() =>

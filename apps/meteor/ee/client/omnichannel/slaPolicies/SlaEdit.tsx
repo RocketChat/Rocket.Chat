@@ -26,6 +26,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		control,
 		getValues,
 		formState: { errors, isValid, isDirty },
+		reset,
 	} = useForm({
 		mode: 'onChange',
 		defaultValues: { name, description, dueTimeInMinutes },
@@ -42,16 +43,12 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		name: 'dueTimeInMinutes',
 		rules: {
 			validate(value) {
-				return !value || Number(value) <= 0 ? t('The_field_is_required', t('Estimated_wait_time_in_minutes')) : true;
+				return Number(value || 0) <= 0 ? t('The_field_is_required', t('Estimated_wait_time_in_minutes')) : true;
 			},
 		},
 	});
 
 	const { field: descField } = useController({ control, name: 'description' });
-
-	const handleReset = useMutableCallback(() => {
-		reload();
-	});
 
 	const handleSave = useMutableCallback(async () => {
 		const { name, description, dueTimeInMinutes } = getValues();
@@ -64,7 +61,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 			await saveSLA(slaId, {
 				name,
 				description,
-				dueTimeInMinutes,
+				dueTimeInMinutes: String(dueTimeInMinutes),
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
@@ -107,7 +104,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 					<Margins inlineEnd='x4'>
 						{!isNew && (
-							<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={handleReset}>
+							<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
 								{t('Reset')}
 							</Button>
 						)}

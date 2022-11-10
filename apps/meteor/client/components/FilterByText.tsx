@@ -40,7 +40,7 @@ const FilterByText = ({
 	}, []);
 
 	useEffect(() => {
-		setFilter({ text });
+		setFilter({ text } as GenericTableParams);
 	}, [setFilter, text]);
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
