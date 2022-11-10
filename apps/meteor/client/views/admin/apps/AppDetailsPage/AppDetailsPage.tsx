@@ -2,7 +2,7 @@ import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { App } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useTranslation, useCurrentRoute, useRoute, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useRef, ReactElement } from 'react';
 
 import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
@@ -20,6 +20,7 @@ import AppSettings from './tabs/AppSettings';
 
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -40,7 +41,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const router = useRoute(currentRouteName);
 	const handleReturn = useMutableCallback((): void => router.push({}));
 
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace } = appData || {};
+	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace, name } = appData || {};
 	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
 
 	const saveAppSettings = useCallback(async () => {
@@ -56,9 +57,11 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 			);
 		} catch (e: any) {
 			handleAPIError(e);
+		} finally {
+			dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
 		}
 		setIsSaving(false);
-	}, [id, settings]);
+	}, [dispatchToastMessage, id, name, settings]);
 
 	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
 		if (routeName === 'admin-marketplace') {
