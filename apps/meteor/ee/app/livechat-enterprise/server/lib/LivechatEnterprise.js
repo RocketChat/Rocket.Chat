@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements, LivechatPriority } from '@rocket.chat/models';
+import { LivechatInquiry, Users, LivechatRooms, OmnichannelServiceLevelAgreements, LivechatPriority } from '@rocket.chat/models';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { Messages, Subscriptions } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, removeSLAFromRooms, updateInquiryQueueSla, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
@@ -195,7 +195,7 @@ export const LivechatEnterprise = {
 		}
 	},
 
-	removePriority(_id) {
+	async removePriority(_id) {
 		check(_id, String);
 
 		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
@@ -206,6 +206,9 @@ export const LivechatEnterprise = {
 			});
 		}
 		const removed = LivechatPriority.removeById(_id);
+		if (removed) {
+			await removePriorityFromRooms(_id);
+		}
 		return removed;
 	},
 
@@ -235,7 +238,7 @@ export const LivechatEnterprise = {
 		}
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
-		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
+		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
 	},
 };
 

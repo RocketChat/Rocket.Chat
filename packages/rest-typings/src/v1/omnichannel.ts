@@ -22,6 +22,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
 
@@ -1180,6 +1181,26 @@ const GETOmnichannelContactSearchSchema = {
 };
 
 export const isGETOmnichannelContactSearchProps = ajv.compile<GETOmnichannelContactSearchProps>(GETOmnichannelContactSearchSchema);
+
+type POSTLivechatAgentStatusProps = { status?: ILivechatAgent['statusLivechat']; agentId?: string };
+
+const POSTLivechatAgentStatusPropsSchema = {
+	type: 'object',
+	properties: {
+		status: {
+			type: 'string',
+			enum: Object.values(ILivechatAgentStatus),
+			nullable: true,
+		},
+		agentId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatAgentStatusProps = ajv.compile<POSTLivechatAgentStatusProps>(POSTLivechatAgentStatusPropsSchema);
 
 type LivechatAnalyticsAgentsTotalServiceTimeProps = {
 	start: string;
@@ -2788,6 +2809,9 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.forward': {
 		POST: (params: LiveChatRoomForward) => void;
 	};
+	'/v1/livechat/room.saveInfo': {
+		POST: (params: LiveChatRoomSaveInfo) => void;
+	};
 	'/v1/livechat/monitors': {
 		GET: (params: LivechatMonitorsListProps) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
@@ -2952,8 +2976,13 @@ export type OmnichannelEndpoints = {
 			status: string;
 		};
 	};
+
 	'/v1/livechat/agents/:uid/departments': {
 		GET: (params: { enableDepartmentsOnly: 'true' | 'false' | '0' | '1' }) => { departments: ILivechatDepartmentAgents[] };
+	};
+
+	'/v1/livechat/agent.status': {
+		POST: (params: POSTLivechatAgentStatusProps) => { status: ILivechatAgent['statusLivechat'] };
 	};
 
 	'/v1/canned-responses': {

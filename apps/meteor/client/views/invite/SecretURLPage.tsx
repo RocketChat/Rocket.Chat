@@ -2,7 +2,7 @@ import { useSessionDispatch, useRouteParameter, useSetting, useTranslation } fro
 import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
 
-import { KonchatNotification } from '../../../app/ui';
+import { KonchatNotification } from '../../../app/ui/client';
 import { call } from '../../lib/utils/call';
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';

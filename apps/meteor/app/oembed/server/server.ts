@@ -168,8 +168,8 @@ const getUrlMeta = async function (
 	let content: OEmbedUrlContentResult | undefined;
 	try {
 		content = await getUrlContent(urlObj, 5);
-	} catch (e) {
-		log.error('Error fetching url content', e);
+	} catch (err) {
+		log.error({ msg: 'Error fetching url content', err });
 	}
 
 	if (!content) {

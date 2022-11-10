@@ -197,6 +197,10 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	omnichannel?: {
 		predictedVisitorAbandonmentAt: Date;
 	};
+	// sms field is used when the room is created from one of the internal SMS integrations (e.g. Twilio)
+	sms?: {
+		from: string;
+	};
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -262,6 +266,7 @@ export type RoomAdminFieldsType =
 	| 'default'
 	| 'favorite'
 	| 'featured'
+	| 'reactWhenReadOnly'
 	| 'topic'
 	| 'msgs'
 	| 'archived'
