@@ -472,7 +472,7 @@
   "Cannot_open_conversation_with_yourself": "Ein Selbstgespräch kann nicht gestartet werden",
   "CAS_autoclose": "Login-Popup automatisch schließen",
   "CAS_base_url": "SSO-Base-URL",
-  "CAS_base_url_Description": "Basis-URL des externen Singe Sign On Services e.g: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Basis-URL des externen Singe Sign On Services e.g: https://sso.example.undef/sso",
   "CAS_button_color": "Hintergrundfarbe des Login-Buttons",
   "CAS_button_label_color": "Farbe des Login-Button-Texts",
   "CAS_button_label_text": "Text des Login-Buttons",

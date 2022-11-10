@@ -407,7 +407,7 @@
   "Cannot_open_conversation_with_yourself": "Neposredno sporočilo samemu sebi ni mogoče",
   "CAS_autoclose": "Samodejno zapri pojavno okno za vpis",
   "CAS_base_url": "SSO osnovni URL",
-  "CAS_base_url_Description": "Osnovni URL vaše zunanje storitve SSO npr.: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Osnovni URL vaše zunanje storitve SSO npr.: https://sso.example.undef/sso",
   "CAS_button_color": "Barva ozadja gumba za prijavo",
   "CAS_button_label_color": "Barva besedila gumba za prijavo",
   "CAS_button_label_text": "Oznaka gumba za prijavo",

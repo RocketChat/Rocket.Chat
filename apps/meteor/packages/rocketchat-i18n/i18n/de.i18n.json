@@ -813,7 +813,7 @@
   "CAS_Description": "Der zentrale Authentifizierungsdienst ermöglicht es den Mitgliedern, sich mit einem Satz von Anmeldedaten über mehrere Protokolle bei mehreren Websites anzumelden.",
   "CAS_autoclose": "Anmelde-Popup automatisch schließen",
   "CAS_base_url": "SSO-Base-URL",
-  "CAS_base_url_Description": "Basis-URL des externen Singe Sign On Services e.g: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Basis-URL des externen Singe Sign On Services e.g: https://sso.example.undef/sso",
   "CAS_button_color": "Hintergrundfarbe des Anmeldungs-Buttons",
   "CAS_button_label_color": "Farbe des Anmeldungs-Button-Texts",
   "CAS_button_label_text": "Text des Anmeldungs-Buttons",

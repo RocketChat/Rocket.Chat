@@ -730,7 +730,7 @@
   "Cannot_share_your_location": "無法分享您的位置...",
   "CAS_autoclose": "自動關閉登入彈出視窗",
   "CAS_base_url": "SSO 基本網址",
-  "CAS_base_url_Description": "您的外部SSO服務的基本網址，例如：https：//sso.example.undef/sso/",
+  "CAS_base_url_Description": "您的外部SSO服務的基本網址，例如：https：//sso.example.undef/sso",
   "CAS_button_color": "登入按鈕背景色",
   "CAS_button_label_color": "登入按鈕文字顏色",
   "CAS_button_label_text": "登入按鈕標籤",

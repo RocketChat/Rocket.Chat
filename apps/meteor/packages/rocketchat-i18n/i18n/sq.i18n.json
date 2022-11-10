@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Nuk mund të mesosh mesazhin me veten",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "URL bazë e SSO",
-  "CAS_base_url_Description": "URL-ja bazë e shërbimit tuaj të jashtëm të SSO-së: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL-ja bazë e shërbimit tuaj të jashtëm të SSO-së: https: //sso.example.undef/sso",
   "CAS_button_color": "Butoni i hyrjes Historiku i ngjyrës",
   "CAS_button_label_color": "Butoni i identifikimit Ngjyra e tekstit",
   "CAS_button_label_text": "Etiketa e butonit të identifikimit",

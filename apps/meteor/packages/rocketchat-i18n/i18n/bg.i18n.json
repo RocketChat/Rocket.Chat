@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Не можете да препратите съобщение със себе си",
   "CAS_autoclose": "Автоматично влизане в изскачащи прозорци",
   "CAS_base_url": "Основен URL адрес на SSO",
-  "CAS_base_url_Description": "Основният URL адрес на външната ви SSO услуга, например: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Основният URL адрес на външната ви SSO услуга, например: https: //sso.example.undef/sso",
   "CAS_button_color": "Цвят на фона на бутона за вход",
   "CAS_button_label_color": "Бутон за въвеждане на текст",
   "CAS_button_label_text": "Етикет за бутон за вход",

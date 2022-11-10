@@ -649,7 +649,7 @@
   "Cannot_share_your_location": "위치를 공유 할 수 없습니다 ...",
   "CAS_autoclose": "로그인 팝업 자동으로 닫기",
   "CAS_base_url": "SSO Base URL",
-  "CAS_base_url_Description": "외부 SSO 서비스에 대한 base URL. 예: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "외부 SSO 서비스에 대한 base URL. 예: https://sso.example.undef/sso",
   "CAS_button_color": "로그인 버튼 배경 색상",
   "CAS_button_label_color": "로그인 버튼 텍스트 색상",
   "CAS_button_label_text": "로그인 버튼 레이블",

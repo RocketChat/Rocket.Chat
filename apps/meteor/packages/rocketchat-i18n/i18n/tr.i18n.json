@@ -497,7 +497,7 @@
   "Cannot_open_conversation_with_yourself": "Kendinize doğrudan ileti gönderemezsiniz",
   "CAS_autoclose": "Giriş baloncuğunu otomatik kapat",
   "CAS_base_url": "SSO Temel URL",
-  "CAS_base_url_Description": "Kullandığınız SSO servisinin temel URL'i. Ör: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Kullandığınız SSO servisinin temel URL'i. Ör: https://sso.example.undef/sso",
   "CAS_button_color": "Giriş butonu arka plan rengi",
   "CAS_button_label_color": "Giriş butonu yazı rengi",
   "CAS_button_label_text": "Giriş butonu etiketi",

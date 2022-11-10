@@ -608,7 +608,7 @@
   "Cannot_share_your_location": "Kan ikke dele din placering...",
   "CAS_autoclose": "Autoclose login popup",
   "CAS_base_url": "SSO Base-URL",
-  "CAS_base_url_Description": "Base-adressen til din eksterne SSO-tjeneste fx: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Base-adressen til din eksterne SSO-tjeneste fx: https: //sso.example.undef/sso",
   "CAS_button_color": "Login-knap's baggrundsfarve",
   "CAS_button_label_color": "Login-knap's tekstfarve",
   "CAS_button_label_text": "Login-knap's tekst",

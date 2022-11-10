@@ -735,7 +735,7 @@
   "Cannot_share_your_location": "No es posible compartir la ubicació ...",
   "CAS_autoclose": "Finestra emergent de tancament automàtic de sessió",
   "CAS_base_url": "URL base de SSO",
-  "CAS_base_url_Description": "Adreça URL base del servei extern SSO. Ex: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Adreça URL base del servei extern SSO. Ex: https://sso.example.undef/sso",
   "CAS_button_color": "Color de fons del botó d'inici de sessió",
   "CAS_button_label_color": "Color de text del botó d'inici de sessió",
   "CAS_button_label_text": "Etiqueta del botó d'inici de sessió",

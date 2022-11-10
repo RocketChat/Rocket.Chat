@@ -449,7 +449,7 @@
   "Cannot_open_conversation_with_yourself": "Kan inte skicka direktmeddelande till dig själv",
   "CAS_autoclose": "Stäng loginpopup automatiskt",
   "CAS_base_url": "SSO-basadress",
-  "CAS_base_url_Description": "Basadressen till din externa SSO-tjänst, t ex: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Basadressen till din externa SSO-tjänst, t ex: https: //sso.example.undef/sso",
   "CAS_button_color": "Inloggningsknapp bakgrundsfärg",
   "CAS_button_label_color": "Textfärg på inloggningsknapp",
   "CAS_button_label_text": "Text på inloggningsknapp",

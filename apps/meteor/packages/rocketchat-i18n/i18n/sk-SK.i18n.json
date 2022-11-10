@@ -415,7 +415,7 @@
   "Cannot_open_conversation_with_yourself": "Nemôžete napísať priamu správu sami sebe",
   "CAS_autoclose": "Vyskakovacie okno automatického zatvorenia",
   "CAS_base_url": "Základná adresa URL pre SSO",
-  "CAS_base_url_Description": "Základná adresa URL vašej externej služby SSO, napr .: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Základná adresa URL vašej externej služby SSO, napr .: https://sso.example.undef/sso",
   "CAS_button_color": "Farba pozadia prihlasovacieho tlačidla",
   "CAS_button_label_color": "Farba textu prihlasovacieho tlačidla",
   "CAS_button_label_text": "Označenie prihlasovacieho tlačidla",

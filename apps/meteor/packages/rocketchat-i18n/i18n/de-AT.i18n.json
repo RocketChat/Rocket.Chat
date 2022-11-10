@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Kann Nachricht nicht mit dir selbst senden",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO-Basis-URL",
-  "CAS_base_url_Description": "Die Basis-URL Ihres externen SSO-Diensts, z. B .: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Die Basis-URL Ihres externen SSO-Diensts, z. B .: https: //sso.example.undef/sso",
   "CAS_button_color": "Login Button Hintergrundfarbe",
   "CAS_button_label_color": "Login Button Textfarbe",
   "CAS_button_label_text": "Anmelden-Button-Label",

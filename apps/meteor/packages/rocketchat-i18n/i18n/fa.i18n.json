@@ -535,7 +535,7 @@
   "Cannot_open_conversation_with_yourself": "پیام مستقیم با خودتان را نمیتوانید",
   "CAS_autoclose": "خودکار پنجره ورود به سیستم",
   "CAS_base_url": "URL پایه SSO",
-  "CAS_base_url_Description": "آدرس پایه سرویس SSO خارجی شما به عنوان مثال: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "آدرس پایه سرویس SSO خارجی شما به عنوان مثال: https: //sso.example.undef/sso",
   "CAS_button_color": "دکمه ورود رنگ پس زمینه",
   "CAS_button_label_color": "دکمه ورود رنگ متن",
   "CAS_button_label_text": "برچسب دکمه ورود",

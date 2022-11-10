@@ -814,7 +814,7 @@
   "CAS_Description": "Keskitetyn todennuspalvelun avulla jäsenet voivat käyttää samoja tunnistetietoja kirjautuakseen useisiin sivustoihin useiden eri protokollien kautta.",
   "CAS_autoclose": "Login -popupin automaattinen sulku",
   "CAS_base_url": "SSO:n perusmuotoinen URL-osoite",
-  "CAS_base_url_Description": "Ulkoisen SSO-palvelun perus-URL-osoite: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Ulkoisen SSO-palvelun perus-URL-osoite: https: //sso.example.undef/sso",
   "CAS_button_color": "Kirjautumisnapin taustaväri",
   "CAS_button_label_color": "Kirjautumisnapin tekstin väri",
   "CAS_button_label_text": "Kirjautumisnapin etiketti",

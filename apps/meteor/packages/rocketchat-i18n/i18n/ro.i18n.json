@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Nu puteți să transmiteți mesajul cu voi înșivă",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO URL de bază",
-  "CAS_base_url_Description": "Adresa URL de bază a serviciului SSO extern, de exemplu: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Adresa URL de bază a serviciului SSO extern, de exemplu: https: //sso.example.undef/sso",
   "CAS_button_color": "Culoarea de fundal a butonului de conectare",
   "CAS_button_label_color": "Butonul Culoare text de conectare",
   "CAS_button_label_text": "Etichetă pentru butonul de conectare",

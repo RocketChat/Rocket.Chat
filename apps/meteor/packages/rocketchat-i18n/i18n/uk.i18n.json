@@ -561,7 +561,7 @@
   "Cannot_open_conversation_with_yourself": "Неможливо відправити повідомлення самому собі",
   "CAS_autoclose": "Автозакриття спливаючого вікна логіну",
   "CAS_base_url": "Базова URL-адреса SSO",
-  "CAS_base_url_Description": "Базова URL-адреса зовнішньої служби SSO, наприклад: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Базова URL-адреса зовнішньої служби SSO, наприклад: https: //sso.example.undef/sso",
   "CAS_button_color": "Колір фону кнопки входу",
   "CAS_button_label_color": "Колір тексту кнопки входу",
   "CAS_button_label_text": "Мітка кнопки входу",

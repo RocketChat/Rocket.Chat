@@ -804,7 +804,7 @@
   "CAS_Description": "Centralna usługa uwierzytelniania umożliwia członkom korzystanie z jednego zestawu poświadczeń do logowania się do wielu witryn za pośrednictwem wielu protokołów.",
   "CAS_autoclose": "Automatycznie zamykaj okienko logowania",
   "CAS_base_url": "Podstawowy adres URL SSO",
-  "CAS_base_url_Description": "Podstawowy adres URL zewnętrznej usługi SSO, np.: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Podstawowy adres URL zewnętrznej usługi SSO, np.: https://sso.example.undef/sso",
   "CAS_button_color": "Kolor tła przycisku logowania",
   "CAS_button_label_color": "Kolor tekstu przycisku logowania",
   "CAS_button_label_text": "Etykieta przycisku logowania",

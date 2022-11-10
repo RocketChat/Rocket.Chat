@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Tidak bisa Pesan Langsung dengan diri sendiri",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "URL Dasar SSO",
-  "CAS_base_url_Description": "URL dasar layanan SSO eksternal Anda misalnya: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL dasar layanan SSO eksternal Anda misalnya: https: //sso.example.undef/sso",
   "CAS_button_color": "Tombol Masuk Warna Latar Belakang",
   "CAS_button_label_color": "Tombol Masuk Warna Teks",
   "CAS_button_label_text": "Tombol Masuk Label",

@@ -736,7 +736,7 @@
   "Cannot_disable_while_on_call": "Impossible de changer le statut pendant les appels",
   "CAS_autoclose": "Fermer automatiquement la fenêtre contextuelle de connexion",
   "CAS_base_url": "URL de base SSO",
-  "CAS_base_url_Description": "URL de base pour votre service SSO externe, par exemple : https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL de base pour votre service SSO externe, par exemple : https://sso.example.undef/sso",
   "CAS_button_color": "Bouton de connexion, couleur de fond",
   "CAS_button_label_color": "Bouton de connexion, couleur du texte",
   "CAS_button_label_text": "Bouton de connexion, étiquette",

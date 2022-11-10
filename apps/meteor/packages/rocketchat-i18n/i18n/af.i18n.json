@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Kan nie Boodskap met jouself rig nie",
   "CAS_autoclose": "Autoclose Inloggen Popup",
   "CAS_base_url": "SSO-basis-URL",
-  "CAS_base_url_Description": "Die basis-URL van u eksterne SSO-diens, byvoorbeeld: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Die basis-URL van u eksterne SSO-diens, byvoorbeeld: https: //sso.example.undef/sso",
   "CAS_button_color": "Login Button Agtergrond Kleur",
   "CAS_button_label_color": "Intekenknoppie Teks Kleur",
   "CAS_button_label_text": "Inlogknoppie",
