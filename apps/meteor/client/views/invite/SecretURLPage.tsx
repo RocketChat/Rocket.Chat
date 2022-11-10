@@ -4,7 +4,7 @@ import React, { ReactElement, useEffect } from 'react';
 
 import RegistrationI18nProvider from '../root/providers/RegistrationI18nProvider';
 
-const SecretURLPage = (): ReactElement => {
+const SecretURLPage = (): ReactElement | null => {
 	const uid = useUserId();
 	const homeRouter = useRoute('home');
 
@@ -15,7 +15,7 @@ const SecretURLPage = (): ReactElement => {
 	}, [uid, homeRouter]);
 
 	if (uid) {
-		return <></>;
+		return null;
 	}
 
 	return (
