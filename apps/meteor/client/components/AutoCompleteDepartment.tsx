@@ -8,7 +8,7 @@ import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentProps = {
-	value: { value: string; label: string } | string;
+	value?: { value: string; label: string } | string;
 	onChange: (value: string) => void;
 	excludeDepartmentId?: string;
 	onlyMyDepartments?: boolean;
@@ -64,7 +64,7 @@ export const AutoCompleteDepartment = ({
 	);
 
 	const department = useMemo(() => {
-		const valueFound = value && (typeof value !== 'object' ? value : value.value || '');
+		const valueFound = typeof value === 'string' ? value : value?.value || '';
 		return sortedByName.find((dep) => dep.value.value === valueFound)?.value;
 	}, [sortedByName, value]);
 
