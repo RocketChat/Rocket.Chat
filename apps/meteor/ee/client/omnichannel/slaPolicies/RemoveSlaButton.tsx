@@ -15,7 +15,7 @@ function RemoveSlaButton({ _id, reload }: Props): ReactElement {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
-	const prioritiesRoute = useRoute('omnichannel-sla-policies');
+	const slaRoute = useRoute('omnichannel-sla-policies');
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
@@ -32,7 +32,7 @@ function RemoveSlaButton({ _id, reload }: Props): ReactElement {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Priority_removed') });
-				prioritiesRoute.push({});
+				slaRoute.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

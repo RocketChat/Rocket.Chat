@@ -26,7 +26,7 @@ registerOmnichannelSidebarItem({
 });
 
 registerOmnichannelSidebarItem({
-	href: 'omnichannel/priorities',
+	href: 'omnichannel/sla-policies',
 	i18nLabel: 'SLA_Policies',
 	permissionGranted: () => hasAtLeastOnePermission('manage-livechat-sla'),
 });
