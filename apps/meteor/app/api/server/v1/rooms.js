@@ -559,7 +559,7 @@ API.v1.addRoute(
 			}
 
 			if (type === 'email') {
-				if ((!toEmails && !toUsers) || (!toUsers?.filter(Boolean).length && !toEmails?.filter(Boolean).length)) {
+				if (!toUsers?.filter(Boolean).length && !toEmails?.filter(Boolean).length) {
 					throw new Meteor.Error('error-invalid-params', 'No recipients specified');
 				}
 
