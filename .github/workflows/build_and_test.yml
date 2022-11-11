@@ -659,10 +659,8 @@ jobs:
             RC_VERSION=$GIT_TAG
 
             if [[ '${{ needs.release-versions.outputs.release }}' = 'release-candidate' ]]; then
-              SNAP_CHANNEL=candidate
               RC_RELEASE=candidate
             elif [[ '${{ needs.release-versions.outputs.release }}' = 'latest' ]]; then
-              SNAP_CHANNEL=stable
               RC_RELEASE=stable
             fi
           else
@@ -670,7 +668,6 @@ jobs:
             GIT_BRANCH="${GITHUB_REF#*heads/}"
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
             RC_VERSION="${REPO_VERSION}"
-            SNAP_CHANNEL=edge
             RC_RELEASE=develop
           fi;
           ROCKET_DEPLOY_DIR="/tmp/deploy"
@@ -851,3 +848,19 @@ jobs:
               docker push $DH_IMAGE_NAME:$RELEASE
             fi
           fi
+
+  trigger-dependent-workflows:
+    runs-on: ubuntu-latest
+    needs:
+      - services-docker-image-publish
+      - docker-image-publish
+      - release-versions
+    steps:
+      - name: Send built image details to seperate pipeline
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          event-type: images_built
+          repository: RocketChat/Community
+          client-payload: |
+            ${{ format('{"tag":"{0}"}', env.GITHUB_REF_NAME) }}
