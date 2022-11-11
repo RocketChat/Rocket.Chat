@@ -9,13 +9,24 @@ import { Trans } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 
+type LoginRegisterPayload = {
+	name: string;
+	passwordConfirmation: string;
+	username: string;
+	password: string;
+	email: string;
+	reason: string;
+};
+
 export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const t = useTranslation();
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
-
 	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers');
+
+	const formLabelId = useUniqueId();
+	const registerUser = useRegisterMethod();
 
 	const {
 		register,
@@ -23,43 +34,31 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 		setError,
 		watch,
 		formState: { errors },
-	} = useForm<{
-		name: string;
-		passwordConfirmation: string;
-		username: string;
-		password: string;
-		email: string;
-		reason: string;
-	}>();
+	} = useForm<LoginRegisterPayload>();
 
-	const registerUser = useRegisterMethod();
+	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
+		try {
+			await registerUser({ pass: password, ...formData });
+		} catch (error: any) {
+			if (error.errorType === 'error-invalid-email') {
+				setError('email', { type: 'invalid-email', message: t('Invalid_email') });
+			}
+			if (error.errorType === 'error-user-already-exists') {
+				setError('username', { type: 'user-already-exists', message: t('Username_already_exist') });
+			}
 
-	const formLabelId = useUniqueId();
+			if (/Email already exists/.test(error.error)) {
+				setError('email', { type: 'email-already-exists', message: t('Email_already_exists') });
+			}
+
+			if (/Username is already in use/.test(error.error)) {
+				setError('username', { type: 'username-already-exists', message: t('Username_already_exist') });
+			}
+		}
+	};
 
 	return (
-		<Form
-			aria-labelledby={formLabelId}
-			onSubmit={handleSubmit(async ({ password, passwordConfirmation: _, ...formData }) => {
-				try {
-					await registerUser({ pass: password, ...formData });
-				} catch (error: any) {
-					if (error.errorType === 'error-invalid-email') {
-						setError('email', { type: 'invalid-email', message: t('Invalid_email') });
-					}
-					if (error.errorType === 'error-user-already-exists') {
-						setError('username', { type: 'user-already-exists', message: t('Username_already_exist') });
-					}
-
-					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('Email_already_exists') });
-					}
-
-					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('Username_already_exist') });
-					}
-				}
-			})}
-		>
+		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
 			<Form.Header>
 				<Form.Title id={formLabelId}>{t('Register')}</Form.Title>
 			</Form.Header>
@@ -84,7 +83,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								id='name'
 							/>
 						</Field.Row>
-						{errors.reason && (
+						{errors.name && (
 							<Field.Error>
 								{t('The_field_is_required', {
 									postProcess: 'sprintf',
@@ -149,7 +148,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						<Field.Row>
 							<PasswordInput
 								{...register('password', {
-									required: true,
+									required: t('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Password')] }),
 								})}
 								placeholder='******'
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
@@ -157,6 +156,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								id='password'
 							/>
 						</Field.Row>
+						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
@@ -175,6 +175,9 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								/>
 							</Field.Row>
 							{errors.passwordConfirmation?.type === 'validate' && <Field.Error>{t('Invalid_confirm_pass')}</Field.Error>}
+							{errors.passwordConfirmation?.type === 'required' && (
+								<Field.Error>{t('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Confirm_password')] })}</Field.Error>
+							)}
 						</Field>
 					)}
 					{manuallyApproveNewUsersRequired && (
