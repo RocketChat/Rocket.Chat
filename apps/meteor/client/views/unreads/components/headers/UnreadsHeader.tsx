@@ -9,10 +9,12 @@ import HeaderMenu from './HeaderMenu';
 type UnreadsHeaderProps = {
 	totalMessages: number;
 	totalRooms: number;
-	handleMarkAll: any;
+	handleMarkAll: () => Promise<void>;
+	sortBy: string;
+	setSortBy: (sortBy: string) => void;
 };
 
-const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, handleMarkAll }) => {
+const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, handleMarkAll, sortBy, setSortBy }) => {
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
@@ -39,7 +41,11 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 							<span style={{ marginLeft: '10px' }}>{t('Mark_all_as_read_short')}</span>
 						</Button>
 					)}
-					<HeaderMenu handleMarkAll={(): Promise<void> => handleMarkAll()} />
+					<HeaderMenu
+						handleMarkAll={(): Promise<void> => handleMarkAll()}
+						sortBy={sortBy}
+						setSortBy={(sortBy: string): void => setSortBy(sortBy)}
+					/>
 				</ButtonGroup>
 			</Header.Content.Row>
 		</Header>

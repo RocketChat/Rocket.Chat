@@ -6,6 +6,7 @@
 	align-self: center;
 }
 
-.unreadsAccordionHeader hr {
-	visibility: hidden !important;
+.unreadsAccordionHeader hr,
+.unreadsSectionHeader hr {
+	visibility: hidden;
 }

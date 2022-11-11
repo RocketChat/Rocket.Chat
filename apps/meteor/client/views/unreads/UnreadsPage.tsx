@@ -1,23 +1,21 @@
-import { Accordion, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useEffect, useMemo, useState } from 'react';
 
 import Page from '../../components/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { MessageWithMdEnforced } from '../room/MessageList/lib/parseMessageTextToAstMarkdown';
 import ResultMessage from './components/body/ResultMessage';
-import AccordionHeader from './components/headers/AccordionHeader';
+import UnreadsBody from './components/body/UnreadsBody';
 import UnreadsHeader from './components/headers/UnreadsHeader';
-import MessageList from './components/messages/MessageList';
 import { useUnreads } from './hooks/useUnreads';
 
 import './styles/accordion.css';
 
 const UnreadsPage: FC = () => {
-	const t = useTranslation();
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
 	const [loading, error, unreads, fetchMessages] = useUnreads();
 	const [expandedItem, setExpandedItem] = useState(null);
+	const [sortBy, setSortBy] = useState('Activity');
 	const [activeMessages, setActiveMessages] = useState<MessageWithMdEnforced[]>([]);
 
 	const totalMessages = useMemo(() => {
@@ -29,6 +27,13 @@ const UnreadsPage: FC = () => {
 
 		return total;
 	}, [unreads]);
+
+	const sortedRooms = useMemo(() => {
+		const sortedRooms =
+			unreads?.sort((a: any, b: any) => (sortBy !== 'Activity' ? a?.name?.localeCompare(b?.name) : b?.lm - a?.lm)) ?? unreads;
+
+		return sortedRooms;
+	}, [sortBy, unreads]);
 
 	async function handleMarkAll(): Promise<void> {
 		if (unreads) await Promise.all(unreads.map((room) => readMessages({ rid: room.rid })));
@@ -64,45 +69,33 @@ const UnreadsPage: FC = () => {
 	}, [unreads, expandedItem, fetchMessages]);
 
 	return (
-		<Page>
+		<Page padding={0}>
 			{error && !loading && <ResultMessage />}
 			{unreads && !unreads.length && !loading && <ResultMessage empty />}
 			{!!loading && <PageSkeleton />}
 			{unreads && unreads.length > 0 && !loading && (
 				<>
 					<Page.Header
+						className='unreadsSectionHeader'
 						title={
 							<UnreadsHeader
 								totalMessages={totalMessages}
 								totalRooms={unreads.length}
 								handleMarkAll={(): Promise<void> => handleMarkAll()}
+								sortBy={sortBy}
+								setSortBy={(sortBy: string): void => setSortBy(sortBy)}
 							/>
 						}
 					/>
-					<Page.ScrollableContentWithShadow>
-						<Box marginBlock='none' paddingBlock='none' marginInline='auto' width='full'>
-							<Accordion borderBlockStyle='unset'>
-								{unreads.map((room) => (
-									<Accordion.Item
-										key={room._id}
-										className='unreadsAccordionHeader'
-										title={<AccordionHeader room={room} />}
-										expanded={expandedItem === room._id}
-										onToggle={(): void => {
-											getMessages(room);
-										}}
-									>
-										<ButtonGroup flexDirection='row' justifyContent={'flex-end'}>
-											<Button onClick={(): Promise<void> => handleMark(room.rid)}>
-												<Icon name={'flag'} size='x20' margin='4x' />
-												<span style={{ marginLeft: '10px' }}>{t('Mark_read')}</span>
-											</Button>
-										</ButtonGroup>
-										<MessageList messages={activeMessages} rid={room.rid} />
-									</Accordion.Item>
-								))}
-							</Accordion>
-						</Box>
+					<Page.ScrollableContentWithShadow padding={0}>
+						<UnreadsBody
+							sortedRooms={sortedRooms}
+							expandedItem={expandedItem}
+							activeMessages={activeMessages}
+							handleMarkAll={(): Promise<void> => handleMarkAll()}
+							handleMark={(id: string): Promise<void> => handleMark(id)}
+							getMessages={(room: any): Promise<void> => getMessages(room)}
+						/>
 					</Page.ScrollableContentWithShadow>
 				</>
 			)}

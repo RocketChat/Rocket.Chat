@@ -7,9 +7,13 @@ import ListItem from '../../../../components/Sidebar/ListItem';
 import { useDropdownVisibility } from '../../../../sidebar/header/hooks/useDropdownVisibility';
 
 type HeaderMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
-	handleMarkAll: any;
+	handleMarkAll: () => Promise<void>;
+	sortBy: string;
+	setSortBy: (sortBy: string) => void;
 };
+
 const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
+	const { handleMarkAll, sortBy, setSortBy, ...rest } = props;
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
@@ -17,28 +21,28 @@ const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
 	const target = useRef(null);
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
 
-	const [checked, setChecked] = React.useState(false);
+	const [checked, setChecked] = React.useState(sortBy === 'Activity');
 
 	const sortUnreadMessages = (): void => {
 		if (checked) {
 			setChecked(false);
-			console.log('Sort by Date');
+			setSortBy('Name');
 		} else {
 			setChecked(true);
-			// rooms.sort((a, b) => a.localeCompare(b));
+			setSortBy('Activity');
 		}
 	};
 
 	return (
 		<>
-			<Sidebar.TopBar.Action {...props} icon='sort' onClick={(): void => toggle()} ref={reference} />
+			<Sidebar.TopBar.Action icon='sort' {...rest} onClick={(): void => toggle()} ref={reference} />
 			{isVisible &&
 				createPortal(
 					<Dropdown reference={reference} ref={target}>
 						{isMobile && (
 							<>
 								<OptionTitle>{t('Action')}</OptionTitle>
-								<Option label={t('Mark_all_as_read_short')} icon={'flag'} onClick={props?.handleMarkAll} />
+								<Option label={t('Mark_all_as_read_short')} icon={'flag'} onClick={handleMarkAll} />
 								<OptionDivider />
 							</>
 						)}
