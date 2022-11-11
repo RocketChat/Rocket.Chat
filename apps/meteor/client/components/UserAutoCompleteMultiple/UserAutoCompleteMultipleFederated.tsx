@@ -89,7 +89,7 @@ const UserAutoCompleteMultipleFederated = ({
 	);
 
 	return (
-		<OptionsContext.Provider value={{ options, onSelect: onAddSelected }}>
+		<OptionsContext.Provider value={{ options }}>
 			<MultiSelectFiltered
 				placeholder={placeholder}
 				value={value}
@@ -97,7 +97,7 @@ const UserAutoCompleteMultipleFederated = ({
 				filter={filter}
 				setFilter={setFilter}
 				renderSelected={({ value, onMouseDown }: { value: string; onMouseDown: () => void }): ReactElement => {
-					const currentCachedOption = selectedCache[value];
+					const currentCachedOption = selectedCache[value] || {};
 
 					return (
 						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie='x4' mb='x2'>
