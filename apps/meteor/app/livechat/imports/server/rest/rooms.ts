@@ -19,6 +19,8 @@ const validateDateParams = (property: string, date?: string) => {
 	return parsedDate;
 };
 
+const isBoolean = (value?: string | boolean): boolean => value === 'true' || value === 'false' || typeof value === 'boolean';
+
 API.v1.addRoute(
 	'livechat/rooms',
 	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
@@ -58,7 +60,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
-					open: !!open && open === 'true',
+					...(isBoolean(open) && { open: open === 'true' }),
 					createdAt: createdAtParam,
 					closedAt: closedAtParam,
 					tags,
