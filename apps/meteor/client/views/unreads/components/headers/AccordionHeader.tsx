@@ -1,4 +1,3 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
@@ -7,7 +6,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
 
-const AccordionHeader: FC<{ room: any; handleMark: any }> = ({ room, handleMark }) => {
+const AccordionHeader: FC<{ room: any }> = ({ room }) => {
 	const t = useTranslation();
 	const icon = useRoomIcon(room);
 
@@ -32,12 +31,6 @@ const AccordionHeader: FC<{ room: any; handleMark: any }> = ({ room, handleMark 
 					</Header.Subtitle>
 				</Header.Content.Row>
 			</Header.Content>
-			<ButtonGroup>
-				<Button onClick={handleMark}>
-					<Icon name={'flag'} size='x20' margin='4x' />
-					<span style={{ marginLeft: '10px' }}>{t('Mark_read')}</span>
-				</Button>
-			</ButtonGroup>
 		</Header>
 	);
 };

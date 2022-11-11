@@ -5,3 +5,7 @@
 .unreadsAccordionHeader span i {
 	align-self: center;
 }
+
+.unreadsAccordionHeader hr {
+	visibility: hidden !important;
+}

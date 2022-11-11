@@ -1,16 +1,13 @@
 import { Accordion, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { Header } from '@rocket.chat/ui-client';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useEffect, useMemo, useState } from 'react';
 
-import MarkdownText from '../../components/MarkdownText';
 import Page from '../../components/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { MessageWithMdEnforced } from '../room/MessageList/lib/parseMessageTextToAstMarkdown';
-import AccordionHeader from './components/body/AccordionHeader';
 import ResultMessage from './components/body/ResultMessage';
-import DropdownMenu from './components/dropdownMenu/DropdownMenu';
+import AccordionHeader from './components/headers/AccordionHeader';
+import UnreadsHeader from './components/headers/UnreadsHeader';
 import MessageList from './components/messages/MessageList';
 import { useUnreads } from './hooks/useUnreads';
 
@@ -18,7 +15,6 @@ import './styles/accordion.css';
 
 const UnreadsPage: FC = () => {
 	const t = useTranslation();
-	const isMobile = useMediaQuery('(max-width: 767px)');
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
 	const [loading, error, unreads, fetchMessages] = useUnreads();
 	const [expandedItem, setExpandedItem] = useState(null);
@@ -76,48 +72,34 @@ const UnreadsPage: FC = () => {
 				<>
 					<Page.Header
 						title={
-							<>
-								<Header.Content.Row>
-									<Header.Title is='h1'>{`${totalMessages} ${t('Unread_Messages')}`}</Header.Title>
-								</Header.Content.Row>
-								<Header.Content.Row>
-									<Header.Subtitle is='h2'>
-										<MarkdownText
-											parseEmoji={true}
-											variant='inlineWithoutBreaks'
-											withTruncatedText
-											content={`${unreads.length} ${unreads.length === 1 ? t('Room') : t('Rooms')}`}
-										/>
-									</Header.Subtitle>
-								</Header.Content.Row>
-							</>
+							<UnreadsHeader
+								totalMessages={totalMessages}
+								totalRooms={unreads.length}
+								handleMarkAll={(): Promise<void> => handleMarkAll()}
+							/>
 						}
-					>
-						<ButtonGroup>
-							{!isMobile && (
-								<Button onClick={handleMarkAll}>
-									<Icon name={'flag'} size='x20' margin='4x' />
-									<span style={{ marginLeft: '10px' }}>{t('Mark_all_as_read_short')}</span>
-								</Button>
-							)}
-							<DropdownMenu />
-						</ButtonGroup>
-					</Page.Header>
+					/>
 					<Page.ScrollableContentWithShadow>
 						<Box marginBlock='none' paddingBlock='none' marginInline='auto' width='full'>
 							<Accordion borderBlockStyle='unset'>
 								{unreads.map((room) => (
-									<div className='unreadsAccordionHeader' key={room._id}>
-										<Accordion.Item
-											title={<AccordionHeader room={room} handleMark={(): Promise<void> => handleMark(room.rid)} />}
-											expanded={expandedItem === room._id}
-											onToggle={(): void => {
-												getMessages(room);
-											}}
-										>
-											<MessageList messages={activeMessages} rid={room.rid} />
-										</Accordion.Item>
-									</div>
+									<Accordion.Item
+										key={room._id}
+										className='unreadsAccordionHeader'
+										title={<AccordionHeader room={room} />}
+										expanded={expandedItem === room._id}
+										onToggle={(): void => {
+											getMessages(room);
+										}}
+									>
+										<ButtonGroup flexDirection='row' justifyContent={'flex-end'}>
+											<Button onClick={(): Promise<void> => handleMark(room.rid)}>
+												<Icon name={'flag'} size='x20' margin='4x' />
+												<span style={{ marginLeft: '10px' }}>{t('Mark_read')}</span>
+											</Button>
+										</ButtonGroup>
+										<MessageList messages={activeMessages} rid={room.rid} />
+									</Accordion.Item>
 								))}
 							</Accordion>
 						</Box>
