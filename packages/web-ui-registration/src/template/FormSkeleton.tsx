@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 
 const FormSkeleton = (): ReactElement => {
 	return (
-		<Form aria-busy onSubmit={() => false}>
+		<Form aria-busy>
 			<Form.Header>
 				<Form.Title>
 					<Skeleton />
