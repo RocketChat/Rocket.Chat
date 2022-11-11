@@ -7,30 +7,9 @@ import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
-import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from '../../../helpers';
+import { appButtonProps, appStatusSpanProps, handleAPIError, handleInstallError } from '../../../helpers';
+import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
-
-const installApp = async ({ id, name, version, permissionsGranted }) => {
-	try {
-		const { status } = await Apps.installApp(id, version, permissionsGranted);
-		warnStatusChange(name, status);
-	} catch (error) {
-		handleAPIError(error);
-	}
-};
-
-const actions = {
-	purchase: installApp,
-	install: installApp,
-	update: async ({ id, name, marketplaceVersion, permissionsGranted }) => {
-		try {
-			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
-			warnStatusChange(name, status);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	},
-};
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, ...props }) => {
 	const t = useTranslation();
@@ -48,7 +27,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 		(permissionsGranted) => {
 			setModal(null);
 
-			actions[action]({ ...app, permissionsGranted }).then(() => {
+			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
 				setLoading(false);
 			});
 		},
@@ -109,7 +88,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 
 	return (
 		<Box {...props}>
-			{button && (
+			{button && isAppDetailsPage && (
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -147,9 +126,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, ins
 			)}
 			{status && (
 				<>
-					<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : ''}>
-						{status.label}
-					</Tag>
+					<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : ''}>{status.label}</Tag>
 				</>
 			)}
 		</Box>
