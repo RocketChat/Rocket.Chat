@@ -1,3 +1,4 @@
+/* eslint no-await-in-loop: 0 */
 import type { Page } from '@playwright/test';
 
 import { test, expect } from '../../utils/test';
