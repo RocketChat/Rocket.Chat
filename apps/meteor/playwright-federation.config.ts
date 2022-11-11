@@ -13,7 +13,7 @@ export default {
 			// (even in headless mode)
 			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
 		},
-		permissions: ['microphone'],
+		permissions: ['microphone', 'camera'],
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: 'list',

@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-
 import type { Locator, Page } from '@playwright/test';
 
 export class FederationHomeContent {
@@ -27,7 +25,57 @@ export class FederationHomeContent {
 
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
+		await this.page
+			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
+			.click();
+	}
+
+	async sendMessageUsingEnter(text: string): Promise<void> {
+		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
+	}
+
+	async editLastMessage(message: string): Promise<void> {
+		await this.openLastMessageMenu();
+		await this.btnOptionEditMessage.click();
+		await this.page.locator('[name="msg"]').fill(message);
+		await this.page.keyboard.press('Enter');
+	}
+
+	async deleteLastMessage(): Promise<void> {
+		await this.openLastMessageMenu();
+		await this.btnOptionDeleteMessage.click();
+		await this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger').click();
+	}
+
+	async starLastMessage(): Promise<void> {
+		await this.openLastMessageMenu();
+		await this.btnOptionStarMessage.click();
+	}
+
+	async replyInDm(message: string): Promise<void> {
+		await this.openLastMessageMenu();
+		await this.btnOptionReplyDirectly.click();
+		await this.page.waitForTimeout(2000);
+		await this.page.locator('[name="msg"]').fill(message);
+		await this.page.keyboard.press('Enter');
+	}
+
+	async sendAudioRecordedMessage(): Promise<void> {
+		await this.btnRecordAudio.click();
+		await this.page.waitForTimeout(5000);
+		await this.page.locator('.js-audio-message-done').click();
+		await this.btnModalConfirm.click();
+	}
+
+	async sendVideoRecordedMessage(): Promise<void> {
+		await this.btnMenuMoreActions.click();
+		await this.btnVideoMessage.click();
+		await this.page.locator('.vrec-dialog button.record').click();
+		await this.page.waitForTimeout(5000);
+		await this.page.locator('.vrec-dialog button.record').click();
+		await this.page.locator('.vrec-dialog button.ok').click();
+		await this.btnModalConfirm.click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -55,8 +103,12 @@ export class FederationHomeContent {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
 	}
 
-	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
+	get getLastFileAttachmentContent(): Locator {
+		return this.page.locator('.rcx-attachment__content').last();
+	}
+
+	get getLastFileName(): Locator {
+		return this.page.locator('.rcx-message-attachment').last();
 	}
 
 	get fileNameInput(): Locator {
@@ -115,28 +167,16 @@ export class FederationHomeContent {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
 	}
 
-	get inputModalClosingComment(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
+	get btnOptionReplyInThread(): Locator {
+		return this.page.locator('[data-qa-id="reply-in-thread"]');
 	}
 
-	get btnSendTranscript(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	get btnOptionStartDiscussion(): Locator {
+		return this.page.locator('[data-qa-id="start-discussion"]');
 	}
 
-	get btnCannedResponses(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
-	}
-
-	get btnNewCannedResponse(): Locator {
-		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
-	}
-
-	get inputModalAgentUserName(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)');
-	}
-
-	get inputModalAgentForwardComment(): Locator {
-		return this.page.locator('[data-qa-id="ForwardChatModalTextAreaInputComment"]');
+	get btnOptionReplyDirectly(): Locator {
+		return this.page.locator('[data-qa-id="reply-directly"]');
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
@@ -145,21 +185,10 @@ export class FederationHomeContent {
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
 	}
 
-	async dragAndDropFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
-
-		const dataTransfer = await this.page.evaluateHandle((contract) => {
-			const data = new DataTransfer();
-			const file = new File([`${contract}`], 'any_file.txt', {
-				type: 'text/plain',
-			});
-			data.items.add(file);
-			return data;
-		}, contract);
-
-		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
-		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	async sendFileMessage(fileName: string): Promise<void> {
+		await this.btnMenuMoreActions.click();
+		await this.btnOptionFileUpload.click();
+		await this.page.locator('input[type=file]#fileupload-input').setInputFiles(`./tests/e2e/federation/files/${fileName}`);
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -168,8 +197,22 @@ export class FederationHomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 
-	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('role=button[name="Take it!"]');
+	async quoteMessage(message: string): Promise<void> {
+		await this.openLastMessageMenu();
+		await this.page.locator('[data-qa-id="quote-message"]').click();
+		await this.page.locator('[name="msg"]').fill(message);
+		await this.page.keyboard.press('Enter');
+	}
+
+	async reactToMessage(emoji: string): Promise<void> {
+		await this.openLastMessageMenu();
+		await this.page.locator('[data-qa-id="reaction-message"]').click();
+		await this.page.locator('.js-emojipicker-search').fill(emoji);
+		await this.page.locator(`[data-emoji="${emoji}"]`).last().click();
+	}
+
+	async unreactLastMessage(): Promise<void> {
+		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).click();
 	}
 
 	async getSystemMessageByText(text: string): Promise<Locator> {
@@ -178,5 +221,9 @@ export class FederationHomeContent {
 
 	async getLastSystemMessageName(): Promise<Locator> {
 		return this.page.locator('div[data-qa="system-message"]:last-child span.rcx-message-system__name');
+	}
+
+	async getAllReactions(): Promise<Locator> {
+		return this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction');
 	}
 }

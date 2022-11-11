@@ -1,12 +1,12 @@
 import faker from '@faker-js/faker';
 
-import { test, expect } from '../utils/test';
-import { FederationChannel } from '../page-objects/channel';
-import * as constants from '../config/constants';
-import { registerUser } from '../utils/register-user';
-import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../utils/format';
-import { doLogin } from '../utils/auth';
-import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../utils/channel';
+import { test, expect } from '../../utils/test';
+import { FederationChannel } from '../../page-objects/channel';
+import * as constants from '../../config/constants';
+import { registerUser } from '../../utils/register-user';
+import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { doLogin } from '../../utils/auth';
+import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
 test.describe.parallel('Federation - Channel Creation', () => {
 	let poFederationChannelServer1: FederationChannel;
@@ -1164,6 +1164,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
+
+				await poFederationChannelServer1.sidenav.openChat(channelName);
 
 				await poFederationChannelServer2.sidenav.openChat(channelName);
 				await poFederationChannelServer2.tabs.btnRoomInfo.click();

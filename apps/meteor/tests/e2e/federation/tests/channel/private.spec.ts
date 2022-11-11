@@ -1,12 +1,12 @@
 import faker from '@faker-js/faker';
 
-import { test, expect } from '../utils/test';
-import { FederationChannel } from '../page-objects/channel';
-import * as constants from '../config/constants';
-import { registerUser } from '../utils/register-user';
-import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../utils/format';
-import { doLogin } from '../utils/auth';
-import { createGroupAndInviteRemoteUserToCreateLocalUser } from '../utils/channel';
+import { test, expect } from '../../utils/test';
+import { FederationChannel } from '../../page-objects/channel';
+import * as constants from '../../config/constants';
+import { registerUser } from '../../utils/register-user';
+import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { doLogin } from '../../utils/auth';
+import { createGroupAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
 test.describe.parallel('Federation - Group Creation', () => {
 	let poFederationChannelServer1: FederationChannel;
@@ -1107,6 +1107,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [fullUsernameFromServer2]);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
+
+				await poFederationChannelServer1.sidenav.openChat(groupName);
 
 				await poFederationChannelServer2.sidenav.openChat(groupName);
 				await poFederationChannelServer2.tabs.btnRoomInfo.click();
