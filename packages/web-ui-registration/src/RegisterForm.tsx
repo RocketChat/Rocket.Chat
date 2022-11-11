@@ -37,24 +37,27 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 	} = useForm<LoginRegisterPayload>();
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
-		try {
-			await registerUser({ pass: password, ...formData });
-		} catch (error: any) {
-			if (error.errorType === 'error-invalid-email') {
-				setError('email', { type: 'invalid-email', message: t('Invalid_email') });
-			}
-			if (error.errorType === 'error-user-already-exists') {
-				setError('username', { type: 'user-already-exists', message: t('Username_already_exist') });
-			}
+		registerUser.mutate(
+			{ pass: password, ...formData },
+			{
+				onError: (error: any) => {
+					if (error.errorType === 'error-invalid-email') {
+						setError('email', { type: 'invalid-email', message: t('Invalid_email') });
+					}
+					if (error.errorType === 'error-user-already-exists') {
+						setError('username', { type: 'user-already-exists', message: t('Username_already_exist') });
+					}
 
-			if (/Email already exists/.test(error.error)) {
-				setError('email', { type: 'email-already-exists', message: t('Email_already_exists') });
-			}
+					if (/Email already exists/.test(error.error)) {
+						setError('email', { type: 'email-already-exists', message: t('Email_already_exists') });
+					}
 
-			if (/Username is already in use/.test(error.error)) {
-				setError('username', { type: 'username-already-exists', message: t('Username_already_exist') });
-			}
-		}
+					if (/Username is already in use/.test(error.error)) {
+						setError('username', { type: 'username-already-exists', message: t('Username_already_exist') });
+					}
+				},
+			},
+		);
 	};
 
 	return (
