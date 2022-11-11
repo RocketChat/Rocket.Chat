@@ -32,7 +32,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/priority/:priorityId',
+	'livechat/priorities/:priorityId',
 	{
 		authRequired: true,
 		permissionsRequired: {

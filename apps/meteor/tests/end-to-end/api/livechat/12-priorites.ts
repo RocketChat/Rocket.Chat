@@ -217,13 +217,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 	});
 
-	describe('livechat/priority/:priorityId', () => {
+	describe('livechat/priorities/:priorityId', () => {
 		let priority: ILivechatPriority;
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-priorities', []);
 			await updatePermission('view-l-room', []);
-			const response = await request.get(api('livechat/priority/123')).set(credentials).expect(403);
+			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
 			expect((response.body as any)?.error).to.contain('error-unauthorized');
@@ -238,7 +238,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			priority = priorities[0];
 
 			const response = await request
-				.get(api(`livechat/priority/${priority._id}`))
+				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -247,12 +247,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body._id).to.be.equal(priority._id);
 		});
 		it('should throw 404 when priority does not exist', async () => {
-			const response = await request.get(api('livechat/priority/123')).set(credentials).expect(404);
+			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(404);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should update a priority when using PUT', async () => {
 			const response = await request
-				.put(api(`livechat/priority/${priority._id}`))
+				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.send({
 					name: faker.random.word(),
@@ -263,7 +263,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should return dirty: true after a priority has been updated', async () => {
 			const response = await request
-				.get(api(`livechat/priority/${priority._id}`))
+				.get(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200);
