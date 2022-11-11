@@ -6,10 +6,9 @@ test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('sidebar', () => {
 	let poHomeChannel: HomeChannel;
-	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		await createTargetChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -22,7 +21,7 @@ test.describe.serial('sidebar', () => {
 		await poHomeChannel.sidenav.openDisplayOptions();
 		await poHomeChannel.sidenav.selectOrderByName();
 
-		const channels = await poHomeChannel.sidenav.getChannels()
-		expect(channels, 'Channels are not sorted by name').toEqual([...channels].sort())
+		const channels = await poHomeChannel.sidenav.getChannels();
+		expect(channels, 'Channels are not sorted by name').toEqual([...channels].sort());
 	});
 });

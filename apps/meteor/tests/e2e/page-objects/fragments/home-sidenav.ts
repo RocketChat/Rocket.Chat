@@ -52,14 +52,15 @@ export class HomeSidenav {
 	}
 
 	async selectOrderByName(): Promise<void> {
-		const label = this.page.locator('text=⦇Name >> label')
+		const label = this.page.locator('text=⦇Name >> label');
 
-		if (!await label.locator('input').isChecked()) {
-			await label.click()
+		const inputIsChecked = await label.locator('input').isChecked();
+		if (!inputIsChecked) {
+			await label.click();
 
 			// Wait for child change
-			await this.page.locator('.rooms-list .rc-scrollbars-view > div > div').evaluate(div => {
-				return new Promise<void>(resolve => {
+			await this.page.locator('.rooms-list .rc-scrollbars-view > div > div').evaluate((div) => {
+				return new Promise<void>((resolve) => {
 					new window.MutationObserver(() => {
 						resolve();
 					}).observe(div, { childList: true });
@@ -73,30 +74,30 @@ export class HomeSidenav {
 	}
 
 	async getChannels(): Promise<string[]> {
-		const items = await this.page.$$('.rc-scrollbars-view div[data-index]')
-		const channels: string[] = []
+		const items = await this.page.$$('.rc-scrollbars-view div[data-index]');
 
-		let inChannels = false
-		for (const item of items) {
-			if (!inChannels) {
-				const sidebar = await item.$('.rcx-sidebar-section .rcx-sidebar-title')
-				if (!sidebar) continue
-
-				const sidebarText = await sidebar.textContent()
-				if (sidebarText === 'Channels') {
-					inChannels = true
+		const channels: string[] = await Promise.all(
+			items.map(async (item) => {
+				const sidebar = await item.$('.rcx-sidebar-section .rcx-sidebar-title');
+				if (sidebar) {
+					const sidebarText = await sidebar.textContent();
+					if (sidebarText === 'Channels') {
+						return 'Channels';
+					}
 				}
 
-				continue
-			}
+				const channel = await item.$('.rcx-sidebar-item .rcx-sidebar-item__title');
+				const channelName = await channel?.textContent();
 
-			const channel = await item.$('.rcx-sidebar-item .rcx-sidebar-item__title')
-			const channelName = await channel?.textContent()
+				if (channelName) return channelName;
+				return '';
+			}),
+		);
 
-			if (channelName) channels.push(channelName)
-		}
+		const channelIndex = channels.findIndex((channel) => channel === 'Channels');
+		const filteredChannels = channels.filter((channel) => !!channel).slice(channelIndex);
 
-		return channels;
+		return filteredChannels;
 	}
 
 	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
