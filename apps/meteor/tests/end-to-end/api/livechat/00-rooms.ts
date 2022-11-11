@@ -4,8 +4,9 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatCustomField } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
+import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {
@@ -20,6 +21,9 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { sleep } from '../../../data/livechat/utils';
+import { IS_EE } from '../../../e2e/config/constants';
+import { createCustomField } from '../../../data/livechat/custom-fields';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -227,12 +231,22 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an array of rooms when the query params is all valid', (done) => {
 			request
-				.get(
-					api(`livechat/rooms?agents[]=teste&departamentId=123&open=true&createdAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}
-			&closedAt={"start": "2018-01-26T00:11:22.345Z", "end": "2018-01-26T00:11:22.345Z"}&tags[]=rocket
-			&customFields={"docId": "031041"}&count=3&offset=1&sort={"_updatedAt": 1}&fields={"msgs": 0}&roomName=test`),
-				)
+				.get(api(`livechat/rooms`))
 				.set(credentials)
+				.query({
+					'agents[]': 'teste',
+					'departmentId': '123',
+					'open': true,
+					'createdAt': '{"start":"2018-01-26T00:11:22.345Z","end":"2018-01-26T00:11:22.345Z"}',
+					'closedAt': '{"start":"2018-01-26T00:11:22.345Z","end":"2018-01-26T00:11:22.345Z"}',
+					'tags[]': 'rocket',
+					'customFields': '{ "docId": "031041" }',
+					'count': 3,
+					'offset': 1,
+					'sort': '{ "_updatedAt": 1 }',
+					'fields': '{ "msgs": 0 }',
+					'roomName': 'test',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res: Response) => {
@@ -243,6 +257,54 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+		it('should not cause issues when the customFields is empty', (done) => {
+			request
+				.get(api(`livechat/rooms`))
+				.set(credentials)
+				.query({ customFields: {}, roomName: 'test' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.rooms).to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
+		it('should throw an error if customFields param is not a object', (done) => {
+			request
+				.get(api(`livechat/rooms`))
+				.set(credentials)
+				.query({ customFields: 'string' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	describe('livechat/room.join', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: '123' }).send().expect(403);
+		});
+		it('should fail if no roomId is present on query params', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			await request.get(api('livechat/room.join')).set(credentials).expect(400);
+		});
+		it('should fail if room is present but invalid', async () => {
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: 'invalid' }).send().expect(400);
+		});
+		it('should allow user to join room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			await request.get(api('livechat/room.join')).set(credentials).query({ roomId: room._id }).send().expect(200);
 		});
 	});
 
@@ -277,10 +339,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-token');
-				})
 				.end(done);
 		});
 
@@ -294,10 +352,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-room');
-				})
 				.end(done);
 		});
 
@@ -329,10 +383,6 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('room-closed');
-				})
 				.end(done);
 		});
 	});
@@ -482,7 +532,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-token]');
 				})
 				.end(done);
 		});
@@ -500,7 +549,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-room]');
 				})
 				.end(done);
 		});
@@ -518,7 +566,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('[invalid-data]');
 				})
 				.end(done);
 		});
@@ -970,6 +1017,332 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages[1]).to.have.property('msg', 'Hello 2');
 			expect(body.messages[1]).to.have.property('ts');
 			expect(body.messages[1]).to.have.property('username', visitor.username);
+		});
+	});
+
+	describe('livechat/transfer.history/:rid', () => {
+		it('should fail if user doesnt have "view-livechat-rooms" permission', async () => {
+			await updatePermission('view-livechat-rooms', []);
+			const { body } = await request
+				.get(api(`livechat/transfer.history/test`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if room is not a valid room id', async () => {
+			await updatePermission('view-livechat-rooms', ['admin', 'livechat-manager']);
+			const { body } = await request
+				.get(api(`livechat/transfer.history/test`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(body).to.have.property('success', false);
+		});
+		it('should return empty for a room without transfer history', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.get(api(`livechat/transfer.history/${room._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('history').that.is.an('array');
+			expect(body.history.length).to.equal(0);
+		});
+		it('should return the transfer history for a room', async () => {
+			const initialAgentAssignedToChat: IUser = await createUser();
+			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
+			await createAgent(initialAgentAssignedToChat.username);
+			await makeAgentAvailable(initialAgentCredentials);
+
+			const newVisitor = await createVisitor();
+			// at this point, the chat will get transferred to agent "user"
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const forwardChatToUser: IUser = await createUser();
+			const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
+			await createAgent(forwardChatToUser.username);
+			await makeAgentAvailable(forwardChatToUserCredentials);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: newRoom._id,
+					userId: forwardChatToUser._id,
+					clientAction: true,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const { body } = await request
+				.get(api(`livechat/transfer.history/${newRoom._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('history').that.is.an('array');
+			expect(body.history.length).to.equal(1);
+			expect(body.history[0]).to.have.property('scope', 'agent');
+			expect(body.history[0]).to.have.property('comment', 'test comment');
+			expect(body.history[0]).to.have.property('transferredBy').that.is.an('object');
+		});
+	});
+
+	describe('livechat/room.saveInfo', () => {
+		it('should fail if no data is sent as body param', async () => {
+			await request.post(api('livechat/room.saveInfo')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+		});
+
+		it('should return an "unauthorized error" when the user does not have "view-l-room" permission', async () => {
+			await updatePermission('view-l-room', []);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: 'invalid-room-id',
+					},
+					guestData: {
+						_id: 'invalid-guest-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.have.string('unauthorized');
+				});
+		});
+
+		it('should not allow users to update room info without serving the chat or having "save-others-livechat-room-info" permission', async () => {
+			await updatePermission('view-l-room', ['admin']);
+			await updatePermission('save-others-livechat-room-info', []);
+
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			// delay for 1 second to make sure the routing queue gets stopped
+			await sleep(1000);
+
+			const newVisitor = await createVisitor();
+			// at this point, the chat will get transferred to agent "user"
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.have.string('unauthorized');
+				});
+
+			await updatePermission('save-others-livechat-room-info', ['admin']);
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			// delay for 1 second to make sure the routing queue starts again
+			await sleep(1000);
+		});
+
+		it('should throw an error if roomData is not provided', async () => {
+			await updatePermission('view-l-room', ['admin']);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					guestData: {
+						_id: 'invalid-guest-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error if guestData is not provided', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: 'invalid-room-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error if roomData is not of valid type', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: 'invalid-room-data',
+					guestData: {
+						_id: 'invalid-guest-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should throw an error if guestData is not of valid type', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					guestData: 'invalid-guest-data',
+					roomData: {
+						_id: 'invalid-room-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should allow user to update the room info', async () => {
+			await updatePermission('view-l-room', ['admin']);
+
+			const newVisitor = await createVisitor();
+			// at this point, the chat will get transferred to agent "user"
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						topic: 'new topic',
+						tags: ['tag1', 'tag2'],
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom).to.have.property('topic', 'new topic');
+			expect(latestRoom).to.have.property('tags').of.length(2);
+			expect(latestRoom).to.have.property('tags').to.include('tag1');
+			expect(latestRoom).to.have.property('tags').to.include('tag2');
+		});
+
+		(IS_EE ? it : it.skip)('should allow user to update the room info - EE fields', async () => {
+			const cfName = faker.lorem.word();
+			await createCustomField({
+				searchable: true,
+				field: cfName,
+				label: cfName,
+				scope: 'room',
+				visibility: 'visible',
+				regexp: '',
+			} as unknown as ILivechatCustomField & { field: string });
+
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						topic: 'new topic',
+						tags: ['tag1', 'tag2'],
+						livechatData: {
+							[cfName]: 'test-input-1-value',
+						},
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom).to.have.property('topic', 'new topic');
+			expect(latestRoom).to.have.property('tags').of.length(2);
+			expect(latestRoom).to.have.property('tags').to.include('tag1');
+			expect(latestRoom).to.have.property('tags').to.include('tag2');
+			expect(latestRoom).to.have.property('livechatData').to.have.property(cfName, 'test-input-1-value');
+		});
+
+		(IS_EE ? it : it.skip)('endpoint should handle empty custom fields', async () => {
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						topic: 'new topic',
+						tags: ['tag1', 'tag2'],
+						livechatData: {},
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom).to.have.property('topic', 'new topic');
+			expect(latestRoom).to.have.property('tags').of.length(2);
+			expect(latestRoom).to.have.property('tags').to.include('tag1');
+			expect(latestRoom).to.have.property('tags').to.include('tag2');
+			expect(latestRoom).to.not.have.property('livechatData');
+		});
+
+		(IS_EE ? it : it.skip)('should throw an error if custom fields are not valid', async () => {
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: 'invalid-room-id',
+						livechatData: {
+							key: {
+								value: 'invalid',
+							},
+						},
+					},
+					guestData: {
+						_id: 'invalid-visitor-id',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 	});
 });

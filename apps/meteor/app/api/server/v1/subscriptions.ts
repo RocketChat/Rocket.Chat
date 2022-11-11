@@ -69,6 +69,7 @@ API.v1.addRoute(
 	Route: api/v1/subscriptions.read
 	Params:
 		- rid: The rid of the room to be marked as read.
+		- roomId: Alternative for rid.
  */
 API.v1.addRoute(
 	'subscriptions.read',
@@ -78,7 +79,9 @@ API.v1.addRoute(
 	},
 	{
 		post() {
-			Meteor.call('readMessages', this.bodyParams.rid);
+			const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
+
+			Meteor.call('readMessages', roomId);
 
 			return API.v1.success();
 		},

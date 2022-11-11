@@ -99,16 +99,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 	return UIKitInteractionType.MODAL_ClOSE;
 };
 
-export const triggerAction = async ({
-	appId,
-	type,
-	actionId,
-	rid,
-	mid,
-	viewId,
-	container,
-	payload,
-}) => {
+export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, container, payload }) => {
 	const triggerId = generateTriggerId(appId);
 
 	try {
@@ -124,7 +115,7 @@ export const triggerAction = async ({
 		};
 
 		const result = await Promise.race([
-			fetch(`${ Livechat.client.host }/api/${ encodeURI(`apps/ui.interaction/${ appId }`) }`, {
+			fetch(`${Livechat.client.host}/api/${encodeURI(`apps/ui.interaction/${appId}`)}`, {
 				method: 'POST',
 				body: Livechat.client.getBody(params),
 				headers: Object.assign({ 'x-visitor-token': Livechat.credentials.token }, Livechat.client.getHeaders()),

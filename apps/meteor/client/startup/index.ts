@@ -14,6 +14,7 @@ import './incomingMessages';
 import './ldap';
 import './loadMissedMessages';
 import './loginViaQuery';
+import './mergeSubscriptionsAndRooms';
 import './messageObserve';
 import './messageTypes';
 import './notifications';
