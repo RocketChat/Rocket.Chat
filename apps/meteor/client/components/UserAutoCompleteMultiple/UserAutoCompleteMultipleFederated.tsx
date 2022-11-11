@@ -1,9 +1,9 @@
 import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
-import type { Options } from '@rocket.chat/fuselage';
+import type { OptionType } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { memo, ReactElement, useState, ComponentProps } from 'react';
+import React, { memo, ReactElement, useState, useCallback, useMemo } from 'react';
 
 import UserAvatar from '../avatar/UserAvatar';
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
@@ -55,27 +55,49 @@ const UserAutoCompleteMultipleFederated = ({
 		{ keepPreviousData: true },
 	);
 
-	const options = data || [];
+	const options = useMemo(() => data || [], [data]);
 
-	const onAddSelected: ComponentProps<typeof Options>['onSelect'] = ([value]) => {
-		setFilter('');
-		const cachedOption = options.find(([curVal]) => curVal === value)?.[1];
-		if (!cachedOption) {
-			throw new Error('UserAutoCompleteMultiple - onAddSelected - failed to cache option');
-		}
-		setSelectedCache({ ...selectedCache, [value]: cachedOption });
-	};
+	const onAddSelected = useCallback(
+		([value]: OptionType, shouldRemoveUser = false): void => {
+			setFilter('');
+			if (shouldRemoveUser) {
+				return setSelectedCache((users) => {
+					const selectedUsers = { ...users };
+					delete selectedUsers[value];
+					return selectedUsers;
+				});
+			}
+			const cachedOption = options.find(([curVal]) => curVal === value)?.[1];
+			if (!cachedOption) {
+				throw new Error('UserAutoCompleteMultiple - onAddSelected - failed to cache option');
+			}
+			setSelectedCache({ ...selectedCache, [value]: cachedOption });
+		},
+		[selectedCache, setSelectedCache, options],
+	);
+
+	const handleOnChange = useCallback(
+		(usernames: string[]) => {
+			onChange(usernames);
+			const selectedUsernames = Object.entries(selectedCache).map(([, item]) => item.username);
+			const newAddedUsername = usernames.filter((username) => !selectedUsernames.includes(username))[0];
+			const removedUsername = selectedUsernames.filter((username) => !usernames.includes(username))[0];
+			newAddedUsername && onAddSelected([newAddedUsername, newAddedUsername]);
+			removedUsername && onAddSelected([removedUsername, removedUsername], true);
+		},
+		[onChange, selectedCache, onAddSelected],
+	);
 
 	return (
 		<OptionsContext.Provider value={{ options, onSelect: onAddSelected }}>
 			<MultiSelectFiltered
 				placeholder={placeholder}
 				value={value}
-				onChange={onChange}
+				onChange={handleOnChange}
 				filter={filter}
 				setFilter={setFilter}
 				renderSelected={({ value, onMouseDown }: { value: string; onMouseDown: () => void }): ReactElement => {
-					const currentCachedOption = selectedCache[value] || {};
+					const currentCachedOption = selectedCache[value];
 
 					return (
 						<Chip key={value} {...props} height='x20' onMouseDown={onMouseDown} mie='x4' mb='x2'>
