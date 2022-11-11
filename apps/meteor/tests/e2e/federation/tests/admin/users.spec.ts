@@ -7,7 +7,7 @@ import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 import { FederationAdmin } from '../../page-objects/admin';
 
-test.describe.parallel('Federation - Admin Panel - Users', () => {
+test.describe.skip('Federation - Admin Panel - Users', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
 	let usernameWithDomainFromServer2: string;
@@ -65,9 +65,9 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		).toContainText('Not possible to edit a federated user');
 	});
 
-	// TODO: these skipped tests needs a PR got merged to be able to run them
+	// TODO: these skipped tests needs a this PR to be merged: https://github.com/RocketChat/Rocket.Chat/pull/27251
 
-	test.skip('expect not to have teh kebab menu enable, since there should not be any menu option enabled for federated users', async ({
+	test.skip('expect not to have the kebab menu enable, since there should not be any menu option enabled for federated users', async ({
 		page,
 	}) => {
 		await poFederationAdmin.inputSearchUsers.type(usernameWithDomainFromServer2);
@@ -94,12 +94,11 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		const after = parseInt(
 			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
-		expect(before).not.toEqual(after);
-		expect(before + 1).toEqual(after);
+		expect(before).toEqual(after);
 		await page2.close();
 	});
 
-	test.skip('expect to federated users (but local ones) not being counted as a seat cap in an EE environment', async ({
+	test.skip('expect to federated users (but local ones) being counted as a seat cap in an EE environment', async ({
 		browser,
 		page,
 		apiServer1,
@@ -118,7 +117,8 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		const after = parseInt(
 			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
-		expect(before).toEqual(after);
+		expect(before).not.toEqual(after);
+		expect(before + 1).toEqual(after);
 		await page2.close();
 	});
 });
