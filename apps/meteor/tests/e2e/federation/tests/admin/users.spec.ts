@@ -7,7 +7,7 @@ import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 import { FederationAdmin } from '../../page-objects/admin';
 
-test.describe.skip('Federation - Admin Panel - Users', () => {
+test.describe.parallel('Federation - Admin Panel - Users', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
 	let usernameWithDomainFromServer2: string;
