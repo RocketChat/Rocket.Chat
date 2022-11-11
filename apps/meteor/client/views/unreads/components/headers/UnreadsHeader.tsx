@@ -39,7 +39,7 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 							<span style={{ marginLeft: '10px' }}>{t('Mark_all_as_read_short')}</span>
 						</Button>
 					)}
-					<HeaderMenu />
+					<HeaderMenu handleMarkAll={(): Promise<void> => handleMarkAll()} />
 				</ButtonGroup>
 			</Header.Content.Row>
 		</Header>

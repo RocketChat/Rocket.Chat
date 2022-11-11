@@ -1,13 +1,15 @@
 import { Sidebar, Dropdown, OptionDivider, OptionTitle, Option, RadioButton } from '@rocket.chat/fuselage';
-import { useEndpoint, useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { VFC, useRef, HTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
 
 import ListItem from '../../../../components/Sidebar/ListItem';
 import { useDropdownVisibility } from '../../../../sidebar/header/hooks/useDropdownVisibility';
 
-const HeaderMenu: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
-	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
+type HeaderMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+	handleMarkAll: any;
+};
+const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
@@ -36,7 +38,7 @@ const HeaderMenu: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 						{isMobile && (
 							<>
 								<OptionTitle>{t('Action')}</OptionTitle>
-								<Option label={t('Mark_all_as_read_short')} icon={'flag'} onClick={readMessages as any} />
+								<Option label={t('Mark_all_as_read_short')} icon={'flag'} onClick={props?.handleMarkAll} />
 								<OptionDivider />
 							</>
 						)}
