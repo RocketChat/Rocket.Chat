@@ -1,4 +1,3 @@
-import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Tooltip, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
@@ -9,7 +8,8 @@ import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
-import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError, warnStatusChange } from '../../../helpers';
+import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
+import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { TooltipOnHover } from './TooltipOnHover';
 
@@ -19,43 +19,6 @@ type AppStatusProps = {
 	isAppDetailsPage: boolean;
 	installed?: boolean;
 	versionIncompatible?: boolean;
-};
-
-type UpdateProps = {
-	id: string;
-	name: string;
-	marketplaceVersion: string;
-	permissionsGranted: IPermission[];
-};
-
-const installApp = async ({ id, name, version, permissionsGranted }: any): Promise<void> => {
-	try {
-		const { status } = await Apps.installApp(id, version, permissionsGranted);
-		if (!status) {
-			throw new Error('status must not be empty');
-		}
-
-		warnStatusChange(name, status);
-	} catch (error: any) {
-		handleAPIError(error);
-	}
-};
-
-const actions = {
-	purchase: installApp,
-	install: installApp,
-	update: async ({ id, name, marketplaceVersion, permissionsGranted }: UpdateProps): Promise<void> => {
-		try {
-			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
-			if (!status) {
-				throw new Error('status must not be empty');
-			}
-
-			warnStatusChange(name, status);
-		} catch (error: any) {
-			handleAPIError(error);
-		}
-	},
 };
 
 const AppStatus = ({
@@ -83,7 +46,12 @@ const AppStatus = ({
 		(permissionsGranted) => {
 			setModal(null);
 
-			actions[action]({ ...app, permissionsGranted }).then(() => {
+			if (action === undefined) {
+				setLoading(false);
+				return;
+			}
+
+			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
 				setLoading(false);
 			});
 		},

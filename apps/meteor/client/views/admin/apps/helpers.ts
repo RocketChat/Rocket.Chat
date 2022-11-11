@@ -87,18 +87,17 @@ const shouldHandleErrorAsWarning = (message: string): boolean => {
 	return warnings.includes(message);
 };
 
-export const handleAPIError = (error: {
-	xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } };
-	message: string;
-}): void => {
-	const message = error.xhr?.responseJSON?.error ?? error.message;
+export const handleAPIError = (error: unknown): void => {
+	if (error instanceof Error) {
+		const { message } = error;
 
-	if (shouldHandleErrorAsWarning(message)) {
-		dispatchToastMessage({ type: 'warning', message });
-		return;
+		if (shouldHandleErrorAsWarning(message)) {
+			dispatchToastMessage({ type: 'warning', message });
+			return;
+		}
+
+		dispatchToastMessage({ type: 'error', message });
 	}
-
-	dispatchToastMessage({ type: 'error', message });
 };
 
 export const warnStatusChange = (appName: string, status: AppStatus): void => {
