@@ -59,7 +59,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 							<>
 								<TooltipOnHover
 									element={
-										<Tag medium variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
+										<Tag variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
 											{incompatibleStatus?.label}
 										</Tag>
 									}

@@ -176,7 +176,7 @@ const AppStatus = ({
 								key={index}
 								element={<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>}
 								tooltip={<Tooltip>{status.tooltipText}</Tooltip>}
-							></TooltipOnHover>
+							/>
 						) : (
 							<Box is={'span'} key={index}>
 								<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>

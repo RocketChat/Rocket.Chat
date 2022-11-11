@@ -29,7 +29,7 @@ const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 							})}
 						</Tooltip>
 					}
-				></TooltipOnHover>
+				/>
 			))}
 		</>
 	);
