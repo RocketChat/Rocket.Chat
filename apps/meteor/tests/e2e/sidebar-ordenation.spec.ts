@@ -22,6 +22,6 @@ test.describe.serial('sidebar', () => {
 		await poHomeChannel.sidenav.selectOrderByName();
 
 		const channels = await poHomeChannel.sidenav.getChannels();
-		expect(channels, 'Channels are not sorted by name').toEqual([...channels].sort());
+		expect(channels, 'Channels are not sorted by name').toEqual([...channels].sort((a, b) => a.localeCompare(b)));
 	});
 });

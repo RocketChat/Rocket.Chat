@@ -70,7 +70,7 @@ export class HomeSidenav {
 	}
 
 	async selectOrderByActivity(): Promise<void> {
-		await this.page.locator('text=Activity >> label').click();
+		await this.page.locator('text=Activity >> label').click();
 	}
 
 	async getChannels(): Promise<string[]> {
