@@ -33,6 +33,7 @@ export class LivechatRooms extends Base {
 				},
 			},
 		);
+		this.tryEnsureIndex({ 'livechatData.$**': 1 });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -198,7 +199,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
@@ -208,7 +209,10 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'$or': [
+				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
+				{ 'email.thread': new RegExp(emailThread.map((t) => `"${t}"`).join('|')) },
+			],
 			...(departmentId && { departmentId }),
 		};
 
@@ -220,10 +224,20 @@ export class LivechatRooms extends Base {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
+	}
+
+	updateEmailThreadByRoomId(roomId, threadIds) {
+		const query = {
+			$addToSet: {
+				'email.thread': threadIds,
+			},
+		};
+
+		return this.update({ _id: roomId }, query);
 	}
 
 	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {

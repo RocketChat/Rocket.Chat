@@ -1,8 +1,6 @@
 import './livechat';
 import './config';
 import './startup';
-import './visitorStatus';
-import './agentStatus';
 import '../lib/messageTypes';
 import './hooks/beforeCloseRoom';
 import './hooks/beforeDelegateAgent';
@@ -19,6 +17,7 @@ import './hooks/markRoomNotResponded';
 import './hooks/sendTranscriptOnClose';
 import './hooks/saveContactLastChat';
 import './hooks/saveLastMessageToInquiry';
+import './hooks/afterUserActions';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';

@@ -62,6 +62,7 @@ const AutoCompleteDepartment = (props) => {
 			setFilter={setDepartmentsFilter}
 			options={sortedByName}
 			placeholder={t('Select_an_option')}
+			data-qa='autocomplete-department'
 			endReached={
 				departmentsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
 			}

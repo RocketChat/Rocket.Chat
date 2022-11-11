@@ -46,7 +46,7 @@ API.v1.addRoute('livechat/visitor', {
 			await Promise.all(rooms.map((room: IRoom) => Livechat.saveRoomInfo(room, visitor)));
 		}
 
-		if (customFields && customFields instanceof Array) {
+		if (customFields && Array.isArray(customFields)) {
 			customFields.forEach((field) => {
 				const customField = Promise.await(LivechatCustomField.findOneById(field.key));
 				if (!customField) {

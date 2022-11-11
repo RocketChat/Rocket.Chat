@@ -27,6 +27,14 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
+	test('expect create invite to the room', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnTabMembers.click();
+		await poHomeChannel.tabs.members.inviteUser();
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+	});
+
 	test('expect mute "user1"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();

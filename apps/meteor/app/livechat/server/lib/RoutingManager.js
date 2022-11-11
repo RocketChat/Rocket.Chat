@@ -179,19 +179,22 @@ export const RoutingManager = {
 			return room;
 		}
 
-		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', {
-			agent,
-			inquiry,
-			options,
-		});
+		try {
+			await callbacks.run('livechat.checkAgentBeforeTakeInquiry', {
+				agent,
+				inquiry,
+				options,
+			});
+		} catch (e) {
+			if (options.clientAction && !options.forwardingToDepartment) {
+				throw e;
+			}
+			agent = null;
+		}
+
 		if (!agent) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
 			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
-		}
-
-		if (room.onHold) {
-			logger.debug(`Room ${room._id} is on hold. Remove current assignments before routing`);
-			Subscriptions.removeByRoomIdAndUserId(room._id, agent.agentId);
 		}
 
 		LivechatInquiry.takeInquiry(_id);

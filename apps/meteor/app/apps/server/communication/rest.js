@@ -130,7 +130,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
@@ -213,13 +213,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -348,7 +351,7 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			'featured',
+			'featured-apps',
 			{ authRequired: true },
 			{
 				async get() {
@@ -362,7 +365,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps/featured`, {
+						result = HTTP.get(`${baseUrl}/v1/featured-apps`, {
 							headers,
 						});
 					} catch (e) {
@@ -497,13 +500,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');

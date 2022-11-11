@@ -27,9 +27,9 @@ export class WebsocketConnection implements IConnection {
 	connectWithUrl(connectionUrl: string, connectionProtocol = 'sip'): Promise<void> {
 		this.logger.log({ msg: 'connect()' });
 		const returnPromise = new Promise<void>((_resolve, _reject) => {
-			const onError = (error: any): void => {
-				_reject(error);
-				this.logger.error({ msg: 'checkCallserverConnection () Connection Error', error });
+			const onError = (err: unknown): void => {
+				_reject(err);
+				this.logger.error({ msg: 'checkCallserverConnection () Connection Error', err });
 			};
 			const onConnect = (): void => {
 				_resolve();

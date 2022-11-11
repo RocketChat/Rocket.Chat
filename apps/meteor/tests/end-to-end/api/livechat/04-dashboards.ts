@@ -28,14 +28,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/conversation-totalizers'))
+					.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -63,14 +59,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/productivity-totalizers'))
+					.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -98,14 +90,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/chats-totalizers'))
+					.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -133,14 +121,12 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
+					.get(
+						api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
+					)
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -169,14 +155,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/charts/chats'))
+					.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -202,14 +184,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
+					.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -236,10 +214,6 @@ describe('LIVECHAT - dashboards', function () {
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -266,14 +240,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
+					.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});
@@ -296,14 +266,10 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-manager', []).then(() => {
 				request
-					.get(api('livechat/analytics/dashboards/charts/timings'))
+					.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
 					.end(done);
 			});
 		});

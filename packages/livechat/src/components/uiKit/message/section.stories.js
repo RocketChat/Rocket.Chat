@@ -13,13 +13,15 @@ export default {
 	decorators: [
 		(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />,
 		(storyFn) => <PopoverContainer children={storyFn()} />,
-		(storyFn) => <Surface
-			children={storyFn()}
-			dispatchAction={async (payload) => {
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				action('dispatchAction')(payload);
-			}}
-		/>,
+		(storyFn) => (
+			<Surface
+				children={storyFn()}
+				dispatchAction={async (payload) => {
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					action('dispatchAction')(payload);
+				}}
+			/>
+		),
 	],
 };
 

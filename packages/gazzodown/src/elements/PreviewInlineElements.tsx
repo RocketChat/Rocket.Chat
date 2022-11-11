@@ -8,6 +8,9 @@ import KatexErrorBoundary from '../katex/KatexErrorBoundary';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
+import BoldSpan from './BoldSpan';
+import ItalicSpan from './ItalicSpan';
+import StrikeSpan from './StrikeSpan';
 
 type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];
@@ -18,9 +21,13 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
-				case 'ITALIC':
+					return <BoldSpan key={index} children={child.value} />;
+
 				case 'STRIKE':
-					return <PreviewInlineElements key={index} children={child.value} />;
+					return <StrikeSpan key={index} children={child.value} />;
+
+				case 'ITALIC':
+					return <ItalicSpan key={index} children={child.value} />;
 
 				case 'LINK':
 					return <PreviewInlineElements key={index} children={[child.value.label]} />;

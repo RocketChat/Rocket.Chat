@@ -3,7 +3,7 @@ import { findTags, findTagById } from './lib/tags';
 
 API.v1.addRoute(
 	'livechat/tags',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
@@ -27,7 +27,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/tags/:tagId',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
 			const { tagId } = this.urlParams;

@@ -13,10 +13,10 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		get(uri: string, prefix?: string): Promise<APIResponse>;
+		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
-		delete(uri: string, prefix?: string): Promise<APIResponse>;
+		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
 };
 
@@ -61,17 +61,17 @@ export const test = baseTest.extend<BaseTest>({
 		};
 
 		await use({
-			get(uri: string, prefix = API_PREFIX) {
-				return request.get(BASE_API_URL + prefix + uri, { headers });
+			get(uri: string, params?: AnyObj, prefix = API_PREFIX) {
+				return request.get(BASE_URL + prefix + uri, { headers, params });
 			},
 			post(uri: string, data: AnyObj, prefix = API_PREFIX) {
 				return request.post(BASE_URL + prefix + uri, { headers, data });
 			},
 			put(uri: string, data: AnyObj, prefix = API_PREFIX) {
-				return request.put(BASE_API_URL + prefix + uri, { headers, data });
+				return request.put(BASE_URL + prefix + uri, { headers, data });
 			},
-			delete(uri: string, prefix = API_PREFIX) {
-				return request.delete(BASE_API_URL + prefix + uri, { headers });
+			delete(uri: string, params?: AnyObj, prefix = API_PREFIX) {
+				return request.delete(BASE_URL + prefix + uri, { headers, params });
 			},
 		});
 	},

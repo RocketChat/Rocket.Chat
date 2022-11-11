@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -22,11 +23,7 @@ describe('LIVECHAT - Integrations', function () {
 					.get(api('livechat/integrations.settings'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
-					})
+					.expect(403)
 					.end(done);
 			});
 		});
@@ -40,6 +37,19 @@ describe('LIVECHAT - Integrations', function () {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.settings).to.be.an('array');
+						const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
+						expect(settingIds).to.include.members([
+							'Livechat_webhookUrl',
+							'Livechat_secret_token',
+							'Livechat_webhook_on_start',
+							'Livechat_webhook_on_close',
+							'Livechat_webhook_on_chat_taken',
+							'Livechat_webhook_on_chat_queued',
+							'Livechat_webhook_on_forward',
+							'Livechat_webhook_on_offline_msg',
+							'Livechat_webhook_on_visitor_message',
+							'Livechat_webhook_on_agent_message',
+						]);
 					})
 					.end(done);
 			});
