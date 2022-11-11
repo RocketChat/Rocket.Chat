@@ -3031,7 +3031,7 @@ export type OmnichannelEndpoints = {
 		PUT: (params: PUTLivechatPriority) => void;
 	};
 
-	'/v1/livechat/priority.reset': {
+	'/v1/livechat/priorities.reset': {
 		POST: () => void;
 		GET: () => { reset: boolean };
 	};

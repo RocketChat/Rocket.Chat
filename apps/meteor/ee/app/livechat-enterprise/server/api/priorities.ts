@@ -66,7 +66,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/priority.reset',
+	'livechat/priorities.reset',
 	{
 		authRequired: true,
 		permissionsRequired: {
@@ -76,6 +76,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (await LivechatPriority.canResetPriorities()) {
+				return API.v1.failure();
+			}
 			await LivechatPriority.resetPriorities();
 			return API.v1.success();
 		},
