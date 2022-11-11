@@ -208,7 +208,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 			html: Accounts.emailTemplates.userToActivate.html({
 				...options,
 				name: options.name || options.profile?.name,
-				email: options.email || options.profile?.email,
+				email: options.email || user.emails[0].address,
 			}),
 		};
 
