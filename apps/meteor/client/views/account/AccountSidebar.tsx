@@ -1,17 +1,17 @@
 import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, useCallback, useEffect } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { itemsSubscription } from '.';
 import { menu, SideNav } from '../../../app/ui-utils/client';
 import Sidebar from '../../components/Sidebar';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../providers/SettingsProvider';
+import { getAccountSidebarItems, subscribeToAccountSidebarItems } from './sidebarItems';
 
 const AccountSidebar = (): ReactElement => {
 	const t = useTranslation();
 
-	const items = useSubscription(itemsSubscription);
+	const items = useSyncExternalStore(subscribeToAccountSidebarItems, getAccountSidebarItems);
 
 	const closeFlex = useCallback(() => {
 		if (isLayoutEmbedded()) {

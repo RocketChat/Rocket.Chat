@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import dompurify from 'dompurify';
-import marked from 'marked';
+import { marked } from 'marked';
 import React, { ComponentProps, FC, useMemo } from 'react';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
@@ -17,8 +17,8 @@ const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
 
-marked.InlineLexer.rules.gfm = {
-	...marked.InlineLexer.rules.gfm,
+marked.Lexer.rules.gfm = {
+	...marked.Lexer.rules.gfm,
 	strong: /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
 	em: /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
 };
@@ -77,7 +77,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 }) => {
 	const sanitizer = dompurify.sanitize;
 
-	let markedOptions: {};
+	let markedOptions: marked.MarkedOptions;
 
 	switch (variant) {
 		case 'inline':
@@ -94,7 +94,9 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	const __html = useMemo(() => {
 		const html = ((): any => {
 			if (content && typeof content === 'string') {
-				const markedHtml = marked(new Option(content).innerHTML, markedOptions);
+				const markedHtml = /inline/.test(variant)
+					? marked.parseInline(new Option(content).innerHTML, markedOptions)
+					: marked.parse(new Option(content).innerHTML, markedOptions);
 
 				if (parseEmoji) {
 					// We are using the old emoji parser here. This could come
@@ -108,7 +110,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		})();
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
-	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
 
 	return __html ? (
 		<Box

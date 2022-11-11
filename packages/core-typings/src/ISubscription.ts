@@ -28,7 +28,7 @@ export interface ISubscription extends IRocketChatRecord {
 	userMentions: number;
 	groupMentions: number;
 
-	broadcast?: boolean;
+	broadcast?: true;
 	tunread?: Array<string>;
 	tunreadGroup?: Array<string>;
 	tunreadUser?: Array<string>;
@@ -45,18 +45,18 @@ export interface ISubscription extends IRocketChatRecord {
 	fname?: string;
 
 	code?: unknown;
-	archived?: unknown;
+	archived?: boolean;
 	audioNotificationValue?: string;
 	desktopNotifications?: 'all' | 'mentions' | 'nothing';
 	mobilePushNotifications?: 'all' | 'mentions' | 'nothing';
 	emailNotifications?: 'all' | 'mentions' | 'nothing';
 	blocked?: unknown;
 	blocker?: unknown;
-	autoTranslate?: unknown;
+	autoTranslate?: boolean;
 	autoTranslateLanguage?: string;
 	disableNotifications?: boolean;
 	muteGroupMentions?: boolean;
-	ignored?: unknown;
+	ignored?: IUser['_id'][];
 
 	department?: unknown;
 

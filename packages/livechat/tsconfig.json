@@ -6,8 +6,10 @@
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
-
 		"noImplicitAny": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+		"esModuleInterop": true,
 	},
 	"exclude": [
 		"./node_modules",

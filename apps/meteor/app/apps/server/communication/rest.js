@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -7,7 +8,6 @@ import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
-import { Settings } from '../../../models/server/raw';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -70,13 +70,13 @@ export class AppsRestApi {
 			'',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					// Gets the Apps from the marketplace
 					if (this.queryParams.marketplace) {
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -100,7 +100,7 @@ export class AppsRestApi {
 
 					if (this.queryParams.categories) {
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -130,7 +130,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
@@ -183,8 +183,8 @@ export class AppsRestApi {
 
 						const headers = getDefaultHeaders();
 						try {
-							const downloadToken = getWorkspaceAccessToken(true, 'marketplace:download', false);
-							const marketplaceToken = getWorkspaceAccessToken();
+							const downloadToken = await getWorkspaceAccessToken(true, 'marketplace:download', false);
+							const marketplaceToken = await getWorkspaceAccessToken();
 
 							const [downloadResponse, marketplaceResponse] = await Promise.all([
 								fetch(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
@@ -213,10 +213,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const formData = await getUploadFormData({
-							request: this.request,
-						});
-						buff = formData?.app?.fileBuffer;
+						const app = await getUploadFormData(
+							{
+								request: this.request,
+							},
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
+						);
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -315,11 +321,11 @@ export class AppsRestApi {
 			'bundles/:id/apps',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
-					const token = getWorkspaceAccessToken();
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
@@ -345,15 +351,47 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
+			'featured-apps',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = getDefaultHeaders();
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/featured-apps`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				},
+			},
+		);
+
+		this.api.addRoute(
 			':id',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					if (this.queryParams.marketplace && this.queryParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -379,7 +417,7 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken();
+						const token = await getWorkspaceAccessToken();
 						if (token) {
 							headers.Authorization = `Bearer ${token}`;
 						}
@@ -431,7 +469,7 @@ export class AppsRestApi {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
 						const headers = getDefaultHeaders();
-						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+						const token = await getWorkspaceAccessToken(true, 'marketplace:download', false);
 
 						try {
 							const response = await fetch(
@@ -462,10 +500,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const formData = await getUploadFormData({
-							request: this.request,
-						});
-						buff = formData?.app?.fileBuffer;
+						const app = await getUploadFormData(
+							{
+								request: this.request,
+							},
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
+						);
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -523,19 +567,51 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			':id/sync',
+			':id/versions',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				post() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
-					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
+					const token = await getWorkspaceAccessToken();
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
-					const workspaceIdSetting = Promise.await(Settings.findOneById('Cloud_Workspace_Id'));
+					let result;
+					try {
+						result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}`, {
+							headers,
+						});
+					} catch (e) {
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+					}
+
+					if (!result || result.statusCode !== 200) {
+						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result.data);
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ apps: result.data });
+				},
+			},
+		);
+
+		this.api.addRoute(
+			':id/sync',
+			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{
+				async post() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+
+					const headers = getDefaultHeaders();
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					const workspaceIdSetting = await Settings.findOneById('Cloud_Workspace_Id');
 
 					let result;
 					try {
@@ -552,7 +628,7 @@ export class AppsRestApi {
 						return API.v1.failure();
 					}
 
-					Promise.await(Apps.updateAppsMarketplaceInfo([result.data]));
+					await Apps.updateAppsMarketplaceInfo([result.data]);
 
 					return API.v1.success({ app: result.data });
 				},

@@ -1,5 +1,13 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
-import { useSetModal, useRoute, useQueryStringParameter, useEndpoint, useUpload, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useRoute,
+	useQueryStringParameter,
+	useEndpoint,
+	useUpload,
+	useTranslation,
+	useToastMessageDispatch,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -15,6 +23,7 @@ const placeholderUrl = 'https://rocket.chat/apps/package.zip';
 
 function AppInstallPage() {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const appsRoute = useRoute('admin-apps');
 	const setModal = useSetModal();
@@ -53,9 +62,21 @@ function AppInstallPage() {
 		fileData.append('permissions', JSON.stringify(permissionsGranted));
 
 		if (appId) {
-			await uploadUpdateApp(fileData);
+			try {
+				await uploadUpdateApp(fileData);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
+			}
 		} else {
-			app = await uploadApp(fileData);
+			try {
+				app = await uploadApp(fileData);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
+			}
 		}
 
 		appsRoute.push({ context: 'details', id: appId || app.app.id });
@@ -77,17 +98,13 @@ function AppInstallPage() {
 	};
 
 	const handleAppPermissionsReview = async (permissions, appFile, appId) => {
-		if (!permissions || permissions.length === 0) {
-			await sendFile(permissions, appFile, appId);
-		} else {
-			setModal(
-				<AppPermissionsReviewModal
-					appPermissions={permissions}
-					cancel={cancelAction}
-					confirm={(permissions) => sendFile(permissions, appFile, appId)}
-				/>,
-			);
-		}
+		setModal(
+			<AppPermissionsReviewModal
+				appPermissions={permissions}
+				onCancel={cancelAction}
+				onConfirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
+			/>,
+		);
 	};
 
 	const install = async () => {

@@ -1,22 +1,25 @@
-import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup, Button, Icon, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useCurrentRoute, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
+import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
-import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
+import { VoipInfoCallButton } from '../../calls/contextualBar/VoipInfoCallButton';
 
 const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
@@ -31,6 +34,8 @@ const ContactInfo = ({ id, rid, route }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+
+	const isCallReady = useIsCallReady();
 
 	const onEditButtonClick = useMutableCallback(() => {
 		if (!hasPermission('edit-omnichannel-contact')) {
@@ -84,7 +89,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	}
 
 	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+		contact: { fname, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
 	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
@@ -100,9 +105,11 @@ const ContactInfo = ({ id, rid, route }) => {
 		liveRoute.push({ id: _id, tab: 'contact-chat-history' });
 	};
 
-	const showContactHistory = currentRouteName === 'live';
+	const showContactHistory = currentRouteName === 'live' && lastChat;
 
-	const displayName = name || username;
+	const displayName = parseOutboundPhoneNumber(fname) || username;
+
+	const { phoneNumber } = phone?.[0] || {};
 
 	return (
 		<>
@@ -113,12 +120,7 @@ const ContactInfo = ({ id, rid, route }) => {
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
-								<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
-								{username && name && (
-									<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
-										({username})
-									</Box>
-								)}
+								<AgentInfoDetails mis='x10' name={displayName} shortName={username} status={<UserStatus status={status} />} />
 							</Info>
 						</Field>
 					)}
@@ -131,7 +133,7 @@ const ContactInfo = ({ id, rid, route }) => {
 					{phone && phone.length && (
 						<Field>
 							<Label>{t('Phone')}</Label>
-							<Info>{phone[0].phoneNumber}</Info>
+							<Info>{parseOutboundPhoneNumber(phoneNumber)}</Info>
 						</Field>
 					)}
 					{ts && (
@@ -162,13 +164,20 @@ const ContactInfo = ({ id, rid, route }) => {
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{showContactHistory && lastChat && (
-						<Button onClick={onChatHistory}>
+				<ButtonGroup stretch flexWrap='wrap'>
+					{isCallReady && (
+						<>
+							<VoipInfoCallButton phoneNumber={phoneNumber} mi={0} flexBasis='0' />
+							{showContactHistory && <Divider width='100%' />}
+						</>
+					)}
+
+					{showContactHistory && (
+						<Button onClick={onChatHistory} mis={0} flexBasis='0'>
 							<Icon name='history' size='x20' /> {t('Chat_History')}
 						</Button>
 					)}
-					<Button onClick={onEditButtonClick}>
+					<Button onClick={onEditButtonClick} flexBasis='0'>
 						<Icon name='pencil' size='x20' /> {t('Edit')}
 					</Button>
 				</ButtonGroup>

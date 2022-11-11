@@ -1,4 +1,4 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
@@ -16,9 +16,7 @@ const AssignAgentButton: FC<{ extension: string; reload: () => void }> = ({ exte
 
 	return (
 		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<Button small ghost title={t('Associate_Agent')} onClick={handleAssociation}>
-				<Icon name='user-plus' size='x20' mie='x4' />
-			</Button>
+			<IconButton icon='user-plus' small title={t('Associate_Agent')} onClick={handleAssociation} />
 		</Table.Cell>
 	);
 };

@@ -1,15 +1,14 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import UserInfo from '../../../components/UserInfo';
 import VerticalBar from '../../../components/VerticalBar';
 import { useForm } from '../../../hooks/useForm';
-import UserInfo from '../../room/contextualBar/UserInfo';
-import { formsSubscription } from '../additionalForms';
+import { useFormsSubscription } from '../additionalForms';
 
 // TODO: TYPE:
 // Department
@@ -46,7 +45,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
 		[userDepartments],
 	);
-	const eeForms = useSubscription(formsSubscription);
+	const eeForms = useFormsSubscription();
 
 	const saveRef = useRef({
 		values: {},
@@ -77,14 +76,14 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
 	const { departments, status, voipExtension } = values as {
 		departments: string[];
-		status: string;
+		status: ILivechatAgent['statusLivechat'];
 		voipExtension: string;
 	};
 
 	const MaxChats = useMaxChatsPerAgent();
 
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
-	const saveAgentStatus = useMethod('livechat:changeLivechatStatus');
+	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -101,7 +100,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 			agentsRoute.push({});
 			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		commit();
 		commitMaxChats();
@@ -109,9 +108,11 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 
 	return (
 		<VerticalBar.ScrollableContent is='form' {...props}>
-			<Box alignSelf='center'>
-				<UserInfo.Avatar data-qa='AgentEdit-Avatar' margin='auto' size={'x332'} title={username} username={username} />
-			</Box>
+			{username && (
+				<Box alignSelf='center'>
+					<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
+				</Box>
+			)}
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>

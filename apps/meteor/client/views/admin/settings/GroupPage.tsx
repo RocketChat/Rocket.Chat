@@ -99,7 +99,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -161,7 +161,7 @@ const GroupPage: FC<GroupPageProps> = ({
 			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
-						<Button danger primary type='reset' onClick={handleCancelClick}>
+						<Button primary type='reset' onClick={handleCancelClick}>
 							{t('Cancel')}
 						</Button>
 					)}

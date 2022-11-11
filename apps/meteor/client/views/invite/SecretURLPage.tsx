@@ -1,8 +1,8 @@
 import { useSessionDispatch, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
 
-import { KonchatNotification } from '../../../app/ui';
+import { KonchatNotification } from '../../../app/ui/client';
 import { call } from '../../lib/utils/call';
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';

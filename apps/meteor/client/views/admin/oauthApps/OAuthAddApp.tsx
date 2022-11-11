@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, TextInput, Field, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
@@ -22,7 +22,7 @@ const OAuthAddApp = (): ReactElement => {
 		control,
 	} = useForm<OAuthAddAppPayload>();
 
-	const saveApp = useMethod('addOAuthApp');
+	const saveApp = useEndpoint('POST', '/v1/oauth-apps.create');
 
 	const router = useRoute('admin-oauth-apps');
 
@@ -34,7 +34,7 @@ const OAuthAddApp = (): ReactElement => {
 			close();
 			dispatchToastMessage({ type: 'success', message: t('Application_added') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

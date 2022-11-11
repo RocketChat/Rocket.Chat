@@ -2,7 +2,7 @@ import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.
 import { useSetModal, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, MouseEvent, useCallback, useMemo, useState } from 'react';
 
-import { chatMessages } from '../../../../../../app/ui';
+import { ChatMessages } from '../../../../../../app/ui/client';
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
 import { useRoom } from '../../../../../../client/views/room/contexts/RoomContext';
@@ -47,10 +47,12 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const { input } = chatMessages[room._id];
+		const input = ChatMessages.get({ rid: room._id })?.input;
 
-		input.value = text;
-		input.focus();
+		if (input) {
+			input.value = text;
+			input.focus();
+		}
 	};
 
 	const onClickCreate = (): void => {

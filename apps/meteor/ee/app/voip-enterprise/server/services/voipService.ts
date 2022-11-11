@@ -1,11 +1,11 @@
-import { ILivechatAgent, ILivechatVisitor, IRoomClosingInfo, IUser, IVoipRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IRoomClosingInfo, IUser, IVoipRoom } from '@rocket.chat/core-typings';
 
-import { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
+import type { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';
 import { overwriteClassOnLicense } from '../../../license/server';
 import { calculateOnHoldTimeForRoom } from '../lib/calculateOnHoldTimeForRoom';
 
-overwriteClassOnLicense('livechat-enterprise', OmnichannelVoipService, {
+overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
 	getRoomClosingData(
 		_originalFn: (
 			closer: ILivechatVisitor | ILivechatAgent,

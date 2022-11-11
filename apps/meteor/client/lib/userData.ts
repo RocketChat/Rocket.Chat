@@ -1,4 +1,4 @@
-import type { IUser, IUserDataEvent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import { Serialized } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -29,12 +29,11 @@ type RawUserData = Serialized<
 		| 'active'
 		| 'defaultRoom'
 		| 'customFields'
-		| 'statusLivechat'
 		| 'oauth'
 		| 'createdAt'
 		| '_updatedAt'
 		| 'avatarETag'
-	>
+	> & { statusLivechat?: ILivechatAgent['statusLivechat'] }
 >;
 
 const updateUser = (userData: IUser): void => {
@@ -81,7 +80,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 		}
 	});
 
-	const { ldap, lastLogin, services, ...userData } = await APIClient.get('/v1/me');
+	const { ldap, lastLogin, services: rawServices, ...userData } = await APIClient.get('/v1/me');
 
 	// email?: {
 	// 	verificationTokens?: IUserEmailVerificationToken[];
@@ -93,18 +92,46 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	// }
 
 	if (userData) {
+		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
+
 		updateUser({
 			...userData,
-			...(services && {
-				...services,
-				...(services.email?.verificationTokens && {
-					email: {
-						verificationTokens: services.email.verificationTokens.map((token) => ({
-							...token,
-							when: new Date(token.when),
-						})),
-					},
-				}),
+			...(rawServices && {
+				services: {
+					...(services ? { ...services } : {}),
+					...(resume
+						? {
+								resume: {
+									...(resume.loginTokens && {
+										loginTokens: resume.loginTokens.map((token) => ({
+											...token,
+											when: new Date(token.when),
+											createdAt: (token.createdAt ? new Date(token.createdAt) : undefined) as Date,
+											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
+										})),
+									}),
+								},
+						  }
+						: {}),
+					...(cloud
+						? {
+								cloud: {
+									...cloud,
+									expiresAt: new Date(cloud.expiresAt),
+								},
+						  }
+						: {}),
+					emailCode: emailCode?.map(({ expire, ...data }) => ({ expire: new Date(expire), ...data })) || [],
+					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
+					...(email?.verificationTokens && {
+						email: {
+							verificationTokens: email.verificationTokens.map((token) => ({
+								...token,
+								when: new Date(token.when),
+							})),
+						},
+					}),
+				},
 			}),
 			...(lastLogin && {
 				lastLogin: new Date(lastLogin),

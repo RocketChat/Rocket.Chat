@@ -1,17 +1,26 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { FederationRoomInviteUserDto, FederationRoomSendExternalMessageDto } from '../../../application/input/RoomSenderDto';
+import {
+	FederationAfterLeaveRoomDto,
+	FederationAfterRemoveUserFromRoomDto,
+	FederationCreateDMAndInviteUserDto,
+	FederationRoomSendExternalMessageDto,
+} from '../../../application/input/RoomSenderDto';
+import {
+	formatExternalUserIdToInternalUsernameFormat,
+	removeExternalSpecificCharsFromExternalIdentifier,
+} from '../../matrix/converters/RoomReceiver';
 
 export class FederationRoomSenderConverter {
-	public static toRoomInviteUserDto(
+	public static toCreateDirectMessageRoomDto(
 		internalInviterId: string,
 		internalRoomId: string,
 		externalInviteeId: string,
-	): FederationRoomInviteUserDto {
-		const normalizedInviteeId = externalInviteeId.replace('@', '');
-		const inviteeUsernameOnly = externalInviteeId.split(':')[0]?.replace('@', '');
+	): FederationCreateDMAndInviteUserDto {
+		const normalizedInviteeId = removeExternalSpecificCharsFromExternalIdentifier(externalInviteeId);
+		const inviteeUsernameOnly = formatExternalUserIdToInternalUsernameFormat(externalInviteeId);
 
-		return Object.assign(new FederationRoomInviteUserDto(), {
+		return new FederationCreateDMAndInviteUserDto({
 			internalInviterId,
 			internalRoomId,
 			rawInviteeId: externalInviteeId,
@@ -25,10 +34,29 @@ export class FederationRoomSenderConverter {
 		internalRoomId: string,
 		message: IMessage,
 	): FederationRoomSendExternalMessageDto {
-		return Object.assign(new FederationRoomSendExternalMessageDto(), {
+		return new FederationRoomSendExternalMessageDto({
 			internalRoomId,
 			internalSenderId,
 			message,
+		});
+	}
+
+	public static toAfterUserLeaveRoom(internalUserId: string, internalRoomId: string): FederationAfterLeaveRoomDto {
+		return new FederationAfterLeaveRoomDto({
+			internalRoomId,
+			internalUserId,
+		});
+	}
+
+	public static toOnUserRemovedFromRoom(
+		internalUserId: string,
+		internalRoomId: string,
+		actionDoneByInternalId: string,
+	): FederationAfterRemoveUserFromRoomDto {
+		return new FederationAfterRemoveUserFromRoomDto({
+			internalRoomId,
+			internalUserId,
+			actionDoneByInternalId,
 		});
 	}
 }

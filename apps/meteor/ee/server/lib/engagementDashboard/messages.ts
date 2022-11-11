@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IDirectMessageRoom, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { Messages, Analytics } from '@rocket.chat/models';
 
-import { Messages, Analytics } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
@@ -89,8 +89,8 @@ export const findWeeklyMessagesSentData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayMessages = (currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
-	const todayMessages = (currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
+	const yesterdayMessages = currentPeriodMessages.find((item) => item._id === yesterday)?.messages || 0;
+	const todayMessages = currentPeriodMessages.find((item) => item._id === today)?.messages || 0;
 	const currentPeriodTotalOfMessages = getTotalOfWeekItems(currentPeriodMessages, 'messages');
 	const lastPeriodTotalOfMessages = getTotalOfWeekItems(lastPeriodMessages, 'messages');
 	return {

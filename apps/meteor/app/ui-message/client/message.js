@@ -5,12 +5,13 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
-import { RoomRoles, UserRoles, Roles } from '../../models/client';
+import { RoomRoles, UserRoles, Roles, Rooms } from '../../models/client';
 import { Markdown } from '../../markdown/client';
 import { t } from '../../utils';
 import { AutoTranslate } from '../../autotranslate/client';
@@ -50,7 +51,7 @@ const renderBody = (msg, settings) => {
 	}
 
 	if (searchedText) {
-		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${str}</mark>`);
+		msg = msg.replace(new RegExp(`(${searchedText})(?![^<]*>)`, 'gi'), (str) => `<mark>${str}</mark>`);
 	}
 
 	return msg;
@@ -448,7 +449,9 @@ Template.message.helpers({
 		}
 
 		if (!context) {
-			context = 'message';
+			const room = Rooms.findOne({ _id: this.msg.rid });
+
+			context = isRoomFederated(room) ? 'federated' : 'message';
 		}
 
 		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);

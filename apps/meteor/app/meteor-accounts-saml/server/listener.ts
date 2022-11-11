@@ -1,16 +1,16 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
-import { IIncomingMessage } from '@rocket.chat/core-typings';
+import type { IIncomingMessage } from '@rocket.chat/core-typings';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import { ISAMLAction } from './definition/ISAMLAction';
+import type { ISAMLAction } from './definition/ISAMLAction';
 
 RoutePolicy.declare('/_saml/', 'network');
 

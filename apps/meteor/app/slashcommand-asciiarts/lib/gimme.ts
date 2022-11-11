@@ -13,7 +13,11 @@ function Gimme(_command: 'gimme', params: string, item: RequiredField<Partial<IM
 	Meteor.call('sendMessage', msg);
 }
 
-slashCommands.add('gimme', Gimme, {
-	description: 'Slash_Gimme_Description',
-	params: 'your_message_optional',
+slashCommands.add({
+	command: 'gimme',
+	callback: Gimme,
+	options: {
+		description: 'Slash_Gimme_Description',
+		params: 'your_message_optional',
+	},
 });

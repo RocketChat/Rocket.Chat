@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
+import { NotificationQueue, Users } from '@rocket.chat/models';
 
-import { NotificationQueue, Users } from '../../models/server/raw';
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
 import { PushNotification } from '../../push-notifications/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -45,8 +44,8 @@ class NotificationClass {
 		setTimeout(() => {
 			try {
 				this.worker();
-			} catch (e) {
-				SystemLogger.error('Error sending notification', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
 			}
 		}, this.cyclePause);
@@ -83,7 +82,7 @@ class NotificationClass {
 			NotificationQueue.removeById(notification._id);
 		} catch (e) {
 			SystemLogger.error(e);
-			await NotificationQueue.setErrorById(notification._id, e.message);
+			await NotificationQueue.setErrorById(notification._id, e instanceof Error ? e.message : String(e));
 		}
 
 		if (counter >= this.maxBatchSize) {
@@ -92,7 +91,7 @@ class NotificationClass {
 		this.worker(counter++);
 	}
 
-	getNextNotification(): Promise<INotification | undefined> {
+	getNextNotification(): Promise<INotification | null> {
 		const expired = new Date();
 		expired.setMinutes(expired.getMinutes() - 5);
 

@@ -12,7 +12,7 @@ type AddCustomSoundProps = {
 	onChange: () => void;
 };
 
-const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -79,7 +79,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 

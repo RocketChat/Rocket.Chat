@@ -10,7 +10,8 @@ import type {
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
-import Ajv, { JSONSchemaType } from 'ajv';
+import type { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -320,7 +321,7 @@ const VoipEventsSchema: JSONSchemaType<VoipEvents> = {
 
 export const isVoipEventsProps = ajv.compile<VoipEvents>(VoipEventsSchema);
 
-type VoipRoom = { token: string; agentId: ILivechatAgent['_id'] } | { rid: string; token: string };
+type VoipRoom = { token: string; agentId: ILivechatAgent['_id']; direction: IVoipRoom['direction'] } | { rid: string; token: string };
 
 const VoipRoomSchema: JSONSchemaType<VoipRoom> = {
 	oneOf: [
@@ -332,6 +333,10 @@ const VoipRoomSchema: JSONSchemaType<VoipRoom> = {
 				},
 				agentId: {
 					type: 'string',
+				},
+				direction: {
+					type: 'string',
+					enum: ['inbound', 'outbound'],
 				},
 			},
 			required: ['token', 'agentId'],
@@ -405,7 +410,7 @@ const VoipCallServerCheckConnectionSchema: JSONSchemaType<VoipCallServerCheckCon
 
 export const isVoipCallServerCheckConnectionProps = ajv.compile<VoipCallServerCheckConnection>(VoipCallServerCheckConnectionSchema);
 
-type VoipRooms = {
+type VoipRooms = PaginatedRequest<{
 	agents?: string[];
 	open?: 'true' | 'false';
 	createdAt?: string;
@@ -413,7 +418,9 @@ type VoipRooms = {
 	tags?: string[];
 	queue?: string;
 	visitorId?: string;
-};
+	roomName?: string;
+	direction?: IVoipRoom['direction'];
+}>;
 
 const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 	type: 'object',
@@ -450,6 +457,31 @@ const VoipRoomsSchema: JSONSchemaType<VoipRooms> = {
 			nullable: true,
 		},
 		visitorId: {
+			type: 'string',
+			nullable: true,
+		},
+		direction: {
+			type: 'string',
+			enum: ['inbound', 'outbound'],
+			nullable: true,
+		},
+		roomName: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -516,9 +548,11 @@ export type VoipEndpoints = {
 		};
 	};
 	'/v1/omnichannel/agent/extension': {
-		GET: (params: OmnichannelAgentExtensionGET) => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
 		POST: (params: OmnichannelAgentExtensionPOST) => void;
-		DELETE: (params: OmnichannelAgentExtensionDELETE) => void;
+	};
+	'/v1/omnichannel/agent/extension/:username': {
+		GET: () => { extension: Pick<IUser, '_id' | 'username' | 'extension'> };
+		DELETE: () => void;
 	};
 	'/v1/omnichannel/agents/available': {
 		GET: (params: OmnichannelAgentsAvailable) => PaginatedResult<{ agents: ILivechatAgent[] }>;

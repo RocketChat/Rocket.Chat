@@ -1,13 +1,16 @@
+import { Settings } from '@rocket.chat/models';
 import { Random } from 'meteor/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Users, Settings as SettingsRaw } from '../../models/server';
+import { Users } from '../../models/server';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
 
-		this.csvParser = require('csv-parse/lib/sync');
+		const { parse } = require('csv-parse/lib/sync');
+
+		this.csvParser = parse;
 	}
 
 	prepareUsingLocalFile(fullFilePath) {
@@ -119,7 +122,7 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				SettingsRaw.incrementValueById('CSV_Importer_Count', usersCount);
+				Promise.await(Settings.incrementValueById('CSV_Importer_Count', usersCount));
 				super.updateRecord({ 'count.users': usersCount });
 				return increaseProgressCount();
 			}

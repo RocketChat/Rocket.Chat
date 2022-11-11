@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger';
-import { Users } from '../../models';
+import { Users } from '../../models/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';

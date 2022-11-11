@@ -2,7 +2,6 @@ import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { api } from '../../../server/sdk/api';
 import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
 import { NetworkBroker } from '../NetworkBroker';
 
@@ -32,7 +31,8 @@ const {
 	SKIP_PROCESS_EVENT_REGISTRATION = 'false',
 } = process.env;
 
-const Base = Serializers.Base as unknown as new () => {};
+const { Base } = Serializers;
+
 class CustomRegenerator extends Errors.Regenerator {
 	restoreCustomError(plainError: any): Error | undefined {
 		const { message, reason, details, errorType, isClientSafe } = plainError;
@@ -62,7 +62,7 @@ class CustomRegenerator extends Errors.Regenerator {
 }
 
 class EJSONSerializer extends Base {
-	serialize(obj: {}): Buffer {
+	serialize(obj: any): Buffer {
 		return Buffer.from(EJSON.stringify(obj));
 	}
 
@@ -170,4 +170,4 @@ const network = new ServiceBroker({
 	},
 });
 
-api.setBroker(new NetworkBroker(network));
+export const broker = new NetworkBroker(network);

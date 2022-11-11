@@ -6,10 +6,10 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
-import { chatMessages } from '../../ui';
+import { ChatMessages } from '../../ui/client';
 import { popover, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
-import { ChatSubscription } from '../../models';
+import { ChatSubscription } from '../../models/client';
 import './body.html';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
@@ -89,11 +89,7 @@ Template.body.onRendered(function () {
 			return;
 		}
 
-		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
-		if (!inputMessage) {
-			return;
-		}
-		inputMessage.focus();
+		ChatMessages.get({ rid: RoomManager.openedRoom })?.input.focus();
 	});
 
 	const handleMessageLinkClick = (event) => {

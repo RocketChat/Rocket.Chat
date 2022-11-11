@@ -25,8 +25,8 @@ type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' |
 interface IUserInfo {
 	_id: string;
 	username?: string;
-	name: string;
-	status: string;
+	name?: string;
+	status?: string;
 	settings?: Record<string, any>;
 }
 interface ITeamMemberInfo {
@@ -134,7 +134,7 @@ export type TeamsEndpoints = {
 	};
 
 	'/v1/teams.info': {
-		GET: (params: ({ teamId: string } | { teamName: string }) & {}) => {
+		GET: (params: ({ teamId: string } | { teamName: string }) & Record<string, string | number | boolean | object>) => {
 			teamInfo: Partial<ITeam>;
 		};
 	};

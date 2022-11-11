@@ -1,8 +1,8 @@
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 
 import { SAMLUtils } from '../Utils';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { ILogoutRequestValidateCallback } from '../../definition/callbacks';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { ILogoutRequestValidateCallback } from '../../definition/callbacks';
 
 export class LogoutRequestParser {
 	serviceProviderOptions: IServiceProviderOptions;
@@ -44,7 +44,7 @@ export class LogoutRequestParser {
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
 			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 
-			return callback(e, null);
+			return callback(e instanceof Error ? e : String(e), null);
 		}
 	}
 }

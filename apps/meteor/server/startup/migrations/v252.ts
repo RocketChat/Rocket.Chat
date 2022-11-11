@@ -1,6 +1,7 @@
-import { IOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

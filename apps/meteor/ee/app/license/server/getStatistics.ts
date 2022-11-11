@@ -1,13 +1,19 @@
 import { log } from 'console';
 
-import { getModules, getTags } from './license';
-import { Analytics } from '../../../../server/sdk';
-import { CannedResponseRaw, LivechatPriorityRaw, LivechatTagRaw, LivechatUnitRaw } from '../../models/server';
+import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
 
-type ENTERPRISE_STATISTICS = {
+import { getModules, getTags, hasLicense } from './license';
+import { Analytics } from '../../../../server/sdk';
+
+type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;
+
+type GenericStats = {
 	modules: string[];
 	tags: string[];
 	seatRequests: number;
+};
+
+type EEOnlyStats = {
 	livechatTags: number;
 	cannedResponses: number;
 	priorities: number;
@@ -15,24 +21,35 @@ type ENTERPRISE_STATISTICS = {
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
+	const genericStats: GenericStats = {
+		modules: getModules(),
+		tags: getTags().map(({ name }) => name),
+		seatRequests: await Analytics.getSeatRequestCount(),
+	};
+
+	const eeModelsStats = await getEEStatistics();
+
+	const statistics = {
+		...genericStats,
+		...eeModelsStats,
+	};
+
+	return statistics;
+}
+
+// These models are only available on EE license so don't import them inside CE license as it will break the build
+async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
+	if (!hasLicense('livechat-enterprise')) {
+		return;
+	}
+
 	const statsPms: Array<Promise<any>> = [];
 
-	const statistics: ENTERPRISE_STATISTICS = {} as any;
+	const statistics: Partial<EEOnlyStats> = {};
 
-	const modules = getModules();
-	statistics.modules = modules;
-
-	const tags = getTags().map(({ name }) => name);
-	statistics.tags = tags;
-
-	statsPms.push(
-		Analytics.getSeatRequestCount().then((count) => {
-			statistics.seatRequests = count;
-		}),
-	);
 	// Number of livechat tags
 	statsPms.push(
-		LivechatTagRaw.col.count().then((count) => {
+		LivechatTag.col.count().then((count) => {
 			statistics.livechatTags = count;
 			return true;
 		}),
@@ -40,7 +57,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of canned responses
 	statsPms.push(
-		CannedResponseRaw.col.count().then((count) => {
+		CannedResponse.col.count().then((count) => {
 			statistics.cannedResponses = count;
 			return true;
 		}),
@@ -48,7 +65,7 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of Priorities
 	statsPms.push(
-		LivechatPriorityRaw.col.count().then((count) => {
+		LivechatPriority.col.count().then((count) => {
 			statistics.priorities = count;
 			return true;
 		}),
@@ -56,12 +73,15 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnitRaw.col.count().then((count) => {
-			statistics.businessUnits = count;
-			return true;
-		}),
+		LivechatUnit.find({ type: 'u' })
+			.count()
+			.then((count) => {
+				statistics.businessUnits = count;
+				return true;
+			}),
 	);
 
 	await Promise.all(statsPms).catch(log);
-	return statistics;
+
+	return statistics as EEOnlyStats;
 }

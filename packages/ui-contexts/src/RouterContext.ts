@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-import type { Subscription } from 'use-subscription';
 
 export type RouteName = string;
 
@@ -14,44 +13,37 @@ export type RouterContextValue = {
 		name: RouteName,
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
-	) => Subscription<string | undefined>;
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
 	queryRouteUrl: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
-	) => Subscription<string | undefined>;
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
 	pushRoute: (name: RouteName, parameters: RouteParameters | undefined, queryStringParameters: QueryStringParameters | undefined) => void;
 	replaceRoute: (
 		name: RouteName,
 		parameters: RouteParameters | undefined,
 		queryStringParameters: QueryStringParameters | undefined,
 	) => void;
-	queryRouteParameter: (name: string) => Subscription<string | undefined>;
-	queryQueryStringParameter: (name: string) => Subscription<string | undefined>;
-	queryCurrentRoute: () => Subscription<[RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?]>;
+	queryRouteParameter: (name: string) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
+	queryQueryStringParameter: (
+		name: string,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
+	queryCurrentRoute: () => [
+		subscribe: (onStoreChange: () => void) => () => void,
+		getSnapshot: () => [RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?],
+	];
 };
 
 export const RouterContext = createContext<RouterContextValue>({
-	queryRoutePath: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: () => (): void => undefined,
-	}),
-	queryRouteUrl: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: () => (): void => undefined,
-	}),
+	queryRoutePath: () => [() => (): void => undefined, (): undefined => undefined],
+	queryRouteUrl: () => [() => (): void => undefined, (): undefined => undefined],
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
-	queryRouteParameter: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: () => (): void => undefined,
-	}),
-	queryQueryStringParameter: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: () => (): void => undefined,
-	}),
-	queryCurrentRoute: () => ({
-		getCurrentValue: (): [undefined, {}, {}, undefined] => [undefined, {}, {}, undefined],
-		subscribe: () => (): void => undefined,
-	}),
+	queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
+	queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],
+	queryCurrentRoute: () => [
+		() => (): void => undefined,
+		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],
+	],
 });

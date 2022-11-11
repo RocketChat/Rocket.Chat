@@ -24,6 +24,8 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
 		this.tryEnsureIndex({ createdOTR: 1 }, { sparse: true });
 		this.tryEnsureIndex({ encrypted: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ broadcast: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ 'streamingOptions.type': 1 }, { sparse: true }); // used on statistics
 
 		this.tryEnsureIndex(
 			{
@@ -47,20 +49,6 @@ export class Rooms extends Base {
 		};
 
 		return this.findOne(query, options);
-	}
-
-	setJitsiTimeout(_id, time) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				jitsiTimeout: time,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setCallStatus(_id, status) {
@@ -329,7 +317,7 @@ export class Rooms extends Base {
 		let channelName = s.trim(name);
 		try {
 			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = Promise.await(import('../../../utils/lib/getValidRoomName'));
+			const { getValidRoomName } = Promise.await(import('../../../utils/server/lib/getValidRoomName'));
 			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
@@ -398,16 +386,6 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, options = {}) {
-		const query = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-		};
-		return this.find(query, options);
-	}
-
 	findByUserId(userId, options) {
 		const query = { 'u._id': userId };
 
@@ -438,23 +416,6 @@ export class Rooms extends Base {
 					},
 				},
 			],
-		};
-
-		return this.find(query, options);
-	}
-
-	findBySubscriptionTypeAndUserId(type, userId, options) {
-		const data = Subscriptions.findByUserIdAndType(userId, type, {
-			fields: { rid: 1 },
-		})
-			.fetch()
-			.map((item) => item.rid);
-
-		const query = {
-			t: type,
-			_id: {
-				$in: data,
-			},
 		};
 
 		return this.find(query, options);
@@ -492,41 +453,6 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
-
-		const query = {
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
-			],
-		};
-		return this.find(query, options);
-	}
-
-	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
-
-		const query = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
-			],
-		};
-		return this.find(query, options);
-	}
-
 	findByNameAndType(name, type, options) {
 		const query = {
 			t: type,
@@ -554,92 +480,6 @@ export class Rooms extends Base {
 		};
 
 		// do not use cache
-		return this._db.find(query, options);
-	}
-
-	findByNameOrFNameAndRoomIdsIncludingTeamRooms(text, teamIds, roomIds, options) {
-		const searchTerm = text && new RegExp(text, 'i');
-
-		const query = {
-			$and: [
-				{ teamMain: { $exists: false } },
-				{ prid: { $exists: false } },
-				{
-					$or: [
-						{
-							t: 'c',
-							teamId: { $exists: false },
-						},
-						{
-							t: 'c',
-							teamId: { $in: teamIds },
-						},
-						...(roomIds?.length > 0
-							? [
-									{
-										_id: {
-											$in: roomIds,
-										},
-									},
-							  ]
-							: []),
-					],
-				},
-				...(searchTerm
-					? [
-							{
-								$or: [
-									{
-										name: searchTerm,
-									},
-									{
-										fname: searchTerm,
-									},
-								],
-							},
-					  ]
-					: []),
-			],
-		};
-
-		return this._db.find(query, options);
-	}
-
-	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
-		const query = {
-			teamMain: true,
-			$and: [
-				{
-					$or: [
-						{
-							t: 'p',
-							_id: {
-								$in: rids,
-							},
-						},
-						{
-							t: 'c',
-						},
-					],
-				},
-			],
-		};
-
-		if (text) {
-			const regex = new RegExp(text, 'i');
-
-			query.$and.push({
-				$or: [
-					{
-						name: regex,
-					},
-					{
-						fname: regex,
-					},
-				],
-			});
-		}
-
 		return this._db.find(query, options);
 	}
 
@@ -1002,6 +842,11 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	/**
+	 * @param {string} _id
+	 * @param {string?} messageId
+	 * @returns {Promise<void>}
+	 */
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);

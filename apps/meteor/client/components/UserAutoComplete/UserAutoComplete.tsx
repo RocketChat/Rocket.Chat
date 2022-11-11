@@ -38,9 +38,10 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }): ReactElement => {
+			data-qa-id='UserAutoComplete'
+			renderSelected={({ value, label }): ReactElement | null => {
 				if (!value) {
-					undefined;
+					return null;
 				}
 
 				return (
