@@ -16,7 +16,7 @@ type AutoCompleteDepartmentProps = {
 	haveNone?: boolean;
 };
 
-export const AutoCompleteDepartment = ({
+const AutoCompleteDepartment = ({
 	value,
 	excludeDepartmentId,
 	onlyMyDepartments,

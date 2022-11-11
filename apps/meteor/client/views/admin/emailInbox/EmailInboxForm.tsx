@@ -19,7 +19,7 @@ import React, { useCallback, ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
-import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
 

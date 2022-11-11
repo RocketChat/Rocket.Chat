@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 
 type QueueListFilterPropsType = FC<{
 	setFilter: Dispatch<SetStateAction<any>>;

@@ -5,7 +5,7 @@ import moment from 'moment';
 import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
-import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import { useFormsSubscription } from '../additionalForms';
 import Label from './Label';

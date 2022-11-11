@@ -1,6 +1,6 @@
 import { useMemo, lazy, LazyExoticComponent } from 'react';
 
-import type { AutoCompleteDepartment } from '../../../../client/components/AutoCompleteDepartment';
+import type AutoCompleteDepartment from '../../../../client/components/AutoCompleteDepartment';
 import { registerForm } from '../../../../client/views/omnichannel/additionalForms';
 import { hasLicense } from '../../../app/license/client';
 import type CurrentChatTags from '../tags/CurrentChatTags';
