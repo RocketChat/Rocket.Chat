@@ -2,14 +2,12 @@ import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState, ReactElement } from 'react';
 
-import { GenericTableParams } from './GenericTable/GenericTable';
-
 type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
 	placeholder?: string;
 	inputRef?: () => void;
 	shouldFiltersStack?: boolean;
-	onChange: (filter: GenericTableParams) => void;
+	onChange: (filter: { text: string }) => void;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {
@@ -40,7 +38,7 @@ const FilterByText = ({
 	}, []);
 
 	useEffect(() => {
-		setFilter({ text } as GenericTableParams);
+		setFilter({ text });
 	}, [setFilter, text]);
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {

@@ -51,7 +51,9 @@ function SlasPage({ data, header, setParams, params, title, renderRow, children 
 						total={data?.total}
 						setParams={setParams}
 						params={params}
-						renderFilter={({ onChange = (): void => undefined, ...props }): ReactElement => <FilterByText onChange={onChange} {...props} />}
+						renderFilter={({ onChange = (): void => undefined, ...props }): ReactElement => (
+							<FilterByText onChange={(params): void => onChange(params as GenericTableParams)} {...props} />
+						)}
 					/>
 				</Page.Content>
 			</Page>
