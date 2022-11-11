@@ -116,7 +116,7 @@ export const theme = new (class {
 	}
 })();
 
-settings.watch('css', () => {
+settings.watchMultiple(['css', 'Layout_Fuselage_Palette'], () => {
 	addStyle('css-theme', theme.getCss());
 	process.emit('message', {
 		refresh: 'client',
