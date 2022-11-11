@@ -145,6 +145,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						{isResetPasswordAllowed && (
 							<Field.Row justifyContent='end'>
 								<Field.Link
+									href='#'
 									onClick={(e): void => {
 										e.preventDefault();
 										setLoginRoute('reset-password');
