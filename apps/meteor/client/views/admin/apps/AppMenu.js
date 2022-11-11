@@ -1,6 +1,7 @@
 import { Box, Icon, Menu, Throbber } from '@rocket.chat/fuselage';
 import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
+import semver from 'semver';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import WarningModal from '../../../components/WarningModal';
@@ -8,28 +9,7 @@ import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError } from './helpers';
-
-const installApp = async ({ id, name, version, permissionsGranted }) => {
-	try {
-		const { status } = await Apps.installApp(id, version, permissionsGranted);
-		warnStatusChange(name, status);
-	} catch (error) {
-		handleAPIError(error);
-	}
-};
-
-const actions = {
-	purchase: installApp,
-	install: installApp,
-	update: async ({ id, name, marketplaceVersion, permissionsGranted }) => {
-		try {
-			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
-			warnStatusChange(name, status);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	},
-};
+import { marketplaceActions } from './helpers/marketplaceActions';
 
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
@@ -156,7 +136,7 @@ function AppMenu({ app, ...props }) {
 		(permissionsGranted) => {
 			setModal(null);
 
-			actions[action]({ ...app, permissionsGranted }).then(() => {
+			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
 				setLoading(false);
 			});
 		},
@@ -199,6 +179,22 @@ function AppMenu({ app, ...props }) {
 		showAppPermissionsReviewModal();
 	}, [action, app.id, app.purchaseType, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
+	const handleUpdate = useCallback(async () => {
+		setLoading(true);
+
+		const isLoggedIn = await checkUserLoggedIn();
+
+		if (!isLoggedIn) {
+			setLoading(false);
+			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		showAppPermissionsReviewModal();
+	}, [checkUserLoggedIn, setModal, showAppPermissionsReviewModal]);
+
+	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
+
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
 			...(canAppBeSubscribed &&
@@ -237,6 +233,17 @@ function AppMenu({ app, ...props }) {
 						action: handleViewLogs,
 					},
 				}),
+			...(canUpdate && {
+				update: {
+					label: (
+						<Box>
+							<Icon name='refresh' size='x16' marginInlineEnd='x4' />
+							{t('Update')}
+						</Box>
+					),
+					action: handleUpdate,
+				},
+			}),
 			...(app.installed &&
 				isAppEnabled && {
 					disable: {
@@ -289,6 +296,8 @@ function AppMenu({ app, ...props }) {
 		handleAcquireApp,
 		context,
 		handleViewLogs,
+		canUpdate,
+		handleUpdate,
 		isAppEnabled,
 		handleDisable,
 		handleEnable,
