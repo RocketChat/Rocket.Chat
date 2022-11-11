@@ -1,10 +1,11 @@
 import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Badge, Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
+import semver from 'semver';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
@@ -15,8 +16,19 @@ type AppRowProps = App & { isMarketplace: boolean };
 
 // TODO: org props
 const AppRow: FC<AppRowProps> = (props) => {
-	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
-		props;
+	const {
+		name,
+		id,
+		description,
+		iconFileData,
+		marketplaceVersion,
+		iconFileContent,
+		installed,
+		isSubscribed,
+		isMarketplace,
+		bundledIn,
+		version,
+	} = props;
 
 	const breakpoints = useBreakpoints();
 	const isDescriptionVisible = breakpoints.includes('xl');
@@ -62,6 +74,8 @@ const AppRow: FC<AppRowProps> = (props) => {
 		}
 	`;
 
+	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
+
 	return (
 		<Box
 			key={id}
@@ -99,6 +113,7 @@ const AppRow: FC<AppRowProps> = (props) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
+				{canUpdate && <Badge small variant='primary' />}
 				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
 				<Box minWidth='x32'>
 					<AppMenu app={props} mis='x4' />
