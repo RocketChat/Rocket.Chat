@@ -20,7 +20,6 @@ export default {
 	testDir: 'tests/e2e/federation',
 	workers: 1,
 	retries: 2,
-	timeout: 60 * 1000,
-	globalTimeout: 40 * 60 * 1000,
+	timeout: 60 * 2000,
 	maxFailures: 5,
 } as PlaywrightTestConfig;

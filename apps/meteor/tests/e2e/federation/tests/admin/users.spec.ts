@@ -1,25 +1,33 @@
-import faker from '@faker-js/faker';
-
 import { test, expect } from '../../utils/test';
 import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
 import { registerUser } from '../../utils/register-user';
-import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
 import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
+import { FederationAdmin } from '../../page-objects/admin';
 
-test.describe.skip('Federation - Admin Panel - Users', () => {
+test.describe.parallel('Federation - Admin Panel - Users', () => {
 	let poFederationChannelServer1: FederationChannel;
 	let userFromServer2UsernameOnly: string;
-	let userFromServer1UsernameOnly: string;
-	let createdChannelName: string;
+	let usernameWithDomainFromServer2: string;
 
-	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
-		userFromServer1UsernameOnly = await registerUser(apiServer1);
+	let poFederationAdmin: FederationAdmin;
+
+	test.beforeEach(async ({ page }) => {
+		poFederationAdmin = new FederationAdmin(page);
+	});
+
+	test.beforeAll(async ({ apiServer2, browser }) => {
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
+		usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+			userFromServer2UsernameOnly,
+			constants.RC_SERVER_2.matrixServerName,
+		);
+
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
-		createdChannelName = await createChannelAndInviteRemoteUserToCreateLocalUser({
+		await createChannelAndInviteRemoteUserToCreateLocalUser({
 			page,
 			poFederationChannelServer1,
 			userFromServer2UsernameOnly,
@@ -36,118 +44,81 @@ test.describe.skip('Federation - Admin Panel - Users', () => {
 				password: constants.RC_SERVER_1.password,
 			},
 		});
-
-		await page.addInitScript(() => {
-			window.localStorage.setItem('fuselage-localStorage-members-list-type', JSON.stringify('online'));
-		});
+		await page.goto(`${constants.RC_SERVER_1.url}/admin/users`);
 	});
 
-	test.afterEach(async ({ page }) => {
-		await poFederationChannelServer1.sidenav.logout();
-		await page.close();
+	test('expect to not be able to edit federated users from the admin panel', async ({ page }) => {
+		await poFederationAdmin.inputSearchUsers.type(usernameWithDomainFromServer2);
+		await page.locator(`table tr`).locator(`figure[data-username="${usernameWithDomainFromServer2}"]`).click();
+		await expect(poFederationAdmin.tabs.users.btnEdit).toBeDisabled();
 	});
 
-	test('expect to not be able to delete federated users from the admin panel', async ({}) => {});
-
-	test('expect to not be able to reset E2E keys from federated users from the admin panel', async ({}) => {});
-
-	test('expect to not be able to reset TOTP from federated users from the admin panel', async ({}) => {});
-
-	test('expect to not be able to make federated users  as admins from the admin panel', async ({}) => {});
-
-	test('expect to not be able to deactivate federated users from the admin panel', async ({}) => {});
-
-	test('expect to not be able to edit federated users from the admin panel', async ({ browser, page }) => {
-		const pageForServer2 = await browser.newPage();
-		const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-		const channelName = faker.datatype.uuid();
-
-		await doLogin({
-			page: pageForServer2,
-			server: {
-				url: constants.RC_SERVER_2.url,
-				username: userFromServer2UsernameOnly,
-				password: constants.RC_SERVER_2.password,
-			},
-			storeState: false,
-		});
-
-		await page.goto(`${constants.RC_SERVER_1.url}/home`);
-		await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-		const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-			userFromServer2UsernameOnly,
-			constants.RC_SERVER_2.matrixServerName,
-		);
-		const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
-			constants.RC_SERVER_1.username,
-			constants.RC_SERVER_1.matrixServerName,
-		);
-
-		await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
-
-		await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
-
-		await poFederationChannelServer1.sidenav.openChat(channelName);
-		await poFederationChannelServer1.tabs.btnTabMembers.click();
-		await poFederationChannelServer1.tabs.members.showAllUsers();
-
-		await poFederationChannelServer2.sidenav.openChat(channelName);
-		await poFederationChannelServer2.tabs.btnTabMembers.click();
-		await poFederationChannelServer2.tabs.members.showAllUsers();
-
-		await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
-		await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
-
-		await expect(poFederationChannelServer2.tabs.members.getUserInList(userFromServer2UsernameOnly)).toBeVisible();
-		await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
-		await pageForServer2.close();
+	test('expect to not be able to edit federated users from the admin panel (trying to bypass by url)', async ({ page }) => {
+		await poFederationAdmin.inputSearchUsers.type(usernameWithDomainFromServer2);
+		await page.locator(`table tr`).locator(`figure[data-username="${usernameWithDomainFromServer2}"]`).click();
+		await expect(poFederationAdmin.tabs.users.btnEdit).toBeDisabled();
+		const currentUrl = await page.url();
+		await page.goto(`${currentUrl.replace('info', 'edit')}`);
+		await expect(page.locator('.rcx-box.rcx-box--full.rcx-callout__wrapper')).toBeVisible();
+		await expect(
+			page.locator('.rcx-box.rcx-box--full.rcx-callout__wrapper').locator('.rcx-box.rcx-box--full.rcx-callout__children'),
+		).toContainText('Not possible to edit a federated user');
 	});
 
-	test('expect to federated users not being counted as a seat cap in an EE environment', async ({ browser, page }) => {
-		const pageForServer2 = await browser.newPage();
-		const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-		const channelName = faker.datatype.uuid();
+	// TODO: these skipped tests needs a PR got merged to be able to run them
 
-		await doLogin({
-			page: pageForServer2,
-			server: {
-				url: constants.RC_SERVER_2.url,
-				username: userFromServer2UsernameOnly,
-				password: constants.RC_SERVER_2.password,
-			},
-			storeState: false,
+	test.skip('expect not to have teh kebab menu enable, since there should not be any menu option enabled for federated users', async ({
+		page,
+	}) => {
+		await poFederationAdmin.inputSearchUsers.type(usernameWithDomainFromServer2);
+		await page.locator(`table tr`).locator(`figure[data-username="${usernameWithDomainFromServer2}"]`).click();
+		await expect(page.locator('[data-testid="menu"]')).not.toBeVisible();
+	});
+
+	test.skip('expect to federated users (remote only) not being counted as a seat cap in an EE environment', async ({
+		browser,
+		page,
+		apiServer2,
+	}) => {
+		const before = parseInt(
+			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
+		);
+		const newUserFromServer2 = await registerUser(apiServer2);
+		const page2 = await browser.newPage();
+		const poFederationChannelServer1ForUser2 = new FederationChannel(page2);
+		await createChannelAndInviteRemoteUserToCreateLocalUser({
+			page: page2,
+			poFederationChannelServer1: poFederationChannelServer1ForUser2,
+			userFromServer2UsernameOnly: newUserFromServer2,
 		});
-
-		await page.goto(`${constants.RC_SERVER_1.url}/home`);
-		await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-		const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-			userFromServer2UsernameOnly,
-			constants.RC_SERVER_2.matrixServerName,
+		const after = parseInt(
+			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
-		const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
-			constants.RC_SERVER_1.username,
-			constants.RC_SERVER_1.matrixServerName,
+		expect(before).not.toEqual(after);
+		expect(before + 1).toEqual(after);
+		await page2.close();
+	});
+
+	test.skip('expect to federated users (but local ones) not being counted as a seat cap in an EE environment', async ({
+		browser,
+		page,
+		apiServer1,
+	}) => {
+		const before = parseInt(
+			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
 		);
-
-		await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
-
-		await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
-
-		await poFederationChannelServer1.sidenav.openChat(channelName);
-		await poFederationChannelServer1.tabs.btnTabMembers.click();
-		await poFederationChannelServer1.tabs.members.showAllUsers();
-
-		await poFederationChannelServer2.sidenav.openChat(channelName);
-		await poFederationChannelServer2.tabs.btnTabMembers.click();
-		await poFederationChannelServer2.tabs.members.showAllUsers();
-
-		await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
-		await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
-
-		await expect(poFederationChannelServer2.tabs.members.getUserInList(userFromServer2UsernameOnly)).toBeVisible();
-		await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
-		await pageForServer2.close();
+		const newUserFromServer1 = await registerUser(apiServer1);
+		const page2 = await browser.newPage();
+		const poFederationChannelServer1ForUser2 = new FederationChannel(page2);
+		await createChannelAndInviteRemoteUserToCreateLocalUser({
+			page: page2,
+			poFederationChannelServer1: poFederationChannelServer1ForUser2,
+			userFromServer2UsernameOnly: newUserFromServer1,
+		});
+		const after = parseInt(
+			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
+		);
+		expect(before).toEqual(after);
+		await page2.close();
 	});
 });

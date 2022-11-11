@@ -473,13 +473,18 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					`hello ${userFromServer2UsernameOnly}, here's ${adminUsernameWithDomainFromServer1} from Server A, all, ${userFromServer2UsernameOnly}`,
 				);
 			});
+		});
 
+		test.describe('Message actions', () => {
 			test('expect to send a message quoting a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				const channelName = faker.datatype.uuid();
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
+
+				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer2.sidenav.openChat(channelName);
 				await page.waitForTimeout(2000);
 
 				const message = `Message for quote - ${Date.now()}`;
@@ -494,9 +499,12 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			test('expect to send a message quoting a message Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				const channelName = faker.datatype.uuid();
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [userFromServer2UsernameOnly]);
+
+				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer2.sidenav.openChat(channelName);
 				await page.waitForTimeout(2000);
 
 				const message = `Message for quote - ${Date.now()}`;
@@ -507,9 +515,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await expect(poFederationChannelServer2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
 				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
 			});
-		});
 
-		test.describe('Message actions', () => {
 			test('expect to react a message from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);

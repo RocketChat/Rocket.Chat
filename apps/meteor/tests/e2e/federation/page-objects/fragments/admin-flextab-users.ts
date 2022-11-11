@@ -11,6 +11,10 @@ export class FederationAdminFlextabUsers {
 		return this.page.locator('//button[text()="New"]');
 	}
 
+	get btnEdit(): Locator {
+		return this.page.locator('//button[text()="Edit"]');
+	}
+
 	get btnSave(): Locator {
 		return this.page.locator('//button[text()="Save"]');
 	}

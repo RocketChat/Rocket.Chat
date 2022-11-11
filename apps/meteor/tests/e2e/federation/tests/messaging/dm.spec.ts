@@ -477,43 +477,84 @@ test.describe.parallel('Federation - DM Messaging', () => {
 					`hello ${userFromServer2UsernameOnly}, here's ${adminUsernameWithDomainFromServer1} from Server A, all, ${userFromServer2UsernameOnly}`,
 				);
 			});
-
-			test('expect to send a message quoting a message from Server A to Server B', async ({ page }) => {
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await page.waitForTimeout(2000);
-
-				const message = `Message for quote - ${Date.now()}`;
-
-				await poFederationChannelServer2.content.sendMessage(message);
-				await poFederationChannelServer1.content.quoteMessage('this is a quote message');
-
-				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
-				await expect(poFederationChannelServer2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
-			});
-
-			test('expect to send a message quoting a message Server B to Server A', async ({ page }) => {
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
-				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				await page.waitForTimeout(2000);
-
-				const message = `Message for quote - ${Date.now()}`;
-
-				await poFederationChannelServer1.content.sendMessage(message);
-				await poFederationChannelServer2.content.quoteMessage('this is a quote message');
-
-				await expect(poFederationChannelServer2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
-				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
-			});
 		});
 
 		test.describe('Message actions', () => {
+			test('expect to send a message quoting a message from Server A to Server B', async ({ browser, apiServer2, page }) => {
+				const page2 = await browser.newPage();
+				const poFederationChannelServerUser2 = new FederationChannel(page2);
+				const usernameFromServer2 = await registerUser(apiServer2);
+
+				await doLogin({
+					page: page2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: usernameFromServer2,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await page2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					usernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
+
+				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await page.waitForTimeout(2000);
+
+				const message = `Message for quote - ${Date.now()}`;
+
+				await poFederationChannelServerUser2.content.sendMessage(message);
+				await poFederationChannelServer1.content.quoteMessage('this is a quote message');
+
+				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+				await expect(poFederationChannelServerUser2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+				await page2.close();
+			});
+
+			test('expect to send a message quoting a message Server B to Server A', async ({ browser, apiServer2, page }) => {
+				const page2 = await browser.newPage();
+				const poFederationChannelServerUser2 = new FederationChannel(page2);
+				const usernameFromServer2 = await registerUser(apiServer2);
+
+				await doLogin({
+					page: page2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: usernameFromServer2,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await page2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					usernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
+
+				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await page.waitForTimeout(2000);
+				const message = `Message for quote - ${Date.now()}`;
+
+				await poFederationChannelServer1.content.sendMessage(message);
+				await poFederationChannelServerUser2.content.quoteMessage('this is a quote message');
+
+				await expect(poFederationChannelServerUser2.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+				await expect(poFederationChannelServer1.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+				await page2.close();
+			});
+
 			test('expect to react a message from Server A to Server B', async ({ browser, page, apiServer2 }) => {
 				const page2 = await browser.newPage();
 				const poFederationChannelServerUser2 = new FederationChannel(page2);
