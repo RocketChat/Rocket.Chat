@@ -11,9 +11,20 @@ import { appIncompatibleStatusProps } from '../helpers';
 import AppStatus from './tabs/AppStatus';
 import { TooltipOnHover } from './tabs/AppStatus/TooltipOnHover';
 
+const versioni18nKey = (app: App): string => {
+	const { version, marketplaceVersion, marketplace } = app;
+	const marketplaceCast = marketplace as boolean;
+
+	if (marketplaceCast) {
+		return marketplaceVersion;
+	}
+
+	return version;
+};
+
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, versionIncompatible } = app;
+	const { iconFileData, name, author, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, versionIncompatible } = app;
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
@@ -28,8 +39,9 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
 				{app?.shortDescription && <Box mbe='x16'>{app.shortDescription}</Box>}
+
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
-					<AppStatus app={app} installed={installed} isAppDetailsPage={true} />
+					<AppStatus app={app} installed={installed} isAppDetailsPage={true} versionIncompatible={versionIncompatible} />
 					{(installed || isSubscribed) && <AppMenu app={app} mis='x8' />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
@@ -39,11 +51,11 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<Box is='span'> | </Box>
 
 					<Box marginInlineStart={'16px'} marginInlineEnd={'4px'}>
-						{t('Version_version', { version })}
+						{t('Version_version', { version: versioni18nKey(app) })}
 					</Box>
 
 					<Box is={'span'} marginInlineEnd={'16px'}>
-						{versionIncompatible && (
+						{versionIncompatible === true && (
 							<>
 								<TooltipOnHover
 									element={

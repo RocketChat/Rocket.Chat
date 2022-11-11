@@ -227,7 +227,7 @@ export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean): appSta
 	const status = appStatusSpanProps(app);
 	const statuses = [];
 
-	if (app.versionIncompatible && !isAppDetailsPage) {
+	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {
 		statuses.push(appIncompatibleStatusProps());
 	}
 

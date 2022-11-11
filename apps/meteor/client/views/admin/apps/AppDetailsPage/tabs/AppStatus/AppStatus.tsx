@@ -3,7 +3,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Tooltip, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo, ReactElement, Fragment } from 'react';
+import React, { useCallback, useState, memo, ReactElement } from 'react';
 
 import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
@@ -17,7 +17,8 @@ type AppStatusProps = {
 	app: App;
 	showStatus?: boolean;
 	isAppDetailsPage: boolean;
-	installed: boolean;
+	installed?: boolean;
+	versionIncompatible?: boolean;
 };
 
 type UpdateProps = {
@@ -57,14 +58,19 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
+const AppStatus = ({
+	app,
+	showStatus = true,
+	versionIncompatible,
+	isAppDetailsPage,
+	installed,
+	...props
+}: AppStatusProps): ReactElement => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
-
 	const { price, purchaseType, pricingPlans } = app;
-
 	const button = appButtonProps(app || {});
 	const statuses = appMultiStatusProps(app, isAppDetailsPage);
 
@@ -105,6 +111,24 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
 	};
 
+	const openIncompatibleModal = async (app: App): Promise<void> => {
+		try {
+			const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
+			setModal(<IframeModal url={incompatibleData.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
+		} catch (e: any) {
+			handleAPIError(error);
+		}
+	};
+
+	const openPurchaseModal = async (app: App): Promise<void> => {
+		try {
+			const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
+			setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
+		} catch (error) {
+			handleAPIError(error);
+		}
+	};
+
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const handleClick = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
@@ -121,13 +145,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			return;
 		}
 
+		if (versionIncompatible && action !== undefined && ['install', 'update'].includes(action)) {
+			openIncompatibleModal(app);
+			return;
+		}
+
 		if (action !== undefined && action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
+			openPurchaseModal(app);
 			return;
 		}
 
@@ -189,9 +213,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 							tooltip={<Tooltip>{status.tooltipText}</Tooltip>}
 						></TooltipOnHover>
 					) : (
-						<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
-							{status.label}
-						</Tag>
+						<Box is={'span'} key={index}>
+							<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
+								{status.label}
+							</Tag>
+						</Box>
 					)}
 				</Margins>
 			))}
