@@ -1,3 +1,5 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
@@ -1021,7 +1023,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
 		}
 		if (roomName) {
-			query.fname = new RegExp(roomName, 'i');
+			query.fname = new RegExp(escapeRegExp(roomName), 'i');
 		}
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
