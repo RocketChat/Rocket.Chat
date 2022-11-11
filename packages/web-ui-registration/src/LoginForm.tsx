@@ -114,7 +114,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 									errors.username?.message ||
 									(errors.username?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
 								}
-								aria-invalid={errors.username || errorOnSubmit === 'user-not-found' ? 'true' : 'false'}
+								aria-invalid={errors.username ? 'true' : 'false'}
 								id='username'
 							/>
 						</Field.Row>
@@ -130,12 +130,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								{...register('password', {
 									required: true,
 								})}
-								placeholder={'*****'}
+								placeholder='*****'
 								error={
 									errors.password?.message ||
 									(errors.password?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
 								}
-								aria-invalid={errors.password || errorOnSubmit === 'user-not-found' ? 'true' : 'false'}
+								aria-invalid={errors.password ? 'true' : 'false'}
 								id='password'
 							/>
 						</Field.Row>

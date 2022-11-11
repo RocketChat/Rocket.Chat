@@ -11,7 +11,7 @@ export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: Dispatc
 
 	const t = useTranslation();
 	return (
-		<Form onSubmit={() => false}>
+		<Form>
 			<Form.Header>
 				<Form.Title>{t('Register')}</Form.Title>
 			</Form.Header>
