@@ -129,8 +129,8 @@ const AppStatus = ({
 	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
 
 	return (
-		<Box {...props} display='flex' flexDirection='row'>
-			{button && (
+		<Box {...props} display='flex'>
+			{button && isAppDetailsPage && (
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -169,25 +169,21 @@ const AppStatus = ({
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineStart='x8' key={index}>
-					{status.tooltipText ? (
-						<TooltipOnHover
-							key={index}
-							element={
-								<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
-									{status.label}
-								</Tag>
-							}
-							tooltip={<Tooltip>{status.tooltipText}</Tooltip>}
-						></TooltipOnHover>
-					) : (
-						<Box is={'span'} key={index}>
-							<Tag medium variant={status.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
-								{status.label}
-							</Tag>
-						</Box>
-					)}
-				</Margins>
+				<>
+					<Margins inlineStart='x16'>
+						{status.tooltipText ? (
+							<TooltipOnHover
+								key={index}
+								element={<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>}
+								tooltip={<Tooltip>{status.tooltipText}</Tooltip>}
+							></TooltipOnHover>
+						) : (
+							<Box is={'span'} key={index}>
+								<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>
+							</Box>
+						)}
+					</Margins>
+				</>
 			))}
 		</Box>
 	);
