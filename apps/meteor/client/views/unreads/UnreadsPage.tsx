@@ -26,7 +26,7 @@ const UnreadsPage: FC = () => {
 	const [expandedItem, setExpandedItem] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState('Activity');
 	const [activeMessages, setActiveMessages] = useState<MessageWithMdEnforced[]>([]);
-	const [undoAllHistory, setUndoAllHistory] = useState<any[]>([]);
+	const [undoUnreadsHistory, setundoUnreadsHistory] = useState<any[]>([]);
 	const [pageLoading, setPageLoading] = useState<boolean>(true);
 
 	const totalMessages = useMemo(() => {
@@ -41,18 +41,18 @@ const UnreadsPage: FC = () => {
 
 	const fusedRoomsWithUndoAndSort = useMemo(
 		() =>
-			[...undoAllHistory.map((room: any) => ({ ...room, undo: true })), ...(unreads || [])].sort((a: any, b: any) =>
+			[...undoUnreadsHistory.map((room: any) => ({ ...room, undo: true })), ...(unreads || [])].sort((a: any, b: any) =>
 				sortBy !== 'Activity' ? a?.name?.localeCompare(b?.name) : b?.lm - a?.lm,
 			),
-		[undoAllHistory, unreads, sortBy],
+		[undoUnreadsHistory, unreads, sortBy],
 	);
 
 	async function handleMarkAll(): Promise<void> {
-		if (undoAllHistory.length) {
-			await Promise.all(undoAllHistory.map((room) => unreadMessages({ roomId: room.rid })));
-			setUndoAllHistory([]);
+		if (undoUnreadsHistory.length) {
+			await Promise.all(undoUnreadsHistory.map((room) => unreadMessages({ roomId: room.rid })));
+			setundoUnreadsHistory([]);
 		} else if (unreads) {
-			setUndoAllHistory([...unreads.map((room: IUnreadHistoryRoom) => ({ ...room, undo: true }))]);
+			setundoUnreadsHistory([...unreads.map((room: IUnreadHistoryRoom) => ({ ...room, undo: true }))]);
 			await Promise.all(unreads.map((room) => readMessages({ rid: room.rid })));
 		}
 		setExpandedItem(null);
@@ -60,13 +60,13 @@ const UnreadsPage: FC = () => {
 	}
 
 	async function handleMark(room: IUnreadRoom): Promise<void> {
-		const index = undoAllHistory.findIndex((r) => r.rid === room.rid);
+		const index = undoUnreadsHistory.findIndex((r) => r.rid === room.rid);
 		if (index >= 0) {
 			await unreadMessages({ roomId: room.rid });
-			undoAllHistory.splice(index, 1);
-			setUndoAllHistory(undoAllHistory);
+			undoUnreadsHistory.splice(index, 1);
+			setundoUnreadsHistory(undoUnreadsHistory);
 		} else {
-			setUndoAllHistory([...undoAllHistory, room]);
+			setundoUnreadsHistory([...undoUnreadsHistory, room]);
 			await readMessages({ rid: room.rid });
 		}
 		setExpandedItem(null);
@@ -138,7 +138,7 @@ const UnreadsPage: FC = () => {
 		return (
 			<Page>
 				<ResultMessage empty>
-					{!!undoAllHistory.length && (
+					{!!undoUnreadsHistory.length && (
 						<ButtonGroup
 							padding={20}
 							paddingBlockEnd={20}
@@ -175,7 +175,7 @@ const UnreadsPage: FC = () => {
 								handleMarkAll={(): Promise<void> => handleMarkAll()}
 								sortBy={sortBy}
 								setSortBy={(sortBy: string): void => setSortBy(sortBy)}
-								hasUndo={!!undoAllHistory.length}
+								hasUndo={!!undoUnreadsHistory.length}
 							/>
 						}
 					/>
