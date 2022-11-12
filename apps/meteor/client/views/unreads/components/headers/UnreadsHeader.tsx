@@ -34,7 +34,7 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 			<Header.Content.Row flexDirection='row' justifyContent={'flex-end'}>
 				<ButtonGroup>
 					{!isMobile && (
-						<Button onClick={handleMarkAll}>
+						<Button small onClick={handleMarkAll}>
 							<Icon name={'flag'} size='x20' margin='4x' />
 							<span style={{ marginLeft: '10px' }}>{t('Mark_all_as_read_short')}</span>
 						</Button>
