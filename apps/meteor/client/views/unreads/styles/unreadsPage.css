@@ -1,5 +1,5 @@
 .unreadsAccordionHeader [class*='rcx-accordion-item__bar'] {
-	padding: 0 10px !important;
+	padding: 0 20px 0 10px !important;
 	min-height: 40px !important;
 }
 
@@ -20,4 +20,8 @@
 	margin: 0 !important;
 	margin-block: 0 !important;
 	margin-inline: 0 !important;
+}
+
+.unreadsSectionHeader {
+	height: 64px;
 }
