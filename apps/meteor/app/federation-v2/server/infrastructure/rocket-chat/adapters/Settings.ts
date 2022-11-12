@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
+import { resolve } from 'path';
 
 import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
@@ -243,7 +244,7 @@ export class RocketChatSettingsAdapter {
 
 	private getRegistrationFileFromHomeserver(): Record<string, any> | undefined {
 		try {
-			const registrationYaml = fs.readFileSync('../../../../../matrix-federation-config/registration.yaml', 'utf8');
+			const registrationYaml = fs.readFileSync(resolve(process.cwd(), '../../../matrix-federation-config/registration.yaml'), 'utf8');
 
 			const parsedFile = yaml.load(registrationYaml as string) as Record<string, any>;
 			return {
