@@ -9,3 +9,7 @@
 .unreadsAccordionHeader hr {
 	visibility: hidden !important;
 }
+
+.unreadsAccordionHeader .rcx-accordion-item__panel--expanded {
+	padding-top: 5px !important;
+}

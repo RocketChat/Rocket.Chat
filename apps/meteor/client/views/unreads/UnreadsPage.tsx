@@ -1,7 +1,9 @@
 import { Accordion, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { FC, memo, useEffect, useMemo, useState } from 'react';
 
+import { MessageAction } from '../../../app/ui-utils/client/lib/MessageAction';
 import Page from '../../components/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { MessageWithMdEnforced } from '../room/MessageList/lib/parseMessageTextToAstMarkdown';
@@ -53,6 +55,17 @@ const UnreadsPage: FC = () => {
 		setActiveMessages(messages);
 	}
 
+	async function handleRedirect(): Promise<void> {
+		if (activeMessages.length === 0) return;
+
+		const permalink = await MessageAction.getPermaLink(activeMessages[0]._id);
+
+		const urlWithoutProtocol = permalink.slice(permalink.indexOf('//') + 2);
+		const messageUrl = urlWithoutProtocol.slice(urlWithoutProtocol.indexOf('/'));
+
+		FlowRouter.go(messageUrl);
+	}
+
 	useEffect(() => {
 		unreads?.forEach(async (room) => {
 			if (expandedItem === room._id) {
@@ -92,12 +105,30 @@ const UnreadsPage: FC = () => {
 											getMessages(room);
 										}}
 									>
-										<ButtonGroup flexDirection='row' justifyContent={'flex-end'}>
-											<Button onClick={(): Promise<void> => handleMark(room.rid)}>
-												<Icon name={'flag'} size='x20' margin='4x' />
-												<span style={{ marginLeft: '10px' }}>{t('Mark_read')}</span>
-											</Button>
-										</ButtonGroup>
+										{activeMessages?.length > 0 && (
+											<ButtonGroup
+												display='flex'
+												flexDirection='row'
+												justifyContent='space-around'
+												width='full'
+												padding='10px'
+												alignItems='center'
+											>
+												<Button
+													small
+													onClick={(): Promise<void> => handleRedirect()}
+													backgroundColor='transparent'
+													borderColor='transparent'
+												>
+													<Icon name={'reply-directly'} size='x20' margin='4x' />
+													<span style={{ marginLeft: '8px' }}>{t('Jump_to')}</span>
+												</Button>
+												<Button small onClick={(): Promise<void> => handleMark(room.rid)}>
+													<Icon name={'flag'} size='x20' margin='4x' />
+													<span style={{ marginLeft: '8px' }}>{t('Mark_read')}</span>
+												</Button>
+											</ButtonGroup>
+										)}
 										<MessageList messages={activeMessages} rid={room.rid} />
 									</Accordion.Item>
 								))}
