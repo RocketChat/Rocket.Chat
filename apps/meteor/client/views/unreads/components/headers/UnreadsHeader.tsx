@@ -12,9 +12,10 @@ type UnreadsHeaderProps = {
 	handleMarkAll: () => Promise<void>;
 	sortBy: string;
 	setSortBy: (sortBy: string) => void;
+	hasUndo?: boolean;
 };
 
-const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, handleMarkAll, sortBy, setSortBy }) => {
+const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, handleMarkAll, sortBy, setSortBy, hasUndo }) => {
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
@@ -38,14 +39,10 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 					{!isMobile && (
 						<Button small onClick={handleMarkAll}>
 							<Icon name={'flag'} size='x20' margin='4x' />
-							<span style={{ marginLeft: '10px' }}>{t('Mark_all_as_read_short')}</span>
+							<span style={{ marginLeft: '10px' }}>{hasUndo ? t('Undo') : t('Mark_all_as_read_short')}</span>
 						</Button>
 					)}
-					<HeaderMenu
-						handleMarkAll={(): Promise<void> => handleMarkAll()}
-						sortBy={sortBy}
-						setSortBy={(sortBy: string): void => setSortBy(sortBy)}
-					/>
+					<HeaderMenu handleMarkAll={handleMarkAll} sortBy={sortBy} setSortBy={(sortBy: string): void => setSortBy(sortBy)} />
 				</ButtonGroup>
 			</Header.Content.Row>
 		</Header>

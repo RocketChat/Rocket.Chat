@@ -688,7 +688,7 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
-	setAsUnreadByRoomIdAndUserId(roomId, userId, firstMessageUnreadTimestamp) {
+	setAsUnreadByRoomIdAndUserId(roomId, userId, firstMessageUnreadTimestamp, numOfUnreads) {
 		const query = {
 			'rid': roomId,
 			'u._id': userId,
@@ -699,6 +699,7 @@ export class Subscriptions extends Base {
 				open: true,
 				alert: true,
 				ls: firstMessageUnreadTimestamp,
+				unread: numOfUnreads,
 			},
 		};
 

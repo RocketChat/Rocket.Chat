@@ -5,7 +5,7 @@ import { TooltipWrapper } from '@rocket.chat/layout';
 import { useCurrentRoute, useLayout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement } from 'react';
 
-import { useRoomList } from '../hooks/useRoomList';
+import { useUnreadRoomList } from '../../views/unreads/hooks/useUnreadRoomList';
 
 const UnreadsSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
@@ -16,23 +16,22 @@ const UnreadsSection = (props: typeof Box): ReactElement => {
 		directoryRoute.push({});
 	});
 
-	const rooms = useRoomList();
-	const hasUnreadMessages = rooms.filter((room) => room?.unread || room?.tunread?.length)?.length > 0;
+	const rooms = useUnreadRoomList();
+	const hasUnreadMessages = rooms?.length > 0;
 
 	const currentRoute = useCurrentRoute();
 	const [currentRouteName] = currentRoute;
 	const isActive = currentRouteName === 'unreads';
 
-	const color = hasUnreadMessages ? '#ffffff' : '#9ea2a8';
+	const color = hasUnreadMessages ? 'var(--color-white)' : 'var(--color-gray)';
 	const tooltip = 'You have new messages!';
 
-	// TODO import colors from useSidebarPaletteColor
 	const sidebarItemStyles = css`
 		cursor: pointer;
-		background-color: ${isActive ? '#414852' : '#2f343d'} !important;
+		background-color: ${isActive ? 'var(--color-dark-medium)' : 'var(--color-dark)'} !important;
 		&:hover,
 		&:focus {
-			background-color: #1f2329 !important;
+			background-color: var(--color-darkest) !important;
 		}
 	`;
 

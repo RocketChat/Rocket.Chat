@@ -1,4 +1,5 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { FC, memo, useEffect, useMemo, useState } from 'react';
 
@@ -9,16 +10,24 @@ import { MessageWithMdEnforced } from '../room/MessageList/lib/parseMessageTextT
 import ResultMessage from './components/body/ResultMessage';
 import UnreadsBody from './components/body/UnreadsBody';
 import UnreadsHeader from './components/headers/UnreadsHeader';
-import { useUnreads } from './hooks/useUnreads';
+import { IUnreadRoom, useUnreads } from './hooks/useUnreads';
 
 import './styles/unreadsPage.css';
 
+type IUnreadHistoryRoom = IUnreadRoom & { undo?: boolean };
+
+const maxLoading = 4000;
+
 const UnreadsPage: FC = () => {
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
+	const unreadMessages = useEndpoint('POST', '/v1/subscriptions.unread');
 	const [loading, error, unreads, fetchMessages] = useUnreads();
-	const [expandedItem, setExpandedItem] = useState(null);
+	const t = useTranslation();
+	const [expandedItem, setExpandedItem] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState('Activity');
 	const [activeMessages, setActiveMessages] = useState<MessageWithMdEnforced[]>([]);
+	const [undoAllHistory, setUndoAllHistory] = useState<any[]>([]);
+	const [pageLoading, setPageLoading] = useState<boolean>(true);
 
 	const totalMessages = useMemo(() => {
 		let total = 0;
@@ -30,34 +39,52 @@ const UnreadsPage: FC = () => {
 		return total;
 	}, [unreads]);
 
-	const sortedRooms = useMemo(() => {
-		const sortedRooms =
-			unreads?.sort((a: any, b: any) => (sortBy !== 'Activity' ? a?.name?.localeCompare(b?.name) : b?.lm - a?.lm)) ?? unreads;
-
-		return sortedRooms;
-	}, [sortBy, unreads]);
+	const fusedRoomsWithUndoAndSort = useMemo(
+		() =>
+			[...undoAllHistory.map((room: any) => ({ ...room, undo: true })), ...(unreads || [])].sort((a: any, b: any) =>
+				sortBy !== 'Activity' ? a?.name?.localeCompare(b?.name) : b?.lm - a?.lm,
+			),
+		[undoAllHistory, unreads, sortBy],
+	);
 
 	async function handleMarkAll(): Promise<void> {
-		if (unreads) await Promise.all(unreads.map((room) => readMessages({ rid: room.rid })));
+		if (undoAllHistory.length) {
+			await Promise.all(undoAllHistory.map((room) => unreadMessages({ roomId: room.rid })));
+			setUndoAllHistory([]);
+		} else if (unreads) {
+			setUndoAllHistory([...unreads.map((room: IUnreadHistoryRoom) => ({ ...room, undo: true }))]);
+			await Promise.all(unreads.map((room) => readMessages({ rid: room.rid })));
+		}
 		setExpandedItem(null);
 		setActiveMessages([]);
 	}
 
-	async function handleMark(rid: string): Promise<void> {
-		await readMessages({ rid });
+	async function handleMark(room: IUnreadRoom): Promise<void> {
+		const index = undoAllHistory.findIndex((r) => r.rid === room.rid);
+		if (index >= 0) {
+			await unreadMessages({ roomId: room.rid });
+			undoAllHistory.splice(index, 1);
+			setUndoAllHistory(undoAllHistory);
+		} else {
+			setUndoAllHistory([...undoAllHistory, room]);
+			await readMessages({ rid: room.rid });
+		}
 		setExpandedItem(null);
 		setActiveMessages([]);
 	}
 
-	async function getMessages(room: any): Promise<void> {
+	async function getMessages(room: IUnreadHistoryRoom): Promise<void> {
 		if (expandedItem === room._id) {
 			setExpandedItem(null);
 			setActiveMessages([]);
-			return;
+		} else if (room.undo) {
+			setExpandedItem(room._id);
+			setActiveMessages([]);
+		} else {
+			setExpandedItem(room._id);
+			const messages = await fetchMessages(room);
+			setActiveMessages(messages);
 		}
-		const messages = await fetchMessages(room);
-		setExpandedItem(room._id);
-		setActiveMessages(messages);
 	}
 
 	async function handleRedirect(): Promise<void> {
@@ -72,7 +99,9 @@ const UnreadsPage: FC = () => {
 	}
 
 	useEffect(() => {
-		unreads?.forEach(async (room) => {
+		if (unreads?.length) setPageLoading(false);
+
+		unreads?.some(async (room) => {
 			if (expandedItem === room._id) {
 				const messages = await fetchMessages(room);
 				setExpandedItem(room._id);
@@ -80,6 +109,55 @@ const UnreadsPage: FC = () => {
 			}
 		});
 	}, [unreads, expandedItem, fetchMessages]);
+
+	useEffect(() => {
+		const loadingTimeout = setTimeout(() => {
+			setPageLoading(false);
+		}, maxLoading);
+
+		return () => clearTimeout(loadingTimeout);
+	}, []);
+
+	if (error) {
+		return (
+			<Page>
+				<ResultMessage />
+			</Page>
+		);
+	}
+
+	if (loading || pageLoading) {
+		return (
+			<Page>
+				<PageSkeleton />
+			</Page>
+		);
+	}
+
+	if (!pageLoading && (!unreads || !unreads?.length)) {
+		return (
+			<Page>
+				<ResultMessage empty>
+					{!!undoAllHistory.length && (
+						<ButtonGroup
+							padding={20}
+							paddingBlockEnd={20}
+							display='flex'
+							flexDirection='row'
+							justifyContent='center'
+							alignItems='center'
+							width='full'
+						>
+							<Button onClick={(): Promise<void> => handleMarkAll()}>
+								<Icon name={'flag'} size='x20' margin='4x' />
+								<span style={{ marginLeft: '10px' }}>{t('Undo')}</span>
+							</Button>
+						</ButtonGroup>
+					)}
+				</ResultMessage>
+			</Page>
+		);
+	}
 
 	return (
 		<Page padding={0}>
@@ -97,17 +175,18 @@ const UnreadsPage: FC = () => {
 								handleMarkAll={(): Promise<void> => handleMarkAll()}
 								sortBy={sortBy}
 								setSortBy={(sortBy: string): void => setSortBy(sortBy)}
+								hasUndo={!!undoAllHistory.length}
 							/>
 						}
 					/>
 					<Page.ScrollableContentWithShadow padding={0}>
 						<UnreadsBody
-							sortedRooms={sortedRooms}
+							sortedRooms={fusedRoomsWithUndoAndSort}
 							expandedItem={expandedItem}
 							activeMessages={activeMessages}
 							handleRedirect={(): Promise<void> => handleRedirect()}
-							handleMark={(id: string): Promise<void> => handleMark(id)}
-							getMessages={(room: any): Promise<void> => getMessages(room)}
+							handleMark={(room): Promise<void> => handleMark(room)}
+							getMessages={(room): Promise<void> => getMessages(room)}
 						/>
 					</Page.ScrollableContentWithShadow>
 				</>

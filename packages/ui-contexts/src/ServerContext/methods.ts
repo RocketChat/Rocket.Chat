@@ -151,7 +151,7 @@ export interface ServerMethods {
 		rid: IRoom['_id'],
 		ts?: Date,
 		limit?: number,
-		ls?: number,
+		ls?: Date,
 		showThreadMessages?: boolean,
 		unreadOnly?: boolean,
 	) => {
