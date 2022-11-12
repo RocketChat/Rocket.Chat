@@ -854,7 +854,6 @@ jobs:
     needs:
       - services-docker-image-publish
       - docker-image-publish
-      - release-versions
     steps:
       - name: Send built image details to seperate pipeline
         uses: peter-evans/repository-dispatch@v2
