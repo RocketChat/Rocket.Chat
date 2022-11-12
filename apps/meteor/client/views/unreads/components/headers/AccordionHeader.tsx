@@ -18,7 +18,7 @@ const AccordionHeader: FC<{ room: any }> = ({ room }) => {
 			<Header.Content>
 				<Header.Content.Row>
 					<Header.Icon icon={icon} />
-					<Header.Title is='h1'>{room.name}</Header.Title>
+					<Header.Title is='h1'>{room?.fname ? room.fname : room.name}</Header.Title>
 				</Header.Content.Row>
 				<Header.Content.Row>
 					<Header.Subtitle is='h2'>
