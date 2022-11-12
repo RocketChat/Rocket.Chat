@@ -7,6 +7,10 @@
 	align-self: center;
 }
 
+.unreadsUndoItem span i {
+	display: none;
+}
+
 .unreadsAccordionHeader hr,
 .unreadsSectionHeader hr {
 	visibility: hidden;
