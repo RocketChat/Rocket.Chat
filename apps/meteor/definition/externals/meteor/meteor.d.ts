@@ -79,5 +79,17 @@ declare module 'meteor/meteor' {
 
 		function _relativeToSiteRootUrl(path: string): string;
 		const _localStorage: Window['localStorage'];
+
+		function loginWithLDAP(
+			username: string | object,
+			password: string,
+			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
+		): void;
+
+		function loginWithCrowd(
+			username: string | object,
+			password: string,
+			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
+		): void;
 	}
 }
