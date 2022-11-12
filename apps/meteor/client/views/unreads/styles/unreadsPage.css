@@ -1,0 +1,27 @@
+.unreadsAccordionHeader [class*='rcx-accordion-item__bar'] {
+	padding: 0 20px 0 10px !important;
+	min-height: 40px !important;
+}
+
+.unreadsAccordionHeader span i {
+	align-self: center;
+}
+
+.unreadsAccordionHeader hr,
+.unreadsSectionHeader hr {
+	visibility: hidden;
+}
+
+.unreadsAccordionHeader .rcx-accordion-item__panel--expanded {
+	padding-top: 5px !important;
+}
+
+.unreadsSectionHeader:first-child {
+	margin: 0 !important;
+	margin-block: 0 !important;
+	margin-inline: 0 !important;
+}
+
+.unreadsSectionHeader {
+	height: 64px;
+}

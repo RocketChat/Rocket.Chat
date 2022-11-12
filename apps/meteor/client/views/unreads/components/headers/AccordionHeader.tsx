@@ -1,25 +1,26 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import { getAvatarURL } from '../../../../../app/utils/lib/getAvatarURL';
 import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
 
-const AccordionHeader: FC<{ room: any; handleMark: any }> = ({ room, handleMark }) => {
+const AccordionHeader: FC<{ room: any }> = ({ room }) => {
 	const t = useTranslation();
 	const icon = useRoomIcon(room);
+	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` });
 
 	return (
 		<Header borderBlockStyle='unset'>
 			<Header.Avatar>
-				<RoomAvatar room={room} />
+				<RoomAvatar url={room?.avatarETag ?? defaultUrl} room={room} />
 			</Header.Avatar>
 			<Header.Content>
 				<Header.Content.Row>
 					<Header.Icon icon={icon} />
-					<Header.Title is='h1'>{room.name}</Header.Title>
+					<Header.Title is='h1'>{room?.fname ?? room.name}</Header.Title>
 				</Header.Content.Row>
 				<Header.Content.Row>
 					<Header.Subtitle is='h2'>
@@ -32,12 +33,6 @@ const AccordionHeader: FC<{ room: any; handleMark: any }> = ({ room, handleMark 
 					</Header.Subtitle>
 				</Header.Content.Row>
 			</Header.Content>
-			<ButtonGroup>
-				<Button onClick={handleMark}>
-					<Icon name={'flag'} size='x20' margin='4x' />
-					<span style={{ marginLeft: '10px' }}>{t('Mark_as_read')}</span>
-				</Button>
-			</ButtonGroup>
 		</Header>
 	);
 };
