@@ -9,7 +9,7 @@ const ResultMessage: FC<ResultMessageProps> = ({ empty }) => {
 	const t = useTranslation();
 	return (
 		<Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' width='full' height='80%'>
-			<Icon name={empty ? 'check' : 'warning'} size='x60' color='green' />
+			<Icon name={empty ? 'check' : 'warning'} size='x60' color={empty ? 'green' : 'red'} />
 			<Box marginBlock='x4'>
 				<Box is='h3' color='default' fontScale='h3'>
 					{empty ? t('No_unreads') : t('Unread_Error')}

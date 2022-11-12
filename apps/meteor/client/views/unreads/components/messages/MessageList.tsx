@@ -1,6 +1,6 @@
 import { IThreadMessage, IRoom } from '@rocket.chat/core-typings';
 import { Box, MessageDivider, Skeleton } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Fragment, memo, ReactElement } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
@@ -23,6 +23,7 @@ type MessageListProps = {
 };
 
 export const MessageList = ({ messages, rid }: MessageListProps): ReactElement => {
+	const t = useTranslation();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const format = useFormatDate();
 
@@ -59,7 +60,7 @@ export const MessageList = ({ messages, rid }: MessageListProps): ReactElement =
 									{shouldShowDivider && (
 										<MessageDivider>
 											{isNewDay && format(message.ts)}
-											{tmid && <Box fontWeight={400}>{'Reply from thread'}</Box>}
+											{tmid && <Box fontWeight={400}>{t('Reply_in_thread')}</Box>}
 										</MessageDivider>
 									)}
 

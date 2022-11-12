@@ -2,6 +2,7 @@ import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import { getAvatarURL } from '../../../../../app/utils/lib/getAvatarURL';
 import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
@@ -9,11 +10,12 @@ import { useRoomIcon } from '../../../../hooks/useRoomIcon';
 const AccordionHeader: FC<{ room: any }> = ({ room }) => {
 	const t = useTranslation();
 	const icon = useRoomIcon(room);
+	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` });
 
 	return (
 		<Header borderBlockStyle='unset'>
 			<Header.Avatar>
-				<RoomAvatar room={room} />
+				<RoomAvatar url={room?.avatarETag ?? defaultUrl} room={room} />
 			</Header.Avatar>
 			<Header.Content>
 				<Header.Content.Row>
