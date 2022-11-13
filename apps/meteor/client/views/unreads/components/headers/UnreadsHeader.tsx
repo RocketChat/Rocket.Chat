@@ -33,7 +33,7 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 				<ButtonGroup>
 					{!isMobile && (
 						<Button small onClick={handleMarkAll}>
-							<Icon name={'flag'} size='x20' margin='4x' />
+							<Icon name={hasUndo ? 'undo' : 'flag'} size='x20' margin='4x' />
 							<span style={{ marginLeft: '10px' }}>{hasUndo ? t('Undo_all') : t('Mark_all_as_read_short')}</span>
 						</Button>
 					)}

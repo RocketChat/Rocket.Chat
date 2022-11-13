@@ -12,7 +12,7 @@ const ResultMessage: FC<ResultMessageProps> = ({ empty, children }) => {
 		<Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' width='full' height='80%'>
 			<Icon name={empty ? 'check' : 'warning'} size='x60' color={empty ? 'green' : 'red'} />
 			<Box marginBlock='x4'>
-				<Box is='h3' color='default' fontScale='h3' textAlign='center' margin={20}>
+				<Box is='h4' color='default' fontScale='h4' textAlign='center' margin={20}>
 					{empty ? t('No_unreads') : t('Unread_Error')}
 				</Box>
 				{children}

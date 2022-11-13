@@ -43,7 +43,11 @@ const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
 						{isMobile && (
 							<>
 								<OptionTitle>{t('Action')}</OptionTitle>
-								<Option label={hasUndo ? t('Undo_all') : t('Mark_all_as_read_short')} icon={'flag'} onClick={handleMarkAll} />
+								<Option
+									label={hasUndo ? t('Undo_all') : t('Mark_all_as_read_short')}
+									icon={hasUndo ? 'undo' : 'flag'}
+									onClick={handleMarkAll}
+								/>
 								<OptionDivider />
 							</>
 						)}

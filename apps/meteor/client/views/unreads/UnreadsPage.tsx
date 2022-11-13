@@ -118,7 +118,7 @@ const UnreadsPage: FC = () => {
 	if (error) {
 		return (
 			<Page>
-				<Page.Header className='unreadsSectionHeader' title={t('Unread_Messages')} />
+				<Page.Header className='unreadsSectionHeader' title='' padding={'0 20px'} />
 				<ResultMessage />
 			</Page>
 		);
@@ -128,10 +128,10 @@ const UnreadsPage: FC = () => {
 		return <PageSkeleton />;
 	}
 
-	if (!pageLoading && (!unreads || !unreads?.length || unreads?.length === undoHistory.length)) {
+	if (!pageLoading && (!unreads || !unreads?.length || (unreads?.length && unreads?.length === undoHistory.length))) {
 		return (
 			<Page>
-				<Page.Header className='unreadsSectionHeader' title={t('Unread_Messages')} />
+				<Page.Header className='unreadsSectionHeader' title='' padding={0} />
 				<ResultMessage empty>
 					{!!undoHistory.length && (
 						<ButtonGroup
@@ -144,7 +144,7 @@ const UnreadsPage: FC = () => {
 							width='full'
 						>
 							<Button onClick={(): Promise<void> => handleMarkAll()}>
-								<Icon name={'flag'} size='x20' margin='4x' />
+								<Icon name={'undo'} size='x20' margin='4x' />
 								<span style={{ marginLeft: '10px' }}>{t('Undo')}</span>
 							</Button>
 						</ButtonGroup>
@@ -156,40 +156,33 @@ const UnreadsPage: FC = () => {
 
 	return (
 		<Page padding={0}>
-			{error && !loading && <ResultMessage />}
-			{unreads && !unreads.length && !loading && <ResultMessage empty />}
-			{!!loading && <PageSkeleton />}
-			{unreads && unreads.length > 0 && !loading && (
-				<>
-					<Page.Header
-						className='unreadsSectionHeader'
-						margin={0}
-						borderBlockEndWidth={0}
-						color={'var(--color-gray)'}
-						backgroundColor={'var(--color-dark)'}
-						title={
-							<UnreadsHeader
-								totalMessages={totalMessages}
-								totalRooms={unreads.length}
-								handleMarkAll={(): Promise<void> => handleMarkAll()}
-								sortBy={sortBy}
-								setSortBy={(sortBy: string): void => setSortBy(sortBy)}
-								hasUndo={!!undoHistory.length}
-							/>
-						}
+			<Page.Header
+				className='unreadsSectionHeader'
+				margin={0}
+				borderBlockEndWidth={0}
+				color={'var(--color-gray)'}
+				backgroundColor={'var(--color-dark)'}
+				title={
+					<UnreadsHeader
+						totalMessages={totalMessages}
+						totalRooms={unreads?.length || 0}
+						handleMarkAll={(): Promise<void> => handleMarkAll()}
+						sortBy={sortBy}
+						setSortBy={(sortBy: string): void => setSortBy(sortBy)}
+						hasUndo={!!undoHistory.length}
 					/>
-					<Page.ScrollableContentWithShadow padding={0}>
-						<UnreadsBody
-							sortedRooms={sortedRooms}
-							expandedItem={expandedItem}
-							activeMessages={activeMessages}
-							handleRedirect={(): Promise<void> => handleRedirect()}
-							handleMark={(room): Promise<void> => handleMark(room)}
-							getMessages={(room): Promise<void> => getMessages(room)}
-						/>
-					</Page.ScrollableContentWithShadow>
-				</>
-			)}
+				}
+			/>
+			<Page.ScrollableContentWithShadow padding={0}>
+				<UnreadsBody
+					sortedRooms={sortedRooms}
+					expandedItem={expandedItem}
+					activeMessages={activeMessages}
+					handleRedirect={(): Promise<void> => handleRedirect()}
+					handleMark={(room): Promise<void> => handleMark(room)}
+					getMessages={(room): Promise<void> => getMessages(room)}
+				/>
+			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
 };

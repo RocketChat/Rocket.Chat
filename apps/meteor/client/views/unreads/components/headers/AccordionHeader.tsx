@@ -34,10 +34,7 @@ const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; hand
 							parseEmoji={true}
 							variant='inlineWithoutBreaks'
 							withTruncatedText
-							content={(room.undo ? t('Total_reads') : t('Total_unreads')).replace(
-								'{messages}',
-								room?.unread + (room?.tunread?.length || 0),
-							)}
+							content={t('Total_unreads').replace('{messages}', room?.unread + (room?.tunread?.length || 0))}
 						/>
 					</Header.Subtitle>
 				</Header.Content.Row>
@@ -49,7 +46,7 @@ const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; hand
 						<span style={{ marginLeft: '8px' }}>{t('Jump_to')}</span>
 					</Button>
 					<Button small onClick={(): Promise<void> => handleMark(room)} backgroundColor='transparent' borderColor='transparent'>
-						<Icon name={'flag'} size='x20' margin='4x' />
+						<Icon name={'undo'} size='x20' margin='4x' />
 						<span style={{ marginLeft: '10px' }}>{t('Undo')}</span>
 					</Button>
 				</ButtonGroup>
