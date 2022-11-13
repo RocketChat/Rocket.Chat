@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui';
+import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui/client';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
