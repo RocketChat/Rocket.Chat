@@ -20,11 +20,11 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 	const { isMobile } = useLayout();
 
 	return (
-		<Header>
+		<Header padding={10}>
 			<Header.Content.Row flexDirection='row' justifyContent={'flex-start'}>
 				<Box flexDirection='column' justifyContent={'flex-start'}>
-					<Header.Title is='h1'>{`${totalMessages} ${t('Unread_Messages')}`}</Header.Title>
-					<Header.Subtitle is='h2' padding={'0px 5px'}>
+					<Header.Title is='h1' color={'var(--color-white)'} fontWeight='500'>{`${totalMessages} ${t('Unread_Messages')}`}</Header.Title>
+					<Header.Subtitle is='h2' padding={'0px 5px'} color={'var(--color-gray)'} fontWeight='400'>
 						<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={`${totalRooms} ${t('Rooms')}`} />
 					</Header.Subtitle>
 				</Box>
