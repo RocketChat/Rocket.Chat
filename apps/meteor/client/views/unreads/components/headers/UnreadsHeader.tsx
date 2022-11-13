@@ -25,12 +25,7 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 				<Box flexDirection='column' justifyContent={'flex-start'}>
 					<Header.Title is='h1'>{`${totalMessages} ${t('Unread_Messages')}`}</Header.Title>
 					<Header.Subtitle is='h2' padding={'0px 5px'}>
-						<MarkdownText
-							parseEmoji={true}
-							variant='inlineWithoutBreaks'
-							withTruncatedText
-							content={`${totalRooms} ${totalRooms === 1 ? t('Room') : t('Rooms')}`}
-						/>
+						<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={`${totalRooms} ${t('Rooms')}`} />
 					</Header.Subtitle>
 				</Box>
 			</Header.Content.Row>
@@ -39,10 +34,15 @@ const UnreadsHeader: FC<UnreadsHeaderProps> = ({ totalMessages, totalRooms, hand
 					{!isMobile && (
 						<Button small onClick={handleMarkAll}>
 							<Icon name={'flag'} size='x20' margin='4x' />
-							<span style={{ marginLeft: '10px' }}>{hasUndo ? t('Undo') : t('Mark_all_as_read_short')}</span>
+							<span style={{ marginLeft: '10px' }}>{hasUndo ? t('Undo_all') : t('Mark_all_as_read_short')}</span>
 						</Button>
 					)}
-					<HeaderMenu handleMarkAll={handleMarkAll} sortBy={sortBy} setSortBy={(sortBy: string): void => setSortBy(sortBy)} />
+					<HeaderMenu
+						handleMarkAll={handleMarkAll}
+						sortBy={sortBy}
+						setSortBy={(sortBy: string): void => setSortBy(sortBy)}
+						hasUndo={hasUndo}
+					/>
 				</ButtonGroup>
 			</Header.Content.Row>
 		</Header>

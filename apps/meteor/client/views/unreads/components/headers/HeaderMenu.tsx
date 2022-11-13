@@ -10,10 +10,11 @@ type HeaderMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	handleMarkAll: () => Promise<void>;
 	sortBy: string;
 	setSortBy: (sortBy: string) => void;
+	hasUndo?: boolean;
 };
 
 const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
-	const { handleMarkAll, sortBy, setSortBy, ...rest } = props;
+	const { handleMarkAll, sortBy, setSortBy, hasUndo, ...rest } = props;
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
@@ -42,7 +43,7 @@ const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
 						{isMobile && (
 							<>
 								<OptionTitle>{t('Action')}</OptionTitle>
-								<Option label={t('Mark_all_as_read_short')} icon={'flag'} onClick={handleMarkAll} />
+								<Option label={hasUndo ? t('Undo_all') : t('Mark_all_as_read_short')} icon={'flag'} onClick={handleMarkAll} />
 								<OptionDivider />
 							</>
 						)}

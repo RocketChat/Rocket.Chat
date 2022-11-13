@@ -2,7 +2,7 @@ import { Accordion, Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import { IUnreadRoom } from '../../hooks/useUnreads';
+import { IUnreadHistoryRoom } from '../../hooks/useUnreads';
 import AccordionHeader from '../headers/AccordionHeader';
 import MessageList from '../messages/MessageList';
 
@@ -11,8 +11,8 @@ type UnreadsBodyProps = {
 	expandedItem: any;
 	activeMessages: any;
 	handleRedirect: () => Promise<void>;
-	handleMark: (room: IUnreadRoom) => Promise<void>;
-	getMessages: (room: IUnreadRoom) => Promise<void>;
+	handleMark: (room: IUnreadHistoryRoom) => Promise<void>;
+	getMessages: (room: IUnreadHistoryRoom) => Promise<void>;
 };
 
 const UnreadsBody: FC<UnreadsBodyProps> = ({ sortedRooms, handleMark, handleRedirect, expandedItem, activeMessages, getMessages }) => {

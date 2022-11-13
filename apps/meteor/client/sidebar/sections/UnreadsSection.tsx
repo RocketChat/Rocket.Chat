@@ -24,7 +24,6 @@ const UnreadsSection = (props: typeof Box): ReactElement => {
 	const isActive = currentRouteName === 'unreads';
 
 	const color = hasUnreadMessages ? 'var(--color-white)' : 'var(--color-gray)';
-	const tooltip = 'You have new messages!';
 
 	const sidebarItemStyles = css`
 		cursor: pointer;
@@ -43,7 +42,7 @@ const UnreadsSection = (props: typeof Box): ReactElement => {
 				</Sidebar.TopBar.Title>
 				{hasUnreadMessages && (
 					<Sidebar.TopBar.Actions>
-						<TooltipWrapper text={tooltip}>
+						<TooltipWrapper text={t('You_have_new_messages')}>
 							<Icon size='x20' name='bell' color={color} />
 						</TooltipWrapper>
 					</Sidebar.TopBar.Actions>

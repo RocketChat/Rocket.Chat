@@ -7,9 +7,9 @@ import { getAvatarURL } from '../../../../../app/utils/lib/getAvatarURL';
 import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
-import { IUnreadRoom } from '../../hooks/useUnreads';
+import { IUnreadHistoryRoom } from '../../hooks/useUnreads';
 
-const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; handleMark: (room: IUnreadRoom) => Promise<void> }> = ({
+const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; handleMark: (room: IUnreadHistoryRoom) => Promise<void> }> = ({
 	room,
 	handleMark,
 	handleRedirect,

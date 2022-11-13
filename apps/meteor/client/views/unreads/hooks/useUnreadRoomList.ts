@@ -7,7 +7,7 @@ import { useQueryOptions } from '../../../sidebar/hooks/useQueryOptions';
 
 const query = { open: { $ne: false } };
 
-export const useUnreadRoomList = (): Array<ISubscription & IRoom> => {
+export const useUnreadRoomList = (extraRooms: string[] = []): Array<ISubscription & IRoom> => {
 	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
 
 	const options = useQueryOptions();
@@ -15,8 +15,8 @@ export const useUnreadRoomList = (): Array<ISubscription & IRoom> => {
 	const rooms = useUserSubscriptions(query, options) as (ISubscription & IRoom)[];
 
 	useEffect(() => {
-		setRoomList(rooms.filter((room) => room?.unread || room?.tunread?.length));
-	}, [setRoomList, rooms]);
+		setRoomList(rooms.filter((room) => room?.unread || room?.tunread?.length || extraRooms.includes(room?.rid)));
+	}, [setRoomList, rooms, extraRooms]);
 
 	return roomList;
 };
