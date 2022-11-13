@@ -35,7 +35,7 @@ const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
 	};
 
 	return (
-		<>
+		<Sidebar.TopBar.Section className='sidebar--custom-colors'>
 			<Sidebar.TopBar.Action icon='sort' {...rest} onClick={(): void => toggle()} ref={reference} />
 			{isVisible &&
 				createPortal(
@@ -63,7 +63,7 @@ const HeaderMenu: VFC<HeaderMenuProps> = (props) => {
 					</Dropdown>,
 					document.body,
 				)}
-		</>
+		</Sidebar.TopBar.Section>
 	);
 };
 

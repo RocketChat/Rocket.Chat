@@ -33,7 +33,7 @@ const UnreadsBody: FC<UnreadsBodyProps> = ({ sortedRooms, handleMark, handleRedi
 						{!room.undo && (
 							<>
 								<ButtonGroup
-									padding={0}
+									padding={'0 5px'}
 									paddingBlockEnd={20}
 									display='flex'
 									flexDirection='row'

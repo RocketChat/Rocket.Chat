@@ -1,6 +1,6 @@
 .unreadsAccordionHeader [class*='rcx-accordion-item__bar'] {
-	padding: 0 20px 0 10px !important;
 	min-height: 40px !important;
+	padding: 0 20px 0 10px !important;
 }
 
 .unreadsAccordionHeader span i {
@@ -17,15 +17,9 @@
 }
 
 .unreadsAccordionHeader .rcx-accordion-item__panel--expanded {
-	padding-top: 5px !important;
+	padding-top: 10px !important;
 }
 
 .unreadsSectionHeader:first-child {
-	margin: 0 !important;
-	margin-block: 0 !important;
-	margin-inline: 0 !important;
-}
-
-.unreadsSectionHeader {
-	height: 64px;
+	padding-left: 5px;
 }

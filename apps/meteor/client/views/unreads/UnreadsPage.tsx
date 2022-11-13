@@ -163,6 +163,10 @@ const UnreadsPage: FC = () => {
 				<>
 					<Page.Header
 						className='unreadsSectionHeader'
+						margin={0}
+						borderBlockEndWidth={0}
+						color={'var(--color-gray)'}
+						backgroundColor={'var(--color-dark)'}
 						title={
 							<UnreadsHeader
 								totalMessages={totalMessages}
