@@ -8,16 +8,18 @@ import { useUnreadRoomList } from './useUnreadRoomList';
 export type IUnreadState = boolean;
 
 export type IUnreadRoom = ISubscription & IRoom & { firstMessage?: IMessage };
+export type IUnreadHistoryRoom = IUnreadRoom & { undo?: boolean };
 
 const retryDelay = 1000;
 const maxTries = 5;
 
-export const useUnreads = (): [IUnreadState, any, IUnreadRoom[] | null, (room: any) => Promise<MessageWithMdEnforced[]>] => {
-	const [result, setResult] = useState<IUnreadRoom[] | null>(null);
+export const useUnreads = (): [IUnreadState, any, IUnreadHistoryRoom[] | null, (room: any) => Promise<MessageWithMdEnforced[]>, any] => {
+	const [result, setResult] = useState<IUnreadHistoryRoom[] | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<unknown>(null);
+	const [undoHistory, setUndoHistory] = useState<string[]>([]);
 
-	const subscriptions = useUnreadRoomList();
+	const subscriptions = useUnreadRoomList(undoHistory);
 	const getMessages = useMethod('loadHistory');
 	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
 
@@ -79,18 +81,23 @@ export const useUnreads = (): [IUnreadState, any, IUnreadRoom[] | null, (room: a
 	const fetchRoomsData = useCallback(async () => {
 		setLoading(true);
 		try {
-			const rooms: IUnreadRoom[] = subscriptions.filter((room) => room?.unread || room?.tunread?.length) as IUnreadRoom[];
+			const rooms: IUnreadHistoryRoom[] = subscriptions
+				.map((room: IUnreadHistoryRoom) => {
+					if (undoHistory.includes(room.rid)) room.undo = true;
+					return room;
+				})
+				.filter((room) => room?.unread || room?.tunread?.length || room.undo) as IUnreadHistoryRoom[];
 
 			setResult(rooms);
 			setLoading(false);
 		} catch (err) {
 			setError(err);
 		}
-	}, [subscriptions]);
+	}, [subscriptions, undoHistory]);
 
 	useEffect(() => {
 		fetchRoomsData();
 	}, [fetchRoomsData]);
 
-	return [loading, error, loading || error ? null : result, fetchMessagesData];
+	return [loading, error, loading || error ? null : result, fetchMessagesData, { undoHistory, setUndoHistory }];
 };

@@ -10,23 +10,20 @@ import { MessageWithMdEnforced } from '../room/MessageList/lib/parseMessageTextT
 import ResultMessage from './components/body/ResultMessage';
 import UnreadsBody from './components/body/UnreadsBody';
 import UnreadsHeader from './components/headers/UnreadsHeader';
-import { IUnreadRoom, useUnreads } from './hooks/useUnreads';
+import { IUnreadHistoryRoom, useUnreads } from './hooks/useUnreads';
 
 import './styles/unreadsPage.css';
-
-type IUnreadHistoryRoom = IUnreadRoom & { undo?: boolean };
 
 const maxLoading = 4000;
 
 const UnreadsPage: FC = () => {
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
 	const unreadMessages = useEndpoint('POST', '/v1/subscriptions.unread');
-	const [loading, error, unreads, fetchMessages] = useUnreads();
+	const [loading, error, unreads, fetchMessages, { undoHistory, setUndoHistory }] = useUnreads();
 	const t = useTranslation();
 	const [expandedItem, setExpandedItem] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState('Activity');
 	const [activeMessages, setActiveMessages] = useState<MessageWithMdEnforced[]>([]);
-	const [undoUnreadsHistory, setundoUnreadsHistory] = useState<any[]>([]);
 	const [pageLoading, setPageLoading] = useState<boolean>(true);
 
 	const totalMessages = useMemo(() => {
@@ -39,35 +36,33 @@ const UnreadsPage: FC = () => {
 		return total;
 	}, [unreads]);
 
-	const fusedRoomsWithUndoAndSort = useMemo(
-		() =>
-			[...undoUnreadsHistory.map((room: any) => ({ ...room, undo: true })), ...(unreads || [])].sort((a: any, b: any) =>
-				sortBy !== 'Activity' ? a?.name?.localeCompare(b?.name) : b?.lm - a?.lm,
-			),
-		[undoUnreadsHistory, unreads, sortBy],
+	const sortedRooms = useMemo(
+		() => unreads?.sort((a: any, b: any) => (sortBy !== 'Activity' ? a?.name?.localeCompare(b?.name) : b?.lm - a?.lm)),
+		[unreads, sortBy],
 	);
 
 	async function handleMarkAll(): Promise<void> {
-		if (undoUnreadsHistory.length) {
-			await Promise.all(undoUnreadsHistory.map((room) => unreadMessages({ roomId: room.rid })));
-			setundoUnreadsHistory([]);
+		setPageLoading(true);
+		if (undoHistory.length) {
+			await Promise.all(undoHistory.map((rid: string) => unreadMessages({ roomId: rid })));
+			setUndoHistory([]);
 		} else if (unreads) {
-			setundoUnreadsHistory([...unreads.map((room: IUnreadHistoryRoom) => ({ ...room, undo: true }))]);
+			setUndoHistory(unreads.map((room: IUnreadHistoryRoom) => room.rid));
 			await Promise.all(unreads.map((room) => readMessages({ rid: room.rid })));
 		}
 		setExpandedItem(null);
 		setActiveMessages([]);
 	}
 
-	async function handleMark(room: IUnreadRoom): Promise<void> {
-		const index = undoUnreadsHistory.findIndex((r) => r.rid === room.rid);
+	async function handleMark(room: IUnreadHistoryRoom): Promise<void> {
+		const index = undoHistory.findIndex((rid: string) => rid === room.rid);
 		if (index >= 0) {
 			await unreadMessages({ roomId: room.rid });
-			undoUnreadsHistory.splice(index, 1);
-			setundoUnreadsHistory(undoUnreadsHistory);
+			undoHistory.splice(index, 1);
+			setUndoHistory(undoHistory);
 		} else {
-			setundoUnreadsHistory([...undoUnreadsHistory, room]);
 			await readMessages({ rid: room.rid });
+			setUndoHistory([...undoHistory, room.rid]);
 		}
 		setExpandedItem(null);
 		setActiveMessages([]);
@@ -99,8 +94,6 @@ const UnreadsPage: FC = () => {
 	}
 
 	useEffect(() => {
-		if (unreads?.length) setPageLoading(false);
-
 		unreads?.some(async (room) => {
 			if (expandedItem === room._id) {
 				const messages = await fetchMessages(room);
@@ -109,6 +102,10 @@ const UnreadsPage: FC = () => {
 			}
 		});
 	}, [unreads, expandedItem, fetchMessages]);
+
+	useEffect(() => {
+		if (unreads?.length) setPageLoading(false);
+	}, [unreads]);
 
 	useEffect(() => {
 		const loadingTimeout = setTimeout(() => {
@@ -121,24 +118,22 @@ const UnreadsPage: FC = () => {
 	if (error) {
 		return (
 			<Page>
+				<Page.Header className='unreadsSectionHeader' title={t('Unread_Messages')} />
 				<ResultMessage />
 			</Page>
 		);
 	}
 
 	if (loading || pageLoading) {
-		return (
-			<Page>
-				<PageSkeleton />
-			</Page>
-		);
+		return <PageSkeleton />;
 	}
 
-	if (!pageLoading && (!unreads || !unreads?.length)) {
+	if (!pageLoading && (!unreads || !unreads?.length || unreads?.length === undoHistory.length)) {
 		return (
 			<Page>
+				<Page.Header className='unreadsSectionHeader' title={t('Unread_Messages')} />
 				<ResultMessage empty>
-					{!!undoUnreadsHistory.length && (
+					{!!undoHistory.length && (
 						<ButtonGroup
 							padding={20}
 							paddingBlockEnd={20}
@@ -175,13 +170,13 @@ const UnreadsPage: FC = () => {
 								handleMarkAll={(): Promise<void> => handleMarkAll()}
 								sortBy={sortBy}
 								setSortBy={(sortBy: string): void => setSortBy(sortBy)}
-								hasUndo={!!undoUnreadsHistory.length}
+								hasUndo={!!undoHistory.length}
 							/>
 						}
 					/>
 					<Page.ScrollableContentWithShadow padding={0}>
 						<UnreadsBody
-							sortedRooms={fusedRoomsWithUndoAndSort}
+							sortedRooms={sortedRooms}
 							expandedItem={expandedItem}
 							activeMessages={activeMessages}
 							handleRedirect={(): Promise<void> => handleRedirect()}
