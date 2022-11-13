@@ -33,7 +33,7 @@ const UnreadsBody: FC<UnreadsBodyProps> = ({ sortedRooms, handleMark, handleRedi
 						{!room.undo && (
 							<>
 								<ButtonGroup
-									padding={'0 5px'}
+									padding={'0 20px'}
 									paddingBlockEnd={20}
 									display='flex'
 									flexDirection='row'
@@ -50,7 +50,7 @@ const UnreadsBody: FC<UnreadsBodyProps> = ({ sortedRooms, handleMark, handleRedi
 										onClick={(): Promise<void> => handleMark(room)}
 										{...(room.undo ? { backgroundColor: 'transparent', borderStyle: 'unset' } : {})}
 									>
-										<Icon name={'flag'} size='x20' margin='4x' />
+										<Icon name={room.undo ? 'undo' : 'flag'} size='x20' margin='4x' />
 										<span style={{ marginLeft: '10px' }}>{room.undo ? t('Undo') : t('Mark_as_read')}</span>
 									</Button>
 								</ButtonGroup>
