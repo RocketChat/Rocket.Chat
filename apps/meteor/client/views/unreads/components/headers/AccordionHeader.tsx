@@ -7,6 +7,7 @@ import { getAvatarURL } from '../../../../../app/utils/lib/getAvatarURL';
 import MarkdownText from '../../../../components/MarkdownText';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useRoomIcon } from '../../../../hooks/useRoomIcon';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { IUnreadHistoryRoom } from '../../hooks/useUnreads';
 
 const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; handleMark: (room: IUnreadHistoryRoom) => Promise<void> }> = ({
@@ -17,6 +18,7 @@ const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; hand
 	const t = useTranslation();
 	const icon = useRoomIcon(room);
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` });
+	const displayName = room.t === 'd' ? room.name : roomCoordinator.getRoomName(room.t, room);
 
 	return (
 		<Header borderBlockStyle='unset'>
@@ -26,7 +28,7 @@ const AccordionHeader: FC<{ room: any; handleRedirect: () => Promise<void>; hand
 			<Header.Content>
 				<Header.Content.Row>
 					<Header.Icon icon={icon} />
-					<Header.Title is='h1'>{room?.fname ?? room.name}</Header.Title>
+					<Header.Title is='h1'>{displayName}</Header.Title>
 				</Header.Content.Row>
 				<Header.Content.Row>
 					<Header.Subtitle is='h2'>
