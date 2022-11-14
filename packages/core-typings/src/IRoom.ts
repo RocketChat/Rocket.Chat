@@ -172,6 +172,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	waitingResponse: any;
 	responseBy: any;
 	priorityId?: string;
+	priorityWeight?: number;
 
 	slaId?: string;
 

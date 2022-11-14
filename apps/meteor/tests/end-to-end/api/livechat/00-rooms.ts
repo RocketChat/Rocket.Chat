@@ -4,7 +4,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatCustomField } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	ILivechatVisitor,
+	IUser,
+	IOmnichannelSystemMessage,
+	ILivechatCustomField,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
 import faker from '@faker-js/faker';
 
@@ -21,6 +28,8 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import type { DummyResponse } from '../../../data/livechat/utils';
+import type { SuccessResult } from '../../../../app/api/server/api';
 import { sleep } from '../../../data/livechat/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
@@ -1343,6 +1352,82 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+	(IS_EE ? describe : describe.skip)('priority integration', async () => {
+		let priorities: ILivechatPriority[];
+		let chosenPriority: ILivechatPriority;
+		this.afterAll(async () => {
+			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
+		});
+		it('should return the list of priorities', async () => {
+			const response = await request
+				.get(api('livechat/priorities'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: DummyResponse<SuccessResult<{ priorities: ILivechatPriority[] }>>) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('priorities').and.to.be.an('array');
+					expect(res.body.priorities).to.have.length.greaterThan(0);
+				});
+			priorities = response.body.priorities;
+			const rnd = faker.datatype.number({ min: 0, max: priorities.length - 1 });
+			chosenPriority = priorities[rnd];
+		});
+		it('should prioritize the room', async () => {
+			const response = await request
+				.post(api(`livechat/rooms/${room._id}/priority`))
+				.set(credentials)
+				.send({
+					priorityId: chosenPriority._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body).to.have.property('roomId', room._id);
+			expect(response.body).to.have.property('priorityId', chosenPriority._id);
+		});
+		it('should return the room with the new priority', async () => {
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+			expect(updatedRoom).to.have.property('priorityId', chosenPriority._id);
+			expect(updatedRoom).to.have.property('priorityWeight', chosenPriority.sortItem);
+		});
+		it('should unprioritize the room', async () => {
+			const response = await request
+				.delete(api(`livechat/rooms/${room._id}/priority`))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+		});
+		it('should return the room with the new priority', async () => {
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+			expect(updatedRoom).to.not.have.property('priorityId');
+			expect(updatedRoom).to.not.have.property('priorityWeight');
+		});
+		it('should fail to return the priorities if lacking permissions', async () => {
+			await updatePermission('manage-livechat-priorities', []);
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+		});
+		it('should fail to prioritize the room from a lack of permissions', async () => {
+			await request
+				.post(api(`livechat/rooms/${room._id}/priority`))
+				.set(credentials)
+				.send({
+					priorityId: chosenPriority._id,
+				})
+				.expect(403);
+		});
+		it('should fail to unprioritize the room from a lack of permissions', async () => {
+			await request
+				.delete(api(`livechat/rooms/${room._id}/priority`))
+				.set(credentials)
+				.send()
+				.expect(403);
 		});
 	});
 });
