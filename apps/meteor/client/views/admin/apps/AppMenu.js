@@ -7,6 +7,7 @@ import {
 	useRoute,
 	useRouteParameter,
 	useToastMessageDispatch,
+	useCurrentRoute,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
@@ -44,8 +45,15 @@ function AppMenu({ app, ...props }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
-	const appsRoute = useRoute('admin-apps');
+
+	const [currentRouteName, params] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
+	const router = useRoute(currentRouteName);
+
 	const context = useRouteParameter('context');
+	const currentTab = useRouteParameter('tab');
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
 	const buildExternalUrl = useEndpoint('GET', '/apps');
@@ -106,8 +114,8 @@ function AppMenu({ app, ...props }) {
 	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
-		appsRoute.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
-	}, [app.id, app.version, appsRoute]);
+		router.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
+	}, [app.id, app.version, router]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -133,6 +141,9 @@ function AppMenu({ app, ...props }) {
 				handleAPIError(error);
 			} finally {
 				dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
+				if (context === 'details' && currentTab !== 'details') {
+					router.replace({ ...params, tab: 'details' });
+				}
 			}
 		};
 
@@ -156,7 +167,7 @@ function AppMenu({ app, ...props }) {
 		setModal(
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [app.name, closeModal, dispatchToastMessage, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
+	}, [app.name, closeModal, dispatchToastMessage, handleSubscription, isSubscribed, params, router, setModal, t, uninstallApp]);
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
