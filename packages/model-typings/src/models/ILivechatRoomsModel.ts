@@ -1,4 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { AggregationCursor } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -71,6 +72,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		served: any;
 		onlyCount?: boolean;
 		options?: any;
+		source?: string;
 	}): any;
 
 	findRoomsWithCriteria(params: {
@@ -98,4 +100,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 
 	findOpen(): any;
+
+	findAvailableSources(): AggregationCursor<{ _id: any; fullTypes: IOmnichannelRoom['source'][] }>;
 }

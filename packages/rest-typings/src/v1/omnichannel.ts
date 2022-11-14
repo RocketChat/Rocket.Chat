@@ -2226,6 +2226,7 @@ type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedR
 	searchText?: string;
 	closedChatsOnly?: string;
 	servedChatsOnly?: string;
+	source?: string;
 }>;
 
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
@@ -2252,6 +2253,10 @@ const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 			nullable: true,
 		},
 		servedChatsOnly: {
+			type: 'string',
+			nullable: true,
+		},
+		source: {
 			type: 'string',
 			nullable: true,
 		},
@@ -3111,6 +3116,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/charts/agents-status': {
 		GET: (params: GETDashboardsAgentStatusParams) => { offline: number; away: number; busy: number; available: number };
+	};
+	'/v1/livechat/rooms/filters': {
+		GET: () => { filters: IOmnichannelRoom['source'][] };
 	};
 } & {
 	// EE

@@ -92,7 +92,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, visitorId } = this.urlParams;
-			const { searchText, closedChatsOnly, servedChatsOnly } = this.queryParams;
+			const { searchText, closedChatsOnly, servedChatsOnly, source } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const history = await searchChats({
@@ -102,6 +102,7 @@ API.v1.addRoute(
 				searchText,
 				closedChatsOnly,
 				servedChatsOnly,
+				source,
 				pagination: {
 					offset,
 					count,
