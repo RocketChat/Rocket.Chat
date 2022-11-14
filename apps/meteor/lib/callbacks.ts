@@ -74,6 +74,7 @@ type EventLikeCallbackSignatures = {
 	) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
+	'usernameSet': () => void;
 };
 
 /**
