@@ -27,7 +27,7 @@ const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ..
 			{name}
 		</Box>
 		{shortName && (
-			<Box display='flex' mis='x7' mb='x9' justifyContent='center' fontScale='c1'>
+			<Box data-qa-id='agent-info-details-username' display='flex' mis='x7' mb='x9' justifyContent='center' fontScale='c1'>
 				({shortName})
 			</Box>
 		)}

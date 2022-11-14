@@ -18,7 +18,7 @@ const DepartmentField = ({ departmentId }) => {
 	return (
 		<Field>
 			<Label>{t('Department')}</Label>
-			<Info>{data.department?.name || t('Department_not_found')}</Info>
+			<Info data-qa-id='department-field-name'>{data.department?.name || t('Department_not_found')}</Info>
 		</Field>
 	);
 };

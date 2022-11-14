@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -21,7 +22,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 	}
 
 	return (
-		<>
+		<Box data-qa='custom-field-form'>
 			{data.customFields
 				.filter(
 					(customField) =>
@@ -57,7 +58,7 @@ const CustomFieldsForm = (): ReactElement | null => {
 							return null;
 					}
 				})}
-		</>
+		</Box>
 	);
 };
 
