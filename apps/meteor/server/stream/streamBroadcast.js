@@ -1,3 +1,4 @@
+import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
@@ -10,6 +11,7 @@ import { hasPermission } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { isDocker, getURL } from '../../app/utils/server';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
+import { isEnterprise } from '../../ee/app/license/server/license';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -22,6 +24,13 @@ const logger = new Logger('StreamBroadcast');
 export const connLogger = logger.section('Connection');
 export const authLogger = logger.section('Auth');
 export const streamLogger = logger.section('Stream');
+
+// show warning debounced, giving an extra time for a license to be fetched
+const showMonolithWarning = debounce(function () {
+	if (!isEnterprise()) {
+		logger.warn(TAPi18n.__('Multiple_monolith_instances_alert'));
+	}
+}, 10000);
 
 function _authorizeConnection(instance) {
 	authLogger.info(`Authorizing with ${instance}`);
@@ -60,10 +69,6 @@ function startMatrixBroadcast() {
 		added: Meteor.bindEnvironment((record) => {
 			cache.set(record._id, record);
 
-			if (cache.size > 1) {
-				logger.warn(TAPi18n.__('Multiple_monolith_instances_alert'));
-			}
-
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
 
@@ -100,6 +105,10 @@ function startMatrixBroadcast() {
 			connections[instance].onReconnect = function () {
 				return authorizeConnection(instance);
 			};
+
+			if (cache.size > 1) {
+				showMonolithWarning();
+			}
 		}),
 
 		removed(id) {

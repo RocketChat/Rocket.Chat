@@ -48,7 +48,7 @@ const PadButton = ({
 			<Box is='span' fontSize='h2' lineHeight='32px'>
 				{firstDigit}
 			</Box>
-			<Box is='span' fontSize='c1' lineHeight='16px' color='info'>
+			<Box is='span' fontSize='c1' lineHeight='16px' color='hint'>
 				{secondDigit}
 			</Box>
 		</Button>

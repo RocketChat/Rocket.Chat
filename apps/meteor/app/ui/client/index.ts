@@ -15,13 +15,11 @@ import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
 
-// import './components/tooltip';
-
-export { ChatMessages, chatMessages } from './lib/ChatMessages';
+export { ChatMessages } from './lib/ChatMessages';
 export { fileUpload } from './lib/fileUpload';
 export { UserAction, USER_ACTIVITIES } from './lib/UserAction';
 export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
-export { AudioRecorder } from './lib/recorderjs/audioRecorder';
+export { AudioRecorder } from './lib/recorderjs/AudioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export * from './lib/userPopoverStatus';

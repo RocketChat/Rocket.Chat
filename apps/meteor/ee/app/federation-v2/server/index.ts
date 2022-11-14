@@ -1,4 +1,11 @@
-import { runFederation, stopFederation, rocketSettingsAdapter, federationQueueInstance } from '../../../../app/federation-v2/server';
+import {
+	runFederation,
+	stopFederation,
+	rocketSettingsAdapter,
+	federationQueueInstance,
+	rocketMessageAdapter,
+	rocketFileAdapter,
+} from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 
@@ -9,6 +16,8 @@ const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
+	rocketMessageAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
@@ -16,13 +25,16 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
+	rocketMessageAdapter,
 	federationBridgeEE,
 );
 
 export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
@@ -36,7 +48,7 @@ let cancelSettingsObserverEE: () => void;
 
 onToggledFeature('federation', {
 	up: async () => {
-		await stopFederation();
+		await stopFederation(federationRoomServiceSenderEE);
 		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
 		);
