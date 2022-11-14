@@ -91,6 +91,7 @@ const UserAutoCompleteMultipleFederated = ({
 	return (
 		<OptionsContext.Provider value={{ options }}>
 			<MultiSelectFiltered
+				data-qa-type='user-auto-complete-input'
 				placeholder={placeholder}
 				value={value}
 				onChange={handleOnChange}
