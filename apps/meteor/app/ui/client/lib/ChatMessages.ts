@@ -3,10 +3,9 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, SlashCommand } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 
 import { KonchatNotification } from './notification';
@@ -31,6 +30,7 @@ import {
 import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import { call } from '../../../../client/lib/utils/call';
 
 class QuotedMessages {
 	private emitter = new Emitter<{ update: void }>();
@@ -103,6 +103,98 @@ class ComposerState {
 	}
 }
 
+interface IMessageProcessor {
+	process(message: IMessage): Promise<boolean>;
+}
+
+const performSlashCommand = (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => call('slashCommand', params);
+
+class SlashCommandProcessor implements IMessageProcessor {
+	public constructor(private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>) {}
+
+	private parse(msg: string): { command: SlashCommand<string>; params: string } | undefined {
+		const match = msg.match(/^\/([^\s]+)(.*)/m);
+
+		if (!match) {
+			return undefined;
+		}
+
+		const [, cmd, params] = match;
+		const command = slashCommands.commands[cmd];
+
+		if (!command) {
+			return undefined;
+		}
+
+		return { command, params };
+	}
+
+	private handleUnrecognizedCommand(commandName: string, { rid }: Pick<IMessage, 'rid'>): void {
+		console.error(TAPi18n.__('No_such_command', { command: escapeHTML(commandName) }));
+		const invalidCommandMsg: Partial<IMessage> = {
+			_id: Random.id(),
+			rid,
+			ts: new Date(),
+			msg: TAPi18n.__('No_such_command', { command: escapeHTML(commandName) }),
+			u: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				name: 'Rocket.Cat',
+			},
+			private: true,
+		};
+
+		this.collection.upsert({ _id: invalidCommandMsg._id }, { $set: invalidCommandMsg });
+	}
+
+	public async process(message: IMessage): Promise<boolean> {
+		const match = this.parse(message.msg);
+
+		if (!match) {
+			return false;
+		}
+
+		const { command, params } = match;
+
+		const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
+
+		if (!permission || hasAtLeastOnePermission(permission, message.rid)) {
+			if (clientOnly) {
+				handleOnClient?.(commandName, params, message);
+				return true;
+			}
+
+			await APIClient.post('/v1/statistics.telemetry', {
+				params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
+			});
+
+			const triggerId = generateTriggerId(appId);
+
+			const data = {
+				cmd: commandName,
+				params,
+				msg: message,
+			} as const;
+
+			try {
+				const result = await performSlashCommand({ cmd: commandName, params, msg: message, triggerId });
+				handleResult?.(undefined, result, data);
+			} catch (error: unknown) {
+				handleResult?.(error, undefined, data);
+			}
+
+			return true;
+		}
+
+		if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
+			this.handleUnrecognizedCommand(commandName, message);
+			return true;
+		}
+
+		return false;
+	}
+}
+
 type ChatMessagesParams =
 	| { rid: IRoom['_id']; tmid?: IMessage['_id']; input?: never }
 	| { rid?: never; tmid?: never; input: HTMLInputElement | HTMLTextAreaElement };
@@ -112,11 +204,13 @@ export class ChatMessages {
 
 	public composerState: ComposerState;
 
+	public slashCommandProcessor: IMessageProcessor | undefined;
+
 	private editing: {
 		element?: HTMLElement;
 		id?: string;
-		saved?: string;
-		savedCursor?: number;
+		savedValue?: string;
+		savedCursorPosition?: number;
 	} = {};
 
 	private records: Record<
@@ -140,6 +234,7 @@ export class ChatMessages {
 		});
 
 		this.composerState = new ComposerState(params.rid + (params.tmid ? `-${params.tmid}` : ''));
+		this.slashCommandProcessor = new SlashCommandProcessor(collection);
 	}
 
 	private setDraftAndUpdateInput(value: string | undefined) {
@@ -217,39 +312,55 @@ export class ChatMessages {
 	}
 
 	private toPrevMessage() {
-		const { element } = this.editing;
-		if (!element) {
-			const messages = Array.from(this.wrapper?.querySelectorAll('[data-own="true"]') ?? []);
-			const message = messages.pop();
-			return message && this.edit(message as HTMLElement, false);
+		if (!this.editing.element) {
+			const mid = (Array.from(this.wrapper?.querySelectorAll('[data-own="true"]') ?? []).pop() as HTMLElement | undefined)?.dataset.id;
+			if (mid) this.editMessage(mid);
+			return;
 		}
 
-		for (let previous = element.previousElementSibling; previous; previous = previous.previousElementSibling) {
-			if (previous.matches('[data-own="true"]')) {
-				return this.edit(previous as HTMLElement, false);
+		for (
+			let previous = (this.editing.element.previousElementSibling ?? undefined) as HTMLElement | undefined;
+			previous;
+			previous = previous.previousElementSibling as HTMLElement | undefined
+		) {
+			if (previous.matches('[data-own="true"]') && previous.dataset.id) {
+				this.editMessage(previous.dataset.id);
+				return;
 			}
 		}
+
 		this.clearEditing();
 	}
 
 	private toNextMessage() {
-		const { element } = this.editing;
-		if (element) {
-			let next;
-			for (next = element.nextElementSibling; next; next = next.nextElementSibling) {
-				if (next.matches('[data-own="true"]')) {
-					break;
-				}
-			}
-
-			next ? this.edit(next as HTMLElement, true) : this.clearEditing();
-		} else {
+		if (!this.editing.element) {
 			this.clearEditing();
+			return;
 		}
+
+		let next: HTMLElement | undefined;
+		for (
+			next = (this.editing.element.nextElementSibling ?? undefined) as HTMLElement | undefined;
+			next;
+			next = next.nextElementSibling as HTMLElement | undefined
+		) {
+			if (next.matches('[data-own="true"]') && next.dataset.id) {
+				this.editMessage(next.dataset.id, { cursorAtStart: true });
+				return;
+			}
+		}
+
+		this.clearEditing();
 	}
 
-	public edit(element: HTMLElement, isEditingTheNextOne?: boolean) {
-		const message = this.collection.findOne(element.dataset.id);
+	public editMessage(mid: IMessage['_id'], { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) {
+		const { tmid } = this.params;
+		const element = document.getElementById(tmid ? `thread-${mid}` : mid);
+		if (!element) {
+			throw new Error('Message element not found');
+		}
+
+		const message = this.collection.findOne(mid);
 		if (!message) {
 			throw new Error('Message not found');
 		}
@@ -305,7 +416,7 @@ export class ChatMessages {
 			this.setDraftAndUpdateInput(msg);
 		}
 
-		const cursorPosition = isEditingTheNextOne ? 0 : input.value.length;
+		const cursorPosition = cursorAtStart ? 0 : input.value.length;
 		input.focus();
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
@@ -318,8 +429,8 @@ export class ChatMessages {
 		}
 
 		if (!this.editing.element) {
-			this.editing.saved = this.input?.value;
-			this.editing.savedCursor = this.input?.selectionEnd;
+			this.editing.savedValue = this.input?.value;
+			this.editing.savedCursorPosition = this.input?.selectionEnd;
 			return;
 		}
 
@@ -330,8 +441,8 @@ export class ChatMessages {
 		delete this.editing.element;
 		clearHighlightMessage();
 
-		this.setDraftAndUpdateInput(this.editing.saved || '');
-		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : input.value.length;
+		this.setDraftAndUpdateInput(this.editing.savedValue || '');
+		const cursorPosition = this.editing.savedCursorPosition ? this.editing.savedCursorPosition : input.value.length;
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
@@ -436,7 +547,7 @@ export class ChatMessages {
 
 		KonchatNotification.removeRoomNotification(message.rid);
 
-		if (await this.processSlashCommand(message)) {
+		if (await this.slashCommandProcessor?.process(message)) {
 			return;
 		}
 
@@ -522,60 +633,6 @@ export class ChatMessages {
 		this.clearEditing();
 		await callWithErrorHandling('updateMessage', message);
 		return true;
-	}
-
-	public async processSlashCommand(msgObject: IMessage) {
-		if (msgObject.msg[0] === '/') {
-			const match = msgObject.msg.match(/^\/([^\s]+)/m);
-			if (match) {
-				const command = match[1];
-
-				if (slashCommands.commands[command]) {
-					const commandOptions = slashCommands.commands[command];
-					const param = msgObject.msg.replace(/^\/([^\s]+)/m, '');
-
-					if (!commandOptions.permission || hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
-						if (commandOptions.clientOnly) {
-							commandOptions.callback?.(command, param, msgObject);
-						} else {
-							APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command }] });
-							const triggerId = generateTriggerId(slashCommands.commands[command].appId);
-							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject, triggerId }, (err: Error, result: never) => {
-								typeof commandOptions.result === 'function' &&
-									commandOptions.result(err, result, {
-										cmd: command,
-										params: param,
-										msg: msgObject,
-									});
-							});
-						}
-
-						return true;
-					}
-				}
-
-				if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
-					console.error(TAPi18n.__('No_such_command', { command: escapeHTML(command) }));
-					const invalidCommandMsg = {
-						_id: Random.id(),
-						rid: msgObject.rid,
-						ts: new Date(),
-						msg: TAPi18n.__('No_such_command', { command: escapeHTML(command) }),
-						u: {
-							_id: 'rocket.cat',
-							username: 'rocket.cat',
-							name: 'Rocket.Cat',
-						},
-						private: true,
-					};
-
-					this.collection.upsert({ _id: invalidCommandMsg._id }, { $set: invalidCommandMsg });
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	public async confirmDeleteMsg(message: IMessage) {

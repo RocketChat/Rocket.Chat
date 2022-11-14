@@ -209,6 +209,7 @@ export interface ServerMethods {
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
 	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
+	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unfollowMessage': UnfollowMessageMethod;

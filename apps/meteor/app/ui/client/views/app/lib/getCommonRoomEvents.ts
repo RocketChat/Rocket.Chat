@@ -232,7 +232,7 @@ async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, temp
 	msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
 
 	const _chatMessages = ChatMessages.get({ rid });
-	if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
+	if (await _chatMessages?.slashCommandProcessor?.process(msgObject)) {
 		return;
 	}
 
