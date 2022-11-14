@@ -95549,6 +95549,83 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "5.3.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27243",
+          "title": "[FIX] Multi instance error message",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27240",
+          "title": "[FIX] Next schedule check for Apps",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "27151",
+          "title": "[FIX] Hide system messages setting not being respected.",
+          "userLogin": "gabriellsh",
+          "description": "There was a query missing the parameters in the client.\r\n\r\nAlso added a few tests to help reduce the risk of this happening again.",
+          "milestone": "5.3.1",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27229",
+          "title": "Chore: Check for Cloud client secret to check if workspace is registered",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "27105",
+          "title": "[FIX] File upload receiving whole file to apply limits",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "ggazzo",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "27167",
+          "title": "[FIX] User merge by e-mail on OAuth is case-sensitive",
+          "userLogin": "matheusbsilva137",
+          "description": "- Ignore case when searching for a user by email.",
+          "milestone": "5.3.1",
+          "contributors": [
+            "matheusbsilva137",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
