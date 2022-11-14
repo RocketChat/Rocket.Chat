@@ -1,5 +1,13 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useMethod,
+	useEndpoint,
+	useTranslation,
+	useRoute,
+	useRouteParameter,
+	useToastMessageDispatch,
+} from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
 import WarningModal from '../../../components/WarningModal';
@@ -9,6 +17,7 @@ import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers'
 
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 	const appsRoute = useRoute('admin-apps');
@@ -92,6 +101,8 @@ function AppMenu({ app, ...props }) {
 				await uninstallApp();
 			} catch (error) {
 				handleAPIError(error);
+			} finally {
+				dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
 			}
 		};
 
@@ -115,7 +126,7 @@ function AppMenu({ app, ...props }) {
 		setModal(
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [closeModal, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
+	}, [app.name, closeModal, dispatchToastMessage, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
 
 	const menuOptions = useMemo(
 		() => ({
