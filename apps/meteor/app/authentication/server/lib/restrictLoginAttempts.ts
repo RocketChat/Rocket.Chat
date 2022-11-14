@@ -79,6 +79,10 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 		return true;
 	}
 
+	if (lastTs && lastTs > new Date()) {
+		return false;
+	}
+
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
 	await saveBlockedLogin(login, willBeBlockedUntil);
@@ -124,6 +128,10 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 
 	if (!lastAttemptAt) {
 		return true;
+	}
+
+	if (lastTs && lastTs > new Date()) {
+		return false;
 	}
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
