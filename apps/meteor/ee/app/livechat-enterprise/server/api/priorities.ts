@@ -76,7 +76,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (await LivechatPriority.canResetPriorities()) {
+			if (!(await LivechatPriority.canResetPriorities())) {
 				return API.v1.failure();
 			}
 			await LivechatPriority.resetPriorities();
