@@ -1,7 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
@@ -19,7 +18,7 @@ const AppRow: FC<AppRowProps> = (props) => {
 	const {
 		name,
 		id,
-		description,
+		shortDescription,
 		iconFileData,
 		marketplaceVersion,
 		iconFileContent,
@@ -29,9 +28,6 @@ const AppRow: FC<AppRowProps> = (props) => {
 		bundledIn,
 		version,
 	} = props;
-
-	const breakpoints = useBreakpoints();
-	const isDescriptionVisible = breakpoints.includes('xl');
 
 	const appsRoute = useRoute('admin-apps');
 	const marketplaceRoute = useRoute('admin-marketplace');
@@ -105,11 +101,7 @@ const AppRow: FC<AppRowProps> = (props) => {
 							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
-					{isDescriptionVisible && (
-						<Box is='span' withTruncatedText width='x369'>
-							{description}
-						</Box>
-					)}
+					{shortDescription && <Box is='span'>{shortDescription}</Box>}
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
