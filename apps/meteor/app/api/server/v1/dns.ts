@@ -125,14 +125,15 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
+			const params = { ...this.queryParams, ...this.bodyParams };
 			check(
-				this.bodyParams,
+				params,
 				Match.ObjectIncluding({
 					url: String,
 				}),
 			);
 
-			const { url } = this.bodyParams;
+			const { url } = params;
 			if (!url) {
 				throw new Meteor.Error('error-missing-param', 'The required "url" param is missing.');
 			}
