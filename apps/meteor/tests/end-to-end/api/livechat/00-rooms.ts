@@ -1345,4 +1345,17 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400);
 		});
 	});
+
+	describe('livechat/rooms/filters', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/rooms/filters')).set(credentials).expect(403);
+		});
+		it('should return a list of available source filters', async () => {
+			await updatePermission('view-l-room', ['admin']);
+			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
+			expect(response.body).to.have.property('filters').and.to.be.an('array');
+			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;
+		});
+	});
 });
