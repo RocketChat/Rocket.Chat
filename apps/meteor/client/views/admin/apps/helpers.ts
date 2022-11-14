@@ -16,8 +16,10 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
+type Actions = 'update' | 'install' | 'purchase';
+
 type appButtonResponseProps = {
-	action: 'update' | 'install' | 'purchase';
+	action: Actions;
 	icon?: 'reload' | 'warning';
 	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
@@ -163,6 +165,14 @@ export const appButtonProps = ({
 		const cannotTry = pricingPlans.every((currentPricingPlan) => currentPricingPlan.trialDays === 0);
 		const isTierBased = pricingPlans.every((currentPricingPlan) => currentPricingPlan.tiers && currentPricingPlan.tiers.length > 0);
 
+		if (versionIncompatible) {
+			return {
+				action: 'purchase',
+				label: 'Subscribe',
+				icon: 'warning',
+			};
+		}
+
 		if (cannotTry || isEnterpriseOnly) {
 			return {
 				action: 'purchase',
@@ -185,9 +195,25 @@ export const appButtonProps = ({
 
 	const canBuy = price > 0;
 	if (canBuy) {
+		if (versionIncompatible) {
+			return {
+				action: 'purchase',
+				label: 'Buy',
+				icon: 'warning',
+			};
+		}
+
 		return {
 			action: 'purchase',
 			label: 'Buy',
+		};
+	}
+
+	if (versionIncompatible) {
+		return {
+			action: 'purchase',
+			label: 'Install',
+			icon: 'warning',
 		};
 	}
 
