@@ -2640,7 +2640,7 @@
   "UserDataDownload_EmailBody": "Jou data lêer is nou gereed om af te laai. Klik <a href=\"__download_link__\">hier</a> om dit af te laai.",
   "UserDataDownload_EmailSubject": "Jou data lêer is gereed om af te laai",
   "UserDataDownload_Requested": "Laai Lêer Gevra",
-  "UserDataDownload_RequestExisted_Text": null,
+  "UserDataDownload_RequestExisted_Text": "Jou data lêer word reeds gegenereer. 'N Skakel om dit te laai sal na u e-pos gestuur word wanneer dit gereed is.",
   "Username": "Gebruikersnaam",
   "Username_already_exist": "Gebruikersnaam bestaan ​​reeds. Probeer asseblief 'n ander gebruikersnaam.",
   "Username_and_message_must_not_be_empty": "Gebruikersnaam en boodskap moet nie leeg wees nie.",
@@ -2794,5 +2794,15 @@
   "Your_password_is_wrong": "Jou wagwoord is verkeerd!",
   "Your_push_was_sent_to_s_devices": "Jou druk is gestuur na%s toestelle",
   "Your_server_link": "Jou bediener skakel",
-  "Your_workspace_is_ready": "Jou werkruimte is gereed om 🎉 te gebruik"
+  "Your_workspace_is_ready": "Jou werkruimte is gereed om 🎉 te gebruik",
+  "registration.page.registration.waitActivationWarning": "Voordat u kan inteken, moet u rekening handmatig deur 'n administrateur geaktiveer word.",
+  "registration.page.login.forgot": "Het jy jou wagwoord vergeet",
+  "registration.page.resetPassword.sent": "As hierdie e-pos geregistreer is, stuur ons instruksies oor hoe om u wagwoord terug te stel. As jy nie binnekort 'n e-pos ontvang nie, kom asseblief terug en probeer weer.",
+  "registration.component.login": "Teken aan",
+  "registration.component.resetPassword": "Herstel wagwoord",
+  "registration.component.form.emailOrUsername": "E-pos of gebruikersnaam",
+  "registration.component.form.email": "e-pos",
+  "registration.component.form.password": "wagwoord",
+  "registration.component.form.divider": "of",
+  "registration.component.form.submit": "Indien"
 }

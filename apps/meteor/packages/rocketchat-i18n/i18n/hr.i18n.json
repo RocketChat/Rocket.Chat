@@ -2775,7 +2775,7 @@
   "UserDataDownload_EmailBody": "Datoteka podataka sada je spremna za preuzimanje. Kliknite <a href=\"__download_link__\">ovdje</a>da biste je preuzeli.",
   "UserDataDownload_EmailSubject": "Vaša datoteka podataka je spremna za preuzimanje",
   "UserDataDownload_Requested": "Traženje tražene datoteke",
-  "UserDataDownload_RequestExisted_Text": null,
+  "UserDataDownload_RequestExisted_Text": "Vaša datoteka podataka već se generira. Veza za preuzimanje bit će poslana na vašu e-adresu kada bude spremna.",
   "Username": "Korisničko ime",
   "Username_already_exist": "Korisničko ime već postoji. Pokušajte s drugim korisničkim imenom.",
   "Username_and_message_must_not_be_empty": "Korisničko ime i poruka ne smiju biti prazni.",
@@ -2929,5 +2929,16 @@
   "Your_password_is_wrong": "Vaša lozinka je pogrešna!",
   "Your_push_was_sent_to_s_devices": "Push obavijest je poslana %s uređaje",
   "Your_server_link": "Veza poslužitelja",
-  "Your_workspace_is_ready": "Radni je prostor spreman za upotrebu 🎉"
+  "Your_workspace_is_ready": "Radni je prostor spreman za upotrebu 🎉",
+  "registration.page.login.errors.wrongCredentials": "Korisnik nije pronađen ili pogrešna lozinka",
+  "registration.page.registration.waitActivationWarning": "Prije nego što se prijavite, vaš račun mora ručno aktivirati administrator.",
+  "registration.page.login.forgot": "Zaboravih lozinku",
+  "registration.page.resetPassword.sent": "Ako je ova e-poruka registrirana, poslat ćemo vam upute o tome kako poništiti zaporku. Ako uskoro ne primite e-poruku, vratite se i pokušajte ponovo.",
+  "registration.component.login": "Prijava",
+  "registration.component.resetPassword": "Resetiraj lozinku",
+  "registration.component.form.emailOrUsername": "Email or username",
+  "registration.component.form.email": "Email",
+  "registration.component.form.password": "Lozinka",
+  "registration.component.form.divider": "ili",
+  "registration.component.form.submit": "Pošalji"
 }

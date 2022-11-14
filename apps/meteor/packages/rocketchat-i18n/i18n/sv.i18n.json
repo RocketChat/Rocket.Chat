@@ -1092,7 +1092,7 @@
   "error-delete-protected-role": "Det går inte att radera en skyddad roll",
   "error-department-not-found": "Avdelning inte hittad",
   "error-direct-message-file-upload-not-allowed": "Fildelning får inte användas i direktmeddelanden",
-  "error-duplicate-channel-name": null,
+  "error-duplicate-channel-name": "En kanal med namnet \\\"%s\\\" existerar redan",
   "error-edit-permissions-not-allowed": "Redigera behörigheter är inte tillåtet",
   "error-email-domain-blacklisted": "E-postdomän är svartlistad",
   "error-email-send-failed": "Fel vid skicka e-post: __message__",
@@ -2893,5 +2893,14 @@
   "Your_password_is_wrong": "Ditt lösenord är fel!",
   "Your_push_was_sent_to_s_devices": "Din push skickades till %s enheter",
   "Your_server_link": "Din serverlänk",
-  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉"
+  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉",
+  "registration.page.login.errors.wrongCredentials": "Användaren hittades inte eller så är lösenordet felaktigt",
+  "registration.page.registration.waitActivationWarning": "Innan du kan logga in måste ditt konto aktiveras manuellt av en administratör.",
+  "registration.page.resetPassword.sent": "Om det här e-postmeddelandet är registrerat skickar vi instruktioner om hur du återställer ditt lösenord. Om du inte får ett mail inom kort, vänligen kom tillbaka och försök igen.",
+  "registration.component.login": "Logga in",
+  "registration.component.resetPassword": "Återställ lösenord",
+  "registration.component.form.email": "E-post",
+  "registration.component.form.password": "Lösenord",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Skicka"
 }

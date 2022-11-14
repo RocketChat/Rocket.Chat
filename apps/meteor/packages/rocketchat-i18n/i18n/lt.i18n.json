@@ -2695,7 +2695,7 @@
   "UserDataDownload_EmailBody": "Jūsų duomenų failas dabar paruoštas atsisiuntimui. Jei norite atsisiųsti, spustelėkite <a href=\"__download_link__\">čia</a>.",
   "UserDataDownload_EmailSubject": "Jūsų duomenų failas yra pasirengęs atsisiųsti",
   "UserDataDownload_Requested": "Parsisiųskite prašomą failą",
-  "UserDataDownload_RequestExisted_Text": null,
+  "UserDataDownload_RequestExisted_Text": "Jūsų duomenų failas jau sukurtas. Nuoroda, kurią norite atsisiųsti, bus išsiųsta į jūsų el. Pašto adresą, kai bus paruošta.",
   "Username": "Vartotojo vardas",
   "Username_already_exist": "Vardas jau egzistuoja. Pabandykite kitą vartotojo vardą.",
   "Username_and_message_must_not_be_empty": "Vartotojo vardas ir žinutė negali būti tušti.",
@@ -2849,5 +2849,15 @@
   "Your_password_is_wrong": "Jūsų slaptažodis neteisingas!",
   "Your_push_was_sent_to_s_devices": "Jūsų paspaudimas buvo išsiųstas į%s įrenginius",
   "Your_server_link": "Jūsų serverio nuoroda",
-  "Your_workspace_is_ready": "Jūsų darbo vieta yra paruošta naudoti 🎉"
+  "Your_workspace_is_ready": "Jūsų darbo vieta yra paruošta naudoti 🎉",
+  "registration.page.registration.waitActivationWarning": "Prieš prisijungdami, administratoriaus rankiniu būdu turi įjungti savo sąskaitą.",
+  "registration.page.login.forgot": "Pamiršai slaptažodį",
+  "registration.page.resetPassword.sent": "Jei šis el. Laiškas yra užregistruotas, atsiųsime instrukcijas, kaip iš naujo nustatyti slaptažodį. Jei netrukus negausite el. Laiško, grįžkite ir bandykite dar kartą.",
+  "registration.component.login": "Prisijungti",
+  "registration.component.resetPassword": "Atstatyti slaptažodį",
+  "registration.component.form.emailOrUsername": "El. pastas arba vartotojo vardas",
+  "registration.component.form.email": "Paštas",
+  "registration.component.form.password": "Slaptažodis",
+  "registration.component.form.divider": "arba",
+  "registration.component.form.submit": "Pateikti"
 }

@@ -2648,7 +2648,7 @@
   "UserDataDownload_EmailBody": "File data Anda sekarang siap diunduh. Klik <a href=\"__download_link__\">di sini</a>untuk mengunduhnya.",
   "UserDataDownload_EmailSubject": "File Data Anda Siap Diunduh",
   "UserDataDownload_Requested": "Unduh File Diminta",
-  "UserDataDownload_RequestExisted_Text": null,
+  "UserDataDownload_RequestExisted_Text": "File data Anda sudah dihasilkan. Tautan untuk mengunduhnya akan dikirim ke alamat email Anda jika sudah siap.",
   "Username": "Nama pengguna",
   "Username_already_exist": "Nama pengguna sudah ada. Silakan coba nama pengguna lain",
   "Username_and_message_must_not_be_empty": "Username dan pesan tidak boleh kosong.",
@@ -2802,5 +2802,16 @@
   "Your_password_is_wrong": "password Anda salah!",
   "Your_push_was_sent_to_s_devices": "push dikirim ke%s perangkat",
   "Your_server_link": "Tautan server Anda",
-  "Your_workspace_is_ready": "Ruang kerja Anda siap digunakan 🎉"
+  "Your_workspace_is_ready": "Ruang kerja Anda siap digunakan 🎉",
+  "registration.page.login.errors.wrongCredentials": "User tidak ditemukan atau password sala",
+  "registration.page.registration.waitActivationWarning": "Akun anda harus terlebih dahulu diaktifkan secara manual oleh seorang administrator untuk dapat melakukan login.",
+  "registration.page.login.forgot": "Lupa kata sandi anda",
+  "registration.page.resetPassword.sent": "Jika email ini terdaftar, kami akan mengirimkan instruksi tentang cara mereset kata sandi Anda. Jika Anda tidak segera menerima email, kembalilah dan coba lagi.",
+  "registration.component.login": "Login",
+  "registration.component.resetPassword": "Ubah kata sandi",
+  "registration.component.form.emailOrUsername": "Email atau username",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Kata sandi",
+  "registration.component.form.divider": "atau",
+  "registration.component.form.submit": "Submit"
 }

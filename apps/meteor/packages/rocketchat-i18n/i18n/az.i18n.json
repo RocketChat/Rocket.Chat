@@ -2640,7 +2640,7 @@
   "UserDataDownload_EmailBody": "Məlumat faylınız artıq yüklənməyə hazırdır. Yükləmək üçün <a href=\"__download_link__\">burada</a>vurun.",
   "UserDataDownload_EmailSubject": "Sizin Data Faylınız Yükləməyə Hazırdır",
   "UserDataDownload_Requested": "İstənilən faylı yükləyin",
-  "UserDataDownload_RequestExisted_Text": null,
+  "UserDataDownload_RequestExisted_Text": "Məlumat faylınız artıq yaradılıb. Hazır olduğunuzda onu yükləmək üçün bir link e-poçt ünvanınıza göndəriləcək.",
   "Username": "İstifadəçi adı",
   "Username_already_exist": "İstifadəçi adı artıq mövcuddur. Başqa bir istifadəçi adı cəhd edin.",
   "Username_and_message_must_not_be_empty": "İstifadəçi adı və mesajı boş olmamalıdır.",
@@ -2794,5 +2794,15 @@
   "Your_password_is_wrong": "Şifrəniz səhvdir!",
   "Your_push_was_sent_to_s_devices": "Sizin itəniz%s cihazlarına göndərildi",
   "Your_server_link": "Sizin server bağlantınız",
-  "Your_workspace_is_ready": "İş yeriniz 🎉 istifadə etməyə hazırdır"
+  "Your_workspace_is_ready": "İş yeriniz 🎉 istifadə etməyə hazırdır",
+  "registration.page.registration.waitActivationWarning": "Giriş yapabilmeniz üçün hesabınız bir administrator tərəfindən əl ilə aktivləşdirilməlidir.",
+  "registration.page.login.forgot": "Şifrəni unutmusan",
+  "registration.page.resetPassword.sent": "Bu e-poçt qeydə alındıqda, parolunuzu necə sıfırlayacağına dair təlimatlar göndərəcəyik. Qısa müddətdə bir e-poçt almazsan, geri qayıdın və yenidən cəhd edin.",
+  "registration.component.login": "Daxil ol",
+  "registration.component.resetPassword": "Parolu sıfırlamak",
+  "registration.component.form.emailOrUsername": "E-poçt və ya istifadəçi adı",
+  "registration.component.form.email": "E-poçt",
+  "registration.component.form.password": "Şifrə",
+  "registration.component.form.divider": "və ya",
+  "registration.component.form.submit": "təqdim"
 }

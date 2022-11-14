@@ -2640,7 +2640,7 @@
   "UserDataDownload_EmailBody": "Via datuma dosiero nun estas preta por elŝuti. Alklaku <a href=\"__download_link__\">ĉi tie</a>por elŝuti ĝin.",
   "UserDataDownload_EmailSubject": "Via datuma dosiero estas preta por elŝuti",
   "UserDataDownload_Requested": "Elŝuta dosiero Petita",
-  "UserDataDownload_RequestExisted_Text": null,
+  "UserDataDownload_RequestExisted_Text": "Via datuma dosiero jam estas generita. Ligo por elŝuti ĝin estos sendita al via retpoŝta adreso kiam preta.",
   "Username": "Uzulnomo",
   "Username_already_exist": "Uzantnomo jam ekzistas. Bonvolu provi alian uzantnomon.",
   "Username_and_message_must_not_be_empty": "Uzulnomo kaj mesaĝo ne devas esti malplenaj.",
@@ -2795,5 +2795,15 @@
   "Your_push_was_sent_to_s_devices": "Via push estis sendita al%s aparatoj",
   "Your_server_link": "Via servilo-ligilo",
   "Your_temporary_password_is_password": "Via provizora pasvorto estas: <strong>[pasvorto]</strong>",
-  "Your_workspace_is_ready": "Via labora spaco pretas uzi 🎉"
+  "Your_workspace_is_ready": "Via labora spaco pretas uzi 🎉",
+  "registration.page.registration.waitActivationWarning": "Antaŭ ol vi povas ensaluti, via konto devas esti permane aktivigita de administranto.",
+  "registration.page.login.forgot": "Ĉu vi forgesis vian pasvorton",
+  "registration.page.resetPassword.sent": "Se ĉi tiu retpoŝto estas registrita, ni sendos instrukciojn pri kiel restarigi vian pasvorton. Se vi ne ricevos retpoŝton baldaŭ, bonvolu reveni kaj provu denove.",
+  "registration.component.login": "Ensaluti",
+  "registration.component.resetPassword": "Restarigu pasvorton",
+  "registration.component.form.emailOrUsername": "Retpoŝtadreso aŭ uzantnomo",
+  "registration.component.form.email": "Retpoŝto",
+  "registration.component.form.password": "Pasvorto",
+  "registration.component.form.divider": "aŭ",
+  "registration.component.form.submit": "Afiŝu"
 }
