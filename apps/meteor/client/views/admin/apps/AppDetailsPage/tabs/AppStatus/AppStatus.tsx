@@ -84,7 +84,7 @@ const AppStatus = ({
 			const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
 			setModal(<IframeModal url={incompatibleData.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
 		} catch (e: any) {
-			handleAPIError(error);
+			handleAPIError(e);
 		}
 	};
 
@@ -139,22 +139,12 @@ const AppStatus = ({
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button
-						secondary={button.label !== 'Update'}
-						primary={button.label === 'Update'}
-						fontSize='x12'
-						fontWeight={700}
-						disabled={loading}
-						onClick={handleClick}
-						pi='x8'
-						pb='x6'
-						lineHeight='x12'
-					>
+					<Button primary fontSize='x12' fontWeight={700} disabled={loading} onClick={handleClick} pi='x8' pb='x6' lineHeight='x12'>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
 							<>
-								{button.icon && <Icon name={button.icon} mie='x8' />}
+								{button.icon && <Icon name={button.icon} fontSize={'12px'} mie='x8' />}
 								{t(button.label.replace(' ', '_') as TranslationKey)}
 							</>
 						)}
@@ -170,15 +160,14 @@ const AppStatus = ({
 
 			{statuses?.map((status, index) => (
 				<>
-					<Margins inlineStart='x16'>
+					<Margins all='x8' key={`${index.toString()}'-margins'`}>
 						{status.tooltipText ? (
 							<TooltipOnHover
-								key={index}
 								element={<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>}
-								tooltip={<Tooltip>{status.tooltipText}</Tooltip>}
+								tooltip={<Tooltip key={`${index.toString()}'-tooltip-internal'`}>{status.tooltipText}</Tooltip>}
 							/>
 						) : (
-							<Box is={'span'} key={index}>
+							<Box is={'span'}>
 								<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>
 							</Box>
 						)}

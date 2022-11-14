@@ -18,7 +18,7 @@ const appErroredStatuses = [
 
 type appButtonResponseProps = {
 	action: 'update' | 'install' | 'purchase';
-	icon?: 'reload';
+	icon?: 'reload' | 'warning';
 	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
 
@@ -119,9 +119,18 @@ export const appButtonProps = ({
 	subscriptionInfo,
 	pricingPlans,
 	isEnterpriseOnly,
+	versionIncompatible,
 }: App): appButtonResponseProps | undefined => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
+		if (versionIncompatible) {
+			return {
+				action: 'update',
+				icon: 'warning',
+				label: 'Update',
+			};
+		}
+
 		return {
 			action: 'update',
 			icon: 'reload',
@@ -135,6 +144,14 @@ export const appButtonProps = ({
 
 	const canDownload = isPurchased;
 	if (canDownload) {
+		if (versionIncompatible) {
+			return {
+				action: 'install',
+				icon: 'warning',
+				label: 'Install',
+			};
+		}
+
 		return {
 			action: 'install',
 			label: 'Install',
@@ -183,7 +200,7 @@ export const appButtonProps = ({
 export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 	icon: 'check',
 	label: 'Incompatible',
-	tooltipText: t('App_version_incompatible'),
+	tooltipText: t('App_version_incompatible_tooltip'),
 });
 
 export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
