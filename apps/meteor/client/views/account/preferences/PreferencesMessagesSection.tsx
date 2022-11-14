@@ -82,9 +82,9 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
-			['default', t('Selected_first_reply_deselected_following_replies')],
+			['default', t('Selected_first_reply_unselected_following_replies')],
 			['always', t('Selected_by_default')],
-			['never', t('Deselected_by_default')],
+			['never', t('Unselected_by_default')],
 		],
 		[t],
 	);

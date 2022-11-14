@@ -431,7 +431,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			values: [
 				{
 					key: 'default',
-					i18nLabel: 'Selected_first_reply_deselected_following_replies',
+					i18nLabel: 'Selected_first_reply_unselected_following_replies',
 				},
 				{
 					key: 'always',
@@ -439,7 +439,7 @@ settingsRegistry.addGroup('Accounts', function () {
 				},
 				{
 					key: 'never',
-					i18nLabel: 'Deselected_by_default',
+					i18nLabel: 'Unselected_by_default',
 				},
 			],
 			public: true,
