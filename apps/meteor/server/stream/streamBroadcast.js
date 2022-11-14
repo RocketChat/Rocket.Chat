@@ -12,6 +12,7 @@ import { settings } from '../../app/settings/server';
 import { isDocker, getURL } from '../../app/utils/server';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
 import { isEnterprise } from '../../ee/app/license/server/license';
+import * as moleculerBroadcast from '../../ee/server/lib/moleculerBroadcast';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -65,51 +66,55 @@ function authorizeConnection(instance) {
 const cache = new Map();
 export let matrixBroadCastActions;
 function startMatrixBroadcast() {
+	moleculerBroadcast.startMatrix();
+
 	matrixBroadCastActions = {
-		added: Meteor.bindEnvironment((record) => {
-			cache.set(record._id, record);
+		added:
+			moleculerBroadcast.connect ||
+			Meteor.bindEnvironment((record) => {
+				cache.set(record._id, record);
 
-			const subPath = getURL('', { cdn: false, full: false });
-			let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
+				const subPath = getURL('', { cdn: false, full: false });
+				let instance = `${record.extraInformation.host}:${record.extraInformation.port}${subPath}`;
 
-			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
-				authLogger.info({ msg: 'prevent self connect', instance });
-				return;
-			}
-
-			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
-				instance = `localhost:${record.extraInformation.port}${subPath}`;
-			}
-
-			if (connections[instance] && connections[instance].instanceRecord) {
-				if (connections[instance].instanceRecord._createdAt < record._createdAt) {
-					connections[instance].disconnect();
-					delete connections[instance];
-				} else {
+				if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
+					authLogger.info({ msg: 'prevent self connect', instance });
 					return;
 				}
-			}
 
-			connLogger.info({ msg: 'connecting in', instance });
+				if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
+					instance = `localhost:${record.extraInformation.port}${subPath}`;
+				}
 
-			connections[instance] = DDP.connect(instance, {
-				_dontPrintErrors: settings.get('Log_Level') !== '2',
-			});
+				if (connections[instance] && connections[instance].instanceRecord) {
+					if (connections[instance].instanceRecord._createdAt < record._createdAt) {
+						connections[instance].disconnect();
+						delete connections[instance];
+					} else {
+						return;
+					}
+				}
 
-			// remove not relevant info from instance record
-			delete record.extraInformation.os;
+				connLogger.info({ msg: 'connecting in', instance });
 
-			connections[instance].instanceRecord = record;
-			connections[instance].instanceId = record._id;
+				connections[instance] = DDP.connect(instance, {
+					_dontPrintErrors: settings.get('Log_Level') !== '2',
+				});
 
-			connections[instance].onReconnect = function () {
-				return authorizeConnection(instance);
-			};
+				// remove not relevant info from instance record
+				delete record.extraInformation.os;
 
-			if (cache.size > 1) {
-				showMonolithWarning();
-			}
-		}),
+				connections[instance].instanceRecord = record;
+				connections[instance].instanceId = record._id;
+
+				connections[instance].onReconnect = function () {
+					return authorizeConnection(instance);
+				};
+
+				if (cache.size > 1) {
+					showMonolithWarning();
+				}
+			}),
 
 		removed(id) {
 			const record = cache.get(id);
@@ -276,7 +281,7 @@ export function startStreamBroadcast() {
 		return results;
 	}
 
-	const onBroadcast = Meteor.bindEnvironment(broadcast);
+	const onBroadcast = moleculerBroadcast.broadcast || Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
 	settings.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
