@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
+import type { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
 import VerticalBar from '../../../../client/components/VerticalBar';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveSlaButton from './RemoveSlaButton';

@@ -7,7 +7,7 @@ import React, { ReactElement, ReactNode } from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericTable from '../../../../client/components/GenericTable';
-import { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
+import type { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
 import Page from '../../../../client/components/Page';
 
 type RowData = Partial<{ _id?: number | string; name: string; description: string; dueTimeInMinutes: number }>;
