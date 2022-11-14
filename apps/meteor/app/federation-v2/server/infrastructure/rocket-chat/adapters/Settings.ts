@@ -236,6 +236,7 @@ export class RocketChatSettingsAdapter {
 
 				this.add('Federation_Matrix_registration_file', '', {
 					readonly: true,
+					hidden: Boolean(preExistingConfiguration),
 					type: 'code',
 					i18nLabel: 'Federation_Matrix_registration_file',
 					i18nDescription: 'Federation_Matrix_registration_file_desc',
@@ -285,5 +286,6 @@ export class RocketChatSettingsAdapter {
 		Promise.await(Settings.updateValueById('Federation_Matrix_homeserver_domain', existingConfiguration.rocketchat?.domainName));
 		Promise.await(Settings.updateValueById('Federation_Matrix_bridge_url', existingConfiguration.bridgeUrl));
 		Promise.await(Settings.updateValueById('Federation_Matrix_bridge_localpart', existingConfiguration.botName));
+		Promise.await(Settings.update({ _id: 'Federation_Matrix_registration_file' }, { $set: { hidden: Boolean(existingConfiguration) } }));
 	}
 }
