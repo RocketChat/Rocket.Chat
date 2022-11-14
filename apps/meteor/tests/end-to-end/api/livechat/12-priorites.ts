@@ -353,7 +353,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.priorities).to.be.an('array');
 			response.body.priorities.forEach((priority: ILivechatPriority) => {
 				expect(priority.name).to.eq(priority.defaultValue);
-				expect(priority.name).to.have.property('dirty', false);
+				expect(priority).to.have.property('dirty', false);
 			});
 		});
 		it('should fail to reset when lacking permissions', async () => {
