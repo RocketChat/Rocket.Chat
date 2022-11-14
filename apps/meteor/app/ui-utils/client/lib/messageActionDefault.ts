@@ -193,7 +193,7 @@ Meteor.startup(async function () {
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message)?.confirmDeleteMsg(message);
+			getChatMessagesFrom(message)?.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room }) {
 			if (!subscription) {

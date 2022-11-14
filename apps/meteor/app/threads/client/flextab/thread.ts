@@ -128,13 +128,6 @@ Template.thread.helpers({
 				}
 				return instance.chatMessages?.send(params);
 			},
-			onKeyUp: (
-				event: KeyboardEvent,
-				params: {
-					rid: string;
-					tmid?: string | undefined;
-				},
-			) => instance.chatMessages?.keyup(event, params),
 			onKeyDown: (event: KeyboardEvent) => {
 				const result = instance.chatMessages?.keydown(event);
 

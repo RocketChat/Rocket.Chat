@@ -237,7 +237,7 @@ export class ChatMessages {
 		this.slashCommandProcessor = new SlashCommandProcessor(collection);
 	}
 
-	private setDraftAndUpdateInput(value: string | undefined) {
+	public setDraftAndUpdateInput(value: string | undefined) {
 		this.composerState.update(value);
 
 		if (value === undefined) return;
@@ -522,7 +522,7 @@ export class ChatMessages {
 				}
 
 				this.resetToDraft(this.editing.id);
-				await this.confirmDeleteMsg(message);
+				await this.requestMessageDeletion(message);
 				return;
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -635,7 +635,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	public async confirmDeleteMsg(message: IMessage) {
+	public async requestMessageDeletion(message: IMessage) {
 		if (MessageTypes.isSystemMessage(message)) {
 			return;
 		}
@@ -653,7 +653,7 @@ export class ChatMessages {
 					this.clearEditing();
 				}
 
-				this.deleteMsg(message);
+				this.deleteMessage(message);
 
 				this.input?.focus();
 				resolve();
@@ -686,7 +686,7 @@ export class ChatMessages {
 		});
 	}
 
-	public async deleteMsg({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
+	private async deleteMessage({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
 		const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
@@ -752,21 +752,6 @@ export class ChatMessages {
 			event.preventDefault();
 			event.stopPropagation();
 		}
-	}
-
-	public keyup(event: KeyboardEvent, { rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
-		const input = event.currentTarget as HTMLTextAreaElement;
-		const keyCode = event.which;
-
-		if (!Object.values<number>(keyCodes).includes(keyCode)) {
-			if (input?.value.trim()) {
-				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
-			} else {
-				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
-			}
-		}
-
-		this.setDraftAndUpdateInput(input.value);
 	}
 
 	public onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {

@@ -15,7 +15,7 @@ import { EmojiPicker } from '../../../emoji/client';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import type { ChatMessages } from '../../../ui/client';
-import { fileUpload, KonchatNotification } from '../../../ui/client';
+import { UserAction, USER_ACTIVITIES, fileUpload, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
 import { t, getUserPreference } from '../../../utils/client';
 import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
@@ -399,7 +399,7 @@ Template.messageBox.events({
 	'focus .js-input-message'() {
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
-	'keydown .js-input-message'(event: JQuery.KeyDownEvent, instance: MessageBoxTemplateInstance) {
+	'keydown .js-input-message'(event: JQuery.KeyDownEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const { originalEvent } = event;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
@@ -416,11 +416,21 @@ Template.messageBox.events({
 		const { rid, tmid, onKeyDown } = this;
 		onKeyDown?.call(this, event, { rid, tmid });
 	},
-	'keyup .js-input-message'(event: JQuery.KeyUpEvent) {
-		const { rid, tmid, onKeyUp } = this;
-		onKeyUp?.call(this, event, { rid, tmid });
+	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
+		const { rid, tmid, chatMessagesInstance } = this;
+		const { currentTarget: input, which: keyCode } = event;
+
+		if (!Object.values<number>(keyCodes).includes(keyCode)) {
+			if (input?.value.trim()) {
+				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+			} else {
+				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+			}
+		}
+
+		chatMessagesInstance.setDraftAndUpdateInput(input.value);
 	},
-	'paste .js-input-message'(event: JQuery.TriggeredEvent, instance: MessageBoxTemplateInstance) {
+	'paste .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const originalEvent = event.originalEvent as ClipboardEvent | undefined;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
@@ -473,7 +483,7 @@ Template.messageBox.events({
 			fileUpload(files, input, { rid, tmid });
 		}
 	},
-	'input .js-input-message'(event: JQuery.TriggeredEvent, instance: MessageBoxTemplateInstance) {
+	'input .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const { input } = instance;
 		if (!input) {
 			return;
@@ -488,7 +498,7 @@ Template.messageBox.events({
 		const { rid, tmid, onValueChanged } = this;
 		onValueChanged?.call(this, event, { rid, tmid });
 	},
-	'propertychange .js-input-message'(event: JQuery.TriggeredEvent, instance: MessageBoxTemplateInstance) {
+	'propertychange .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const originalEvent = event.originalEvent as { propertyName: string } | undefined;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
