@@ -34,26 +34,6 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		);
 	}
 
-	async findLastBlockByIp(ip: string): Promise<IServerEvent | null> {
-		return this.findOne<IServerEvent>(
-			{
-				ip,
-				t: ServerEventType.BLOCKED_AT,
-			},
-			{ sort: { ts: -1 } },
-		);
-	}
-
-	async findLastBlockByUsername(username: string): Promise<IServerEvent | null> {
-		return this.findOne<IServerEvent>(
-			{
-				'u.username': username,
-				't': ServerEventType.BLOCKED_AT,
-			},
-			{ sort: { ts: -1 } },
-		);
-	}
-
 	async countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number> {
 		return this.find({
 			'u.username': username,
