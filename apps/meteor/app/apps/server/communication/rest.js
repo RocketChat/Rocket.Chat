@@ -130,7 +130,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
