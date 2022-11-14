@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -15,19 +16,15 @@ import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1, federation: 1, roles: 1 },
+		fields: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
 	if (!user) {
 		return;
 	}
 
-	if (user.federation) {
-		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
-
-		if (existingSubscriptions > 0) {
-			throw new Meteor.Error('FEDERATION_Error_user_is_federated_on_rooms');
-		}
+	if (isUserFederated(user)) {
+		throw new Meteor.Error('error-user-is-federated', 'Cannot delete federated user');
 	}
 
 	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);

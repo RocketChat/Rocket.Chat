@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
@@ -41,6 +42,12 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 
 	if (!user) {
 		return false;
+	}
+
+	if (isUserFederated(user)) {
+		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
+			method: 'setUserActiveStatus',
+		});
 	}
 
 	// Users without username can't do anything, so there is no need to check for owned rooms

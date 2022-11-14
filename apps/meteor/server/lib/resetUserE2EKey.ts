@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
@@ -59,6 +60,11 @@ const sendResetNotitification = function (uid: string): void {
 export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boolean {
 	if (notifyUser) {
 		sendResetNotitification(uid);
+	}
+
+	const user = Users.findOneById(uid, { fields: { federated: 1, username: 1 } });
+	if (isUserFederated(user)) {
+		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have e2e encryption', { function: 'resetUserE2EEncriptionKey' });
 	}
 
 	Users.resetE2EKey(uid);
