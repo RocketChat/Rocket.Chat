@@ -60,3 +60,16 @@ export const getUserStatus = (userId) =>
 				resolve(res.body);
 			});
 	});
+
+
+export const getMe = (overrideCredential = credentials) =>
+	new Promise((resolve) => {
+		request
+			.get(api('me'))
+			.set(overrideCredential)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end((end, res) => {
+				resolve(res.body);
+			});
+	});

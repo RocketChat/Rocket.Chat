@@ -689,7 +689,7 @@ export class Users extends Base {
 
 	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
 		const query = {
-			'emails.address': String(emailAddress).trim().toLowerCase(),
+			'emails.address': new RegExp(`^${escapeRegExp(String(emailAddress).trim())}$`, 'i'),
 			[`services.${serviceName}.id`]: userId,
 		};
 
@@ -1001,6 +1001,16 @@ export class Users extends Base {
 		);
 	}
 
+	findActiveFederated(options = {}) {
+		return this.find(
+			{
+				active: true,
+				federated: true,
+			},
+			options,
+		);
+	}
+
 	getSAMLByIdAndSAMLProvider(_id, provider) {
 		return this.findOne(
 			{
@@ -1066,16 +1076,6 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				lastLogin: new Date(),
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
-	updateStatusById(_id, status) {
-		const update = {
-			$set: {
-				status,
 			},
 		};
 
@@ -1603,7 +1603,7 @@ Find users to send a message by email if:
 	}
 
 	getActiveLocalUserCount() {
-		return this.findActive().count() - this.findActiveRemote().count();
+		return this.findActive().count() - this.findActiveRemote().count() - this.findActiveFederated().count();
 	}
 
 	getActiveLocalGuestCount(idExceptions = []) {
@@ -1644,6 +1644,10 @@ Find users to send a message by email if:
 				customFields,
 			},
 		});
+	}
+
+	countRoomMembers(roomId) {
+		return this.find({ __rooms: roomId, active: true }).count();
 	}
 }
 

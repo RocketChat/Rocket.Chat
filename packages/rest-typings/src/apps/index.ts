@@ -4,7 +4,7 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { AppScreenshot, App, FeaturedAppsSections } from '@rocket.chat/core-typings';
+import type { AppScreenshot, App, FeaturedAppsSection, ILogItem } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
@@ -12,9 +12,13 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id': {
-		GET: (params: { marketplace?: 'true' | 'false'; version?: string; appVersion?: string; update?: 'true' | 'false' }) => {
-			app: App;
-		};
+		GET:
+			| ((params: { marketplace?: 'true' | 'false'; version?: string; appVersion?: string; update?: 'true' | 'false' }) => {
+					app: App;
+			  })
+			| (() => {
+					app: App;
+			  });
 		DELETE: () => void;
 		POST: (params: { marketplace: boolean; version: string; permissionsGranted: IPermission[]; appId: string }) => {
 			app: App;
@@ -66,6 +70,12 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/:id/logs': {
+		GET: () => {
+			logs: ILogItem[];
+		};
+	};
+
 	'/apps/:id/apis': {
 		GET: () => {
 			apis: IApiEndpointMetadata[];
@@ -96,9 +106,9 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/featured': {
+	'/apps/featured-apps': {
 		GET: () => {
-			sections: FeaturedAppsSections;
+			sections: FeaturedAppsSection[];
 		};
 	};
 

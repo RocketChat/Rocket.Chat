@@ -54,15 +54,15 @@ const getStream = (
 		retransmit?: boolean | undefined;
 		retransmitToSelf?: boolean | undefined;
 	},
-): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
 	const streamer = Meteor.StreamerCentral.instances[streamName]
 		? Meteor.StreamerCentral.instances[streamName]
 		: new Meteor.Streamer(streamName, options);
 
 	return (eventName, callback): (() => void) => {
-		streamer.on(eventName, callback);
+		streamer.on(eventName, callback as (...args: any[]) => void);
 		return (): void => {
-			streamer.removeListener(eventName, callback);
+			streamer.removeListener(eventName, callback as (...args: any[]) => void);
 		};
 	};
 };

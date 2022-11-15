@@ -14,11 +14,21 @@ export default {
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
-			args: ['--use-gl=egl'],
+			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
 		},
+		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
-	reporter: process.env.CI ? 'github' : 'list',
+	reporter: [
+		process.env.CI ? ['github'] : ['list'],
+		[
+			'playwright-qase-reporter',
+			{
+				projectCode: 'RC',
+				// uploadAttachments: true,
+			},
+		],
+	],
 	testDir: 'tests/e2e',
 	workers: 1,
 	retries: process.env.CI ? 2 : undefined,

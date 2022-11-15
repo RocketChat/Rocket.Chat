@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState, ReactElement } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';
-import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
+import { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {
@@ -89,7 +89,7 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 					throw new Error(t('No_messages_found_to_prune'));
 				}
 
-				dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
+				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
 				closeModal();
 				reset();
 			} catch (error: unknown) {

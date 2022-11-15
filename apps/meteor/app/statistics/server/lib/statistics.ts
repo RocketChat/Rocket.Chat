@@ -36,6 +36,8 @@ import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Analytics, Team, VideoConf } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
+import { getMatrixFederationStatistics } from '../../../federation-v2/server/infrastructure/rocket-chat/statistics';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -82,7 +84,7 @@ export const statistics = {
 		const uniqueID = await Settings.findOne('uniqueID');
 		statistics.uniqueId = settings.get('uniqueID');
 		if (uniqueID) {
-			statistics.installedAt = String(uniqueID.createdAt);
+			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
 
 		if (Info) {
@@ -342,6 +344,7 @@ export const statistics = {
 		);
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
@@ -486,7 +489,6 @@ export const statistics = {
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
-		statistics.matrixBridgeEnabled = settings.get('Federation_Matrix_enabled');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
@@ -506,6 +508,8 @@ export const statistics = {
 
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
+
+		statistics.matrixFederation = await getMatrixFederationStatistics();
 
 		await Promise.all(statsPms).catch(log);
 

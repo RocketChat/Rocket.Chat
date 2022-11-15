@@ -10,14 +10,14 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 
 const subscriptionFields = {};
 
-const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
+const useThreadMessage = (tmid: string): IMessage | undefined => {
+	const [message, setMessage] = useState<IMessage | undefined>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
 		async (params) => {
@@ -62,7 +62,7 @@ const ThreadComponent: FC<{
 	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
-	const openUserInfo = useTabBarOpenUserInfo();
+	const openRoomInfo = useTabBarOpenUserInfo();
 
 	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
@@ -104,7 +104,7 @@ const ThreadComponent: FC<{
 		following,
 		subscription,
 		rid: room._id,
-		tabBar: { openUserInfo },
+		tabBar: { openRoomInfo },
 	}));
 
 	useEffect(() => {
@@ -119,10 +119,10 @@ const ThreadComponent: FC<{
 				following,
 				subscription,
 				rid: room._id,
-				tabBar: { openUserInfo },
+				tabBar: { openRoomInfo },
 			};
 		});
-	}, [following, jump, openUserInfo, room._id, subscription, threadMessage]);
+	}, [following, jump, openRoomInfo, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

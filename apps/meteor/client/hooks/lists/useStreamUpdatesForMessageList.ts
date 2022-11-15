@@ -44,17 +44,17 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 			return;
 		}
 
-		const unsubscribeFromRoomMessages = subscribeToRoomMessages<RoomMessagesRidEvent>(rid, (message) => {
+		const unsubscribeFromRoomMessages = subscribeToRoomMessages(rid, (message: RoomMessagesRidEvent) => {
 			messageList.handle(message);
 		});
 
-		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(`${rid}/deleteMessage`, ({ _id: mid }) => {
+		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id: mid }: NotifyRoomRidDeleteMessageEvent) => {
 			messageList.remove(mid);
 		});
 
-		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageBulkEvent>(
+		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
 			`${rid}/deleteMessageBulk`,
-			(params) => {
+			(params: NotifyRoomRidDeleteMessageBulkEvent) => {
 				const matchDeleteCriteria = createDeleteCriteria(params);
 				messageList.prune(matchDeleteCriteria);
 			},

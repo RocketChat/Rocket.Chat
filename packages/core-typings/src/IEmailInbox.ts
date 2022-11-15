@@ -19,6 +19,7 @@ export interface IEmailInbox {
 		username: string;
 		password: string;
 		secure: boolean;
+		maxRetries: number;
 	};
 	_createdAt: Date;
 	_createdBy: {
@@ -27,3 +28,5 @@ export interface IEmailInbox {
 	};
 	_updatedAt: Date;
 }
+
+export type IEmailInboxPayload = Omit<IEmailInbox, '_createdAt' | '_createdBy' | '_updatedAt'>;

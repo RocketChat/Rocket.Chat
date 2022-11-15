@@ -1,18 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AdminSidenav } from './fragments';
 import { AdminFlextab } from './fragments/admin-flextab';
 
 export class Admin {
 	private readonly page: Page;
 
-	readonly sidenav: AdminSidenav;
-
 	readonly tabs: AdminFlextab;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.sidenav = new AdminSidenav(page);
 		this.tabs = new AdminFlextab(page);
 	}
 
@@ -98,5 +94,42 @@ export class Admin {
 
 	get btnResetRobotsFileContent(): Locator {
 		return this.page.locator('[data-qa-reset-setting-id="Robot_Instructions_File_Content"]');
+	}
+
+	get btnImportNewFile(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
+	}
+
+	async getOptionFileType(option: string): Promise<Locator> {
+		await this.page.locator('.rcx-select').click();
+		return this.page.locator(`.rcx-option__content >> text="${option}"`);
+	}
+
+	get inputFile(): Locator {
+		return this.page.locator('input[type=file]');
+	}
+
+	get btnImport(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import"');
+	}
+
+	get btnStartImport(): Locator {
+		return this.page.locator('.rcx-button--primary.rcx-button >> text="Start Importing"');
+	}
+
+	get importStatusTableFirstRowCell(): Locator {
+		return this.page.locator('[data-qa-id="ImportTable"] tbody tr:first-child td >> text="Completed successfully"');
+	}
+
+	get btnAssetsSettings(): Locator {
+		return this.page.locator('[data-qa-id="Assets"] >> role=button[name="Open"]');
+	}
+
+	get btnDeleteAssetsLogo(): Locator {
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
+	}
+
+	get inputAssetsLogo(): Locator {
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
 	}
 }
