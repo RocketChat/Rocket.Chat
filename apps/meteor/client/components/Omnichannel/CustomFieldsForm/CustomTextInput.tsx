@@ -15,10 +15,10 @@ export const CustomTextInput = forwardRef<
 	const t = useTranslation();
 	const {
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<{ livechatData: Record<string, any> }>();
 
 	const errorMessage = useMemo(() => {
-		const error = errors?.livechatData && errors?.livechatData[data._id];
+		const error = errors?.livechatData?.[data._id];
 
 		if (error?.type === 'regexp') {
 			return t('The_field_is_not_valid', data.label);

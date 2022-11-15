@@ -15,7 +15,7 @@ export const CustomSelectInput = forwardRef<
 	const t = useTranslation();
 	const {
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<{ livechatData: Record<string, any> }>();
 
 	const mappedOptions = useMemo(() => data.options.split(',').map<[string, string]>((value: string) => [value, value]), [data.options]);
 
