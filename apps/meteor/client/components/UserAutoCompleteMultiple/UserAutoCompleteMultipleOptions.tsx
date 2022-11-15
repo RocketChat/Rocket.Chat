@@ -25,7 +25,6 @@ const UserAutoCompleteMultipleOptions = forwardRef(function UserAutoCompleteMult
 	return (
 		<Options
 			{...props}
-			data-qa-type='user-auto-complete-options'
 			key='AutocompleteOptions'
 			options={options}
 			onSelect={onSelect}
