@@ -203,4 +203,9 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The app ${appId} is executing a unmute action triggered by user ${executorId} on userId ${userId}`);
 		await unmuteUserInRoom(roomId, executorId, userId);
 	}
+
+	protected async hideRoom(roomId: string, executorId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The app ${appId} is executing a hide action on room ${roomId} triggered by user ${executorId}`);
+		Subscriptions.hideByRoomIdAndUserId(roomId, executorId);
+	}
 }
