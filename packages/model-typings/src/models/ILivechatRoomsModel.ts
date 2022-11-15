@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { AggregationCursor } from 'mongodb';
+import type { AggregationCursor, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -101,5 +101,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findOpen(): any;
 
-	findAvailableSources(): AggregationCursor<{ _id: any; fullTypes: IOmnichannelRoom['source'][] }>;
+	findAvailableSources(): AggregationCursor<Document>;
 }
