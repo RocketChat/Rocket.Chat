@@ -37,9 +37,9 @@ import {
 import { isTruthy } from '../../../../lib/isTruthy';
 
 const { ServiceProviderMetadata } = proxyquire
-	.noCallThru()
+.noCallThru()
 	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', {
-		'meteor/meteor': {
+		'meteor/meteor': { ///here
 			Meteor: {
 				absoluteUrl() {
 					return 'http://localhost:3000/';
