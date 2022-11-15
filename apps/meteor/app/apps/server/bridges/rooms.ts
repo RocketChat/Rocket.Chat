@@ -9,6 +9,8 @@ import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typing
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { muteUserInRoom } from '../../../../server/lib/muteUserInRoom';
+import { unmuteUserInRoom } from '../../../../server/lib/unmuteUserInRoom';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -190,5 +192,15 @@ export class AppRoomBridge extends RoomBridge {
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid));
 		const userConverter = this.orch.getConverters()!.get('users');
 		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
+	}
+
+	protected async muteUser(roomId: string, executorId: string, userId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The app ${appId} is executing a mute action triggered by user ${executorId} on userId ${userId}`);
+		await muteUserInRoom(roomId, executorId, userId);
+	}
+
+	protected async unmuteUser(roomId: string, executorId: string, userId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The app ${appId} is executing a unmute action triggered by user ${executorId} on userId ${userId}`);
+		await unmuteUserInRoom(roomId, executorId, userId);
 	}
 }
