@@ -31,6 +31,15 @@ const actions = {
 	},
 };
 
+const openIncompatibleModal = async (app, action, cancel, setModal) => {
+	try {
+		const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
+		setModal(<IframeModal url={incompatibleData.url} cancel={cancel} />);
+	} catch (e) {
+		handleAPIError(e);
+	}
+};
+
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
@@ -55,6 +64,7 @@ function AppMenu({ app, ...props }) {
 
 	const closeModal = useCallback(() => {
 		setModal(null);
+		setLoading(false);
 	}, [setModal]);
 
 	const handleEnable = useCallback(async () => {
@@ -69,6 +79,11 @@ function AppMenu({ app, ...props }) {
 	const handleSubscription = useCallback(async () => {
 		if (!(await checkUserLoggedIn())) {
 			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 
@@ -183,6 +198,11 @@ function AppMenu({ app, ...props }) {
 		if (!isLoggedIn) {
 			setLoading(false);
 			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 

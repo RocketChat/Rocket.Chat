@@ -79,10 +79,10 @@ const AppStatus = ({
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
 	};
 
-	const openIncompatibleModal = async (app: App, action: string): Promise<void> => {
+	const openIncompatibleModal = async (app: App, action: string, cancel: () => void): Promise<void> => {
 		try {
 			const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
-			setModal(<IframeModal url={incompatibleData.url} cancel={cancelAction} confirm={cancelAction} />);
+			setModal(<IframeModal url={incompatibleData.url} cancel={cancel} confirm={cancel} />);
 		} catch (e: any) {
 			handleAPIError(e);
 		}
@@ -114,7 +114,7 @@ const AppStatus = ({
 		}
 
 		if (versionIncompatible && action !== undefined) {
-			openIncompatibleModal(app, action);
+			openIncompatibleModal(app, action, cancelAction);
 			return;
 		}
 
