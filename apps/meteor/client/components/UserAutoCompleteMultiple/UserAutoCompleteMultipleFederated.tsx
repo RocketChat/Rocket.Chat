@@ -1,5 +1,4 @@
 import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
-import type { OptionType } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -57,35 +56,37 @@ const UserAutoCompleteMultipleFederated = ({
 
 	const options = useMemo(() => data || [], [data]);
 
-	const onAddSelected = useCallback(
-		([value]: OptionType, shouldRemoveUser = false): void => {
-			setFilter('');
-			if (shouldRemoveUser) {
-				return setSelectedCache((users) => {
-					const selectedUsers = { ...users };
-					delete selectedUsers[value];
-					return selectedUsers;
-				});
-			}
-			const cachedOption = options.find(([curVal]) => curVal === value)?.[1];
-			if (!cachedOption) {
+	const onAddUser = useCallback(
+		(username: string): void => {
+			const user = options.find(([val]) => val === username)?.[1];
+			if (!user) {
 				throw new Error('UserAutoCompleteMultiple - onAddSelected - failed to cache option');
 			}
-			setSelectedCache({ ...selectedCache, [value]: cachedOption });
+			setSelectedCache((selectedCache) => ({ ...selectedCache, [username]: user }));
 		},
-		[selectedCache, setSelectedCache, options],
+		[setSelectedCache, options],
+	);
+
+	const onRemoveUser = useCallback(
+		(username: string): void =>
+			setSelectedCache((selectedCache) => {
+				const users = { ...selectedCache };
+				delete users[username];
+				return users;
+			}),
+		[setSelectedCache],
 	);
 
 	const handleOnChange = useCallback(
 		(usernames: string[]) => {
 			onChange(usernames);
-			const selectedUsernames = Object.entries(selectedCache).map(([, item]) => item.username);
-			const newAddedUsername = usernames.filter((username) => !selectedUsernames.includes(username))[0];
-			const removedUsername = selectedUsernames.filter((username) => !usernames.includes(username))[0];
-			newAddedUsername && onAddSelected([newAddedUsername, newAddedUsername]);
-			removedUsername && onAddSelected([removedUsername, removedUsername], true);
+			const newAddedUsername = usernames.filter((username) => !value.includes(username))[0];
+			const removedUsername = value.filter((username) => !usernames.includes(username))[0];
+			setFilter('');
+			newAddedUsername && onAddUser(newAddedUsername);
+			removedUsername && onRemoveUser(removedUsername);
 		},
-		[onChange, selectedCache, onAddSelected],
+		[onChange, setFilter, onAddUser, onRemoveUser, value],
 	);
 
 	return (
