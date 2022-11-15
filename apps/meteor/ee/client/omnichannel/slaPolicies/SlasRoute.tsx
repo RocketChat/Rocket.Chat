@@ -1,23 +1,30 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useRouteParameter, useRoute, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React, { useMemo, useCallback, useState, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
+import type { GenericTableParams } from '../../../../client/components/GenericTable/GenericTable';
 import VerticalBar from '../../../../client/components/VerticalBar';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
-import PrioritiesPage from './PrioritiesPage';
-import PriorityEditWithData from './PriorityEditWithData';
-import PriorityNew from './PriorityNew';
-import RemovePriorityButton from './RemovePriorityButton';
+import RemoveSlaButton from './RemoveSlaButton';
+import SlaEditWithData from './SlaEditWithData';
+import SlaNew from './SlaNew';
+import SlasPage from './SlasPage';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useEndpointQuery = (
+	{ text, itemsPerPage, current }: GenericTableParams,
+	[column, direction]: [string, 'asc' | 'desc'],
+): {
+	sort: string;
+	count?: number;
+	current?: number;
+} =>
 	useMemo(
 		() => ({
-			fields: JSON.stringify({ name: 1 }),
 			text,
 			sort: JSON.stringify({
 				[column]: sortDir(direction),
@@ -29,39 +36,41 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 		[text, itemsPerPage, current, column, direction],
 	);
 
-function PrioritiesRoute() {
+function SlasRoute(): ReactElement {
 	const t = useTranslation();
-	const canViewPriorities = usePermission('manage-livechat-sla');
+	const canViewSlas = usePermission('manage-livechat-sla');
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const [params, setParams] = useState<GenericTableParams>({ text: '', current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState<[string, 'asc' | 'desc']>(['name', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
-	const prioritiesRoute = useRoute('omnichannel-priorities');
+	const query = useEndpointQuery(debouncedParams, debouncedSort);
+	const SlasRoute = useRoute('omnichannel-sla-policies');
 	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
+	const id = useRouteParameter('id') || '';
 
-	const onHeaderClick = useMutableCallback((id) => {
+	const onHeaderClick = useMutableCallback((id: string) => {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
 			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
 			return;
 		}
+
 		setSort([id, 'asc']);
 	});
 
 	const onRowClick = useMutableCallback(
 		(id) => () =>
-			prioritiesRoute.push({
+			SlasRoute.push({
 				context: 'edit',
 				id,
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/sla', query);
+	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
+	const { data, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query));
 
 	const header = useMemo(
 		() =>
@@ -102,53 +111,44 @@ function PrioritiesRoute() {
 				<Table.Cell withTruncatedText>
 					{dueTimeInMinutes} {t('minutes')}
 				</Table.Cell>
-				<RemovePriorityButton _id={_id} reload={reload} />
+				<RemoveSlaButton _id={_id} reload={refetch} />
 			</Table.Row>
 		),
-		[reload, onRowClick, t],
+		[refetch, onRowClick, t],
 	);
 
-	const EditPrioritiesTab = useCallback(() => {
+	const EditSlasTab = useCallback((): ReactElement | null => {
 		if (!context) {
-			return '';
+			return null;
 		}
-		const handleVerticalBarCloseButtonClick = () => {
-			prioritiesRoute.push({});
+
+		const handleVerticalBarCloseButtonClick = (): void => {
+			SlasRoute.push({});
 		};
 
 		return (
 			<VerticalBar>
 				<VerticalBar.Header>
-					{context === 'edit' && t('Edit_Priority')}
-					{context === 'new' && t('New_Priority')}
+					{context === 'edit' && t('Edit_SLA_Policy')}
+					{context === 'new' && t('New_SLA_Policy')}
 					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 				</VerticalBar.Header>
 
-				{context === 'edit' && <PriorityEditWithData priorityId={id} reload={reload} />}
-				{context === 'new' && <PriorityNew reload={reload} />}
+				{context === 'edit' && <SlaEditWithData slaId={id || ''} reload={refetch} />}
+				{context === 'new' && <SlaNew reload={refetch} />}
 			</VerticalBar>
 		);
-	}, [t, context, id, prioritiesRoute, reload]);
+	}, [t, context, id, SlasRoute, refetch]);
 
-	if (!canViewPriorities) {
+	if (!canViewSlas) {
 		return <NotAuthorizedPage />;
 	}
 
 	return (
-		<PrioritiesPage
-			setParams={setParams}
-			params={params}
-			onHeaderClick={onHeaderClick}
-			data={data}
-			useQuery={useQuery}
-			reload={reload}
-			header={header}
-			renderRow={renderRow}
-			title={t('Priorities')}
-		>
-			<EditPrioritiesTab />
-		</PrioritiesPage>
+		<SlasPage setParams={setParams} params={params} data={data} header={header} renderRow={renderRow} title={t('SLA_Policies')}>
+			<EditSlasTab />
+		</SlasPage>
 	);
 }
 
-export default PrioritiesRoute;
+export default SlasRoute;
