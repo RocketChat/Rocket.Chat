@@ -64,3 +64,26 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'livechat/priorities.reset',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+			GET: { permissions: ['manage-livechat-priorities'], operation: 'hasAny' },
+		},
+	},
+	{
+		async post() {
+			if (!(await LivechatPriority.canResetPriorities())) {
+				return API.v1.failure();
+			}
+			await LivechatPriority.resetPriorities();
+			return API.v1.success();
+		},
+		async get() {
+			return API.v1.success({ reset: await LivechatPriority.canResetPriorities() });
+		},
+	},
+);
