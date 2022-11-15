@@ -1214,11 +1214,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 									$eq: ['$source.type', 'app'],
 								},
 								then: '$$REMOVE',
-								else: '$source',
+								else: { type: '$source.type' },
 							},
 						},
 					},
-					apps: { $addToSet: '$source' },
+					apps: {
+						$addToSet: {
+							$cond: {
+								if: {
+									$eq: ['$source.type', 'app'],
+								},
+								else: '$$REMOVE',
+								then: {
+									type: '$source.type',
+									id: '$source.id',
+									alias: '$source.alias',
+									sidebarIcon: '$source.sidebarIcon',
+									defaultIcon: '$source.defaultIcon',
+								},
+							},
+						},
+					},
 				},
 			},
 			{
