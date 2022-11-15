@@ -4,7 +4,7 @@ import { LivechatInquiry, Users, LivechatRooms, OmnichannelServiceLevelAgreement
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { Messages, Subscriptions } from '../../../../../app/models/server';
+import { Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, removeSLAFromRooms, updateInquiryQueueSla, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
@@ -188,8 +188,7 @@ export const LivechatEnterprise = {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		LivechatRooms.setOnHold(roomId);
-		Subscriptions.setOnHold(roomId);
+		Promise.await(LivechatRooms.setOnHoldByRoomId(roomId));
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
