@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -20,12 +20,12 @@ import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
-import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import './thread.html';
+import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
-	subscription: ISubscription;
+	subscription: IRoom & ISubscription;
 }> & {
 	firstNode: HTMLElement;
 	Threads: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
@@ -98,7 +98,7 @@ Template.thread.helpers({
 			},
 		};
 	},
-	messageBoxData() {
+	messageBoxData(): MessageBoxTemplateInstance['data'] {
 		const instance = Template.instance() as ThreadTemplateInstance;
 		const {
 			mainMessage: { rid, _id: tmid },
@@ -128,15 +128,8 @@ Template.thread.helpers({
 				}
 				return instance.chatMessages?.send(params);
 			},
-			onKeyDown: (event: KeyboardEvent) => {
-				const result = instance.chatMessages?.keydown(event);
-
-				const { which: keyCode } = event;
-				const input = event.target as HTMLTextAreaElement | null;
-
-				if (keyCode === keyCodes.ESCAPE && !result && !input?.value.trim()) {
-					instance.closeThread();
-				}
+			onEscape: () => {
+				instance.closeThread();
 			},
 		};
 	},

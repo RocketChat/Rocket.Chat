@@ -61,7 +61,6 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 								}
 							}, 200);
 						},
-						onKeyDown: (event: KeyboardEvent) => chatMessagesInstance.keydown(event),
 						onSend: (
 							_event: Event,
 							params: {

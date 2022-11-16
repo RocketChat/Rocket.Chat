@@ -28,7 +28,6 @@ import {
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
-import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { call } from '../../../../client/lib/utils/call';
 
@@ -213,13 +212,7 @@ export class ChatMessages {
 		savedCursorPosition?: number;
 	} = {};
 
-	private records: Record<
-		IMessage['_id'],
-		| {
-				draft: string;
-		  }
-		| undefined
-	> = {};
+	private editingDrafts: Record<IMessage['_id'], string | undefined> = {};
 
 	public wrapper: HTMLElement | undefined;
 
@@ -279,9 +272,7 @@ export class ChatMessages {
 			return;
 		}
 
-		const record = this.records[id] || { draft };
-		record.draft = draft;
-		this.records[id] = record;
+		this.editingDrafts[id] ||= draft;
 	}
 
 	private clearCurrentDraft() {
@@ -290,8 +281,8 @@ export class ChatMessages {
 			return;
 		}
 
-		const hasValue = this.records[id];
-		delete this.records[id];
+		const hasValue = this.editingDrafts[id];
+		delete this.editingDrafts[id];
 		return !!hasValue;
 	}
 
@@ -311,7 +302,7 @@ export class ChatMessages {
 		return oldValue !== message.msg;
 	}
 
-	private toPrevMessage() {
+	public toPreviousMessage() {
 		if (!this.editing.element) {
 			const mid = (Array.from(this.wrapper?.querySelectorAll('[data-own="true"]') ?? []).pop() as HTMLElement | undefined)?.dataset.id;
 			if (mid) this.editMessage(mid);
@@ -332,7 +323,7 @@ export class ChatMessages {
 		this.clearEditing();
 	}
 
-	private toNextMessage() {
+	public toNextMessage() {
 		if (!this.editing.element) {
 			this.clearEditing();
 			return;
@@ -392,9 +383,8 @@ export class ChatMessages {
 			}
 		}
 
-		const draft = this.records[message._id];
-		let msg = draft?.draft;
-		msg = msg || message.msg;
+		const draft = this.editingDrafts[message._id];
+		const msg = draft || message.msg;
 
 		this.clearEditing();
 
@@ -702,55 +692,17 @@ export class ChatMessages {
 		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
-	public keydown(event: KeyboardEvent) {
-		const input = event.currentTarget as HTMLTextAreaElement;
-		const keyCode = event.which;
-		const { id } = this.editing;
-
-		if (keyCode === keyCodes.ESCAPE && this.editing.element) {
+	public handleEscapeKeyPress(event: JQuery.KeyDownEvent<HTMLTextAreaElement>) {
+		if (this.editing.id) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			if (!id || !this.resetToDraft(id)) {
+			const reset = this.resetToDraft(this.editing.id);
+
+			if (!reset) {
 				this.clearCurrentDraft();
 				this.clearEditing();
-				return true;
 			}
-
-			return;
-		}
-
-		if (keyCode === keyCodes.ARROW_UP || keyCode === keyCodes.ARROW_DOWN) {
-			if (event.shiftKey) {
-				return;
-			}
-
-			const cursorPosition = input.selectionEnd;
-
-			if (keyCode === keyCodes.ARROW_UP) {
-				if (cursorPosition === 0) {
-					this.toPrevMessage();
-				} else if (!event.altKey) {
-					return;
-				}
-
-				if (event.altKey) {
-					this.input?.setSelectionRange(0, 0);
-				}
-			} else {
-				if (cursorPosition === input.value.length) {
-					this.toNextMessage();
-				} else if (!event.altKey) {
-					return;
-				}
-
-				if (event.altKey) {
-					this.input?.setSelectionRange(this.input.value.length, this.input.value.length);
-				}
-			}
-
-			event.preventDefault();
-			event.stopPropagation();
 		}
 	}
 

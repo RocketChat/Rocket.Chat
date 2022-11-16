@@ -28,7 +28,7 @@ import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBox.html';
 
-type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
+export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
 	tmid: IMessage['_id'];
 	onSend: (
@@ -38,8 +38,10 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 			tshow?: boolean;
 		},
 	) => Promise<void>;
+	onEscape?: () => void;
 	tshow: IMessage['tshow'];
 	subscription: ISubscription & IRoom;
+	showFormattingTips: boolean;
 	chatMessagesInstance: ChatMessages;
 }> & {
 	state: ReactiveDict<{
@@ -399,7 +401,11 @@ Template.messageBox.events({
 	'focus .js-input-message'() {
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
-	'keydown .js-input-message'(event: JQuery.KeyDownEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
+	'keydown .js-input-message'(
+		this: MessageBoxTemplateInstance['data'],
+		event: JQuery.KeyDownEvent<HTMLTextAreaElement>,
+		instance: MessageBoxTemplateInstance,
+	) {
 		const { originalEvent } = event;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
@@ -413,8 +419,53 @@ Template.messageBox.events({
 			return;
 		}
 
-		const { rid, tmid, onKeyDown } = this;
-		onKeyDown?.call(this, event, { rid, tmid });
+		const { chatMessagesInstance } = this;
+		const { currentTarget: input } = event;
+
+		switch (event.key) {
+			case 'Escape': {
+				chatMessagesInstance.handleEscapeKeyPress(event);
+
+				if (!event.isDefaultPrevented() && !input.value.trim()) this.onEscape?.();
+				return;
+			}
+
+			case 'ArrowUp': {
+				if (event.shiftKey) {
+					return;
+				}
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				if (input.selectionEnd === 0) {
+					chatMessagesInstance.toPreviousMessage();
+				}
+
+				if (event.altKey) {
+					input.setSelectionRange(0, 0);
+				}
+
+				return;
+			}
+
+			case 'ArrowDown': {
+				if (event.shiftKey) {
+					return;
+				}
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				if (input.selectionEnd === input.value.length) {
+					chatMessagesInstance.toNextMessage();
+				}
+
+				if (event.altKey) {
+					input.setSelectionRange(input.value.length, input.value.length);
+				}
+			}
+		}
 	},
 	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
 		const { rid, tmid, chatMessagesInstance } = this;
