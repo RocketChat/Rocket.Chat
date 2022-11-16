@@ -168,16 +168,23 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 		setTimeout(reject, TRIGGER_TIMEOUT, [TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
 
-		const { type: interactionType, ...data } = await APIClient.post(`/apps/ui.interaction/${appId}`, {
-			type,
-			actionId,
-			payload,
-			container,
-			mid,
-			rid,
-			triggerId,
-			viewId,
-		});
+		const { type: interactionType, ...data } = await (async () => {
+			try {
+				return await APIClient.post(`/apps/ui.interaction/${appId}`, {
+					type,
+					actionId,
+					payload,
+					container,
+					mid,
+					rid,
+					triggerId,
+					viewId,
+				});
+			} catch (e) {
+				reject(e);
+				return {};
+			}
+		})();
 
 		return resolve(handlePayloadUserInteraction(interactionType, data));
 	});

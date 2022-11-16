@@ -47,7 +47,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 			email: inboxData?.email,
 			description: inboxData?.description,
 			senderInfo: inboxData?.senderInfo,
-			department: inboxData?.department,
+			department: inboxData?.department || '',
 			// SMTP
 			smtpServer: inboxData?.smtp.server,
 			smtpPort: inboxData?.smtp.port ?? 587,
