@@ -48,17 +48,19 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		const { current } = settingsRef;
 		setIsSaving(true);
 		try {
-			await Apps.setAppSettings(
+			const success = await Apps.setAppSettings(
 				id,
 				(Object.values(settings || {}) as ISetting[]).map((value) => ({
 					...value,
 					value: current?.[value.id],
 				})),
 			);
+
+			if (success) {
+				dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
+			}
 		} catch (e: any) {
 			handleAPIError(e);
-		} finally {
-			dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
 		}
 		setIsSaving(false);
 	}, [dispatchToastMessage, id, name, settings]);

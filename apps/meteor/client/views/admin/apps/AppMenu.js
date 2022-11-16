@@ -136,14 +136,15 @@ function AppMenu({ app, ...props }) {
 		const uninstall = async () => {
 			closeModal();
 			try {
-				await uninstallApp();
+				const { success } = await uninstallApp();
+				if (success) {
+					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
+					if (context === 'details' && currentTab !== 'details') {
+						router.replace({ ...params, tab: 'details' });
+					}
+				}
 			} catch (error) {
 				handleAPIError(error);
-			} finally {
-				dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
-				if (context === 'details' && currentTab !== 'details') {
-					router.replace({ ...params, tab: 'details' });
-				}
 			}
 		};
 
@@ -167,7 +168,20 @@ function AppMenu({ app, ...props }) {
 		setModal(
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [app.name, closeModal, dispatchToastMessage, handleSubscription, isSubscribed, params, router, setModal, t, uninstallApp]);
+	}, [
+		app?.name,
+		closeModal,
+		context,
+		currentTab,
+		dispatchToastMessage,
+		handleSubscription,
+		isSubscribed,
+		params,
+		router,
+		setModal,
+		t,
+		uninstallApp,
+	]);
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
