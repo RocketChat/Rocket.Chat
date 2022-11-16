@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
-import { setUserAvatar } from '../../../../../lib/server';
+import { setUserAvatar, _setRealName as setRealName } from '../../../../../lib/server';
 import { FederatedUser } from '../../../domain/FederatedUser';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
@@ -95,5 +95,9 @@ export class RocketChatUserAdapter {
 
 	public async updateFederationAvatar(internalUserId: string, externalAvatarUrl: string): Promise<void> {
 		await Users.setFederationAvatarUrlById(internalUserId, externalAvatarUrl);
+	}
+
+	public async updateRealName(internalUser: IUser, name: string): Promise<void> {
+		setRealName(internalUser._id, name, internalUser);
 	}
 }
