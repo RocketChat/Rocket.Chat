@@ -5,6 +5,7 @@ import type { Timestamp, Db, ChangeStreamDeleteDocument, ChangeStreamInsertDocum
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { MongoClient } from 'mongodb';
 
+import type { Logger } from '../lib/logger/Logger';
 import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
 import { watchCollections } from './watchCollections';
@@ -34,69 +35,57 @@ export class DatabaseWatcher extends EventEmitter {
 
 	private metrics?: any;
 
+	private logger: Logger;
+
 	/**
 	 * Last doc timestamp received from a real time event
 	 */
 	private lastDocTS: Date;
 
-	constructor({ db, _oplogHandle, metrics }: { db: Db; _oplogHandle?: any; metrics?: any }) {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	constructor({ db, _oplogHandle, metrics, logger: LoggerClass }: { db: Db; _oplogHandle?: any; metrics?: any; logger: typeof Logger }) {
 		super();
 
 		this.db = db;
 		this._oplogHandle = _oplogHandle;
 		this.metrics = metrics;
+		this.logger = new LoggerClass('DatabaseWatcher');
 	}
 
 	async watch(): Promise<void> {
 		if (useMeteorOplog) {
+			// TODO remove this when updating to Meteor 2.8
+			this.logger.warn(
+				'Using USE_NATIVE_OPLOG=true is currently desencouraged due to known performance issues. Please use IGNORE_CHANGE_STREAM=true instead.',
+			);
 			this.watchMeteorOplog();
 			return;
 		}
 
-		if (await this.isChangeStreamAvailable()) {
-			this.watchChangeStream();
+		if (ignoreChangeStream) {
+			this.watchOplog();
 			return;
 		}
 
-		this.watchOplog();
-	}
-
-	private async isChangeStreamAvailable(): Promise<boolean> {
-		if (ignoreChangeStream) {
-			return false;
-		}
-
 		try {
-			const { storageEngine } = await this.db.command({ serverStatus: 1 });
-
-			if (!storageEngine || storageEngine.name !== 'wiredTiger') {
-				return false;
-			}
-
-			await this.db.admin().command({ replSetGetStatus: 1 });
-		} catch (e) {
-			if (e instanceof Error && e.message.startsWith('not authorized')) {
-				console.info(
-					'Change Stream is available for your installation, give admin permissions to your database user to use this improved version.',
-				);
-			}
-			return false;
+			this.watchChangeStream();
+		} catch (err: unknown) {
+			this.watchOplog();
 		}
-
-		return true;
 	}
 
 	private async watchOplog(): Promise<void> {
-		console.log('[DatabaseWatcher] Using oplog');
-
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
 		if (!isMasterDoc || !isMasterDoc.setName) {
 			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
 		}
 
 		if (!process.env.MONGO_OPLOG_URL) {
-			throw Error('no-mongo-url');
+			throw Error('no-mongo-oplog-url');
 		}
+
+		this.logger.startup('Using oplog');
+
 		const dbName = this.db.databaseName;
 
 		const client = new MongoClient(process.env.MONGO_OPLOG_URL, {
@@ -141,11 +130,12 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private watchMeteorOplog(): void {
-		console.log('[DatabaseWatcher] Using Meteor oplog');
-
 		if (!this._oplogHandle) {
 			throw new Error('no-oplog-handle');
 		}
+
+		this.logger.startup('Using Meteor oplog');
+
 		watchCollections.forEach((collection) => {
 			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
@@ -154,24 +144,34 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private watchChangeStream(): void {
-		console.log('[DatabaseWatcher] Using change streams');
-
-		const changeStream = this.db.watch<
-			IRocketChatRecord,
-			| ChangeStreamInsertDocument<IRocketChatRecord>
-			| ChangeStreamUpdateDocument<IRocketChatRecord>
-			| ChangeStreamDeleteDocument<IRocketChatRecord>
-		>([
-			{
-				$match: {
-					'operationType': { $in: ['insert', 'update', 'delete'] },
-					'ns.coll': { $in: watchCollections },
+		try {
+			const changeStream = this.db.watch<
+				IRocketChatRecord,
+				| ChangeStreamInsertDocument<IRocketChatRecord>
+				| ChangeStreamUpdateDocument<IRocketChatRecord>
+				| ChangeStreamDeleteDocument<IRocketChatRecord>
+			>([
+				{
+					$match: {
+						'operationType': { $in: ['insert', 'update', 'delete'] },
+						'ns.coll': { $in: watchCollections },
+					},
 				},
-			},
-		]);
-		changeStream.on('change', (event) => {
-			this.emitDoc(event.ns.coll, convertChangeStreamPayload(event));
-		});
+			]);
+			changeStream.on('change', (event) => {
+				this.emitDoc(event.ns.coll, convertChangeStreamPayload(event));
+			});
+
+			changeStream.on('error', (err) => {
+				throw err;
+			});
+
+			this.logger.startup('Using change streams');
+		} catch (err: unknown) {
+			this.logger.error({ msg: 'Change stream error', err });
+
+			throw err;
+		}
 	}
 
 	private emitDoc(collection: string, doc: RealTimeData<IRocketChatRecord> | void): void {
