@@ -12,8 +12,8 @@ import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
-		await Apps.installApp(id, version, permissionsGranted);
-		warnAppInstall(name);
+		const { status } = await Apps.installApp(id, version, permissionsGranted);
+		warnAppInstall(name, status);
 	} catch (error) {
 		handleAPIError(error);
 	}
