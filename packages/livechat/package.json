@@ -15,6 +15,7 @@
 		"clean": "rimraf dist",
 		"build": "webpack-cli --mode production",
 		"dev": "yarn build",
+		"dev2": "npm run build",
 		"start": "webpack-dev-server --mode development",
 		"lint": "run-s eslint stylelint",
 		"eslint": "eslint src",

@@ -22,7 +22,7 @@ export default i18next
 		})
 		.use(initReactI18next)
 		.init({
-			lng: normalizeLanguageString(configLanguage() || browserLanguage()),
+			lng: 'fa',//normalizeLanguageString(configLanguage() || browserLanguage()),
 			fallbackLng: 'en',
 			react: {
 				useSuspense: false,

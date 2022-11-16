@@ -14,8 +14,8 @@ $max-lines: 12;
 	width: 100%;
 	height: 100%;
 	padding: $screen-padding;
-	align-items: flex-end;
-	justify-content: flex-end;
+	align-items: flex-start;
+	justify-content: flex-start;
 
 	.screen__inner {
 		margin-bottom: $screen-padding;

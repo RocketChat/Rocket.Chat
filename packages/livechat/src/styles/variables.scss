@@ -1,4 +1,23 @@
-$font-family: 'Helvetica Neue', arial, sans-serif;
+@font-face {
+	font-family: 'IRANSans';
+	font-style: normal;
+	font-weight: normal;
+	src: url("https://widget.affilio.ir/assets/fonts/IRANYekanWebRegular.eot");
+	src: url("https://widget.affilio.ir/assets/fonts/IRANYekanWebRegular.eot?#iefix")
+		format("embedded-opentype"),
+		/* IE6-8 */
+		url("https://widget.affilio.ir/assets/fonts/IRANYekanWebRegular.woff2")
+		format("woff2"),
+		/* FF39+,Chrome36+, Opera24+*/
+		url("https://widget.affilio.ir/assets/fonts/IRANYekanWebRegular.woff")
+		format("woff"),
+		/* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+		url("https://widget.affilio.ir/assets/fonts/IRANYekanWebRegular.ttf")
+		format("truetype");
+}
+$font-family: 'IRANSans';
+
+// $font-family: 'Helvetica Neue', arial, sans-serif;
 
 $default-border: 2px;
 $default-border-radius: 2px;
