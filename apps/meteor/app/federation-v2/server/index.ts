@@ -1,4 +1,5 @@
 import type { FederationRoomServiceSender } from './application/sender/RoomServiceSender';
+import type { IFederationBridgeRegistrationFile } from './domain/IFederationBridge';
 import { FederationFactory } from './infrastructure/Factory';
 
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
@@ -85,8 +86,24 @@ const federationMessageServiceSender = FederationFactory.buildMessageServiceSend
 
 let cancelSettingsObserver: () => void;
 
-const onFederationEnabledStatusChanged = async (isFederationEnabled: boolean): Promise<void> => {
-	federationBridge.onFederationAvailabilityChanged(isFederationEnabled);
+const onFederationEnabledStatusChanged = async (
+	isFederationEnabled: boolean,
+	appServiceId: string,
+	homeServerUrl: string,
+	homeServerDomain: string,
+	bridgeUrl: string,
+	bridgePort: number,
+	homeServerRegistrationFile: IFederationBridgeRegistrationFile,
+): Promise<void> => {
+	federationBridge.onFederationAvailabilityChanged(
+		isFederationEnabled,
+		appServiceId,
+		homeServerUrl,
+		homeServerDomain,
+		bridgeUrl,
+		bridgePort,
+		homeServerRegistrationFile,
+	);
 	if (isFederationEnabled) {
 		federationBridge.logFederationStartupInfo('Running Federation V2');
 		FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
@@ -108,8 +125,8 @@ export const runFederation = async (): Promise<void> => {
 	);
 	FederationFactory.setupValidators(federationRoomInternalHooksValidator);
 	federationQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
-	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged((isFederationEnabled) =>
-		onFederationEnabledStatusChanged(isFederationEnabled),
+	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
+		onFederationEnabledStatusChanged.bind(onFederationEnabledStatusChanged),
 	);
 	await rocketNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms(
 		rocketNotificationAdapter.broadcastUserTypingOnRoom.bind(rocketNotificationAdapter),

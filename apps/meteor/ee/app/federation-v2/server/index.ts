@@ -7,6 +7,7 @@ import {
 	rocketFileAdapter,
 	rocketNotificationAdapter,
 } from '../../../../app/federation-v2/server';
+import type { IFederationBridgeRegistrationFile } from '../../../../app/federation-v2/server/domain/IFederationBridge';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 
@@ -48,7 +49,24 @@ const runFederationEE = async (): Promise<void> => {
 
 let cancelSettingsObserverEE: () => void;
 
-const onFederationEnabledStatusChangedEE = async (isFederationEnabled: boolean): Promise<void> => {
+const onFederationEnabledStatusChangedEE = async (
+	isFederationEnabled: boolean,
+	appServiceId: string,
+	homeServerUrl: string,
+	homeServerDomain: string,
+	bridgeUrl: string,
+	bridgePort: number,
+	homeServerRegistrationFile: IFederationBridgeRegistrationFile,
+): Promise<void> => {
+	federationBridgeEE.onFederationAvailabilityChanged(
+		isFederationEnabled,
+		appServiceId,
+		homeServerUrl,
+		homeServerDomain,
+		bridgeUrl,
+		bridgePort,
+		homeServerRegistrationFile,
+	);
 	if (isFederationEnabled) {
 		FederationFactoryEE.setupListeners(
 			federationRoomInternalHooksServiceSenderEE,
@@ -64,8 +82,8 @@ const onFederationEnabledStatusChangedEE = async (isFederationEnabled: boolean):
 onToggledFeature('federation', {
 	up: async () => {
 		await stopFederation(federationRoomServiceSenderEE);
-		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged((isFederationEnabled) =>
-			onFederationEnabledStatusChangedEE(isFederationEnabled),
+		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
+			onFederationEnabledStatusChangedEE.bind(onFederationEnabledStatusChangedEE),
 		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
