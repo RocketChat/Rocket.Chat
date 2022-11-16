@@ -19,7 +19,16 @@ export default {
 		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
-	reporter: process.env.CI ? 'github' : 'list',
+	reporter: [
+		process.env.CI ? ['github'] : ['list'],
+		[
+			'playwright-qase-reporter',
+			{
+				projectCode: 'RC',
+				// uploadAttachments: true,
+			},
+		],
+	],
 	testDir: 'tests/e2e',
 	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
