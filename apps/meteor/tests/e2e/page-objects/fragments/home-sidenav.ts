@@ -52,7 +52,7 @@ export class HomeSidenav {
 	}
 
 	async selectOrderByName(): Promise<void> {
-		const label = this.page.locator('text=⦇Name >> label');
+		const label = this.page.locator('text=Name >> label');
 
 		const inputIsChecked = await label.locator('input').isChecked();
 		if (!inputIsChecked) {
