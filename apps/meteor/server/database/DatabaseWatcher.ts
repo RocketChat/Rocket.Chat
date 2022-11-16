@@ -63,14 +63,14 @@ export class DatabaseWatcher extends EventEmitter {
 		}
 
 		if (ignoreChangeStream) {
-			this.watchOplog();
+			await this.watchOplog();
 			return;
 		}
 
 		try {
 			this.watchChangeStream();
 		} catch (err: unknown) {
-			this.watchOplog();
+			await this.watchOplog();
 		}
 	}
 
@@ -168,7 +168,7 @@ export class DatabaseWatcher extends EventEmitter {
 
 			this.logger.startup('Using change streams');
 		} catch (err: unknown) {
-			this.logger.error({ msg: 'Change stream error', err });
+			this.logger.error(err, 'Change stream error');
 
 			throw err;
 		}

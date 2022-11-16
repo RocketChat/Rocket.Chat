@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 3035;
 	// TODO having to import Logger to pass as a param is a temporary solution. logger should come from the service (either from broker or api)
 	const watcher = new DatabaseWatcher({ db, logger: Logger });
 
-	api.registerService(new StreamHub(watcher));
+	api.registerService(new StreamHub(watcher, Logger));
 
 	await api.start();
 

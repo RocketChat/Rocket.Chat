@@ -14,7 +14,10 @@ const watcher = new DatabaseWatcher({ db, _oplogHandle: (mongo as any)._oplogHan
 
 initWatchers(watcher, api.broadcastLocal.bind(api));
 
-watcher.watch();
+watcher.watch().catch((err: Error) => {
+	SystemLogger.fatal(err, 'Fatal error occurred when watching database');
+	process.exit(1);
+});
 
 setInterval(function _checkDatabaseWatcher() {
 	if (watcher.isLastDocDelayed()) {
