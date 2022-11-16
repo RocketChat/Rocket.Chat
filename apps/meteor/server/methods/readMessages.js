@@ -18,6 +18,9 @@ Meteor.methods({
 
 		const user = Meteor.user();
 		const room = Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'readMessages' });
+		}
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}

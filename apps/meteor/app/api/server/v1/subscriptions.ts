@@ -66,10 +66,11 @@ API.v1.addRoute(
 /**
   This API is suppose to mark any room as read.
 
-  Method: POST
-  Route: api/v1/subscriptions.read
-  Params:
-    - rid: The rid of the room to be marked as read.
+	Method: POST
+	Route: api/v1/subscriptions.read
+	Params:
+		- rid: The rid of the room to be marked as read.
+		- roomId: Alternative for rid.
  */
 API.v1.addRoute(
 	'subscriptions.read',
@@ -79,8 +80,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { rid, readThreads = false } = this.bodyParams;
-			await readMessages(rid, this.userId, readThreads);
+			const { readThreads = false } = this.bodyParams;
+			const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
+			await readMessages(roomId, this.userId, readThreads);
+
 			return API.v1.success();
 		},
 	},

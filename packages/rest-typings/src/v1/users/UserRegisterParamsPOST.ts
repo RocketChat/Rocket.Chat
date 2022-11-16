@@ -18,7 +18,6 @@ const UserRegisterParamsPostSchema = {
 	properties: {
 		username: {
 			type: 'string',
-			minLength: 3,
 		},
 
 		name: {

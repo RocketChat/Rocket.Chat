@@ -138,6 +138,22 @@ describe('[Subscriptions]', function () {
 				.end(done);
 		});
 
+		it('should fail on two params with different ids', (done) => {
+			request
+				.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: testDM._id,
+					roomId: testChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				})
+				.end(done);
+		});
+
 		it('should fail on mark inexistent public channel as read', (done) => {
 			request
 				.post(api('subscriptions.read'))
@@ -148,7 +164,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
 				})
 				.end(done);
 		});
@@ -163,7 +179,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
 				})
 				.end(done);
 		});
@@ -178,7 +194,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
 				})
 				.end(done);
 		});
@@ -193,7 +209,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('errorType', 'error-room-does-not-exist');
 				})
 				.end(done);
 		});
@@ -206,7 +222,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
 		});

@@ -5,7 +5,7 @@ type SubscriptionsGet = { updatedSince?: string };
 
 type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 
-type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean };
+type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId: IRoom['_id']; readThreads?: boolean };
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
 
@@ -41,18 +41,36 @@ const SubscriptionsGetOneSchema = {
 export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				readThreads: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+			required: ['rid'],
+			additionalProperties: false,
 		},
-		readThreads: {
-			type: 'boolean',
-			nullable: true,
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				readThreads: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
 		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
+	],
 };
 
 export const isSubscriptionsReadProps = ajv.compile<SubscriptionsRead>(SubscriptionsReadSchema);
