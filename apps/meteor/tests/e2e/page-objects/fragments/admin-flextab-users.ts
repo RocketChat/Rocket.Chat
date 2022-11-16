@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class FederationAdminFlextabUsers {
+export class AdminFlextabUsers {
 	private readonly page: Page;
 
 	constructor(page: Page) {
