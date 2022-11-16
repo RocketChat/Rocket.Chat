@@ -85,6 +85,17 @@ const federationMessageServiceSender = FederationFactory.buildMessageServiceSend
 
 let cancelSettingsObserver: () => void;
 
+const onFederationEnabledStatusChanged = async (isFederationEnabled: boolean): Promise<void> => {
+	federationBridge.onFederationAvailabilityChanged(isFederationEnabled);
+	if (isFederationEnabled) {
+		federationBridge.logFederationStartupInfo('Running Federation V2');
+		FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
+		await import('./infrastructure/rocket-chat/slash-commands');
+		return;
+	}
+	FederationFactory.removeCEListeners();
+};
+
 export const runFederation = async (): Promise<void> => {
 	federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 		rocketRoomAdapter,
@@ -95,10 +106,10 @@ export const runFederation = async (): Promise<void> => {
 		rocketNotificationAdapter,
 		federationBridge,
 	);
-	FederationFactory.setupListeners(federationRoomServiceSender, federationRoomInternalHooksValidator, federationMessageServiceSender);
+	FederationFactory.setupValidators(federationRoomInternalHooksValidator);
 	federationQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
-	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
-		federationBridge.onFederationAvailabilityChanged.bind(federationBridge),
+	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged((isFederationEnabled) =>
+		onFederationEnabledStatusChanged(isFederationEnabled),
 	);
 	await rocketNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms(
 		rocketNotificationAdapter.broadcastUserTypingOnRoom.bind(rocketNotificationAdapter),
@@ -106,9 +117,10 @@ export const runFederation = async (): Promise<void> => {
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
+	FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
 	await federationBridge.start();
 	federationBridge.logFederationStartupInfo('Running Federation V2');
-	require('./infrastructure/rocket-chat/slash-commands');
+	await import('./infrastructure/rocket-chat/slash-commands');
 };
 
 const updateServiceSenderInstance = (federationRoomServiceSenderInstance: FederationRoomServiceSender) => {
@@ -117,7 +129,7 @@ const updateServiceSenderInstance = (federationRoomServiceSenderInstance: Federa
 
 export const stopFederation = async (federationRoomServiceSenderInstance: FederationRoomServiceSender): Promise<void> => {
 	updateServiceSenderInstance(federationRoomServiceSenderInstance);
-	FederationFactory.removeListeners();
+	FederationFactory.removeCEListeners();
 	await federationBridge.stop();
 	cancelSettingsObserver();
 };

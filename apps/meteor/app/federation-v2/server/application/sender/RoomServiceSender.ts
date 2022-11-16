@@ -37,13 +37,13 @@ export class FederationRoomServiceSender extends FederationService {
 
 		const internalInviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!internalInviterUser) {
-			await this.createFederatedUserForInviterUsingLocalInformation(internalInviterId);
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId);
 		}
 
 		const internalInviteeUser = await this.internalUserAdapter.getFederatedUserByInternalId(normalizedInviteeId);
 		if (!internalInviteeUser) {
 			const existsOnlyOnProxyServer = false;
-			await this.createFederatedUser(rawInviteeId, normalizedInviteeId, existsOnlyOnProxyServer);
+			await this.createFederatedUserInternallyOnly(rawInviteeId, normalizedInviteeId, existsOnlyOnProxyServer);
 		}
 
 		const federatedInviterUser = internalInviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));

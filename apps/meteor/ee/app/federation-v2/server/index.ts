@@ -48,11 +48,24 @@ const runFederationEE = async (): Promise<void> => {
 
 let cancelSettingsObserverEE: () => void;
 
+const onFederationEnabledStatusChangedEE = async (isFederationEnabled: boolean): Promise<void> => {
+	if (isFederationEnabled) {
+		FederationFactoryEE.setupListeners(
+			federationRoomInternalHooksServiceSenderEE,
+			federationDMRoomInternalHooksServiceSenderEE,
+			rocketSettingsAdapter,
+		);
+		await import('./infrastructure/rocket-chat/slash-commands');
+		return;
+	}
+	FederationFactoryEE.removeListeners();
+};
+
 onToggledFeature('federation', {
 	up: async () => {
 		await stopFederation(federationRoomServiceSenderEE);
-		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
-			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
+		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged((isFederationEnabled) =>
+			onFederationEnabledStatusChangedEE(isFederationEnabled),
 		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
@@ -63,7 +76,7 @@ onToggledFeature('federation', {
 			federationDMRoomInternalHooksServiceSenderEE,
 			rocketSettingsAdapter,
 		);
-		require('./infrastructure/rocket-chat/slash-commands');
+		await import('./infrastructure/rocket-chat/slash-commands');
 	},
 	down: async () => {
 		await federationBridgeEE.stop();

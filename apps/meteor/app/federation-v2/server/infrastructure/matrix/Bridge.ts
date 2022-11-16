@@ -128,9 +128,17 @@ export class MatrixBridge implements IFederationBridge {
 		}
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
 		const newUser = new MatrixUserInstance(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`, ...(avatarUrl ? { url: avatarUrl } : {}) });
+		await this.bridgeInstance.provisionUser(newUser, { name, ...(avatarUrl ? { url: avatarUrl } : {}) });
 
 		return matrixUserId;
+	}
+
+	public async setUserDisplayName(externalUserId: string, displayName: string): Promise<void> {
+		try {
+			await this.bridgeInstance.getIntent(externalUserId).setDisplayName(displayName);
+		} catch (e) {
+			// no-op
+		}
 	}
 
 	public async createDirectMessageRoom(

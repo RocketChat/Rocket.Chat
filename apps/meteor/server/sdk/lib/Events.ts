@@ -86,6 +86,7 @@ export type EventSignatures = {
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
+	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
