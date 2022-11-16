@@ -5,6 +5,7 @@ import {
 	federationQueueInstance,
 	rocketMessageAdapter,
 	rocketFileAdapter,
+	rocketNotificationAdapter,
 } from '../../../../app/federation-v2/server';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
@@ -19,6 +20,7 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 	rocketFileAdapter,
 	rocketMessageAdapter,
 	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federationBridgeEE,
 );
 

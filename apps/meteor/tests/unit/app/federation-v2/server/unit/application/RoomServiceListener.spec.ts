@@ -80,6 +80,10 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 	};
+	const notificationsAdapter = {
+		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
+		broadcastUserTypingOnRoom: sinon.stub(),
+	};
 	const fileAdapter = {
 		uploadFile: sinon.stub(),
 	};
@@ -98,6 +102,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			messageAdapter as any,
 			fileAdapter as any,
 			settingsAdapter as any,
+			notificationsAdapter as any,
 			bridge as any,
 		);
 	});

@@ -11,7 +11,7 @@ export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
 const federationBridge = FederationFactory.buildFederationBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
-const rocketNotificationAdapter = FederationFactory.buildRocketNotificationAdapter();
+export const rocketNotificationAdapter = FederationFactory.buildRocketNotificationAdapter();
 export const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
 
 const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
@@ -20,6 +20,7 @@ const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver
 	rocketMessageAdapter,
 	rocketFileAdapter,
 	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federationBridge,
 );
 
@@ -54,6 +55,7 @@ export let federationRoomServiceSender = FederationFactory.buildRoomServiceSende
 	rocketFileAdapter,
 	rocketMessageAdapter,
 	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federationBridge,
 );
 
@@ -90,12 +92,16 @@ export const runFederation = async (): Promise<void> => {
 		rocketFileAdapter,
 		rocketMessageAdapter,
 		rocketSettingsAdapter,
+		rocketNotificationAdapter,
 		federationBridge,
 	);
 	FederationFactory.setupListeners(federationRoomServiceSender, federationRoomInternalHooksValidator, federationMessageServiceSender);
 	federationQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
 		federationBridge.onFederationAvailabilityChanged.bind(federationBridge),
+	);
+	await rocketNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms(
+		rocketNotificationAdapter.broadcastUserTypingOnRoom.bind(rocketNotificationAdapter),
 	);
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;

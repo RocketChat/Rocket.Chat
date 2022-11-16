@@ -6,6 +6,7 @@ import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
@@ -25,6 +26,7 @@ export class FederationRoomServiceSender extends FederationService {
 		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
+		protected internalNotificationAdapter: RocketChatNotificationAdapter,
 		protected bridge: IFederationBridge,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
@@ -71,7 +73,11 @@ export class FederationRoomServiceSender extends FederationService {
 				federatedInviterUser,
 				federatedInviteeUser,
 			]);
-			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+				createdInternalRoomId,
+				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+			);
 		}
 
 		const federatedRoom =

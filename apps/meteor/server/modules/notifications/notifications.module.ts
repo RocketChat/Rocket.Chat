@@ -5,7 +5,6 @@ import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
-import { api } from '../../sdk/api';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -249,17 +248,6 @@ export class NotificationsModule {
 
 			if (!(await canType({ extraData, rid, username, userId: this.userId ?? undefined }))) {
 				return false;
-			}
-
-			if (
-				e === 'typing' ||
-				(e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing')))
-			) {
-				api.broadcast('user.typing', {
-					user: { username },
-					isTyping: _activity.includes('user-typing'),
-					roomId: rid,
-				});
 			}
 
 			// DEPRECATED

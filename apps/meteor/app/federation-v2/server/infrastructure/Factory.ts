@@ -67,6 +67,7 @@ export class FederationFactory {
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceListener {
 		return new FederationRoomServiceListener(
@@ -75,6 +76,7 @@ export class FederationFactory {
 			rocketMessageAdapter,
 			rocketFileAdapter,
 			rocketSettingsAdapter,
+			rocketNotificationAdapter,
 			bridge,
 		);
 	}
@@ -85,6 +87,7 @@ export class FederationFactory {
 		rocketFileAdapter: RocketChatFileAdapter,
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridge,
 	): FederationRoomServiceSender {
 		return new FederationRoomServiceSender(
@@ -93,6 +96,7 @@ export class FederationFactory {
 			rocketFileAdapter,
 			rocketMessageAdapter,
 			rocketSettingsAdapter,
+			rocketNotificationAdapter,
 			bridge,
 		);
 	}
