@@ -76,7 +76,7 @@ const onFederationEnabledStatusChanged = async (isFederationEnabled: boolean): P
 	if (isFederationEnabled) {
 		federationBridge.logFederationStartupInfo('Running Federation V2');
 		FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
-		require('./infrastructure/rocket-chat/slash-commands');
+		await import('./infrastructure/rocket-chat/slash-commands');
 		return;
 	}
 	FederationFactory.removeCEListeners();
@@ -102,7 +102,7 @@ export const runFederation = async (): Promise<void> => {
 	FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
 	await federationBridge.start();
 	federationBridge.logFederationStartupInfo('Running Federation V2');
-	require('./infrastructure/rocket-chat/slash-commands');
+	await import('./infrastructure/rocket-chat/slash-commands');
 };
 
 const updateServiceSenderInstance = (federationRoomServiceSenderInstance: FederationRoomServiceSender) => {

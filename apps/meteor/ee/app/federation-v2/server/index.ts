@@ -53,7 +53,7 @@ const onFederationEnabledStatusChangedEE = async (isFederationEnabled: boolean):
 			federationDMRoomInternalHooksServiceSenderEE,
 			rocketSettingsAdapter,
 		);
-		require('./infrastructure/rocket-chat/slash-commands');
+		await import('./infrastructure/rocket-chat/slash-commands');
 		return;
 	}
 	FederationFactoryEE.removeListeners();
@@ -74,7 +74,7 @@ onToggledFeature('federation', {
 			federationDMRoomInternalHooksServiceSenderEE,
 			rocketSettingsAdapter,
 		);
-		require('./infrastructure/rocket-chat/slash-commands');
+		await import('./infrastructure/rocket-chat/slash-commands');
 	},
 	down: async () => {
 		await federationBridgeEE.stop();
