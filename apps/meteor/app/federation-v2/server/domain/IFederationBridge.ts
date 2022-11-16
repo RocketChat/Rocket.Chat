@@ -53,4 +53,5 @@ export interface IFederationBridge {
 		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
 		eventToReplyTo: string,
 	): Promise<string>;
+	setUserDisplayName(externalUserId: string, displayName: string): Promise<void>;
 }
