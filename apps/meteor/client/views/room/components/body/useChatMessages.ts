@@ -19,7 +19,7 @@ export const useChatMessages = (rid: IRoom['_id'], wrapperRef: RefObject<HTMLEle
 
 		chatMessagesInstance.initializeWrapper(wrapper);
 		return (): void => {
-			chatMessagesInstance.onDestroyed?.(rid);
+			ChatMessages.delete({ rid });
 		};
 	}, [chatMessagesInstance, rid, wrapperRef]);
 

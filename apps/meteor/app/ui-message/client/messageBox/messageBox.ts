@@ -123,6 +123,8 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 		const { value } = input;
 		this.set('');
 
+		UserAction.stop(this.data.rid, USER_ACTIVITIES.USER_TYPING, { tmid: this.data.tmid });
+
 		onSend?.call(this.data, event, { value, tshow }).then(() => {
 			autogrow?.update();
 			input.focus();
@@ -211,6 +213,8 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 });
 
 Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
+	UserAction.cancel(this.data.rid);
+
 	if (!this.autogrow) {
 		return;
 	}

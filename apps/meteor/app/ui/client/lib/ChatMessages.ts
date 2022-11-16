@@ -27,7 +27,6 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { call } from '../../../../client/lib/utils/call';
 
@@ -446,8 +445,6 @@ export class ChatMessages {
 
 		const threadsEnabled = settings.get('Threads_enabled');
 
-		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
-
 		if (!ChatSubscription.findOne({ rid })) {
 			await callWithErrorHandling('joinRoom', rid);
 		}
@@ -706,8 +703,7 @@ export class ChatMessages {
 		}
 	}
 
-	public onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {
-		UserAction.cancel(rid);
+	private onDestroyed(tmid?: IMessage['_id']) {
 		// TODO: check why we need too many ?. here :(
 		if (this.input?.parentElement?.classList.contains('editing') === true) {
 			if (!tmid) {
@@ -741,7 +737,7 @@ export class ChatMessages {
 
 	public static delete({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		const id = this.getID({ rid, tmid });
-		this.instances[id].onDestroyed(rid, tmid);
+		this.instances[id].onDestroyed(tmid);
 		delete this.instances[id];
 	}
 
