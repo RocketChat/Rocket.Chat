@@ -3355,7 +3355,7 @@
   "Msgs": "Viestit",
   "multi": "monta",
   "multi_line": "monirivinen",
-  "Multiple_monolith_instances_alert": "Käytät useita instansseja... jotkut ominaisuudet eivät käyttäydy suunnitellulla tavalla.",
+  "Multiple_monolith_instances_alert": null,
   "Mute": "Mykistä",
   "Mute_and_dismiss": "Mykistä ja poista",
   "Mute_all_notifications": "Mykistä kaikki ilmoitukset",

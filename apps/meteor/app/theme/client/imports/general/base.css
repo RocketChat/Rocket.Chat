@@ -35,12 +35,6 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-@media (width <= 500px) {
-	body {
-		position: fixed;
-	}
-}
-
 :focus {
 	outline: 0 !important;
 	outline-style: none;
@@ -54,7 +48,7 @@ body {
 		display: table;
 		clear: both;
 
-		content: "";
+		content: '';
 	}
 }
 
@@ -136,7 +130,7 @@ button {
 		width: 100%;
 		height: 1px;
 
-		content: "";
+		content: '';
 
 		animation-name: unread;
 		animation-duration: 0.2s;
