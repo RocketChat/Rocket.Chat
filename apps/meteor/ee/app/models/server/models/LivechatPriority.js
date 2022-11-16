@@ -8,7 +8,7 @@ export class LivechatPriority extends Base {
 		super('livechat_priority');
 
 		this.tryEnsureIndex({ name: 1 }, { unique: true });
-		this.tryEnsureIndex({ sortItems: 1 });
+		this.tryEnsureIndex({ sortItem: 1 });
 		this.tryEnsureIndex({ dirty: 1 });
 	}
 

@@ -3043,7 +3043,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatPrioritiesParams) => PaginatedResult<{ priorities: ILivechatPriority[] }>;
 	};
 
-	'/v1/livechat/priority/:priorityId': {
+	'/v1/livechat/priorities/:priorityId': {
 		GET: () => ILivechatPriority | void;
 		PUT: (params: PUTLivechatPriority) => void;
 	};

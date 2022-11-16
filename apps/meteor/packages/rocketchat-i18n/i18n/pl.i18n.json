@@ -3312,7 +3312,7 @@
   "Msgs": "Wiadomości",
   "multi": "multi",
   "multi_line": "linia multi",
-  "Multiple_monolith_instances_alert": "Obsługujesz wiele instancji... niektóre funkcje nie będą zachowywać się zgodnie z projektem.",
+  "Multiple_monolith_instances_alert": null,
   "Mute": "Wyciszenie",
   "Mute_and_dismiss": "Wycisz i odrzuć",
   "Mute_all_notifications": "Wycisz wszystkie powiadomienia",
