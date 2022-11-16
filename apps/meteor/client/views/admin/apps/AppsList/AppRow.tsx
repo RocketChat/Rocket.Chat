@@ -100,7 +100,7 @@ const AppRow: FC<AppRowProps> = (props) => {
 			</Box>
 
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
-				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
+				<AppStatus app={props} isAppDetailsPage={false} installed={installed} mis='x4' />
 				<Box minWidth='x32'>
 					<AppMenu app={props} mis='x4' />
 				</Box>

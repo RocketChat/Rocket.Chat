@@ -18,17 +18,9 @@ type AppStatusProps = {
 	showStatus?: boolean;
 	isAppDetailsPage: boolean;
 	installed?: boolean;
-	versionIncompatible?: boolean;
 };
 
-const AppStatus = ({
-	app,
-	showStatus = true,
-	versionIncompatible,
-	isAppDetailsPage,
-	installed,
-	...props
-}: AppStatusProps): ReactElement => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
@@ -113,7 +105,7 @@ const AppStatus = ({
 			return;
 		}
 
-		if (versionIncompatible && action !== undefined) {
+		if (app.versionIncompatible && action !== undefined) {
 			openIncompatibleModal(app, action, cancelAction);
 			return;
 		}
@@ -144,7 +136,7 @@ const AppStatus = ({
 							<Throbber inheritColor />
 						) : (
 							<>
-								{button.icon && <Icon name={button.icon} fontSize={'12px'} mie='x8' />}
+								{button.icon && <Icon name={button.icon} fontSize={'13px'} mie='x4' />}
 								{t(button.label.replace(' ', '_') as TranslationKey)}
 							</>
 						)}
@@ -160,7 +152,7 @@ const AppStatus = ({
 
 			{statuses?.map((status, index) => (
 				<>
-					<Margins all='x8' key={`${index.toString()}'-margins'`}>
+					<Margins all='x8'>
 						{status.tooltipText ? (
 							<TooltipOnHover
 								element={<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>}
