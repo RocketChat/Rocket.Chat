@@ -9,7 +9,7 @@
 		"@rocket.chat/css-in-js": "0.31.21",
 		"@rocket.chat/fuselage": "0.31.21",
 		"@rocket.chat/fuselage-tokens": "0.31.21",
-		"@rocket.chat/message-parser": "0.31.21",
+		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/styled": "0.31.21",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
