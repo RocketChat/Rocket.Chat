@@ -25,7 +25,14 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 	public async onDirectMessageRoomCreation(dmRoomOnCreationInput: FederationOnDirectMessageRoomCreationDto): Promise<void> {
 		const { internalRoomId, internalInviterId, invitees, inviteComesFromAnExternalHomeServer } = dmRoomOnCreationInput;
 
-		if (invitees.length === 0 || inviteComesFromAnExternalHomeServer) {
+		const atLeastOneExternalUser = invitees.some(
+			(invitee) =>
+				!FederatedUserEE.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(invitee.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
+		);
+		if (invitees.length === 0 || inviteComesFromAnExternalHomeServer || !atLeastOneExternalUser) {
 			return;
 		}
 		await this.createExternalDirectMessageRoomAndInviteUsers({
