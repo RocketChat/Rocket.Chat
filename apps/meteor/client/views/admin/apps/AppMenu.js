@@ -16,7 +16,7 @@ import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError } from './helpers';
+import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
@@ -70,18 +70,37 @@ function AppMenu({ app, ...props }) {
 	const button = appButtonProps(app || {});
 	const action = button?.action || '';
 
+	const cancelAction = useCallback(() => {
+		setModal(null);
+		setLoading(false);
+	}, [setModal]);
+
+	const confirmAction = useCallback(
+		(permissionsGranted) => {
+			setModal(null);
+
+			actions[action]({ ...app, permissionsGranted }).then(() => {
+				setLoading(false);
+			});
+		},
+		[setModal, action, app, setLoading],
+	);
+
+	const showAppPermissionsReviewModal = useCallback(() => {
+		if (!isAppPurchased) {
+			setPurchased(true);
+		}
+
+		if (!Array.isArray(app.permissions)) {
+			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
+		}
+
+		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
+	}, [app.permissions, cancelAction, confirmAction, isAppPurchased, setModal, setPurchased]);
+
 	const closeModal = useCallback(() => {
 		setModal(null);
 	}, [setModal]);
-
-	const handleEnable = useCallback(async () => {
-		try {
-			const { status } = await setAppStatus({ status: 'manually_enabled' });
-			warnStatusChange(app.name, status);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	}, [app.name, setAppStatus]);
 
 	const handleSubscription = useCallback(async () => {
 		if (!(await checkUserLoggedIn())) {
@@ -113,6 +132,30 @@ function AppMenu({ app, ...props }) {
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
 	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
 
+	const handleAcquireApp = useCallback(async () => {
+		setLoading(true);
+
+		const isLoggedIn = await checkUserLoggedIn();
+
+		if (!isLoggedIn) {
+			setLoading(false);
+			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (action === 'purchase' && !isAppPurchased) {
+			try {
+				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
+			} catch (error) {
+				handleAPIError(error);
+			}
+			return;
+		}
+
+		showAppPermissionsReviewModal();
+	}, [action, app.id, app.purchaseType, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
+
 	const handleViewLogs = useCallback(() => {
 		router.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
 	}, [app.id, app.version, router]);
@@ -122,7 +165,7 @@ function AppMenu({ app, ...props }) {
 			closeModal();
 			try {
 				const { status } = await setAppStatus({ status: 'manually_disabled' });
-				warnStatusChange(app.name, status);
+				warnEnableDisableApp(app.name, status, 'disable');
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -131,6 +174,15 @@ function AppMenu({ app, ...props }) {
 			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [app.name, closeModal, setAppStatus, setModal, t]);
+
+	const handleEnable = useCallback(async () => {
+		try {
+			const { status } = await setAppStatus({ status: 'manually_enabled' });
+			warnEnableDisableApp(app.name, status, 'enable');
+		} catch (error) {
+			handleAPIError(error);
+		}
+	}, [app.name, setAppStatus]);
 
 	const handleUninstall = useCallback(() => {
 		const uninstall = async () => {
@@ -182,58 +234,6 @@ function AppMenu({ app, ...props }) {
 		t,
 		uninstallApp,
 	]);
-
-	const cancelAction = useCallback(() => {
-		setModal(null);
-		setLoading(false);
-	}, [setModal]);
-
-	const confirmAction = useCallback(
-		(permissionsGranted) => {
-			setModal(null);
-
-			actions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
-		},
-		[setModal, action, app, setLoading],
-	);
-
-	const showAppPermissionsReviewModal = useCallback(() => {
-		if (!isAppPurchased) {
-			setPurchased(true);
-		}
-
-		if (!Array.isArray(app.permissions)) {
-			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
-		}
-
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
-	}, [app.permissions, cancelAction, confirmAction, isAppPurchased, setModal, setPurchased]);
-
-	const handleAcquireApp = useCallback(async () => {
-		setLoading(true);
-
-		const isLoggedIn = await checkUserLoggedIn();
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
-
-		if (action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		showAppPermissionsReviewModal();
-	}, [action, app.id, app.purchaseType, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
