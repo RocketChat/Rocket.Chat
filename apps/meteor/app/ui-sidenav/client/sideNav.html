@@ -1,5 +1,6 @@
 <template name="sideNav">
-	<aside class="rcx-sidebar sidebar sidebar--main sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation"  data-qa-opened="{{dataQa}}">
+	<nav class="sidebar sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" aria-labelledby="sidebar-title">
+		<h1 id="sidebar-title" class="visually-hidden">{{_ "Channels_sidebar"}}</h1>
 		{{> sidebarHeader }}
 		<div class="wrapper-unread">
 			<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
@@ -18,6 +19,6 @@
 			{{> Template.dynamic template=flexTemplate data=flexData }}
 		</div>
 		{{> sidebarFooter}}
-	</aside>
+	</nav>
 	<div class="sidebar-wrap"></div>
 </template>
