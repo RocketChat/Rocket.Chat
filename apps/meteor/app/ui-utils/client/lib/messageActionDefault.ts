@@ -29,12 +29,12 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 Meteor.startup(async function () {
-	const { chatMessages } = await import('../../../ui');
+	const { ChatMessages } = await import('../../../ui/client');
 
-	const getChatMessagesFrom = (msg: IMessage): ChatMessages => {
+	const getChatMessagesFrom = (msg: IMessage): ChatMessages | undefined => {
 		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
-		return chatMessages[`${rid}-${tmid}`] || chatMessages[rid];
+		return ChatMessages.get({ rid, tmid }) ?? ChatMessages.get({ rid });
 	};
 
 	MessageAction.addButton({
@@ -82,18 +82,16 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const { input } = getChatMessagesFrom(message);
+			const chatMessagesInstance = getChatMessagesFrom(message);
+			const input = chatMessagesInstance?.input;
 			if (!input) {
 				return;
 			}
 
 			const $input = $(input);
 
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message);
-
-			$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
+			$input.focus().data('mention-user', false).trigger('dataChange');
+			chatMessagesInstance.quotedMessages.add(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {
@@ -158,7 +156,7 @@ Meteor.startup(async function () {
 			if (!element) {
 				throw new Error('Message not found');
 			}
-			getChatMessagesFrom(message).edit(element);
+			getChatMessagesFrom(message)?.edit(element);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
@@ -199,7 +197,7 @@ Meteor.startup(async function () {
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).confirmDeleteMsg(message);
+			getChatMessagesFrom(message)?.confirmDeleteMsg(message);
 		},
 		condition({ message, subscription, room }) {
 			if (!subscription) {

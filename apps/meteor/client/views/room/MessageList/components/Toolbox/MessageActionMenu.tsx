@@ -38,6 +38,7 @@ export const MessageActionMenu: FC<{
 			onClick={(): void => setVisible(!visible)}
 			data-qa-id='menu'
 			data-qa-type='message-action-menu'
+			title={t('More')}
 		>
 			{visible && (
 				<ToolboxDropdown reference={ref} container={messagesContainer} {...rest}>
