@@ -196,7 +196,8 @@ export class LDAPEEManager extends LDAPManager {
 			{},
 			{
 				projection: {
-					_updatedAt: 0,
+					_id: 1,
+					name: 1,
 				},
 			},
 		).toArray()) as Array<IRole>;
