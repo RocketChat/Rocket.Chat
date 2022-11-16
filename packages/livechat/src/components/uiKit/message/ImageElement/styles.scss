@@ -1,0 +1,23 @@
+@import '../../../../styles/variables';
+
+.uikit-image {
+	overflow: hidden;
+
+	background-repeat: no-repeat;
+	background-position: 50%;
+	background-size: cover;
+
+	&--accessory {
+		width: 5.5rem;
+		height: 5.5rem;
+
+		border-radius: $default-border-radius;
+	}
+
+	&--context {
+		width: 1.25rem;
+		height: 1.25rem;
+
+		border-radius: $default-border-radius;
+	}
+}

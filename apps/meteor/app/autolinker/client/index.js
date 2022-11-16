@@ -1,0 +1,1 @@
+export { createAutolinkerMessageRenderer } from './client';

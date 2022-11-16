@@ -1,2 +1,0 @@
-import './startup';
-import './router';

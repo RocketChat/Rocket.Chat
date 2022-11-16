@@ -1,2 +1,0 @@
-import './logger';
-import './viewLogs';

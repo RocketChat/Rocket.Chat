@@ -1,0 +1,58 @@
+<template name="authorize">
+	{{#if currentUser}}
+		<div class="oauth-panel">
+			<form method="post" action="" role="form" class="{{#unless Template.subscriptionsReady}}hidden{{/unless}}">
+				{{#if currentUser}}
+					<div class="user-info">
+						<div class="thumb">
+							{{> avatar username=currentUser.username}}
+						</div>
+						<div class="username">
+							{{_ "You_are_logged_in_as"}}
+							<h1>{{currentUser.username}}</h1>
+						</div>
+					</div>
+				{{/if}}
+
+				<div class="integration-info">
+					<div>
+						<span><b>{{getClient.name}}</b> {{_ "will_be_able_to"}}</span>
+						<ul class="integration-permissions">
+							<li>Post Messages</li>
+							<li>Create Channels</li>
+							<li>Change Channel Topic</li>
+						</ul>
+					</div>
+				</div>
+				<input type="hidden" name="allow" value="yes">
+				<input type="hidden" name="token" value="{{getToken}}">
+				<input type="hidden" name="client_id" value="{{client_id}}">
+				<input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
+				<input type="hidden" name="response_type" value="code">
+				<div class="buttons-group">
+					<button id="logout-oauth" class="rc-button rc-button--danger logout">{{_ "Logout"}}</button>
+					<button id="cancel-oauth" type="button" class="rc-button rc-button--cancel">{{_ "Cancel"}}</button>
+					<button type="submit" class="rc-button rc-button--primary save">{{_ "Authorize"}}</button>
+				</div>
+			</form>
+			{{#unless Template.subscriptionsReady}}
+				{{_ "loading"}}...
+			{{/unless}}
+		</div>
+	{{else}}
+		{{> loginButtons}}
+	{{/if}}
+</template>
+
+<template name="oauth404">
+		<div class="oauth-panel">
+			<form>
+				{{#if $eq error '404'}}
+					<h2>Invalid OAuth client</h2>
+				{{/if}}
+				{{#if $eq error 'invalid_redirect_uri'}}
+					<h2>Redirect URL does not match</h2>
+				{{/if}}
+			</form>
+		</div>
+</template>

@@ -1,0 +1,71 @@
+<template name="rc_modal">
+	<div class="rc-modal-wrapper">
+		{{#if $eq template 'ModalBlock'}}
+			{{> ModalBlock data}}
+		{{else}}
+		<dialog class="rc-modal rc-modal--{{modifier}}" data-modal="modal">
+
+			{{# if template}}
+				{{> Template.dynamic template=template data=data}}
+			{{else}}
+				<header class="rc-modal__header">
+					<h1 class="rc-modal__title">
+						{{#if html}}
+							{{{title}}}
+						{{else}}
+							{{title}}
+						{{/if}}
+					</h1>
+					<button title="{{_ "Close"}}" class="contextual-bar__close js-close">
+						{{> icon classes="rc-modal__close" icon="plus"}}
+					</button>
+				</header>
+
+				<section class="rc-modal__content">
+					{{#if content}}
+						{{> Template.dynamic template=content data=data}}
+					{{/if}}
+					{{#if type}}
+						{{> icon block=type icon=modalIcon}}
+					{{/if}}
+					{{#if text}}
+						<div class="rc-modal__content-text">
+							{{#if html}}
+								{{{text}}}
+							{{else}}
+								{{text}}
+							{{/if}}
+						</div>
+					{{/if}}
+					{{#if input}}
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__wrapper">
+									<input name="name" type="{{inputType}}" class="rc-input__element js-modal-input" placeholder="{{inputPlaceholder}}">
+								</div>
+							</label>
+						</div>
+						<div class="rc-modal__content-error"></div>
+					{{/if}}
+					{{#if inputActionText}}
+						<input class="rc-button rc-button--nude js-input-action" type="submit" data-button="input-action" value="{{inputActionText}}">
+					{{/if}}
+					{{#if dontAskAgain}}
+						<label class="rc-checkbox">
+							<input type="checkbox" id="dont-ask-me-again" class="rc-checkbox__input js-modal-dont-ask">
+							{{> icon icon="check" block="rc-checkbox__icon"}}
+							<span class="rc-checkbox__text rc-text__small">{{_ "Dont_ask_me_again"}}</span>
+						</label>
+					{{/if}}
+					</section>
+					{{# if showFooter }}
+						<footer class="rc-modal__footer {{#unless showFooter}}rc-modal__footer--empty{{/unless}}">
+							<input class="rc-button rc-button--secondary js-close {{#unless showCancelButton}}rc-button--invisible{{/unless}}" style="{{#if cancelButtonColor}}color: {{cancelButtonColor}}{{/if}}" type="submit" data-button="cancel" value="{{cancelButtonText}}">
+							<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm {{#unless showConfirmButton}}rc-button--invisible{{/unless}}" type="submit" data-button="create" value="{{confirmButtonText}}">
+						</footer>
+					{{/if}}
+			{{/if}}
+			</dialog>
+		{{/if}}
+	</div>
+</template>
