@@ -56,7 +56,7 @@ export class DatabaseWatcher extends EventEmitter {
 		if (useMeteorOplog) {
 			// TODO remove this when updating to Meteor 2.8
 			this.logger.warn(
-				'Using USE_NATIVE_OPLOG=true is currently desencouraged due to known performance issues. Please use IGNORE_CHANGE_STREAM=true instead.',
+				'Using USE_NATIVE_OPLOG=true is currently discouraged due to known performance issues. Please use IGNORE_CHANGE_STREAM=true instead.',
 			);
 			this.watchMeteorOplog();
 			return;
