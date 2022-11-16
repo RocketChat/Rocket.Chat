@@ -5,6 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
+import { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { ChatMessages } from '../../../../../../app/ui/client';
 import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
@@ -16,20 +17,34 @@ export type ComposerMessageProps = {
 	subscription?: ISubscription;
 	chatMessagesInstance: ChatMessages;
 	onResize?: () => void;
+	onEscape?: () => void;
+	onNavigateToNextMessage?: () => void;
+	onNavigateToPreviousMessage?: () => void;
 };
 
-const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({
+	rid,
+	subscription,
+	chatMessagesInstance,
+	onResize,
+	onEscape,
+	onNavigateToNextMessage,
+	onNavigateToPreviousMessage,
+}: ComposerMessageProps): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
 
 	const messageBoxViewRef = useRef<Blaze.View>();
 	const messageBoxViewDataRef = useRef(
-		new ReactiveVar({
+		new ReactiveVar<MessageBoxTemplateInstance['data']>({
 			rid,
 			subscription,
 			isEmbedded: isLayoutEmbedded,
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
 			onResize,
+			onEscape,
+			onNavigateToNextMessage,
+			onNavigateToPreviousMessage,
 			chatMessagesInstance,
 		}),
 	);
@@ -41,16 +56,29 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 			isEmbedded: isLayoutEmbedded,
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
 			onResize,
+			onEscape,
+			onNavigateToNextMessage,
+			onNavigateToPreviousMessage,
 			chatMessagesInstance,
 		});
-	}, [isLayoutEmbedded, onResize, rid, showFormattingTips, subscription, chatMessagesInstance]);
+	}, [
+		isLayoutEmbedded,
+		onResize,
+		rid,
+		showFormattingTips,
+		subscription,
+		chatMessagesInstance,
+		onEscape,
+		onNavigateToNextMessage,
+		onNavigateToPreviousMessage,
+	]);
 
 	const footerRef = useCallback(
 		(footer: HTMLElement | null) => {
 			if (footer) {
 				messageBoxViewRef.current = Blaze.renderWithData(
 					Template.messageBox,
-					() => ({
+					(): MessageBoxTemplateInstance['data'] => ({
 						...messageBoxViewDataRef.current.get(),
 						onInputChanged: (input: HTMLTextAreaElement): void => {
 							chatMessagesInstance.initializeInput(input);

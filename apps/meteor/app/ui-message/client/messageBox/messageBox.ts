@@ -30,18 +30,23 @@ import './messageBox.html';
 
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
-	tmid: IMessage['_id'];
-	onSend: (
+	tmid?: IMessage['_id'];
+	onSend?: (
 		event: Event,
 		params: {
 			value: string;
 			tshow?: boolean;
 		},
 	) => Promise<void>;
+	onResize?: () => void;
+	onInputChanged?: (input: HTMLTextAreaElement) => void;
 	onEscape?: () => void;
-	tshow: IMessage['tshow'];
-	subscription: ISubscription & IRoom;
+	onNavigateToPreviousMessage?: () => void;
+	onNavigateToNextMessage?: () => void;
+	tshow?: IMessage['tshow'];
+	subscription?: ISubscription;
 	showFormattingTips: boolean;
+	isEmbedded?: boolean;
 	chatMessagesInstance: ChatMessages;
 }> & {
 	state: ReactiveDict<{
@@ -175,7 +180,7 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const { rid, tmid, onInputChanged, onResize } = Template.currentData();
+		const { rid, tmid, onInputChanged, onResize } = Template.currentData() as MessageBoxTemplateInstance['data'];
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message') as HTMLTextAreaElement;
@@ -207,7 +212,7 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			}
 
 			const shadow = this.find('.js-input-message-shadow');
-			this.autogrow = setupAutogrow(input, shadow, onResize);
+			this.autogrow = onResize ? setupAutogrow(input, shadow, onResize) : null;
 		});
 	});
 });
@@ -225,7 +230,7 @@ Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
 		const instance = Template.instance() as MessageBoxTemplateInstance;
-		const { rid } = Template.currentData();
+		const { rid } = Template.currentData() as MessageBoxTemplateInstance['data'];
 		if (!rid) {
 			return false;
 		}
@@ -233,7 +238,7 @@ Template.messageBox.helpers({
 		return isAnonymous || instance.state.get('mustJoinWithCode');
 	},
 	isWritable() {
-		const { rid, subscription } = Template.currentData();
+		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
 		if (!rid) {
 			return true;
 		}
@@ -443,7 +448,7 @@ Template.messageBox.events({
 				event.stopPropagation();
 
 				if (input.selectionEnd === 0) {
-					chatMessagesInstance.toPreviousMessage();
+					this.onNavigateToPreviousMessage?.();
 				}
 
 				if (event.altKey) {
@@ -462,7 +467,7 @@ Template.messageBox.events({
 				event.stopPropagation();
 
 				if (input.selectionEnd === input.value.length) {
-					chatMessagesInstance.toNextMessage();
+					this.onNavigateToNextMessage?.();
 				}
 
 				if (event.altKey) {

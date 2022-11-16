@@ -204,16 +204,124 @@ export class ChatMessages {
 
 	public slashCommandProcessor: IMessageProcessor | undefined;
 
-	private editing: {
+	private messageEditingState: {
 		element?: HTMLElement;
 		id?: string;
 		savedValue?: string;
 		savedCursorPosition?: number;
-	} = {};
+		drafts: Record<IMessage['_id'], string | undefined>;
+	} = {
+		drafts: {},
+	};
 
-	private editingDrafts: Record<IMessage['_id'], string | undefined> = {};
+	public messageEditing = {
+		toPreviousMessage: (wrapper: HTMLElement | undefined) => {
+			if (!this.messageEditingState.element) {
+				const mid = (Array.from(wrapper?.querySelectorAll('[data-own="true"]') ?? []).pop() as HTMLElement | undefined)?.dataset.id;
+				if (mid) this.messageEditing.editMessage(mid);
+				return;
+			}
 
-	public wrapper: HTMLElement | undefined;
+			for (
+				let previous = (this.messageEditingState.element.previousElementSibling ?? undefined) as HTMLElement | undefined;
+				previous;
+				previous = previous.previousElementSibling as HTMLElement | undefined
+			) {
+				if (previous.matches('[data-own="true"]') && previous.dataset.id) {
+					this.messageEditing.editMessage(previous.dataset.id);
+					return;
+				}
+			}
+
+			this.clearEditing();
+		},
+		toNextMessage: () => {
+			if (!this.messageEditingState.element) {
+				this.clearEditing();
+				return;
+			}
+
+			let next: HTMLElement | undefined;
+			for (
+				next = (this.messageEditingState.element.nextElementSibling ?? undefined) as HTMLElement | undefined;
+				next;
+				next = next.nextElementSibling as HTMLElement | undefined
+			) {
+				if (next.matches('[data-own="true"]') && next.dataset.id) {
+					this.messageEditing.editMessage(next.dataset.id, { cursorAtStart: true });
+					return;
+				}
+			}
+
+			this.clearEditing();
+		},
+		editMessage: (mid: IMessage['_id'], { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
+			const { tmid } = this.params;
+			const element = document.getElementById(tmid ? `thread-${mid}` : mid);
+			if (!element) {
+				throw new Error('Message element not found');
+			}
+
+			const message = this.collection.findOne(mid);
+			if (!message) {
+				throw new Error('Message not found');
+			}
+
+			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+			const editAllowed = settings.get('Message_AllowEditing');
+			const editOwn = message?.u && message.u._id === Meteor.userId();
+
+			if (!hasPermission && (!editAllowed || !editOwn)) {
+				return;
+			}
+
+			if (MessageTypes.isSystemMessage(message)) {
+				return;
+			}
+
+			const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
+			if (blockEditInMinutes && blockEditInMinutes !== 0) {
+				let msgTs;
+				if (message.ts) {
+					msgTs = moment(message.ts);
+				}
+				if (msgTs) {
+					const currentTsDiff = moment().diff(msgTs, 'minutes');
+
+					if (currentTsDiff > blockEditInMinutes) {
+						return;
+					}
+				}
+			}
+
+			const draft = this.messageEditingState.drafts[message._id];
+			const msg = draft || message.msg;
+
+			this.clearEditing();
+
+			const { input } = this;
+
+			if (!input) {
+				return;
+			}
+
+			this.messageEditingState.element = element;
+			this.messageEditingState.id = message._id;
+			input.parentElement?.classList.add('editing');
+			element.classList.add('editing');
+			setHighlightMessage(message._id);
+
+			if (message.attachments?.[0].description) {
+				this.setDraftAndUpdateInput(message.attachments[0].description);
+			} else if (msg) {
+				this.setDraftAndUpdateInput(msg);
+			}
+
+			const cursorPosition = cursorAtStart ? 0 : input.value.length;
+			input.focus();
+			input.setSelectionRange(cursorPosition, cursorPosition);
+		},
+	};
 
 	public input: HTMLTextAreaElement | undefined;
 
@@ -240,10 +348,6 @@ export class ChatMessages {
 		$(this.input).trigger('change').trigger('input');
 	}
 
-	public initializeWrapper(wrapper: HTMLElement) {
-		this.wrapper = wrapper;
-	}
-
 	public initializeInput(input: HTMLTextAreaElement) {
 		this.input = input;
 		this.setDraftAndUpdateInput(this.composerState.get());
@@ -255,12 +359,11 @@ export class ChatMessages {
 			return;
 		}
 
-		const { id } = this.editing;
-		if (!id) {
+		if (!this.messageEditingState.id) {
 			return;
 		}
 
-		const message = this.collection.findOne(id);
+		const message = this.collection.findOne(this.messageEditingState.id);
 		if (!message) {
 			throw new Error('Message not found');
 		}
@@ -271,17 +374,16 @@ export class ChatMessages {
 			return;
 		}
 
-		this.editingDrafts[id] ||= draft;
+		this.messageEditingState.drafts[this.messageEditingState.id] ||= draft;
 	}
 
 	private clearCurrentDraft() {
-		const { id } = this.editing;
-		if (!id) {
+		if (!this.messageEditingState.id) {
 			return;
 		}
 
-		const hasValue = this.editingDrafts[id];
-		delete this.editingDrafts[id];
+		const hasValue = this.messageEditingState.drafts[this.messageEditingState.id];
+		delete this.messageEditingState.drafts[this.messageEditingState.id];
 		return !!hasValue;
 	}
 
@@ -301,115 +403,6 @@ export class ChatMessages {
 		return oldValue !== message.msg;
 	}
 
-	public toPreviousMessage() {
-		if (!this.editing.element) {
-			const mid = (Array.from(this.wrapper?.querySelectorAll('[data-own="true"]') ?? []).pop() as HTMLElement | undefined)?.dataset.id;
-			if (mid) this.editMessage(mid);
-			return;
-		}
-
-		for (
-			let previous = (this.editing.element.previousElementSibling ?? undefined) as HTMLElement | undefined;
-			previous;
-			previous = previous.previousElementSibling as HTMLElement | undefined
-		) {
-			if (previous.matches('[data-own="true"]') && previous.dataset.id) {
-				this.editMessage(previous.dataset.id);
-				return;
-			}
-		}
-
-		this.clearEditing();
-	}
-
-	public toNextMessage() {
-		if (!this.editing.element) {
-			this.clearEditing();
-			return;
-		}
-
-		let next: HTMLElement | undefined;
-		for (
-			next = (this.editing.element.nextElementSibling ?? undefined) as HTMLElement | undefined;
-			next;
-			next = next.nextElementSibling as HTMLElement | undefined
-		) {
-			if (next.matches('[data-own="true"]') && next.dataset.id) {
-				this.editMessage(next.dataset.id, { cursorAtStart: true });
-				return;
-			}
-		}
-
-		this.clearEditing();
-	}
-
-	public editMessage(mid: IMessage['_id'], { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) {
-		const { tmid } = this.params;
-		const element = document.getElementById(tmid ? `thread-${mid}` : mid);
-		if (!element) {
-			throw new Error('Message element not found');
-		}
-
-		const message = this.collection.findOne(mid);
-		if (!message) {
-			throw new Error('Message not found');
-		}
-
-		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = message?.u && message.u._id === Meteor.userId();
-
-		if (!hasPermission && (!editAllowed || !editOwn)) {
-			return;
-		}
-
-		if (MessageTypes.isSystemMessage(message)) {
-			return;
-		}
-
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		if (blockEditInMinutes && blockEditInMinutes !== 0) {
-			let msgTs;
-			if (message.ts) {
-				msgTs = moment(message.ts);
-			}
-			if (msgTs) {
-				const currentTsDiff = moment().diff(msgTs, 'minutes');
-
-				if (currentTsDiff > blockEditInMinutes) {
-					return;
-				}
-			}
-		}
-
-		const draft = this.editingDrafts[message._id];
-		const msg = draft || message.msg;
-
-		this.clearEditing();
-
-		const { input } = this;
-
-		if (!input) {
-			return;
-		}
-
-		this.editing.element = element;
-		this.editing.id = message._id;
-		input.parentElement?.classList.add('editing');
-		element.classList.add('editing');
-		setHighlightMessage(message._id);
-
-		if (message.attachments?.[0].description) {
-			this.setDraftAndUpdateInput(message.attachments[0].description);
-		} else if (msg) {
-			this.setDraftAndUpdateInput(msg);
-		}
-
-		const cursorPosition = cursorAtStart ? 0 : input.value.length;
-		input.focus();
-		input.setSelectionRange(cursorPosition, cursorPosition);
-	}
-
 	private clearEditing() {
 		const { input } = this;
 
@@ -417,21 +410,21 @@ export class ChatMessages {
 			return;
 		}
 
-		if (!this.editing.element) {
-			this.editing.savedValue = this.input?.value;
-			this.editing.savedCursorPosition = this.input?.selectionEnd;
+		if (!this.messageEditingState.element) {
+			this.messageEditingState.savedValue = this.input?.value;
+			this.messageEditingState.savedCursorPosition = this.input?.selectionEnd;
 			return;
 		}
 
 		this.recordInputAsDraft();
 		input.parentElement?.classList.remove('editing');
-		this.editing.element.classList.remove('editing');
-		delete this.editing.id;
-		delete this.editing.element;
+		this.messageEditingState.element.classList.remove('editing');
+		delete this.messageEditingState.id;
+		delete this.messageEditingState.element;
 		clearHighlightMessage();
 
-		this.setDraftAndUpdateInput(this.editing.savedValue || '');
-		const cursorPosition = this.editing.savedCursorPosition ? this.editing.savedCursorPosition : input.value.length;
+		this.setDraftAndUpdateInput(this.messageEditingState.savedValue || '');
+		const cursorPosition = this.messageEditingState.savedCursorPosition ? this.messageEditingState.savedCursorPosition : input.value.length;
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
@@ -467,7 +460,7 @@ export class ChatMessages {
 		}
 
 		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
-		const originalMessage = this.collection.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
+		const originalMessage = this.collection.findOne({ _id: this.messageEditingState.id }, { fields: { tmid: 1 }, reactive: false });
 		if (originalMessage && tmid && !originalMessage.tmid) {
 			tmid = undefined;
 			tshow = undefined;
@@ -495,8 +488,8 @@ export class ChatMessages {
 			return;
 		}
 
-		if (this.editing.id) {
-			const message = this.collection.findOne(this.editing.id);
+		if (this.messageEditingState.id) {
+			const message = this.collection.findOne(this.messageEditingState.id);
 			if (!message) {
 				throw new Error('Message not found');
 			}
@@ -504,11 +497,11 @@ export class ChatMessages {
 			try {
 				if (message.attachments && message.attachments?.length > 0) {
 					// @ts-ignore
-					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
+					await this.processMessageEditing({ _id: this.messageEditingState.id, rid, msg: '' });
 					return;
 				}
 
-				this.resetToDraft(this.editing.id);
+				this.resetToDraft(this.messageEditingState.id);
 				await this.requestMessageDeletion(message);
 				return;
 			} catch (error) {
@@ -528,7 +521,7 @@ export class ChatMessages {
 			return;
 		}
 
-		if (this.editing.id && (await this.processMessageEditing({ ...message, _id: this.editing.id }))) {
+		if (this.messageEditingState.id && (await this.processMessageEditing({ ...message, _id: this.messageEditingState.id }))) {
 			return;
 		}
 
@@ -565,7 +558,11 @@ export class ChatMessages {
 			return false;
 		}
 
-		if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
+		if (
+			!settings.get('FileUpload_Enabled') ||
+			!settings.get('Message_AllowConvertLongMessagesToAttachment') ||
+			this.messageEditingState.id
+		) {
 			throw new Error(t('Message_too_long'));
 		}
 
@@ -636,7 +633,7 @@ export class ChatMessages {
 
 		await new Promise<void>((resolve) => {
 			const onConfirm = () => {
-				if (this.editing.id === message._id) {
+				if (this.messageEditingState.id === message._id) {
 					this.clearEditing();
 				}
 
@@ -651,7 +648,7 @@ export class ChatMessages {
 
 			const onCloseModal = () => {
 				imperativeModal.close();
-				if (this.editing.id === message._id) {
+				if (this.messageEditingState.id === message._id) {
 					this.clearEditing();
 				}
 				this.input?.focus();
@@ -690,11 +687,11 @@ export class ChatMessages {
 	}
 
 	public handleEscapeKeyPress(event: JQuery.KeyDownEvent<HTMLTextAreaElement>) {
-		if (this.editing.id) {
+		if (this.messageEditingState.id) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			const reset = this.resetToDraft(this.editing.id);
+			const reset = this.resetToDraft(this.messageEditingState.id);
 
 			if (!reset) {
 				this.clearCurrentDraft();

@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IEditedMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
 
 import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -25,9 +25,10 @@ import type { MessageBoxTemplateInstance } from '../../../ui-message/client/mess
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
-	subscription: IRoom & ISubscription;
+	subscription: ISubscription;
 }> & {
 	firstNode: HTMLElement;
+	wrapper?: HTMLElement;
 	Threads: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
@@ -126,11 +127,13 @@ Template.thread.helpers({
 				if (alsoSendPreferenceState === 'default') {
 					instance.state.set('sendToChannel', false);
 				}
-				return instance.chatMessages?.send(params);
+				return instance.chatMessages.send(params);
 			},
 			onEscape: () => {
 				instance.closeThread();
 			},
+			onNavigateToPreviousMessage: () => instance.chatMessages.messageEditing.toPreviousMessage(instance.wrapper),
+			onNavigateToNextMessage: () => instance.chatMessages.messageEditing.toNextMessage(),
 		};
 	},
 	hideUsername() {
@@ -213,16 +216,17 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	}
 
 	this.atBottom = true;
+	this.wrapper = this.find('.js-scroll-thread');
 
-	const wrapper = this.find('.js-scroll-thread');
 	const input = this.find('.js-input-message') as HTMLTextAreaElement;
 
-	this.chatMessages.initializeWrapper(wrapper);
 	this.chatMessages.initializeInput(input);
 
 	this.sendToBottom = _.throttle(() => {
 		this.atBottom = true;
-		wrapper.scrollTop = wrapper.scrollHeight;
+		if (this.wrapper) {
+			this.wrapper.scrollTop = this.wrapper.scrollHeight;
+		}
 	}, 300);
 
 	this.sendToBottomIfNecessary = () => {

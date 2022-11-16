@@ -152,7 +152,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message)?.editMessage(message._id);
+			getChatMessagesFrom(message)?.messageEditing.editMessage(message._id);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {

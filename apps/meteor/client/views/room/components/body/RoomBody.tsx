@@ -71,7 +71,7 @@ const RoomBody = (): ReactElement => {
 	const atBottomRef = useRef(!useQueryStringParameter('msg'));
 	const lastScrollTopRef = useRef(0);
 
-	const chatMessagesInstance = useChatMessages(room._id, wrapperRef);
+	const chatMessagesInstance = useChatMessages(room._id);
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
@@ -522,6 +522,14 @@ const RoomBody = (): ReactElement => {
 		sendToBottomIfNecessary();
 	}, [sendToBottomIfNecessary]);
 
+	const handleNavigateToPreviousMessage = useCallback((): void => {
+		chatMessagesInstance.messageEditing.toPreviousMessage(wrapperRef.current ?? undefined);
+	}, [chatMessagesInstance.messageEditing]);
+
+	const handleNavigateToNextMessage = useCallback((): void => {
+		chatMessagesInstance.messageEditing.toNextMessage();
+	}, [chatMessagesInstance.messageEditing]);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -614,6 +622,8 @@ const RoomBody = (): ReactElement => {
 								subscription={subscription}
 								chatMessagesInstance={chatMessagesInstance}
 								onResize={handleComposerResize}
+								onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
+								onNavigateToNextMessage={handleNavigateToNextMessage}
 							/>
 						</div>
 					</div>
