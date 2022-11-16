@@ -34,7 +34,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	});
 
 	return (
-		<Modal>
+		<Modal data-qa='create-direct-modal'>
 			<Modal.Header>
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
