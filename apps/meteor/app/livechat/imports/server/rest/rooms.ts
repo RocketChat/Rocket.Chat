@@ -86,7 +86,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid } = this.urlParams;
 			const { priorityId } = this.bodyParams;
-			const result = LivechatRooms.setPriorityByRoomId(rid, priorityId);
+			const result = await LivechatRooms.setPriorityByRoomId(rid, priorityId);
 			if (!result) {
 				return API.v1.failure({ error: 'Error setting priority' });
 			}
@@ -94,7 +94,7 @@ API.v1.addRoute(
 		},
 		async delete() {
 			const { rid } = this.urlParams;
-			const result = LivechatRooms.unsetPriorityByRoomId(rid);
+			const result = await LivechatRooms.unsetPriorityByRoomId(rid);
 			if (!result) {
 				return API.v1.failure({ error: 'Error unsetting priority' });
 			}
