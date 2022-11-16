@@ -53,6 +53,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 							const unread = Boolean(subscription?.tunread?.includes(message._id));
 							const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
 							const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
+							const isIgnored = Boolean(subscription?.ignored?.includes(message.u._id));
 
 							return (
 								<Fragment key={message._id}>
@@ -77,6 +78,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 											unread={unread}
 											mention={mention}
 											all={all}
+											isIgnored={isIgnored}
 										/>
 									)}
 
