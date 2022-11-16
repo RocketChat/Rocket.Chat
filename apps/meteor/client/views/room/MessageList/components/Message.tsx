@@ -25,7 +25,7 @@ const Message: FC<{
 	isIgnored: boolean;
 }> = ({ message, sequential, all, mention, unread, isIgnored, ...props }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
-	const [isMessageIgnored, toggleMessageIgnored] = useToggle(isIgnored);
+	const [isMessageIgnored, toggleMessageIgnored] = useToggle((message as { ignored?: boolean }).ignored ?? isIgnored);
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
