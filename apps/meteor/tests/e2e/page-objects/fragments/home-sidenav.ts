@@ -17,7 +17,11 @@ export class HomeSidenav {
 		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
 
-	get btnCreateChannel(): Locator {
+	get inputDirectUsername(): Locator {
+		return this.page.locator('#modal-root [data-qa="create-direct-modal"] [data-qa-type="user-auto-complete-input"]');
+	}
+
+	get btnCreate(): Locator {
 		return this.page.locator('//*[@id="modal-root"]//button[contains(text(), "Create")]');
 	}
 
@@ -56,6 +60,6 @@ export class HomeSidenav {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();
 		await this.inputChannelName.type(name);
-		await this.btnCreateChannel.click();
+		await this.btnCreate.click();
 	}
 }
