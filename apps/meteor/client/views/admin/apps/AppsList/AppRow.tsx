@@ -15,8 +15,7 @@ type AppRowProps = App & { isMarketplace: boolean };
 
 // TODO: org props
 const AppRow = (props: AppRowProps): ReactElement => {
-	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, bundledIn, version } =
-		props;
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -93,7 +92,7 @@ const AppRow = (props: AppRowProps): ReactElement => {
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
 				{canUpdate && <Badge small variant='primary' />}
-				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
+				<AppStatus app={props} isAppDetailsPage={false} installed={installed} mis='x4' />
 				<Box minWidth='x32'>
 					<AppMenu app={props} mis='x4' />
 				</Box>
