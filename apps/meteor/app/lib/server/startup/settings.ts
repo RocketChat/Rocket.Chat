@@ -431,15 +431,15 @@ settingsRegistry.addGroup('Accounts', function () {
 			values: [
 				{
 					key: 'default',
-					i18nLabel: 'Default',
+					i18nLabel: 'Selected_first_reply_unselected_following_replies',
 				},
 				{
 					key: 'always',
-					i18nLabel: 'Always',
+					i18nLabel: 'Selected_by_default',
 				},
 				{
 					key: 'never',
-					i18nLabel: 'Never',
+					i18nLabel: 'Unselected_by_default',
 				},
 			],
 			public: true,
