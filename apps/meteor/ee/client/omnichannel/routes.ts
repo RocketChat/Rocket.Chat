@@ -12,6 +12,11 @@ registerOmnichannelRoute('/sla-policies/:context?/:id?', {
 	component: lazy(() => import('./slaPolicies/SlasRoute')),
 });
 
+registerOmnichannelRoute('/priorities/:context?/:id?', {
+	name: 'omnichannel-priorities',
+	component: lazy(() => import('./priorities/PrioritiesRoute')),
+});
+
 registerOmnichannelRoute('/canned-responses/:context?/:id?', {
 	name: 'omnichannel-canned-responses',
 	component: lazy(() => import('./cannedResponses/CannedResponsesRoute')),
