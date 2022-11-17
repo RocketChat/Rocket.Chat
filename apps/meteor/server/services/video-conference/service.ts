@@ -172,7 +172,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 						emoji: false,
 					},
 				],
-			},
+			} as IBlock,
 		];
 	}
 
@@ -727,8 +727,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	): Promise<string> {
 		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
-		console.log('join event');
-		await this.runOnUserJoinEvent(call, user);
+		await this.runOnUserJoinEvent(call, user as IVideoConferenceUser);
 
 		return this.getUrl(call, user, options);
 	}
