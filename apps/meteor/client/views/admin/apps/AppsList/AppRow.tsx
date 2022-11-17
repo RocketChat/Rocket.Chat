@@ -15,8 +15,7 @@ type AppRowProps = App & { isMarketplace: boolean };
 
 // TODO: org props
 const AppRow: FC<AppRowProps> = (props) => {
-	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, isMarketplace, bundledIn } =
-		props;
+	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isMarketplace, bundledIn } = props;
 
 	const breakpoints = useBreakpoints();
 	const isDescriptionVisible = breakpoints.includes('xl');
