@@ -75,23 +75,28 @@ export class DatabaseWatcher extends EventEmitter {
 	}
 
 	private async watchOplog(): Promise<void> {
+		if (!process.env.MONGO_OPLOG_URL) {
+			throw Error('No $MONGO_OPLOG_URL provided');
+		}
+
 		const isMasterDoc = await this.db.admin().command({ ismaster: 1 });
 		if (!isMasterDoc || !isMasterDoc.setName) {
-			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
+			throw Error("$MONGO_URL should be a replica set's URL");
 		}
-
-		if (!process.env.MONGO_OPLOG_URL) {
-			throw Error('no-mongo-oplog-url');
-		}
-
-		this.logger.startup('Using oplog');
 
 		const dbName = this.db.databaseName;
 
 		const client = new MongoClient(process.env.MONGO_OPLOG_URL, {
 			maxPoolSize: 1,
 		});
+
+		if (client.db().databaseName !== 'local') {
+			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
+		}
+
 		await client.connect();
+
+		this.logger.startup('Using oplog');
 
 		const db = client.db();
 
