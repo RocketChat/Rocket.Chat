@@ -26,8 +26,8 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 				</Box>
 				{app?.shortDescription && <Box mbe='x16'>{app.shortDescription}</Box>}
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
-					<AppStatus app={app} installed={installed} isAppDetailsPage={true} />
-					{(installed || isSubscribed) && <AppMenu app={app} mis='x8' />}
+					<AppStatus app={app} installed={installed} isAppDetailsPage />
+					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage mis='x8' />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
 					<Box fontScale='p2m' mie='x16'>

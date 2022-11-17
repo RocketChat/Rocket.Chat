@@ -19,7 +19,7 @@ import IframeModal from './IframeModal';
 import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
 
-function AppMenu({ app, ...props }) {
+function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
@@ -247,17 +247,18 @@ function AppMenu({ app, ...props }) {
 						action: handleViewLogs,
 					},
 				}),
-			...(canUpdate && {
-				update: {
-					label: (
-						<Box>
-							<Icon name='refresh' size='x16' marginInlineEnd='x4' />
-							{t('Update')}
-						</Box>
-					),
-					action: handleUpdate,
-				},
-			}),
+			...(canUpdate &&
+				!isAppDetailsPage && {
+					update: {
+						label: (
+							<Box>
+								<Icon name='refresh' size='x16' marginInlineEnd='x4' />
+								{t('Update')}
+							</Box>
+						),
+						action: handleUpdate,
+					},
+				}),
 			...(app.installed &&
 				isAppEnabled && {
 					disable: {
@@ -310,12 +311,13 @@ function AppMenu({ app, ...props }) {
 		isSubscribed,
 		t,
 		handleSubscription,
-		app.installed,
+		app?.installed,
 		button?.label,
 		handleAcquireApp,
 		context,
 		handleViewLogs,
 		canUpdate,
+		isAppDetailsPage,
 		handleUpdate,
 		isAppEnabled,
 		handleDisable,
