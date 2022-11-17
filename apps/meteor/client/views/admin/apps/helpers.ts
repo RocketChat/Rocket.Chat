@@ -16,6 +16,25 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
+type appButtonResponseProps = {
+	action: 'update' | 'install' | 'purchase';
+	icon?: 'reload';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
+};
+
+type appStatusSpanResponseProps = {
+	type?: 'failed' | 'warning';
+	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
+};
+
+type PlanType = 'Subscription' | 'Paid' | 'Free';
+
+type FormattedPriceAndPlan = {
+	type: PlanType;
+	price: string;
+};
+
 export const apiCurlGetter =
 	(absoluteUrl: (path: string) => string) =>
 	(method: string, api: IApiEndpointMetadata): string[] => {
@@ -67,18 +86,17 @@ const shouldHandleErrorAsWarning = (message: string): boolean => {
 	return warnings.includes(message);
 };
 
-export const handleAPIError = (error: {
-	xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } };
-	message: string;
-}): void => {
-	const message = error.xhr?.responseJSON?.error ?? error.message;
+export const handleAPIError = (error: unknown): void => {
+	if (error instanceof Error) {
+		const { message } = error;
 
-	if (shouldHandleErrorAsWarning(message)) {
-		dispatchToastMessage({ type: 'warning', message });
-		return;
+		if (shouldHandleErrorAsWarning(message)) {
+			dispatchToastMessage({ type: 'warning', message });
+			return;
+		}
+
+		dispatchToastMessage({ type: 'error', message });
 	}
-
-	dispatchToastMessage({ type: 'error', message });
 };
 
 export const warnStatusChange = (appName: string, status: AppStatus): void => {
@@ -88,12 +106,6 @@ export const warnStatusChange = (appName: string, status: AppStatus): void => {
 	}
 
 	dispatchToastMessage({ type: 'info', message: (t(`App_status_${status}`), appName) });
-};
-
-type appButtonPropsResponse = {
-	action: 'update' | 'install' | 'purchase';
-	icon?: 'reload';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
 
 export const appButtonProps = ({
@@ -106,7 +118,7 @@ export const appButtonProps = ({
 	subscriptionInfo,
 	pricingPlans,
 	isEnterpriseOnly,
-}: App): appButtonPropsResponse | undefined => {
+}: App): appButtonResponseProps | undefined => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {
@@ -167,13 +179,7 @@ export const appButtonProps = ({
 	};
 };
 
-type appStatusSpanPropsResponse = {
-	type?: 'failed' | 'warning';
-	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
-};
-
-export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanPropsResponse | undefined => {
+export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
 		return;
 	}
@@ -229,4 +235,21 @@ export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: Ap
 		price: formatPrice(price),
 		trialDays,
 	});
+};
+
+export const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: AppPricingPlan[], price: number): FormattedPriceAndPlan => {
+	if (purchaseType === 'subscription') {
+		const type = 'Subscription';
+		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {
+			return { type, price: '-' };
+		}
+
+		return { type, price: formatPricingPlan(pricingPlans[0]) };
+	}
+
+	if (price > 0) {
+		return { type: 'Paid', price: formatPrice(price) };
+	}
+
+	return { type: 'Free', price: '-' };
 };
