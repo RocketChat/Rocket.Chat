@@ -56,8 +56,6 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 		},
 	);
 
-	// const { value: data, phase: state, reload } = useEndpointData('/v1/integrations.history', query);
-
 	const handleClearHistory = async (): Promise<void> => {
 		try {
 			await clearHistory();
@@ -85,7 +83,6 @@ function OutgoingWebhookHistoryPage(props: ComponentProps<typeof Page>): ReactEl
 			diff: Partial<HistoryData['history'][number]>;
 			data: HistoryData['history'][number];
 		}) => {
-			console.log(data);
 			if (type === 'inserted') {
 				setTotal((total) => total + 1);
 				queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
