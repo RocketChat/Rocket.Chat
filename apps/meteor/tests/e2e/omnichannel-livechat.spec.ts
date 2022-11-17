@@ -40,11 +40,6 @@ test.describe.only('Livechat', () => {
 			await poAuxContext.page.close();
 		});
 
-		// test('expect send message to livechat', async () => {
-		// 	await poLiveChat.btnOpenLiveChat('R').click();
-		// 	await poLiveChat.sendMessage(newUser, false);
-		// });
-
 		test('Send message to online agent', async () => {
 			await test.step('Expect message to be sent by livechat', async () => {
 				await poLiveChat.btnOpenLiveChat('R').click();
