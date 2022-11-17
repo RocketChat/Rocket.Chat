@@ -1,4 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -97,5 +98,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 
-	findOpen(): any;
+	findOpen(): FindCursor<IOmnichannelRoom>;
+
+	setAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
+
+	unsetAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
+
+	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
 }
