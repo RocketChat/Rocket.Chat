@@ -8,5 +8,4 @@ export type AppInfo = App & {
 	settings?: ISettings;
 	apis: Array<IApiEndpointMetadata>;
 	screenshots: Array<AppScreenshot>;
-	versionIncompatible: boolean;
 };
