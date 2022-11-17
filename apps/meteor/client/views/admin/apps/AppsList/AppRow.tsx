@@ -94,7 +94,7 @@ const AppRow = (props: AppRowProps): ReactElement => {
 				{canUpdate && <Badge small variant='primary' />}
 				<AppStatus app={props} isAppDetailsPage={false} installed={installed} mis='x4' />
 				<Box minWidth='x32'>
-					<AppMenu app={props} mis='x4' />
+					<AppMenu app={props} isAppDetailsPage={false} mis='x4' />
 				</Box>
 			</Box>
 		</Box>
