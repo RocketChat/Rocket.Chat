@@ -1,5 +1,13 @@
 import { Box, Icon, Menu, Throbber } from '@rocket.chat/fuselage';
-import { useSetModal, useMethod, useEndpoint, useTranslation, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useMethod,
+	useEndpoint,
+	useTranslation,
+	useRoute,
+	useRouteParameter,
+	useCurrentRoute,
+} from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -35,7 +43,13 @@ function AppMenu({ app, ...props }) {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
-	const appsRoute = useRoute('admin-apps');
+
+	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
+	const router = useRoute(currentRouteName);
+
 	const context = useRouteParameter('context');
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
@@ -97,8 +111,8 @@ function AppMenu({ app, ...props }) {
 	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
-		appsRoute.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
-	}, [app.id, app.version, appsRoute]);
+		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
+	}, [app.id, app.version, context, router]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -261,6 +275,11 @@ function AppMenu({ app, ...props }) {
 						action: handleEnable,
 					},
 				}),
+			...(app.installed && {
+				divider: {
+					type: 'divider',
+				},
+			}),
 			...(app.installed && {
 				uninstall: {
 					label: (
