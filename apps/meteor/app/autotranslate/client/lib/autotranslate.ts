@@ -14,7 +14,7 @@ import { Subscriptions, Messages } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { call } from '../../../../client/lib/utils/call';
 
-let userLanguage = 'en';
+let userLanguage = '';
 let username = '';
 
 Meteor.startup(() => {
@@ -23,7 +23,7 @@ Meteor.startup(() => {
 		if (!user) {
 			return;
 		}
-		userLanguage = user.language || 'en';
+		userLanguage = user.language || '';
 		username = user.username || '';
 	});
 });
