@@ -44,7 +44,7 @@ const DefaultHomePage = (): ReactElement => {
 							<CreateChannelsCard />
 						</HomepageGridItem>
 					)}
-					<HomepageGridItem>
+<!-- 					<HomepageGridItem>
 						<JoinRoomsCard />
 					</HomepageGridItem>
 					<HomepageGridItem>
@@ -55,7 +55,7 @@ const DefaultHomePage = (): ReactElement => {
 					</HomepageGridItem>
 					<HomepageGridItem>
 						<DocumentationCard />
-					</HomepageGridItem>
+					</HomepageGridItem> -->
 				</Grid>
 				{displayCustomBody && (
 					<Box mb='x16'>
