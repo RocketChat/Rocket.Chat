@@ -2795,5 +2795,14 @@
   "Your_password_is_wrong": "Falsches Passwort",
   "Your_push_was_sent_to_s_devices": "Die Push-Nachricht wurde an %s Geräte gesendet.",
   "Your_server_link": "Ihre Serververbindung",
-  "Your_workspace_is_ready": "Ihr Arbeitsbereich ist einsatzbereit 🎉"
+  "Your_workspace_is_ready": "Ihr Arbeitsbereich ist einsatzbereit 🎉",
+  "registration.page.login.errors.wrongCredentials": "Entweder konnte der Benutzer nicht gefunden werden oder Sie haben ein falsches Passwort angegeben.",
+  "registration.page.registration.waitActivationWarning": "Bevor Sie sich anmelden können, muss das Konto von einem Administrator manuell aktiviert werden.",
+  "registration.page.resetPassword.sent": "Wenn diese E-Mail registriert ist, senden wir Ihnen Anweisungen zum Zurücksetzen Ihres Passworts. Wenn Sie in Kürze keine E-Mail erhalten, kommen Sie bitte zurück und versuchen Sie es erneut.",
+  "registration.component.login": "Anmelden",
+  "registration.component.resetPassword": "Passwort zurücksetzen",
+  "registration.component.form.email": "E-Mail",
+  "registration.component.form.password": "Passwort",
+  "registration.component.form.divider": "oder",
+  "registration.component.form.submit": "Abschicken"
 }

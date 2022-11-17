@@ -2811,5 +2811,13 @@
   "Your_password_is_wrong": "你的密码错了！",
   "Your_push_was_sent_to_s_devices": "您的推送已发送到％s设备",
   "Your_server_link": "您的服务器链接",
-  "Your_workspace_is_ready": "您的工作区已准备好使用🎉"
+  "Your_workspace_is_ready": "您的工作区已准备好使用🎉",
+  "registration.page.registration.waitActivationWarning": "您的帐户必须由管理员手工启动后才能登录。",
+  "registration.page.resetPassword.sent": "如果此电子邮件已注册，我们将发送有关如何重置密码的说明。如果您很短时间内没有收到电子邮件，请返回并重试。",
+  "registration.component.login": "登录",
+  "registration.component.resetPassword": "重设密码",
+  "registration.component.form.email": "电子邮件",
+  "registration.component.form.password": "密码",
+  "registration.component.form.divider": "要么",
+  "registration.component.form.submit": "提交"
 }

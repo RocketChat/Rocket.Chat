@@ -26,6 +26,7 @@ const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 				flexShrink={1}
 				height='full'
 				overflow='hidden'
+				aria-labelledby='PageHeader-title'
 				{...props}
 				backgroundColor={`var(--rcx-color-surface-${background}, ${surfaceMap[background]})`}
 			/>
