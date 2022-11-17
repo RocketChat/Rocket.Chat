@@ -2792,5 +2792,13 @@
   "Your_password_is_wrong": "Fjalëkalimi juaj është e gabuar!",
   "Your_push_was_sent_to_s_devices": "shtytje juaj u dërgua në pajisjet %s",
   "Your_server_link": "Lidhjet e serverit tuaj",
-  "Your_workspace_is_ready": "Hapësira e punës tënde është e gatshme të përdorë 🎉"
+  "Your_workspace_is_ready": "Hapësira e punës tënde është e gatshme të përdorë 🎉",
+  "registration.page.login.errors.wrongCredentials": "Përdoruesi nuk u gjet ose fjalëkalim është i gabuar",
+  "registration.page.registration.waitActivationWarning": "Para se ju të identifikoheni, llogaria juaj duhet të aktivizohet nga një administrator.",
+  "registration.page.resetPassword.sent": "Nëse kjo e-mail është regjistruar, ne do të dërgojmë udhëzime se si të rivendosni fjalëkalimin tuaj. Nëse nuk merrni një email së shpejti, lutemi të ktheheni dhe provoni përsëri.",
+  "registration.component.login": "Hyrje",
+  "registration.component.resetPassword": "Rivendos fjalëkalimin",
+  "registration.component.form.password": "Fjalëkalim",
+  "registration.component.form.divider": "ose",
+  "registration.component.form.submit": "Paraqit"
 }

@@ -3304,5 +3304,14 @@
   "Your_push_was_sent_to_s_devices": "Anlık bildiriminiz %s aygıta gönderildi",
   "Your_question": "Sorunuz",
   "Your_server_link": "Sunucu bağlantınız",
-  "Your_workspace_is_ready": "Çalışma alanınız kullanılmaya hazır 🎉"
+  "Your_workspace_is_ready": "Çalışma alanınız kullanılmaya hazır 🎉",
+  "registration.page.login.errors.wrongCredentials": "Kullanıcı bulunamadı veya parola yanlış",
+  "registration.page.registration.waitActivationWarning": "Oturum açmadan önce, hesabınızın yönetici tarafından etkinleştirilmesi gerekiyor.",
+  "registration.page.resetPassword.sent": "Bu e-posta kayıtlıysa, şifrenizi nasıl sıfırlayacağınıza ilişkin talimatlar göndeririz. Kısa süre içinde bir e-posta almıyorsanız, lütfen geri dönün ve tekrar deneyin.",
+  "registration.component.login": "Oturum aç",
+  "registration.component.resetPassword": "Şifreyi sıfırla",
+  "registration.component.form.email": "E-posta",
+  "registration.component.form.password": "Şifre",
+  "registration.component.form.divider": "ya da",
+  "registration.component.form.submit": "Gönder"
 }

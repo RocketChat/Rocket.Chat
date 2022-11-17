@@ -2798,5 +2798,16 @@
   "Your_password_is_wrong": "Kata laluan anda adalah salah!",
   "Your_push_was_sent_to_s_devices": "push anda telah dihantar ke peranti %s",
   "Your_server_link": "Pautan pelayan anda",
-  "Your_workspace_is_ready": "Ruang kerja anda sedia untuk menggunakan 🎉"
+  "Your_workspace_is_ready": "Ruang kerja anda sedia untuk menggunakan 🎉",
+  "registration.page.login.errors.wrongCredentials": "Pengguna tidak dijumpai atau kata laluan salah",
+  "registration.page.registration.waitActivationWarning": "Sebelum anda boleh log masuk, akaun anda mesti diaktifkan secara manual oleh pentadbiran.",
+  "registration.page.login.forgot": "Lupa kata laluan anda",
+  "registration.page.resetPassword.sent": "Jika e-mel ini didaftarkan, kami akan menghantar arahan mengenai cara untuk menetapkan semula kata laluan anda. Jika anda tidak menerima e-mel tidak lama lagi, sila kembali dan cuba lagi.",
+  "registration.component.login": "Log masuk",
+  "registration.component.resetPassword": "Menetapkan semula kata laluan",
+  "registration.component.form.emailOrUsername": "E-mel atau nama pengguna",
+  "registration.component.form.email": "e-mel",
+  "registration.component.form.password": "Kata laluan",
+  "registration.component.form.divider": "atau",
+  "registration.component.form.submit": "Hantar"
 }

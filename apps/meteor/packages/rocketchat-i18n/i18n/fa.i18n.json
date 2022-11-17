@@ -3136,5 +3136,17 @@
   "Your_password_is_wrong": "رمز عبور خود را اشتباه است!",
   "Your_push_was_sent_to_s_devices": "فشار خود را به دستگاه %s را ارسال شد",
   "Your_server_link": "لینک سرور شما",
-  "Your_workspace_is_ready": "فضای کاری شما آماده استفاده است"
+  "Your_workspace_is_ready": "فضای کاری شما آماده استفاده است",
+  "registration.page.login.errors.wrongCredentials": "کاربر یافت نشد و یا رمز عبور اشتباه",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "کاربران برنامه مجاز به ورود مستقیم نیستند.",
+  "registration.page.registration.waitActivationWarning": "قبل از اینکه شما می توانید وارد شوید، حساب خود را باید به صورت دستی توسط مدیر فعال می شود.",
+  "registration.page.login.forgot": "فراموشی رمز عبور",
+  "registration.page.resetPassword.sent": "اگر این ایمیل ثبت شده باشد، دستورالعمل هایی در مورد نحوه بازنشانی گذرواژه شما ارسال خواهیم کرد. اگر مدت کوتاهی ایمیل دریافت نکنید، لطفا بیایید و دوباره امتحان کنید.",
+  "registration.component.login": "ورود",
+  "registration.component.resetPassword": "تنظیم مجدد رمز عبور",
+  "registration.component.form.emailOrUsername": "ایمیل یا نام کاربری",
+  "registration.component.form.email": "ایمیل",
+  "registration.component.form.password": "رمز عبور",
+  "registration.component.form.divider": "یا",
+  "registration.component.form.submit": "ارسال"
 }

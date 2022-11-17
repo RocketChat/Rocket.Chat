@@ -4042,5 +4042,16 @@
   "Your_question": "Dit spørgsmål",
   "Your_server_link": "Din server link",
   "Your_temporary_password_is_password": "Din midlertidige adgangskode er <strong>[password]</strong>.",
-  "Your_workspace_is_ready": "Dit arbejdsområde er klar til brug 🎉"
+  "Your_workspace_is_ready": "Dit arbejdsområde er klar til brug 🎉",
+  "registration.page.login.errors.loginBlockedForIp": "Login er blevet midlertidigt blokeret til denne IP",
+  "registration.page.login.errors.loginBlockedForUser": "Login er blevet midlertidigt blokeret for denne bruger",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "App-brugere må ikke logge direkte på.",
+  "registration.page.registration.waitActivationWarning": "Før du kan logge ind, skal din konto manuelt aktiveres af en administrator.",
+  "registration.page.resetPassword.sent": "Hvis denne e-mail er registreret, sender vi instruktioner om hvordan du nulstiller din adgangskode. Hvis du ikke modtager en e-mail inden for kort tid, bedes du venligst vende tilbage og prøve igen.",
+  "registration.component.login": "Login",
+  "registration.component.resetPassword": "Nulstille kodeord",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Adgangskode",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Indsend"
 }
