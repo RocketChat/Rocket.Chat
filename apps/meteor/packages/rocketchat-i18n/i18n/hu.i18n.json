@@ -3837,5 +3837,17 @@
   "Your_server_link": "A szerver linkje",
   "Your_temporary_password_is_password": "Az ideiglenes jelszavad: <strong>[password]</strong>",
   "Your_TOTP_has_been_reset": "A kétfaktoros TOTP-d visszaállításra került.",
-  "Your_workspace_is_ready": "A munkaterület készen áll a 🎉 használatára"
+  "Your_workspace_is_ready": "A munkaterület készen áll a 🎉 használatára",
+  "registration.page.login.errors.wrongCredentials": "Felhasználó nem található vagy hibás jelszó",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Az alkalmazás felhasználóinak nem engedélyezett a közvetlen bejelentkezés.",
+  "registration.page.registration.waitActivationWarning": "Mielőtt bejelentkezés fiókját manuálisan kell aktiválni a rendszergazda.",
+  "registration.page.login.forgot": "Elfelejtetted a jelszavad?",
+  "registration.page.resetPassword.sent": "Ha regisztrálta ezt az e-mailt, utasításokat küldünk a jelszó visszaállításáról. Ha hamarosan nem kap e-mailt, kérjük, térjen vissza és próbálkozzon újra.",
+  "registration.component.login": "Bejelentkezés",
+  "registration.component.resetPassword": "Jelszó visszaállítása",
+  "registration.component.form.emailOrUsername": "E-mail vagy felhasználónév",
+  "registration.component.form.email": "Email",
+  "registration.component.form.password": "Jelszó",
+  "registration.component.form.divider": "vagy",
+  "registration.component.form.submit": "Küldés"
 }
