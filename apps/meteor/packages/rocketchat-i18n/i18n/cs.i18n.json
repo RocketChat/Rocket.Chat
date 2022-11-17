@@ -1640,7 +1640,6 @@
   "files": "soubory",
   "Files": "Soubory",
   "Files_only": "Odstranit pouze připojené soubory, zachovat zprávy",
-  "files_pruned": "soubory pročištěny",
   "FileSize_Bytes": "__fileSize__ Bytů",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",
@@ -4019,5 +4018,17 @@
   "Your_question": "Váš dotaz",
   "Your_server_link": "Odkaz na Váš server",
   "Your_temporary_password_is_password": "Vaše dočasné heslo je <strong>[password]</strong>.",
-  "Your_workspace_is_ready": "Váš prostředí je připraveno k použití 🎉"
+  "Your_workspace_is_ready": "Váš prostředí je připraveno k použití 🎉",
+  "registration.page.login.errors.wrongCredentials": "Uživatel nebyl nalezen nebo zadáno nesprávné heslo",
+  "registration.page.login.errors.loginBlockedForIp": "Pro tuto IP adresu je přihlášení dočasně zakázáno",
+  "registration.page.login.errors.loginBlockedForUser": "Pro tohoto uživatele bylo přihlášení dočasně zakázáno",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Uživatelé aplikace se nemohou přihlásit napřímo.",
+  "registration.page.registration.waitActivationWarning": "Předtím, než se můžete přihlásit, Váš účet musí být ručně aktivován správcem.",
+  "registration.page.resetPassword.sent": "Pokud je e-mail v naší databázi, odešleme na něj instrukce pro reset hesla. Pokud vám e-mail nepřijde během chvilky, prosím vraťte se a zkuste to znova.",
+  "registration.component.login": "Přihlásit se",
+  "registration.component.resetPassword": "Obnovit heslo",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Heslo",
+  "registration.component.form.divider": "nebo",
+  "registration.component.form.submit": "Odeslat"
 }

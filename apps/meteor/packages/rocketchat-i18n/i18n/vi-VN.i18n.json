@@ -1237,7 +1237,6 @@
   "File_uploaded": "File đã được tải lên",
   "files": "các tập tin",
   "Files_only": "Chỉ xóa các tệp được đính kèm, giữ thư",
-  "files_pruned": "tập tin bị cắt xén",
   "FileUpload": "Tải tệp lên",
   "FileUpload_Disabled": "Tải tệp lên bị vô hiệu.",
   "FileUpload_Enabled": "Đã bật",
@@ -2892,5 +2891,14 @@
   "Your_password_is_wrong": "Mật khẩu của bạn sai!",
   "Your_push_was_sent_to_s_devices": "Đã được gửi tới % thiết bị",
   "Your_server_link": "Đường dẫn máy chủ của bạn",
-  "Your_workspace_is_ready": "Workspace của bạn đã sẵn sàng"
+  "Your_workspace_is_ready": "Workspace của bạn đã sẵn sàng",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Người dùng ứng dụng không được phép đăng nhập trực tiếp.",
+  "registration.page.registration.waitActivationWarning": "Trước khi bạn có thể đăng nhập, tài khoản của bạn phải được quản trị viên kích hoạt theo cách thủ công.",
+  "registration.page.resetPassword.sent": "Nếu email này đã được đăng ký, chúng tôi sẽ gửi hướng dẫn về cách đặt lại mật khẩu của bạn. Nếu bạn không nhận được email sớm, vui lòng quay lại và thử lại.",
+  "registration.component.login": "Đăng nhập",
+  "registration.component.resetPassword": "Đặt lại mật khẩu",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Mật khẩu",
+  "registration.component.form.divider": "hoặc là",
+  "registration.component.form.submit": "Gửi đi"
 }

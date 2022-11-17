@@ -80,7 +80,7 @@ function WorkspaceLoginSection({ onRegisterStatusChange, ...props }) {
 
 	return (
 		<Box is='section' {...props}>
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>{t('Cloud_workspace_connected')}</p>
 			</Box>
 
@@ -96,7 +96,7 @@ function WorkspaceLoginSection({ onRegisterStatusChange, ...props }) {
 				)}
 			</ButtonGroup>
 
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>{t('Cloud_workspace_disconnect')}</p>
 			</Box>
 

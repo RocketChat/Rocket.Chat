@@ -1197,7 +1197,6 @@
   "File_uploaded": "Įkeltas failas",
   "files": "failai",
   "Files_only": "Tik pašalinkite prisegtus failus, saugokite pranešimus",
-  "files_pruned": "failai suskaidomi",
   "FileUpload": "Failo ikelimas",
   "FileUpload_Disabled": "Failų įkėlimai išjungti.",
   "FileUpload_Enabled": "Failų įkėlimai įjungti",
@@ -2850,5 +2849,15 @@
   "Your_password_is_wrong": "Jūsų slaptažodis neteisingas!",
   "Your_push_was_sent_to_s_devices": "Jūsų paspaudimas buvo išsiųstas į%s įrenginius",
   "Your_server_link": "Jūsų serverio nuoroda",
-  "Your_workspace_is_ready": "Jūsų darbo vieta yra paruošta naudoti 🎉"
+  "Your_workspace_is_ready": "Jūsų darbo vieta yra paruošta naudoti 🎉",
+  "registration.page.registration.waitActivationWarning": "Prieš prisijungdami, administratoriaus rankiniu būdu turi įjungti savo sąskaitą.",
+  "registration.page.login.forgot": "Pamiršai slaptažodį",
+  "registration.page.resetPassword.sent": "Jei šis el. Laiškas yra užregistruotas, atsiųsime instrukcijas, kaip iš naujo nustatyti slaptažodį. Jei netrukus negausite el. Laiško, grįžkite ir bandykite dar kartą.",
+  "registration.component.login": "Prisijungti",
+  "registration.component.resetPassword": "Atstatyti slaptažodį",
+  "registration.component.form.emailOrUsername": "El. pastas arba vartotojo vardas",
+  "registration.component.form.email": "Paštas",
+  "registration.component.form.password": "Slaptažodis",
+  "registration.component.form.divider": "arba",
+  "registration.component.form.submit": "Pateikti"
 }

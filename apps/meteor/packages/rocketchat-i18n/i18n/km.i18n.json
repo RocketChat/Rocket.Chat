@@ -1385,7 +1385,6 @@
   "File_uploaded": "ឯកសារបានផ្ទុកឡើង",
   "files": "ឯកសារ",
   "Files_only": "យកតែឯកសារភ្ជាប់ប៉ុណ្ណោះ, រក្សាទុកសារ",
-  "files_pruned": "ឯកសារដែលបានកាត់ចេញ",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
   "FileSize_MB": "__fileSize__ MB",
@@ -3152,5 +3151,14 @@
   "Your_password_is_wrong": "ពាក្យសម្ងាត់របស់អ្នកគឺខុស!",
   "Your_push_was_sent_to_s_devices": "ការជំរុញរបស់អ្នកត្រូវបានបញ្ជូនទៅកាន់ឧបករណ៍ %s បាន",
   "Your_server_link": "តំណភ្ជាប់ម៉ាស៊ីនមេរបស់អ្នក",
-  "Your_workspace_is_ready": "កន្លែងធ្វើការរបស់អ្នករួចរាល់ដើម្បីប្រើ🎉"
+  "Your_workspace_is_ready": "កន្លែងធ្វើការរបស់អ្នករួចរាល់ដើម្បីប្រើ🎉",
+  "registration.page.login.errors.wrongCredentials": "អ្នកប្រើប្រាស់ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ",
+  "registration.page.registration.waitActivationWarning": "មុន​ពេល​ចូល​ប្រើប្រាស់​គណនី​អ្នក​ត្រូវ​តែ​ទទួល​បាន​ការ​អនុញ្ញាតិ​ពី​អ្នក​គ្រប់​គ្រង​ជាមុន​សិន​",
+  "registration.page.resetPassword.sent": "បើអ៊ីមែលនេះត្រូវបានចុះឈ្មោះយើងនឹងផ្ញើការណែនាំអំពីរបៀបកំណត់ពាក្យសម្ងាត់របស់អ្នក។ បើអ្នកមិនទទួលបានអ៊ីមែលក្នុងរយៈពេលខ្លីសូមត្រឡប់មកវិញហើយព្យាយាមម្តងទៀត។",
+  "registration.component.login": "ឡុក​ចូល",
+  "registration.component.resetPassword": "កំណត់​ពាក្យ​សម្ងាត់​ឡើងវិញ",
+  "registration.component.form.email": "អ៊ីម៉ែល",
+  "registration.component.form.password": "ពាក្យសម្ងាត់",
+  "registration.component.form.divider": "ឬ",
+  "registration.component.form.submit": "បញ្ចូល"
 }

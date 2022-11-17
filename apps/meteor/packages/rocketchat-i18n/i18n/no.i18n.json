@@ -1212,7 +1212,6 @@
   "File_uploaded": "Fil opplastet",
   "files": "filer",
   "Files_only": "Bare fjern vedlagte filer, hold meldinger",
-  "files_pruned": "filer beskjæres",
   "FileUpload": "Filopplasting",
   "FileUpload_Disabled": "Filopplastinger er deaktivert.",
   "FileUpload_Enabled": "Filopplastinger aktivert",
@@ -2900,5 +2899,13 @@
   "Your_password_is_wrong": "Ditt passord er feil!",
   "Your_push_was_sent_to_s_devices": "Din push ble sendt til%s-enheter",
   "Your_server_link": "Din serverkobling",
-  "Your_workspace_is_ready": "Ditt arbeidsområde er klar til bruk 🎉"
+  "Your_workspace_is_ready": "Ditt arbeidsområde er klar til bruk 🎉",
+  "registration.page.registration.waitActivationWarning": "Før du kan logge inn, må kontoen din aktiveres manuelt av en administrator.",
+  "registration.page.resetPassword.sent": "Hvis denne e-posten er registrert, sender vi instruksjoner om hvordan du tilbakestiller passordet ditt. Hvis du ikke mottar en epost, vennligst kom tilbake og prøv igjen.",
+  "registration.component.login": "Logg inn",
+  "registration.component.resetPassword": "Tilbakestilling av passord",
+  "registration.component.form.email": "E-post",
+  "registration.component.form.password": "Passord",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Sende inn"
 }

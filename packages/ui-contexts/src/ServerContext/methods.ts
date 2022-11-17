@@ -174,12 +174,14 @@ export interface ServerMethods {
 		moreBefore: boolean;
 		moreAfter: boolean;
 	};
+	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'openRoom': (rid: IRoom['_id']) => ISubscription;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
+	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
 	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
@@ -225,8 +227,8 @@ export interface ServerMethods {
 	'checkRegistrationSecretURL': (hash: string) => boolean;
 	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
-	'livechat:takeInquiry': (inquiryId: string) => unknown;
-	'livechat:resumeOnHold': (roomId: string) => unknown;
+	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
+	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
 	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
 	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 	'spotlight': (

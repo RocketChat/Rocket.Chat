@@ -2,6 +2,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
@@ -9,8 +10,9 @@ import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { chatMessages } from './ChatMessages';
+import { ChatMessages } from './ChatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
+import { Rooms } from '../../../models/client';
 
 export type Uploading = {
 	id: string;
@@ -156,7 +158,7 @@ export type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLTextAreaElement | undefined,
+	input: HTMLInputElement | HTMLTextAreaElement | undefined,
 	{
 		rid,
 		tmid,
@@ -173,7 +175,9 @@ export const fileUpload = async (
 
 	const files = Array.isArray(f) ? f : [f];
 
-	const replies = input ? $(input).data('reply') : [];
+	const chatMessagesInstance = input ? ChatMessages.get({ input }) : undefined;
+
+	const replies = chatMessagesInstance?.quotedMessages.get() ?? [];
 	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';
@@ -188,10 +192,12 @@ export const fileUpload = async (
 
 	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
 	const messageBoxText = Meteor._localStorage.getItem(key) || '';
+	const room = Rooms.findOne({ _id: rid });
 
 	const uploadNextFile = (): void => {
 		const file = files.pop();
 		if (!file) {
+			chatMessagesInstance?.quotedMessages.clear();
 			return;
 		}
 
@@ -201,6 +207,7 @@ export const fileUpload = async (
 				file: file.file,
 				fileName: file.name,
 				fileDescription: messageBoxText,
+				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();
@@ -220,8 +227,7 @@ export const fileUpload = async (
 						tmid,
 					);
 					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
-					const chatMessageKey = [rid, tmid].filter(Boolean).join('-');
-					const { input } = chatMessages[chatMessageKey];
+					const input = ChatMessages.get({ rid, tmid })?.input;
 					if (input) {
 						input.value = '';
 						$(input).trigger('input');

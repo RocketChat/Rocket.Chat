@@ -1273,7 +1273,6 @@
   "File_uploaded": "Datoteka je prenesena",
   "files": "slika",
   "Files_only": "Samo uklonite priložene datoteke, zadržite poruke",
-  "files_pruned": "datoteke su obrezane",
   "FileUpload": "Prijenos datoteke",
   "FileUpload_Disabled": "Prijenosi datoteka su onemogućeni",
   "FileUpload_Enabled": "Prijenos Datoteka Omogućeno",
@@ -2930,5 +2929,16 @@
   "Your_password_is_wrong": "Vaša lozinka je pogrešna!",
   "Your_push_was_sent_to_s_devices": "Push obavijest je poslana %s uređaje",
   "Your_server_link": "Veza poslužitelja",
-  "Your_workspace_is_ready": "Radni je prostor spreman za upotrebu 🎉"
+  "Your_workspace_is_ready": "Radni je prostor spreman za upotrebu 🎉",
+  "registration.page.login.errors.wrongCredentials": "Korisnik nije pronađen ili pogrešna lozinka",
+  "registration.page.registration.waitActivationWarning": "Prije nego što se prijavite, vaš račun mora ručno aktivirati administrator.",
+  "registration.page.login.forgot": "Zaboravih lozinku",
+  "registration.page.resetPassword.sent": "Ako je ova e-poruka registrirana, poslat ćemo vam upute o tome kako poništiti zaporku. Ako uskoro ne primite e-poruku, vratite se i pokušajte ponovo.",
+  "registration.component.login": "Prijava",
+  "registration.component.resetPassword": "Resetiraj lozinku",
+  "registration.component.form.emailOrUsername": "Email or username",
+  "registration.component.form.email": "Email",
+  "registration.component.form.password": "Lozinka",
+  "registration.component.form.divider": "ili",
+  "registration.component.form.submit": "Pošalji"
 }

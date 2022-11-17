@@ -1,5 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 
+import { queueMicrotask } from './utils/queueMicrotask';
+
 interface ISubscriptionFactory<T> {
 	(...args: any[]): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T];
 }
@@ -7,22 +9,24 @@ interface ISubscriptionFactory<T> {
 export const createReactiveSubscriptionFactory =
 	<T>(computeCurrentValueWith: (...args: any[]) => T): ISubscriptionFactory<T> =>
 	(...args: any[]): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T] => {
-		const computeCurrentValue = (): T => computeCurrentValueWith(...args);
-
 		const callbacks = new Set<() => void>();
 
-		let currentValue = computeCurrentValue();
+		let currentValue = computeCurrentValueWith(...args);
 
-		const computation = Tracker.autorun(() => {
-			currentValue = computeCurrentValue();
-			callbacks.forEach((callback) => {
-				Tracker.afterFlush(callback);
+		const reactiveFn = (): void => {
+			currentValue = computeCurrentValueWith(...args);
+			queueMicrotask(() => {
+				callbacks.forEach((callback) => {
+					callback();
+				});
 			});
+		};
+
+		let computation: Tracker.Computation | undefined;
+
+		queueMicrotask(() => {
+			computation = Tracker.autorun(reactiveFn);
 		});
-
-		const { stop } = computation;
-
-		computation.stop = (): void => undefined;
 
 		return [
 			(callback): (() => void) => {
@@ -32,8 +36,7 @@ export const createReactiveSubscriptionFactory =
 					callbacks.delete(callback);
 
 					if (callbacks.size === 0) {
-						computation.stop = stop;
-						computation.stop();
+						queueMicrotask(() => computation?.stop());
 					}
 				};
 			},

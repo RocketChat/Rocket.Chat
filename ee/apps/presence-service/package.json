@@ -5,7 +5,7 @@
 	"description": "Rocket.Chat Presence service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"ms": "MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint src",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
@@ -15,13 +15,16 @@
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/emitter": "0.31.21",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
-		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/string-helpers": "0.31.21",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
-		"fibers": "^5.0.1",
+		"fibers": "^5.0.3",
 		"moleculer": "^0.14.21",
 		"mongodb": "^4.3.1",
 		"nats": "^2.4.0",

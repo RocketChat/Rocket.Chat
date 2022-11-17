@@ -1149,7 +1149,6 @@
   "File_uploaded": "Το αρχείο μεταφορτώθηκε",
   "files": "αρχεία",
   "Files_only": "Αφαιρέστε μόνο τα συνημμένα αρχεία, κρατήστε τα μηνύματα",
-  "files_pruned": "τα αρχεία κλαδεύονται",
   "FileUpload": "Ανέβασμα αρχείου",
   "FileUpload_Disabled": "Οι μεταφορτώσεις αρχείων είναι απενεργοποιημένες.",
   "FileUpload_Enabled": "Ενεργοποιηθεί η μεταφόρτωση αρχείων",
@@ -2802,5 +2801,16 @@
   "Your_password_is_wrong": "Ο κωδικός πρόσβασής σας είναι λάθος!",
   "Your_push_was_sent_to_s_devices": "ώθηση σας στάλθηκε σε συσκευές %s",
   "Your_server_link": "Σύνδεσμος διακομιστή σας",
-  "Your_workspace_is_ready": "Ο χώρος εργασίας σας είναι έτοιμος για χρήση 🎉"
+  "Your_workspace_is_ready": "Ο χώρος εργασίας σας είναι έτοιμος για χρήση 🎉",
+  "registration.page.login.errors.wrongCredentials": "Ο χρήστης δεν βρέθηκε ή εσφαλμένο κωδικό πρόσβασης",
+  "registration.page.registration.waitActivationWarning": "Για να μπορέσετε να συνδεθείτε, ο λογαριασμός σας θα πρέπει να ενεργοποιηθεί χειροκίνητα από κάποιον διαχειριστή.",
+  "registration.page.login.forgot": "Ξέχασα τον κωδικό μου",
+  "registration.page.resetPassword.sent": "Αν αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου είναι καταχωρημένο, θα στείλουμε οδηγίες σχετικά με τον τρόπο επαναφοράς του κωδικού πρόσβασής σας. Εάν δεν λάβετε σύντομα ένα μήνυμα ηλεκτρονικού ταχυδρομείου, επιστρέψτε και δοκιμάστε ξανά.",
+  "registration.component.login": "Είσοδος",
+  "registration.component.resetPassword": "Επαναφορά κωδικού",
+  "registration.component.form.emailOrUsername": "Email ή όνομα χρήστη",
+  "registration.component.form.email": "Email",
+  "registration.component.form.password": "Κωδικός",
+  "registration.component.form.divider": "ή",
+  "registration.component.form.submit": "Υποβολή"
 }

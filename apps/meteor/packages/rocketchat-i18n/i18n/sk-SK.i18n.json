@@ -1152,7 +1152,6 @@
   "File_uploaded": "Nahraný súbor",
   "files": "súbory",
   "Files_only": "Odpojte iba pripojené súbory, uložte správy",
-  "files_pruned": "súbory prerezané",
   "FileUpload": "Nahranie súboru",
   "FileUpload_Disabled": "Nahrávanie súborov je zakázané.",
   "FileUpload_Enabled": "Odovzdané súbory sú povolené",
@@ -2803,5 +2802,13 @@
   "Your_password_is_wrong": "Vaše heslo je nesprávne!",
   "Your_push_was_sent_to_s_devices": "Posun bol odoslaný na zariadenia%s",
   "Your_server_link": "Váš odkaz na server",
-  "Your_workspace_is_ready": "Váš pracovný priestor je pripravený na použitie 🎉"
+  "Your_workspace_is_ready": "Váš pracovný priestor je pripravený na použitie 🎉",
+  "registration.page.registration.waitActivationWarning": "Skôr ako sa môžete prihlásiť, váš účet musí byť ručne aktivovaný správcom.",
+  "registration.page.resetPassword.sent": "Ak je tento e-mail zaregistrovaný, pošleme pokyny na obnovenie hesla. Ak v krátkom čase nedostanete e-mail, vráťte sa a skúste to znova.",
+  "registration.component.login": "Prihlásiť sa",
+  "registration.component.resetPassword": "Obnoviť heslo",
+  "registration.component.form.email": "e-mail",
+  "registration.component.form.password": "Heslo",
+  "registration.component.form.divider": "alebo",
+  "registration.component.form.submit": "Predložiť"
 }

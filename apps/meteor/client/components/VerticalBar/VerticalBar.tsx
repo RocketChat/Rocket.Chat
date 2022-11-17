@@ -8,13 +8,13 @@ const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => 
 	return (
 		<Box
 			rcx-vertical-bar
-			backgroundColor='surface'
+			bg='light'
 			display='flex'
 			flexDirection='column'
 			flexShrink={0}
 			width={sizes.contextualBar}
 			borderInlineStartWidth='2px'
-			borderInlineStartColor='neutral-300'
+			borderInlineStartColor='extra-light'
 			borderInlineStartStyle='solid'
 			height='full'
 			position={position}

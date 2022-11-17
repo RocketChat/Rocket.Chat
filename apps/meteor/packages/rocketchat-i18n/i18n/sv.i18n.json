@@ -1211,7 +1211,6 @@
   "File_uploaded": "Uppladdad fil",
   "files": "filer",
   "Files_only": "Ta bara bort bifogade filer, behåll meddelanden",
-  "files_pruned": "filer beskurna",
   "FileUpload": "Uppladdad fil",
   "FileUpload_Disabled": "Filuppladdningar är inaktiverade.",
   "FileUpload_Enabled": "Filuppladdningar aktiverade",
@@ -2894,5 +2893,14 @@
   "Your_password_is_wrong": "Ditt lösenord är fel!",
   "Your_push_was_sent_to_s_devices": "Din push skickades till %s enheter",
   "Your_server_link": "Din serverlänk",
-  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉"
+  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉",
+  "registration.page.login.errors.wrongCredentials": "Användaren hittades inte eller så är lösenordet felaktigt",
+  "registration.page.registration.waitActivationWarning": "Innan du kan logga in måste ditt konto aktiveras manuellt av en administratör.",
+  "registration.page.resetPassword.sent": "Om det här e-postmeddelandet är registrerat skickar vi instruktioner om hur du återställer ditt lösenord. Om du inte får ett mail inom kort, vänligen kom tillbaka och försök igen.",
+  "registration.component.login": "Logga in",
+  "registration.component.resetPassword": "Återställ lösenord",
+  "registration.component.form.email": "E-post",
+  "registration.component.form.password": "Lösenord",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Skicka"
 }

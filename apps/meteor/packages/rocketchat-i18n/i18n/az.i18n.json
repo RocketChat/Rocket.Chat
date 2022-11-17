@@ -1142,7 +1142,6 @@
   "File_uploaded": "Fayl yükləndi",
   "files": "faylları",
   "Files_only": "Yalnız əlavə faylları silin, mesajı saxlayın",
-  "files_pruned": "fayllar kəsilmişdir",
   "FileUpload": "Fayl yüklə",
   "FileUpload_Disabled": "Fayl yükləmələri aradan qaldırıldı.",
   "FileUpload_Enabled": "Fayl yükləmələri aktivləşmişdir",
@@ -2795,5 +2794,15 @@
   "Your_password_is_wrong": "Şifrəniz səhvdir!",
   "Your_push_was_sent_to_s_devices": "Sizin itəniz%s cihazlarına göndərildi",
   "Your_server_link": "Sizin server bağlantınız",
-  "Your_workspace_is_ready": "İş yeriniz 🎉 istifadə etməyə hazırdır"
+  "Your_workspace_is_ready": "İş yeriniz 🎉 istifadə etməyə hazırdır",
+  "registration.page.registration.waitActivationWarning": "Giriş yapabilmeniz üçün hesabınız bir administrator tərəfindən əl ilə aktivləşdirilməlidir.",
+  "registration.page.login.forgot": "Şifrəni unutmusan",
+  "registration.page.resetPassword.sent": "Bu e-poçt qeydə alındıqda, parolunuzu necə sıfırlayacağına dair təlimatlar göndərəcəyik. Qısa müddətdə bir e-poçt almazsan, geri qayıdın və yenidən cəhd edin.",
+  "registration.component.login": "Daxil ol",
+  "registration.component.resetPassword": "Parolu sıfırlamak",
+  "registration.component.form.emailOrUsername": "E-poçt və ya istifadəçi adı",
+  "registration.component.form.email": "E-poçt",
+  "registration.component.form.password": "Şifrə",
+  "registration.component.form.divider": "və ya",
+  "registration.component.form.submit": "təqdim"
 }

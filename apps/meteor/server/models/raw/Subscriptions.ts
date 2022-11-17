@@ -256,6 +256,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		searchTerm: string,
 		exceptions: string[],
 		searchFields: string[],
+		extraConditions: Filter<IUser>,
 		limit: number,
 		roomType?: ISubscription['t'],
 		{ startsWith = false, endsWith = false }: { startsWith?: string | false; endsWith?: string | false } = {},
@@ -319,6 +320,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 								{
 									$match: {
 										$expr: { $eq: ['$_id', '$$id'] },
+										...extraConditions,
 										active: true,
 										username: {
 											$exists: true,

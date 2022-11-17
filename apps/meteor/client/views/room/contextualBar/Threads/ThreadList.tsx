@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTabContext } from '../../providers/ToolboxProvider';
+import { useTabContext } from '../../contexts/ToolboxContext';
 import ThreadComponent from '../../threads/ThreadComponent';
 import ThreadRow from './ThreadRow';
 import { withData } from './withData';
@@ -105,7 +105,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 					p='x24'
 					borderBlockEndWidth='x2'
 					borderBlockEndStyle='solid'
-					borderBlockEndColor='neutral-200'
+					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
@@ -135,7 +135,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 				)}
 
 				{!loading && total === 0 && (
-					<Box p='x24' color='neutral-600' textAlign='center' width='full'>
+					<Box p='x24' color='annotation' textAlign='center' width='full'>
 						{t('No_Threads')}
 					</Box>
 				)}

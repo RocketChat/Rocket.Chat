@@ -1,8 +1,14 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 
+import { fetch } from '../../../../../server/lib/http/fetch';
 import type { IExternalUserProfileInformation, IFederationBridge } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/MessageTextParser';
+import { convertEmojisRCFormatToMatrixFormat } from './converters/MessageReceiver';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
+import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
+import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
@@ -66,8 +72,8 @@ export class MatrixBridge implements IFederationBridge {
 				await this.bridgeInstance.run(this.bridgePort);
 				this.isRunning = true;
 			}
-		} catch (e) {
-			federationBridgeLogger.error('Failed to initialize the matrix-appservice-bridge.', e);
+		} catch (err) {
+			federationBridgeLogger.error({ msg: 'Failed to initialize the matrix-appservice-bridge.', err });
 		} finally {
 			this.isUpdatingBridgeStatus = false;
 		}
@@ -84,10 +90,15 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined> {
 		try {
-			const externalInformation = await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId);
+			const externalInformation = await this.bridgeInstance.getIntent(externalUserId).getProfileInfo(externalUserId, undefined, false);
 
 			return {
 				displayName: externalInformation.displayname || '',
+				...(externalInformation.avatar_url
+					? {
+							avatarUrl: externalInformation.avatar_url,
+					  }
+					: {}),
 			};
 		} catch (err) {
 			// no-op
@@ -106,13 +117,21 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async createUser(username: string, name: string, domain: string): Promise<string> {
+	public async setUserAvatar(externalUserId: string, avatarUrl: string): Promise<void> {
+		try {
+			await this.bridgeInstance.getIntent(externalUserId).matrixClient.setAvatarUrl(avatarUrl);
+		} catch (e) {
+			// no-op
+		}
+	}
+
+	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
 		}
 		const matrixUserId = `@${username?.toLowerCase()}:${domain}`;
 		const newUser = new MatrixUserInstance(matrixUserId);
-		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})` });
+		await this.bridgeInstance.provisionUser(newUser, { name: `${username} (${name})`, ...(avatarUrl ? { url: avatarUrl } : {}) });
 
 		return matrixUserId;
 	}
@@ -142,12 +161,65 @@ export class MatrixBridge implements IFederationBridge {
 		return matrixRoom.room_id;
 	}
 
-	public async sendMessage(externalRoomId: string, externaSenderId: string, text: string): Promise<void> {
+	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<string> {
 		try {
-			await this.bridgeInstance.getIntent(externaSenderId).sendText(externalRoomId, text);
+			const messageId = await this.bridgeInstance.getIntent(externalSenderId).matrixClient.sendHtmlText(
+				externalRoomId,
+				this.escapeEmojis(
+					await toExternalMessageFormat({
+						message: message.msg,
+						externalRoomId,
+						homeServerDomain: this.homeServerDomain,
+					}),
+				),
+			);
+
+			return messageId;
 		} catch (e) {
 			throw new Error('User is not part of the room.');
 		}
+	}
+
+	public async sendReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		originalEventSender: string,
+		replyMessage: string,
+	): Promise<string> {
+		const { formattedMessage, message } = await toExternalQuoteMessageFormat({
+			externalRoomId,
+			eventToReplyTo,
+			originalEventSender,
+			message: this.escapeEmojis(replyMessage),
+			homeServerDomain: this.homeServerDomain,
+		});
+		const messageId = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'body': message,
+				'format': 'org.matrix.custom.html',
+				'formatted_body': formattedMessage,
+				'm.relates_to': {
+					'm.in_reply_to': { event_id: eventToReplyTo },
+				},
+				'msgtype': MatrixEnumSendMessageType.TEXT,
+			});
+
+		return messageId;
+	}
+
+	private escapeEmojis(text: string): string {
+		return convertEmojisRCFormatToMatrixFormat(text);
+	}
+
+	public async getReadStreamForFileFromUrl(externalUserId: string, fileUrl: string): Promise<ReadableStream> {
+		const response = await fetch(this.convertMatrixUrlToHttp(externalUserId, fileUrl));
+		if (!response.body) {
+			throw new Error('Not able to download the file');
+		}
+
+		return response.body;
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {
@@ -183,6 +255,160 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async kickUserFromRoom(externalRoomId: string, externalUserId: string, externalOwnerId: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
+	}
+
+	public async redactEvent(externalRoomId: string, externalUserId: string, externalEventId: string): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).matrixClient.redactEvent(externalRoomId, externalEventId);
+	}
+
+	public async sendMessageReaction(
+		externalRoomId: string,
+		externalUserId: string,
+		externalEventId: string,
+		reaction: string,
+	): Promise<string> {
+		const eventId = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.sendEvent(externalRoomId, MatrixEventType.MESSAGE_REACTED, {
+				'm.relates_to': {
+					event_id: externalEventId,
+					key: convertEmojisRCFormatToMatrixFormat(reaction),
+					rel_type: 'm.annotation',
+				},
+			});
+
+		return eventId;
+	}
+
+	public async updateMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		externalEventId: string,
+		newMessageText: string,
+	): Promise<void> {
+		const messageInExternalFormat = this.escapeEmojis(
+			await toExternalMessageFormat({ message: newMessageText, externalRoomId, homeServerDomain: this.homeServerDomain }),
+		);
+
+		await this.bridgeInstance.getIntent(externalUserId).matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+			'body': ` * ${newMessageText}`,
+			'format': 'org.matrix.custom.html',
+			'formatted_body': messageInExternalFormat,
+			'm.new_content': {
+				body: messageInExternalFormat,
+				format: 'org.matrix.custom.html',
+				formatted_body: messageInExternalFormat,
+				msgtype: MatrixEnumSendMessageType.TEXT,
+			},
+			'm.relates_to': {
+				rel_type: MatrixEnumRelatesToRelType.REPLACE,
+				event_id: externalEventId,
+			},
+			'msgtype': MatrixEnumSendMessageType.TEXT,
+		});
+	}
+
+	public async sendMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
+			const { event_id: messageId } = await this.bridgeInstance.getIntent(externaSenderId).sendMessage(externalRoomId, {
+				body: fileDetails.filename,
+				filename: fileDetails.filename,
+				info: {
+					size: fileDetails.fileSize,
+					mimetype: fileDetails.mimeType,
+					...(fileDetails.metadata?.height && fileDetails.metadata?.width
+						? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+						: {}),
+				},
+				msgtype: this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+				url: mxcUrl,
+			});
+
+			return messageId;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
+	public async sendReplyMessageFileToRoom(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
+			const { event_id: messageId } = await this.bridgeInstance.getIntent(externaSenderId).sendMessage(externalRoomId, {
+				'body': fileDetails.filename,
+				'filename': fileDetails.filename,
+				'info': {
+					size: fileDetails.fileSize,
+					mimetype: fileDetails.mimeType,
+					...(fileDetails.metadata?.height && fileDetails.metadata?.width
+						? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+						: {}),
+				},
+				'm.relates_to': {
+					'm.in_reply_to': { event_id: eventToReplyTo },
+				},
+				'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+				'url': mxcUrl,
+			});
+
+			return messageId;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
+	private getMsgTypeBasedOnMimeType(mimeType: string): MatrixEnumSendMessageType {
+		const knownImageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+		const knownAudioMimeTypes = ['audio/mpeg', 'audio/ogg', 'audio/wav'];
+		const knownVideoMimeTypes = ['video/mp4', 'video/ogg', 'video/webm'];
+
+		if (knownImageMimeTypes.includes(mimeType)) {
+			return MatrixEnumSendMessageType.IMAGE;
+		}
+		if (knownAudioMimeTypes.includes(mimeType)) {
+			return MatrixEnumSendMessageType.AUDIO;
+		}
+		if (knownVideoMimeTypes.includes(mimeType)) {
+			return MatrixEnumSendMessageType.VIDEO;
+		}
+		return MatrixEnumSendMessageType.FILE;
+	}
+
+	public async uploadContent(
+		externalSenderId: string,
+		content: Buffer,
+		options?: { name?: string; type?: string },
+	): Promise<string | undefined> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externalSenderId).uploadContent(content, options);
+
+			return mxcUrl;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+		}
+	}
+
+	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string {
+		return this.bridgeInstance.getIntent(externalUserId).matrixClient.mxcToHttp(matrixUrl);
 	}
 
 	protected async createInstance(): Promise<void> {
