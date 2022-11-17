@@ -267,13 +267,14 @@ function executeIntegrationRest() {
 		return API.v1.success();
 	}
 
+	// Use default values defined in the webhook configuration
+	if (this.bodyParams.channel || this.bodyParams.roomId) {
+		return API.v1.failure("'channel' and 'roomId' are deprecated, please remove these values to proceed");
+	}
+
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		// Use default values defined in the webhook configuration
-		delete this.bodyParams.channel;
-		delete this.bodyParams.roomId;
-
 		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
