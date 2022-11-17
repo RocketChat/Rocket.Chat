@@ -5800,9 +5800,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
-  version: 1.35.0-alpha
-  resolution: "@rocket.chat/apps-engine@file:../../../Rocket.Chat.Apps-engine#../../../Rocket.Chat.Apps-engine::hash=ed26f9&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+"@rocket.chat/apps-engine@npm:1.36.0-videoconf":
+  version: 1.36.0-videoconf
+  resolution: "@rocket.chat/apps-engine@npm:1.36.0-videoconf"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -5811,7 +5811,7 @@ __metadata:
     stack-trace: 0.0.10
     uuid: ^3.4.0
     vm2: ^3.9.11
-  checksum: 6916f2ae42b79cedc116640ffbcc97ac9df1fac042718a16ae2fd40ad6703e6487b4ebc1834265fee8567d52749363d387703c4e69e481f36dcdd071b7ff650e
+  checksum: 0d22a3e114f14823d8e372119de86bb88924a36392dee611ae880ba44d546c17e2e091527fc24c9c59d5a6199203480dff1f76cda73bbd9ffe69eccce4955276
   languageName: node
   linkType: hard
 
@@ -6553,7 +6553,7 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": ../../../Rocket.Chat.Apps-engine
+    "@rocket.chat/apps-engine": 1.36.0-videoconf
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": 0.31.21
