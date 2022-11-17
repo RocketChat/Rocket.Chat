@@ -52,7 +52,7 @@ export class HomeSidenav {
 	}
 
 	async selectOrderByName(): Promise<void> {
-		const label = this.page.locator('text=Name >> label');
+		const label = this.page.locator('text=Name >> .. >> label');
 
 		const inputIsChecked = await label.locator('input').isChecked();
 		if (!inputIsChecked) {
@@ -70,10 +70,11 @@ export class HomeSidenav {
 	}
 
 	async selectOrderByActivity(): Promise<void> {
-		await this.page.locator('text=Activity >> label').click();
+		await this.page.locator('text=Activity >> .. >> label').click();
 	}
 
 	async getChannels(): Promise<string[]> {
+		await this.page.waitForSelector('.rc-scrollbars-view div[data-index]');
 		const items = await this.page.$$('.rc-scrollbars-view div[data-index]');
 
 		const channels: string[] = await Promise.all(
