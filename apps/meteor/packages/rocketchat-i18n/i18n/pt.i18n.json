@@ -3213,5 +3213,17 @@
   "Your_push_was_sent_to_s_devices": "A sua notificação foi enviada para %s dispositivos",
   "Your_question": "A sua pergunta",
   "Your_server_link": "O link do seu servidor",
-  "Your_workspace_is_ready": "O seu espaço de trabalho está pronto a usar 🎉"
+  "Your_workspace_is_ready": "O seu espaço de trabalho está pronto a usar 🎉",
+  "registration.page.login.errors.wrongCredentials": "Usuário não encontrado ou senha incorreta",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Os utilizadores da aplicação não têm permissão para fazer se autenticar diretamente.",
+  "registration.page.registration.waitActivationWarning": "Antes de se conectar, a sua conta deverá ser manualmente activa por um administrador.",
+  "registration.page.login.forgot": "Esqueceu a sua senha ?",
+  "registration.page.resetPassword.sent": "Se este e-mail estiver cadastrado, vamos enviar instruções de como pode redefinir a sua senha. Se não receber um e-mail em breve, volte e tente novamente.",
+  "registration.component.login": "Entrar",
+  "registration.component.resetPassword": "Redefinir senha",
+  "registration.component.form.emailOrUsername": "Email ou nome de utilizador",
+  "registration.component.form.email": "Email",
+  "registration.component.form.password": "Palavra-passe",
+  "registration.component.form.divider": "ou",
+  "registration.component.form.submit": "Submeter"
 }
