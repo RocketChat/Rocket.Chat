@@ -61,7 +61,6 @@ type RoomListRowProps = {
 	isAnonymous?: boolean;
 
 	room: ISubscription & IRoom;
-	lastMessage?: IMessage;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
