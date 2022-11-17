@@ -121,7 +121,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
 
 	return (
-		<Box {...props} display='flex'>
+		<Box {...props} display='flex' mis='x4'>
 			{button && isAppDetailsPage && (
 				<Box
 					display='flex'
