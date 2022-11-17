@@ -1,11 +1,15 @@
 import { IMessage } from '@rocket.chat/core-typings';
-import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
+import { useLayout, useCurrentRoute, useRoute, useSetting, useMethod } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useMemo, memo, MouseEvent, UIEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
+import { Messages } from '../../../../app/models/client';
+import { ChatMessages } from '../../../../app/ui/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
+import { getRandomId } from '../../../../lib/random';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
+import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
@@ -30,6 +34,8 @@ export const MessageProvider = memo(function MessageProvider({
 	}
 
 	const router = useRoute(routeName);
+
+	const sendMessage = useMethod('sendMessage');
 
 	const time = useFormatTime();
 	const dateAndTime = useFormatDateAndTime();
@@ -109,13 +115,61 @@ export const MessageProvider = memo(function MessageProvider({
 						},
 					);
 				},
+				sendMessage: async ({ msg }: { msg: string }): Promise<void> => {
+					let msgObject = { _id: getRandomId(), rid, msg } as IMessage;
+					if (!msg) {
+						return;
+					}
+
+					msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
+
+					const chatMessagesInstance = ChatMessages.get({ rid });
+					if (await chatMessagesInstance?.slashCommandProcessor?.process(msgObject)) {
+						return;
+					}
+
+					await sendMessage(msgObject);
+				},
+				respondWithMessage: async ({ msg }: { msg: string }): Promise<void> => {
+					const chatMessagesInstance = ChatMessages.get({ rid });
+					if (chatMessagesInstance?.input) {
+						chatMessagesInstance.input.value = msg;
+						chatMessagesInstance.input.focus();
+					}
+				},
+				respondWithQuotedMessage: async ({ mid }: { mid: string }): Promise<void> => {
+					const chatMessagesInstance = ChatMessages.get({ rid });
+					if (!mid || !chatMessagesInstance) {
+						return;
+					}
+
+					const message = Messages.findOne({ _id: mid }); // TODO: find a way to get the message from the collection without a query
+
+					chatMessagesInstance.quotedMessages.add(message);
+
+					$(chatMessagesInstance)?.trigger('focus').data('mention-user', false).trigger('dataChange');
+				},
 			},
 			formatters: {
 				time,
 				dateAndTime,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, tabBarOpen, queryStringParams]);
+	}, [
+		isEmbedded,
+		oembedEnabled,
+		isMobile,
+		broadcast,
+		time,
+		dateAndTime,
+		router,
+		params,
+		rid,
+		routeName,
+		tabBarOpen,
+		queryStringParams,
+		sendMessage,
+	]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });

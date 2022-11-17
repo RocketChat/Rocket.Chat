@@ -22,6 +22,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import './thread.html';
 import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
+import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
@@ -57,6 +58,47 @@ const sort = { ts: 1 };
 Template.thread.events({
 	...dropzoneEvents,
 	...getCommonRoomEvents(),
+	async 'click .js-actionButton-sendMessage'(event: JQuery.ClickEvent, instance: ThreadTemplateInstance) {
+		const rid = instance.state.get('rid');
+		const tmid = instance.state.get('tmid');
+		const msg = event.currentTarget.value;
+		let msgObject = { _id: Random.id(), rid, tmid, msg } as IMessage;
+		if (!msg) {
+			return;
+		}
+
+		msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
+
+		if (await instance.chatMessages.slashCommandProcessor?.process(msgObject)) {
+			return;
+		}
+
+		await callWithErrorHandling('sendMessage', msgObject);
+	},
+	'click .js-actionButton-respondWithMessage'(event: JQuery.ClickEvent, instance: ThreadTemplateInstance) {
+		const msg = event.currentTarget.value;
+		if (!msg) {
+			return;
+		}
+
+		if (instance.chatMessages.input) {
+			instance.chatMessages.input.value = msg;
+			instance.chatMessages.input.focus();
+		}
+	},
+	'click .js-actionButton-respondWithQuotedMessage'(event: JQuery.ClickEvent, instance: ThreadTemplateInstance) {
+		const mid = event.currentTarget.id;
+
+		if (!mid || !instance.chatMessages) {
+			return;
+		}
+
+		const message = Messages.findOne({ _id: mid }); // TODO: find a way to get the message from the collection without a query
+
+		instance.chatMessages.quotedMessages.add(message);
+
+		$(instance.chatMessages)?.trigger('focus').data('mention-user', false).trigger('dataChange');
+	},
 	'click .js-close'(e: JQuery.ClickEvent) {
 		e.preventDefault();
 		e.stopPropagation();
