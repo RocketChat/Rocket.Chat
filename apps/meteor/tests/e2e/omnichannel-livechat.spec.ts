@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
-import { HomeChannel, HomeOmnichannel, OmnichannelLiveChat } from './page-objects';
+import { HomeOmnichannel, OmnichannelLiveChat } from './page-objects';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
 	const page = await browser.newPage({ storageState });
@@ -18,7 +18,7 @@ const newUser = {
 
 const testImg =
 	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
-test.describe.only('Livechat', () => {
+test.describe('Livechat', () => {
 	test.describe('Send message', () => {
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChat;
@@ -83,14 +83,14 @@ test.describe.only('Livechat', () => {
 			test.use({ storageState: 'user1-session.json' });
 			test('expect message is received from user', async ({ page }) => {
 				await page.goto('/');
-				const poHomeChannel = new HomeChannel(page);
-				await poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name);
-				await expect(poHomeChannel.content.lastUserMessageNotSequential).toBeVisible();
-				await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText('this_a_test_message_from_user');
+				const poHomeOmnichannel = new HomeOmnichannel(page);
+				await poHomeOmnichannel.sidenav.openQueuedOmnichannelChat(newUser.name);
+				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toBeVisible();
+				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toContainText('this_a_test_message_from_user');
 			});
 		});
 		test.describe('Send markdown message to online agent', () => {
-			let poAuxContext: { page: Page; poHomeChannel: HomeOmnichannel };
+			let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 			test.beforeAll(async ({ browser, api }) => {
 				await api.post('/livechat/users/agent', { username: 'user1' });
 
@@ -120,10 +120,10 @@ test.describe.only('Livechat', () => {
 			test.use({ storageState: 'user1-session.json' });
 			test('expect message is received from user', async ({ page }) => {
 				await page.goto('/');
-				const poHomeChannel = new HomeChannel(page);
-				await poHomeChannel.sidenav.openQueuedOmnichannelChat(newUser.name);
-				await expect(poHomeChannel.content.lastUserMessageNotSequential).toBeVisible();
-				await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText('image_test');
+				const poHomeOmnichannel = new HomeOmnichannel(page);
+				await poHomeOmnichannel.sidenav.openQueuedOmnichannelChat(newUser.name);
+				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toBeVisible();
+				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toContainText('image_test');
 			});
 		});
 
