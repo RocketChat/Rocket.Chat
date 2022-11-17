@@ -158,9 +158,8 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async setAppSettings(appId: string, settings: ISetting[]): Promise<boolean> {
-		const { success } = await APIClient.post(`/apps/${appId}/settings`, { settings });
-		return success;
+	public async setAppSettings(appId: string, settings: ISetting[]): Promise<void> {
+		await APIClient.post(`/apps/${appId}/settings`, { settings });
 	}
 
 	public async getAppApis(appId: string): Promise<IApiEndpointMetadata[]> {
