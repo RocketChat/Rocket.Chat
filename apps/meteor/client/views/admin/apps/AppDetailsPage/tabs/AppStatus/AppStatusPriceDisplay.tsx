@@ -3,7 +3,7 @@ import { Box, Tag } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
 
-import { formatPriceAndPurchaseType } from '../../../helpers';
+import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
 
 type AppStatusPriceDisplayProps = {
 	purchaseType: string;

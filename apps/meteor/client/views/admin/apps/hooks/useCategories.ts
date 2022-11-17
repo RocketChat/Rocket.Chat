@@ -9,7 +9,7 @@ import {
 	CategoryOnSelected,
 	selectedCategoriesList,
 } from '../definitions/CategoryDropdownDefinitions';
-import { handleAPIError } from '../helpers';
+import { handleAPIError } from '../helpers/handleAPIError';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
