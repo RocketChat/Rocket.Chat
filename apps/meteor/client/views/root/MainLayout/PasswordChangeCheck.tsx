@@ -4,7 +4,9 @@ import React, { lazy, ReactElement, ReactNode } from 'react';
 
 import TwoFactorAuthSetupCheck from './TwoFactorAuthSetupCheck';
 
-const ResetPasswordPage = lazy(() => import('../../login/ResetPassword/ResetPassword'));
+const ResetPasswordPage = lazy(() =>
+	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
+);
 
 const PasswordChangeCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const requirePasswordChange = (useUser() as IUser | null)?.requirePasswordChange === true;

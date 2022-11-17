@@ -1196,4 +1196,43 @@ export class LivechatRoomsRaw extends BaseRaw {
 	findOpen() {
 		return this.find({ t: 'l', open: true });
 	}
+
+	setAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferOngoing: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unsetAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$unset: {
+				autoTransferOngoing: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setAutoTransferredAtById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt: new Date(),
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
 }
