@@ -2,8 +2,8 @@ import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, KeyboardEvent, MouseEvent } from 'react';
+import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import semver from 'semver';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
@@ -14,39 +14,26 @@ import BundleChips from '../BundleChips';
 type AppRowProps = App & { isMarketplace: boolean };
 
 // TODO: org props
-const AppRow: FC<AppRowProps> = (props) => {
-	const {
-		name,
-		id,
-		shortDescription,
-		iconFileData,
-		marketplaceVersion,
-		iconFileContent,
-		installed,
-		isSubscribed,
-		isMarketplace,
-		bundledIn,
-		version,
-	} = props;
+const AppRow = (props: AppRowProps): ReactElement => {
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, bundledIn, version } =
+		props;
 
-	const appsRoute = useRoute('admin-apps');
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
+	const router = useRoute(currentRouteName);
 
-	const handleClick = (): void => {
-		if (isMarketplace) {
-			marketplaceRoute.push({
-				context: 'details',
+	const context = useRouteParameter('context');
+
+	const handleNavigateToAppInfo = (): void => {
+		context &&
+			router.push({
+				context,
+				page: 'info',
 				version: marketplaceVersion,
 				id,
 			});
-			return;
-		}
-
-		appsRoute.push({
-			context: 'details',
-			version: marketplaceVersion,
-			id,
-		});
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLOrSVGElement>): void => {
@@ -54,7 +41,7 @@ const AppRow: FC<AppRowProps> = (props) => {
 			return;
 		}
 
-		handleClick();
+		handleNavigateToAppInfo();
 	};
 
 	const preventClickPropagation = (e: MouseEvent<HTMLOrSVGElement>): void => {
@@ -77,7 +64,7 @@ const AppRow: FC<AppRowProps> = (props) => {
 			key={id}
 			role='link'
 			tabIndex={0}
-			onClick={handleClick}
+			onClick={handleNavigateToAppInfo}
 			onKeyDown={handleKeyDown}
 			display='flex'
 			flexDirection='row'
