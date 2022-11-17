@@ -14,10 +14,12 @@ const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 	const icon = useRoomIcon(room);
 
 	return (
-		<Header.Tag>
-			<Header.Tag.Icon icon={icon} />
-			<Header.Link href={href}>{roomCoordinator.getRoomName(room.t, room)}</Header.Link>
-		</Header.Tag>
+		<Header.Link href={href}>
+			<Header.Tag>
+				<Header.Tag.Icon icon={icon} />
+				{roomCoordinator.getRoomName(room.t, room)}
+			</Header.Tag>
+		</Header.Link>
 	);
 };
 
