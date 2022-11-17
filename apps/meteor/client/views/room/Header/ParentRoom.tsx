@@ -17,7 +17,7 @@ const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 		<Header.Link href={href}>
 			<Header.Tag>
 				<Header.Tag.Icon icon={icon} />
-				{roomCoordinator.getRoomName(room.t, room)}
+				<Header.Link href={href}>{roomCoordinator.getRoomName(room.t, room)}</Header.Link>
 			</Header.Tag>
 		</Header.Link>
 	);
