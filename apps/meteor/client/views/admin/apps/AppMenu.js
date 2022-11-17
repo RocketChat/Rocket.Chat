@@ -46,7 +46,7 @@ function AppMenu({ app, ...props }) {
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
-	const [currentRouteName, params] = useCurrentRoute();
+	const [currentRouteName, currentRouteParams] = useCurrentRoute();
 	if (!currentRouteName) {
 		throw new Error('No current route name');
 	}
@@ -157,8 +157,8 @@ function AppMenu({ app, ...props }) {
 	}, [action, app.id, app.purchaseType, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
 	const handleViewLogs = useCallback(() => {
-		router.push({ context: 'details', id: app.id, version: app.version, tab: 'logs' });
-	}, [app.id, app.version, router]);
+		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
+	}, [app.id, app.version, context, router]);
 
 	const handleDisable = useCallback(() => {
 		const confirm = async () => {
@@ -192,7 +192,7 @@ function AppMenu({ app, ...props }) {
 				if (success) {
 					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
 					if (context === 'details' && currentTab !== 'details') {
-						router.replace({ ...params, tab: 'details' });
+						router.replace({ ...currentRouteParams, tab: 'details' });
 					}
 				}
 			} catch (error) {
@@ -228,7 +228,7 @@ function AppMenu({ app, ...props }) {
 		dispatchToastMessage,
 		handleSubscription,
 		isSubscribed,
-		params,
+		currentRouteParams,
 		router,
 		setModal,
 		t,
@@ -297,6 +297,11 @@ function AppMenu({ app, ...props }) {
 						action: handleEnable,
 					},
 				}),
+			...(app.installed && {
+				divider: {
+					type: 'divider',
+				},
+			}),
 			...(app.installed && {
 				uninstall: {
 					label: (
