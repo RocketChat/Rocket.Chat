@@ -1,6 +1,6 @@
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, IndexDescription } from 'mongodb';
 import { Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -9,6 +9,10 @@ import { BaseRaw } from './BaseRaw';
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
 		super(db, 'subscription', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { E2EKey: 1 }, unique: true, sparse: true }];
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {
