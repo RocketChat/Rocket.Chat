@@ -89,6 +89,7 @@ export type EventSignatures = {
 	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
+	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'presence.status'(data: {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;

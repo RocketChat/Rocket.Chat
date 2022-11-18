@@ -27,16 +27,34 @@ export const getFederatedUserByInternalUsername = async (username: string): Prom
 
 export class RocketChatUserAdapter {
 	public async getFederatedUserByExternalId(externalUserId: string): Promise<FederatedUser | undefined> {
-		const internalBridgedUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(externalUserId);
-		if (!internalBridgedUserId) {
+		const internalBridgedUser = await MatrixBridgedUser.getBridgedUserByExternalUserId(externalUserId);
+		if (!internalBridgedUser) {
 			return;
 		}
 
-		const user = await Users.findOneById(internalBridgedUserId);
+		const user = await Users.findOneById(internalBridgedUser.uid);
 
 		if (user) {
-			return createFederatedUserInstance(externalUserId, user);
+			return createFederatedUserInstance(externalUserId, user, internalBridgedUser.remote);
 		}
+	}
+
+	public async getFederatedUsersByExternalIds(externalUserIds: string[]): Promise<FederatedUser[]> {
+		const internalBridgedUsers = await MatrixBridgedUser.getLocalUsersByExternalIds(externalUserIds);
+		if (internalBridgedUsers.length === 0) {
+			return [];
+		}
+		const internalUserIds = internalBridgedUsers.map((bridgedUser) => bridgedUser.uid);
+		const internalUserIdsMap: Record<string, Record<string, any>> = internalBridgedUsers.reduce(
+			(acc, bridgedUser) => ({ ...acc, [bridgedUser.uid]: { mui: bridgedUser.mui, remote: bridgedUser.remote } }),
+			{},
+		);
+		const users = await Users.findByIds(internalUserIds).toArray();
+
+		if (users.length === 0) {
+			return [];
+		}
+		return users.map((user) => createFederatedUserInstance(internalUserIdsMap[user._id].mui, user, internalUserIdsMap[user._id].remote));
 	}
 
 	public async getFederatedUserByInternalId(internalUserId: string): Promise<FederatedUser | undefined> {

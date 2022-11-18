@@ -23,6 +23,7 @@ import type {
 import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
+import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -31,6 +32,7 @@ export class FederationRoomServiceListener extends FederationService {
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
+		protected internalNotificationAdapter: RocketChatNotificationAdapter,
 		protected bridge: IFederationBridge,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
@@ -75,7 +77,11 @@ export class FederationRoomServiceListener extends FederationService {
 			roomType || RoomType.CHANNEL,
 			externalRoomName,
 		);
-		await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+		const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+			createdInternalRoomId,
+			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+		);
 	}
 
 	public async onChangeRoomMembership(roomChangeMembershipInput: FederationRoomChangeMembershipDto): Promise<void> {
@@ -144,8 +150,12 @@ export class FederationRoomServiceListener extends FederationService {
 			if (isDirectMessageRoom({ t: roomType })) {
 				const members = [federatedInviterUser, federatedInviteeUser];
 				const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, members);
-				await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+				const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
 				await this.bridge.joinRoom(externalRoomId, externalInviteeId);
+				await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+					createdInternalRoomId,
+					this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+				);
 				return;
 			}
 			const newFederatedRoom = FederatedRoom.createInstance(
@@ -156,8 +166,12 @@ export class FederationRoomServiceListener extends FederationService {
 				externalRoomName,
 			);
 
-			await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+				createdInternalRoomId,
+				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+			);
 		}
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
@@ -196,7 +210,11 @@ export class FederationRoomServiceListener extends FederationService {
 				directMessageRoom.getMembers(),
 			);
 			await this.internalRoomAdapter.removeDirectMessageRoom(federatedRoom);
-			await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+				createdInternalRoomId,
+				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+			);
 			return;
 		}
 

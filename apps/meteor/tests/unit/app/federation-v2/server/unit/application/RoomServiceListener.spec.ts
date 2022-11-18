@@ -81,6 +81,10 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
 	};
+	const notificationsAdapter = {
+		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
+		broadcastUserTypingOnRoom: sinon.stub(),
+	};
 	const fileAdapter = {
 		uploadFile: sinon.stub(),
 	};
@@ -99,6 +103,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			messageAdapter as any,
 			fileAdapter as any,
 			settingsAdapter as any,
+			notificationsAdapter as any,
 			bridge as any,
 		);
 	});
@@ -108,7 +113,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.createFederatedRoomForDirectMessage.reset();
 		roomAdapter.removeDirectMessageRoom.reset();
-		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.updateRoomType.reset();
 		roomAdapter.updateRoomName.reset();
 		roomAdapter.updateFederatedRoomByInternalRoomId.reset();

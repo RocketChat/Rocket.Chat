@@ -16,6 +16,13 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			}
 			await federationUserServiceSender.afterUserAvatarChanged(username);
 		});
+		this.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
+			if (!roomId || !username) {
+				return;
+			}
+
+			await federationUserServiceSender.onUserTyping(username, roomId, isTyping);
+		});
 		this.onEvent('user.realNameChanged', async ({ _id, name }): Promise<void> => {
 			if (!settings.get('Federation_Matrix_enabled')) {
 				return;

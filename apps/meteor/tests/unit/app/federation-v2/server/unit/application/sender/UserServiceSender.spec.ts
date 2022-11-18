@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 const { FederationUserServiceSender } = proxyquire
 	.noCallThru()
@@ -26,6 +27,17 @@ const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../../
 	},
 });
 
+const { FederatedRoom } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+	mongodb: {
+		'ObjectId': class ObjectId {
+			toHexString(): string {
+				return 'hexString';
+			}
+		},
+		'@global': true,
+	},
+});
+
 describe('Federation - Application - FederationUserServiceSender', () => {
 	let service: typeof FederationUserServiceSender;
 	const userAdapter = {
@@ -39,6 +51,7 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
+		isTypingStatusEnabled: sinon.stub(),
 	};
 	const fileAdapter = {
 		getBufferForAvatarFile: sinon.stub(),
@@ -47,13 +60,26 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 	const bridge = {
 		uploadContent: sinon.stub(),
 		setUserAvatar: sinon.stub(),
+		notifyUserTyping: sinon.stub(),
+		setUserDisplayName: sinon.stub(),
+		createUser: sinon.stub(),
+		getUserProfileInformation: sinon.stub(),
+	};
+	const roomAdapter = {
+		getFederatedRoomByInternalId: sinon.stub(),
 		setUserDisplayName: sinon.stub(),
 		createUser: sinon.stub(),
 		getUserProfileInformation: sinon.stub(),
 	};
 
 	beforeEach(() => {
-		service = new FederationUserServiceSender(userAdapter as any, fileAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationUserServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			fileAdapter as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -68,6 +94,9 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 		fileAdapter.getFileMetadataForAvatarFile.reset();
 		bridge.uploadContent.reset();
 		bridge.setUserAvatar.reset();
+		bridge.notifyUserTyping.reset();
+		settingsAdapter.isTypingStatusEnabled.reset();
+		roomAdapter.getFederatedRoomByInternalId.reset();
 		bridge.setUserDisplayName.reset();
 		bridge.createUser.reset();
 		bridge.getUserProfileInformation.reset();
@@ -227,6 +256,53 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 			await service.afterUserRealNameChanged('id', 'name');
 
 			expect(bridge.setUserDisplayName.calledWith('externalInviterId', 'name')).to.be.true;
+		});
+	});
+
+	describe('#onUserTyping()', () => {
+		const user = FederatedUser.createWithInternalReference('externalInviterId', true, {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			_id: '_id',
+		});
+		it('should NOT notify about the typing event externally if the setting is disabled', async () => {
+			settingsAdapter.isTypingStatusEnabled.returns(false);
+			await service.onUserTyping({} as any);
+
+			expect(bridge.notifyUserTyping.called).to.be.false;
+		});
+
+		it('should NOT notify about the typing event externally if the user does not exists', async () => {
+			settingsAdapter.isTypingStatusEnabled.returns(true);
+			userAdapter.getFederatedUserByInternalUsername.resolves(undefined);
+			await service.onUserTyping({} as any);
+
+			expect(bridge.notifyUserTyping.called).to.be.false;
+		});
+
+		it('should NOT notify about the typing event externally if the room does not exists', async () => {
+			settingsAdapter.isTypingStatusEnabled.returns(true);
+			userAdapter.getFederatedUserByInternalUsername.resolves({});
+			await service.onUserTyping({} as any);
+
+			expect(bridge.notifyUserTyping.called).to.be.false;
+		});
+
+		it('should notify about the typing event externally correctly', async () => {
+			const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+			settingsAdapter.isTypingStatusEnabled.returns(true);
+			userAdapter.getFederatedUserByInternalUsername.resolves(
+				FederatedUser.createWithInternalReference('externalInviterId', true, {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					_id: '_id',
+				}),
+			);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			const isTyping = true;
+			await service.onUserTyping('internalUsername', 'internalRoomId', isTyping);
+
+			expect(bridge.notifyUserTyping.calledWith(room.getExternalId(), user.getExternalId(), isTyping)).to.be.true;
 		});
 	});
 });
