@@ -6,9 +6,9 @@ import { PriorityFormData } from './PriorityEditForm';
 import PriorityEditFormWithData from './PriorityEditFormWithData';
 
 type PriorityVerticalBarProps = {
-	context: 'new' | 'edit';
+	context: 'edit';
 	priorityId: string;
-	onSave: (data: PriorityFormData) => void;
+	onSave: (data: PriorityFormData) => Promise<void>;
 	onClose: () => void;
 };
 

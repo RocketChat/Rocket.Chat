@@ -6,7 +6,7 @@ import React, { ReactElement } from 'react';
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import PriorityEditForm, { ILivechatClientPriority, PriorityEditFormProps } from './PriorityEditForm';
 
-type PriorityEditFormWithDataProps = Exclude<PriorityEditFormProps, 'data'> & {
+type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 	priorityId: string;
 };
 
