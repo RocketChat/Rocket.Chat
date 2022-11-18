@@ -118,7 +118,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		showAppPermissionsReviewModal();
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button && button.action !== 'update';
+	const shouldShowPriceDisplay = isAppDetailsPage && button;
 
 	return (
 		<Box {...props} display='flex' mis='x4'>

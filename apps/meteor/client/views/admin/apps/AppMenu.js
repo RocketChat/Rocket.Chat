@@ -123,7 +123,7 @@ function AppMenu({ app, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
+	}, [checkUserLoggedIn, app, setModal, closeModal, buildExternalUrl, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -231,7 +231,7 @@ function AppMenu({ app, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app.id, app.purchaseType, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
+	}, [action, app, cancelAction, checkUserLoggedIn, closeModal, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
 	const incompatibleIconName = (app, action) => {
 		if (app.versionIncompatible) {
@@ -339,9 +339,9 @@ function AppMenu({ app, ...props }) {
 	}, [
 		canAppBeSubscribed,
 		isSubscribed,
+		app,
 		t,
 		handleSubscription,
-		app.installed,
 		button?.label,
 		handleAcquireApp,
 		context,
