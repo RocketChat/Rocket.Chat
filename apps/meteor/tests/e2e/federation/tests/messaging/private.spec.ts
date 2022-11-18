@@ -2,11 +2,11 @@
 import faker from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { test, expect } from '../../utils/test';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
 import { registerUser } from '../../utils/register-user';
-import { formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
 import { doLogin } from '../../utils/auth';
 import { createGroupAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
@@ -30,17 +30,22 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			userFromServer2UsernameOnly,
 			constants.RC_SERVER_2.matrixServerName,
 		);
+		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
 		createdGroupName = await createGroupAndInviteRemoteUserToCreateLocalUser({
 			page,
-			poFederationChannelServer1,
-			userFromServer2UsernameOnly,
+			poFederationChannelServer: poFederationChannelServer1,
+			fullUsernameFromServer: fullUsernameFromServer2,
+			server: constants.RC_SERVER_1,
 		});
-		await apiServer1.post('/settings/Message_AudioRecorderEnabled', { value: true });
-		await apiServer2.post('/settings/Message_AudioRecorderEnabled', { value: true });
-		await apiServer1.post('/settings/Message_VideoRecorderEnabled', { value: true });
-		await apiServer2.post('/settings/Message_VideoRecorderEnabled', { value: true });
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
+	});
+
+	test.afterAll(async ({ apiServer1, apiServer2 }) => {
+		await tearDownTesting(apiServer1);
+		await tearDownTesting(apiServer2);
 	});
 
 	test.beforeEach(async ({ page, browser }) => {
@@ -105,11 +110,22 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
 			});
 
-			// TODO: skipping this test until we have the Synapse server to test against, this is having some intermittencies
-			test.describe.skip('With multiple users', () => {
+			test.describe('With multiple users', () => {
 				const createdGroup = faker.datatype.uuid();
 
-				test('expect to send a message from Server A (creator) to Server B', async ({ page }) => {
+				test('expect to send a message from Server A (creator) to Server B', async ({ browser, page }) => {
+					const page2 = await browser.newPage();
+					const poFederationChannel1ForUser2 = new FederationChannel(page2);
+
+					await doLogin({
+						page: page2,
+						server: {
+							url: constants.RC_SERVER_1.url,
+							username: userFromServer1UsernameOnly,
+							password: constants.RC_SERVER_1.password,
+						},
+						storeState: false,
+					});
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
@@ -122,20 +138,21 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 					await poFederationChannelServer1.sidenav.openChat(createdGroup);
 					await poFederationChannelServer2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
 					await page.waitForTimeout(2000);
 
 					await poFederationChannelServer1.content.sendMessage('hello world from server A (creator)');
 
 					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
 					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
 					await pageForServer2.close();
+					await page2.close();
 				});
-
-				test('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
-					await poFederationChannelServer1.sidenav.logout();
+				// TODO: double check this test
+				test.skip('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
-
 					await doLogin({
 						page: page2,
 						server: {
@@ -150,33 +167,57 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannelServer1.sidenav.openChat(createdGroup);
 					await poFederationChannelServer2.sidenav.openChat(createdGroup);
 
 					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
+					await page2.waitForTimeout(2000);
+					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
-					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
+					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+						'hello world from server A (user 2) message 2',
+					);
+					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+						'hello world from server A (user 2) message 2',
+					);
+					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText(
+						'hello world from server A (user 2) message 2',
+					);
 
 					await page2.close();
 					await pageForServer2.close();
 				});
 
-				test('expect to send a message from Server B to Server A', async ({ page }) => {
+				test('expect to send a message from Server B to Server A', async ({ browser, page }) => {
+					const page2 = await browser.newPage();
+					const poFederationChannel1ForUser2 = new FederationChannel(page2);
+					await doLogin({
+						page: page2,
+						server: {
+							url: constants.RC_SERVER_1.url,
+							username: userFromServer1UsernameOnly,
+							password: constants.RC_SERVER_1.password,
+						},
+						storeState: false,
+					});
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
 					await poFederationChannelServer1.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
 					await poFederationChannelServer2.sidenav.openChat(createdGroup);
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer2.content.sendMessage('hello world from server A (user 2)');
+					await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
-					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
+					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
+					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
 					await pageForServer2.close();
+					await page2.close();
 				});
 			});
 		});

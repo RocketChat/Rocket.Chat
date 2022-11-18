@@ -1,7 +1,7 @@
 /* eslint no-await-in-loop: 0 */
 import type { Page } from '@playwright/test';
 
-import { test, expect } from '../../utils/test';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
 import { registerUser } from '../../utils/register-user';
@@ -41,12 +41,14 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
 		await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2]);
-
-		await apiServer1.post('/settings/Message_AudioRecorderEnabled', { value: true });
-		await apiServer2.post('/settings/Message_AudioRecorderEnabled', { value: true });
-		await apiServer1.post('/settings/Message_VideoRecorderEnabled', { value: true });
-		await apiServer2.post('/settings/Message_VideoRecorderEnabled', { value: true });
 		await page.close();
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
+	});
+
+	test.afterAll(async ({ apiServer1, apiServer2 }) => {
+		await tearDownTesting(apiServer1);
+		await tearDownTesting(apiServer2);
 	});
 
 	test.beforeEach(async ({ page, browser }) => {
@@ -111,40 +113,75 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
 			});
 
-			// TODO: skipping this test until we have the Synapse server to test against, this is having some intermittencies
-			test.describe.skip('With multiple users', () => {
-				let usernameFromServer2: string;
+			test.describe('With multiple users', () => {
+				let createdUsernameFromServer2: string;
 				let usernameWithDomainFromServer2: string;
 
-				test('expect to send a message from Server A (creator) to Server B', async ({ page, apiServer2 }) => {
+				test('expect to send a message from Server A (creator) to Server B', async ({ browser, page, apiServer2 }) => {
+					const page2 = await browser.newPage();
+					const poFederationChannel1ForUser2 = new FederationChannel(page2);
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+					createdUsernameFromServer2 = await registerUser(apiServer2);
+
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: createdUsernameFromServer2,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
+					await doLogin({
+						page: page2,
+						server: {
+							url: constants.RC_SERVER_1.url,
+							username: userFromServer1UsernameOnly,
+							password: constants.RC_SERVER_1.password,
+						},
+						storeState: false,
+					});
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					usernameFromServer2 = await registerUser(apiServer2);
-
-					const fullUsernameFromServer2 = formatIntoFullMatrixUsername(usernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+					const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
 					usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-						usernameFromServer2,
+						createdUsernameFromServer2,
 						constants.RC_SERVER_2.matrixServerName,
 					);
 
 					await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2, userFromServer1UsernameOnly]);
 
-					await poFederationChannelServer1.sidenav.openChat(`${usernameWithDomainFromServer2}, ${userFromServer1UsernameOnly}`);
-					await poFederationChannelServer2.sidenav.openChat(`${adminUsernameWithDomainFromServer1}, ${userFromServer1UsernameOnly}`);
-					await page.waitForTimeout(2000);
-
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world from server A (creator)');
 
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(adminUsernameWithDomainFromServer1);
+					await page.waitForTimeout(2000);
+
 					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
 					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
 					await pageForServer2.close();
+					await page2.close();
 				});
-
-				test('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
+				// TODO: double check this test
+				test.skip('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: createdUsernameFromServer2,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
 					await doLogin({
 						page: page2,
 						server: {
@@ -158,29 +195,66 @@ test.describe.parallel('Federation - DM Messaging', () => {
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(`${adminUsernameWithDomainFromServer1}, ${userFromServer2UsernameOnly}`);
-					await poFederationChannelServer2.sidenav.openChat(`${adminUsernameWithDomainFromServer1}, ${userFromServer1UsernameOnly}`);
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(adminUsernameWithDomainFromServer1);
 
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
+					await page2.waitForTimeout(2000);
+					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
-					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
+					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+						'hello world from server A (user 2) message 2',
+					);
+					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText(
+						'hello world from server A (user 2) message 2',
+					);
+					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+						'hello world from server A (user 2) message 2',
+					);
 
 					await page2.close();
+					await pageForServer2.close();
 				});
 
-				test('expect to send a message from Server B to Server A', async ({ page }) => {
+				test('expect to send a message from Server B to Server A', async ({ page, browser }) => {
+					const page2 = await browser.newPage();
+					const poFederationChannel1ForUser2 = new FederationChannel(page2);
+					const pageForServer2 = await browser.newPage();
+					const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+
+					await doLogin({
+						page: pageForServer2,
+						server: {
+							url: constants.RC_SERVER_2.url,
+							username: createdUsernameFromServer2,
+							password: constants.RC_SERVER_2.password,
+						},
+						storeState: false,
+					});
+					await doLogin({
+						page: page2,
+						server: {
+							url: constants.RC_SERVER_1.url,
+							username: userFromServer1UsernameOnly,
+							password: constants.RC_SERVER_1.password,
+						},
+						storeState: false,
+					});
 					await page.goto(`${constants.RC_SERVER_1.url}/home`);
 					await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-					await poFederationChannelServer1.sidenav.openChat(`${usernameWithDomainFromServer2}, ${userFromServer1UsernameOnly}`);
-					await poFederationChannelServer2.sidenav.openChat(`${adminUsernameWithDomainFromServer1}, ${userFromServer1UsernameOnly}`);
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(adminUsernameWithDomainFromServer1);
 
-					await poFederationChannelServer2.content.sendMessage('hello world from server A (user 2)');
+					await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
-					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (user 2)');
+					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
+					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
 					await pageForServer2.close();
+					await page2.close();
 				});
 			});
 		});

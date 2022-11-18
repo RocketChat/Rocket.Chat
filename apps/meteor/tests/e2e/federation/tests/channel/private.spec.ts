@@ -1,6 +1,6 @@
 import faker from '@faker-js/faker';
 
-import { test, expect } from '../../utils/test';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
 import { registerUser } from '../../utils/register-user';
@@ -17,13 +17,22 @@ test.describe.parallel('Federation - Group Creation', () => {
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
+		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
 		createdGroupName = await createGroupAndInviteRemoteUserToCreateLocalUser({
 			page,
-			poFederationChannelServer1,
-			userFromServer2UsernameOnly,
+			poFederationChannelServer: poFederationChannelServer1,
+			fullUsernameFromServer: fullUsernameFromServer2,
+			server: constants.RC_SERVER_1,
 		});
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
+	});
+
+	test.afterAll(async ({ apiServer1, apiServer2 }) => {
+		await tearDownTesting(apiServer1);
+		await tearDownTesting(apiServer2);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -149,8 +158,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await pageForServer2.close();
 			});
 
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the remote user does not exists in the server A yet)', () => {
+			test.describe('With multiple users (when the remote user does not exists in the server A yet)', () => {
 				const createdGroup = faker.datatype.uuid();
 				let createdUsernameFromServer2: string;
 
@@ -248,10 +256,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await page2.close();
 				});
 			});
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
+			// TODO: double check this test
 			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
 				const createdGroup = faker.datatype.uuid();
-
 				test('expect to create a group inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
 					page,
@@ -500,8 +507,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await pageForServer2.close();
 			});
 
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the remote user does not exists in the server A yet)', () => {
+			test.describe('With multiple users (when the remote user does not exists in the server A yet)', () => {
 				const createdGroup = faker.datatype.uuid();
 				let createdUsernameFromServer2: string;
 
@@ -599,8 +605,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				});
 			});
 
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
+			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				const createdGroup = faker.datatype.uuid();
 
 				test('expect to create an empty group, and invite an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
@@ -947,11 +952,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await pageForServer2.close();
 			});
 
-			// TODO: skipping this test until we have the Synapse server to test against, this is having some intermittencies
-			test.skip('expect only the owner of the room being able to edit the channel name AND the channel topic', async ({
-				browser,
-				page,
-			}) => {
+			test('expect only the owner of the room being able to edit the channel name AND the channel topic', async ({ browser, page }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
 
@@ -1001,6 +1002,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				);
 				await expect(nameChangedSystemMessageServer2).toBeVisible();
 
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
 				await poFederationChannelServer1.tabs.room.btnEdit.click();
 				await poFederationChannelServer1.tabs.room.inputTopic.fill('hello-topic-edited');
 				await poFederationChannelServer1.tabs.room.btnSave.click();

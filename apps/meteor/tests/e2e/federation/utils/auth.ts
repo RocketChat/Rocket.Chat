@@ -17,9 +17,9 @@ export const doLogin = async ({
 }) => {
 	await page.goto(`${server.url}/login`);
 
-	await page.locator('[name=emailOrUsername]').type(server.username);
-	await page.locator('[name=pass]').type(server.password);
-	await page.locator('.login').click();
+	await page.locator('role=textbox[name=/username/i]').type(server.username);
+	await page.locator('[name=password]').type(server.password);
+	await page.locator('role=button[name="Login"]').click();
 
 	await page.waitForTimeout(1000);
 	if (storeState) {

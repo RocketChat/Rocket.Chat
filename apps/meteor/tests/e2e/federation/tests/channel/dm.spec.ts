@@ -1,4 +1,4 @@
-import { test, expect } from '../../utils/test';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
 import { registerUser } from '../../utils/register-user';
@@ -14,13 +14,22 @@ test.describe.parallel('Federation - Direct Messages', () => {
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
+		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
 		await createChannelAndInviteRemoteUserToCreateLocalUser({
 			page,
-			poFederationChannelServer1,
-			userFromServer2UsernameOnly,
+			poFederationChannelServer: poFederationChannelServer1,
+			fullUsernameFromServer: fullUsernameFromServer2,
+			server: constants.RC_SERVER_1,
 		});
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
+	});
+
+	test.afterAll(async ({ apiServer1, apiServer2 }) => {
+		await tearDownTesting(apiServer1);
+		await tearDownTesting(apiServer2);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -126,8 +135,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await pageForServer2.close();
 			});
 
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the remote user does not exists in the server A yet)', () => {
+			test.describe('With multiple users (when the remote user does not exists in the server A yet)', () => {
 				let createdUsernameFromServer2: string;
 
 				test('expect to create a DM inviting an user from the Server B who does not exist in Server A yet + an user from Server A only (locally)', async ({
@@ -168,12 +176,12 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.createDirectMessagesUsingModal([fullUsernameFromServer2, userFromServer1UsernameOnly]);
 
-					await poFederationChannelServer1.sidenav.openChat(`${usernameWithDomainFromServer2}, ${userFromServer1UsernameOnly}`);
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(`${usernameWithDomainFromServer2}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(userCreatedWithDomainFromServer1);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -208,7 +216,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(`${usernameWithDomainFromServer2}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
@@ -218,8 +226,8 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await page2.close();
 				});
 			});
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
+
+			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				test('expect to create a DM inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
 					page,
@@ -255,12 +263,12 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.createDirectMessagesUsingModal([userFromServer2UsernameOnly, userFromServer1UsernameOnly]);
 
-					await poFederationChannelServer1.sidenav.openChat(`${usernameWithDomainFromServer2}, ${userFromServer1UsernameOnly}`);
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(`${usernameWithDomainFromServer2}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(usernameOriginalFromServer1OnlyWithDomain);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -287,19 +295,15 @@ test.describe.parallel('Federation - Direct Messages', () => {
 						},
 						storeState: false,
 					});
-
-					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
-
-					await poFederationChannel1ForUser2.sidenav.openChat(`${userFromServer2UsernameOnly}, ${constants.RC_SERVER_1.username}`);
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
-					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
-					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						userFromServer2UsernameOnly,
 						constants.RC_SERVER_2.matrixServerName,
 					);
+					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
+
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -358,11 +362,180 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await pageForServer2.close();
 			});
 
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the remote user does not exists in the server A yet)', () => {
+			test('expect to create a DM inviting an user from the Server B who already exist in Server A', async ({
+				browser,
+				page,
+				apiServer2,
+			}) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const createdUsernameFromServer2 = await registerUser(apiServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: createdUsernameFromServer2,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+				await poFederationChannelServer1.sidenav.logout();
+				await createChannelAndInviteRemoteUserToCreateLocalUser({
+					page,
+					poFederationChannelServer: poFederationChannelServer1,
+					fullUsernameFromServer: fullUsernameFromServer2,
+					server: constants.RC_SERVER_1,
+					closePageAfterCreation: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					createdUsernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const adminUsernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
+
+				await poFederationChannelServer1.sidenav.openChat('general');
+
+				await poFederationChannelServer1.content.dispatchSlashCommand(`/federation dm @${usernameWithDomainFromServer2}`);
+
+				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.tabs.btnUserInfo.click();
+				await poFederationChannelServer1.content.sendMessage('hello world');
+
+				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.tabs.btnUserInfo.click();
+
+				await expect(poFederationChannelServer1.tabs.dmUserMember.getUserInfoUsername(usernameWithDomainFromServer2)).toBeVisible();
+				await expect(poFederationChannelServer2.tabs.dmUserMember.getUserInfoUsername(adminUsernameWithDomainFromServer1)).toBeVisible();
+				await pageForServer2.close();
+			});
+
+			test('expect to create a DM inviting an user from the Server A who does not exist in Server B yet', async ({
+				browser,
+				page,
+				apiServer1,
+			}) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const createdUsernameFromServer1 = await registerUser(apiServer1);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: constants.RC_SERVER_2.username,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const fullUsernameFromServer1 = formatIntoFullMatrixUsername(createdUsernameFromServer1, constants.RC_SERVER_1.matrixServerName);
+				const usernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					createdUsernameFromServer1,
+					constants.RC_SERVER_1.matrixServerName,
+				);
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_2.username,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+
+				await poFederationChannelServer2.sidenav.openChat('general');
+
+				await poFederationChannelServer2.content.dispatchSlashCommand(`/federation dm @${fullUsernameFromServer1}`);
+
+				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
+				await poFederationChannelServer2.tabs.btnUserInfo.click();
+				await poFederationChannelServer2.content.sendMessage('hello world');
+
+				await poFederationChannelServer1.sidenav.logout();
+				await doLogin({
+					page,
+					server: {
+						url: constants.RC_SERVER_1.url,
+						username: createdUsernameFromServer1,
+						password: constants.RC_SERVER_1.password,
+					},
+					storeState: false,
+				});
+
+				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.tabs.btnUserInfo.click();
+
+				await expect(poFederationChannelServer2.tabs.dmUserMember.getUserInfoUsername(usernameWithDomainFromServer1)).toBeVisible();
+				await expect(poFederationChannelServer1.tabs.dmUserMember.getUserInfoUsername(usernameWithDomainFromServer2)).toBeVisible();
+				await pageForServer2.close();
+			});
+
+			test('expect to create a DM inviting an user from the Server A who already exist in Server B', async ({
+				browser,
+				page,
+				apiServer2,
+			}) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const createdUsernameFromServer2 = await registerUser(apiServer2);
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: createdUsernameFromServer2,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(createdUsernameFromServer2, constants.RC_SERVER_2.matrixServerName);
+				await poFederationChannelServer1.sidenav.logout();
+				await createChannelAndInviteRemoteUserToCreateLocalUser({
+					page,
+					poFederationChannelServer: poFederationChannelServer1,
+					fullUsernameFromServer: fullUsernameFromServer2,
+					server: constants.RC_SERVER_1,
+					closePageAfterCreation: false,
+				});
+
+				await page.goto(`${constants.RC_SERVER_1.url}/home`);
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+
+				const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
+					createdUsernameFromServer2,
+					constants.RC_SERVER_2.matrixServerName,
+				);
+				const adminUsernameWithDomainFromServer1 = formatUsernameAndDomainIntoMatrixFormat(
+					constants.RC_SERVER_1.username,
+					constants.RC_SERVER_1.matrixServerName,
+				);
+				await poFederationChannelServer2.sidenav.openChat('general');
+
+				await poFederationChannelServer2.content.dispatchSlashCommand(`/federation dm @${adminUsernameWithDomainFromServer1}`);
+
+				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
+				await poFederationChannelServer2.tabs.btnUserInfo.click();
+				await poFederationChannelServer2.content.sendMessage('hello world');
+
+				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
+				await poFederationChannelServer1.tabs.btnUserInfo.click();
+
+				await expect(poFederationChannelServer2.tabs.dmUserMember.getUserInfoUsername(adminUsernameWithDomainFromServer1)).toBeVisible();
+				await expect(poFederationChannelServer1.tabs.dmUserMember.getUserInfoUsername(usernameWithDomainFromServer2)).toBeVisible();
+				await pageForServer2.close();
+			});
+
+			test.describe('With multiple users (when the remote user does not exists in the server A yet)', () => {
 				let createdUsernameFromServer2: string;
 
-				test('expect to create A DM, and invite an user from the Server B who does not exist in Server A yet + an user from Server A only (locally)', async ({
+				test('expect to create a DM, and invite an user from the Server B who does not exist in Server A yet + an user from Server A only (locally)', async ({
 					browser,
 					apiServer2,
 					page,
@@ -398,16 +571,17 @@ test.describe.parallel('Federation - Direct Messages', () => {
 						constants.RC_SERVER_1.matrixServerName,
 					);
 
+					await poFederationChannelServer1.sidenav.openChat('general');
 					await poFederationChannelServer1.content.dispatchSlashCommand(
-						`/federation dm ${fullUsernameFromServer2}, @${constants.RC_SERVER_1.username}`,
+						`/federation dm ${fullUsernameFromServer2} @${userFromServer1UsernameOnly}`,
 					);
 
-					await poFederationChannelServer1.sidenav.openChat(`${usernameWithDomainFromServer2}, ${userFromServer1UsernameOnly}`);
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(userFromServer1UsernameOnly);
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(`${usernameWithDomainFromServer2}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(usernameOriginalFromServer1OnlyWithDomain);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -415,7 +589,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
 
-					await expect(poFederationChannelServer2.tabs.members.getUserInList(userFromServer2UsernameOnly)).toBeVisible();
+					await expect(poFederationChannelServer2.tabs.members.getUserInList(createdUsernameFromServer2)).toBeVisible();
 					await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameOriginalFromServer1OnlyWithDomain)).toBeVisible();
 					await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
 					await pageForServer2.close();
@@ -437,14 +611,12 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(`${userFromServer2UsernameOnly}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(constants.RC_SERVER_1.username);
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
-					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
-						userFromServer2UsernameOnly,
+						createdUsernameFromServer2,
 						constants.RC_SERVER_2.matrixServerName,
 					);
 
@@ -455,8 +627,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				});
 			});
 
-			// TODO: enable these skipped tests as soon as we have a Synapse environment to test against
-			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
+			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				test('expect to create a DM, and invite an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
 					page,
@@ -490,16 +661,18 @@ test.describe.parallel('Federation - Direct Messages', () => {
 						constants.RC_SERVER_1.matrixServerName,
 					);
 
+					await poFederationChannelServer1.sidenav.openChat('general');
+
 					await poFederationChannelServer1.content.dispatchSlashCommand(
-						`/federation dm @${usernameWithDomainFromServer2}, @${constants.RC_SERVER_1.username}`,
+						`/federation dm @${usernameWithDomainFromServer2} @${userFromServer1UsernameOnly}`,
 					);
 
-					await poFederationChannelServer1.sidenav.openChat(`${usernameWithDomainFromServer2}, ${userFromServer1UsernameOnly}`);
+					await poFederationChannelServer1.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(`${usernameWithDomainFromServer2}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannelServer2.sidenav.openDMMultipleChat(usernameOriginalFromServer1OnlyWithDomain);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -529,12 +702,10 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(`${userFromServer2UsernameOnly}, ${constants.RC_SERVER_1.username}`);
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(constants.RC_SERVER_1.username);
 					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
-					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						userFromServer2UsernameOnly,
 						constants.RC_SERVER_2.matrixServerName,

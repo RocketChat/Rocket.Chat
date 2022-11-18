@@ -1,8 +1,8 @@
-import { test, expect } from '../../utils/test';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
 import { registerUser } from '../../utils/register-user';
-import { formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
 import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 import { FederationAdmin } from '../../page-objects/admin';
@@ -18,20 +18,29 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		poFederationAdmin = new FederationAdmin(page);
 	});
 
-	test.beforeAll(async ({ apiServer2, browser }) => {
+	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 			userFromServer2UsernameOnly,
 			constants.RC_SERVER_2.matrixServerName,
 		);
 
+		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
 		await createChannelAndInviteRemoteUserToCreateLocalUser({
 			page,
-			poFederationChannelServer1,
-			userFromServer2UsernameOnly,
+			poFederationChannelServer: poFederationChannelServer1,
+			fullUsernameFromServer: fullUsernameFromServer2,
+			server: constants.RC_SERVER_1,
 		});
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
+	});
+
+	test.afterAll(async ({ apiServer1, apiServer2 }) => {
+		await tearDownTesting(apiServer1);
+		await tearDownTesting(apiServer2);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -86,10 +95,12 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		const newUserFromServer2 = await registerUser(apiServer2);
 		const page2 = await browser.newPage();
 		const poFederationChannelServer1ForUser2 = new FederationChannel(page2);
+		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(newUserFromServer2, constants.RC_SERVER_2.matrixServerName);
 		await createChannelAndInviteRemoteUserToCreateLocalUser({
 			page: page2,
-			poFederationChannelServer1: poFederationChannelServer1ForUser2,
-			userFromServer2UsernameOnly: newUserFromServer2,
+			poFederationChannelServer: poFederationChannelServer1ForUser2,
+			fullUsernameFromServer: fullUsernameFromServer2,
+			server: constants.RC_SERVER_1,
 		});
 		const after = parseInt(
 			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',
@@ -109,10 +120,12 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		const newUserFromServer1 = await registerUser(apiServer1);
 		const page2 = await browser.newPage();
 		const poFederationChannelServer1ForUser2 = new FederationChannel(page2);
+		const fullUsernameFromServer1 = formatIntoFullMatrixUsername(newUserFromServer1, constants.RC_SERVER_1.matrixServerName);
 		await createChannelAndInviteRemoteUserToCreateLocalUser({
 			page: page2,
-			poFederationChannelServer1: poFederationChannelServer1ForUser2,
-			userFromServer2UsernameOnly: newUserFromServer1,
+			poFederationChannelServer: poFederationChannelServer1ForUser2,
+			fullUsernameFromServer: fullUsernameFromServer1,
+			server: constants.RC_SERVER_1,
 		});
 		const after = parseInt(
 			(await page.locator('[data-qa-id="seats-available"]').textContent())?.replace('Seats Available', '').trim() || '0',

@@ -23,6 +23,10 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
 
+	get typingIndicator(): Locator {
+		return this.page.locator('.rc-message-box__activity');
+	}
+
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page
@@ -64,7 +68,7 @@ export class FederationHomeContent {
 	async sendAudioRecordedMessage(): Promise<void> {
 		await this.btnRecordAudio.click();
 		await this.page.waitForTimeout(5000);
-		await this.page.locator('.js-audio-message-done').click();
+		await this.page.locator('.rc-message-box__icon.rc-message-box__audio-message-done').click();
 		await this.btnModalConfirm.click();
 	}
 
@@ -80,9 +84,11 @@ export class FederationHomeContent {
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
+		await this.page.waitForTimeout(2000);
 		await this.page
 			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
 			.click();
+		await this.page.waitForTimeout(3000);
 	}
 
 	get btnModalCancel(): Locator {

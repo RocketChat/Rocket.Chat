@@ -68,6 +68,14 @@ export class FederationSidenav {
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
+	async openDMMultipleChat(name: string): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-search"]').click();
+		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.waitForTimeout(2000);
+		await this.page.locator('[data-qa="sidebar-item-title"]').nth(1).click();
+		await this.page.waitForTimeout(2000);
+	}
+
 	async createPublicChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();
