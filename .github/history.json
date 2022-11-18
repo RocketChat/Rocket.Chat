@@ -95626,6 +95626,35 @@
           ]
         }
       ]
+    },
+    "5.3.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27259",
+          "title": "[FIX] Sidebar Room list extended preview not updating on new messages.",
+          "userLogin": "gabriellsh",
+          "milestone": "5.3.2",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "27294",
+          "title": "[FIX] Replace regex not compatible with safari",
+          "userLogin": "filipemarins",
+          "milestone": "5.3.2",
+          "contributors": [
+            "filipemarins"
+          ]
+        }
+      ]
     }
   }
 }

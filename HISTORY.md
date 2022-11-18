@@ -1,4 +1,24 @@
 
+# 5.3.2
+`2022-11-18  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Replace regex not compatible with safari ([#27294](https://github.com/RocketChat/Rocket.Chat/pull/27294))
+
+- Sidebar Room list extended preview not updating on new messages. ([#27259](https://github.com/RocketChat/Rocket.Chat/pull/27259))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+
 # 5.3.1
 `2022-11-14  ·  5 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
 
