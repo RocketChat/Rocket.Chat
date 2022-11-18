@@ -170,4 +170,16 @@ export class HomeContent {
 	get takeOmnichannelChatButton(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
+
+	get lastSystemMessageBody(): Locator {
+		return this.page.locator('[data-qa-type="system-message-body"]').last();
+	}
+
+	get resumeOnHoldOmnichannelChatButton(): Locator {
+		return this.page.locator('button.rcx-button--primary >> text=Resume');
+	}
+
+	get btnOnHold(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
+	}
 }

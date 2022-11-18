@@ -360,7 +360,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 					</Grid.Item>
 				</Grid>
 			</Field>
-			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
+			<CustomFieldsForm jsonCustomFields={undefined} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
 	);
 };
