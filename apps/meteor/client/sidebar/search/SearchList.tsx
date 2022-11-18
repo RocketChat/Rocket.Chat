@@ -25,6 +25,7 @@ import React, {
 	Dispatch,
 	FormEventHandler,
 	Ref,
+	MouseEventHandler,
 } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
@@ -289,6 +290,13 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		};
 	}, [cursorRef, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
 
+	const handleClick: MouseEventHandler<HTMLElement> = (e): void => {
+		if (e.target instanceof Element && [e.target.tagName, e.target.parentElement?.tagName].includes('BUTTON')) {
+			return;
+		}
+		return onClose();
+	};
+
 	return (
 		<Box
 			position='absolute'
@@ -325,6 +333,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				w='full'
 				data-qa='sidebar-search-result'
 				aria-busy={isLoading}
+				onClick={handleClick}
 			>
 				<Virtuoso
 					style={{ height: '100%', width: '100%' }}
