@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../api';
 import { resolveSRV, resolveTXT } from '../../../federation/server/functions/resolveDNS';
 import { isErrnoException } from '../../../../server/lib/isErrnoException';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 /**
  * @openapi
@@ -132,6 +133,12 @@ API.v1.addRoute(
 					url: String,
 				}),
 			);
+
+			if (!this.bodyParams && this.queryParams) {
+				apiDeprecationLogger.warn(
+					'Using query parameters on the dns.resolve.txt endpoint is deprecated and will no longer be supported in the next major release of Rocket.Chat.',
+				);
+			}
 
 			const { url } = params;
 			if (!url) {
