@@ -6,7 +6,8 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
+import type { ContextType } from 'react';
 
 import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -22,11 +23,18 @@ import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import './thread.html';
 import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
-import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
+import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
 
 type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
 	subscription: ISubscription;
+	jump: unknown;
+	following: boolean;
+	rid: IRoom['_id'];
+	tabBar: {
+		openRoomInfo: (username: string) => void;
+	};
+	messageContext: ContextType<typeof MessageContext>;
 }> & {
 	firstNode: HTMLElement;
 	wrapper?: HTMLElement;
@@ -58,47 +66,6 @@ const sort = { ts: 1 };
 Template.thread.events({
 	...dropzoneEvents,
 	...getCommonRoomEvents(),
-	async 'click .js-actionButton-sendMessage'(event: JQuery.ClickEvent, instance: ThreadTemplateInstance) {
-		const rid = instance.state.get('rid');
-		const tmid = instance.state.get('tmid');
-		const msg = event.currentTarget.value;
-		let msgObject = { _id: Random.id(), rid, tmid, msg } as IMessage;
-		if (!msg) {
-			return;
-		}
-
-		msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
-
-		if (await instance.chatMessages.slashCommandProcessor?.process(msgObject)) {
-			return;
-		}
-
-		await callWithErrorHandling('sendMessage', msgObject);
-	},
-	'click .js-actionButton-respondWithMessage'(event: JQuery.ClickEvent, instance: ThreadTemplateInstance) {
-		const msg = event.currentTarget.value;
-		if (!msg) {
-			return;
-		}
-
-		if (instance.chatMessages.input) {
-			instance.chatMessages.input.value = msg;
-			instance.chatMessages.input.focus();
-		}
-	},
-	'click .js-actionButton-respondWithQuotedMessage'(event: JQuery.ClickEvent, instance: ThreadTemplateInstance) {
-		const mid = event.currentTarget.id;
-
-		if (!mid || !instance.chatMessages) {
-			return;
-		}
-
-		const message = Messages.findOne({ _id: mid }); // TODO: find a way to get the message from the collection without a query
-
-		instance.chatMessages.quotedMessages.add(message);
-
-		$(instance.chatMessages)?.trigger('focus').data('mention-user', false).trigger('dataChange');
-	},
 	'click .js-close'(e: JQuery.ClickEvent) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -130,7 +97,7 @@ Template.thread.helpers({
 
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
-	messageContext(this: { mainMessage: IMessage }) {
+	_messageContext(this: { mainMessage: IMessage }) {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
@@ -189,6 +156,9 @@ Template.thread.helpers({
 			checked,
 			onChange: () => instance.state.set('sendToChannel', !checked),
 		};
+	},
+	messageContext() {
+		return (Template.instance() as ThreadTemplateInstance).data.messageContext;
 	},
 });
 

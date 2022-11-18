@@ -18,10 +18,12 @@ import { useTabBarOpen } from '../contexts/ToolboxContext';
 
 export const MessageProvider = memo(function MessageProvider({
 	rid,
+	tmid,
 	broadcast,
 	children,
 }: {
 	rid: string;
+	tmid?: IMessage['_id'];
 	broadcast?: boolean;
 	children: ReactNode;
 }) {
@@ -123,7 +125,7 @@ export const MessageProvider = memo(function MessageProvider({
 
 					msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
 
-					const chatMessagesInstance = ChatMessages.get({ rid });
+					const chatMessagesInstance = ChatMessages.get({ rid, tmid });
 					if (await chatMessagesInstance?.slashCommandProcessor?.process(msgObject)) {
 						return;
 					}
@@ -131,14 +133,14 @@ export const MessageProvider = memo(function MessageProvider({
 					await sendMessage(msgObject);
 				},
 				respondWithMessage: async ({ msg }: { msg: string }): Promise<void> => {
-					const chatMessagesInstance = ChatMessages.get({ rid });
+					const chatMessagesInstance = ChatMessages.get({ rid, tmid });
 					if (chatMessagesInstance?.input) {
 						chatMessagesInstance.input.value = msg;
 						chatMessagesInstance.input.focus();
 					}
 				},
 				respondWithQuotedMessage: async ({ mid }: { mid: string }): Promise<void> => {
-					const chatMessagesInstance = ChatMessages.get({ rid });
+					const chatMessagesInstance = ChatMessages.get({ rid, tmid });
 					if (!mid || !chatMessagesInstance) {
 						return;
 					}

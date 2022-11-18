@@ -4,12 +4,13 @@ import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useE
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo, FC, useContext } from 'react';
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import { MessageContext } from '../contexts/MessageContext';
 import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
@@ -98,6 +99,8 @@ const ThreadComponent: FC<{
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
+	const messageContext = useContext(MessageContext);
+
 	const [viewData, setViewData] = useState(() => ({
 		mainMessage: threadMessage,
 		jump,
@@ -105,6 +108,7 @@ const ThreadComponent: FC<{
 		subscription,
 		rid: room._id,
 		tabBar: { openRoomInfo },
+		messageContext,
 	}));
 
 	useEffect(() => {
@@ -120,9 +124,10 @@ const ThreadComponent: FC<{
 				subscription,
 				rid: room._id,
 				tabBar: { openRoomInfo },
+				messageContext,
 			};
 		});
-	}, [following, jump, openRoomInfo, room._id, subscription, threadMessage]);
+	}, [following, jump, messageContext, openRoomInfo, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

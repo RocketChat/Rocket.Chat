@@ -13,7 +13,7 @@ import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTi
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Rooms } from '../../models/client';
 import { Markdown } from '../../markdown/client';
-import { t } from '../../utils';
+import { t } from '../../utils/client';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
