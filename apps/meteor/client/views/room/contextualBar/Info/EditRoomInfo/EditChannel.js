@@ -307,7 +307,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Label>{t('Description')}</Field.Label>
 						<Field.Row>
 							<TextAreaInput
-								disabled={!canViewDescription || isRoomFederated(room)}
+								disabled={isRoomFederated(room)}
 								rows={4}
 								value={roomDescription}
 								onChange={handleRoomDescription}
@@ -321,7 +321,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Label>{t('Announcement')}</Field.Label>
 						<Field.Row>
 							<TextAreaInput
-								disabled={!canViewAnnouncement || isRoomFederated(room)}
+								disabled={isRoomFederated(room)}
 								rows={4}
 								value={roomAnnouncement}
 								onChange={handleRoomAnnouncement}
@@ -386,11 +386,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Password_to_access')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch
-									disabled={canViewJoinCode || isRoomFederated(room)}
-									checked={joinCodeRequired}
-									onChange={handleJoinCodeRequired}
-								/>
+								<ToggleSwitch disabled={isRoomFederated(room)} checked={joinCodeRequired} onChange={handleJoinCodeRequired} />
 							</Field.Row>
 						</Box>
 						<Field.Row>
