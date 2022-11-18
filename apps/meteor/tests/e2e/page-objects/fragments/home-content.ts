@@ -10,7 +10,7 @@ export class HomeContent {
 	}
 
 	get inputMessage(): Locator {
-		return this.page.locator('[name="msg"]');
+		return this.page.locator('[contenteditable="true"]');
 	}
 
 	get messagePopUpItems(): Locator {
@@ -26,12 +26,12 @@ export class HomeContent {
 	}
 
 	async sendMessage(text: string): Promise<void> {
-		await this.page.locator('[name="msg"]').type(text);
+		await this.inputMessage.type(text);
 		await this.page.keyboard.press('Enter');
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
-		await this.page.locator('[name="msg"]').type(text);
+		await this.inputMessage.type(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}

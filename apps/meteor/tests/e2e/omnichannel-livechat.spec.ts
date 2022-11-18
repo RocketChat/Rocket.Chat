@@ -16,8 +16,7 @@ const newUser = {
 	email: faker.internet.email(),
 };
 
-const testImg =
-	'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+const testUrl = 'https://assets.digitalocean.com/articles/alligator/boo.svg';
 test.describe('Livechat', () => {
 	test.describe('Send message', () => {
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
@@ -53,6 +52,7 @@ test.describe('Livechat', () => {
 
 			await test.step('expect message to be received by agent', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newUser.name);
+				await poAuxContext.poHomeOmnichannel.content.takeOmnichannelChatButton.click();
 				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 			});
@@ -79,52 +79,14 @@ test.describe('Livechat', () => {
 				await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
 			});
 		});
-		test.describe('Verify message is received', () => {
-			test.use({ storageState: 'user1-session.json' });
-			test('expect message is received from user', async ({ page }) => {
-				await page.goto('/');
-				const poHomeOmnichannel = new HomeOmnichannel(page);
-				await poHomeOmnichannel.sidenav.openQueuedOmnichannelChat(newUser.name);
-				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toBeVisible();
-				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toContainText('this_a_test_message_from_user');
-			});
+		test('expect message is received from user', async () => {
+			await poAuxContext.poHomeOmnichannel.sidenav.openQueuedOmnichannelChat(newUser.name);
+			await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toBeVisible();
+			await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_again_from_agent');
 		});
-		test.describe('Send markdown message to online agent', () => {
-			let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
-			test.beforeAll(async ({ browser, api }) => {
-				await api.post('/livechat/users/agent', { username: 'user1' });
-
-				poAuxContext = await createAuxContext(browser, 'user1-session.json');
-			});
-
-			test.afterAll(async () => {
-				await poAuxContext.page.close();
-			});
-
-			test('expect image-containing markdown to be received from agent and user ', async ({ page }) => {
-				await poLiveChat.btnOpenLiveChat('R').click();
-				await poLiveChat.sendMessage(newUser, false);
-
-				await poLiveChat.onlineAgentMessage.type(`![image_test](${testImg})`);
-				await poLiveChat.btnSendMessageToOnlineAgent.click();
-
-				await expect(page.locator(`img[src="${testImg}"]`)).toBeVisible();
-			});
-
-			test('expect after user close live chat screen dont show messages', async ({ page }) => {
-				await poLiveChat.btnOpenLiveChat('R').click();
-				await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
-			});
-		});
-		test.describe('Verify markdown message is received', () => {
-			test.use({ storageState: 'user1-session.json' });
-			test('expect message is received from user', async ({ page }) => {
-				await page.goto('/');
-				const poHomeOmnichannel = new HomeOmnichannel(page);
-				await poHomeOmnichannel.sidenav.openQueuedOmnichannelChat(newUser.name);
-				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toBeVisible();
-				await expect(poHomeOmnichannel.content.lastUserMessageNotSequential).toContainText('image_test');
-			});
+		test('expect after user close live chat screen dont show messages', async ({ page }) => {
+			await poLiveChat.btnOpenLiveChat('R').click();
+			await expect(page.locator('[contenteditable="true"]')).not.toBeVisible();
 		});
 
 		test.describe('close livechat conversation', () => {
@@ -133,6 +95,34 @@ test.describe('Livechat', () => {
 				await poAuxContext.poHomeOmnichannel.content.omnichannelCloseChatModal.inputComment.fill('this_is_a_test_comment');
 				await poAuxContext.poHomeOmnichannel.content.omnichannelCloseChatModal.btnConfirm.click();
 				await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
+			});
+		});
+
+		test('Send markdown image message to online agent', async () => {
+			await test.step('Expect new message to be sent by livechat', async () => {
+				await page.locator('div >>text="New Chat"').click();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await expect(page.locator('div >>text="this_a_test_message_from_user"')).toBeVisible();
+			});
+
+			await test.step('Expect message to be sent by agent', async () => {
+				await poAuxContext.page.reload();
+				await poAuxContext.poHomeOmnichannel.sidenav.openChat(newUser.name);
+				await poAuxContext.poHomeOmnichannel.content.takeOmnichannelChatButton.click();
+				await poAuxContext.poHomeOmnichannel.content.sendMessage(`![image_test](${testUrl})`);
+				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage).toBeVisible();
+				await expect(poAuxContext.poHomeOmnichannel.content.lastUserMessage.locator(`img[src="${testUrl}"]`)).toBeVisible();
+			});
+
+			await test.step('expect livechat to be receive image', async () => {
+				await page.reload();
+
+				await expect(page.locator('div >>text="image_test"')).toBeVisible();
+
+				await expect(page.locator(`img[src="${testUrl}"]`)).toBeVisible();
 			});
 		});
 	});
