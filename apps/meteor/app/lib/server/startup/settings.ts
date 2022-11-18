@@ -431,18 +431,19 @@ settingsRegistry.addGroup('Accounts', function () {
 			values: [
 				{
 					key: 'default',
-					i18nLabel: 'Default',
+					i18nLabel: 'Selected_first_reply_unselected_following_replies',
 				},
 				{
 					key: 'always',
-					i18nLabel: 'Always',
+					i18nLabel: 'Selected_by_default',
 				},
 				{
 					key: 'never',
-					i18nLabel: 'Never',
+					i18nLabel: 'Unselected_by_default',
 				},
 			],
 			public: true,
+			i18nLabel: 'Also_send_thread_message_to_channel_behavior',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -1562,20 +1563,12 @@ settingsRegistry.addGroup('Layout', function () {
 			enterprise: true,
 			public: true,
 		});
-		this.add(
-			'Layout_Home_Body',
-			'<p>~~~~ Default html example ~~~~</p>\n<strong>Welcome to (ENTER ORGANIZATION NAME HERE)</strong>\n\n<p>All general communications should be done through #general</p>\n<p>find more information <a href="INSERT LINK" target="_blank" rel="noopener">here</a></p>',
-			{
-				type: 'code',
-				enableQuery: {
-					_id: 'Layout_Custom_Body',
-					value: true,
-				},
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
+		this.add('Layout_Home_Body', '', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
@@ -3216,27 +3209,32 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 });
 
 settingsRegistry.addGroup('Call_Center', function () {
+	// TODO: Check with the backend team if an i18nPlaceholder is possible
 	this.with({ tab: 'Settings' }, function () {
-		this.add('VoIP_Enabled', false, {
-			type: 'boolean',
-			public: true,
-			enableQuery: {
-				_id: 'Livechat_enabled',
-				value: true,
-			},
+		this.section('General_Settings', function () {
+			this.add('VoIP_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enabled_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_JWT_Secret', '', {
+				type: 'password',
+				i18nDescription: 'VoIP_JWT_Secret_description',
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
 		});
-		this.add('VoIP_JWT_Secret', '', {
-			type: 'password',
-			i18nDescription: 'VoIP_JWT_Secret_description',
-			enableQuery: {
-				_id: 'VoIP_Enabled',
-				value: true,
-			},
-		});
-		this.section('Server_Configuration', function () {
+		this.section('Voip_Server_Configuration', function () {
 			this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'WebSocket Server',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3245,6 +3243,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'wss://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3253,6 +3252,8 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Retry_Count', -1, {
 				type: 'int',
 				public: true,
+				i18nDescription: 'VoIP_Retry_Count_Description',
+				placeholder: '1',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3273,6 +3274,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Host', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'https://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3282,6 +3284,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Port', 0, {
 				type: 'int',
 				public: true,
+				placeholder: '8080',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3291,6 +3294,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Server Name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3300,6 +3304,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Username', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Username',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,

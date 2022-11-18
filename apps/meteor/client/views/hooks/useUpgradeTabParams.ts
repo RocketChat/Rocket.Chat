@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
 
-import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
+import { getUpgradeTabType, UpgradeTabVariant } from '../../../lib/upgradeTab';
 import { useLicense } from '../../hooks/useLicense';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
@@ -15,7 +15,6 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 
 	const trialLicense = licenses?.find(({ meta }) => meta?.trial);
 	const isTrial = licenses?.every(({ meta }) => meta?.trial) ?? false;
-	const hasGoldLicense = licenses?.some(({ tag }) => tag?.name === 'Gold') ?? false;
 	const trialEndDate = trialLicense?.meta ? format(new Date(trialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
@@ -23,7 +22,6 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 		hasValidLicense,
 		hadExpiredTrials,
 		isTrial,
-		hasGoldLicense,
 	});
 
 	return { tabType: upgradeTabType, trialEndDate, isLoading: !isSuccess };

@@ -1,4 +1,5 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -19,7 +20,7 @@ type WithOptions = {
 	options?: any;
 };
 
-export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
+export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
 	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
@@ -97,5 +98,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 
-	findOpen(): any;
+	findOpen(): FindCursor<IOmnichannelRoom>;
+
+	setAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
+
+	unsetAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
+
+	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
 }

@@ -1,13 +1,13 @@
 import { isRoomFederated, IRoom, IUser, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useUserRoom, useAtLeastOnePermission, useUser } from '@rocket.chat/ui-contexts';
+import { useUserRoom, useAtLeastOnePermission, useUser, usePermission } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState, ReactElement } from 'react';
 
-import * as Federation from '../../../../../app/federation-v2/client/Federation';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import UserInfoWithData from '../UserInfo';
 import AddUsers from './AddUsers';
 import InviteUsers from './InviteUsers';
@@ -31,6 +31,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const isTeam = room && isTeamRoom(room);
 	const isDirect = room && isDirectMessageRoom(room);
+
+	const canCreateInviteLinks = usePermission('create-invite-links');
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,
@@ -105,7 +107,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			onClickView={openUserInfo}
 			loadMoreItems={loadMoreItems}
 			reload={reload}
-			{...(canAddUsers && { onClickAdd: openAddUser, onClickInvite: openInvite })}
+			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
+			onClickAdd={canAddUsers ? openAddUser : undefined}
 		/>
 	);
 };

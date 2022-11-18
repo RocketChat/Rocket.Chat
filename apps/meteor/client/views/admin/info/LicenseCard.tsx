@@ -1,9 +1,9 @@
 import { ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import Card from '../../../components/Card';
 import PlanTag from '../../../components/PlanTag';
 import { useLicense } from '../../../hooks/useLicense';
 import Feature from './Feature';

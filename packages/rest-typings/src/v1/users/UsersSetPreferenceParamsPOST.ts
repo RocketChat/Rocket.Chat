@@ -22,6 +22,7 @@ export type UsersSetPreferencesParamsPOST = {
 		pushNotifications?: string;
 		enableAutoAway?: boolean;
 		highlights?: string[];
+		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
 		messageViewMode?: number;
 		hideUsernames?: boolean;
@@ -37,6 +38,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
+		receiveLoginDetectionEmail?: boolean;
 	};
 };
 
@@ -68,6 +70,11 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				convertAsciiEmoji: {
 					type: 'boolean',
+					nullable: true,
+				},
+				alsoSendThreadToChannel: {
+					type: 'string',
+					enum: ['default', 'always', 'never'],
 					nullable: true,
 				},
 				saveMobileBandwidth: {

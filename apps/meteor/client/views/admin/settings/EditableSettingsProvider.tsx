@@ -7,7 +7,7 @@ import type { FilterOperators } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { createReactiveSubscriptionFactory } from '../../../providers/createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
 import { EditableSettingsContext, EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
 
 const defaultQuery: SettingsContextQuery = {};

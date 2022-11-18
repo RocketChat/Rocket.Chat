@@ -1057,7 +1057,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (tags) {
 			query.tags = { $in: tags };
 		}
-		if (customFields) {
+		if (customFields && Object.keys(customFields).length) {
 			query.$and = Object.keys(customFields).map((key) => ({
 				[`livechatData.${key}`]: new RegExp(customFields[key], 'i'),
 			}));
@@ -1190,10 +1190,49 @@ export class LivechatRoomsRaw extends BaseRaw {
 	}
 
 	setDepartmentByRoomId(roomId, departmentId) {
-		return this.update({ _id: roomId }, { $set: { departmentId } });
+		return this.updateOne({ _id: roomId }, { $set: { departmentId } });
 	}
 
 	findOpen() {
 		return this.find({ t: 'l', open: true });
+	}
+
+	setAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferOngoing: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unsetAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$unset: {
+				autoTransferOngoing: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setAutoTransferredAtById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt: new Date(),
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }
