@@ -3219,7 +3219,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@juggle/resize-observer@npm:^3.3.1, @juggle/resize-observer@npm:^3.4.0":
+"@juggle/resize-observer@npm:^3.4.0":
   version: 3.4.0
   resolution: "@juggle/resize-observer@npm:3.4.0"
   checksum: 2505028c05cc2e17639fcad06218b1c4b60f932a4ebb4b41ab546ef8c157031ae377e3f560903801f6d01706dbefd4943b6c4704bf19ed86dfa1c62f1473a570
@@ -5902,7 +5902,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:0.31.21, @rocket.chat/css-in-js@npm:^0.31.20, @rocket.chat/css-in-js@npm:^0.31.21":
+"@rocket.chat/css-in-js@npm:0.31.21, @rocket.chat/css-in-js@npm:^0.31.21":
   version: 0.31.21
   resolution: "@rocket.chat/css-in-js@npm:0.31.21"
   dependencies:
@@ -5928,7 +5928,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:^0.31.20, @rocket.chat/css-supports@npm:^0.31.21":
+"@rocket.chat/css-supports@npm:^0.31.21":
   version: 0.31.21
   resolution: "@rocket.chat/css-supports@npm:0.31.21"
   dependencies:
@@ -6100,18 +6100,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:0.31.20":
-  version: 0.31.20
-  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.20"
-  dependencies:
-    use-sync-external-store: ~1.2.0
-  peerDependencies:
-    "@rocket.chat/fuselage-tokens": "*"
-    react: ^17.0.2
-  checksum: eb60d296d7be75dab36c27ac39a6da36d7aafa6e6f93c28cac839bbd2d691a25aa6d068bd931aabc3ad3cca503a5ed6203e5057a24bfecafe9c9314a1c6d3849
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/fuselage-hooks@npm:0.31.21, @rocket.chat/fuselage-hooks@npm:^0.31.21":
   version: 0.31.21
   resolution: "@rocket.chat/fuselage-hooks@npm:0.31.21"
@@ -6133,20 +6121,6 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     react: ^17.0.2
   checksum: 474f89848f99a7c82a7180cbc41c144591716e9bfce15fc63694a9376cb4e20ed5fb587df1ae9267cb5cf522bfe4b6be3ffb899968d295784698da54fe61c2a7
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/fuselage-polyfills@npm:0.31.20":
-  version: 0.31.20
-  resolution: "@rocket.chat/fuselage-polyfills@npm:0.31.20"
-  dependencies:
-    "@juggle/resize-observer": ^3.3.1
-    clipboard-polyfill: ^3.0.3
-    element-closest-polyfill: ^1.0.4
-    focus-visible: ^5.2.0
-    focus-within-polyfill: ^5.2.1
-    new-event-polyfill: ^1.0.1
-  checksum: 995f5779bbdd0d33e13ea2b3e8a5d12af8689430f1341751a5fcec1856b9fb3abdc78270df09ccc96e3a930d8a212fd29585858f7850df672ee636e009b04fb9
   languageName: node
   linkType: hard
 
@@ -6178,7 +6152,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:0.31.21, @rocket.chat/fuselage-tokens@npm:^0.31.20, @rocket.chat/fuselage-tokens@npm:^0.31.21":
+"@rocket.chat/fuselage-tokens@npm:0.31.21, @rocket.chat/fuselage-tokens@npm:^0.31.21":
   version: 0.31.21
   resolution: "@rocket.chat/fuselage-tokens@npm:0.31.21"
   checksum: 318d41ab4ef71d04cf5dcd685c90a4b627307818d4dcf331ac25ebec9d1aeffdc1c222d15f3d09fefd609fbe15ee1b201800371a7b5c89610a6df634d37f3d21
@@ -6198,10 +6172,10 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": ~1.30.0
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": 0.31.20
-    "@rocket.chat/fuselage-hooks": 0.31.20
-    "@rocket.chat/fuselage-polyfills": 0.31.20
-    "@rocket.chat/icons": 0.31.20
+    "@rocket.chat/fuselage": next
+    "@rocket.chat/fuselage-hooks": next
+    "@rocket.chat/fuselage-polyfills": next
+    "@rocket.chat/icons": next
     "@rocket.chat/prettier-config": next
     "@rocket.chat/styled": next
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -6246,30 +6220,6 @@ __metadata:
     react-dom: "*"
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/fuselage@npm:0.31.20":
-  version: 0.31.20
-  resolution: "@rocket.chat/fuselage@npm:0.31.20"
-  dependencies:
-    "@rocket.chat/css-in-js": ^0.31.20
-    "@rocket.chat/css-supports": ^0.31.20
-    "@rocket.chat/fuselage-tokens": ^0.31.20
-    "@rocket.chat/memo": ^0.31.20
-    "@rocket.chat/styled": ^0.31.20
-    invariant: ^2.2.4
-    react-aria: ~3.19.0
-    react-keyed-flatten-children: ^1.3.0
-    react-stately: ~3.17.0
-  peerDependencies:
-    "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/fuselage-polyfills": "*"
-    "@rocket.chat/icons": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-virtuoso: 1.2.4
-  checksum: cf148746c0bd4bbbe39d5946aea51abdd81ed9d6c582c8659b86fa9586dd13b34967f654aecfcc86b57d0f74ffdf7d401d4b9145689a65a5e69758e7860e5eb7
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/fuselage@npm:0.31.21":
   version: 0.31.21
@@ -6379,13 +6329,6 @@ __metadata:
     react: "*"
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/icons@npm:0.31.20":
-  version: 0.31.20
-  resolution: "@rocket.chat/icons@npm:0.31.20"
-  checksum: 0029ecf7975f2d193be112c7774649fb9f13a31f6464a4e31546f0c5ac0bfc293c33f95bace00c9d682ad6f352b69f46aa5afc044f17e623be86013b866b311b
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/icons@npm:0.31.21":
   version: 0.31.21
@@ -6508,7 +6451,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:0.31.21, @rocket.chat/memo@npm:^0.31.20, @rocket.chat/memo@npm:^0.31.21":
+"@rocket.chat/memo@npm:0.31.21, @rocket.chat/memo@npm:^0.31.21":
   version: 0.31.21
   resolution: "@rocket.chat/memo@npm:0.31.21"
   checksum: e76efd3ac70d92a2a2ae897d06e8f8f0495040f0dfc460b8f60611dcc69838123080f15fe0b34b69a3f9ee86b60eeca2b4a8302a0eaf7c5ae55ddbe234efd62a
@@ -7064,7 +7007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:0.31.21, @rocket.chat/styled@npm:^0.31.20, @rocket.chat/styled@npm:^0.31.21":
+"@rocket.chat/styled@npm:0.31.21, @rocket.chat/styled@npm:^0.31.21":
   version: 0.31.21
   resolution: "@rocket.chat/styled@npm:0.31.21"
   dependencies:
@@ -16833,7 +16776,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-closest-polyfill@npm:^1.0.4, element-closest-polyfill@npm:^1.0.5":
+"element-closest-polyfill@npm:^1.0.5":
   version: 1.0.5
   resolution: "element-closest-polyfill@npm:1.0.5"
   checksum: baadc55f03035a8ffbcde818d3b4892de31fabe94d69c01d627522f4d306bf971300b5863e24c9774840877c7418802bd7e4538fe6142aee85f893694fb0c4c5
