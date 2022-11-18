@@ -79,7 +79,8 @@ test.describe.serial('message-actions', () => {
 	test('expect close thread if has only one message and user press escape', async ({ page }) => {
 		await expect(page).toHaveURL(/.*thread/);
 
-		await page.keyboard.press('Escape', { delay: 100 });
+		await expect(page.locator('//main//aside >> [data-qa-type="message"]')).toBeVisible();
+		await page.keyboard.press('Escape');
 
 		await expect(page).not.toHaveURL(/.*thread/);
 	});
