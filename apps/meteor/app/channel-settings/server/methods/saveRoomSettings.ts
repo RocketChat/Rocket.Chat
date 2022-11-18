@@ -167,17 +167,17 @@ const validators: Record<string, (context: ValidationContext) => void> = {
 
 type SaverContext = { value: any; room: IRoom; rid: IRoom['_id']; user: IUser };
 
-const settingSavers: Record<string, (context: SaverContext) => void> = {
-	roomName({ value, rid, user, room }: { value: string; rid: IRoom['_id']; user: IUser; room: IRoom }) {
-		if (!Promise.await(saveRoomName(rid, value, user))) {
+const settingSavers: Record<string, (context: SaverContext) => Promise<void>> = {
+	async roomName({ value, rid, user, room }: { value: string; rid: IRoom['_id']; user: IUser; room: IRoom }) {
+		if (!(await saveRoomName(rid, value, user))) {
 			return;
 		}
 
 		if (room.teamId && room.teamMain) {
-			Team.update(user._id, room.teamId, { name: value, updateRoom: false });
+			await Team.update(user._id, room.teamId, { name: value, updateRoom: false });
 		}
 	},
-	roomTopic({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async roomTopic({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (!value && !room.topic) {
 			return;
 		}
@@ -185,7 +185,7 @@ const settingSavers: Record<string, (context: SaverContext) => void> = {
 			saveRoomTopic(rid, value, user);
 		}
 	},
-	roomAnnouncement({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async roomAnnouncement({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (!value && !room.announcement) {
 			return;
 		}
@@ -193,12 +193,12 @@ const settingSavers: Record<string, (context: SaverContext) => void> = {
 			saveRoomAnnouncement(rid, value, user);
 		}
 	},
-	roomCustomFields({ value, room, rid }: { value: Record<string, string>; room: IRoom; rid: IRoom['_id'] }) {
+	async roomCustomFields({ value, room, rid }: { value: Record<string, string>; room: IRoom; rid: IRoom['_id'] }) {
 		if (hasCustomFields(room) && value !== room.customFields) {
 			saveRoomCustomFields(rid, value);
 		}
 	},
-	roomDescription({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async roomDescription({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (!value && !room.description) {
 			return;
 		}
@@ -206,7 +206,7 @@ const settingSavers: Record<string, (context: SaverContext) => void> = {
 			saveRoomDescription(rid, value, user);
 		}
 	},
-	roomType({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async roomType({ value, room, rid, user }: { value: string; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (value === room.t) {
 			return;
 		}
@@ -217,60 +217,60 @@ const settingSavers: Record<string, (context: SaverContext) => void> = {
 
 		if (room.teamId && room.teamMain) {
 			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
-			Team.update(user._id, room.teamId, { type, updateRoom: false });
+			await Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
-	streamingOptions({ value, rid }: { value: IRoom['streamingOptions']; rid: IRoom['_id'] }) {
+	async streamingOptions({ value, rid }: { value: IRoom['streamingOptions']; rid: IRoom['_id'] }) {
 		saveStreamingOptions(rid, value);
 	},
-	readOnly({ value, room, rid, user }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async readOnly({ value, room, rid, user }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (value !== room.ro) {
 			saveRoomReadOnly(rid, value, user);
 		}
 	},
-	reactWhenReadOnly({ value, room, rid, user }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async reactWhenReadOnly({ value, room, rid, user }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (value !== room.reactWhenReadOnly) {
 			saveReactWhenReadOnly(rid, value, user);
 		}
 	},
-	systemMessages({ value, room, rid }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async systemMessages({ value, room, rid }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 			saveRoomSystemMessages(rid, value);
 		}
 	},
-	joinCode({ value, rid }: { value: string; rid: IRoom['_id'] }) {
-		Rooms.setJoinCodeById(rid, String(value));
+	async joinCode({ value, rid }: { value: string; rid: IRoom['_id'] }) {
+		await Rooms.setJoinCodeById(rid, String(value));
 	},
-	default({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveDefaultById(rid, value);
+	async default({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveDefaultById(rid, value);
 	},
-	featured({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveFeaturedById(rid, value);
+	async featured({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveFeaturedById(rid, value);
 	},
-	retentionEnabled({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveRetentionEnabledById(rid, value);
+	async retentionEnabled({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveRetentionEnabledById(rid, value);
 	},
-	retentionMaxAge({ value, rid }: { value: number; rid: IRoom['_id'] }) {
-		Rooms.saveRetentionMaxAgeById(rid, value);
+	async retentionMaxAge({ value, rid }: { value: number; rid: IRoom['_id'] }) {
+		await Rooms.saveRetentionMaxAgeById(rid, value);
 	},
-	retentionExcludePinned({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveRetentionExcludePinnedById(rid, value);
+	async retentionExcludePinned({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveRetentionExcludePinnedById(rid, value);
 	},
-	retentionFilesOnly({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveRetentionFilesOnlyById(rid, value);
+	async retentionFilesOnly({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveRetentionFilesOnlyById(rid, value);
 	},
-	retentionIgnoreThreads({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveRetentionIgnoreThreadsById(rid, value);
+	async retentionIgnoreThreads({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveRetentionIgnoreThreadsById(rid, value);
 	},
-	retentionOverrideGlobal({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		Rooms.saveRetentionOverrideGlobalById(rid, value);
+	async retentionOverrideGlobal({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
-	encrypted({ value, room, rid, user }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
+	async encrypted({ value, room, rid, user }: { value: boolean; room: IRoom; rid: IRoom['_id']; user: IUser }) {
 		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
-	favorite({ value, rid, user }: { value: { favorite: boolean }; rid: IRoom['_id']; user: IUser }) {
+	async favorite({ value, rid, user }: { value: { favorite: boolean }; rid: IRoom['_id']; user: IUser }) {
 		const { favorite } = value;
-		saveFavoriteRoom(rid, user._id, favorite);
+		await saveFavoriteRoom(rid, user._id, favorite);
 	},
 	async roomAvatar({ value, rid, user }: { value: string; rid: IRoom['_id']; user: IUser }) {
 		await setRoomAvatar(rid, value, user);
@@ -358,19 +358,19 @@ Meteor.methods({
 		keys = Object.keys(settings);
 
 		// saving data
-		keys.forEach((setting) => {
+		for await (const setting of Object.keys(settings)) {
 			const value = settings[setting];
 
 			const saver = settingSavers[setting];
 			if (saver) {
-				saver({
+				await saver({
 					value,
 					room,
 					rid,
 					user,
 				});
 			}
-		});
+		}
 
 		Meteor.defer(async () => {
 			const room = await Rooms.findOneById(rid);
