@@ -224,9 +224,9 @@ export class LDAPEEManager extends LDAPManager {
 			const userFields = ensureArray<string>(fieldMap[ldapField]);
 
 			for await (const userField of userFields) {
-				const [roleName] = userField.split(/\.(.+)/);
+				const [roleIdOrName] = userField.split(/\.(.+)/);
 
-				const role = roles.find((role) => role.name === roleName);
+				const role = roles.find((role) => role._id === roleIdOrName || role.name === roleIdOrName);
 
 				if (role) {
 					allowedRoles.push(role._id);
