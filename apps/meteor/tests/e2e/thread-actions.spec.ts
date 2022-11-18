@@ -75,4 +75,12 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.openLastThreadMessageMenu();
 		await page.locator('[data-qa-id="permalink"]').click();
 	});
+
+	test('expect close thread if has only one message and user press escape', async ({ page }) => {
+		await expect(page).toHaveURL(/.*thread/);
+
+		await page.keyboard.press('Escape', { delay: 100 });
+
+		await expect(page).not.toHaveURL(/.*thread/);
+	});
 });
