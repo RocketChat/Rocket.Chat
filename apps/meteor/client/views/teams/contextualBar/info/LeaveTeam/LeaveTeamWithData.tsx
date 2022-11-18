@@ -17,8 +17,12 @@ const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataPro
 	const t = useTranslation();
 	const userId = useUserId();
 
+	if (!userId) {
+		throw Error('No user found');
+	}
+
 	const getRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
-	const { data, isLoading } = useQuery(['teams.listRoomsOfUser'], () => getRoomsOfUser({ teamId, userId: userId || '' }));
+	const { data, isLoading } = useQuery(['teams.listRoomsOfUser'], () => getRoomsOfUser({ teamId, userId }));
 
 	if (isLoading) {
 		return (
