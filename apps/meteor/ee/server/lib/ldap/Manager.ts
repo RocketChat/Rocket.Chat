@@ -226,7 +226,7 @@ export class LDAPEEManager extends LDAPManager {
 			for await (const userField of userFields) {
 				const [roleIdOrName] = userField.split(/\.(.+)/);
 
-				const role = roles.find((role) => role._id === roleIdOrName || role.name === roleIdOrName);
+				const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
 
 				if (role) {
 					allowedRoles.push(role._id);
