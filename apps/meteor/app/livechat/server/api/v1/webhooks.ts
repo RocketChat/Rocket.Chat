@@ -74,8 +74,8 @@ API.v1.addRoute(
 				Livechat.logger.debug({ response });
 				return API.v1.success(response?.statusCode === 200);
 			} catch (error) {
-				Livechat.logger.error({ msg: 'Error testing webhook', err: error });
-				return API.v1.failure({ message: `Error testing webhook: ${error}` });
+				Livechat.logger.error(`Error testing webhook: ${error}`);
+				throw new Error('error-invalid-webhook-response');
 			}
 		},
 	},
