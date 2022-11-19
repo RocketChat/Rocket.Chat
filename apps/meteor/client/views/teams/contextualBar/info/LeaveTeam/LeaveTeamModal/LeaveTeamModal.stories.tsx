@@ -2,7 +2,9 @@ import { action } from '@storybook/addon-actions';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import LeaveTeamModal, { StepOne, StepTwo } from '.';
+import LeaveTeamModal from './LeaveTeamModal';
+import LeaveTeamModalChannels from './LeaveTeamModalChannels';
+import LeaveTeamModalConfirmation from './LeaveTeamModalConfirmation';
 
 export default {
 	title: 'Teams/Contextual Bar/LeaveTeamModal',
@@ -12,24 +14,23 @@ export default {
 	},
 } as ComponentMeta<typeof LeaveTeamModal>;
 
-export const Default: ComponentStory<typeof LeaveTeamModal> = (args) => <LeaveTeamModal {...args} />;
-Default.storyName = 'LeaveTeamModal';
-Default.args = {
-	teamId: '123',
-	onConfirm: action('onConfirm'),
-	onCancel: action('onCancel'),
-};
-
-export const ModalStepOne: ComponentStory<typeof StepOne> = (args) => <StepOne {...args} />;
-ModalStepOne.storyName = 'StepOne';
-ModalStepOne.args = {
+export const ChannelsStep: ComponentStory<typeof LeaveTeamModalChannels> = (args) => <LeaveTeamModalChannels {...args} />;
+ChannelsStep.storyName = 'LeaveTeamModalChannels';
+ChannelsStep.args = {
 	rooms: Array.from({ length: 15 }).map((_, i) => ({
-		rid: i,
+		_id: `${i}`,
 		fname: `Room #${i}`,
 		name: `room-${i}`,
 		usersCount: 10 * i,
 		type: 'p',
 		t: 'p',
+		isLastOwner: false,
+		msgs: 10,
+		u: {
+			_id: 'user',
+		},
+		autoTranslateLanguage: 'english',
+		_updatedAt: '2022-02-02 09:00',
 	})),
 	selectedRooms: {},
 	onConfirm: action('onConfirm'),
@@ -38,9 +39,9 @@ ModalStepOne.args = {
 	onToggleAllRooms: action('onToggleAllRooms'),
 };
 
-export const ModalStepTwo: ComponentStory<typeof StepTwo> = (args) => <StepTwo {...args} />;
-ModalStepTwo.storyName = 'StepTwo';
-ModalStepTwo.args = {
+export const ConfirmationStep: ComponentStory<typeof LeaveTeamModalConfirmation> = (args) => <LeaveTeamModalConfirmation {...args} />;
+ConfirmationStep.storyName = 'StepTwo';
+ConfirmationStep.args = {
 	onConfirm: action('onConfirm'),
 	onCancel: action('onCancel'),
 	onClose: action('onClose'),
