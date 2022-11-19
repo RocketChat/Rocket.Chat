@@ -6,27 +6,14 @@ import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { ReactElement, UIEvent, useCallback, useMemo } from 'react';
 
-import { emoji } from '../../../../../app/emoji/client';
+import { detectEmoji } from '../../../../lib/detectEmoji';
 import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
 import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 
-type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
-const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
-	const html = Object.values(emoji.packages)
-		.reverse()
-		.reduce((html, { render }) => render(html), text);
-	const div = document.createElement('div');
-	div.innerHTML = html;
-	return Array.from(div.querySelectorAll('span')).map((span) => ({
-		name: span.title,
-		className: span.className,
-		image: span.style.backgroundImage || undefined,
-		content: span.innerText,
-	}));
-};
+type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
 const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps): ReactElement => {
 	const highlights = useMessageListHighlights();
