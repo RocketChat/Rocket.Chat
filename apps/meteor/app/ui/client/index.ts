@@ -9,8 +9,7 @@ import './views/app/userSearch.html';
 import './views/app/roomSearch';
 import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
 import './components/icon';
-import './components/table.html';
-import './components/table';
+
 import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
