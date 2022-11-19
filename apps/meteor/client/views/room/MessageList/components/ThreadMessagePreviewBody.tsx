@@ -3,9 +3,8 @@ import { MarkupInteractionContext, PreviewMarkup } from '@rocket.chat/gazzodown'
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
-import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
-
 import { detectEmoji } from '../../../../lib/detectEmoji';
+import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
 
 type ThreadMessagePreviewBodyProps = {
 	message: IMessage;
@@ -29,7 +28,7 @@ const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): R
 		>
 			<PreviewMarkup tokens={parsedMessage.md} />
 		</MarkupInteractionContext.Provider>
-	)
+	);
 };
 
 export default ThreadMessagePreviewBody;

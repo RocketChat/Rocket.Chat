@@ -12,7 +12,6 @@ import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
 import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 
-
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
 const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps): ReactElement => {
