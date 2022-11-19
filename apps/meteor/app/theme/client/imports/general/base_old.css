@@ -280,40 +280,6 @@
 	& input[type='text'] {
 		display: block;
 	}
-
-	&.double-col {
-		& > label {
-			width: 30%;
-			margin-bottom: 0;
-			padding: 10px 20px 10px 0;
-
-			text-align: right;
-
-			line-height: 15px;
-		}
-
-		& > div {
-			width: 60%;
-			min-height: 2.5rem;
-
-			& label {
-				display: inline-block;
-
-				margin-right: 4px;
-				padding: 10px 20px 10px 0;
-
-				line-height: 15px;
-
-				&:nth-last-child(1) {
-					margin-right: 0;
-				}
-
-				& input {
-					margin-right: 4px;
-				}
-			}
-		}
-	}
 }
 
 .rc-old form.inline {
@@ -363,22 +329,6 @@
 
 .rc-old label.required::after {
 	content: ' *';
-}
-
-.rc-old .btn-loading {
-	cursor: not-allowed;
-	pointer-events: none;
-
-	border-width: 0;
-	box-shadow: none !important;
-
-	& i {
-		display: block;
-	}
-
-	& div {
-		display: none;
-	}
 }
 
 /* new layout buttons */
@@ -551,37 +501,6 @@
 		}
 	}
 }
-
-/*
-.rc-old #rocket-chat {
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-
-	display: block;
-	visibility: visible;
-
-	width: auto;
-
-	transition: opacity 0.2s ease-out;
-
-	opacity: 1;
-
-	&.animated-hidden {
-		visibility: hidden;
-
-		opacity: 0;
-	}
-
-	& > .alert {
-		position: absolute;
-
-		margin-bottom: 0;
-		padding: 5px;
-	}
-} */
 
 /* rooms-box */
 
@@ -795,34 +714,6 @@
 
 .rc-old .new-room-highlight a {
 	animation: highlight 6s infinite;
-}
-
-.cms-page {
-	display: flex;
-	flex-direction: column;
-
-	max-width: 800px;
-	max-height: 100%;
-	margin: auto;
-
-	padding: 2rem;
-
-	border-radius: var(--border-radius);
-
-	&__content {
-		overflow: auto;
-
-		margin: -1rem;
-		padding: 1rem;
-	}
-
-	& .cms-page-close {
-		display: flex;
-
-		margin-bottom: 10px;
-
-		justify-content: flex-end;
-	}
 }
 
 /* MAIN CONTENT + MAIN PAGES */
@@ -2719,21 +2610,6 @@
 		& .rc-select {
 			width: auto !important;
 			margin: 10px 0 !important;
-		}
-	}
-}
-
-@media (width <= 500px) {
-	.cms-page {
-		padding: 0;
-
-		&__content {
-			margin: 0;
-			padding: 0 1rem 1rem;
-		}
-
-		& .cms-page-close {
-			margin-top: 10px;
 		}
 	}
 }
