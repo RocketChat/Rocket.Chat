@@ -24,7 +24,7 @@ const versioni18nKey = (app: App): string => {
 
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-	const { iconFileData, name, author, iconFileContent, installed, modifiedAt, bundledIn, versionIncompatible } = app;
+	const { iconFileData, name, author, iconFileContent, installed, modifiedAt, bundledIn, versionIncompatible, isSubscribed } = app;
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
@@ -42,7 +42,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<AppStatus app={app} installed={installed} isAppDetailsPage={true} />
-					{installed && <AppMenu app={app} mis='x8' />}
+					{(installed || isSubscribed) && <AppMenu app={app} mis='x8' />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
 					<Box fontScale='p2m' mie='x16'>
