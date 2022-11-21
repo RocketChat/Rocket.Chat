@@ -2946,10 +2946,10 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
 	'/v1/livechat/agent.info/:rid/:token': {
-		GET: () => { agent: ILivechatAgent };
+		GET: () => { agent: ILivechatAgent | { hiddenInfo: true } };
 	};
 	'/v1/livechat/agent.next/:token': {
-		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent } | void;
+		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent | { hiddenInfo: true } } | void;
 	};
 	'/v1/livechat/config': {
 		GET: (params: GETLivechatConfigParams) => {
@@ -2963,7 +2963,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatCustomFieldsParams) => { fields: { Key: string; value: string; overwrite: boolean }[] };
 	};
 	'/v1/livechat/transfer.history/:rid': {
-		GET: () => PaginatedResult<{ history: Pick<IOmnichannelSystemMessage, 'transferData'>[] }>;
+		GET: () => PaginatedResult<{ history: IOmnichannelSystemMessage['transferData'][] }>;
 	};
 	'/v1/livechat/transcript': {
 		POST: (params: POSTLivechatTranscriptParams) => { message: string };
