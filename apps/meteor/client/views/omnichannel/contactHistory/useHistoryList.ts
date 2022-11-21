@@ -40,6 +40,7 @@ export const useHistoryList = (
 			return {
 				items: history.map((history: VisitorSearchChatsResult): VisitorSearchChatsResult & { _updatedAt: Date } => ({
 					...history,
+					ts: new Date(history.ts),
 					_updatedAt: new Date(history.ts),
 				})),
 				itemCount: total,

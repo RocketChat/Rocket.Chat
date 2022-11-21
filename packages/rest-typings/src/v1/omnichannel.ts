@@ -2233,8 +2233,8 @@ export const isGETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams =
 
 type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedRequest<{
 	searchText?: string;
-	closedChatsOnly?: boolean;
-	servedChatsOnly?: boolean;
+	closedChatsOnly?: string;
+	servedChatsOnly?: string;
 }>;
 
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
