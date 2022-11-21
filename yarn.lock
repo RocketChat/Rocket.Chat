@@ -5990,9 +5990,9 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.145
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.145"
-  checksum: 72f0f1a6cf7d5ec2fd1fd7e0916e46e3f38a714ba8c0b90a378a1591eda3aa2e69f86bb6a11a5b642db8be78a2650d634f8cb2b883e78ca5f7bc6c211b7470c0
+  version: 0.32.0-dev.149
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.149"
+  checksum: ce3e29ec94bf64027bfb09aaf02ea16206f6984dc5eeda1c6d3707b6da1126194e239977ea19d818547c875406be637c661ac62d506f5f06f45885f97e30bcce
   languageName: node
   linkType: hard
 
@@ -23669,7 +23669,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
   languageName: node
   linkType: hard
 
