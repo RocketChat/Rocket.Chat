@@ -96,7 +96,7 @@ function AppMenu({ app, ...props }) {
 			return;
 		}
 
-		if (app?.versionIncompatible) {
+		if (app?.versionIncompatible && !isSubscribed) {
 			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
