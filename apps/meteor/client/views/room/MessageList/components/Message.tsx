@@ -2,7 +2,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { FC, memo, useEffect } from 'react';
+import React, { FC, memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useMessageActions } from '../../contexts/MessageContext';
@@ -22,10 +22,11 @@ const Message: FC<{
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
-	isIgnored: boolean;
-}> = ({ message, sequential, all, mention, unread, isIgnored, ...props }) => {
+	isUserIgnored: boolean;
+}> = ({ message, sequential, all, mention, unread, isUserIgnored, ...props }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
-	const [isMessageIgnored, toggleMessageIgnored] = useToggle((message as { ignored?: boolean }).ignored ?? isIgnored);
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
@@ -35,12 +36,7 @@ const Message: FC<{
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
 
-	useEffect(() => {
-		if (isMessageIgnored !== isIgnored) {
-			toggleMessageIgnored();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isIgnored, toggleMessageIgnored]);
+	const isMessageIgnored = (isUserIgnored || (message as { ignored?: boolean }).ignored) && !displayIgnoredMessage;
 
 	return (
 		<MessageTemplate
@@ -75,7 +71,7 @@ const Message: FC<{
 				)}
 				{isMessageIgnored && (
 					<MessageBody data-qa-type='message-body'>
-						<MessageContentIgnored onShowMessageIgnored={toggleMessageIgnored} />
+						<MessageContentIgnored onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 					</MessageBody>
 				)}
 			</MessageContainer>
