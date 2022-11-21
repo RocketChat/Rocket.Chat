@@ -105,8 +105,8 @@ class Voxtelesys {
 
 		try {
 			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
-		} catch (error) {
-			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${error}`);
+		} catch (err) {
+			SystemLogger.error({ msg: 'Error connecting to Voxtelesys SMS API', err });
 		}
 	}
 

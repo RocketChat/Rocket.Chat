@@ -73,11 +73,13 @@ const GenericModal: FC<GenericModalProps> = ({
 		<Modal {...props}>
 			<Modal.Header>
 				{renderIcon(icon, variant)}
-				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
+				<Modal.HeaderText>
+					<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
+				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
-			<Modal.Footer>
+			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				<Modal.FooterControllers>
 					{onCancel && (

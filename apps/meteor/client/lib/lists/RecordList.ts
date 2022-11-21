@@ -24,7 +24,7 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 	}
 
 	protected compare(a: T, b: T): number {
-		return a._updatedAt.getTime() - b._updatedAt.getTime();
+		return b._updatedAt.getTime() - a._updatedAt.getTime();
 	}
 
 	public get phase(): AsyncStatePhase {

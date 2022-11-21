@@ -1,15 +1,13 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import { isTruthy } from '../../lib/isTruthy';
+import { useIsEnterprise } from '../hooks/useIsEnterprise';
 
 function PlanTag(): ReactElement {
 	const [plans, setPlans] = useState<string[]>([]);
 
-	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
-	const { data } = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition());
+	const { data } = useIsEnterprise();
 
 	useEffect(() => {
 		const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;

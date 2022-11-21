@@ -1,6 +1,6 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef } from 'react';
+import React, { MutableRefObject, ReactElement, useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -52,7 +52,7 @@ export type FormSectionProps = {
 	commitRef: MutableRefObject<Record<string, () => void>>;
 };
 
-type FormatedData = Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'>;
+type FormatedData = { data: Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'> };
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -114,7 +114,7 @@ const AccountPreferencesPage = (): ReactElement => {
 				Object.assign(data, { dontAskAgainList: list });
 			}
 
-			await saveFn({ data });
+			await saveFn({ data } as FormatedData);
 			saveData.current = {};
 			setHasAnyChange(false);
 			Object.values(commitRef.current).forEach((fn) => (fn as () => void)());

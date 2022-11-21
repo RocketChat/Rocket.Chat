@@ -13,8 +13,6 @@ import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
-import { federationRoomServiceSender } from '../../../federation-v2/server';
-import { FederationRoomSenderConverter } from '../../../federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
@@ -79,19 +77,19 @@ export function executeSendMessage(uid, message) {
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
-	} catch (error) {
-		SystemLogger.error('Error sending message:', error);
+	} catch (err) {
+		SystemLogger.error({ msg: 'Error sending message:', err });
 
-		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
+		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 
-		if (typeof error === 'string') {
-			throw new Error(error);
+		if (typeof err === 'string') {
+			throw new Error(err);
 		}
 
-		throw error;
+		throw err;
 	}
 }
 
@@ -107,12 +105,6 @@ Meteor.methods({
 		}
 
 		try {
-			if (Promise.await(federationRoomServiceSender.isAFederatedRoom(message.rid))) {
-				return federationRoomServiceSender.sendMessageFromRocketChat(
-					FederationRoomSenderConverter.toSendExternalMessageDto(uid, message.rid, message),
-				);
-			}
-
 			return executeSendMessage(uid, message);
 		} catch (error) {
 			if ((error.error || error.message) === 'error-not-allowed') {

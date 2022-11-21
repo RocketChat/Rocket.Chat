@@ -25,11 +25,13 @@ import React, {
 	Dispatch,
 	FormEventHandler,
 	Ref,
+	MouseEventHandler,
 } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
@@ -140,6 +142,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 		{
 			staleTime: 60_000,
 			keepPreviousData: true,
+			placeholderData: localRooms,
 		},
 	);
 };
@@ -197,7 +200,6 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
 	const { data: items = [], isLoading } = useSearchItems(filterText);
-	console.log({ items, isLoading });
 
 	const itemData = useMemo(
 		() => ({
@@ -238,6 +240,8 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			toggleSelectionState(selectedElement.current, undefined, cursorRef?.current || undefined);
 		}
 	});
+
+	usePreventDefault(boxRef);
 
 	useEffect(() => {
 		resetCursor();
@@ -286,6 +290,13 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		};
 	}, [cursorRef, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
 
+	const handleClick: MouseEventHandler<HTMLElement> = (e): void => {
+		if (e.target instanceof Element && [e.target.tagName, e.target.parentElement?.tagName].includes('BUTTON')) {
+			return;
+		}
+		return onClose();
+	};
+
 	return (
 		<Box
 			position='absolute'
@@ -321,8 +332,8 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				h='full'
 				w='full'
 				data-qa='sidebar-search-result'
-				onClick={onClose}
 				aria-busy={isLoading}
+				onClick={handleClick}
 			>
 				<Virtuoso
 					style={{ height: '100%', width: '100%' }}

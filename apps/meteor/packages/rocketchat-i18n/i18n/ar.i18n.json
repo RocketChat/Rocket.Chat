@@ -19,8 +19,8 @@
   "A_new_owner_will_be_assigned_automatically_to__count__rooms": "سيتم تعيين مالك جديد تلقائيًا إلى <span style=\"font-weight: bold;\">__count__</span> من الغرف.",
   "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "سيتم تعيين مالك جديد تلقائيًا إلى الغرفة <span style=\"font-weight: bold;\"> __roomName__ </span>.",
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "سيتم تعيين مالك جديد تلقائيًا إلى هذه الغرف البالغ عددها <span style=\"font-weight: bold;\">__count__</span> :<br/> __rooms__.",
-  "Accept": "قبول",
   "Accept_Call": "قبول المكالمة",
+  "Accept": "قبول",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "قبول طلبات الدردشة الواردة عبر القناة متعددة الاتجاهات وإن لم يكن هناك وكلاء على الإنترنت",
   "Accept_new_livechats_when_agent_is_idle": "قبول طلبات الدردشة الجديدة عبر القناة متعددة الاتجاهات عندما يكون الوكيل معطلاً",
   "Accept_with_no_online_agents": "القبول حال عدم وجدود وكلاء على الإنترنت",
@@ -409,30 +409,24 @@
   "API_User_Limit": "حد المستخدم لإضافة جميع المستخدمين إلى Channel",
   "API_Wordpress_URL": "عنوان URL لـ WordPress",
   "api-bypass-rate-limit": "حد معدل التجاوز لواجهة برمجة تطبيقات API",
-  "Apps_Marketplace_pricingPlan_startingAt_monthly": "يبدأ من __price__/الشهر",
   "api-bypass-rate-limit_description": "إذن للاتصال بواجهة برمجة التطبيقات بدون تحديد المعدل",
   "Apiai_Key": "مفتاح Api.ai",
   "Apiai_Language": "لغة Api.ai",
   "APIs": "واجهات برمجة التطبيقات",
   "App_author_homepage": "الصفحة الرئيسية للمؤلف",
   "App_Details": "تفاصيل التطبيق",
-  "Apps_Marketplace_pricingPlan_startingAt_monthly_perUser": "يبدأ من __price__/الشهر لكل مستخدم",
   "App_Information": "معلومات التطبيق",
   "App_Installation": "تثبيت التطبيق",
   "App_status_auto_enabled": "تم التمكين",
   "App_status_constructed": "تم الإنشاء",
-  "Apps_Marketplace_pricingPlan_startingAt_yearly": "يبدأ من __price__/السنة",
   "App_status_disabled": "تم التعطيل",
   "App_status_error_disabled": "تم التعطيل: خطأ يتعذر العثور عليه",
   "App_status_initialized": "تمت التهيئة",
   "App_status_invalid_license_disabled": "تم التعطيل: ترخيص غير صالح",
-  "Apps_Marketplace_pricingPlan_startingAt_yearly_perUser": "تبدأ من __price__/السنة لكل مستخدم",
   "App_status_invalid_settings_disabled": "تم التعطيل: تلزم التهيئة",
   "App_status_manually_disabled": "تم التعطيل: يدويًا",
-  "Apps_Marketplace_pricingPlan_yearly": "__price__ /السنة",
   "App_status_manually_enabled": "تم التمكين",
   "App_status_unknown": "غير معروف",
-  "Apps_Marketplace_pricingPlan_yearly_perUser": "__price__/السنة لكل مستخدم",
   "App_support_url": "عنوان url للدعم",
   "App_Url_to_Install_From": "تثبيت من عنوان URL",
   "App_Url_to_Install_From_File": "تثبيت من ملف",
@@ -607,7 +601,6 @@
   "AutoTranslate_Enabled": "تمكين الترجمة التلقائية",
   "AutoTranslate_Enabled_Description": "سيسمح تمكين الترجمة التلقائية للأشخاص الذين لديهم إذن <code class=\"inline\">الترجمة التلقائية</code> بترجمة جميع الرسائل تلقائيًا إلى لغتهم المحددة. قد يتم تطبيق الرسوم.",
   "AutoTranslate_Google": "Google",
-  "Custom_emoji": "رمز تعبيري مخصص",
   "AutoTranslate_Microsoft": "Microsoft",
   "AutoTranslate_Microsoft_API_Key": "مفتاح اشتراك Omp-Apim",
   "AutoTranslate_ServiceProvider": "مزود الخدمة",
@@ -1073,17 +1066,14 @@
   "Country_Cameroon": "الكاميرون",
   "Country_Canada": "كندا",
   "Country_Cape_Verde": "الرأس الأخضر",
-  "Jitsi_Chrome_Extension": "معرف امتداد Chrome",
   "Country_Cayman_Islands": "جزر كايمان",
   "Country_Central_African_Republic": "جمهورية إفريقيا الوسطى",
-  "Jitsi_Enable_Channels": "تمكين في Channel",
   "Country_Chad": "تشاد",
   "Country_Chile": "تشيلي",
   "Country_China": "الصين",
   "Country_Christmas_Island": "جزيرة كريسماس",
   "Country_Cocos_Keeling_Islands": "جزر كوكوس (كيلينغ)",
   "Country_Colombia": "كولومبيا",
-  "join": "انضمام",
   "Country_Comoros": "جزر القمر",
   "Country_Congo": "الكونغو",
   "Country_Congo_The_Democratic_Republic_of_The": "جمهورية الكونغو الديمقراطية",
@@ -1294,6 +1284,7 @@
   "create-p_description": "إذن لإنشاء قنوات خاصة",
   "create-personal-access-tokens": "إنشاء رموز مميزة للوصول الشخصي",
   "create-personal-access-tokens_description": "إذن لإنشاء رموز مميزة للوصول الشخصي",
+  "create-team": "إنشاء فريق",
   "create-user": "إنشاء مستخدم",
   "create-user_description": "إذن لإنشاء مستخدمين",
   "Created": "تم الإنشاء",
@@ -1501,7 +1492,6 @@
   "Do_not_display_unread_counter": "لا تعرض أي عداد لهذه القناة",
   "Do_not_provide_this_code_to_anyone": "لا توفر هذا الرمز لأي أحد.",
   "Do_Nothing": "عدم القيام بشيء",
-  "RDStation_Token": "الرمز المميز لمحطة RD",
   "Do_you_have_any_notes_for_this_conversation": "هل لديك أي ملاحظات لهذه المحادثة؟",
   "Do_you_want_to_accept": "هل تريد أن تقبل؟",
   "Do_you_want_to_change_to_s_question": "هل تريد التغيير إلى <strong>‎%s</strong>؟",
@@ -1580,7 +1570,6 @@
   "edit-other-user-totp": "تحرير TOTP الثنائي للمستخدمين الآخرين",
   "edit-other-user-totp_description": "إذن لتحرير TOTP الثنائي للمستخدمين الآخرين",
   "edit-privileged-setting": "تحرير الإعداد المميز",
-  "Room_tokenpass_config_changed_successfully": "تم تغيير تكوين tokenpass لـ Room بنجاح",
   "edit-privileged-setting_description": "إذن لتحرير الإعدادات",
   "edit-room": "تحرير Room",
   "edit-room_description": "إذن لتحرير اسم الغرفة، وموضوعها، ونوعها (حالة خاصة أو عامة) وحالتها (نشطة أو مؤرشفة)",
@@ -1719,12 +1708,10 @@
   "error-email-send-failed": "حدث خطأ أثناء محاولة إرسال بريد إلكتروني: __message__",
   "error-essential-app-disabled": "خطأ: تم تعطيل تطبيق Rocket.Chat الضروري لذلك. فيُرجى الاتصال بالمسؤول الخاص بك",
   "error-field-unavailable": "سبق استخدام <strong>__field__</strong> :(",
-  "Jitsi_Application_ID": "معرف التطبيق (iss)",
   "error-file-too-large": "حجم الملف كبير جدًا",
   "error-forwarding-chat": "حدث خطأ ما أثناء إعادة توجيه الدردشة، تُرجى المحاولة مرة أخرى لاحقًا.",
   "error-forwarding-chat-same-department": "القسم المحدد هو نفسه قسم الغرفة الحالي",
   "error-forwarding-department-target-not-allowed": "غير مسموح بإعادة التوجيه إلى القسم المستهدف.",
-  "Jitsi_Application_Secret": "كلمة سر التطبيق",
   "error-guests-cant-have-other-roles": "لا يمكن أن يكون للمستخدمين الضيوف أي دور آخر.",
   "error-import-file-extract-error": "فشل استخراج ملف الاستيراد.",
   "error-import-file-is-empty": "يبدو أن الملف المستورد فارغ.",
@@ -1732,9 +1719,7 @@
   "error-importer-not-defined": "لم يتم تحديد المستورِد بطريقة صحيحة، ففئة الاستيراد غير محددة به.",
   "error-input-is-not-a-valid-field": "__input__ ليس __field__ صالحًا",
   "error-insufficient-permission": "خطأ! ليس لديك إذن ' __permission__ ' المطلوب لإجراء هذه العملية",
-  "Jitsi_Enabled_TokenAuth": "تمكين مصادقة JWT",
   "error-inquiry-taken": "سبق استقبال الاستعلام",
-  "Jitsi_Limit_Token_To_Room": "قصر الرمز المميز على Room Jitsi",
   "error-invalid-account": "حساب غير صالح",
   "error-invalid-actionlink": "رابط الإجراء غير صالح",
   "error-invalid-arguments": "وسائط غير صالحة",
@@ -1818,7 +1803,6 @@
   "error-starring-message": "تعذر تمييز الرسالة بنجمة",
   "error-tags-must-be-assigned-before-closing-chat": "يلزم تعيين العلامة (العلامات) قبل إغلاق الدردشة",
   "error-the-field-is-required": "يلزم توفير الحقل __field__.",
-  "Tokenpass_Channel_Label": "Channel Tokenpass",
   "error-this-is-not-a-livechat-room": "هذه ليست غرفة قناة متعددة الاتجاهات",
   "error-token-already-exists": "سبق وجود رمز مميز بهذا الاسم",
   "error-token-does-not-exists": "لا يوجد رمز مميز",
@@ -1826,7 +1810,6 @@
   "error-transcript-already-requested": "سبق طلب نسخة مكتوبة",
   "error-unpinning-message": "تعذر إلغاء تثبيت الرسالة",
   "error-user-has-no-roles": "ليس للمستخدم أدوار",
-  "Tokenpass_Channels": "Channels Tokenpass",
   "error-user-is-not-activated": "المستخدم غير مفعَّل",
   "error-user-is-not-agent": "المستخدم ليس وكيل قناة متعددة الاتجاهات",
   "error-user-is-offline": "المستخدم إذا كان غير متصل",
@@ -1893,7 +1876,6 @@
   "Failed_To_Load_Import_History": "فشل رفع محفوظات الاستيراد",
   "Failed_To_Load_Import_Operation": "فشل رفع عملية الاستيراد",
   "Failed_To_Start_Import": "فشل بدء عملية الاستيراد",
-  "URL_room_prefix": "بادئة غرفة عنوان URL",
   "Failed_to_validate_invite_token": "فشل التحقق من الرمز المميز للدعوة",
   "False": "خاطئ",
   "Fallback_forward_department": "قسم احتياطي لإعادة التوجيه",
@@ -1972,7 +1954,6 @@
   "Federation_Matrix_as_token": "رمز AppService",
   "Federation_Matrix_homeserver_url": "عنوان رابط للخادم",
   "Federation_Matrix_homeserver_domain": "مجال الخادم الرئيسي",
-  "Video Conference": "مؤتمر عبر الفيديو",
   "Field": "حقل",
   "Field_removed": "تمت إزالة الحقل",
   "Field_required": "حقل مطلوب",
@@ -1994,7 +1975,6 @@
   "files": "الملفات",
   "Files": "الملفات",
   "Files_only": "إزالة الملفات المرفقة فقط، والحفاظ على الرسائل",
-  "files_pruned": "الملفات المنقحة",
   "FileSize_Bytes": "__fileSize__ بايت",
   "FileSize_KB": "__fileSize__ كيلوبايت",
   "FileSize_MB": "__fileSize__ ميجابايت",
@@ -2135,6 +2115,7 @@
   "Global_purge_override_warning": "توجد سياسة عامة للاحتفاظ. إذا تركت \"تجاوز نهج الاستبقاء العام\" قيد إيقاف التشغيل، فيمكنك فقط تطبيق سياسة أكثر صرامة من السياسة العامة.",
   "Global_Search": "بحث عام",
   "Go_to_your_workspace": "الانتقال إلى مساحة العمل الخاصة بك",
+  "Hold_Call": "إخفاء المكالمة",
   "GoogleCloudStorage": "التخزين السحابي على Google",
   "GoogleNaturalLanguage_ServiceAccount_Description": "ملف JSON لمفتاح حساب الخدمة. يمكن العثور على مزيد من المعلومات [هنا](https://cloud.google.com/natural-language/docs/common/auth#set_up_a_service_account)",
   "GoogleTagManager_id": "معرف مدير علامات Google",
@@ -2179,7 +2160,6 @@
   "Highlights_List": "تظليل الكلمات",
   "History": "المحفوظات",
   "Hold_Time": "إخفاء الاسم",
-  "Hold_Call": "إخفاء المكالمة",
   "Home": "الصفحة الرئيسية",
   "Host": "مضيف",
   "Hospitality_Businness": "أعمال الضيافة",
@@ -2420,6 +2400,7 @@
   "italics": "مائل",
   "Items_per_page:": "عناصر لكل صفحة:",
   "Job_Title": "المسمى الوظيفي",
+  "Join": "انضمام",
   "Join_audio_call": "انضمام إلى مكالمة صوتية",
   "Join_call": "انضمام إلى مكالمة",
   "Join_Chat": "انضمام إلى دردشة",
@@ -2529,7 +2510,6 @@
   "LDAP_DataSync_CustomFields": "مزامنة الحقول المخصصة",
   "LDAP_DataSync_Roles": "أدوار المزامنة",
   "LDAP_DataSync_Channels": "مزامنة Channel",
-  "RD Station": "محطة RD",
   "LDAP_DataSync_Teams": "مزامنة الفِرَق",
   "LDAP_Enterprise": "مؤسسة",
   "LDAP_DataSync_BackgroundSync": "مزامنة الخلفية",
@@ -2843,6 +2823,7 @@
   "manage-email-inbox_description": "إذن لإدارة صناديق البريد الإلكتروني",
   "manage-emoji": "إدارة الرموز التعبيرية",
   "manage-emoji_description": "إذن لإدارة الرموز التعبيرية للخادم",
+  "messages_pruned": "تم تنقيح الرسائل",
   "manage-incoming-integrations": "إدارة عمليات التكامل الواردة",
   "manage-incoming-integrations_description": "إذن لإدارة عمليات تكامل الخادم الواردة",
   "manage-integrations": "إدارة عمليات التكامل",
@@ -3048,7 +3029,6 @@
   "MessageBox_view_mode": "وضع عرض MessageBox",
   "messages": "الرسائل",
   "Messages": "الرسائل",
-  "messages_pruned": "تم تنقيح الرسائل",
   "Messages_sent": "تم إرسال الرسائل",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "سيتم نشر الرسائل التي تم إرسالها إلى خطاف الويب الوارد هنا.",
   "Meta": "التعريف",
@@ -3201,10 +3181,8 @@
   "No_mentions_found": "لم يتم العثور على إشارات",
   "No_messages_found_to_prune": "لم يتم العثور على رسائل لتنقيحها",
   "No_messages_yet": "لا توجد رسائل حتى الآن",
-  "URL_room_hash": "تمكين تجزئة اسم الغرفة",
   "No_pages_yet_Try_hitting_Reload_Pages_button": "لا توجد صفحات حتى الآن. حاول الضغط على زر \"إعادة تحميل الصفحات\".",
   "No_pinned_messages": "لا توجد رسائل مثبتة",
-  "URL_room_hash_description": "يوصى بالتمكين إذا كان مثيل Jitsi لا يستخدم أي آلية مصادقة.",
   "No_previous_chat_found": "لم يتم العثور على دردشة سابقة",
   "No_results_found": "لم يتم العثور على نتائج",
   "No_results_found_for": "لم يتم العثور على نتائج لـ:",
@@ -3212,7 +3190,6 @@
   "No_starred_messages": "لا توجد رسائل مميزة بنجمة",
   "No_such_command": "لا يوجد مثل هذا الأمر: \"/__command__\"",
   "No_Threads": "لم يتم العثور على مواضيع",
-  "URL_room_suffix": "لاحقة غرفة عنوان URL",
   "Nobody_available": "لا يوجد أي شخص متاح",
   "Node_version": "إصدار العقدة",
   "None": "لا يوجد",
@@ -3722,20 +3699,20 @@
   "Role_Mapping": "تعيين الدور",
   "Role_removed": "تمت إزالة الدور",
   "Room": "غرفة",
-  "room_allowed_reacting": "يُسمح لـ Room بالتفاعل من قِبل  <em>__user_by__</em>",
+  "room_allowed_reacting": "يُسمح لـ Room بالتفاعل من قِبل  __user_by__",
   "Room_announcement_changed_successfully": "تم تغيير إعلان Room بنجاح",
   "Room_archivation_state": "الحالة",
   "Room_archivation_state_false": "نشط",
   "Room_archivation_state_true": "مؤرشف",
   "Room_archived": "Room مؤرشفة",
-  "room_changed_announcement": "تم تغيير إعلان Room إلى: <em>__room_announcement__</em> من قِبل <em>__user_by__</em>",
-  "room_changed_avatar": "تم تغيير الصورة الرمزية لـ Room من قِبل <em>__user_by__</em>",
-  "room_changed_description": "تم تغيير وصف Room إلى: <em>__room_description__</em> من قِبل<em>__user_by__</em>",
-  "room_changed_privacy": "تم تغيير نوع Room إلى:  <em>__room_type__</em> من قِبل <em>__user_by__</em>",
-  "room_changed_topic": "تم تغيير موضوع Room إلى: <em>__room_topic__</em> من قِبل <em>__user_by__</em>",
+  "room_changed_announcement": "تم تغيير إعلان Room إلى: __room_announcement__ من قِبل __user_by__",
+  "room_changed_avatar": "تم تغيير الصورة الرمزية لـ Room من قِبل __user_by__",
+  "room_changed_description": "تم تغيير وصف Room إلى: __room_description__ من قِبل__user_by__",
+  "room_changed_privacy": "تم تغيير نوع Room إلى:  __room_type__ من قِبل __user_by__",
+  "room_changed_topic": "تم تغيير موضوع Room إلى: __room_topic__ من قِبل __user_by__",
   "Room_default_change_to_private_will_be_default_no_more": "هذه قناة افتراضية وسيؤدي تغييرها إلى مجموعة خاصة إلى عدم جعلها قناة افتراضية بعد الآن. هل تريد المتابعة؟",
   "Room_description_changed_successfully": "تم تغيير وصف Room بنجاح",
-  "room_disallowed_reacting": "غير مسموح لـ Room بالتفاعل من قِبل <em>__user_by__</em>",
+  "room_disallowed_reacting": "غير مسموح لـ Room بالتفاعل من قِبل __user_by__",
   "Room_Edit": "تحرير Room",
   "Room_has_been_archived": "تمت أرشفة Room",
   "Room_has_been_deleted": "تم حذف Room",
@@ -3746,13 +3723,13 @@
   "room_account_deactivated": "تم إلغاء تنشيط هذا الحساب",
   "room_is_read_only": "هذه الغرفة للقراءة فقط",
   "room_name": "اسم الغرفة",
-  "Room_name_changed": "تم تغيير اسم Room إلى:  <em>__room_name__</em> من قِبل <em>__user_by__</em>",
+  "Room_name_changed": "تم تغيير اسم Room إلى:  __room_name__ من قِبل __user_by__",
   "Room_name_changed_successfully": "تم تغيير اسم Room بنجاح",
   "Room_not_exist_or_not_permission": "هذه الغرفة غير موجودة أو قد لا يكون لديك إذن بالوصول إليها",
   "Room_not_found": "لم يتم العثور على Room",
   "Room_password_changed_successfully": "تم تغيير كلمة مرور Room بنجاح",
-  "room_removed_read_only": "تمت إضافة إذن كتابي بـ Room من قِبل <em>__user_by__</em>",
-  "room_set_read_only": "تم تعيين Room للقراءة فقط من قِبل <em>__user_by__</em>",
+  "room_removed_read_only": "تمت إضافة إذن كتابي بـ Room من قِبل __user_by__",
+  "room_set_read_only": "تم تعيين Room للقراءة فقط من قِبل __user_by__",
   "Room_topic_changed_successfully": "تم تغيير موضوع Room بنجاح",
   "Room_type_changed_successfully": "تم تغيير نوع Room بنجاح",
   "Room_type_of_default_rooms_cant_be_changed": "هذه غرفة افتراضية ولا يمكن تغيير النوع، يرجى استشارة المسؤول الخاص بك.",
@@ -4555,7 +4532,7 @@
   "User__username__removed_from__room_name__owners": "تمت إزالة المستخدم __username__ من مالكي __room_name__",
   "User__username__unmuted_in_room__roomName__": "تم إلغاء كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User_added": "تمت إضافة المستخدم",
-  "User_added_by": "تمت إضافة المستخدم <em>__user_added__</em> من قِبل <em>__user_by__</em>.",
+  "User_added_by": "تمت إضافة المستخدم __user_added__ من قِبل __user_by__.",
   "User_added_successfully": "تمت إضافة المستخدم بنجاح",
   "User_and_group_mentions_only": "إشارات المستخدم والمجموعة فقط",
   "User_cant_be_empty": "لا يمكن أن يكون المستخدم فارغًا",
@@ -4589,19 +4566,19 @@
   "User_management": "إدارة المستخدم",
   "User_mentions_only": "إشارات المستخدم فقط",
   "User_muted": "تم كتم صوت المستخدم",
-  "User_muted_by": "تم كتم صوت المستخدم <em>__user_muted__</em> من قِبل <em>__user_by__</em>.",
+  "User_muted_by": "تم كتم صوت المستخدم __user_muted__ من قِبل __user_by__.",
   "User_not_found": "لم يتم العثور على المستخدم",
   "User_not_found_or_incorrect_password": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
   "User_or_channel_name": "اسم المستخدم أو القناة",
   "User_Presence": "حضور المستخدم",
   "User_removed": "تمت إزالة المستخدم",
-  "User_removed_by": "تمت إزالة المستخدم <em>__user_removed__</em> من قِبل <em>__user_by__</em>.",
+  "User_removed_by": "تمت إزالة المستخدم __user_removed__ من قِبل __user_by__.",
   "User_sent_a_message_on_channel": "<strong>__username__</strong> أرسل رسالة على <strong>__channel__</strong>",
   "User_sent_a_message_to_you": " <strong>__username__</strong> أرسل إليك رسالة",
   "user_sent_an_attachment": "__user__ أرسل مرفقًا",
   "User_Settings": "إعدادات المستخدم",
   "User_started_a_new_conversation": "__username__ بدأ محادثة جديدة",
-  "User_unmuted_by": "تم إلغاء كتم صوت المستخدم <em>__user_unmuted__</em> من قِبل <em>__user_by__</em>.",
+  "User_unmuted_by": "تم إلغاء كتم صوت المستخدم __user_unmuted__ من قِبل __user_by__.",
   "User_unmuted_in_room": "تم إلغاء كتم صوت المستخدم في الغرفة",
   "User_updated_successfully": "تم تحديث المستخدم بنجاح",
   "User_uploaded_a_file_on_channel": "قام <strong>__username__</strong> بتحميل ملف على <strong>__channel__</strong>",
@@ -4924,13 +4901,29 @@
   "Your_TOTP_has_been_reset": "تمت إعادة تعيين TOTP الثنائي.",
   "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة للاستخدام 🎉",
   "Zapier": "Zapier",
+  "registration.page.login.errors.wrongCredentials": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
+  "registration.page.login.errors.loginBlockedForIp": "تم حظر تسجيل الدخول مؤقتًا لعنوان IP هذا",
+  "registration.page.login.errors.loginBlockedForUser": "تم حظر تسجيل الدخول مؤقتا لهذا المستخدم",
+  "registration.page.login.errors.licenseUserLimitReached": "تم بلوغ الحد الأقصى لعدد المستخدمين.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "لا يُسمح لمستخدمي التطبيق بتسجيل الدخول مباشرة.",
+  "registration.page.registration.waitActivationWarning": "قبل أن تتمكن من تسجيل الدخول، يجب تفعيل حسابك يدويًا بواسطة المسؤول.",
+  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
+  "registration.page.login.forgot": "نسيت كلمة السر",
+  "registration.page.resetPassword.sent": "إن كان البريد الإلكتروني مسجلاً، فسنرسل تعليمات إعادة تعيين كلمة المرور الخاصة بك. إذا لم تتلقَّ بريداً إلكترونيًا في وقت قريب، فيرجى العودة والمحاولة مرة أخرى.",
+  "registration.component.login": "تسجيل الدخول",
+  "registration.component.resetPassword": "إعادة تعيين كلمة السر",
+  "registration.component.form.emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
+  "registration.component.form.email": "البريد الإلكتروني",
+  "registration.component.form.password": "كلمة المرور",
+  "registration.component.form.divider": "أو",
+  "registration.component.form.submit": "إرسال",
+  "registration.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.steps": "الخطوة {{currentStep}} من {{stepCount}}",
   "onboarding.component.form.action.back": "عودة",
   "onboarding.component.form.action.next": "التالي",
   "onboarding.component.form.action.skip": "تخطي هذه الخطوة",
   "onboarding.component.form.action.register": "تسجيل",
   "onboarding.component.form.action.confirm": "تأكيد",
-  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.termsAndConditions": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>",
   "onboarding.component.emailCodeFallback": "ألم تتلق رسالة بريد إلكتروني؟ <1>إعادة الإرسال</1> or <3>تغيير البريد الإلكتروني</3>",
   "onboarding.page.form.title": "دعنا <1>نطلق</1> مساحة العمل الخاصة بك",

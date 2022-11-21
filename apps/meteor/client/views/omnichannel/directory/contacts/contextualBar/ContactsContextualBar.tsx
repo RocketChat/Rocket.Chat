@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
-import { useTabBarClose } from '../../../../room/providers/ToolboxProvider';
+import { useTabBarClose } from '../../../../room/contexts/ToolboxContext';
 import ContactEditWithData from './ContactEditWithData';
 import ContactInfo from './ContactInfo';
 

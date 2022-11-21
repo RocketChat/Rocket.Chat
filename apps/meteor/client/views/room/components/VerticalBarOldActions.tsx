@@ -4,8 +4,7 @@ import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ComponentProps } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { ToolboxContextValue } from '../lib/Toolbox/ToolboxContext';
-import { useTabBarClose } from '../providers/ToolboxProvider';
+import { ToolboxContextValue, useTabBarClose } from '../contexts/ToolboxContext';
 import BlazeTemplate from './BlazeTemplate';
 
 type VerticalBarOldActionsProps = {
