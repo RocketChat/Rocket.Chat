@@ -72,7 +72,11 @@ API.v1.addRoute(
 				const response = HTTP.post(webhookUrl, options);
 
 				Livechat.logger.debug({ response });
-				return API.v1.success(response?.statusCode === 200);
+				if (response?.statusCode === 200) {
+					return API.v1.success();
+				}
+
+				throw new Error('Invalid status code');
 			} catch (error) {
 				Livechat.logger.error(`Error testing webhook: ${error}`);
 				throw new Error('error-invalid-webhook-response');
