@@ -233,8 +233,16 @@ function AppMenu({ app, ...props }) {
 		showAppPermissionsReviewModal();
 	}, [action, app, cancelAction, checkUserLoggedIn, closeModal, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
-	const incompatibleIconName = (app) => {
-		if (app.versionIncompatible) {
+	const incompatibleIconName = (app, action) => {
+		if (!app.versionIncompatible) {
+			return 'card';
+		}
+
+		if (action === 'subscribe' && !isSubscribed) {
+			return 'warning';
+		}
+
+		if (action === 'install') {
 			return 'warning';
 		}
 
@@ -248,7 +256,7 @@ function AppMenu({ app, ...props }) {
 					subscribe: {
 						label: (
 							<Box>
-								<Icon name={incompatibleIconName(app)} size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
 							</Box>
 						),
@@ -262,7 +270,7 @@ function AppMenu({ app, ...props }) {
 				acquire: {
 					label: (
 						<Box>
-							<Icon name={incompatibleIconName(app)} size='x16' marginInlineEnd='x4' />
+							<Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />
 							{t(button.label.replace(' ', '_'))}
 						</Box>
 					),

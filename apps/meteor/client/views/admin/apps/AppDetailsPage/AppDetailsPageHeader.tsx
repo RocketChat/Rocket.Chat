@@ -13,9 +13,7 @@ import { TooltipOnHover } from './tabs/AppStatus/TooltipOnHover';
 
 const versioni18nKey = (app: App): string => {
 	const { version, marketplaceVersion, marketplace } = app;
-	const marketplaceCast = marketplace as boolean;
-
-	if (marketplaceCast) {
+	if (typeof marketplace === 'boolean') {
 		return marketplaceVersion;
 	}
 

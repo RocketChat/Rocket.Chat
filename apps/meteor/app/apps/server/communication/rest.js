@@ -68,7 +68,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			'incompatibleModal',
-			{ authRequired: false },
+			{ authRequired: true },
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
