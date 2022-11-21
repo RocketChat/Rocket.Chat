@@ -132,7 +132,7 @@
 				{{/each}}
 			{{/if}}
 			{{#if hasAttachments}}
-				{{> reactAttachments attachments=msg.attachments file=msg.file messageContext=messageContext }}
+				{{> reactAttachments attachments=msg.attachments file=msg.file messageContext=messageContext chatContext=chatContext }}
 			{{/if}}
 
 

@@ -2,11 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import moment from 'moment';
 import _ from 'underscore';
 
-import { Users } from '../../../../../models/client';
-import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
-import { settings } from '../../../../../settings/client';
-import { RoomManager } from '../../../../../ui-utils/client';
-import { ChatMessages } from '../../../lib/ChatMessages';
+import { Users } from '../../../models/client';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { settings } from '../../../settings/client';
+import type { ThreadTemplateInstance } from './thread';
 
 const userCanDrop = (rid: IRoom['_id']) =>
 	!roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
@@ -23,26 +22,13 @@ async function createFileFromUrl(url: string): Promise<File> {
 	const metadata = {
 		type: data.type,
 	};
-	const { mime } = await import('../../../../../utils/lib/mimeTypes');
+	const { mime } = await import('../../../utils/lib/mimeTypes');
 	const file = new File(
 		[data],
 		`File - ${moment().format(settings.get('Message_TimeAndDateFormat'))}.${mime.extension(data.type)}`,
 		metadata,
 	);
 	return file;
-}
-
-function addToInput(text: string): void {
-	const input = RoomManager.openedRoom ? ChatMessages.get({ rid: RoomManager.openedRoom })?.input : undefined;
-	if (!input) {
-		return;
-	}
-
-	const initText = input.value.slice(0, input.selectionStart ?? undefined);
-	const finalText = input.value.slice(input.selectionEnd ?? undefined, input.value.length);
-
-	input.value = initText + text + finalText;
-	$(input).change().trigger('input');
 }
 
 export const dropzoneHelpers = {
@@ -54,8 +40,8 @@ export const dropzoneHelpers = {
 		return settings.get('FileUpload_Enabled') ? 'dropzone-overlay--enabled' : 'dropzone-overlay--disabled';
 	},
 
-	dragAndDropLabel(this: { _id: IRoom['_id']; rid: IRoom['_id'] }): string {
-		if (!userCanDrop(this._id)) {
+	dragAndDropLabel(this: ThreadTemplateInstance['data']): string {
+		if (!userCanDrop(this.rid)) {
 			return 'error-not-allowed';
 		}
 
@@ -68,14 +54,14 @@ export const dropzoneHelpers = {
 };
 
 export const dropzoneEvents = {
-	'dragenter .dropzone'(this: { _id: IRoom['_id'] }, e: JQuery.DragEnterEvent) {
+	'dragenter .dropzone'(this: ThreadTemplateInstance['data'], e: JQuery.DragEnterEvent) {
 		const types = e.originalEvent?.dataTransfer?.types;
 
 		if (
 			types &&
 			types.length > 0 &&
 			_.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) &&
-			userCanDrop(this._id)
+			userCanDrop(this.rid)
 		) {
 			e.currentTarget.classList.add('over');
 		}
@@ -105,24 +91,13 @@ export const dropzoneEvents = {
 		event.stopPropagation();
 	},
 
-	async 'dropped .dropzone-overlay'(
-		this: { _id: IRoom['_id']; rid: IRoom['_id'] },
-		event: JQuery.DropEvent,
-		instance: Blaze.TemplateInstance & {
-			onFile?: (
-				filesToUpload: {
-					file: File;
-					name: string;
-				}[],
-			) => void;
-		},
-	) {
+	async 'dropped .dropzone-overlay'(this: ThreadTemplateInstance['data'], event: JQuery.DropEvent, instance: ThreadTemplateInstance) {
 		event.currentTarget.parentNode.classList.remove('over');
 
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!userCanDrop(this._id) || !settings.get('FileUpload_Enabled')) {
+		if (!userCanDrop(this.rid) || !settings.get('FileUpload_Enabled')) {
 			return false;
 		}
 
@@ -147,15 +122,17 @@ export const dropzoneEvents = {
 
 				const file = await createFileFromUrl(imgURL);
 				if (typeof file === 'string') {
-					return addToInput(file);
+					instance.onTextDrop?.(file);
+					return;
 				}
 				files = [file];
 			}
 			if (dataTransfer.types.includes('text/plain') && !dataTransfer.types.includes('text/x-moz-url')) {
-				return addToInput(transferData?.trim());
+				instance.onTextDrop?.(transferData.trim());
+				return;
 			}
 		}
-		const { mime } = await import('../../../../../utils/lib/mimeTypes');
+		const { mime } = await import('../../../utils/lib/mimeTypes');
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return {
@@ -164,6 +141,6 @@ export const dropzoneEvents = {
 			};
 		});
 
-		return instance.onFile?.(filesToUpload);
+		instance.onFileDrop?.(filesToUpload);
 	},
 };

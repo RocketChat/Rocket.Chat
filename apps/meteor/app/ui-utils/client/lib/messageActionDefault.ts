@@ -2,7 +2,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
@@ -31,9 +30,7 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 Meteor.startup(async function () {
 	const { ChatMessages } = await import('../../../ui/client');
 
-	const getChatMessagesFrom = (msg: IMessage): ChatMessages | undefined => {
-		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
-
+	const getChatMessagesFrom = ({ rid, _id: tmid }: IMessage): ChatMessages | undefined => {
 		return ChatMessages.get({ rid, tmid }) ?? ChatMessages.get({ rid });
 	};
 

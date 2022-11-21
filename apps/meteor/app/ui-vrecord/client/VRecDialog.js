@@ -27,7 +27,6 @@ export const VRecDialog = new (class {
 		this.dialogView.templateInstance().update({
 			rid,
 			tmid,
-			input: source.querySelector('.js-input-message'),
 		});
 
 		this.source = source;
@@ -42,7 +41,7 @@ export const VRecDialog = new (class {
 	close() {
 		$('.vrec-dialog').removeClass('show');
 		this.opened = false;
-		if (this.video != null) {
+		if (this.video) {
 			return VideoRecorder.stop();
 		}
 	}

@@ -497,7 +497,7 @@ Template.messageBox.events({
 		}
 
 		const { rid, tmid } = this;
-		const { input, autogrow } = instance;
+		const { autogrow } = instance;
 
 		setTimeout(() => autogrow?.update(), 50);
 
@@ -540,7 +540,7 @@ Template.messageBox.events({
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files, input, { rid, tmid });
+			fileUpload(files, { rid, tmid });
 		}
 	},
 	'input .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {

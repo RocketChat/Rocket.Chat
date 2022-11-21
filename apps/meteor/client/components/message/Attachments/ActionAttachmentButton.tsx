@@ -3,7 +3,7 @@ import { Button } from '@rocket.chat/fuselage';
 import { useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import React, { ReactElement, ReactNode } from 'react';
 
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 
 type ProcessingType = Exclude<MessageAttachmentAction['actions'][number]['msg_processing_type'], undefined>;
 
@@ -23,23 +23,28 @@ type ActionAttachmentButtonProps = {
 const usePerformActionMutation = (
 	options?: Omit<UseMutationOptions<void, Error, UsePerfomActionMutationParams>, 'mutationFn'>,
 ): UseMutationResult<void, Error, UsePerfomActionMutationParams> => {
-	const {
-		actions: { sendMessage, respondWithMessage, respondWithQuotedMessage },
-	} = useMessageActions();
+	const chat = useChat();
 
 	return useMutation(async ({ processingType, msg, mid }) => {
+		if (!chat) {
+			return;
+		}
+
 		switch (processingType) {
 			case 'sendMessage':
 				if (!msg) return;
-				return sendMessage?.({ msg });
+				await chat.sendMessage(msg);
+				return;
 
 			case 'respondWithMessage':
 				if (!msg) return;
-				return respondWithMessage?.({ msg });
+				await chat.composer.replyWith(msg);
+				return;
 
 			case 'respondWithQuotedMessage':
 				if (!mid) return;
-				return respondWithQuotedMessage?.({ mid });
+				const message = await chat.allMessages.getOneByID(mid);
+				await chat.composer.quoteMessage(message);
 		}
 	}, options);
 };
@@ -49,7 +54,6 @@ const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAt
 
 	return (
 		<Button
-			className={`js-actionButton-${processingType}`} // TODO: Remove this class when threads are implemented as a component
 			small
 			value={msg}
 			id={mid}

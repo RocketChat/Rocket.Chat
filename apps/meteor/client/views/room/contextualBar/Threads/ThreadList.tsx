@@ -15,7 +15,8 @@ import { Virtuoso } from 'react-virtuoso';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTabContext } from '../../contexts/ToolboxContext';
-import { MessageProvider } from '../../providers/MessageProvider';
+import ChatProvider from '../../providers/ChatProvider';
+import MessageProvider from '../../providers/MessageProvider';
 import ThreadComponent from '../../threads/ThreadComponent';
 import ThreadRow from './ThreadRow';
 import { withData } from './withData';
@@ -184,9 +185,11 @@ const ThreadList: FC<ThreadListProps> = function ThreadList({
 
 			{typeof mid === 'string' && (
 				<VerticalBar.InnerContent>
-					<MessageProvider rid={room._id} tmid={mid} broadcast={subscription?.broadcast ?? false}>
-						<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />
-					</MessageProvider>
+					<ChatProvider tmid={mid}>
+						<MessageProvider rid={room._id} broadcast={subscription?.broadcast ?? false}>
+							<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />
+						</MessageProvider>
+					</ChatProvider>
 				</VerticalBar.InnerContent>
 			)}
 		</>

@@ -158,7 +158,6 @@ export type FileUploadProp = SingleOrArray<{
 /* @deprecated */
 export const fileUpload = async (
 	f: FileUploadProp,
-	input: HTMLInputElement | HTMLTextAreaElement | undefined,
 	{
 		rid,
 		tmid,
@@ -175,7 +174,8 @@ export const fileUpload = async (
 
 	const files = Array.isArray(f) ? f : [f];
 
-	const chatMessagesInstance = input ? ChatMessages.get({ input }) : undefined;
+	const chatMessagesInstance = ChatMessages.get({ rid, tmid });
+	const input = chatMessagesInstance?.input;
 
 	const replies = chatMessagesInstance?.quotedMessages.get() ?? [];
 	const mention = input ? $(input).data('mention-user') : false;
@@ -227,7 +227,6 @@ export const fileUpload = async (
 						tmid,
 					);
 					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
-					const input = ChatMessages.get({ rid, tmid })?.input;
 					if (input) {
 						input.value = '';
 						$(input).trigger('input');

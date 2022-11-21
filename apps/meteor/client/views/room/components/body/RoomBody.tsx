@@ -29,6 +29,7 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
+import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -42,7 +43,6 @@ import RoomForeword from './RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
-import { useChatMessages } from './useChatMessages';
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 import { useRetentionPolicy } from './useRetentionPolicy';
 import { useUnreadMessages } from './useUnreadMessages';
@@ -71,7 +71,12 @@ const RoomBody = (): ReactElement => {
 	const atBottomRef = useRef(!useQueryStringParameter('msg'));
 	const lastScrollTopRef = useRef(0);
 
-	const chatMessagesInstance = useChatMessages(room._id);
+	const chatMessagesInstance = useChat();
+
+	if (!chatMessagesInstance) {
+		throw new Error('No chatMessagesInstance');
+	}
+
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {

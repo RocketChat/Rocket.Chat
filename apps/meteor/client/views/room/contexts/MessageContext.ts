@@ -27,9 +27,6 @@ export type MessageContextValue = {
 		openThread: (tmid: string, jump?: string) => (e: MouseEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;
-		sendMessage?: (params: { msg: string }) => Promise<void>;
-		respondWithMessage?: (params: { msg: string }) => Promise<void>;
-		respondWithQuotedMessage?: (params: { mid: IMessage['_id'] }) => Promise<void>;
 	};
 	formatters: {
 		time: (date: Date) => string;

@@ -5,7 +5,7 @@ import React, { Fragment, memo, ReactElement } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useFormatDate } from '../../../hooks/useFormatDate';
-import { MessageProvider } from '../providers/MessageProvider';
+import MessageProvider from '../providers/MessageProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import Message from './components/Message';
 import MessageSystem from './components/MessageSystem';

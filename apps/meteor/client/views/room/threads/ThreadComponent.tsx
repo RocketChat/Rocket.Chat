@@ -10,6 +10,7 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import { ChatContext } from '../contexts/ChatContext';
 import { MessageContext } from '../contexts/MessageContext';
 import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
@@ -99,6 +100,7 @@ const ThreadComponent: FC<{
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
+	const chatContext = useContext(ChatContext);
 	const messageContext = useContext(MessageContext);
 
 	const [viewData, setViewData] = useState(() => ({
@@ -108,6 +110,7 @@ const ThreadComponent: FC<{
 		subscription,
 		rid: room._id,
 		tabBar: { openRoomInfo },
+		chatContext,
 		messageContext,
 	}));
 
@@ -124,10 +127,11 @@ const ThreadComponent: FC<{
 				subscription,
 				rid: room._id,
 				tabBar: { openRoomInfo },
+				chatContext,
 				messageContext,
 			};
 		});
-	}, [following, jump, messageContext, openRoomInfo, room._id, subscription, threadMessage]);
+	}, [chatContext, following, jump, messageContext, openRoomInfo, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

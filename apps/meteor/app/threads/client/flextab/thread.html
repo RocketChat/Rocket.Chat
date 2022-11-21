@@ -10,10 +10,10 @@
 					</li>
 				{{else}}
 						{{#if mainMessage }}
-							{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u ignored=false shouldCollapseReplies=true messageContext=messageContext}}
+							{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u ignored=false shouldCollapseReplies=true chatContext=chatContext messageContext=messageContext}}
 						{{/if}}
 						{{#each msg in messages}}
-							{{> message hideRoles=true msg=msg room=room shouldCollapseReplies=true subscription=subscription settings=settings templatePrefix='thread-' u=u context="threads" messageContext=messageContext}}
+							{{> message hideRoles=true msg=msg room=room shouldCollapseReplies=true subscription=subscription settings=settings templatePrefix='thread-' u=u context="threads"  chatContext=chatContext messageContext=messageContext}}
 						{{/each}}
 					{{/if}}
 				{{/with}}

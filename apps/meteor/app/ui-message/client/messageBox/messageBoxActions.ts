@@ -29,7 +29,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => settings.get('FileUpload_Enabled'),
-	action({ rid, tmid, event, messageBox }) {
+	action({ rid, tmid, event }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
 		$input.css('display', 'none');
@@ -53,7 +53,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement, { rid, tmid });
+			fileUpload(filesToUpload, { rid, tmid });
 			$input.remove();
 		});
 

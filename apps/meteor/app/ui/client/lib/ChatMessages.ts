@@ -581,7 +581,7 @@ export class ChatMessages {
 				type: contentType,
 				lastModified: Date.now(),
 			});
-			fileUpload([{ file, name: fileName }], input, { rid, tmid });
+			fileUpload([{ file, name: fileName }], { rid, tmid });
 			imperativeModal.close();
 		};
 

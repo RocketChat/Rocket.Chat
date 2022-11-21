@@ -75,11 +75,11 @@ Template.vrecDialog.events({
 	},
 
 	'click .vrec-dialog .ok'(e, instance) {
-		const [rid, tmid, input] = [instance.rid.get(), instance.tmid.get(), instance.input.get()];
+		const [rid, tmid] = [instance.rid.get(), instance.tmid.get()];
 		const cb = (blob) => {
 			const fileName = `${TAPi18n.__('Video record')}.webm`;
 			const file = new File([blob], fileName, { type: 'video/webm' });
-			fileUpload([{ file, type: 'video/webm', name: fileName }], input, { rid, tmid });
+			fileUpload([{ file, type: 'video/webm', name: fileName }], { rid, tmid });
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
@@ -94,12 +94,10 @@ Template.vrecDialog.onCreated(function () {
 
 	this.rid = new ReactiveVar();
 	this.tmid = new ReactiveVar();
-	this.input = new ReactiveVar();
 	this.time = new ReactiveVar('');
-	this.update = ({ rid, tmid, input }) => {
+	this.update = ({ rid, tmid }) => {
 		this.rid.set(rid);
 		this.tmid.set(tmid);
-		this.input.set(input);
 	};
 
 	this.setPosition = function (dialog, source, anchor = 'left') {

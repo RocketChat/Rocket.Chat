@@ -16,7 +16,7 @@ import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManag
 import { Messages } from '../../../models/client';
 import type { FileUploadProp } from '../../../ui/client/lib/fileUpload';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/lib/dropzone';
+import { dropzoneEvents, dropzoneHelpers } from './dropzone';
 import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
@@ -24,8 +24,9 @@ import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonR
 import './thread.html';
 import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
 import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 
-type ThreadTemplateInstance = Blaze.TemplateInstance<{
+export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
 	subscription: ISubscription;
 	jump: unknown;
@@ -34,6 +35,7 @@ type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	tabBar: {
 		openRoomInfo: (username: string) => void;
 	};
+	chatContext: ContextType<typeof ChatContext>;
 	messageContext: ContextType<typeof MessageContext>;
 }> & {
 	firstNode: HTMLElement;
@@ -57,7 +59,8 @@ type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	atBottom?: boolean;
 	sendToBottom: () => void;
 	sendToBottomIfNecessary: () => void;
-	onFile: (files: FileUploadProp) => void;
+	onFileDrop: (files: FileUploadProp) => void;
+	onTextDrop: (text: string) => void;
 	lastJump?: string;
 };
 
@@ -157,8 +160,15 @@ Template.thread.helpers({
 			onChange: () => instance.state.set('sendToChannel', !checked),
 		};
 	},
+	// TODO: remove this
+	chatContext() {
+		const { chatContext } = (Template.instance() as ThreadTemplateInstance).data;
+		return () => chatContext;
+	},
+	// TODO: remove this
 	messageContext() {
-		return (Template.instance() as ThreadTemplateInstance).data.messageContext;
+		const { messageContext } = (Template.instance() as ThreadTemplateInstance).data;
+		return () => messageContext;
 	},
 });
 
@@ -254,20 +264,22 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	const observer = new ResizeObserver(this.sendToBottomIfNecessary);
 	observer.observe(list);
 
-	this.onFile = (filesToUpload) => {
-		const { input } = this.chatMessages;
+	this.onTextDrop = (text: string) => {
+		const initText = input.value.slice(0, input.selectionStart ?? undefined);
+		const finalText = input.value.slice(input.selectionEnd ?? undefined, input.value.length);
 
-		if (!input) {
-			throw new Error('Could not find input element');
-		}
+		input.value = initText + text + finalText;
+		$(input).change().trigger('input');
+	};
 
+	this.onFileDrop = (filesToUpload) => {
 		const rid = this.state.get('rid');
 
 		if (!rid) {
 			throw new Error('No rid found');
 		}
 
-		fileUpload(filesToUpload, input, {
+		fileUpload(filesToUpload, {
 			rid,
 			tmid: this.state.get('tmid'),
 		});

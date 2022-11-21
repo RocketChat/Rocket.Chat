@@ -75,6 +75,7 @@ Template.body.onRendered(function () {
 			popover.close();
 			return;
 		}
+
 		if (!((e.keyCode > 45 && e.keyCode < 91) || e.keyCode === 8)) {
 			return;
 		}
@@ -82,6 +83,7 @@ Template.body.onRendered(function () {
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
+
 		if (target.id === 'pswp') {
 			return;
 		}
