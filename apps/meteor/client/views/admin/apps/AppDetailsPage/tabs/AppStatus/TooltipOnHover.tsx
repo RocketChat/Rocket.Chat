@@ -12,7 +12,7 @@ export const TooltipOnHover = ({ element, tooltip }: TooltipOnHoverProps): React
 
 	return (
 		<>
-			<Box is={'span'} ref={ref} onMouseEnter={(): void => setIsHovered(true)} onMouseLeave={(): void => setIsHovered(false)}>
+			<Box is='span' ref={ref} onMouseEnter={(): void => setIsHovered(true)} onMouseLeave={(): void => setIsHovered(false)}>
 				{element}
 			</Box>
 
