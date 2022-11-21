@@ -136,7 +136,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 							<Throbber inheritColor />
 						) : (
 							<>
-								{button.icon && <Icon name={button.icon} fontSize={'13px'} mie='x4' />}
+								{button.icon && <Icon name={button.icon} size='x16' mie='x4' />}
 								{t(button.label.replace(' ', '_') as TranslationKey)}
 							</>
 						)}
@@ -159,7 +159,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 								tooltip={<Tooltip key={`${index.toString()}'-tooltip-internal'`}>{status.tooltipText}</Tooltip>}
 							/>
 						) : (
-							<Box is={'span'}>
+							<Box is='span'>
 								<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>
 							</Box>
 						)}

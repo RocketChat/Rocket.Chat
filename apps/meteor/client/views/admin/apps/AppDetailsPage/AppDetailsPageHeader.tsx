@@ -50,11 +50,11 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					<Box is='span'> | </Box>
 
-					<Box marginInlineStart={'x16'} marginInlineEnd={'x4'}>
+					<Box marginInlineStart='16px' marginInlineEnd='4px'>
 						{t('Version_version', { version: versioni18nKey(app) })}
 					</Box>
 
-					<Box is={'span'} marginInlineEnd={'x16'} marginInlineStart={'x4'} marginBlockStart={'x4'}>
+					<Box is='span' marginInlineEnd='16px' marginInlineStart='4px' marginBlockStart='4px'>
 						{versionIncompatible === true && (
 							<>
 								<TooltipOnHover
