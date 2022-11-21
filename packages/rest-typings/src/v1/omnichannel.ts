@@ -964,7 +964,7 @@ const LivechatRoomsSchema = {
 
 export const isLivechatRoomsProps = ajv.compile<LivechatRoomsProps>(LivechatRoomsSchema);
 
-type LivechatRidMessagesProps = PaginatedRequest;
+type LivechatRidMessagesProps = PaginatedRequest<{ searchTerm?: string }>;
 
 const LivechatRidMessagesSchema = {
 	type: 'object',
@@ -978,6 +978,10 @@ const LivechatRidMessagesSchema = {
 			nullable: true,
 		},
 		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		searchTerm: {
 			type: 'string',
 			nullable: true,
 		},
