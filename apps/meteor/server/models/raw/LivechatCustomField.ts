@@ -17,6 +17,34 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		return this.find({ scope }, options || {});
 	}
 
+	findMatchingCustomFields(
+		scope: ILivechatCustomField['scope'],
+		searchable = true,
+		options?: FindOptions<ILivechatCustomField>,
+	): FindCursor<ILivechatCustomField> {
+		const query = {
+			scope,
+			searchable,
+		};
+
+		return this.find(query, options);
+	}
+
+	findMatchingCustomFieldsByIds(
+		ids: ILivechatCustomField['_id'][],
+		scope: ILivechatCustomField['scope'],
+		searchable = true,
+		options?: FindOptions<ILivechatCustomField>,
+	): FindCursor<ILivechatCustomField> {
+		const query = {
+			_id: { $in: ids },
+			scope,
+			searchable,
+		};
+
+		return this.find(query, options);
+	}
+
 	async createOrUpdateCustomField(
 		_id: string,
 		field: string,

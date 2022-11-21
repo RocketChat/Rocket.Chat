@@ -36,12 +36,13 @@ export async function connectWorkspace(token: string) {
 			},
 			data: regInfo,
 		});
-	} catch (e: any) {
-		if (e.response?.data?.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  Error: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
-		}
+	} catch (err: any) {
+		SystemLogger.error({
+			msg: 'Failed to Connect with Rocket.Chat Cloud',
+			url: '/api/oauth/clients',
+			...(err.response?.data && { cloudError: err.response.data }),
+			err,
+		});
 
 		return false;
 	}

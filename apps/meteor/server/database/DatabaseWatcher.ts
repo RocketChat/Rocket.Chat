@@ -9,6 +9,10 @@ import { convertChangeStreamPayload } from './convertChangeStreamPayload';
 import { convertOplogPayload } from './convertOplogPayload';
 import { watchCollections } from './watchCollections';
 
+const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
+
+const maxDocMs = instancePing * 4; // 4 times the ping interval
+
 export type RealTimeData<T> = {
 	id: string;
 	action: 'insert' | 'update' | 'remove';
@@ -29,6 +33,11 @@ export class DatabaseWatcher extends EventEmitter {
 	private _oplogHandle?: any;
 
 	private metrics?: any;
+
+	/**
+	 * Last doc timestamp received from a real time event
+	 */
+	private lastDocTS: Date;
 
 	constructor({ db, _oplogHandle, metrics }: { db: Db; _oplogHandle?: any; metrics?: any }) {
 		super();
@@ -170,6 +179,8 @@ export class DatabaseWatcher extends EventEmitter {
 			return;
 		}
 
+		this.lastDocTS = new Date();
+
 		this.metrics?.oplog.inc({
 			collection,
 			op: doc.action,
@@ -180,5 +191,19 @@ export class DatabaseWatcher extends EventEmitter {
 
 	on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
 		return super.on(collection, callback);
+	}
+
+	/**
+	 * @returns the last timestamp delta in miliseconds received from a real time event
+	 */
+	getLastDocDelta(): number {
+		return this.lastDocTS ? Date.now() - this.lastDocTS.getTime() : Infinity;
+	}
+
+	/**
+	 * @returns Indicates if the last document received is older than it should be. If that happens, it means that the oplog is not working properly
+	 */
+	isLastDocDelayed(): boolean {
+		return this.getLastDocDelta() > maxDocMs;
 	}
 }

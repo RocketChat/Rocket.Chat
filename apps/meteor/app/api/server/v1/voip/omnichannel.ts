@@ -3,7 +3,6 @@ import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typin
 import { Users } from '@rocket.chat/models';
 
 import { API } from '../../api';
-import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
 
@@ -31,12 +30,9 @@ const isUserIdndTypeParams = (p: any): p is { userId: string; type: 'free' | 'al
 
 API.v1.addRoute(
 	'omnichannel/agent/extension',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -94,13 +90,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/agent/extension/:username',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: ['view-agent-extension-association'],
+			DELETE: ['manage-agent-extension-association'],
+		},
+	},
 	{
 		// Get the extensions associated with the agent passed as request params.
 		async get() {
-			if (!hasPermission(this.userId, 'view-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.urlParams,
 				Match.ObjectIncluding({
@@ -128,9 +127,6 @@ API.v1.addRoute(
 		},
 
 		async delete() {
-			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.urlParams,
 				Match.ObjectIncluding({
