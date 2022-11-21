@@ -27,18 +27,19 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const appData = useAppInfo(id);
 
-	const [routeName, urlParams] = useCurrentRoute();
-	const appsRoute = useRoute('admin-apps');
-	const marketplaceRoute = useRoute('admin-marketplace');
-	const tab = useRouteParameter('tab');
-
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
 		throw new Error('No current route name');
 	}
-
 	const router = useRoute(currentRouteName);
-	const handleReturn = useMutableCallback((): void => router.push({}));
+
+	const [, urlParams] = useCurrentRoute();
+	const tab = useRouteParameter('tab');
+	const context = useRouteParameter('context');
+
+	const handleReturn = useMutableCallback((): void => {
+		context && router.push({ context, page: 'list' });
+	});
 
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace } = appData || {};
 	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
@@ -61,13 +62,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	}, [id, settings]);
 
 	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
-		if (routeName === 'admin-marketplace') {
-			marketplaceRoute.replace({ ...urlParams, tab });
-		}
-
-		if (routeName === 'admin-apps') {
-			appsRoute.replace({ ...urlParams, tab });
-		}
+		router.replace({ ...urlParams, tab });
 	};
 
 	return (

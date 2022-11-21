@@ -152,7 +152,7 @@ API.v1.addRoute(
 							language: user.language,
 						},
 					},
-				},
+				} as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
 	},
