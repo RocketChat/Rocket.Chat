@@ -74,7 +74,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		<Page flexDirection='column'>
 			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
 				<ButtonGroup>
-					<Button primary disabled={!hasUnsavedChanges || isSaving} invisible={!installed} onClick={saveAppSettings}>
+					{ installed && <Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
 						{!isSaving && t('Save_changes')}
 						{isSaving && <Throbber inheritColor />}
 					</Button>
