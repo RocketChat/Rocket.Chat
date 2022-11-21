@@ -1,6 +1,7 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
-export async function findIntegrationSettings() {
+export async function findIntegrationSettings(): Promise<{ settings: ISetting[] }> {
 	const settings = await Settings.findByIds([
 		'Livechat_webhookUrl',
 		'Livechat_secret_token',
