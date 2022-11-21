@@ -362,7 +362,7 @@ export class CustomOAuth {
 				const update = {
 					$set: {
 						name: serviceData.name,
-						email: serviceData.email,
+						...(this.keyField === 'username' && serviceData.email && { emails: [{ address: serviceData.email, verified: true }] }),
 						[serviceIdKey]: serviceData.id,
 					},
 				};
