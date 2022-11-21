@@ -72,7 +72,7 @@
     "@storybook/react": "~6.5.10",
     "@storybook/source-loader": "~6.5.10",
     "@storybook/theming": "~6.5.10",
-    "@tanstack/react-query": "^4.0.10",
+    "@tanstack/react-query": "^4.16.1",
     "@types/react": "~17.0.48",
     "@types/react-dom": "~17.0.17",
     "babel-loader": "~8.2.3",
