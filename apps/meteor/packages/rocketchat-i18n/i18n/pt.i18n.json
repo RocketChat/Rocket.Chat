@@ -2980,7 +2980,7 @@
   "User Search (Group Validation)": "Pesquisa de usuário (validação de grupo)",
   "User__username__is_now_a_leader_of__room_name_": "Utilizador __username__ é agora um líder de __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Utilizador __username__ é agora um moderador de __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Utilizador __username__ é agora titular de  __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Utilizador __username__ é agora titular de  __room_name__",
   "User__username__removed_from__room_name__leaders": "Utilizador __username__ foi removido de __room_name__ leaders",
   "User__username__removed_from__room_name__moderators": "Utilizador __username__ foi removido dos moderadores de __room_name__",
   "User__username__removed_from__room_name__owners": "Utilizador __username__ foi removido dos proprietários de __room_name__",

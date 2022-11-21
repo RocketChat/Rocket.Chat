@@ -2574,7 +2574,7 @@
   "User": "Korisnik",
   "User__username__is_now_a_leader_of__room_name_": "Korisnik __username__ sada je vođa __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Korisnik __username__ je sada moderator sobe __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Korisnik __username__ je sada vlasnik sobe __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Korisnik __username__ je sada vlasnik sobe __room_name__",
   "User__username__removed_from__room_name__leaders": "Korisnik __username__ uklonjen iz voditelja __room_name__",
   "User__username__removed_from__room_name__moderators": "Korisnik __username__ je uklonjen iz moderatora sobe __room_name__",
   "User__username__removed_from__room_name__owners": "Korisnik __username__ uklonjen kao vlasnik sobe __room_name__ ",

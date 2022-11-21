@@ -4944,7 +4944,7 @@
   "User Search (Group Validation)": "User Search (Group Validation)",
   "User__username__is_now_a_leader_of__room_name_": "User __username__ is now a leader of __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "User __username__ is now a moderator of __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "User __username__ is now a owner of __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "User __username__ is now an owner of __room_name__",
   "User__username__muted_in_room__roomName__": "User __username__ muted in room __roomName__",
   "User__username__removed_from__room_name__leaders": "User __username__ removed from __room_name__ leaders",
   "User__username__removed_from__room_name__moderators": "User __username__ removed from __room_name__ moderators",
