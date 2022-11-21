@@ -1,14 +1,9 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { App } from '@rocket.chat/core-typings';
 
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
+import { appErroredStatuses } from '../helpers';
 
-const appErroredStatuses = [
-	AppStatus.COMPILER_ERROR_DISABLED,
-	AppStatus.ERROR_DISABLED,
-	AppStatus.INVALID_SETTINGS_DISABLED,
-	AppStatus.INVALID_LICENSE_DISABLED,
-];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';

@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, Fragment } from 'react';
 
-import { apiCurlGetter } from '../../../helpers';
+import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
 
 type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];

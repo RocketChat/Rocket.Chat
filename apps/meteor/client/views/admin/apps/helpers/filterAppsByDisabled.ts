@@ -1,5 +1,5 @@
-import { appStatusSpanProps } from '../helpers';
 import { App } from '../types';
+import { appStatusSpanProps } from './appStatusSpanProps';
 
 export const filterAppsByDisabled = (app: App): boolean =>
 	appStatusSpanProps(app)?.label === 'Disabled' ||
