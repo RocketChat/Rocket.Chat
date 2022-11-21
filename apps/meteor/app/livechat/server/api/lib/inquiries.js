@@ -24,28 +24,34 @@ const applyDepartmentRestrictions = async (userId, filterDepartment) => {
 
 export async function findInquiries({ userId, department: filterDepartment, status, pagination: { offset, count, sort } }) {
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
-
 	const options = {
 		limit: count,
-		sort: sort || { ts: -1 },
 		skip: offset,
 	};
 
-	const filter = {
-		...(status && { status }),
-		$or: [
-			{
-				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
+	const filter = [
+		{
+			$match: {
+				$and: [
+					{ ...(status && { status }) },
+					{
+						$or: [
+							{
+								$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
+							},
+							{ ...(department && { department }) },
+							// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
+							{ department: { $exists: false } },
+						],
+					},
+				],
 			},
-			{ ...(department && { department }) },
-			// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
-			{ department: { $exists: false } },
-		],
-	};
+		},
+		...(await LivechatInquiry.getSortingQuery()),
+	];
+	const cursor = LivechatInquiry.col.aggregate(filter, options);
 
-	const { cursor, totalCount } = LivechatInquiry.findPaginated(filter, options);
-
-	const [inquiries, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const [inquiries, total] = await Promise.all([cursor.toArray(), LivechatInquiry.col.countDocuments(filter[0].$match)]);
 
 	return {
 		inquiries,

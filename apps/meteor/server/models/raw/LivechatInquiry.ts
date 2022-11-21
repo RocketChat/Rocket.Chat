@@ -2,6 +2,7 @@ import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -90,5 +91,48 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
 			{ $unset: { locked: 1, lockedAt: 1 } },
 		);
+	}
+
+	async getSortingQuery(): Promise<Document[]> {
+		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
+		const $sort: { 'R.priorityWeight'?: number; 'estimatedServiceTimeAt'?: number; 'ts'?: number } = {};
+		const filter = [];
+		switch (sortMechanism?.value) {
+			case 'Priority':
+				$sort['R.priorityWeight'] = -1;
+				filter.push(
+					...[
+						{
+							$lookup: {
+								from: 'rocketchat_room',
+								localField: 'rid',
+								foreignField: '_id',
+								as: 'R',
+								pipeline: [
+									{
+										$project: {
+											priorityId: 1,
+											priorityWeight: 1,
+											_id: 0,
+										},
+									},
+								],
+							},
+						},
+						{ $unwind: '$R' },
+					],
+				);
+				break;
+			case 'SLAs':
+				$sort.estimatedServiceTimeAt = 1;
+				break;
+			case 'Timestamp':
+				$sort.ts = -1;
+				break;
+			default:
+				break;
+		}
+		filter.push(...[{ $sort: { ...$sort } }]);
+		return filter;
 	}
 }

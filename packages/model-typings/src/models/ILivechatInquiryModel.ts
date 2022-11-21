@@ -15,4 +15,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
+	getSortingQuery(): Promise<Document[]>;
 }
