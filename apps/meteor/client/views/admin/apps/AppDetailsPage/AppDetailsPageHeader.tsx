@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Tag, Tooltip } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { ReactElement } from 'react';
@@ -9,7 +9,6 @@ import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import { appIncompatibleStatusProps } from '../helpers';
 import AppStatus from './tabs/AppStatus';
-import { TooltipOnHover } from './tabs/AppStatus/TooltipOnHover';
 
 const versioni18nKey = (app: App): string => {
 	const { version, marketplaceVersion, marketplace } = app;
@@ -52,20 +51,16 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 						{t('Version_version', { version: versioni18nKey(app) })}
 					</Box>
 
-					<Box is={'span'} marginInlineEnd='x16' marginInlineStart='x4' marginBlockStart='x4'>
-						{versionIncompatible === true && (
-							<>
-								<TooltipOnHover
-									element={
-										<Tag variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}>
-											{incompatibleStatus?.label}
-										</Tag>
-									}
-									tooltip={<Tooltip>{incompatibleStatus?.tooltipText}</Tooltip>}
-								/>
-							</>
-						)}
-					</Box>
+					{versionIncompatible && (
+						<Box is='span' marginInlineEnd='16px' marginInlineStart='4px'>
+							<Tag
+								title={incompatibleStatus?.tooltipText}
+								variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
+							>
+								{incompatibleStatus?.label}
+							</Tag>
+						</Box>
+					)}
 
 					{lastUpdated && (
 						<>

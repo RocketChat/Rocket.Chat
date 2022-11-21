@@ -1,8 +1,8 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Icon, Throbber, Tag, Tooltip, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo, ReactElement } from 'react';
+import React, { useCallback, useState, memo, ReactElement, Fragment } from 'react';
 
 import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
@@ -11,7 +11,6 @@ import IframeModal from '../../../IframeModal';
 import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
-import { TooltipOnHover } from './TooltipOnHover';
 
 type AppStatusProps = {
 	app: App;
@@ -151,20 +150,19 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<>
+				<Fragment key={index}>
 					<Margins all='x8'>
 						{status.tooltipText ? (
-							<TooltipOnHover
-								element={<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>}
-								tooltip={<Tooltip key={`${index.toString()}'-tooltip-internal'`}>{status.tooltipText}</Tooltip>}
-							/>
+							<Tag title={status.tooltipText} variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>
+								{status.label}
+							</Tag>
 						) : (
 							<Box is='span'>
 								<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>
 							</Box>
 						)}
 					</Margins>
-				</>
+				</Fragment>
 			))}
 		</Box>
 	);
