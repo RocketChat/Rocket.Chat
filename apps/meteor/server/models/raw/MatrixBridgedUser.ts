@@ -32,6 +32,12 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 		return bridgedUser ? bridgedUser.uid : null;
 	}
 
+	async getLocalUsersByExternalIds(externalUserIds: string[]): Promise<IMatrixBridgedUser[]> {
+		const bridgedUsers = await this.find({ mui: { $in: externalUserIds } }).toArray();
+
+		return bridgedUsers;
+	}
+
 	async getBridgedUserByLocalId(localUserId: string): Promise<IMatrixBridgedUser | null> {
 		return this.findOne({ uid: localUserId });
 	}

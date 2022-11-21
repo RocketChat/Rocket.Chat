@@ -74,7 +74,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			guest,
 			servedBy,
 			status,
-			...(department?.value && department.value !== 'all' && { department: department.value }),
+			department: department?.value && department.value !== 'all' ? department.value : '',
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
@@ -149,7 +149,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (

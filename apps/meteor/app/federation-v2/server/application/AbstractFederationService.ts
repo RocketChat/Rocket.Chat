@@ -1,5 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
+
 import { FederatedUser } from '../domain/FederatedUser';
 import type { IFederationBridge } from '../domain/IFederationBridge';
+import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
 
@@ -9,12 +12,13 @@ export abstract class FederationService {
 	constructor(
 		protected bridge: IFederationBridge,
 		protected internalUserAdapter: RocketChatUserAdapter,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 	) {
 		this.internalHomeServerDomain = this.internalSettingsAdapter.getHomeServerDomain();
 	}
 
-	protected async createFederatedUser(
+	protected async createFederatedUserInternallyOnly(
 		externalUserId: string,
 		username: string,
 		existsOnlyOnProxyServer = false,
@@ -34,9 +38,40 @@ export abstract class FederationService {
 			});
 		}
 		await this.internalUserAdapter.createFederatedUser(federatedUser);
+		const insertedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId);
+		if (!insertedUser) {
+			return;
+		}
+		await this.updateUserAvatarInternally(insertedUser, externalUserProfileInformation?.avatarUrl);
+		await this.updateUserDisplayNameInternally(insertedUser, externalUserProfileInformation?.displayName);
 	}
 
-	protected async createFederatedUserForInviterUsingLocalInformation(internalInviterId: string): Promise<string> {
+	protected async updateUserAvatarInternally(federatedUser: FederatedUser, avatarUrl?: string): Promise<void> {
+		if (!avatarUrl) {
+			return;
+		}
+		if (!federatedUser.isRemote()) {
+			return;
+		}
+		if (federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
+			await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl));
+			await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), avatarUrl);
+		}
+	}
+
+	protected async updateUserDisplayNameInternally(federatedUser: FederatedUser, displayName?: string): Promise<void> {
+		if (!displayName) {
+			return;
+		}
+		if (!federatedUser.isRemote()) {
+			return;
+		}
+		if (federatedUser.shouldUpdateDisplayName(displayName)) {
+			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReference(), displayName);
+		}
+	}
+
+	protected async createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId: string): Promise<string> {
 		const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
 		if (!internalUser || !internalUser?.username) {
 			throw new Error(`Could not find user id for ${internalInviterId}`);
@@ -44,8 +79,35 @@ export abstract class FederationService {
 		const name = internalUser.name || internalUser.username;
 		const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
 		const existsOnlyOnProxyServer = true;
-		await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
+		await this.createFederatedUserInternallyOnly(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
+		await this.updateUserAvatarExternally(
+			internalUser,
+			(await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId)) as FederatedUser,
+		);
 
 		return externalInviterId;
+	}
+
+	protected async updateUserAvatarExternally(internalUser: IUser, externalInviter: FederatedUser): Promise<void> {
+		if (!internalUser.username) {
+			return;
+		}
+		const buffer = await this.internalFileAdapter.getBufferForAvatarFile(internalUser.username);
+		if (!buffer) {
+			return;
+		}
+		const avatarFileRecord = await this.internalFileAdapter.getFileMetadataForAvatarFile(internalUser.username);
+		if (!avatarFileRecord?.type || !avatarFileRecord?.name) {
+			return;
+		}
+		const externalFileUri = await this.bridge.uploadContent(externalInviter.getExternalId(), buffer, {
+			type: avatarFileRecord.type,
+			name: avatarFileRecord.name,
+		});
+		if (!externalFileUri) {
+			return;
+		}
+		await this.internalUserAdapter.updateFederationAvatar(internalUser._id, externalFileUri);
+		await this.bridge.setUserAvatar(externalInviter.getExternalId(), externalFileUri);
 	}
 }

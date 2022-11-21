@@ -22,7 +22,6 @@ import type {
 	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
-	AtLeast,
 	UserStatus,
 } from '@rocket.chat/core-typings';
 
@@ -87,8 +86,10 @@ export type EventSignatures = {
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
+	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
+	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'presence.status'(data: {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
@@ -137,5 +138,4 @@ export type EventSignatures = {
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
-	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
 };

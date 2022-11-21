@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { v4 as uuid } from 'uuid';
-import type { APIResponse } from '@playwright/test';
+import type { Locator, APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 
 import { BASE_API_URL, BASE_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
@@ -13,10 +13,10 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		get(uri: string, prefix?: string): Promise<APIResponse>;
+		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
-		delete(uri: string, prefix?: string): Promise<APIResponse>;
+		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
 };
 
@@ -61,8 +61,8 @@ export const test = baseTest.extend<BaseTest>({
 		};
 
 		await use({
-			get(uri: string, prefix = API_PREFIX) {
-				return request.get(BASE_URL + prefix + uri, { headers });
+			get(uri: string, params?: AnyObj, prefix = API_PREFIX) {
+				return request.get(BASE_URL + prefix + uri, { headers, params });
 			},
 			post(uri: string, data: AnyObj, prefix = API_PREFIX) {
 				return request.post(BASE_URL + prefix + uri, { headers, data });
@@ -70,11 +70,30 @@ export const test = baseTest.extend<BaseTest>({
 			put(uri: string, data: AnyObj, prefix = API_PREFIX) {
 				return request.put(BASE_URL + prefix + uri, { headers, data });
 			},
-			delete(uri: string, prefix = API_PREFIX) {
-				return request.delete(BASE_URL + prefix + uri, { headers });
+			delete(uri: string, params?: AnyObj, prefix = API_PREFIX) {
+				return request.delete(BASE_URL + prefix + uri, { headers, params });
 			},
 		});
 	},
 });
 
 export const { expect } = test;
+
+expect.extend({
+	async toBeInvalid(received: Locator) {
+		const pass = await received.evaluate((node) => node.getAttribute('aria-invalid') === 'true');
+
+		return {
+			message: () => `expected ${received} to be invalid`,
+			pass,
+		};
+	},
+	async hasAttribute(received: Locator, attribute: string) {
+		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);
+
+		return {
+			message: () => `expected ${received} to have attribute \`${attribute}\``,
+			pass,
+		};
+	},
+});
