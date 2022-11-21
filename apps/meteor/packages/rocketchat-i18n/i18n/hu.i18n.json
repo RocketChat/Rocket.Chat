@@ -3565,7 +3565,7 @@
   "User Search (Group Validation)": "Felhasználó keresés (csoport ellenőrzés)",
   "User__username__is_now_a_leader_of__room_name_": "__username__ mostantól a __room_name__ csatorna vezetője",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ mostantól moderátor a __room_name__ csatornán",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ mostantól tulajdonosa a __room_name__ csatornának",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ mostantól tulajdonosa a __room_name__ csatornának",
   "User__username__muted_in_room__roomName__": "__username__ felhasználó elnémítva a __roomName__ szobában",
   "User__username__removed_from__room_name__leaders": "__username__ már nem vezetője a __room_name__ csatornának",
   "User__username__removed_from__room_name__moderators": "__username__ már nem moderátora a __room_name__ csatornának",

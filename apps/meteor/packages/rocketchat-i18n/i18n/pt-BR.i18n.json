@@ -4539,7 +4539,7 @@
   "User Search (Group Validation)": "Pesquisa de usuário (validação de grupo)",
   "User__username__is_now_a_leader_of__room_name_": "O usuário __username__ agora é um líder da __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "O usuário __username__ agora é um moderador da __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Usuário __username__ agora é proprietário da __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Usuário __username__ agora é proprietário da __room_name__",
   "User__username__muted_in_room__roomName__": "O usuário __username__ foi silenciado na sala __roomName__",
   "User__username__removed_from__room_name__leaders": "O usuário __username__ foi removido dos líderes da __room_name__",
   "User__username__removed_from__room_name__moderators": "O usuário __username__ foi removido dos moderadores da __room_name__",
