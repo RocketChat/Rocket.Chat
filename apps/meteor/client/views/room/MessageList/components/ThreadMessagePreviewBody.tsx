@@ -1,7 +1,9 @@
 import { IMessage } from '@rocket.chat/core-typings';
-import { PreviewMarkup } from '@rocket.chat/gazzodown';
+import { MarkupInteractionContext, PreviewMarkup } from '@rocket.chat/gazzodown';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
+import { detectEmoji } from '../../../../lib/detectEmoji';
 import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
 
 type ThreadMessagePreviewBodyProps = {
@@ -11,7 +13,22 @@ type ThreadMessagePreviewBodyProps = {
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement => {
 	const parsedMessage = parseMessageTextToAstMarkdown(message, { colors: true, emoticons: true });
 
-	return parsedMessage.md ? <PreviewMarkup tokens={parsedMessage.md} /> : <></>;
+	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
+
+	if (!parsedMessage.md) {
+		return <></>;
+	}
+
+	return (
+		<MarkupInteractionContext.Provider
+			value={{
+				detectEmoji,
+				convertAsciiToEmoji,
+			}}
+		>
+			<PreviewMarkup tokens={parsedMessage.md} />
+		</MarkupInteractionContext.Provider>
+	);
 };
 
 export default ThreadMessagePreviewBody;
