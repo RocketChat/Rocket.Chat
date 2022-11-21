@@ -57,6 +57,7 @@ export type AppSubscriptionInfo = {
 
 export type AppPermission = {
 	name: string;
+	required?: boolean;
 };
 
 export type App = {
@@ -69,6 +70,7 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	shortDescription?: string;
 	privacyPolicySummary: string;
 	detailedDescription: {
 		raw: string;

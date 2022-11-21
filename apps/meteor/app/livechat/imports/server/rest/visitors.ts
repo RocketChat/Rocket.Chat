@@ -139,7 +139,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const nameOrUsername = term && new RegExp(escapeRegExp(term), 'i');
+			const nameOrUsername = term ? new RegExp(escapeRegExp(term), 'i') : undefined;
 
 			return API.v1.success(
 				await findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField({
@@ -163,6 +163,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
+			const { searchTerm } = this.requestParams();
 
 			const room = LivechatRooms.findOneById(this.urlParams.rid);
 
@@ -174,7 +175,7 @@ API.v1.addRoute(
 				throw new Error('not-allowed');
 			}
 
-			const { cursor, totalCount } = Messages.findLivechatClosedMessages(this.urlParams.rid, {
+			const { cursor, totalCount } = Messages.findLivechatClosedMessages(this.urlParams.rid, searchTerm, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,

@@ -221,11 +221,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		return this.findPaginated(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+				...(searchTerm && { msg: new RegExp(escapeRegExp(searchTerm), 'ig') }),
 			},
 			options,
 		);
@@ -378,6 +379,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async findOneByFederationId(federationEventId: string): Promise<IMessage | null> {
 		return this.findOne({ 'federation.eventId': federationEventId });
+	}
+
+	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					'federation.eventId': federationEventId,
+				},
+			},
+		);
 	}
 
 	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
