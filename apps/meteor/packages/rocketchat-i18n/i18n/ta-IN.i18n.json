@@ -2580,7 +2580,7 @@
   "User": "பயனர்",
   "User__username__is_now_a_leader_of__room_name_": null,
   "User__username__is_now_a_moderator_of__room_name_": "பயனர் __username__ இப்போது __room_name__ ஒரு மதிப்பீட்டாளர்",
-  "User__username__is_now_a_owner_of__room_name_": "பயனர் __username__ இப்போது __room_name__ ஒரு உரிமையாளர் ஆவார்",
+  "User__username__is_now_an_owner_of__room_name_": "பயனர் __username__ இப்போது __room_name__ ஒரு உரிமையாளர் ஆவார்",
   "User__username__removed_from__room_name__leaders": "__room_name__ தலைவர்களிடமிருந்து பயனர் __username__ நீக்கப்பட்டது",
   "User__username__removed_from__room_name__moderators": "பயனர் __username__ __room_name__ நடுவர்களின் நீக்கப்பட்டது",
   "User__username__removed_from__room_name__owners": "பயனர் __username__ __room_name__ உரிமையாளர்கள் இருந்து நீக்கப்பட்டது",
