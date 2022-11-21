@@ -18,9 +18,9 @@ const LicenseCard = (): ReactElement => {
 
 	const isAirGapped = true;
 
-	const { licenses, isError, isLoading } = useLicense();
+	const { data, isError, isLoading } = useLicense();
 
-	const { modules = [] } = isLoading || isError || !licenses?.length ? {} : licenses[0];
+	const { modules = [] } = isLoading || isError || !data?.licenses?.length ? {} : data?.licenses[0];
 
 	const hasEngagement = modules.includes('engagement-dashboard');
 	const hasOmnichannel = modules.includes('livechat-enterprise');

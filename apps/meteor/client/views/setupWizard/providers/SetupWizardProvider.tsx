@@ -173,6 +173,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
 			queryClient.invalidateQueries(['licenses']);
+			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({
 				...prevState,

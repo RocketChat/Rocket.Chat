@@ -7,9 +7,9 @@ import { useIsEnterprise } from '../../../../client/hooks/useIsEnterprise';
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();
 
-	const { isEnterprise, isLoading } = useIsEnterprise();
+	const { isLoading, isError, data } = useIsEnterprise();
 
-	if (isEnterprise || isLoading) {
+	if (isError || isLoading || data?.isEnterprise) {
 		return null;
 	}
 

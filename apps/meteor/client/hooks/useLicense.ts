@@ -1,32 +1,13 @@
-import { CloudRegistrationStatus, ILicense } from '@rocket.chat/core-typings';
+import { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
-export const useLicense = (): {
-	licenses: ILicense[] | undefined;
-	registrationStatus: CloudRegistrationStatus | undefined;
-	isError: boolean;
-	isLoading: boolean;
-	isSuccess: boolean;
-} => {
-	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
+export const useLicense = (): UseQueryResult<OperationResult<'GET', '/v1/licenses.get'>> => {
 	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
 
-	const { data: registrationStatusData } = useQuery(['licenses', 'getRegistrationStatus'], () => getRegistrationStatus(), {
-		refetchOnWindowFocus: false,
-		keepPreviousData: true,
-		staleTime: Infinity,
-	});
-
-	const { data, isError, isLoading, isSuccess } = useQuery(['licenses', 'getLicenses'], () => getLicenses(), {
+	return useQuery(['licenses', 'getLicenses'], () => getLicenses(), {
 		staleTime: Infinity,
 		keepPreviousData: true,
 		refetchOnWindowFocus: false,
-		enabled: !!registrationStatusData,
 	});
-
-	const registrationStatus = registrationStatusData?.registrationStatus;
-	const licenses = data?.licenses;
-
-	return { licenses, isError, isLoading, isSuccess, registrationStatus };
 };
