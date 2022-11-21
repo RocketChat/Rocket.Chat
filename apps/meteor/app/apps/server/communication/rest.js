@@ -14,7 +14,7 @@ import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 
 const rocketChatVersion = Info.version;
-const appsEngineVersionForMarketplace = '2.0.0';
+const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
 	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
 });

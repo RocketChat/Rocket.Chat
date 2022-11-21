@@ -7,7 +7,7 @@ type TooltipOnHoverProps = {
 };
 
 export const TooltipOnHover = ({ element, tooltip }: TooltipOnHoverProps): ReactElement => {
-	const ref = useRef<Element>();
+	const ref: RefObject<Element> = useRef(null);
 	const [isHovered, setIsHovered] = useState(false);
 
 	return (
@@ -17,7 +17,7 @@ export const TooltipOnHover = ({ element, tooltip }: TooltipOnHoverProps): React
 			</Box>
 
 			<PositionAnimated
-				anchor={ref as RefObject<Element>}
+				anchor={ref}
 				placement='top-middle'
 				margin={8}
 				visible={isHovered ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}

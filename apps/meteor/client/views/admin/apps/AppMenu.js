@@ -233,17 +233,12 @@ function AppMenu({ app, ...props }) {
 		showAppPermissionsReviewModal();
 	}, [action, app, cancelAction, checkUserLoggedIn, closeModal, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
-	const incompatibleIconName = (app, action) => {
+	const incompatibleIconName = (app) => {
 		if (app.versionIncompatible) {
 			return 'warning';
 		}
 
-		switch (action) {
-			case 'subscribe':
-				return 'card';
-			default:
-				return '';
-		}
+		return 'card';
 	};
 
 	const menuOptions = useMemo(() => {
@@ -253,7 +248,7 @@ function AppMenu({ app, ...props }) {
 					subscribe: {
 						label: (
 							<Box>
-								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app)} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
 							</Box>
 						),
@@ -267,7 +262,7 @@ function AppMenu({ app, ...props }) {
 				acquire: {
 					label: (
 						<Box>
-							<Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />
+							<Icon name={incompatibleIconName(app)} size='x16' marginInlineEnd='x4' />
 							{t(button.label.replace(' ', '_'))}
 						</Box>
 					),

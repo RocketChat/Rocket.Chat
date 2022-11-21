@@ -131,7 +131,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary fontSize='x12' fontWeight={700} disabled={loading} onClick={handleClick} pi='x8' pb='x6' lineHeight='x12'>
+					<Button primary fontSize='x12' fontWeight={700} disabled={loading} onClick={handleClick} pi='x8' pb='x6' lineHeight='x14'>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
