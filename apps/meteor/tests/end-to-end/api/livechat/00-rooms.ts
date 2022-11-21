@@ -687,6 +687,63 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.total).to.be.an('number').equal(1);
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
 		});
+		it('should return the messages of the room matching by searchTerm', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+			await sendMessage(room._id, 'Random', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/${room._id}/messages`))
+				.query({ searchTerm: 'Ran' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages');
+			expect(body.messages).to.be.an('array');
+			expect(body.total).to.be.an('number').equal(1);
+			expect(body.messages[0]).to.have.property('msg', 'Random');
+		});
+		it('should return the messages of the room matching by partial searchTerm', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+			await sendMessage(room._id, 'Random', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/${room._id}/messages`))
+				.query({ searchTerm: 'ndo' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages');
+			expect(body.messages).to.be.an('array');
+			expect(body.total).to.be.an('number').equal(1);
+			expect(body.messages[0]).to.have.property('msg', 'Random');
+		});
+		it('should return everything when searchTerm is ""', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await sendMessage(room._id, 'Hello', visitor.token);
+			await sendMessage(room._id, 'Random', visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/${room._id}/messages`))
+				.query({ searchTerm: '' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('messages');
+			expect(body.messages).to.be.an('array');
+			expect(body.messages).to.be.an('array').with.lengthOf.greaterThan(1);
+			expect(body.messages[0]).to.have.property('msg');
+		});
 	});
 
 	describe('[GET] livechat/message/:_id', () => {
