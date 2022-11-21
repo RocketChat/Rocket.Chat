@@ -60,7 +60,7 @@ const ContactHistoryMessage: FC<{
 						<MessageSystemName data-username={message.u.username} data-qa-type='username'>
 							@{message.u.username}
 						</MessageSystemName>
-						<MessageSystemBody>{t('Conversation_closed', { comment: message.msg })}</MessageSystemBody>
+						<MessageSystemBody title={message.msg}>{t('Conversation_closed', { comment: message.msg })}</MessageSystemBody>
 						<MessageSystemTimestamp title={formatTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 					</MessageSystemBlock>
 				</MessageSystemContainer>
