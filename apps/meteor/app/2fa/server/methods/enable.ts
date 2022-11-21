@@ -18,6 +18,14 @@ Meteor.methods({
 			});
 		}
 
+		const hasUnverifiedEmail = user.emails?.some((email) => !email.verified);
+
+		if (hasUnverifiedEmail) {
+			throw new Meteor.Error('error-invalid-user', 'You need to verify your emails before setting up 2FA', {
+				method: '2fa:enable',
+			});
+		}
+
 		const secret = TOTP.generateSecret();
 
 		Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);
