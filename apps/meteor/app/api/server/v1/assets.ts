@@ -4,7 +4,6 @@ import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 import { RocketChatAssets } from '../../../assets/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 
 API.v1.addRoute(
@@ -58,20 +57,6 @@ API.v1.addRoute(
 			if (refreshAllClients) {
 				Meteor.call('refreshClients');
 			}
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'assets.refreshClients',
-	{
-		authRequired: true,
-	},
-	{
-		post() {
-			methodDeprecationLogger.warn('assets.refreshClients will be deprecated in future versions of Rocket.Chat');
-			Meteor.call('refreshClients');
 			return API.v1.success();
 		},
 	},

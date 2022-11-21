@@ -12,7 +12,7 @@ function AssetsGroupPage({ _id, ...group }: AssetsGroupPageProps): ReactElement 
 	const solo = sections.length === 1;
 
 	return (
-		<GroupPage _id={_id} {...group} headerButtons={<></>}>
+		<GroupPage _id={_id} {...group}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName} groupId={_id} hasReset={false} sectionName={sectionName} solo={solo} />
 			))}
