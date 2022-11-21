@@ -5990,9 +5990,9 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.149
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.149"
-  checksum: ce3e29ec94bf64027bfb09aaf02ea16206f6984dc5eeda1c6d3707b6da1126194e239977ea19d818547c875406be637c661ac62d506f5f06f45885f97e30bcce
+  version: 0.32.0-dev.155
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.155"
+  checksum: e19cfed1c29f16676d1a060108cbaa03c17c0856a3a42858f746e33f8910387f1ca16ec2a61fc1968c73bff4eb280aa83a30016a049b288cf7161fc3b31f103a
   languageName: node
   linkType: hard
 
