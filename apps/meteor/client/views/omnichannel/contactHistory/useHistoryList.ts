@@ -32,17 +32,19 @@ export const useHistoryList = (
 		async (start, end) => {
 			const { history, total } = await getHistory({
 				...(options.filter && { searchText: options.filter }),
-				closedChatsOnly: true,
-				servedChatsOnly: true,
+				closedChatsOnly: 'true',
+				servedChatsOnly: 'true',
 				offset: start,
 				count: end + start,
 			});
 			return {
-				items: history.map((history: VisitorSearchChatsResult): VisitorSearchChatsResult & { _updatedAt: Date } => ({
-					...history,
-					ts: new Date(history.ts),
-					_updatedAt: new Date(history.ts),
-				})),
+				items: history.map(
+					(history: Omit<VisitorSearchChatsResult, 'ts'> & { ts: string }): VisitorSearchChatsResult & { _updatedAt: Date } => ({
+						...history,
+						ts: new Date(history.ts),
+						_updatedAt: new Date(history.ts),
+					}),
+				),
 				itemCount: total,
 			};
 		},

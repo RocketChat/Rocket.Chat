@@ -87,7 +87,7 @@ const ContactHistoryVerticalBar = ({
 							overscan={25}
 							data={history}
 							components={{ Scroller: ScrollableContentWrapper as any }}
-							itemContent={(index, data): ReactElement => <ContactHistoryItem history={data} setChatId={setChatId} />}
+							itemContent={(index, data): ReactElement => <ContactHistoryItem key={index} history={data} setChatId={setChatId} />}
 						/>
 					)}
 				</Box>
