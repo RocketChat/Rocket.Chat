@@ -202,7 +202,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 		});
 
-		await this.runVideoConferenceChangedEvent(call);
+		await this.runVideoConferenceChangedEvent(callId);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
@@ -425,7 +425,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
-		await this.runVideoConferenceChangedEvent(call);
+		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		if (call.type === 'direct') {
@@ -605,7 +605,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-direct-call');
 		}
 
-		await this.runNewVideoConferenceEvent(call);
+		await this.runNewVideoConferenceEvent(callId);
 
 		const url = await this.generateNewUrl(call);
 		VideoConferenceModel.setUrlById(callId, url);
@@ -668,7 +668,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-group-call');
 		}
 
-		await this.runNewVideoConferenceEvent(call);
+		await this.runNewVideoConferenceEvent(callId);
 
 		const url = await this.generateNewUrl(call);
 		VideoConferenceModel.setUrlById(callId, url);
@@ -706,7 +706,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-create-livechat-call');
 		}
 
-		await this.runNewVideoConferenceEvent(call);
+		await this.runNewVideoConferenceEvent(callId);
 
 		const joinUrl = await this.getUrl(call);
 		const messageId = await this.createLivechatMessage(call, user, joinUrl);
@@ -726,7 +726,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	): Promise<string> {
 		await callbacks.runAsync('onJoinVideoConference', call._id, user?._id);
 
-		await this.runOnUserJoinEvent(call, user as IVideoConferenceUser);
+		await this.runOnUserJoinEvent(call._id, user as IVideoConferenceUser);
 
 		return this.getUrl(call, user, options);
 	}
@@ -848,7 +848,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async runNewVideoConferenceEvent(call: VideoConference): Promise<void> {
+	private async runNewVideoConferenceEvent(callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId);
+
+		if (!call) {
+			throw new Error('video-conf-data-not-found');
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -858,7 +864,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async runVideoConferenceChangedEvent(call: VideoConference): Promise<void> {
+	private async runVideoConferenceChangedEvent(callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId);
+
+		if (!call) {
+			throw new Error('video-conf-data-not-found');
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -868,7 +880,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	private async runOnUserJoinEvent(call: VideoConference, user?: IVideoConferenceUser): Promise<void> {
+	private async runOnUserJoinEvent(callId: VideoConference['_id'], user?: IVideoConferenceUser): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId);
+
+		if (!call) {
+			throw new Error('video-conf-data-not-found');
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -917,6 +935,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setStatusById(call._id, VideoConferenceStatus.STARTED);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		await this.runVideoConferenceChangedEvent(call);
+		await this.runVideoConferenceChangedEvent(call._id);
 	}
 }
