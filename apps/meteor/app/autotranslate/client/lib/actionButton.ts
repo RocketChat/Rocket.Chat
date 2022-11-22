@@ -22,8 +22,7 @@ Meteor.startup(() => {
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (!isTranslatedMessage(message) || !message.translations[language]) {
-						// } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if (!isTranslatedMessage(message) || (!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language]))) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -31,12 +30,21 @@ Meteor.startup(() => {
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ message, user }) {
+				condition({ message, subscription, user }) {
+					const language = subscription?.autoTranslateLanguage || '';
+					const hasTranslationLanguage = isTranslatedMessage(message) && Boolean(message.translations?.[language]);
+					const hasAttachmentTranslationLanguage = Boolean(message.attachments?.some((attachment) => attachment?.translations?.[language]));
 					if (!user) {
 						return false;
 					}
 
-					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && message.autoTranslateShowInverse);
+					return Boolean(
+						message?.u &&
+							message.u._id !== user._id &&
+							subscription?.autoTranslate &&
+							((isTranslatedMessage(message) && message.autoTranslateShowInverse) ||
+								(!hasTranslationLanguage && !hasAttachmentTranslationLanguage)),
+					);
 				},
 				order: 90,
 			});
@@ -48,8 +56,7 @@ Meteor.startup(() => {
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (!isTranslatedMessage(message) || !message.translations[language]) {
-						// } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if (!isTranslatedMessage(message) || (!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language])) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -57,12 +64,22 @@ Meteor.startup(() => {
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ message, user }) {
+				condition({ message, subscription, user }) {
+					const language = subscription?.autoTranslateLanguage || '';
+					const hasMessageTranslated = isTranslatedMessage(message) && Boolean(message.translations?.[language]);
+					const hasAttachmentTranslated = message.attachments?.some((attachment) => attachment?.translations?.[language]);
 					if (!user) {
 						return false;
 					}
 
-					return Boolean(message?.u && message.u._id !== user._id && isTranslatedMessage(message) && !message.autoTranslateShowInverse);
+					return Boolean(
+						message?.u &&
+							message.u._id !== user._id &&
+							isTranslatedMessage(message) &&
+							subscription?.autoTranslate &&
+							!message.autoTranslateShowInverse &&
+							(hasMessageTranslated || hasAttachmentTranslated),
+					);
 				},
 				order: 90,
 			});

@@ -305,10 +305,13 @@ export abstract class AutoTranslate {
 			Meteor.defer(() => {
 				for (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
-						const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+						// Removes the initial link `[ ](quoterl)` from quote message before translation
+						const translatedText = attachment?.text?.split(') ')[1] || attachment?.text;
+						const attachmentMessage = { ...attachment, text: translatedText };
+						const translations = this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
+
 						if (!_.isEmpty(translations)) {
 							Messages.addAttachmentTranslations(message._id, index, translations);
-							Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
 						}
 					}
 				}

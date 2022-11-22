@@ -177,7 +177,8 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				subscription &&
 				subscription.autoTranslate === true &&
 				message.msg &&
-				(!message.translations || !message.translations[language])
+				(!message.translations ||
+					(!message.translations[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language])))
 			) {
 				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
