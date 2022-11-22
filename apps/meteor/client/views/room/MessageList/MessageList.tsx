@@ -24,8 +24,8 @@ type MessageListProps = {
 
 export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const t = useTranslation();
-	const messages = useMessages({ rid });
 	const subscription = useUserSubscription(rid);
+	const messages = useMessages({ rid, subscription });
 	const isBroadcast = Boolean(subscription?.broadcast);
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const format = useFormatDate();

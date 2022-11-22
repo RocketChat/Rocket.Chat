@@ -1,4 +1,4 @@
-import { IRoom, IMessage } from '@rocket.chat/core-typings';
+import { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
@@ -6,12 +6,13 @@ import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useMessageListContext } from '../contexts/MessageListContext';
 import {
 	MessageWithMdEnforced,
 	parseMessageTextToAstMarkdown,
 	removePossibleNullMessageValues,
 } from '../lib/parseMessageTextToAstMarkdown';
+import { useAutoTranslate } from './useAutoTranslate';
+import { useKatex } from './useKatex';
 
 const options = {
 	sort: {
@@ -19,8 +20,10 @@ const options = {
 	},
 };
 
-export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforced[] => {
-	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
+export const useMessages = ({ rid, subscription }: { rid: IRoom['_id']; subscription?: ISubscription }): MessageWithMdEnforced[] => {
+	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
+	const autoTranslateOptions = useAutoTranslate(subscription);
+	const showColors = Boolean(useSetting('HexColorPreview_Enabled'));
 	const hideSysMes = useSetting('Hide_System_Messages');
 
 	const hideSysMessagesStable = useStableArray(Array.isArray(hideSysMes) ? hideSysMes : []);
@@ -29,16 +32,24 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforc
 		const parseOptions = {
 			colors: showColors,
 			emoticons: true,
-			...(Boolean(katex) && {
+			...(katexEnabled && {
 				katex: {
-					dollarSyntax: katex?.dollarSyntaxEnabled,
-					parenthesisSyntax: katex?.parenthesisSyntaxEnabled,
+					dollarSyntax: katexDollarSyntaxEnabled,
+					parenthesisSyntax: katexParenthesisSyntaxEnabled,
 				},
 			}),
 		};
 		return (message: IMessage): MessageWithMdEnforced =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateLanguage, useShowTranslated);
-	}, [autoTranslateLanguage, katex, showColors, useShowTranslated]);
+			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		autoTranslateOptions.autoTranslateEnabled,
+		autoTranslateOptions.autoTranslateLanguage,
+		katexParenthesisSyntaxEnabled,
+		katexEnabled,
+		katexDollarSyntaxEnabled,
+		showColors,
+	]);
 
 	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({

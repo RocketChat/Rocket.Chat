@@ -2,6 +2,7 @@ import { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import MessageContentBody from '../../../../views/room/MessageList/components/MessageContentBody';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import AttachmentDescription from '../Attachment/AttachmentDescription';
@@ -26,6 +27,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 		// format,
 		// name,
 	} = {},
+	md,
 }) => {
 	// const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
@@ -33,7 +35,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 		<Attachment>
 			{description && (
 				<AttachmentDescription>
-					<MarkdownText parseEmoji content={description} />
+					{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 				</AttachmentDescription>
 			)}
 			<AttachmentRow>

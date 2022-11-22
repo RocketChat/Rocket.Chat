@@ -10,13 +10,16 @@ import {
 	ThreadMessageBody,
 	ThreadMessageUnfollow,
 	CheckBox,
+	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { useShowTranslated } from '../contexts/MessageListContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
@@ -28,6 +31,7 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
 	const body = useMessageBody(parentMessage.data);
+	const translated = useShowTranslated(message);
 	const t = useTranslation();
 
 	const isSelecting = useIsSelecting();
@@ -51,7 +55,17 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
 						<ThreadMessageOrigin system={!!messageType}>
-							{parentMessage.isSuccess && !messageType && <ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />}
+							{parentMessage.isSuccess && !messageType && (
+								<>
+									<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
+									{translated && (
+										<>
+											{' '}
+											<MessageStatusIndicatorItem name='language' color={colors.p500} title={t('Translated')} />
+										</>
+									)}
+								</>
+							)}
 							{messageType && t(messageType.message, messageType.data ? messageType.data(message) : {})}
 							{parentMessage.isLoading && <Skeleton />}
 						</ThreadMessageOrigin>
@@ -68,7 +82,19 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{(message as { ignored?: boolean }).ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}
+						{(message as { ignored?: boolean }).ignored ? (
+							t('Message_Ignored')
+						) : (
+							<>
+								<ThreadMessagePreviewBody message={message} />
+								{translated && (
+									<>
+										{' '}
+										<MessageStatusIndicatorItem name='language' title={t('Translated')} />
+									</>
+								)}
+							</>
+						)}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>

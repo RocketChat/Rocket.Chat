@@ -2,6 +2,7 @@ import { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import MessageContentBody from '../../../../views/room/MessageList/components/MessageContentBody';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import AttachmentContent from '../Attachment/AttachmentContent';
@@ -21,6 +22,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
+	md,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
@@ -28,6 +30,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 		<Attachment>
 			<AttachmentDescription>
 				<MarkdownText parseEmoji variant='inline' content={description} />
+				{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 			</AttachmentDescription>
 			<AttachmentRow>
 				<AttachmentTitle>{title}</AttachmentTitle>

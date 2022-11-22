@@ -22,7 +22,10 @@ Meteor.startup(() => {
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (!isTranslatedMessage(message) || (!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language]))) {
+					if (
+						!isTranslatedMessage(message) ||
+						(!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language]))
+					) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -56,7 +59,10 @@ Meteor.startup(() => {
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (!isTranslatedMessage(message) || (!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language])) {
+					if (
+						!isTranslatedMessage(message) ||
+						(!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language]))
+					) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);

@@ -2,6 +2,7 @@ import { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import MessageContentBody from '../../../../views/room/MessageList/components/MessageContentBody';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import AttachmentContent from '../Attachment/AttachmentContent';
@@ -27,6 +28,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
+	md,
 }) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
@@ -35,7 +37,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 		<Attachment>
 			{description && (
 				<AttachmentDescription>
-					<MarkdownText parseEmoji variant='inline' content={description} />
+					{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 				</AttachmentDescription>
 			)}
 			<AttachmentRow>

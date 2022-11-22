@@ -14,7 +14,7 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
+import { useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContentBody from './MessageContentBody';
@@ -50,8 +50,6 @@ const MessageContent: FC<{
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
-	const messageAttachments = useTranslateAttachments({ message });
-
 	return (
 		<>
 			{!message.blocks?.length && !!message.md?.length && (
@@ -69,7 +67,7 @@ const MessageContent: FC<{
 				</MessageBlock>
 			)}
 
-			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
+			{!!message?.attachments?.length && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
 

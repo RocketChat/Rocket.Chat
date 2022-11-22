@@ -5,6 +5,7 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
 import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
+import MessageContentBody from '../../../../views/room/MessageList/components/MessageContentBody';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import AttachmentContent from '../Attachment/AttachmentContent';
@@ -31,6 +32,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
+	md,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
@@ -50,7 +52,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 					</Box>
 					{description && (
 						<AttachmentDetails is='figcaption'>
-							<MarkdownText parseEmoji variant='inline' content={description} />
+							{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 						</AttachmentDetails>
 					)}
 				</AttachmentContent>
