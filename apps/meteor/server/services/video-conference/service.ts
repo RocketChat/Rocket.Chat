@@ -191,8 +191,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('failed-to-load-own-data');
 		}
 
-		this.notifyVideoConfUpdate(call.rid, call._id);
-
 		await VideoConferenceModel.setDataById(callId, {
 			ringing: false,
 			status: VideoConferenceStatus.DECLINED,
@@ -205,6 +203,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 
 		await this.runVideoConferenceChangedEvent(call);
+		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
 	public async get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null> {
@@ -426,8 +425,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
-		this.notifyVideoConfUpdate(call.rid, call._id);
 		await this.runVideoConferenceChangedEvent(call);
+		this.notifyVideoConfUpdate(call.rid, call._id);
 
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
@@ -892,6 +891,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (call.type === 'direct') {
 			return this.updateDirectCall(call as IDirectVideoConference, _id);
 		}
+
+		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
 	private async addAnonymousUser(call: Optional<IGroupVideoConference, 'providerData'>): Promise<void> {
