@@ -11,6 +11,7 @@ export function loadMessageHistory({
 	limit = 20,
 	ls,
 	showThreadMessages = true,
+	unreadOnly = false,
 	offset = 0,
 }: {
 	userId: string;
@@ -19,11 +20,34 @@ export function loadMessageHistory({
 	limit: number;
 	ls: string;
 	showThreadMessages: boolean;
+	unreadOnly: boolean;
 	offset: number;
 }) {
 	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room);
+
+	if (unreadOnly) {
+		const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			rid,
+			ls,
+			new Date(),
+			hiddenMessageTypes,
+			{
+				limit,
+				sort: {
+					ts: 1,
+				},
+			},
+			showThreadMessages,
+		);
+
+		return {
+			messages: unreadMessages.fetch(),
+			firstUnread: {},
+			unreadNotLoaded: 0,
+		};
+	}
 
 	const options = {
 		sort: {

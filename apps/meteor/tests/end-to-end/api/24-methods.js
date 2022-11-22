@@ -453,7 +453,7 @@ describe('Meteor.methods', function () {
 				.send({
 					message: JSON.stringify({
 						method: 'loadHistory',
-						params: [rid, { $date: new Date().getTime() }, 1],
+						params: [rid, { $date: new Date() }, 1],
 						id: 'id',
 						msg: 'method',
 					}),
