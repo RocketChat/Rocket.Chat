@@ -18,7 +18,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 
 	return (
 		<Box
-			bg='light'
+			bg='surface-light'
 			id='rocket-chat'
 			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			aria-hidden={Boolean(modal)}

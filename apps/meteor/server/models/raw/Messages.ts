@@ -221,11 +221,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		return this.findPaginated(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+				...(searchTerm && { msg: new RegExp(escapeRegExp(searchTerm), 'ig') }),
 			},
 			options,
 		);
