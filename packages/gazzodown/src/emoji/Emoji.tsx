@@ -1,8 +1,9 @@
-import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { ReactElement, useMemo, useContext, memo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
+import PlainSpan from '../elements/PlainSpan';
+import EmojiRenderer from './EmojiRenderer';
 
 type EmojiProps = MessageParser.Emoji & {
 	big?: boolean;
@@ -10,36 +11,18 @@ type EmojiProps = MessageParser.Emoji & {
 };
 
 const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
-	const { detectEmoji } = useContext(MarkupInteractionContext);
+	const { convertAsciiToEmoji } = useContext(MarkupInteractionContext);
 
-	const fallback = useMemo(() => ('unicode' in emoji ? emoji.unicode : `:${emoji.shortCode ?? emoji.value.value}:`), [emoji]);
-
-	const descriptors = useMemo(() => {
-		const detected = detectEmoji?.(fallback);
-		return detected?.length !== 0 ? detected : undefined;
-	}, [detectEmoji, fallback]);
-
-	return (
-		<>
-			{descriptors?.map(({ name, className, image, content }, i) => (
-				<span key={i} title={name}>
-					{preview ? (
-						<ThreadMessageEmoji className={className} name={name} image={image}>
-							{content}
-						</ThreadMessageEmoji>
-					) : (
-						<MessageEmoji big={big} className={className} name={name} image={image}>
-							{content}
-						</MessageEmoji>
-					)}
-				</span>
-			)) ?? (
-				<span role='img' aria-label={fallback.charAt(0) === ':' ? fallback : undefined}>
-					{fallback}
-				</span>
-			)}
-		</>
+	const asciiEmoji = useMemo(
+		() => ('shortCode' in emoji && emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined),
+		[emoji],
 	);
+
+	if (!convertAsciiToEmoji && asciiEmoji) {
+		return <PlainSpan text={asciiEmoji} />;
+	}
+
+	return <EmojiRenderer big={big} preview={preview} {...emoji} />;
 };
 
 export default memo(Emoji);

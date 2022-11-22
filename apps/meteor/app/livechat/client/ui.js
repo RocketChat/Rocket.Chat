@@ -14,7 +14,7 @@ Tracker.autorun((c) => {
 });
 
 AccountBox.addItem({
-	name: 'Manage_Omnichannel',
+	name: 'Omnichannel',
 	icon: 'headset',
 	href: '/omnichannel/current',
 	sideNav: 'omnichannelFlex',

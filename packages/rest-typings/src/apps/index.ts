@@ -4,7 +4,7 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { AppScreenshot, App, FeaturedAppsSection } from '@rocket.chat/core-typings';
+import type { AppScreenshot, App, FeaturedAppsSection, ILogItem } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
@@ -12,10 +12,17 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id': {
-		GET: (params: { marketplace?: 'true' | 'false'; version?: string; appVersion?: string; update?: 'true' | 'false' }) => {
+		GET:
+			| ((params: { marketplace?: 'true' | 'false'; version?: string; appVersion?: string; update?: 'true' | 'false' }) => {
+					app: App;
+			  })
+			| (() => {
+					app: App;
+			  });
+		DELETE: () => {
 			app: App;
+			success: boolean;
 		};
-		DELETE: () => void;
 		POST: (params: { marketplace: boolean; version: string; permissionsGranted: IPermission[]; appId: string }) => {
 			app: App;
 		};
@@ -47,9 +54,9 @@ export type AppsEndpoints = {
 
 	'/apps/:id/settings': {
 		GET: () => {
-			settings: { [key: string]: ISetting };
+			settings: ISetting[];
 		};
-		POST: (params: { settings: ISetting[] }) => { updated: { [key: string]: ISetting } };
+		POST: (params: { settings: ISetting[] }) => { updated: ISetting[]; success: boolean };
 	};
 
 	'/apps/:id/screenshots': {
@@ -63,6 +70,12 @@ export type AppsEndpoints = {
 			languages: {
 				[key: string]: object;
 			};
+		};
+	};
+
+	'/apps/:id/logs': {
+		GET: () => {
+			logs: ILogItem[];
 		};
 	};
 

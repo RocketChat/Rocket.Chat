@@ -79,7 +79,8 @@ Template.DefaultSearchResultTemplate.onCreated(function () {
 
 	// global search
 	this.globalSearchEnabled = this.data.settings.GlobalSearchEnabled;
-	this.data.parentPayload.searchAll = this.globalSearchEnabled;
+	// default value for global search
+	this.data.parentPayload.searchAll = false;
 
 	this.hasMore = new ReactiveVar(true);
 

@@ -15,7 +15,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentPro
 				flexDirection='row'
 				flexGrow='1'
 				flexShrink='1'
-				borderColor={props.selectedCategoriesCount ? 'none' : 'neutral-500'}
+				borderColor={props.selectedCategoriesCount ? 'none' : 'light'}
 				borderWidth={props.selectedCategoriesCount ? 'none' : 'x2'}
 				bg={props.selectedCategoriesCount ? 'primary' : 'alternative'}
 			>

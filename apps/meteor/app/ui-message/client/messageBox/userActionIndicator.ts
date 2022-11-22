@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 
-import { UserAction } from '../../../ui';
+import { UserAction } from '../../../ui/client';
 import { t } from '../../../utils/client';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 
