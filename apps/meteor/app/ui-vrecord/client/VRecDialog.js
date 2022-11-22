@@ -14,7 +14,11 @@ export const VRecDialog = new (class {
 		this.dialogView = Blaze.render(Template.vrecDialog, document.body);
 	}
 
-	open(source, { rid, tmid }) {
+	/**
+	 * @param {HTMLElement} source
+	 * @param {{ rid: import('@rocket.chat/core-typings').IRoom['_id']; tmid?: import('@rocket.chat/core-typings').IMessage['_id']; chat: import('react').ContextType<typeof import('../../../client/views/room/contexts/ChatContext').ChatContext> }} options
+	 */
+	open(source, { rid, tmid, chat }) {
 		if (!this.dialogView) {
 			this.init();
 		}
@@ -27,6 +31,7 @@ export const VRecDialog = new (class {
 		this.dialogView.templateInstance().update({
 			rid,
 			tmid,
+			chat,
 		});
 
 		this.source = source;

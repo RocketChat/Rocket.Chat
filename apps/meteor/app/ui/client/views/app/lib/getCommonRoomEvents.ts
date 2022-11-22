@@ -103,7 +103,7 @@ function handleMessageActionButtonClick(event: JQuery.ClickEvent, template: Comm
 	const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
 	const messageElement = event.target.closest('.message') as HTMLElement;
 	const dataContext = Blaze.getData(messageElement);
-	button?.action.call(dataContext, event, { tabbar: tabBar });
+	button?.action.call(dataContext, event, { tabbar: tabBar, chat: template.data.chatContext });
 }
 
 function handleFollowThreadButtonClick(event: JQuery.ClickEvent) {
@@ -202,7 +202,7 @@ function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: Common
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
-		action: () => item.action(event, { tabbar: tabBar, message, room }),
+		action: () => item.action(event, { tabbar: tabBar, message, room, chat: template.data.chatContext }),
 	}));
 
 	const itemsBelowDivider = ['delete-message', 'report-message'];

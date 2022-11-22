@@ -193,10 +193,6 @@ class SlashCommandProcessor implements IMessageProcessor {
 	}
 }
 
-type ChatMessagesParams =
-	| { rid: IRoom['_id']; tmid?: IMessage['_id']; input?: never }
-	| { rid?: never; tmid?: never; input: HTMLInputElement | HTMLTextAreaElement };
-
 export class ChatMessages {
 	public quotedMessages: QuotedMessages = new QuotedMessages();
 
@@ -581,7 +577,7 @@ export class ChatMessages {
 				type: contentType,
 				lastModified: Date.now(),
 			});
-			fileUpload([{ file, name: fileName }], { rid, tmid });
+			fileUpload([file], { rid, tmid });
 			imperativeModal.close();
 		};
 
@@ -713,22 +709,15 @@ export class ChatMessages {
 
 	private static instances: Record<string, ChatMessages> = {};
 
-	private static getID({ rid, tmid, input }: ChatMessagesParams): string {
-		if (input) {
-			const id = Object.entries(this.instances).find(([, instance]) => instance.input === input)?.[0];
-			if (!id) throw new Error('ChatMessages: input not found');
-
-			return id;
-		}
-
+	private static getID({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): string {
 		return `${rid}${tmid ? `-${tmid}` : ''}`;
 	}
 
-	public static get(params: ChatMessagesParams): ChatMessages | undefined {
+	public static get(params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): ChatMessages | undefined {
 		return this.instances[this.getID(params)];
 	}
 
-	public static set(params: ChatMessagesParams, instance: ChatMessages) {
+	public static set(params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }, instance: ChatMessages) {
 		this.instances[this.getID(params)] = instance;
 	}
 

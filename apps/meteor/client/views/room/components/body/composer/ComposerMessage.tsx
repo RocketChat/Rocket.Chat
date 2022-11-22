@@ -3,23 +3,24 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
+import React, { ContextType, memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
 import { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
-import { ChatMessages } from '../../../../../../app/ui/client';
 import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
+import { ChatContext } from '../../../contexts/ChatContext';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
 	subscription?: ISubscription;
-	chatMessagesInstance: ChatMessages;
+	chatMessagesInstance: ContextType<typeof ChatContext>;
 	onResize?: () => void;
 	onEscape?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
+	onUploadFiles?: (files: readonly File[]) => void;
 };
 
 const ComposerMessage = ({
@@ -30,6 +31,7 @@ const ComposerMessage = ({
 	onEscape,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
+	onUploadFiles,
 }: ComposerMessageProps): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
@@ -45,7 +47,8 @@ const ComposerMessage = ({
 			onEscape,
 			onNavigateToNextMessage,
 			onNavigateToPreviousMessage,
-			chatMessagesInstance,
+			onUploadFiles,
+			chatContext: chatMessagesInstance,
 		}),
 	);
 
@@ -59,7 +62,8 @@ const ComposerMessage = ({
 			onEscape,
 			onNavigateToNextMessage,
 			onNavigateToPreviousMessage,
-			chatMessagesInstance,
+			onUploadFiles,
+			chatContext: chatMessagesInstance,
 		});
 	}, [
 		isLayoutEmbedded,
@@ -71,6 +75,7 @@ const ComposerMessage = ({
 		onEscape,
 		onNavigateToNextMessage,
 		onNavigateToPreviousMessage,
+		onUploadFiles,
 	]);
 
 	const footerRef = useCallback(
@@ -81,7 +86,7 @@ const ComposerMessage = ({
 					(): MessageBoxTemplateInstance['data'] => ({
 						...messageBoxViewDataRef.current.get(),
 						onInputChanged: (input: HTMLTextAreaElement): void => {
-							chatMessagesInstance.initializeInput(input);
+							chatMessagesInstance?.initializeInput(input);
 
 							setTimeout(() => {
 								if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
@@ -89,13 +94,13 @@ const ComposerMessage = ({
 								}
 							}, 200);
 						},
-						onSend: (
+						onSend: async (
 							_event: Event,
 							params: {
 								value: string;
 								tshow?: boolean;
 							},
-						) => chatMessagesInstance.send(params),
+						) => chatMessagesInstance?.send(params),
 					}),
 					footer,
 				);

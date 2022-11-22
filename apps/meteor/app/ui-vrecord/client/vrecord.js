@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui/client';
+import { VideoRecorder, UserAction, USER_ACTIVITIES } from '../../ui/client';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -79,7 +79,8 @@ Template.vrecDialog.events({
 		const cb = (blob) => {
 			const fileName = `${TAPi18n.__('Video record')}.webm`;
 			const file = new File([blob], fileName, { type: 'video/webm' });
-			fileUpload([{ file, type: 'video/webm', name: fileName }], { rid, tmid });
+			console.log(instance.chat);
+			instance.chat?.uploadFiles([file]);
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
@@ -95,9 +96,10 @@ Template.vrecDialog.onCreated(function () {
 	this.rid = new ReactiveVar();
 	this.tmid = new ReactiveVar();
 	this.time = new ReactiveVar('');
-	this.update = ({ rid, tmid }) => {
+	this.update = ({ rid, tmid, chat }) => {
 		this.rid.set(rid);
 		this.tmid.set(tmid);
+		this.chat = chat;
 	};
 
 	this.setPosition = function (dialog, source, anchor = 'left') {

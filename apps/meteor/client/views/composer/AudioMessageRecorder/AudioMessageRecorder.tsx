@@ -4,7 +4,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { AudioRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
@@ -138,6 +139,8 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		await stopRecording();
 	});
 
+	const chat = useChat();
+
 	const handleDoneButtonClick = useMutableCallback(async () => {
 		setState('loading');
 
@@ -146,7 +149,7 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
-		await fileUpload([{ file, name: fileName }], { rid, tmid });
+		await chat?.uploadFiles([file]);
 	});
 
 	if (!isAllowed) {

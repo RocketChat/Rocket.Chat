@@ -11,11 +11,12 @@ import {
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, UIEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
-import { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
+import { cancelUpload, getUploads, subscribeToUploads, Uploading } from '../../../../../app/ui/client/lib/fileUpload';
 import { CommonRoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/CommonRoomTemplateInstance';
 import { getCommonRoomEvents } from '../../../../../app/ui/client/views/app/lib/getCommonRoomEvents';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
@@ -71,10 +72,10 @@ const RoomBody = (): ReactElement => {
 	const atBottomRef = useRef(!useQueryStringParameter('msg'));
 	const lastScrollTopRef = useRef(0);
 
-	const chatMessagesInstance = useChat();
+	const chat = useChat();
 
-	if (!chatMessagesInstance) {
-		throw new Error('No chatMessagesInstance');
+	if (!chat) {
+		throw new Error('No ChatContext provided');
 	}
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
@@ -113,8 +114,8 @@ const RoomBody = (): ReactElement => {
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		sendToBottomIfNecessary();
-		chatMessagesInstance.input?.focus();
-	}, [chatMessagesInstance, sendToBottomIfNecessary]);
+		chat.input?.focus();
+	}, [chat, sendToBottomIfNecessary]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
 		atBottomRef.current = true;
@@ -124,7 +125,7 @@ const RoomBody = (): ReactElement => {
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
-	const uploading = useSession('uploading') as Uploading[];
+	const uploads = useSyncExternalStore(subscribeToUploads, getUploads);
 
 	const messageViewMode = useMemo(() => {
 		const modes = ['', 'cozy', 'compact'] as const;
@@ -208,7 +209,7 @@ const RoomBody = (): ReactElement => {
 	}, [room._id]);
 
 	const handleUploadProgressClose = useCallback((id: Uploading['id']) => {
-		Session.set(`uploading-cancel-${id}`, true);
+		cancelUpload(id);
 	}, []);
 
 	const retentionPolicy = useRetentionPolicy(room);
@@ -353,7 +354,7 @@ const RoomBody = (): ReactElement => {
 				event,
 				selector,
 				listener: (e: JQuery.TriggeredEvent<HTMLUListElement, undefined>) =>
-					handler.call(null, e, { data: { rid: room._id, tabBar: toolbox } }),
+					handler.call(null, e, { data: { rid: room._id, tabBar: toolbox, chatContext: chat } }),
 			};
 		});
 
@@ -366,7 +367,7 @@ const RoomBody = (): ReactElement => {
 				$(messageList).off(event, selector, listener);
 			}
 		};
-	}, [room._id, sendToBottomIfNecessary, toolbox, useLegacyMessageTemplate]);
+	}, [chat, room._id, sendToBottomIfNecessary, toolbox, useLegacyMessageTemplate]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -528,12 +529,35 @@ const RoomBody = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
-		chatMessagesInstance.messageEditing.toPreviousMessage(wrapperRef.current ?? undefined);
-	}, [chatMessagesInstance.messageEditing]);
+		chat.messageEditing.toPreviousMessage(wrapperRef.current ?? undefined);
+	}, [chat.messageEditing]);
 
 	const handleNavigateToNextMessage = useCallback((): void => {
-		chatMessagesInstance.messageEditing.toNextMessage();
-	}, [chatMessagesInstance.messageEditing]);
+		chat.messageEditing.toNextMessage();
+	}, [chat.messageEditing]);
+
+	const handleUploadFiles = useCallback(
+		(files: readonly File[]): void => {
+			chat.uploadFiles(files);
+		},
+		[chat],
+	);
+
+	const replyMID = useQueryStringParameter('reply');
+
+	useEffect(() => {
+		if (!replyMID) {
+			return;
+		}
+
+		chat.allMessages.getOneByID(replyMID).then((message) => {
+			if (!message) {
+				return;
+			}
+
+			chat.composer.quoteMessage(message);
+		});
+	}, [chat.allMessages, chat.composer, replyMID]);
 
 	return (
 		<>
@@ -548,7 +572,7 @@ const RoomBody = (): ReactElement => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<div className={['container-bars', (unread || uploading.length) && 'show'].filter(isTruthy).join(' ')}>
+							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
 								{unread ? (
 									<UnreadMessagesIndicator
 										count={unread.count}
@@ -557,7 +581,7 @@ const RoomBody = (): ReactElement => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								) : null}
-								{uploading.map((upload) => (
+								{uploads.map((upload) => (
 									<UploadProgressIndicator
 										key={upload.id}
 										id={upload.id}
@@ -625,10 +649,11 @@ const RoomBody = (): ReactElement => {
 							<ComposerContainer
 								rid={room._id}
 								subscription={subscription}
-								chatMessagesInstance={chatMessagesInstance}
+								chatMessagesInstance={chat}
 								onResize={handleComposerResize}
 								onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 								onNavigateToNextMessage={handleNavigateToNextMessage}
+								onUploadFiles={handleUploadFiles}
 							/>
 						</div>
 					</div>

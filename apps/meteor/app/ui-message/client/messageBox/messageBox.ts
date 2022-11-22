@@ -8,14 +8,14 @@ import moment from 'moment';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
+import type { ContextType } from 'react';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji/client';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import type { ChatMessages } from '../../../ui/client';
-import { UserAction, USER_ACTIVITIES, fileUpload, KonchatNotification } from '../../../ui/client';
+import { UserAction, USER_ACTIVITIES, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
 import { t, getUserPreference } from '../../../utils/client';
 import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
@@ -23,6 +23,8 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
@@ -43,11 +45,12 @@ export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
+	onUploadFiles?: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
-	chatMessagesInstance: ChatMessages;
+	chatContext: ContextType<typeof ChatContext>;
 }> & {
 	state: ReactiveDict<{
 		mustJoinWithCode?: boolean;
@@ -72,6 +75,12 @@ export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	insertNewLine: () => void;
 	send: (event: Event) => void;
 	sendIconDisabled: ReactiveVar<boolean>;
+};
+
+let lastFocusedInput: HTMLTextAreaElement | undefined = undefined;
+
+export const refocusComposer = () => {
+	(lastFocusedInput ?? document.querySelector<HTMLTextAreaElement>('.js-input-message'))?.focus();
 };
 
 Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
@@ -136,10 +145,10 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 		});
 	};
 
-	const { chatMessagesInstance } = this.data;
+	const { chatContext } = this.data;
 
-	chatMessagesInstance.quotedMessages.subscribe(() => {
-		this.replyMessageData.set(chatMessagesInstance.quotedMessages.get());
+	chatContext?.composer.quotedMessages.subscribe(() => {
+		this.replyMessageData.set(chatContext?.composer.quotedMessages.getSnapshot());
 	});
 });
 
@@ -220,6 +229,10 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
 	UserAction.cancel(this.data.rid);
 
+	if (lastFocusedInput === this.input) {
+		lastFocusedInput = undefined;
+	}
+
 	if (!this.autogrow) {
 		return;
 	}
@@ -268,8 +281,8 @@ Template.messageBox.helpers({
 		return (Template.instance() as MessageBoxTemplateInstance).replyMessageData.get();
 	},
 	onDismissReply() {
-		const { chatMessagesInstance } = (Template.instance() as MessageBoxTemplateInstance).data;
-		return (mid: IMessage['_id']) => chatMessagesInstance.quotedMessages.remove(mid);
+		const { chatContext } = (Template.instance() as MessageBoxTemplateInstance).data;
+		return (mid: IMessage['_id']) => chatContext?.composer.dismissQuotedMessage(mid);
 	},
 	isEmojiEnabled() {
 		return getUserPreference(Meteor.userId(), 'useEmojis');
@@ -407,8 +420,9 @@ Template.messageBox.events({
 			input.selectionEnd = caretPos + emojiValue.length;
 		});
 	},
-	'focus .js-input-message'() {
+	'focus .js-input-message'(event: JQuery.FocusEvent) {
 		KonchatNotification.removeRoomNotification(this.rid);
+		lastFocusedInput = event.currentTarget;
 	},
 	'keydown .js-input-message'(
 		this: MessageBoxTemplateInstance['data'],
@@ -428,12 +442,12 @@ Template.messageBox.events({
 			return;
 		}
 
-		const { chatMessagesInstance } = this;
+		const { chatContext } = this;
 		const { currentTarget: input } = event;
 
 		switch (event.key) {
 			case 'Escape': {
-				chatMessagesInstance.handleEscapeKeyPress(event);
+				chatContext?.handleEscapeKeyPress(event);
 
 				if (!event.isDefaultPrevented() && !input.value.trim()) this.onEscape?.();
 				return;
@@ -477,7 +491,7 @@ Template.messageBox.events({
 		}
 	},
 	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
-		const { rid, tmid, chatMessagesInstance } = this;
+		const { rid, tmid, chatContext } = this;
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (!Object.values<number>(keyCodes).includes(keyCode)) {
@@ -488,7 +502,7 @@ Template.messageBox.events({
 			}
 		}
 
-		chatMessagesInstance.setDraftAndUpdateInput(input.value);
+		chatContext?.setDraftAndUpdateInput(input.value);
 	},
 	'paste .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const originalEvent = event.originalEvent as ClipboardEvent | undefined;
@@ -496,7 +510,6 @@ Template.messageBox.events({
 			throw new Error('Event is not an original event');
 		}
 
-		const { rid, tmid } = this;
 		const { autogrow } = instance;
 
 		setTimeout(() => autogrow?.update(), 50);
@@ -524,23 +537,17 @@ Template.messageBox.events({
 
 				const extension = imageExtension ? `.${imageExtension}` : '';
 
-				return {
-					file: fileItem,
-					name: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
-				};
+				Object.defineProperty(fileItem, 'name', {
+					writable: true,
+					value: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
+				});
+				return fileItem;
 			})
-			.filter(
-				(
-					file,
-				): file is {
-					file: File;
-					name: string;
-				} => Boolean(file),
-			);
+			.filter((file): file is File => !!file);
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files, { rid, tmid });
+			instance.data.onUploadFiles?.(files);
 		}
 	},
 	'input .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
@@ -615,6 +622,7 @@ Template.messageBox.events({
 				tmid: this.tmid,
 				prid: this.subscription.prid,
 				messageBox: instance.firstNode,
+				chat: instance.data.chatContext,
 			},
 			activeElement: event.currentTarget,
 		};
@@ -631,12 +639,14 @@ Template.messageBox.events({
 		actions
 			.filter(({ action }) => !!action)
 			.forEach(({ action }) => {
+				console.log(instance.data);
 				action.call(null, {
 					rid: this.rid,
 					tmid: this.tmid,
 					messageBox: instance.firstNode as HTMLElement,
 					prid: this.subscription.prid,
 					event: event as unknown as Event,
+					chat: instance.data.chatContext,
 				});
 			});
 	},

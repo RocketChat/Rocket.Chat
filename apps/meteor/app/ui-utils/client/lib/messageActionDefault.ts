@@ -16,7 +16,6 @@ import ReportMessageModal from '../../../../client/views/room/modals/ReportMessa
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import type { ChatMessages } from '../../../ui/client';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -28,12 +27,6 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 Meteor.startup(async function () {
-	const { ChatMessages } = await import('../../../ui/client');
-
-	const getChatMessagesFrom = ({ rid, _id: tmid }: IMessage): ChatMessages | undefined => {
-		return ChatMessages.get({ rid, tmid }) ?? ChatMessages.get({ rid });
-	};
-
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',
@@ -78,9 +71,8 @@ Meteor.startup(async function () {
 		label: 'Quote',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const chatMessagesInstance = getChatMessagesFrom(message);
-			const input = chatMessagesInstance?.input;
+			const { message = messageArgs(this).msg, chat } = props;
+			const input = chat?.input;
 			if (!input) {
 				return;
 			}
@@ -88,7 +80,7 @@ Meteor.startup(async function () {
 			const $input = $(input);
 
 			$input.focus().data('mention-user', false).trigger('dataChange');
-			chatMessagesInstance.quotedMessages.add(message);
+			chat.composer.quoteMessage(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {
@@ -148,8 +140,8 @@ Meteor.startup(async function () {
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message)?.messageEditing.editMessage(message._id);
+			const { message = messageArgs(this).msg, chat } = props;
+			chat?.messageEditing.editMessage(message._id);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
@@ -189,8 +181,8 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message)?.requestMessageDeletion(message);
+			const { message = messageArgs(this).msg, chat } = props;
+			chat?.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room }) {
 			if (!subscription) {

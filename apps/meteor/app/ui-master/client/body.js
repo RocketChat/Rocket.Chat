@@ -6,16 +6,17 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { APIClient, t } from '../../utils/client';
-import { ChatMessages } from '../../ui/client';
-import { popover, RoomManager } from '../../ui-utils';
+import { popover } from '../../ui-utils/client';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models/client';
-import './body.html';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { refocusComposer } from '../../ui-message/client/messageBox/messageBox.ts';
+
+import './body.html';
 
 Template.body.onRendered(function () {
 	new Clipboard('.clipboard');
@@ -94,7 +95,7 @@ Template.body.onRendered(function () {
 			return;
 		}
 
-		ChatMessages.get({ rid: RoomManager.openedRoom })?.input.focus();
+		refocusComposer();
 	});
 
 	const handleMessageLinkClick = (event) => {

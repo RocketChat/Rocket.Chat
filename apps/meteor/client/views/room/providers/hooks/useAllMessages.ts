@@ -27,5 +27,5 @@ export const useAllMessages = (): ChatAPI['allMessages'] => {
 			findOneByID,
 			getOneByID,
 		} as const;
-	}, []);
+	}, [getSingleMessage]);
 };

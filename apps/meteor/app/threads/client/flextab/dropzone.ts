@@ -133,14 +133,12 @@ export const dropzoneEvents = {
 			}
 		}
 		const { mime } = await import('../../../utils/lib/mimeTypes');
-		const filesToUpload = Array.from(files).map((file) => {
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
-			return {
-				file,
-				name: file.name,
-			};
-		});
 
-		instance.onFileDrop?.(filesToUpload);
+		instance.onFileDrop?.(
+			Array.from(files).map((file) => {
+				Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
+				return file;
+			}),
+		);
 	},
 };

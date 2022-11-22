@@ -12,6 +12,7 @@ export const useSendMessage = ({
 	rid,
 	tmid,
 }: {
+	/** @deprecated bad coupling */
 	chatMessages: ChatMessages;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];

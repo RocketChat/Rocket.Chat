@@ -1,8 +1,9 @@
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
-import { Meteor } from 'meteor/meteor';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
@@ -13,23 +14,51 @@ import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { ChatMessages } from './ChatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import { Rooms } from '../../../models/client';
+import { getRandomId } from '../../../../lib/random';
 
 export type Uploading = {
-	id: string;
-	name: string;
-	percentage: number;
-	error?: Error;
+	readonly id: string;
+	readonly name: string;
+	readonly percentage: number;
+	readonly error?: Error;
 };
 
 declare module 'meteor/session' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Session {
-		function get(key: 'uploading'): Uploading[];
-		function set(key: 'uploading', param: Uploading[]): void;
+		function get(key: 'uploading'): readonly Uploading[];
+		function set(key: 'uploading', param: readonly Uploading[]): void;
 	}
 }
 
 Session.setDefault('uploading', []);
+
+let uploads: readonly Uploading[] = [];
+
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		uploads = Session.get('uploading');
+	});
+});
+
+export const getUploads = (): readonly Uploading[] => uploads;
+
+export const subscribeToUploads = (callback: () => void): (() => void) => {
+	const computation = Tracker.autorun(() => {
+		Session.get('uploading');
+		callback();
+	});
+
+	return () => computation.stop();
+};
+
+const updateUploads = (update: (uploads: readonly Uploading[]) => readonly Uploading[]) => {
+	Session.set('uploading', update(Session.get('uploading')));
+};
+
+export const cancelUpload = (id: Uploading['id']) => {
+	Session.set(`uploading-cancel-${id}`, true);
+};
 
 export const uploadFileWithMessage = async (
 	rid: string,
@@ -44,16 +73,16 @@ export const uploadFileWithMessage = async (
 	},
 	tmid?: string,
 ): Promise<void> => {
-	const uploads = Session.get('uploading');
+	const id = getRandomId();
 
-	const upload = {
-		id: Random.id(),
-		name: file.name,
-		percentage: 0,
-	};
-
-	uploads.push(upload);
-	Session.set('uploading', uploads);
+	updateUploads((uploads) => [
+		...uploads,
+		{
+			id,
+			name: file.name,
+			percentage: 0,
+		},
+	]);
 
 	try {
 		await new Promise((resolve, reject) => {
@@ -78,86 +107,85 @@ export const uploadFileWithMessage = async (
 							return;
 						}
 
-						const uploads = Session.get('uploading');
+						updateUploads((uploads) =>
+							uploads.map((upload) => {
+								if (upload.id !== id) {
+									return upload;
+								}
 
-						uploads
-							.filter((u) => u.id === upload.id)
-							.forEach((u) => {
-								u.percentage = Math.round(progress) || 0;
-							});
-						Session.set('uploading', uploads);
+								return {
+									...upload,
+									percentage: Math.round(progress) || 0,
+								};
+							}),
+						);
 					},
 					error: (error) => {
-						const uploads = Session.get('uploading');
-						uploads
-							.filter((u) => u.id === upload.id)
-							.forEach((u) => {
-								u.error = new Error(xhr.responseText);
-								u.percentage = 0;
-							});
-						Session.set('uploading', uploads);
+						updateUploads((uploads) =>
+							uploads.map((upload) => {
+								if (upload.id !== id) {
+									return upload;
+								}
+
+								return {
+									...upload,
+									percentage: 0,
+									error: new Error(xhr.responseText),
+								};
+							}),
+						);
 						reject(error);
 					},
 				},
 			);
 
-			if (Session.get('uploading').length) {
+			if (getUploads().length) {
 				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 			}
 
 			Tracker.autorun((computation) => {
-				const isCanceling = Session.get(`uploading-cancel-${upload.id}`);
-				if (!isCanceling) {
+				const abortRequested = Session.get(`uploading-cancel-${id}`);
+				if (!abortRequested) {
 					return;
 				}
 				computation.stop();
-				Session.delete(`uploading-cancel-${upload.id}`);
+				Session.delete(`uploading-cancel-${id}`);
 
 				xhr.abort();
 
-				const uploads = Session.get('uploading');
-				Session.set(
-					'uploading',
-					uploads.filter((u) => u.id !== upload.id),
-				);
+				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 			});
 		});
 
-		const uploads = Session.get('uploading');
-		Session.set(
-			'uploading',
-			uploads.filter((u) => u.id !== upload.id),
-		);
-
-		if (!Session.get('uploading').length) {
-			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-		}
+		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 	} catch (error: unknown) {
-		const uploads = Session.get('uploading');
-		uploads
-			.filter((u) => u.id === upload.id)
-			.forEach((u) => {
-				u.error = new Error(getErrorMessage(error));
-				u.percentage = 0;
+		updateUploads((uploads) => {
+			return uploads.map((upload) => {
+				if (upload.id !== id) {
+					return upload;
+				}
+
+				return {
+					...upload,
+					percentage: 0,
+					error: new Error(getErrorMessage(error)),
+				};
 			});
-		if (!uploads.length) {
+		});
+	} finally {
+		if (!getUploads().length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
-		Session.set('uploading', uploads);
 	}
 };
 
-type SingleOrArray<T> = T | T[];
+export const wipeFailedUploads = (): void => {
+	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
+};
 
-/* @deprecated */
-export type FileUploadProp = SingleOrArray<{
-	file: File;
-	name: string;
-}>;
-
-/* @deprecated */
+/** @deprecated */
 export const fileUpload = async (
-	f: FileUploadProp,
+	files: File[],
 	{
 		rid,
 		tmid,
@@ -166,18 +194,12 @@ export const fileUpload = async (
 		tmid?: string;
 	},
 ): Promise<void> => {
-	if (!f) {
-		throw new Error('No files to upload');
-	}
+	const threadsEnabled = settings.get('Threads_enabled') as boolean;
 
-	const threadsEnabled = settings.get('Threads_enabled');
+	const chat = ChatMessages.get({ rid, tmid });
+	const input = chat?.input;
 
-	const files = Array.isArray(f) ? f : [f];
-
-	const chatMessagesInstance = ChatMessages.get({ rid, tmid });
-	const input = chatMessagesInstance?.input;
-
-	const replies = chatMessagesInstance?.quotedMessages.get() ?? [];
+	const replies = chat?.quotedMessages.get() ?? [];
 	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';
@@ -190,30 +212,28 @@ export const fileUpload = async (
 		tmid = replies[0]._id;
 	}
 
-	const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
-	const messageBoxText = Meteor._localStorage.getItem(key) || '';
-	const room = Rooms.findOne({ _id: rid });
+	const room = (Rooms as Mongo.Collection<IRoom>).findOne({ _id: rid }, { reactive: false });
 
 	const uploadNextFile = (): void => {
 		const file = files.pop();
 		if (!file) {
-			chatMessagesInstance?.quotedMessages.clear();
+			chat?.quotedMessages.clear();
 			return;
 		}
 
 		imperativeModal.open({
 			component: FileUploadModal,
 			props: {
-				file: file.file,
+				file,
 				fileName: file.name,
-				fileDescription: messageBoxText,
+				fileDescription: input?.value ?? '',
 				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();
 				},
 				onSubmit: (fileName: string, description?: string): void => {
-					Object.defineProperty(file.file, 'name', {
+					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,
 					});
@@ -222,20 +242,15 @@ export const fileUpload = async (
 						{
 							description,
 							msg,
-							file: file.file,
+							file,
 						},
 						tmid,
 					);
-					const localStorageKey = ['messagebox', rid, tmid].filter(Boolean).join('_');
-					if (input) {
-						input.value = '';
-						$(input).trigger('input');
-					}
-					Meteor._localStorage.removeItem(localStorageKey);
+					chat?.setDraftAndUpdateInput('');
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				invalidContentType: Boolean(file.file.type && !fileUploadIsValidContentType(file.file.type)),
+				invalidContentType: Boolean(file.type && !fileUploadIsValidContentType(file.type)),
 			},
 		});
 	};

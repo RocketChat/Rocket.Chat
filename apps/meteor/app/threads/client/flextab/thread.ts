@@ -14,8 +14,6 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models/client';
-import type { FileUploadProp } from '../../../ui/client/lib/fileUpload';
-import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from './dropzone';
 import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
@@ -45,7 +43,6 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 		queries: unknown[];
 	};
 	threadsObserve?: Meteor.LiveQueryHandle;
-	chatMessages: ChatMessages;
 	callbackRemove?: () => void;
 	state: ReactiveDict<{
 		rid: string;
@@ -59,7 +56,7 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	atBottom?: boolean;
 	sendToBottom: () => void;
 	sendToBottomIfNecessary: () => void;
-	onFileDrop: (files: FileUploadProp) => void;
+	onFileDrop: (files: File[]) => void;
 	onTextDrop: (text: string) => void;
 	lastJump?: string;
 };
@@ -116,13 +113,18 @@ Template.thread.helpers({
 		const {
 			mainMessage: { rid, _id: tmid },
 			subscription,
+			chatContext,
 		} = Template.currentData() as ThreadTemplateInstance['data'];
+
+		if (!chatContext) {
+			throw new Error('chatContext is not defined');
+		}
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
 		return {
-			chatMessagesInstance: instance.chatMessages,
+			chatContext,
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
@@ -139,13 +141,25 @@ Template.thread.helpers({
 				if (alsoSendPreferenceState === 'default') {
 					instance.state.set('sendToChannel', false);
 				}
-				return instance.chatMessages.send(params);
+				return chatContext.send(params);
+			},
+			onInputChanged: (input: HTMLTextAreaElement): void => {
+				chatContext.initializeInput(input);
+
+				setTimeout(() => {
+					if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
+						input.focus();
+					}
+				}, 200);
 			},
 			onEscape: () => {
 				instance.closeThread();
 			},
-			onNavigateToPreviousMessage: () => instance.chatMessages.messageEditing.toPreviousMessage(instance.wrapper),
-			onNavigateToNextMessage: () => instance.chatMessages.messageEditing.toNextMessage(),
+			onNavigateToPreviousMessage: () => chatContext.messageEditing.toPreviousMessage(instance.wrapper),
+			onNavigateToNextMessage: () => chatContext.messageEditing.toNextMessage(),
+			onUploadFiles: (files: readonly File[]) => {
+				return chatContext.uploadFiles(files);
+			},
 		};
 	},
 	hideUsername() {
@@ -177,6 +191,8 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
+
+	Object.assign(this.data.chatContext, { collection: this.Threads });
 
 	const preferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
@@ -217,8 +233,6 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 		});
 	};
 
-	this.chatMessages = new ChatMessages({ rid: mainMessage.rid, tmid: mainMessage._id }, this.Threads);
-
 	this.closeThread = () => {
 		const {
 			route,
@@ -239,10 +253,6 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 
 	this.atBottom = true;
 	this.wrapper = this.find('.js-scroll-thread');
-
-	const input = this.find('.js-input-message') as HTMLTextAreaElement;
-
-	this.chatMessages.initializeInput(input);
 
 	this.sendToBottom = _.throttle(() => {
 		this.atBottom = true;
@@ -265,6 +275,12 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	observer.observe(list);
 
 	this.onTextDrop = (text: string) => {
+		const input = this.data.chatContext?.input;
+
+		if (!input) {
+			return;
+		}
+
 		const initText = input.value.slice(0, input.selectionStart ?? undefined);
 		const finalText = input.value.slice(input.selectionEnd ?? undefined, input.value.length);
 
@@ -272,17 +288,14 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		$(input).change().trigger('input');
 	};
 
-	this.onFileDrop = (filesToUpload) => {
+	this.onFileDrop = (files) => {
 		const rid = this.state.get('rid');
 
 		if (!rid) {
 			throw new Error('No rid found');
 		}
 
-		fileUpload(filesToUpload, {
-			rid,
-			tmid: this.state.get('tmid'),
-		});
+		this.data.chatContext?.uploadFiles(files);
 	};
 
 	this.autorun(() => {
@@ -332,27 +345,6 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		});
 
 		this.loadMore();
-	});
-
-	this.autorun(() => {
-		const rid = this.state.get('rid');
-		const tmid = this.state.get('tmid');
-		const input = this.find('.js-input-message') as HTMLTextAreaElement | null;
-		if (!input) {
-			throw new Error('Could not find input element');
-		}
-
-		this.chatMessages.initializeInput(input);
-
-		setTimeout(() => {
-			if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
-				input.focus();
-			}
-		}, 200);
-
-		if (rid && tmid) {
-			ChatMessages.set({ rid, tmid }, this.chatMessages);
-		}
 	});
 
 	this.autorun(() => {
