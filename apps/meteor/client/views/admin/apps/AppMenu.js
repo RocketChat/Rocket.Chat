@@ -276,7 +276,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [checkUserLoggedIn, setModal, showAppPermissionsReviewModal]);
+	}, [checkUserLoggedIn, app, closeModal, setModal, showAppPermissionsReviewModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
