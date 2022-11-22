@@ -11,7 +11,7 @@ import { appButtonProps, appStatusSpanProps, handleAPIError, handleInstallError 
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, isSubscribed, installed, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
