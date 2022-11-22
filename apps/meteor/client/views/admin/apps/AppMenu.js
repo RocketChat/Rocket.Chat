@@ -20,6 +20,15 @@ import IframeModal from './IframeModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
 
+const openIncompatibleModal = async (app, action, cancel, setModal) => {
+	try {
+		const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
+		setModal(<IframeModal url={incompatibleData.url} cancel={cancel} />);
+	} catch (e) {
+		handleAPIError(e);
+	}
+};
+
 function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -80,11 +89,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const closeModal = useCallback(() => {
 		setModal(null);
+		setLoading(false);
 	}, [setModal]);
 
 	const handleSubscription = useCallback(async () => {
 		if (!(await checkUserLoggedIn())) {
 			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (app?.versionIncompatible && !isSubscribed) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 
@@ -110,7 +125,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [checkUserLoggedIn, setModal, closeModal, buildExternalUrl, app.id, app.purchaseType, syncApp]);
+	}, [checkUserLoggedIn, app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const handleAcquireApp = useCallback(async () => {
 		setLoading(true);
@@ -120,6 +135,11 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		if (!isLoggedIn) {
 			setLoading(false);
 			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 
@@ -134,7 +154,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app.id, app.purchaseType, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
+	}, [action, app, closeModal, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -215,8 +235,37 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		uninstallApp,
 	]);
 
+	const incompatibleIconName = useCallback(
+		(app, action) => {
+			if (!app.versionIncompatible) {
+				if (action === 'update') {
+					return 'refresh';
+				}
+
+				return 'card';
+			}
+
+			// Now we are handling an incompatible app
+			if (action === 'subscribe' && !isSubscribed) {
+				return 'warning';
+			}
+
+			if (action === 'install' || action === 'update') {
+				return 'warning';
+			}
+
+			return 'card';
+		},
+		[isSubscribed],
+	);
+
 	const handleUpdate = useCallback(async () => {
 		setLoading(true);
+
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'update', closeModal, setModal);
+			return;
+		}
 
 		const isLoggedIn = await checkUserLoggedIn();
 
@@ -227,7 +276,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [checkUserLoggedIn, setModal, showAppPermissionsReviewModal]);
+	}, [checkUserLoggedIn, app, closeModal, setModal, showAppPermissionsReviewModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
@@ -238,7 +287,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					subscribe: {
 						label: (
 							<Box>
-								<Icon name='card' size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
 							</Box>
 						),
@@ -250,7 +299,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		const nonInstalledAppOptions = {
 			...(!app.installed && {
 				acquire: {
-					label: <Box>{t(button.label.replace(' ', '_'))}</Box>,
+					label: (
+						<Box>
+							<Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />
+							{t(button.label.replace(' ', '_'))}
+						</Box>
+					),
 					action: handleAcquireApp,
 				},
 			}),
@@ -274,7 +328,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					update: {
 						label: (
 							<Box>
-								<Icon name='refresh' size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
 								{t('Update')}
 							</Box>
 						),
@@ -331,9 +385,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [
 		canAppBeSubscribed,
 		isSubscribed,
+		app,
 		t,
 		handleSubscription,
-		app?.installed,
 		button?.label,
 		handleAcquireApp,
 		context,
@@ -345,9 +399,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleDisable,
 		handleEnable,
 		handleUninstall,
+		incompatibleIconName,
 	]);
 
-	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' {...props} />;
+	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
 }
 
 export default AppMenu;
