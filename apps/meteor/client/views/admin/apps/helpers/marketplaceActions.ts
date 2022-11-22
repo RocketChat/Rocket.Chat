@@ -1,8 +1,10 @@
-import { installApp } from './installApp';
-import { updateApp } from './updateApp';
+import installApp from './installApp';
+import updateApp from './updateApp';
 
-export const marketplaceActions = {
+const marketplaceActions = {
 	purchase: installApp,
 	install: installApp,
 	update: updateApp,
 };
+
+export default marketplaceActions;

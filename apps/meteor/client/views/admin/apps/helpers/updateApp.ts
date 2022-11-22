@@ -1,14 +1,14 @@
 import { App, AppPermission } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
-import { handleAPIError } from './handleAPIError';
-import { warnStatusChange } from './warnStatusChange';
+import handleAPIError from './handleAPIError';
+import warnStatusChange from './warnStatusChange';
 
 type updateAppProps = App & {
 	permissionsGranted: AppPermission[];
 };
 
-export const updateApp = async ({ id, name, marketplaceVersion, permissionsGranted }: updateAppProps): Promise<void> => {
+const updateApp = async ({ id, name, marketplaceVersion, permissionsGranted }: updateAppProps): Promise<void> => {
 	try {
 		const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
 		if (status) {
@@ -18,3 +18,5 @@ export const updateApp = async ({ id, name, marketplaceVersion, permissionsGrant
 		handleAPIError(error);
 	}
 };
+
+export default updateApp;
