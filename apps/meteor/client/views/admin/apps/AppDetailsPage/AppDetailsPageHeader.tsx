@@ -47,12 +47,10 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					<Box is='span'> | </Box>
 
-					<Box marginInlineStart='16px' marginInlineEnd='4px'>
-						{t('Version_version', { version: versioni18nKey(app) })}
-					</Box>
+					<Box mi='x16'>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 
 					{versionIncompatible && (
-						<Box is='span' marginInlineEnd='16px' marginInlineStart='4px'>
+						<Box is='span' mi='x16'>
 							<Tag
 								title={incompatibleStatus?.tooltipText}
 								variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
@@ -65,7 +63,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					{lastUpdated && (
 						<>
 							<Box is='span'> | </Box>
-							<Box mis='x16'>
+							<Box mi='x16'>
 								{t('Marketplace_app_last_updated', {
 									lastUpdated,
 								})}
