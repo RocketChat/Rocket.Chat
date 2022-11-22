@@ -402,7 +402,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		incompatibleIconName,
 	]);
 
-	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' {...props} />;
+	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
 }
 
 export default AppMenu;
