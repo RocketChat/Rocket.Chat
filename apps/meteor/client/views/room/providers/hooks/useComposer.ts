@@ -30,7 +30,7 @@ export const useComposer = ({
 				chatMessages.quotedMessages.clear();
 			},
 			quotedMessages: {
-				getSnapshot: () => chatMessages.quotedMessages.get(),
+				get: () => chatMessages.quotedMessages.get(),
 				subscribe: (callback: () => void) => chatMessages.quotedMessages.subscribe(callback),
 			},
 		} as const;

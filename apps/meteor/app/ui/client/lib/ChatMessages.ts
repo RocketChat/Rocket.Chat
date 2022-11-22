@@ -577,7 +577,7 @@ export class ChatMessages {
 				type: contentType,
 				lastModified: Date.now(),
 			});
-			fileUpload([file], { rid, tmid });
+			fileUpload([file], this, { rid, tmid });
 			imperativeModal.close();
 		};
 
@@ -696,7 +696,8 @@ export class ChatMessages {
 		}
 	}
 
-	private onDestroyed(tmid?: IMessage['_id']) {
+	private release() {
+		const { tmid } = this.params;
 		// TODO: check why we need too many ?. here :(
 		if (this.input?.parentElement?.classList.contains('editing') === true) {
 			if (!tmid) {
@@ -707,24 +708,35 @@ export class ChatMessages {
 		}
 	}
 
-	private static instances: Record<string, ChatMessages> = {};
+	private static refs = new Map<string, { instance: ChatMessages; count: number }>();
 
 	private static getID({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): string {
 		return `${rid}${tmid ? `-${tmid}` : ''}`;
 	}
 
-	public static get(params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): ChatMessages | undefined {
-		return this.instances[this.getID(params)];
-	}
-
-	public static set(params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }, instance: ChatMessages) {
-		this.instances[this.getID(params)] = instance;
-	}
-
-	public static delete({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+	public static hold({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		const id = this.getID({ rid, tmid });
-		this.instances[id].onDestroyed(tmid);
-		delete this.instances[id];
+
+		const ref = this.refs.get(id) ?? { instance: new ChatMessages({ rid, tmid }), count: 0 };
+		ref.count++;
+		this.refs.set(id, ref);
+
+		return ref.instance;
+	}
+
+	public static release({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+		const id = this.getID({ rid, tmid });
+
+		const ref = this.refs.get(id);
+		if (!ref) {
+			return;
+		}
+
+		ref.count--;
+		if (ref.count === 0) {
+			this.refs.delete(id);
+			ref.instance.release();
+		}
 	}
 
 	public static purgeAllDrafts() {

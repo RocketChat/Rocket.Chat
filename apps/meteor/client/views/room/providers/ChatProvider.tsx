@@ -16,26 +16,22 @@ type ChatProviderProps = {
 const ChatProvider = ({ children, tmid }: ChatProviderProps): ReactElement => {
 	const { _id: rid } = useRoom();
 
-	const chatMessages = useMemo(() => {
-		const instance = ChatMessages.get({ rid, tmid }) ?? new ChatMessages({ rid, tmid });
-		ChatMessages.set({ rid, tmid }, instance);
-		return instance;
-	}, [rid, tmid]);
+	const chatMessages = useMemo(() => ChatMessages.hold({ rid, tmid }), [rid, tmid]);
 
 	useEffect(
 		() => (): void => {
-			ChatMessages.delete({ rid });
+			ChatMessages.release({ rid, tmid });
 		},
-		[chatMessages, rid],
+		[rid, tmid],
 	);
 
-	const sendMessage = useSendMessage({ chatMessages, rid, tmid });
-	const uploadFiles = useUploadFiles({ tmid });
 	const composer = useComposer({ chatMessages });
 	const allMessages = useAllMessages();
+	const sendMessage = useSendMessage({ chatMessages, tmid });
+	const uploadFiles = useUploadFiles({ chatMessages, tmid, composer });
 
 	const value = useMemo(
-		() => Object.assign(chatMessages, { sendMessage, uploadFiles, composer, allMessages }),
+		() => Object.assign(chatMessages, { composer, allMessages, sendMessage, uploadFiles }),
 		[allMessages, chatMessages, composer, sendMessage, uploadFiles],
 	);
 

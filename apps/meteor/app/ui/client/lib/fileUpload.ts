@@ -11,7 +11,7 @@ import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { ChatMessages } from './ChatMessages';
+import type { ChatMessages } from './ChatMessages';
 import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import { Rooms } from '../../../models/client';
 import { getRandomId } from '../../../../lib/random';
@@ -186,6 +186,7 @@ export const wipeFailedUploads = (): void => {
 /** @deprecated */
 export const fileUpload = async (
 	files: File[],
+	chatMessages: ChatMessages,
 	{
 		rid,
 		tmid,
@@ -196,10 +197,9 @@ export const fileUpload = async (
 ): Promise<void> => {
 	const threadsEnabled = settings.get('Threads_enabled') as boolean;
 
-	const chat = ChatMessages.get({ rid, tmid });
-	const input = chat?.input;
+	const input = chatMessages?.input;
 
-	const replies = chat?.quotedMessages.get() ?? [];
+	const replies = chatMessages?.quotedMessages.get() ?? [];
 	const mention = input ? $(input).data('mention-user') : false;
 
 	let msg = '';
@@ -217,7 +217,7 @@ export const fileUpload = async (
 	const uploadNextFile = (): void => {
 		const file = files.pop();
 		if (!file) {
-			chat?.quotedMessages.clear();
+			chatMessages?.quotedMessages.clear();
 			return;
 		}
 
@@ -246,7 +246,7 @@ export const fileUpload = async (
 						},
 						tmid,
 					);
-					chat?.setDraftAndUpdateInput('');
+					chatMessages?.setDraftAndUpdateInput('');
 					imperativeModal.close();
 					uploadNextFile();
 				},

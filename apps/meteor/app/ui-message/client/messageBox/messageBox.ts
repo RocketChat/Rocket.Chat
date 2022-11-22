@@ -148,7 +148,7 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	const { chatContext } = this.data;
 
 	chatContext?.composer.quotedMessages.subscribe(() => {
-		this.replyMessageData.set(chatContext?.composer.quotedMessages.getSnapshot());
+		this.replyMessageData.set(chatContext?.composer.quotedMessages.get());
 	});
 });
 

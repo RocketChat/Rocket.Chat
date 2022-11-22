@@ -2,16 +2,25 @@ import { IMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
+import { ChatMessages } from '../../../../../app/ui/client';
 import { uploadFileWithMessage } from '../../../../../app/ui/client/lib/fileUpload';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
-import { useChat } from '../../contexts/ChatContext';
+import { ChatAPI } from '../../contexts/ChatContext';
 import { useRoom } from '../../contexts/RoomContext';
 import FileUploadModal from '../../modals/FileUploadModal/FileUploadModal';
 
-export const useUploadFiles = ({ tmid }: { tmid?: IMessage['_id'] }): ((files: readonly File[]) => Promise<void>) => {
+export const useUploadFiles = ({
+	chatMessages,
+	tmid,
+	composer,
+}: {
+	/** @deprecated bad coupling */
+	chatMessages: ChatMessages;
+	tmid?: IMessage['_id'];
+	composer: ChatAPI['composer'];
+}): ((files: readonly File[]) => Promise<void>) => {
 	const room = useRoom();
-	const chat = useChat();
 	const threadsEnabled = useSetting('Threads_enabled') as boolean;
 	const setModal = useSetModal();
 
@@ -19,9 +28,9 @@ export const useUploadFiles = ({ tmid }: { tmid?: IMessage['_id'] }): ((files: r
 
 	return useCallback(
 		async (files: readonly File[]): Promise<void> => {
-			const input = chat?.input;
+			const input = chatMessages?.input;
 
-			const replies = chat?.quotedMessages.get() ?? [];
+			const replies = composer.quotedMessages.get();
 			const mention = input ? $(input).data('mention-user') : false;
 
 			let msg = '';
@@ -35,7 +44,7 @@ export const useUploadFiles = ({ tmid }: { tmid?: IMessage['_id'] }): ((files: r
 			const uploadNextFile = (): void => {
 				const file = queue.pop();
 				if (!file) {
-					chat?.quotedMessages.clear();
+					composer.dismissAllQuotedMessages();
 					return;
 				}
 
@@ -63,7 +72,7 @@ export const useUploadFiles = ({ tmid }: { tmid?: IMessage['_id'] }): ((files: r
 								},
 								mention && threadsEnabled && replies.length ? replies[0]._id : tmid,
 							);
-							chat?.setDraftAndUpdateInput('');
+							chatMessages?.setDraftAndUpdateInput('');
 							setModal(null);
 							uploadNextFile();
 						}}
@@ -74,6 +83,6 @@ export const useUploadFiles = ({ tmid }: { tmid?: IMessage['_id'] }): ((files: r
 
 			uploadNextFile();
 		},
-		[chat, rid, room, setModal, threadsEnabled, tmid],
+		[chatMessages, composer, rid, room, setModal, threadsEnabled, tmid],
 	);
 };

@@ -9,7 +9,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { IMessage, IEditedMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
 import type { ContextType } from 'react';
 
-import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
@@ -393,15 +392,9 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 });
 
 Template.thread.onDestroyed(function (this: ThreadTemplateInstance) {
-	const { Threads, threadsObserve, callbackRemove, state } = this;
+	const { Threads, threadsObserve, callbackRemove } = this;
 	Threads.remove({});
 	threadsObserve?.stop();
 
 	callbackRemove?.();
-
-	const tmid = state.get('tmid');
-	const rid = state.get('rid');
-	if (rid && tmid) {
-		ChatMessages.delete({ rid, tmid });
-	}
 });

@@ -1,4 +1,4 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { IMessage } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
@@ -6,17 +6,17 @@ import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
 import { getRandomId } from '../../../../../lib/random';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { ChatAPI } from '../../contexts/ChatContext';
+import { useRoom } from '../../contexts/RoomContext';
 
 export const useSendMessage = ({
 	chatMessages,
-	rid,
 	tmid,
 }: {
 	/** @deprecated bad coupling */
 	chatMessages: ChatMessages;
-	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 }): ChatAPI['sendMessage'] => {
+	const { _id: rid } = useRoom();
 	const sendMessage = useMethod('sendMessage');
 
 	return useCallback(

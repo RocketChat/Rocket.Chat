@@ -5,15 +5,13 @@ import type { ChatMessages } from '../../../../app/ui/client';
 
 /** Replacement API for `ChatMessages` fully decoupled and stateless */
 export type ChatAPI = {
-	readonly sendMessage: (text: string) => Promise<void>;
-	readonly uploadFiles: (files: readonly File[]) => Promise<void>;
 	readonly composer: {
 		readonly replyWith: (text: string) => Promise<void>;
 		readonly quoteMessage: (message: IMessage) => Promise<void>;
 		readonly dismissQuotedMessage: (mid: IMessage['_id']) => Promise<void>;
 		dismissAllQuotedMessages: () => Promise<void>;
 		readonly quotedMessages: {
-			getSnapshot: () => IMessage[];
+			get: () => IMessage[];
 			subscribe: (callback: () => void) => () => void;
 		};
 	};
@@ -21,6 +19,8 @@ export type ChatAPI = {
 		findOneByID: (mid: IMessage['_id']) => Promise<IMessage | undefined>;
 		getOneByID: (mid: IMessage['_id']) => Promise<IMessage>;
 	};
+	readonly sendMessage: (text: string) => Promise<void>;
+	readonly uploadFiles: (files: readonly File[]) => Promise<void>;
 };
 
 type ChatContextValue = (ChatMessages & ChatAPI) | undefined;
