@@ -158,9 +158,6 @@ const VideoConferenceBlock = ({
             </VideoConfMessageActions>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
-            <VideoConfMessageButton primary onClick={joinHandler}>
-              {t('Join')}
-            </VideoConfMessageButton>
             <VideoConfMessageFooterText>
               {t('Waiting_for_answer')}
             </VideoConfMessageFooterText>
