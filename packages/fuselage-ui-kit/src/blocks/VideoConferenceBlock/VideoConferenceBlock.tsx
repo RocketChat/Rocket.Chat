@@ -117,7 +117,7 @@ const VideoConferenceBlock = ({
                 <>
                   <VideoConfMessageUserStack>
                     {data.users.map(({ username }, index) =>
-                      data.users.length <= MAX_USERS ? (
+                      index <= MAX_USERS ? (
                         <Avatar
                           size='x28'
                           key={index}
@@ -130,8 +130,8 @@ const VideoConferenceBlock = ({
                     )}
                   </VideoConfMessageUserStack>
                   <VideoConfMessageFooterText>
-                    {data.users.length > 6
-                      ? `+ ${MAX_USERS - data.users.length} ${t('Joined')}`
+                    {data.users.length > MAX_USERS
+                      ? `+ ${data.users.length - MAX_USERS} ${t('Joined')}`
                       : t('Joined')}
                   </VideoConfMessageFooterText>
                 </>
@@ -183,7 +183,7 @@ const VideoConferenceBlock = ({
           </VideoConfMessageButton>
           <VideoConfMessageUserStack>
             {data.users.map(({ username }, index) =>
-              data.users.length <= MAX_USERS ? (
+              index <= MAX_USERS ? (
                 <Avatar
                   size='x28'
                   key={index}
@@ -196,8 +196,8 @@ const VideoConferenceBlock = ({
             )}
           </VideoConfMessageUserStack>
           <VideoConfMessageFooterText>
-            {data.users.length > 6
-              ? `+ ${MAX_USERS - data.users.length} ${t('Joined')}`
+            {data.users.length > MAX_USERS
+              ? `+ ${data.users.length - MAX_USERS} ${t('Joined')}`
               : t('Joined')}
           </VideoConfMessageFooterText>
         </VideoConfMessageFooter>
