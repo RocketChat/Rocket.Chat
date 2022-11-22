@@ -1,2 +1,2 @@
-meteor npm run lint && \
-meteor npm run testunit
+yarn lint && \
+yarn testunit
