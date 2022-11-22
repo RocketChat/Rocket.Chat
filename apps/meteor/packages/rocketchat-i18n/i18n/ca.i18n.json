@@ -4446,7 +4446,7 @@
   "User Search (Group Validation)": "Cerca d'usuaris (validació de grup)",
   "User__username__is_now_a_leader_of__room_name_": "L'usuari __username__ ara és líder de __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "L'usuari __username__ ara és moderador de la sala __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "L'usuari __username__ ara és un propietari de __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "L'usuari __username__ ara és un propietari de __room_name__",
   "User__username__muted_in_room__roomName__": "Usuari __username__ silenciat a la sala __roomName__",
   "User__username__removed_from__room_name__leaders": "L'usuari __username__ va ser remogut dels líders de __room_name__",
   "User__username__removed_from__room_name__moderators": "L'usuari __username__ ja no és moderador de la sala __room_name__",
@@ -4783,5 +4783,18 @@
   "Your_server_link": "El vostre enllaç del servidor",
   "Your_temporary_password_is_password": "La vostra contrasenya temporal és <strong> [contrasenya] </strong>.",
   "Your_TOTP_has_been_reset": "El vostre TOTP de dos factors s'ha restablert.",
-  "Your_workspace_is_ready": "El vostre espai de treball està a punt per utilitzar 🎉"
+  "Your_workspace_is_ready": "El vostre espai de treball està a punt per utilitzar 🎉",
+  "registration.page.login.errors.wrongCredentials": "Usuari no trobat o contrasenya incorrecta",
+  "registration.page.login.errors.loginBlockedForIp": "L'inici de sessió ha estat bloquejat temporalment per a aquesta IP",
+  "registration.page.login.errors.loginBlockedForUser": "L'inici de sessió ha estat bloquejat temporalment per a aquest usuari",
+  "registration.page.login.errors.licenseUserLimitReached": "S'ha arribat al nombre màxim d'usuaris.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Els usuaris de l'aplicació no poden accedir directament.",
+  "registration.page.registration.waitActivationWarning": "Abans de poder iniciar sessió, els comptes han de ser activats manualment per un administrador.",
+  "registration.page.resetPassword.sent": "Si l'adreça de correu-e ja està registrada, t'enviarem instruccions sobre com restablir la contrasenya. Si no reps el missatge en breu, si us plau torna i reintenta-ho.",
+  "registration.component.login": "Inicia sessió",
+  "registration.component.resetPassword": "Reinicialitza la contrasenya",
+  "registration.component.form.email": "Correu electrònic",
+  "registration.component.form.password": "Contrasenya",
+  "registration.component.form.divider": "o",
+  "registration.component.form.submit": "Envia"
 }

@@ -2599,7 +2599,7 @@
   "User": "карыстальнік",
   "User__username__is_now_a_leader_of__room_name_": "__username__ Карыстальнік цяпер лідэр __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ Карыстальнік цяпер мадэратар __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ Карыстальнік цяпер уладальнік __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ Карыстальнік цяпер уладальнік __room_name__",
   "User__username__removed_from__room_name__leaders": "__username__ Карыстальнік выдалены з __room_name__ лідэраў",
   "User__username__removed_from__room_name__moderators": "__username__ Карыстальнік выдалены з __room_name__ мадэратараў",
   "User__username__removed_from__room_name__owners": "__username__ Карыстальнік выдалены з __room_name__ уладальнікаў",
@@ -2812,5 +2812,15 @@
   "Your_password_is_wrong": "Ваш няправільны пароль!",
   "Your_push_was_sent_to_s_devices": "Ваш штуршок быў адпраўлены ў%s прылад",
   "Your_server_link": "Ваша спасылка сервера",
-  "Your_workspace_is_ready": "Ваша працоўная вобласць гатова да выкарыстання 🎉"
+  "Your_workspace_is_ready": "Ваша працоўная вобласць гатова да выкарыстання 🎉",
+  "registration.page.registration.waitActivationWarning": "Перад тым, як увайсці, ваш уліковы запіс павінна быць актываваная ўручную адміністратарам.",
+  "registration.page.login.forgot": "Забыліся свой пароль",
+  "registration.page.resetPassword.sent": "Калі гэты ліст зарэгістравана, мы адправім інструкцыі па аднаўленні пароля. Калі вы не атрымаеце па электроннай пошце ў бліжэйшы час, калі ласка, вярніцеся і паспрабуйце ізноў.",
+  "registration.component.login": "Увайсці",
+  "registration.component.resetPassword": "Скід пароля",
+  "registration.component.form.emailOrUsername": "Email або імя карыстальніка",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "пароль",
+  "registration.component.form.divider": "або",
+  "registration.component.form.submit": "прадставіць"
 }

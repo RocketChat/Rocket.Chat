@@ -56,8 +56,17 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 
 	return (
 		<Header.Tag>
-			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{isTeamPublic || belongsToTeam ? <Header.Link onClick={teamMainRoomHref}>{value.teamInfo.name}</Header.Link> : value.teamInfo.name}
+			{isTeamPublic || belongsToTeam ? (
+				<Header.Link onClick={teamMainRoomHref}>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{value.teamInfo.name}
+				</Header.Link>
+			) : (
+				<>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{value.teamInfo.name}
+				</>
+			)}
 		</Header.Tag>
 	);
 };

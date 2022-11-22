@@ -34,6 +34,7 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to update license from Rocket.Chat Cloud',
+			url: '/license',
 			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});

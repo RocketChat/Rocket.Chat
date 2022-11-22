@@ -160,7 +160,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
 			if (isUnread) {
-				await readMessages({ rid });
+				await readMessages({ rid, readThreads: true });
 				return;
 			}
 			await unreadMessages(null, rid);
@@ -222,7 +222,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} title={label} icon={icon} {...props} />}
+			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>
 	);
 };

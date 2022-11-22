@@ -1,3 +1,5 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
@@ -1021,7 +1023,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
 		}
 		if (roomName) {
-			query.fname = new RegExp(roomName, 'i');
+			query.fname = new RegExp(escapeRegExp(roomName), 'i');
 		}
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
@@ -1190,10 +1192,49 @@ export class LivechatRoomsRaw extends BaseRaw {
 	}
 
 	setDepartmentByRoomId(roomId, departmentId) {
-		return this.update({ _id: roomId }, { $set: { departmentId } });
+		return this.updateOne({ _id: roomId }, { $set: { departmentId } });
 	}
 
 	findOpen() {
 		return this.find({ t: 'l', open: true });
+	}
+
+	setAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferOngoing: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unsetAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$unset: {
+				autoTransferOngoing: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setAutoTransferredAtById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt: new Date(),
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

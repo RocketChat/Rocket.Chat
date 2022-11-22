@@ -4,7 +4,7 @@ import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 
 import { Users } from '../../../../../app/models/client';
-import { chatMessages, fileUpload } from '../../../../../app/ui/client';
+import { ChatMessages, fileUpload } from '../../../../../app/ui/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useDropTarget } from './useDropTarget';
@@ -35,7 +35,7 @@ export const useFileUploadDropTarget = (
 	);
 
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
-		const { input } = chatMessages[room._id];
+		const input = ChatMessages.get({ rid: room._id })?.input;
 		if (!input) return;
 
 		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');

@@ -77,19 +77,19 @@ export function executeSendMessage(uid, message) {
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
-	} catch (error) {
-		SystemLogger.error('Error sending message:', error);
+	} catch (err) {
+		SystemLogger.error({ msg: 'Error sending message:', err });
 
-		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
+		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 
-		if (typeof error === 'string') {
-			throw new Error(error);
+		if (typeof err === 'string') {
+			throw new Error(err);
 		}
 
-		throw error;
+		throw err;
 	}
 }
 
