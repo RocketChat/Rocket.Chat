@@ -10,7 +10,13 @@ export const useVideoConfData = ({ callId }: { callId: string }) => {
     {
       staleTime: Infinity,
       refetchOnWindowFocus: false,
-      // refetchOnMount: false,
+      refetchOnMount: (query) => {
+        if (query.state.data?.endedAt) {
+          return false;
+        }
+
+        return 'always';
+      },
     }
   );
 };
