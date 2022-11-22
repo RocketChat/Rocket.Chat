@@ -26,6 +26,7 @@ const Row = memo(function Row({ discussion, showRealNames, userId, onClick }) {
 			username={discussion.u.username}
 			following={discussion.replies && discussion.replies.includes(userId)}
 			data-drid={discussion.drid}
+			ts={discussion.ts}
 			msg={msg}
 			t={t}
 			formatDate={formatDate}

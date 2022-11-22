@@ -1,4 +1,5 @@
 import type { FederationRoomServiceSender } from './application/sender/RoomServiceSender';
+import type { IFederationBridgeRegistrationFile } from './domain/IFederationBridge';
 import { FederationFactory } from './infrastructure/Factory';
 
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
@@ -7,18 +8,20 @@ export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapte
 export const queueInstance = FederationFactory.buildFederationQueue();
 rocketSettingsAdapter.initialize();
 export const federationQueueInstance = FederationFactory.buildFederationQueue();
+export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
 const federationBridge = FederationFactory.buildFederationBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapter = FederationFactory.buildRocketRoomAdapter();
 const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
+export const rocketNotificationAdapter = FederationFactory.buildRocketNotificationAdapter();
 export const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
-export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
 
 const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
-	rocketSettingsAdapter,
 	rocketFileAdapter,
+	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federationBridge,
 );
 
@@ -26,6 +29,16 @@ const federationMessageServiceReceiver = FederationFactory.buildMessageServiceRe
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
+	rocketFileAdapter,
+	rocketSettingsAdapter,
+	federationBridge,
+);
+
+const federationUserServiceReceiver = FederationFactory.buildUserServiceReceiver(
+	rocketRoomAdapter,
+	rocketUserAdapter,
+	rocketFileAdapter,
+	rocketNotificationAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -33,20 +46,32 @@ const federationMessageServiceReceiver = FederationFactory.buildMessageServiceRe
 const federationEventsHandler = FederationFactory.buildFederationEventHandler(
 	federationRoomServiceReceiver,
 	federationMessageServiceReceiver,
+	federationUserServiceReceiver,
 	rocketSettingsAdapter,
 );
 
 export let federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 	rocketRoomAdapter,
 	rocketUserAdapter,
-	rocketSettingsAdapter,
 	rocketFileAdapter,
+	rocketMessageAdapter,
+	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federationBridge,
 );
 
 const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalHooksValidator(
 	rocketRoomAdapter,
 	rocketUserAdapter,
+	rocketFileAdapter,
+	rocketSettingsAdapter,
+	federationBridge,
+);
+
+export const federationUserServiceSender = FederationFactory.buildUserServiceSender(
+	rocketRoomAdapter,
+	rocketUserAdapter,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridge,
 );
@@ -61,25 +86,58 @@ const federationMessageServiceSender = FederationFactory.buildMessageServiceSend
 
 let cancelSettingsObserver: () => void;
 
+const onFederationEnabledStatusChanged = async (
+	isFederationEnabled: boolean,
+	appServiceId: string,
+	homeServerUrl: string,
+	homeServerDomain: string,
+	bridgeUrl: string,
+	bridgePort: number,
+	homeServerRegistrationFile: IFederationBridgeRegistrationFile,
+): Promise<void> => {
+	federationBridge.onFederationAvailabilityChanged(
+		isFederationEnabled,
+		appServiceId,
+		homeServerUrl,
+		homeServerDomain,
+		bridgeUrl,
+		bridgePort,
+		homeServerRegistrationFile,
+	);
+	if (isFederationEnabled) {
+		federationBridge.logFederationStartupInfo('Running Federation V2');
+		FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
+		await import('./infrastructure/rocket-chat/slash-commands');
+		return;
+	}
+	FederationFactory.removeCEListeners();
+};
+
 export const runFederation = async (): Promise<void> => {
 	federationRoomServiceSender = FederationFactory.buildRoomServiceSender(
 		rocketRoomAdapter,
 		rocketUserAdapter,
-		rocketSettingsAdapter,
 		rocketFileAdapter,
+		rocketMessageAdapter,
+		rocketSettingsAdapter,
+		rocketNotificationAdapter,
 		federationBridge,
 	);
-	FederationFactory.setupListeners(federationRoomServiceSender, federationRoomInternalHooksValidator, federationMessageServiceSender);
+	FederationFactory.setupValidators(federationRoomInternalHooksValidator);
 	federationQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), FEDERATION_PROCESSING_CONCURRENCY);
 	cancelSettingsObserver = rocketSettingsAdapter.onFederationEnabledStatusChanged(
-		federationBridge.onFederationAvailabilityChanged.bind(federationBridge),
+		onFederationEnabledStatusChanged.bind(onFederationEnabledStatusChanged),
+	);
+	await rocketNotificationAdapter.subscribeToUserTypingEventsOnFederatedRooms(
+		rocketNotificationAdapter.broadcastUserTypingOnRoom.bind(rocketNotificationAdapter),
 	);
 	if (!rocketSettingsAdapter.isFederationEnabled()) {
 		return;
 	}
+	FederationFactory.setupActions(federationRoomServiceSender, federationMessageServiceSender);
 	await federationBridge.start();
 	federationBridge.logFederationStartupInfo('Running Federation V2');
-	require('./infrastructure/rocket-chat/slash-commands');
+	await import('./infrastructure/rocket-chat/slash-commands');
 };
 
 const updateServiceSenderInstance = (federationRoomServiceSenderInstance: FederationRoomServiceSender) => {
@@ -88,7 +146,7 @@ const updateServiceSenderInstance = (federationRoomServiceSenderInstance: Federa
 
 export const stopFederation = async (federationRoomServiceSenderInstance: FederationRoomServiceSender): Promise<void> => {
 	updateServiceSenderInstance(federationRoomServiceSenderInstance);
-	FederationFactory.removeListeners();
+	FederationFactory.removeCEListeners();
 	await federationBridge.stop();
 	cancelSettingsObserver();
 };

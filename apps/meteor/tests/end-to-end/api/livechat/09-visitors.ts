@@ -554,6 +554,39 @@ describe('LIVECHAT - visitors', function () {
 				.then(() => done())
 				.catch(done);
 		});
+
+		it('should return a list of chats when filtered by ', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => Promise.all([createLivechatRoom(createdVisitor.token), createdVisitor]))
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor]) => Promise.all([createAgent(), room, visitor]))
+				.then(([agent, room, visitor]: [ILivechatAgent, IOmnichannelRoom, ILivechatVisitor]) => {
+					return Promise.all([room, visitor, takeInquiry(room._id, agent._id)]);
+				})
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor, any]) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?source=api`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							console.log(res.body);
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.length.of.at.least(1);
+							expect(res.body.history[0]).to.have.property('_id');
+							expect(res.body.history[0]).to.have.property('name');
+							expect(res.body.history[0]).to.have.property('createdAt');
+							expect(res.body.history[0]).to.have.property('endedAt');
+							expect(res.body.history[0]).to.have.property('status');
+							expect(res.body.history[0]).to.have.property('visitor');
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
 	});
 
 	describe('livechat/visitor.status', () => {
@@ -793,8 +826,47 @@ describe('LIVECHAT - visitors', function () {
 			expect(res.body.room.v._id).to.equal(visitor2._id);
 		});
 	});
-});
+	describe('livechat/visitors.search', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			const res = await request.get(api(`livechat/visitors.search?text=nel`)).set(credentials).send();
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if term is not on query params', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			const res = await request.get(api(`livechat/visitors.search`)).set(credentials).send();
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should not fail when term is an evil regex string', async () => {
+			const res = await request.get(api(`livechat/visitors.search?term=^((ab)*)+$`)).set(credentials).send();
+			expect(res.body).to.have.property('success', true);
+		});
+		it('should return a list of visitors when term is a valid string', async () => {
+			const visitor = await createVisitor();
 
-// TODO: Missing tests for the following endpoints:
-// - /v1/livechat/visitor.status
-// - /v1/livechat/visitor.callStatus
+			const res = await request
+				.get(api(`livechat/visitors.search?term=${visitor.name}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.visitors).to.be.an('array');
+			expect(res.body.visitors).to.have.lengthOf.greaterThan(0);
+			expect(res.body.visitors[0]).to.have.property('_id', visitor._id);
+			expect(res.body.visitors[0]).to.have.property('name', visitor.name);
+			expect(res.body.visitors[0]).to.have.property('username', visitor.username);
+			expect(res.body.visitors[0]).to.have.property('visitorEmails');
+			expect(res.body.visitors[0]).to.have.property('phone');
+		});
+		it('should return a list of visitors when term is an empty string', async () => {
+			const res = await request.get(api(`livechat/visitors.search?term=`)).set(credentials).send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.visitors).to.be.an('array');
+			expect(res.body.visitors).to.have.lengthOf.greaterThan(0);
+			expect(res.body.visitors[0]).to.have.property('_id');
+			expect(res.body.visitors[0]).to.have.property('username');
+			expect(res.body.visitors[0]).to.have.property('name');
+			expect(res.body.visitors[0]).to.have.property('phone');
+			expect(res.body.visitors[0]).to.have.property('visitorEmails');
+		});
+	});
+});

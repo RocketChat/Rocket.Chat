@@ -14,6 +14,7 @@ Meteor.startup(function () {
 		section: 'AutoLinker',
 		public: true,
 		i18nLabel: 'Enabled',
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 
 	settingsRegistry.add('AutoLinker_StripPrefix', false, {
@@ -23,6 +24,7 @@ Meteor.startup(function () {
 		public: true,
 		i18nDescription: 'AutoLinker_StripPrefix_Description',
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	settingsRegistry.add('AutoLinker_Urls_Scheme', true, {
 		type: 'boolean',
@@ -30,6 +32,7 @@ Meteor.startup(function () {
 		section: 'AutoLinker',
 		public: true,
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	settingsRegistry.add('AutoLinker_Urls_www', true, {
 		type: 'boolean',
@@ -37,6 +40,7 @@ Meteor.startup(function () {
 		section: 'AutoLinker',
 		public: true,
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	settingsRegistry.add('AutoLinker_Urls_TLD', true, {
 		type: 'boolean',
@@ -44,6 +48,7 @@ Meteor.startup(function () {
 		section: 'AutoLinker',
 		public: true,
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	settingsRegistry.add('AutoLinker_UrlsRegExp', '(://|www\\.).+', {
 		type: 'string',
@@ -51,6 +56,7 @@ Meteor.startup(function () {
 		section: 'AutoLinker',
 		public: true,
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	settingsRegistry.add('AutoLinker_Email', true, {
 		type: 'boolean',
@@ -58,6 +64,7 @@ Meteor.startup(function () {
 		section: 'AutoLinker',
 		public: true,
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	settingsRegistry.add('AutoLinker_Phone', true, {
 		type: 'boolean',
@@ -66,5 +73,6 @@ Meteor.startup(function () {
 		public: true,
 		i18nDescription: 'AutoLinker_Phone_Description',
 		enableQuery,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 });

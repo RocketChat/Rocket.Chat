@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		return Mailer.sendMail(from, subject, body, dryrun, query);
+		return Mailer.sendMail({ from, subject, body, dryrun, query });
 	},
 });
 

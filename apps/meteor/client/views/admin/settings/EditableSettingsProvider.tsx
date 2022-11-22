@@ -181,7 +181,9 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		Tracker.flush();
 	});
 
-	const isEnterprise = useIsEnterprise();
+	const { data } = useIsEnterprise();
+
+	const isEnterprise = data?.isEnterprise ?? false;
 
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({
