@@ -41,8 +41,11 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 			return [];
 		}
 
+		const direction = sortDirection === 'asc' ? 1 : -1;
+
 		return rooms.sort((a, b) =>
-			a[sortBy] && b[sortBy] ? a[sortBy]?.localeCompare(b[sortBy] ?? '') ?? 1 * (sortDirection === 'asc' ? 1 : -1) : 1,
+			// eslint-disable-next-line no-nested-ternary
+			a[sortBy] && b[sortBy] ? (a[sortBy]?.localeCompare(b[sortBy] ?? '') ?? 1) * direction : direction,
 		);
 	}, [rooms, sortBy, sortDirection]);
 
