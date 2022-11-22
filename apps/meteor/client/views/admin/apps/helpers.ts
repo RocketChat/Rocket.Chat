@@ -99,6 +99,15 @@ export const handleAPIError = (error: unknown): void => {
 	}
 };
 
+export const warnAppInstall = (appName: string, status: AppStatus): void => {
+	if (appErroredStatuses.includes(status)) {
+		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
+		return;
+	}
+
+	dispatchToastMessage({ type: 'success', message: `${appName} installed` });
+};
+
 export const warnEnableDisableApp = (appName: string, status: AppStatus, type: string): void => {
 	if (appErroredStatuses.includes(status)) {
 		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
