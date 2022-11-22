@@ -2581,7 +2581,7 @@
   "User": "Uzanto",
   "User__username__is_now_a_leader_of__room_name_": "Uzanto __username__ estas nun estro de __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Uzanto __username__ nun estas moderanto de __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Uzanto __username__ estas nun posedanto de __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Uzanto __username__ estas nun posedanto de __room_name__",
   "User__username__removed_from__room_name__leaders": "Uzanto __username__ forigita de __room_name__ gvidantoj",
   "User__username__removed_from__room_name__moderators": "Uzanto __username__ forigita de __room_name__-moderantoj",
   "User__username__removed_from__room_name__owners": "Uzanto __username__ forigita de __room_name__-posedantoj",

@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type { FindCursor, UpdateResult, AggregationCursor, Document } from 'mongodb';
 
+import type { FindPaginated } from '..';
 import type { IBaseModel } from './IBaseModel';
 
 type Period = {
@@ -72,6 +73,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		served: any;
 		onlyCount?: boolean;
 		options?: any;
+		source?: string;
 	}): any;
 
 	findRoomsWithCriteria(params: {
@@ -79,16 +81,16 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		roomName: any;
 		departmentId: any;
 		open: any;
-		served: any;
+		served?: any;
 		createdAt: any;
 		closedAt: any;
 		tags: any;
 		customFields: any;
-		visitorId: any;
-		roomIds: any;
+		visitorId?: any;
+		roomIds?: any;
 		onhold: any;
 		options?: any;
-	}): any;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
 
 	getOnHoldConversationsBetweenDate(from: any, to: any, departmentId: any): any;
 
@@ -105,4 +107,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	unsetAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
 
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
+
+	findAvailableSources(): AggregationCursor<Document>;
 }

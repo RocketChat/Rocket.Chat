@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ComponentProps, FC } from 'react';
 import React from 'react';
 
@@ -11,16 +10,17 @@ const HeaderLink: FC<ComponentProps<typeof Box>> = (props) => (
 		withTruncatedText
 		className={[
 			css`
-				color: ${colors.n700} !important;
+				color: ${Palette.text['font-hint']} !important;
+				display: flex;
 				&:hover,
 				&:focus {
-					color: ${colors.n800} !important;
+					color: ${Palette.text['font-default']} !important;
 				}
 				&:visited {
-					color: ${colors.n800};
+					color: ${Palette.text['font-default']};
 				}
 			`,
-		].filter(Boolean)}
+		]}
 	/>
 );
 
