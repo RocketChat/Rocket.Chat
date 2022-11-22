@@ -256,7 +256,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await page2.close();
 				});
 			});
-			
+
 			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				const createdGroup = faker.datatype.uuid();
 				test('expect to create a group inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({

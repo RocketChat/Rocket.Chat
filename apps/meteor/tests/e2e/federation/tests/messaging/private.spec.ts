@@ -149,7 +149,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					await pageForServer2.close();
 					await page2.close();
 				});
-				
+
 				test('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);

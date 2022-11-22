@@ -256,7 +256,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 					await page2.close();
 				});
 			});
-			
+
 			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				const createdChannel = faker.datatype.uuid();
 
@@ -1068,7 +1068,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await pageForServer2.close();
 			});
 		});
-		
+
 		test.describe('Removing users from room', () => {
 			test('expect to remove the invitee from the room', async ({ browser, page, apiServer2 }) => {
 				const pageForServer2 = await browser.newPage();
