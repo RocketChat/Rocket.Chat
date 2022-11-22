@@ -45,8 +45,8 @@ class ExternalQueue {
 						};
 					}
 				}
-			} catch (e) {
-				SystemLogger.error('Error requesting agent from external queue.', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error requesting agent from external queue.', err });
 				break;
 			}
 		}
