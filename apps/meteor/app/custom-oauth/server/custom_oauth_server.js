@@ -349,7 +349,8 @@ export class CustomOAuth {
 					user.services &&
 					user.services[serviceName] &&
 					user.services[serviceName].id === serviceData.id &&
-					user.name === serviceData.name
+					user.name === serviceData.name &&
+					user.email === serviceData.email
 				) {
 					return;
 				}
