@@ -11,7 +11,7 @@ import { Options, parse, Root } from '@rocket.chat/message-parser';
 
 import { isParsedMessage } from './isParsedMessage';
 
-type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
+type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 
