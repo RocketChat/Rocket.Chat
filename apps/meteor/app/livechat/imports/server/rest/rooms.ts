@@ -1,4 +1,5 @@
 import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
@@ -69,6 +70,18 @@ API.v1.addRoute(
 					options: { offset, count, sort, fields },
 				}),
 			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/rooms/filters',
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		async get() {
+			return API.v1.success({
+				filters: (await LivechatRooms.findAvailableSources().toArray())[0].fullTypes,
+			});
 		},
 	},
 );
