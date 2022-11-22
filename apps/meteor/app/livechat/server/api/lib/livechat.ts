@@ -2,17 +2,25 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
+import type {
+	ILivechatAgent,
+	ILivechatDepartment,
+	ILivechatTrigger,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	OmnichannelSourceType,
+} from '@rocket.chat/core-typings';
 
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department, skipSettingCheck = false, skipFallbackCheck = false) {
+export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): boolean {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
-async function findTriggers() {
+async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
 	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
 		_id,
@@ -22,7 +30,8 @@ async function findTriggers() {
 	}));
 }
 
-export function findDepartments(businessUnit) {
+export function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
+	// TODO: check this function usage
 	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
 		_id: 1,
 		name: 1,
@@ -30,7 +39,7 @@ export function findDepartments(businessUnit) {
 		showOnOfflineForm: 1,
 	})
 		.fetch()
-		.map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
+		.map(({ _id, name, showOnRegistration, showOnOfflineForm }: ILivechatDepartment) => ({
 			_id,
 			name,
 			showOnRegistration,
@@ -38,7 +47,7 @@ export function findDepartments(businessUnit) {
 		}));
 }
 
-export function findGuest(token) {
+export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	return LivechatVisitors.getVisitorByToken(token, {
 		projection: {
 			name: 1,
@@ -50,7 +59,7 @@ export function findGuest(token) {
 	});
 }
 
-export function findRoom(token, rid) {
+export function findRoom(token: string, rid?: string): IOmnichannelRoom {
 	const fields = {
 		t: 1,
 		departmentId: 1,
@@ -67,7 +76,7 @@ export function findRoom(token, rid) {
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export function findOpenRoom(token, departmentId) {
+export function findOpenRoom(token: string, departmentId?: string): IOmnichannelRoom | undefined {
 	const options = {
 		fields: {
 			departmentId: 1,
@@ -84,9 +93,22 @@ export function findOpenRoom(token, departmentId) {
 		return rooms[0];
 	}
 }
-
-export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
-	const token = guest && guest.token;
+export function getRoom({
+	guest,
+	rid,
+	roomInfo,
+	agent,
+	extraParams,
+}: {
+	guest: ILivechatVisitor;
+	rid?: string;
+	roomInfo?: {
+		source?: { type: OmnichannelSourceType; id?: string; alias?: string; label?: string; sidebarIcon?: string; defaultIcon?: string };
+	};
+	agent?: { agentId?: string; username?: string };
+	extraParams?: Record<string, any>;
+}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
+	const token = guest?.token;
 
 	const message = {
 		_id: Random.id(),
@@ -99,16 +121,20 @@ export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export function findAgent(agentId) {
+export function findAgent(agentId: string): void | { hiddenInfo: true } | ILivechatAgent {
 	return normalizeAgent(agentId);
 }
 
-export function normalizeHttpHeaderData(headers = {}) {
+export function normalizeHttpHeaderData(headers: Record<string, string | string[] | undefined> = {}): {
+	httpHeaders: Record<string, string | string[] | undefined>;
+} {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export async function settings({ businessUnit = '' } = {}) {
-	const initSettings = Livechat.getInitSettings();
+
+export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
+	// Putting this ugly conversion while we type the livechat service
+	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
 	const triggers = await findTriggers();
 	const departments = findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
@@ -183,10 +209,11 @@ export async function settings({ businessUnit = '' } = {}) {
 	};
 }
 
-export async function getExtraConfigInfo(room) {
+export async function getExtraConfigInfo(room: IOmnichannelRoom): Promise<any> {
 	return callbacks.run('livechat.onLoadConfigApi', { room });
 }
 
-export function onCheckRoomParams(params) {
+// TODO: please forgive me for this. Still finding the good types for these callbacks
+export function onCheckRoomParams(params: any): any {
 	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

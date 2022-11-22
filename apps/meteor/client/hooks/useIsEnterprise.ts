@@ -1,8 +1,12 @@
+import { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
-export const useIsEnterprise = (): boolean => {
+export const useIsEnterprise = (): UseQueryResult<OperationResult<'GET', '/v1/licenses.isEnterprise'>> => {
 	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
-	const { data } = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition(), { keepPreviousData: true });
-	return Boolean(data?.isEnterprise);
+	return useQuery(['licenses', 'isEnterprise'], () => isEnterpriseEdition(), {
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+		staleTime: Infinity,
+	});
 };
