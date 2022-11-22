@@ -1,22 +1,15 @@
 import { IMessage, isEditedMessage, ITranslatedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
-import { MessageStatusIndicator, MessageStatusIndicatorItem, MessageStatusIndicatorText } from '@rocket.chat/fuselage';
+import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import {
-	useMessageDateFormatter,
-	useShowStarred,
-	useShowTranslated,
-	useShowFollowing,
-	useTranslateProvider,
-} from '../contexts/MessageListContext';
+import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from '../contexts/MessageListContext';
 
 export const MessageIndicators: FC<{
 	message: IMessage & Partial<ITranslatedMessage>;
 }> = ({ message }) => {
 	const t = useTranslation();
-	const translated = useShowTranslated({ message });
-	const translateProvider = useTranslateProvider({ message });
+	const translated = useShowTranslated(message);
 	const starred = useShowStarred({ message });
 	const following = useShowFollowing({ message });
 
@@ -29,11 +22,7 @@ export const MessageIndicators: FC<{
 
 	return (
 		<MessageStatusIndicator>
-			{translated && (
-				<MessageStatusIndicatorText>
-					<MessageStatusIndicatorItem name='language' title={t('Translated')} /> {translateProvider}
-				</MessageStatusIndicatorText>
-			)}
+			{translated && <MessageStatusIndicatorItem name='language' title={t('Translated')} />}
 
 			{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
 
