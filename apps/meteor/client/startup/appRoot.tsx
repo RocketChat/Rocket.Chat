@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { render } from 'react-dom';
 
 import AppRoot from '../views/root/AppRoot';
+import PageLoading from '../views/root/PageLoading';
 
 const Root = lazy(() => import('../components/root/ErrorBoundary'));
 const createContainer = (): Element => {
@@ -19,8 +20,10 @@ const createContainer = (): Element => {
 const container = createContainer();
 render(
 	(window as any).__BUGSNAG_KEY__ ? (
-		<Suspense fallback={null}>
-			<Root />
+		<Suspense fallback={<PageLoading />}>
+			<Root>
+				<AppRoot />
+			</Root>
 		</Suspense>
 	) : (
 		<AppRoot />
