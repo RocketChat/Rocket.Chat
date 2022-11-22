@@ -116,23 +116,27 @@ const VideoConferenceBlock = ({
               (data.users.length ? (
                 <>
                   <VideoConfMessageUserStack>
-                    {data.users.map(({ username }, index) =>
-                      index <= MAX_USERS ? (
+                    {data.users.map(({ username }, index) => {
+                      if (index + 1 > MAX_USERS) {
+                        return <></>;
+                      }
+
+                      return (
                         <Avatar
                           size='x28'
                           key={index}
                           data-tooltip={username}
                           url={getUserAvatarPath(username as string)}
                         />
-                      ) : (
-                        <></>
-                      )
-                    )}
+                      );
+                    })}
                   </VideoConfMessageUserStack>
                   <VideoConfMessageFooterText>
                     {data.users.length > MAX_USERS
-                      ? `+ ${data.users.length - MAX_USERS} ${t('Joined')}`
-                      : t('Joined')}
+                      ? t('__usersCount__member_joined', {
+                          usersCount: data.users.length - MAX_USERS,
+                        })
+                      : t('joined')}
                   </VideoConfMessageFooterText>
                 </>
               ) : (
@@ -181,25 +185,33 @@ const VideoConferenceBlock = ({
           <VideoConfMessageButton primary onClick={joinHandler}>
             {t('Join')}
           </VideoConfMessageButton>
-          <VideoConfMessageUserStack>
-            {data.users.map(({ username }, index) =>
-              index <= MAX_USERS ? (
-                <Avatar
-                  size='x28'
-                  key={index}
-                  data-tooltip={username}
-                  url={getUserAvatarPath(username as string)}
-                />
-              ) : (
-                <></>
-              )
-            )}
-          </VideoConfMessageUserStack>
-          <VideoConfMessageFooterText>
-            {data.users.length > MAX_USERS
-              ? `+ ${data.users.length - MAX_USERS} ${t('Joined')}`
-              : t('Joined')}
-          </VideoConfMessageFooterText>
+          {data.users.length && (
+            <>
+              <VideoConfMessageUserStack>
+                {data.users.map(({ username }, index) => {
+                  if (index + 1 > MAX_USERS) {
+                    return <></>;
+                  }
+
+                  return (
+                    <Avatar
+                      size='x28'
+                      key={index}
+                      data-tooltip={username}
+                      url={getUserAvatarPath(username as string)}
+                    />
+                  );
+                })}
+              </VideoConfMessageUserStack>
+              <VideoConfMessageFooterText>
+                {data.users.length > MAX_USERS
+                  ? t('__usersCount__member_joined', {
+                      usersCount: data.users.length - MAX_USERS,
+                    })
+                  : t('joined')}
+              </VideoConfMessageFooterText>
+            </>
+          )}
         </VideoConfMessageFooter>
       </VideoConfMessage>
     );
