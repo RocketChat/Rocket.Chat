@@ -162,7 +162,7 @@ describe('LIVECHAT - Integrations', function () {
 			it('should return true if webhook test went good', async () => {
 				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/200');
 				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(200);
-				expect(response.body).to.be.true;
+				expect(response.body.success).to.be.true;
 			});
 			it('should fail if webhook test went bad', async () => {
 				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/400');
