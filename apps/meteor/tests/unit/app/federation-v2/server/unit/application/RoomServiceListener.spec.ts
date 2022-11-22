@@ -513,7 +513,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.addUserToRoom.called).to.be.false;
 		});
 
-		it('should add the user from room if its NOT a LEAVE event', async () => {
+		it('should add the user in room if its NOT a LEAVE event', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 			await service.onChangeRoomMembership({
@@ -531,6 +531,42 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
 			expect(bridge.joinRoom.called).to.be.false;
 			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+		});
+
+		it('should join the room using the bridge if its NOT a leave event AND the invitee is from the proxy home server', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
+		});
+
+		it('should NOT join the room using the bridge if its NOT a leave event AND the invitee is NOT from the proxy home server', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+			expect(bridge.joinRoom.called).to.be.false;
 		});
 
 		describe('User avatar changed event', () => {
