@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "உங்களுடன் செய்தி அனுப்ப முடியாது",
   "CAS_autoclose": "புகுபதிகை மேல்மீட்பு",
   "CAS_base_url": "SSO அடிப்படை URL",
-  "CAS_base_url_Description": "உங்கள் வெளிப்புற SSO சேவையின் அடிப்படை URL எ.கா .: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "உங்கள் வெளிப்புற SSO சேவையின் அடிப்படை URL எ.கா .: https: //sso.example.undef/sso",
   "CAS_button_color": "பொத்தானை பின்னணி நிறம் உள்நுழைய",
   "CAS_button_label_color": "தேதி பட்டன் உரை வண்ணம்",
   "CAS_button_label_text": "உள்நுழை பட்டன் லேபிள்",

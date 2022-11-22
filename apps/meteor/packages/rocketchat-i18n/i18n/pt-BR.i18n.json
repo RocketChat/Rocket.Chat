@@ -757,7 +757,7 @@
   "Cannot_disable_while_on_call": "Não é possível alterar o status durante chamadas",
   "CAS_autoclose": "Fechar a janela de login automaticamente",
   "CAS_base_url": "URL Base SSO",
-  "CAS_base_url_Description": "O URL base do seu serviço SSO externo, por exemplo: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "O URL base do seu serviço SSO externo, por exemplo: https: //sso.example.undef/sso",
   "CAS_button_color": "Cor de fundo do botão de login",
   "CAS_button_label_color": "Cor de texto do botão de login",
   "CAS_button_label_text": "Nome do botão de login",

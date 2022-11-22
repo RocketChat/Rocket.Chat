@@ -820,7 +820,7 @@
   "CAS_Description": "Central Authentication Service allows members to use one set of credentials to sign in to multiple sites over multiple protocols.",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO Base URL",
-  "CAS_base_url_Description": "The base URL of your external SSO service e.g: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "The base URL of your external SSO service e.g: https://sso.example.undef/sso",
   "CAS_button_color": "Login Button Background Color",
   "CAS_button_label_color": "Login Button Text Color",
   "CAS_button_label_text": "Login Button Label",

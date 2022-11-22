@@ -409,7 +409,7 @@
   "Cannot_open_conversation_with_yourself": "Methu â Neges Uniongyrchol gyda chi",
   "CAS_autoclose": "Autoclose Mewngofnodi Popup",
   "CAS_base_url": "URL Sylfaen SSO",
-  "CAS_base_url_Description": "URL sylfaenol eich gwasanaeth SSO allanol e.e.: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL sylfaenol eich gwasanaeth SSO allanol e.e.: https: //sso.example.undef/sso",
   "CAS_button_color": "Botwm Mewngofnodi Lliw Cefndir",
   "CAS_button_label_color": "Botwm Mewngofnodi Lliw Testun",
   "CAS_button_label_text": "Label Botwm Mewngofnodi",

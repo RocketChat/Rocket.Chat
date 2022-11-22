@@ -425,7 +425,7 @@
   "Cannot_open_conversation_with_yourself": "ບໍ່ສາມາດສົ່ງຂໍ້ຄວາມໂດຍກົງກັບຕົວທ່ານເອງ",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO ຖານ URL",
-  "CAS_base_url_Description": "URL ຖານຂອງບໍລິການ SSO ພາຍນອກຂອງທ່ານເຊັ່ນ: https: //ssoexample.undef/sso/",
+  "CAS_base_url_Description": "URL ຖານຂອງບໍລິການ SSO ພາຍນອກຂອງທ່ານເຊັ່ນ: https: //ssoexample.undef/sso",
   "CAS_button_color": "ເຂົ້າສູ່ລະບົບປຸ່ມສີພື້ນຫລັງ",
   "CAS_button_label_color": "ປຸ່ມເຂົ້າສູ່ລະບົບປຸ່ມສີຂຽວ",
   "CAS_button_label_text": "Login Button Label",

@@ -730,7 +730,7 @@
   "Cannot_share_your_location": "No se puede compartir tu ubicación...",
   "CAS_autoclose": "Ventana emergente de cierre automático de sesión",
   "CAS_base_url": "URL base de SSO",
-  "CAS_base_url_Description": "URL base de su servicio de SSO externo; por ejemplo, https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL base de su servicio de SSO externo; por ejemplo, https://sso.example.undef/sso",
   "CAS_button_color": "Color de fondo del botón de inicio de sesión",
   "CAS_button_label_color": "Color de texto del botón de inicio de sesión",
   "CAS_button_label_text": "Etiqueta del botón de inicio de sesión",

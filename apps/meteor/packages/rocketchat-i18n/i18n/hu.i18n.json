@@ -642,7 +642,7 @@
   "Cannot_share_your_location": "Nem oszthatja meg a tartózkodási helyét...",
   "CAS_autoclose": "Bejelentkezési felugró ablak automatikus bezárása",
   "CAS_base_url": "SSO alap URL",
-  "CAS_base_url_Description": "A külső SSO szolgáltatás alap URL-je, például: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "A külső SSO szolgáltatás alap URL-je, például: https://sso.example.undef/sso",
   "CAS_button_color": "Bejelentkezés gomb háttérszíne",
   "CAS_button_label_color": "Bejelentkezés gomb szövegszíne",
   "CAS_button_label_text": "Bejelentkezés gomb felirata",

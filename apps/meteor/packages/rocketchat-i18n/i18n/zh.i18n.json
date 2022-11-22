@@ -645,7 +645,7 @@
   "Cannot_share_your_location": "不能分享您的位置…",
   "CAS_autoclose": "自动关闭登录窗口",
   "CAS_base_url": "SSO 基本 URL",
-  "CAS_base_url_Description": "外部 SSO 服务的基本 URL，例如：https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "外部 SSO 服务的基本 URL，例如：https://sso.example.undef/sso",
   "CAS_button_color": "登录按钮背景颜色",
   "CAS_button_label_color": "登录按钮文字颜色",
   "CAS_button_label_text": "登录按钮标签",

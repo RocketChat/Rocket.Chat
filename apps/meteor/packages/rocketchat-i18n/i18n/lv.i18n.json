@@ -418,7 +418,7 @@
   "Cannot_open_conversation_with_yourself": "Nevar nosūtīt ziņojumu sev",
   "CAS_autoclose": "Automātiski aizvērt pieteikšanās uznirstošo logu",
   "CAS_base_url": "SSO pamata URL",
-  "CAS_base_url_Description": "Jūsu ārējā SSO pakalpojuma bāzes URL, piem.: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Jūsu ārējā SSO pakalpojuma bāzes URL, piem.: https: //sso.example.undef/sso",
   "CAS_button_color": "Pieteikšanās pogas fona krāsa",
   "CAS_button_label_color": "Pieteikšanās pogas teksta krāsa",
   "CAS_button_label_text": "Pieteikšanās pogas marķējums",

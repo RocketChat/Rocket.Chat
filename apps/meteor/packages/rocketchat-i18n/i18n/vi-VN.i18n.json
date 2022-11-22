@@ -505,7 +505,7 @@
   "Cannot_open_conversation_with_yourself": "Không thể tự nhắn tin với chính mình",
   "CAS_autoclose": "Tự động đăng nhập Đăng nhập",
   "CAS_base_url": "URL cơ sở của SSO",
-  "CAS_base_url_Description": "URL cơ sở của dịch vụ SSO bên ngoài của bạn, ví dụ: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL cơ sở của dịch vụ SSO bên ngoài của bạn, ví dụ: https: //sso.example.undef/sso",
   "CAS_button_color": "Màu nền nút đăng nhập",
   "CAS_button_label_color": "Màu văn bản của nút đăng nhập",
   "CAS_button_label_text": "Nhãn Nút Đăng nhập",

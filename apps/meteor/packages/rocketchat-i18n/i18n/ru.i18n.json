@@ -807,7 +807,7 @@
   "Cannot_disable_while_on_call": "Нельзя изменить статус во время звонков",
   "CAS_autoclose": "Автозакрытие всплывающего окна авторизации",
   "CAS_base_url": "SSO базовый URL",
-  "CAS_base_url_Description": "Базовый URL вашего внешнего сервиса SSO. Например: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "Базовый URL вашего внешнего сервиса SSO. Например: https://sso.example.undef/sso",
   "CAS_button_color": "Цвет фона кнопки входа",
   "CAS_button_label_color": "Цвет текста кнопки входа",
   "CAS_button_label_text": "Текст кнопки входа",

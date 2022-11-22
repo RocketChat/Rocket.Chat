@@ -425,7 +425,7 @@
   "Cannot_open_conversation_with_yourself": "Не магу прамое паведамленне з самім сабой",
   "CAS_autoclose": "Autoclose Увайсці Popup",
   "CAS_base_url": "URL SSO Base",
-  "CAS_base_url_Description": "Базавы URL вашай знешняй службы адзінага ўваходу напрыклад: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Базавы URL вашай знешняй службы адзінага ўваходу напрыклад: https: //sso.example.undef/sso",
   "CAS_button_color": "Увайсці Кнопка Колер фону",
   "CAS_button_label_color": "Увайсці Кнопка Колер тэксту",
   "CAS_button_label_text": "Увайсці Кнопка Цэтлік",

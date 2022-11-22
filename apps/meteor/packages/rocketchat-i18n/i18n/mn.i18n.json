@@ -408,7 +408,7 @@
   "Cannot_open_conversation_with_yourself": "Өөрийгөө Шуудан илгээж чадахгүй байна",
   "CAS_autoclose": "Autoclose Login Login",
   "CAS_base_url": "SSO үндсэн URL",
-  "CAS_base_url_Description": "Таны гадаад SSO үйлчилгээний үндсэн URL жишээ нь: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Таны гадаад SSO үйлчилгээний үндсэн URL жишээ нь: https: //sso.example.undef/sso",
   "CAS_button_color": "Нэвтрэх Түлхүүр үгний өнгө",
   "CAS_button_label_color": "Нэвтрэх товч Текст Өнгө",
   "CAS_button_label_text": "Нэвтрэх товчны шошго",

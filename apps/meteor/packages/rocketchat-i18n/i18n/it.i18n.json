@@ -435,7 +435,7 @@
   "Cannot_open_conversation_with_yourself": "Impossibile aprire una conversazione con se stessi",
   "CAS_autoclose": "Chiudi automaticamente il popup di login",
   "CAS_base_url": "SSO Base URL",
-  "CAS_base_url_Description": "La base URL del tuo servizio esterno SSO es: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "La base URL del tuo servizio esterno SSO es: https://sso.example.undef/sso",
   "CAS_button_color": "Colore di sfondo del pulsante di login",
   "CAS_button_label_color": "Colore del testo del pulsante di login",
   "CAS_button_label_text": "Etichetta del pulsante di login",

@@ -466,7 +466,7 @@
   "Cannot_open_conversation_with_yourself": "Nije moguće izravno poručiti sa sobom",
   "CAS_autoclose": "Automatski zatvori prijavni prozor",
   "CAS_base_url": "SSO osnovni URL",
-  "CAS_base_url_Description": "Osnovni URL vaše vanjske SSO usluge, npr. Https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Osnovni URL vaše vanjske SSO usluge, npr. Https: //sso.example.undef/sso",
   "CAS_button_color": "Pozadinska boja gumba za prijavu",
   "CAS_button_label_color": "Boja teksta gumba za prijavu",
   "CAS_button_label_text": "Oznaka gumba za prijavu",

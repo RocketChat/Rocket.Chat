@@ -526,7 +526,7 @@
   "Cannot_open_conversation_with_yourself": "មិនអាចបញ្ជូនសារផ្ទាល់ជាមួយខ្លួនអ្នកបានទេ",
   "CAS_autoclose": "ចូលស្វ័យប្រវត្តិការចូលលេចឡើង",
   "CAS_base_url": "URL មូលដ្ឋានរបស់ SSO",
-  "CAS_base_url_Description": "URL មូលដ្ឋាននៃសេវាកម្ម SSO ខាងក្រៅរបស់អ្នកឧ។ https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "URL មូលដ្ឋាននៃសេវាកម្ម SSO ខាងក្រៅរបស់អ្នកឧ។ https: //sso.example.undef/sso",
   "CAS_button_color": "ពណ៌ផ្ទៃខាងក្រោយចូលចូល",
   "CAS_button_label_color": "ផ្ទាំងចូលប៊ូតុងពណ៌អត្ថបទ",
   "CAS_button_label_text": "ស្លាកប៊ូតុងចូល",

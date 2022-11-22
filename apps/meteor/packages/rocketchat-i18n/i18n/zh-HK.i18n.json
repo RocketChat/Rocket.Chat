@@ -430,7 +430,7 @@
   "Cannot_open_conversation_with_yourself": "不能直接与你自己的消息",
   "CAS_autoclose": "自动关闭登录弹出窗口",
   "CAS_base_url": "SSO基本网址",
-  "CAS_base_url_Description": "您的外部SSO服务的基本网址，例如：https：//sso.example.undef/sso/",
+  "CAS_base_url_Description": "您的外部SSO服务的基本网址，例如：https：//sso.example.undef/sso",
   "CAS_button_color": "登录按钮背景颜色",
   "CAS_button_label_color": "登录按钮文本颜色",
   "CAS_button_label_text": "登录按钮标签",

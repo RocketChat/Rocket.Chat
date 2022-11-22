@@ -472,7 +472,7 @@
   "Cannot_open_conversation_with_yourself": "Kan ikke sende melding til deg selv",
   "CAS_autoclose": "Autoclose Login Popup",
   "CAS_base_url": "SSO Base URL",
-  "CAS_base_url_Description": "Basisadressen til din eksterne SSO-tjeneste, for eksempel: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "Basisadressen til din eksterne SSO-tjeneste, for eksempel: https: //sso.example.undef/sso",
   "CAS_button_color": "Innloggingsknapp Bakgrunnsfarge",
   "CAS_button_label_color": "Innloggingsknapp Tekstfarge",
   "CAS_button_label_text": "Innloggingsknappetikett",

@@ -513,7 +513,7 @@
   "Cannot_open_conversation_with_yourself": "Não é possível fazer uma mensagem directa com a mesma origem",
   "CAS_autoclose": "Saída Automática do registo",
   "CAS_base_url": "URL Base SSO",
-  "CAS_base_url_Description": "O URL base do seu serviço SSO externo, por exemplo: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "O URL base do seu serviço SSO externo, por exemplo: https: //sso.example.undef/sso",
   "CAS_button_color": "Cor de fundo do botão de login",
   "CAS_button_label_color": "Cor de texto do botão de login",
   "CAS_button_label_text": "Nome do botão de registo",

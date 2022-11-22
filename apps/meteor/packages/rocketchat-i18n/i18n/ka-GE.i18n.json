@@ -561,7 +561,7 @@
   "Cannot_open_conversation_with_yourself": "თქვენ ვერ შეძლებთ პირდაპირ მესიჯის გაგზავნას საკუთარ თავთან",
   "CAS_autoclose": "ავტორიზაციის ფანჟრის ავტომატური დახურვა",
   "CAS_base_url": "SSO ბაზის URL",
-  "CAS_base_url_Description": "თქვენი გარე SSO სერვისის ძირითადი URL მაგალითად: https: //sso.example.undef/sso/",
+  "CAS_base_url_Description": "თქვენი გარე SSO სერვისის ძირითადი URL მაგალითად: https: //sso.example.undef/sso",
   "CAS_button_color": "შესვლის ღილაკი ფონის ფერი",
   "CAS_button_label_color": "შესვლის ღილაკი ტექსტის ფერი",
   "CAS_button_label_text": "შესვლის ღილაკის ტექსტი",

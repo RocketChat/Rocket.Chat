@@ -736,7 +736,7 @@
   "Cannot_disable_while_on_call": "Kan status niet wijzigen tijdens gesprekken",
   "CAS_autoclose": "Inlogpop-up automatisch sluiten",
   "CAS_base_url": "SSO-basis-URL",
-  "CAS_base_url_Description": "De basis-URL van uw externe SSO-service, bijvoorbeeld: https://sso.example.undef/sso/",
+  "CAS_base_url_Description": "De basis-URL van uw externe SSO-service, bijvoorbeeld: https://sso.example.undef/sso",
   "CAS_button_color": "Achtergrondkleur inlogknop",
   "CAS_button_label_color": "Tekstkleur inlogknop",
   "CAS_button_label_text": "Label inlogknop",
