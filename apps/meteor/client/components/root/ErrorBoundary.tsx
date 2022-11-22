@@ -1,6 +1,6 @@
 import Bugsnag from '@bugsnag/js';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
-import React, { Fragment } from 'react';
+import React, { Fragment, ReactElement } from 'react';
 
 import pkg from '../../../package.json';
 
@@ -12,5 +12,6 @@ Bugsnag.start({
 	plugins: [new BugsnagPluginReact()],
 });
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type, react/display-name
-export default ({ children }) => <ErrorBoundary>{children}</ErrorBoundary>;
+const BugsnagErrorBoundary = ({ children }: { children: ReactElement }): ReactElement => <ErrorBoundary>{children}</ErrorBoundary>;
+
+export default BugsnagErrorBoundary;
