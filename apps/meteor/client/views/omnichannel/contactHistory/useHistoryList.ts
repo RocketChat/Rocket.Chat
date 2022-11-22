@@ -38,13 +38,11 @@ export const useHistoryList = (
 				count: end + start,
 			});
 			return {
-				items: history.map(
-					(history: Omit<VisitorSearchChatsResult, 'ts'> & { ts: string }): VisitorSearchChatsResult & { _updatedAt: Date } => ({
-						...history,
-						ts: new Date(history.ts),
-						_updatedAt: new Date(history.ts),
-					}),
-				),
+				items: history.map((history: any) => ({
+					...history,
+					ts: new Date(history.ts),
+					_updatedAt: new Date(history.ts),
+				})),
 				itemCount: total,
 			};
 		},
