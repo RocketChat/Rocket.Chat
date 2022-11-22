@@ -11,4 +11,8 @@ export type MessageAttachmentBase = {
 
 	title_link?: string;
 	title_link_download?: boolean;
+
+	translations?: {
+		[language: string]: string;
+	};
 };

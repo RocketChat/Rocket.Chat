@@ -209,7 +209,8 @@ export interface ITranslatedMessage extends IMessage {
 	autoTranslateFetching?: boolean;
 }
 
-export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
+export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage =>
+	'translations' in message || Boolean(message.attachments?.some((attachment) => 'translations' in attachment));
 
 export interface IThreadMainMessage extends IMessage {
 	tcount: number;
