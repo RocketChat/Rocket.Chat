@@ -90,6 +90,10 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 			Rooms.setReactionsInLastMessage(room._id, message);
 		}
 		callbacks.run('setReaction', message._id, reaction);
+		if (!message.reactions[reaction].names) {
+			message.reactions[reaction].names = [];
+		}
+		message.reactions[reaction].names.push(user.name);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
 		isReacted = true;
