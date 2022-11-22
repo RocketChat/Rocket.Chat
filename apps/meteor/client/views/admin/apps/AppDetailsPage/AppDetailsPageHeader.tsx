@@ -47,10 +47,12 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					<Box is='span'> | </Box>
 
-					<Box mi='x16'>{t('Version_version', { version: versioni18nKey(app) })}</Box>
+					<Box mi='x16' marginInlineEnd='x4'>
+						{t('Version_version', { version: versioni18nKey(app) })}
+					</Box>
 
 					{versionIncompatible && (
-						<Box is='span' mi='x16'>
+						<Box is='span' marginInlineEnd='x16' marginBlockStart='x4'>
 							<Tag
 								title={incompatibleStatus?.tooltipText}
 								variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
