@@ -16,6 +16,7 @@ import {
 	makeAgentAvailable,
 	getLivechatRoomInfo,
 	sendMessage,
+	closeRoom,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
@@ -285,6 +286,36 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
+		});
+		it('should only return closed rooms when "open" is set to false', async () => {
+			// Create and close a room
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeRoom(room._id);
+
+			const { body } = await request.get(api('livechat/rooms')).query({ open: false, roomName: room.fname }).set(credentials).expect(200);
+			expect(body.rooms.every((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
+			expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.not.undefined;
+		});
+		it('should only return open rooms when "open" is set to true', async () => {
+			// Create and close a room
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeRoom(room._id);
+
+			const { body } = await request.get(api('livechat/rooms')).query({ open: true, roomName: room.fname }).set(credentials).expect(200);
+			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
+			expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.undefined;
+		});
+		it('should return both closed/open when open param is not passed', async () => {
+			// Create and close a room
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeRoom(room._id);
+
+			const { body } = await request.get(api('livechat/rooms')).set(credentials).expect(200);
+			expect(body.rooms.some((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
+			expect(body.rooms.some((room: IOmnichannelRoom) => room.open)).to.be.true;
 		});
 	});
 
@@ -1400,6 +1431,19 @@ describe('LIVECHAT - rooms', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+
+	describe('livechat/rooms/filters', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/rooms/filters')).set(credentials).expect(403);
+		});
+		it('should return a list of available source filters', async () => {
+			await updatePermission('view-l-room', ['admin']);
+			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
+			expect(response.body).to.have.property('filters').and.to.be.an('array');
+			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;
 		});
 	});
 });

@@ -104,7 +104,7 @@ const UserProvider: FC = ({ children }) => {
 					});
 				}),
 			logout,
-			loginWithService: <T extends LoginService>({ service, clientConfig }: T): (() => Promise<true>) => {
+			loginWithService: <T extends LoginService>({ service, clientConfig = {} }: T): (() => Promise<true>) => {
 				const loginMethods = {
 					'meteor-developer': 'MeteorDeveloperAccount',
 				};

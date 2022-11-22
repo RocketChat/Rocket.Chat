@@ -25,4 +25,16 @@ export class HomeOmnichannel {
 	get btnVerticalBarClose(): Locator {
 		return this.page.locator('[data-qa="VerticalBarActionClose"]');
 	}
+
+	get btnCurrentChats(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-clock"]');
+	}
+
+	get historyItem(): Locator {
+		return this.page.locator('[data-qa="chat-history-item"]').first();
+	}
+
+	get historyMessage(): Locator {
+		return this.page.locator('[data-qa="chat-history-message"]').first();
+	}
 }
