@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { render } from 'react-dom';
 
-import { ErrorBoundary } from '../components/root/ErrorBoundary';
 import AppRoot from '../views/root/AppRoot';
 
+const Root = lazy(() => import('../components/root/ErrorBoundary'));
 const createContainer = (): Element => {
 	const container = document.getElementById('react-root');
 
@@ -18,8 +18,12 @@ const createContainer = (): Element => {
 
 const container = createContainer();
 render(
-	<ErrorBoundary>
+	(window as any).__BUGSNAG_KEY__ ? (
+		<Suspense fallback={null}>
+			<Root />
+		</Suspense>
+	) : (
 		<AppRoot />
-	</ErrorBoundary>,
+	),
 	container,
 );

@@ -3,12 +3,16 @@ import { addScript } from './inject';
 
 const getContent = (): string => `
 
-${ process.env.BUGSNAG_CLIENT ? `window.__BUGSNAG_KEY__ = "${ process.env.BUGSNAG_CLIENT }";\n
+${
+	process.env.BUGSNAG_CLIENT
+		? `window.__BUGSNAG_KEY__ = "${process.env.BUGSNAG_CLIENT}";\n
 window.addEventListener('load', function() {
 	const event = new Event('bugsnag-error-boundary');
 	window.dispatchEvent(event);
 });
-` : '' }
+`
+		: ''
+}
 
 ${process.env.DISABLE_ANIMATION ? 'window.DISABLE_ANIMATION = true;\n' : ''}
 

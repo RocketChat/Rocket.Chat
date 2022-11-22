@@ -1,44 +1,28 @@
-import React, { FC, ReactNode, Fragment, ExoticComponent, useState, useEffect } from 'react';
+import Bugsnag from '@bugsnag/js';
+import BugsnagPluginReact from '@bugsnag/plugin-react';
+import React, { Fragment, useEffect } from 'react';
 
 import pkg from '../../../package.json';
+import AppRoot from '../../views/root/AppRoot';
 
-export const ErrorBoundary: FC = ({ children }) => {
-	const [bugsnagkey, setKey] = useState<string | undefined>(() => (window as any).__BUGSNAG_KEY__);
+const ErrorBoundary = Bugsnag.getPlugin('react')?.createErrorBoundary(React) || Fragment;
 
+Bugsnag.start({
+	apiKey: (window as any).__BUGSNAG_KEY__,
+	appVersion: pkg.version,
+	plugins: [new BugsnagPluginReact()],
+});
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type, react/display-name
+export default () => {
+	console.log('asd');
 	useEffect(() => {
-		const handler = (): void => setKey((window as any).__BUGSNAG_KEY__);
-
-		window.addEventListener('bugsnag-error-boundary', handler);
-
-		return (): void => {
-			window.removeEventListener('bugsnag-error-boundary', handler);
-		};
+		alert('send');
+		Bugsnag.notify(new Error('Test error'));
 	}, []);
-
-	const [Boundary, setBoundary] = useState(() => Fragment);
-	useEffect(() => {
-		(async (): Promise<void> => {
-			if (!bugsnagkey) {
-				setBoundary(Fragment);
-				return;
-			}
-			const Bugsnag = (await import('@bugsnag/js')).default;
-			const BugsnagPluginReact = (await import('@bugsnag/plugin-react')).default;
-			const ErrorBoundary = Bugsnag.getPlugin('react')?.createErrorBoundary(React) || Fragment;
-
-			Bugsnag.start({
-				apiKey: bugsnagkey,
-				appVersion: pkg.version,
-				plugins: [new BugsnagPluginReact()],
-			});
-
-			setBoundary(
-				ErrorBoundary as ExoticComponent<{
-					children?: ReactNode;
-				}>,
-			);
-		})();
-	}, [bugsnagkey]);
-
-	return <Boundary>{children}</Boundary>;
+	return (
+		<ErrorBoundary>
+			<AppRoot />
+		</ErrorBoundary>
+	);
 };
