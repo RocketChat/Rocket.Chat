@@ -50,7 +50,7 @@ const ContactHistoryMessagesVerticalBar = ({
 					p='x24'
 					borderBlockEndWidth='x2'
 					borderBlockEndStyle='solid'
-					borderBlockEndColor='light'
+					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
