@@ -1,4 +1,4 @@
-import { Box, Margins, TextInput, Icon, Throbber, Callout } from '@rocket.chat/fuselage';
+import { Box, Margins, TextInput, Icon, Throbber, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -46,7 +46,7 @@ const ContactHistoryVerticalBar = ({
 					p='x24'
 					borderBlockEndWidth='x2'
 					borderBlockEndStyle='solid'
-					borderBlockEndColor='neutral-200'
+					borderBlockEndColor='light'
 					flexShrink={0}
 				>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
@@ -66,14 +66,17 @@ const ContactHistoryVerticalBar = ({
 					</Box>
 				)}
 				{error && (
-					<Callout mi='x24' type='danger'>
-						{error.toString()}
-					</Callout>
+					<States>
+						<StatesIcon name='warning' variation='danger' />
+						<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+						<StatesSubtitle>{error.toString()}</StatesSubtitle>
+					</States>
 				)}
 				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && (
-					<Box p='x24' color='neutral-600' textAlign='center' width='full'>
-						{t('No_previous_chat_found')}
-					</Box>
+					<States>
+						<StatesIcon name='magnifier' />
+						<StatesTitle>{t('No_results_found')}</StatesTitle>
+					</States>
 				)}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && totalItemCount > 0 && history.length > 0 && (

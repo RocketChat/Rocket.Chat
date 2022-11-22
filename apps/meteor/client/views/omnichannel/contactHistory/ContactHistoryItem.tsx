@@ -8,27 +8,27 @@ import {
 } from '@rocket.chat/fuselage';
 import { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { Dispatch, memo, ReactElement, SetStateAction } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { clickableItem } from '../../../lib/clickableItem';
 
 type ContactHistoryItemProps = {
 	history: VisitorSearchChatsResult;
 	setChatId: Dispatch<SetStateAction<string>>;
 };
 
-function ContactHistoryItem({ history, setChatId }: ContactHistoryItemProps): ReactElement {
+function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItemProps): ReactElement {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const username = history.servedBy?.username;
-	console.log(history);
 	const onClick = (): void => {
 		setChatId(history._id);
 	};
 
 	return (
-		<Message onClick={onClick} data-qa='chat-history-item'>
+		<Box pbs='x16' is={Message} onClick={onClick} data-qa='chat-history-item' {...props}>
 			<Message.LeftContainer>
 				{username && <UserAvatar username={username} className='rcx-message__avatar' size='x36' />}
 			</Message.LeftContainer>
@@ -54,8 +54,8 @@ function ContactHistoryItem({ history, setChatId }: ContactHistoryItemProps): Re
 					</Message.Metrics.Item>
 				</Message.Metrics>
 			</Message.Container>
-		</Message>
+		</Box>
 	);
 }
 
-export default ContactHistoryItem;
+export default memo(clickableItem(ContactHistoryItem));
