@@ -117,7 +117,7 @@ const AppsPageContent = (): ReactElement => {
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.items} />}
+						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 						{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
 						{Boolean(appsResult.value.count) && (
 							<>
