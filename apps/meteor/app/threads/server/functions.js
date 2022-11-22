@@ -76,5 +76,3 @@ export const readThread = ({ userId, rid, tmid }) => {
 
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
 };
-
-export const readAllThreads = (rid, userId) => Subscriptions.removeAllUnreadThreadsByRoomIdAndUserId(rid, userId);
