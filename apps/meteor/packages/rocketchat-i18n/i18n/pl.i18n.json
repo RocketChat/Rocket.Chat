@@ -1744,7 +1744,6 @@
   "Empty_no_agent_selected": "Puste, nie wybrano żadnego agenta",
   "Empty_title": "Pusty tytuł",
   "Use_Legacy_Message_Template": "Użycie starego szablonu wiadomości",
-  "Use_Legacy_Message_Template_alert": "To jest przestarzała funkcja. Może nie działać zgodnie z oczekiwaniami i nie będzie otrzymywać nowych aktualizacji",
   "Enable": "Włącz",
   "Enable_Auto_Away": "Włącz Auto Away",
   "Enable_CSP": "Włącz politykę bezpieczeństwa treści (Content-Security-Policy)",
