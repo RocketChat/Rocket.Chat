@@ -34,6 +34,7 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
+import type { MailerEndpoints } from './v1/mailer';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { CommandsEndpoints } from './v1/commands';
@@ -78,6 +79,7 @@ export interface Endpoints
 		AssetsEndpoints,
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
+		MailerEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
@@ -217,6 +219,9 @@ export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
 export * from './v1/subscriptionsEndpoints';
+export * from './v1/mailer';
+export * from './v1/mailer/MailerParamsPOST';
+export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
 export * from './v1/invites';
 export * from './v1/dm';
@@ -247,3 +252,4 @@ export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/email-inbox';
