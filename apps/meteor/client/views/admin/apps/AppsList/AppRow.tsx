@@ -93,7 +93,7 @@ const AppRow = (props: AppRowProps): ReactElement => {
 
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
 				{canUpdate && <Badge small variant='primary' />}
-				<AppStatus app={props} isAppDetailsPage={false} installed={installed} mis='x4' />
+				<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
 				<Box minWidth='x32'>
 					<AppMenu app={props} isAppDetailsPage={false} mis='x4' />
 				</Box>
