@@ -309,7 +309,7 @@ export class Rooms extends Base {
 	}
 
 	findOneByNonValidatedName(name, options) {
-		const room = this.findOneByName(name, options);
+		const room = this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
 		}
@@ -328,6 +328,21 @@ export class Rooms extends Base {
 
 	findOneByName(name, options) {
 		const query = { name };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByNameOrFname(name, options) {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
 
 		return this.findOne(query, options);
 	}

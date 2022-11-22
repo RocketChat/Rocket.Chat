@@ -11,6 +11,10 @@ export type AppsEndpoints = {
 		GET: () => { externalComponents: IExternalComponent[] };
 	};
 
+	'/apps/incompatibleModal': {
+		GET: (params: { appId: string; appVersion: string; action: string }) => { url: string };
+	};
+
 	'/apps/:id': {
 		GET:
 			| ((params: { marketplace?: 'true' | 'false'; version?: string; appVersion?: string; update?: 'true' | 'false' }) => {
