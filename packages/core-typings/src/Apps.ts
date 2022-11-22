@@ -60,6 +60,8 @@ export type AppPermission = {
 	required?: boolean;
 };
 
+export type PurchaseType = 'buy' | 'subscription';
+
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -82,8 +84,9 @@ export type App = {
 	};
 	categories: string[];
 	version: string;
+	versionIncompatible?: boolean;
 	price: number;
-	purchaseType: string;
+	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
 	iconFileContent: string;
 	installed?: boolean;
