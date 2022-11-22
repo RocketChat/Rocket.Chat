@@ -34,7 +34,7 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 	];
 
 	if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
-		if (importer.instance.importRecord && importer.instance.importRecord.valid) {
+		if (importer.instance.importRecord?.valid) {
 			return { waiting: true };
 		}
 		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
