@@ -119,6 +119,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads = false,
 		alert = false,
 		options: FindOptions<ISubscription> = {},
 	): ReturnType<BaseRaw<ISubscription>['update']> {
@@ -128,6 +129,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update = {
+			...(readThreads && {
+				$unset: {
+					tunread: 1,
+					tunreadUser: 1,
+					tunreadGroup: 1,
+				} as const,
+			}),
 			$set: {
 				open: true,
 				alert,

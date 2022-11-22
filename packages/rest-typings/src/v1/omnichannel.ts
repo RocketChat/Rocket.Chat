@@ -914,6 +914,11 @@ export type LivechatRoomsProps = {
 	onhold?: boolean;
 };
 
+export type VisitorSearchChatsResult = Pick<
+	IOmnichannelRoom,
+	'fname' | 'ts' | 'v' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
+>;
+
 const LivechatRoomsSchema = {
 	type: 'object',
 	properties: {
@@ -2230,6 +2235,7 @@ type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedR
 	searchText?: string;
 	closedChatsOnly?: string;
 	servedChatsOnly?: string;
+	source?: string;
 }>;
 
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
@@ -2256,6 +2262,10 @@ const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 			nullable: true,
 		},
 		servedChatsOnly: {
+			type: 'string',
+			nullable: true,
+		},
+		source: {
 			type: 'string',
 			nullable: true,
 		},
@@ -3010,7 +3020,9 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
 	};
 	'/v1/livechat/visitors.searchChats/room/:roomId/visitor/:visitorId': {
-		GET: (params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams) => PaginatedResult<{ history: IOmnichannelRoom[] }>;
+		GET: (
+			params: GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams,
+		) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
 	};
 	'/v1/livechat/visitors.autocomplete': {
 		GET: (params: GETLivechatVisitorsAutocompleteParams) => {
@@ -3115,6 +3127,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/charts/agents-status': {
 		GET: (params: GETDashboardsAgentStatusParams) => { offline: number; away: number; busy: number; available: number };
+	};
+	'/v1/livechat/rooms/filters': {
+		GET: () => { filters: IOmnichannelRoom['source'][] };
 	};
 } & {
 	// EE
