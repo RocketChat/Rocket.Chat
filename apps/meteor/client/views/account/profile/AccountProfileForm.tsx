@@ -318,7 +318,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							{useMemo(
 								() => (
 									<Field>
-										<Field.Label>{t('Password')}</Field.Label>
+										<Field.Label>{t('New_password')}</Field.Label>
 										<Field.Row>
 											<PasswordInput
 												autoComplete='off'
@@ -360,7 +360,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 					</Grid.Item>
 				</Grid>
 			</Field>
-			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
+			<CustomFieldsForm jsonCustomFields={undefined} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
 	);
 };

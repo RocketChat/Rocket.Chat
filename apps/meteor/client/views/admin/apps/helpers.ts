@@ -86,18 +86,31 @@ const shouldHandleErrorAsWarning = (message: string): boolean => {
 	return warnings.includes(message);
 };
 
-export const handleAPIError = (error: {
-	xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } };
-	message: string;
-}): void => {
-	const message = error.xhr?.responseJSON?.error ?? error.message;
+export const handleAPIError = (error: unknown): void => {
+	if (error instanceof Error) {
+		const { message } = error;
 
-	if (shouldHandleErrorAsWarning(message)) {
-		dispatchToastMessage({ type: 'warning', message });
+		if (shouldHandleErrorAsWarning(message)) {
+			dispatchToastMessage({ type: 'warning', message });
+			return;
+		}
+
+		dispatchToastMessage({ type: 'error', message });
+	}
+};
+
+export const warnEnableDisableApp = (appName: string, status: AppStatus, type: string): void => {
+	if (appErroredStatuses.includes(status)) {
+		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
 		return;
 	}
 
-	dispatchToastMessage({ type: 'error', message });
+	if (type === 'enable') {
+		dispatchToastMessage({ type: 'success', message: `${appName} enabled` });
+		return;
+	}
+
+	dispatchToastMessage({ type: 'success', message: `${appName} disabled` });
 };
 
 export const warnStatusChange = (appName: string, status: AppStatus): void => {

@@ -2678,7 +2678,7 @@
   "User": "Användare",
   "User__username__is_now_a_leader_of__room_name_": "Användare __username__ är nu ledare för __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Användar __username__ är nu en moderator för __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Användar __username__ är nu en ägare av __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Användar __username__ är nu en ägare av __room_name__",
   "User__username__removed_from__room_name__leaders": "Användare __username__ bort från __room_name__ ledare",
   "User__username__removed_from__room_name__moderators": "Användare __username__ togs bort från __room_name__ moderatorer",
   "User__username__removed_from__room_name__owners": "Användar __username__ avlägsnas från __room_name__ ägare",
@@ -2893,5 +2893,14 @@
   "Your_password_is_wrong": "Ditt lösenord är fel!",
   "Your_push_was_sent_to_s_devices": "Din push skickades till %s enheter",
   "Your_server_link": "Din serverlänk",
-  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉"
+  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉",
+  "registration.page.login.errors.wrongCredentials": "Användaren hittades inte eller så är lösenordet felaktigt",
+  "registration.page.registration.waitActivationWarning": "Innan du kan logga in måste ditt konto aktiveras manuellt av en administratör.",
+  "registration.page.resetPassword.sent": "Om det här e-postmeddelandet är registrerat skickar vi instruktioner om hur du återställer ditt lösenord. Om du inte får ett mail inom kort, vänligen kom tillbaka och försök igen.",
+  "registration.component.login": "Logga in",
+  "registration.component.resetPassword": "Återställ lösenord",
+  "registration.component.form.email": "E-post",
+  "registration.component.form.password": "Lösenord",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Skicka"
 }

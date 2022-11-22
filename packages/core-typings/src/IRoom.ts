@@ -263,6 +263,7 @@ export type RoomAdminFieldsType =
 	| 'default'
 	| 'favorite'
 	| 'featured'
+	| 'reactWhenReadOnly'
 	| 'topic'
 	| 'msgs'
 	| 'archived'

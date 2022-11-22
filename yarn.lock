@@ -2001,6 +2001,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eslint/eslintrc@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@eslint/eslintrc@npm:1.3.1"
+  dependencies:
+    ajv: ^6.12.4
+    debug: ^4.3.2
+    espree: ^9.4.0
+    globals: ^13.15.0
+    ignore: ^5.2.0
+    import-fresh: ^3.2.1
+    js-yaml: ^4.1.0
+    minimatch: ^3.1.2
+    strip-json-comments: ^3.1.1
+  checksum: 9844dcc58a44399649926d5a17a2d53d529b80d3e8c3e9d0964ae198bac77ee6bb1cf44940f30cd9c2e300f7568ec82500be42ace6cacefb08aebf9905fe208e
+  languageName: node
+  linkType: hard
+
 "@faker-js/faker@npm:^6.3.1":
   version: 6.3.1
   resolution: "@faker-js/faker@npm:6.3.1"
@@ -2116,6 +2133,17 @@ __metadata:
     uuid: ^8.0.0
     xdg-basedir: ^4.0.0
   checksum: 9c990134014ad83903df4b6bd30d75933cd65b5c9e64aa3535d339f99f159b147264e5423bd2054bb4d9ead55f9a2d7e011fac8c144d47e633a6001a1e480f61
+  languageName: node
+  linkType: hard
+
+"@humanwhocodes/config-array@npm:^0.10.4":
+  version: 0.10.7
+  resolution: "@humanwhocodes/config-array@npm:0.10.7"
+  dependencies:
+    "@humanwhocodes/object-schema": ^1.2.1
+    debug: ^4.1.1
+    minimatch: ^3.0.4
+  checksum: 009d64be8d5bd098ff04e10af79e34f5633245250581fca032fac12a8667b2df8e7d169e69c05bff4d83ea3dd3c7d2d0e05ea9b94d89a7d092e26530caf6f8a3
   languageName: node
   linkType: hard
 
@@ -5465,7 +5493,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": 0.31.21
     eslint: ^8.20.0
     mongodb: ^4.3.1
@@ -5788,7 +5816,7 @@ __metadata:
     "@rocket.chat/css-in-js": 0.31.21
     "@rocket.chat/fuselage": 0.31.21
     "@rocket.chat/fuselage-tokens": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/styled": 0.31.21
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -5928,7 +5956,6 @@ __metadata:
     stylelint: ^14.9.1
     stylelint-order: ^5.0.0
     svg-loader: ^0.0.2
-    ts-loader: ^8.4.0
     typescript: ~4.5.5
     url-loader: ^4.1.1
     webpack: ^4.44.1
@@ -5962,10 +5989,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@npm:0.31.21":
-  version: 0.31.21
-  resolution: "@rocket.chat/message-parser@npm:0.31.21"
-  checksum: 396f69a9b8f24c06f0912c21ec8a447cc8ee67ade323a07accea8d536f827ef66d57a798c9d69591bb0b72ffa90c29749990702b8c3834d822d98afddda7ba1c
+"@rocket.chat/message-parser@npm:next":
+  version: 0.32.0-dev.149
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.149"
+  checksum: ce3e29ec94bf64027bfb09aaf02ea16206f6984dc5eeda1c6d3707b6da1126194e239977ea19d818547c875406be637c661ac62d506f5f06f45885f97e30bcce
   languageName: node
   linkType: hard
 
@@ -6014,7 +6041,7 @@ __metadata:
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": 0.31.21
     "@rocket.chat/memo": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
@@ -6029,6 +6056,7 @@ __metadata:
     "@rocket.chat/ui-kit": 0.31.21
     "@rocket.chat/ui-theming": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
+    "@rocket.chat/web-ui-registration": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/rtm-api": ^6.0.0
     "@storybook/addon-essentials": ~6.5.10
@@ -6160,6 +6188,7 @@ __metadata:
     eslint-config-prettier: ^8.5.0
     eslint-plugin-anti-trojan-source: ^1.1.0
     eslint-plugin-import: ^2.26.0
+    eslint-plugin-playwright: ^0.11.1
     eslint-plugin-prettier: ^4.2.1
     eslint-plugin-react: ^7.30.1
     eslint-plugin-react-hooks: ^4.6.0
@@ -6233,6 +6262,7 @@ __metadata:
     photoswipe: ^4.1.3
     pino: ^7.11.0
     pino-pretty: ^7.6.1
+    playwright-qase-reporter: ^1.2.0-alpha.3
     postcss: ~8.4.14
     postcss-custom-properties: ^11.0.0
     postcss-easy-import: ^3.0.0
@@ -6437,7 +6467,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/ui-kit": 0.31.21
     "@types/jest": ^27.4.1
     ajv: ^8.11.0
@@ -6471,6 +6501,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": 0.31.21
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ^8
@@ -6706,6 +6737,30 @@ __metadata:
     "@rocket.chat/styled": "*"
     react: ^17.0.2
     react-dom: ^17.0.2
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/web-ui-registration@workspace:^, @rocket.chat/web-ui-registration@workspace:packages/web-ui-registration":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/web-ui-registration@workspace:packages/web-ui-registration"
+  dependencies:
+    "@rocket.chat/layout": next
+    "@rocket.chat/ui-contexts": "workspace:^"
+    "@tanstack/react-query": ^4.2.3
+    "@testing-library/react": ^13.3.0
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    react-hook-form: ^7.34.2
+    ts-jest: ^27.1.4
+    typescript: ~4.5.5
+  peerDependencies:
+    "@rocket.chat/layout": "*"
+    "@rocket.chat/ui-contexts": "*"
+    "@tanstack/react-query": "*"
+    react: "*"
+    react-hook-form: "*"
+    react-i18next: "*"
   languageName: unknown
   linkType: soft
 
@@ -8555,18 +8610,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:^4.0.0-beta.1":
-  version: 4.0.10
-  resolution: "@tanstack/query-core@npm:4.0.10"
-  checksum: 581d4506c5edbe91cdb35a2c4fe273aadb51a64ddaf73be63f92088202bda8495a909e286370357740291962149dabb5dd24fe7c048d71c29e702a1c61df5fc4
+"@tanstack/query-core@npm:4.2.3":
+  version: 4.2.3
+  resolution: "@tanstack/query-core@npm:4.2.3"
+  checksum: b37efdc32b1731575eba398eda3b7a4cd3ed25ee1032d5200124c37ab4e58711d310e2e29e9e51284553a7c03c85e55cf8da6833bc3b1e215e0e43e7399ab3ca
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.0.10":
-  version: 4.2.1
-  resolution: "@tanstack/react-query@npm:4.2.1"
+"@tanstack/react-query@npm:^4.0.10, @tanstack/react-query@npm:^4.2.3":
+  version: 4.2.3
+  resolution: "@tanstack/react-query@npm:4.2.3"
   dependencies:
-    "@tanstack/query-core": ^4.0.0-beta.1
+    "@tanstack/query-core": 4.2.3
     "@types/use-sync-external-store": ^0.0.3
     use-sync-external-store: ^1.2.0
   peerDependencies:
@@ -8578,13 +8633,13 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: bbf3a808645c26c649971dc182bb9a7ed7a1d89f6456b60685c6081b8be6ae84ae83b39c7eacb96c4f3b6677ca001d8114037329951987b7a8d65de53b28c862
+  checksum: 0a38ae05271e1669c6efd5cc77608103b6dfde577ecdc88c3f0e72953aea11c102c9b5a49fa2ca822f260a68f9f9646c5e847e7d87c99117b2c2e3b1356cbc8b
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:^8.0.0, @testing-library/dom@npm:^8.3.0":
-  version: 8.13.0
-  resolution: "@testing-library/dom@npm:8.13.0"
+"@testing-library/dom@npm:^8.0.0, @testing-library/dom@npm:^8.3.0, @testing-library/dom@npm:^8.5.0":
+  version: 8.17.1
+  resolution: "@testing-library/dom@npm:8.17.1"
   dependencies:
     "@babel/code-frame": ^7.10.4
     "@babel/runtime": ^7.12.5
@@ -8594,7 +8649,7 @@ __metadata:
     dom-accessibility-api: ^0.5.9
     lz-string: ^1.4.4
     pretty-format: ^27.0.2
-  checksum: 880f1872b9949800d4444e3bdbd03df86d6f41ec7c27136dff1da29e87d2df2d7ee904afcdf895ffce351c25bd12119117eae023354d50e707ad56d43b2ed3ed
+  checksum: e4df091fcf84c9eac4a6ee4c76674c1d562bf98732f0ac8820972d7718ab10397b672b9f082aace3cacd1f610fc77de6e1b6094e67afe1df0443bf22eb9deab2
   languageName: node
   linkType: hard
 
@@ -8634,6 +8689,20 @@ __metadata:
     react-test-renderer:
       optional: true
   checksum: 7fe44352e920deb5cb1876f80d64e48615232072c9d5382f1e0284b3aab46bb1c659a040b774c45cdf084a5257b8fe463f7e08695ad8480d8a15635d4d3d1f6d
+  languageName: node
+  linkType: hard
+
+"@testing-library/react@npm:^13.3.0":
+  version: 13.3.0
+  resolution: "@testing-library/react@npm:13.3.0"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    "@testing-library/dom": ^8.5.0
+    "@types/react-dom": ^18.0.0
+  peerDependencies:
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  checksum: 98fd8616a7cae0ecfcbe97b5b3c5b91fbafccf449c04875395ccc0e3f0b139e53b3261b9536ec2169a5e2883a1be2098907209064061fe0c2ff21dfbc785dd40
   languageName: node
   linkType: hard
 
@@ -9599,7 +9668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
+"@types/react-dom@npm:^18, @types/react-dom@npm:^18.0.0":
   version: 18.0.6
   resolution: "@types/react-dom@npm:18.0.6"
   dependencies:
@@ -9608,7 +9677,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^17, @types/react@npm:^17.0.47, @types/react@npm:~17.0.39, @types/react@npm:~17.0.47":
+"@types/react@npm:*, @types/react@npm:^17":
+  version: 17.0.48
+  resolution: "@types/react@npm:17.0.48"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: b683fa33f751ced0b8c8715df9f40de15513c1d7ce66064a75cdfb8805cc913b0b214a2e7022ef0b724bd62a1e8651d040cd265dd0452bde03cca9b8e495742d
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^17.0.47, @types/react@npm:~17.0.39, @types/react@npm:~17.0.47":
   version: 17.0.50
   resolution: "@types/react@npm:17.0.50"
   dependencies:
@@ -11671,6 +11751,15 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.4
   checksum: 879f61022bd825da2a7ebb72410bc528683ba54c140436baa0b924b7cab02ec0919fe64a04a546f482a75f5fd570b77884f9826764a95f2fd88265e61dcb70db
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.25.0":
+  version: 0.25.0
+  resolution: "axios@npm:0.25.0"
+  dependencies:
+    follow-redirects: ^1.14.7
+  checksum: 2a8a3787c05f2a0c9c3878f49782357e2a9f38945b93018fb0c4fd788171c43dceefbb577988628e09fea53952744d1ecebde234b561f1e703aa43e0a598a3ad
   languageName: node
   linkType: hard
 
@@ -16290,7 +16379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^4.0.0, enhanced-resolve@npm:^4.1.1, enhanced-resolve@npm:^4.5.0":
+"enhanced-resolve@npm:^4.1.1, enhanced-resolve@npm:^4.5.0":
   version: 4.5.0
   resolution: "enhanced-resolve@npm:4.5.0"
   dependencies:
@@ -16672,6 +16761,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-playwright@npm:^0.11.1":
+  version: 0.11.1
+  resolution: "eslint-plugin-playwright@npm:0.11.1"
+  peerDependencies:
+    eslint: ">=7"
+    eslint-plugin-jest: ">=24"
+  peerDependenciesMeta:
+    eslint-plugin-jest:
+      optional: true
+  checksum: 64c6e6a0b2ccc8026e72890cfd64ebf685c5da55eda6ce73be83295af1fd42a7c9a943767f2a583517eba91bae1cfe9a1da219e0c5d8ebcd57d95edfc1a897fb
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-prettier@npm:^4.2.1":
   version: 4.2.1
   resolution: "eslint-plugin-prettier@npm:4.2.1"
@@ -16866,7 +16968,56 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.20.0, eslint@npm:^8.21.0, eslint@npm:^8.22.0":
+"eslint@npm:^8.12.0":
+  version: 8.23.0
+  resolution: "eslint@npm:8.23.0"
+  dependencies:
+    "@eslint/eslintrc": ^1.3.1
+    "@humanwhocodes/config-array": ^0.10.4
+    "@humanwhocodes/gitignore-to-minimatch": ^1.0.2
+    "@humanwhocodes/module-importer": ^1.0.1
+    ajv: ^6.10.0
+    chalk: ^4.0.0
+    cross-spawn: ^7.0.2
+    debug: ^4.3.2
+    doctrine: ^3.0.0
+    escape-string-regexp: ^4.0.0
+    eslint-scope: ^7.1.1
+    eslint-utils: ^3.0.0
+    eslint-visitor-keys: ^3.3.0
+    espree: ^9.4.0
+    esquery: ^1.4.0
+    esutils: ^2.0.2
+    fast-deep-equal: ^3.1.3
+    file-entry-cache: ^6.0.1
+    find-up: ^5.0.0
+    glob-parent: ^6.0.1
+    globals: ^13.15.0
+    globby: ^11.1.0
+    grapheme-splitter: ^1.0.4
+    ignore: ^5.2.0
+    import-fresh: ^3.0.0
+    imurmurhash: ^0.1.4
+    is-glob: ^4.0.0
+    js-sdsl: ^4.1.4
+    js-yaml: ^4.1.0
+    json-stable-stringify-without-jsonify: ^1.0.1
+    levn: ^0.4.1
+    lodash.merge: ^4.6.2
+    minimatch: ^3.1.2
+    natural-compare: ^1.4.0
+    optionator: ^0.9.1
+    regexpp: ^3.2.0
+    strip-ansi: ^6.0.1
+    strip-json-comments: ^3.1.0
+    text-table: ^0.2.0
+  bin:
+    eslint: bin/eslint.js
+  checksum: ff6075daa28d817a7ac4508f31bc108a04d9ab5056608c8651b5bf9cfea5d708ca16dea6cdab2c3c0ae99b0bf0e726af8504eaa8e17c8e12e242cb68237ead64
+  languageName: node
+  linkType: hard
+
+"eslint@npm:^8.20.0, eslint@npm:^8.22.0":
   version: 8.24.0
   resolution: "eslint@npm:8.24.0"
   dependencies:
@@ -16912,6 +17063,55 @@ __metadata:
   bin:
     eslint: bin/eslint.js
   checksum: ca293ce7116599b742d7ab4d43db469beec22f40dd272092d809498be3cff3a7c567769f9763bdf6799aac13dd53447b93a99629b7b54092783046eb57eaced6
+  languageName: node
+  linkType: hard
+
+"eslint@npm:^8.21.0":
+  version: 8.23.1
+  resolution: "eslint@npm:8.23.1"
+  dependencies:
+    "@eslint/eslintrc": ^1.3.2
+    "@humanwhocodes/config-array": ^0.10.5
+    "@humanwhocodes/gitignore-to-minimatch": ^1.0.2
+    "@humanwhocodes/module-importer": ^1.0.1
+    ajv: ^6.10.0
+    chalk: ^4.0.0
+    cross-spawn: ^7.0.2
+    debug: ^4.3.2
+    doctrine: ^3.0.0
+    escape-string-regexp: ^4.0.0
+    eslint-scope: ^7.1.1
+    eslint-utils: ^3.0.0
+    eslint-visitor-keys: ^3.3.0
+    espree: ^9.4.0
+    esquery: ^1.4.0
+    esutils: ^2.0.2
+    fast-deep-equal: ^3.1.3
+    file-entry-cache: ^6.0.1
+    find-up: ^5.0.0
+    glob-parent: ^6.0.1
+    globals: ^13.15.0
+    globby: ^11.1.0
+    grapheme-splitter: ^1.0.4
+    ignore: ^5.2.0
+    import-fresh: ^3.0.0
+    imurmurhash: ^0.1.4
+    is-glob: ^4.0.0
+    js-sdsl: ^4.1.4
+    js-yaml: ^4.1.0
+    json-stable-stringify-without-jsonify: ^1.0.1
+    levn: ^0.4.1
+    lodash.merge: ^4.6.2
+    minimatch: ^3.1.2
+    natural-compare: ^1.4.0
+    optionator: ^0.9.1
+    regexpp: ^3.2.0
+    strip-ansi: ^6.0.1
+    strip-json-comments: ^3.1.0
+    text-table: ^0.2.0
+  bin:
+    eslint: bin/eslint.js
+  checksum: a727e15492786a03b438bcf021db49f715680679846a7b8d79b98ad34576f2a570404ffe882d3c3e26f6359bff7277ef11fae5614bfe8629adb653f20d018c71
   languageName: node
   linkType: hard
 
@@ -18088,7 +18288,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.7, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9":
   version: 1.15.1
   resolution: "follow-redirects@npm:1.15.1"
   peerDependenciesMeta:
@@ -19763,7 +19963,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-escaper@npm:^2.0.0, html-escaper@npm:^2.0.2":
+"html-escaper@npm:^2.0.0":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
   checksum: d2df2da3ad40ca9ee3a39c5cc6475ef67c8f83c234475f24d8e9ce0dc80a2c82df8e1d6fa78ddd1e9022a586ea1bd247a615e80a5cd9273d90111ddda7d9e974
@@ -23469,7 +23669,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
   languageName: node
   linkType: hard
 
@@ -24763,7 +24963,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
+"micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
   version: 4.0.5
   resolution: "micromatch@npm:4.0.5"
   dependencies:
@@ -27679,6 +27879,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-qase-reporter@npm:^1.2.0-alpha.3":
+  version: 1.2.0-alpha.3
+  resolution: "playwright-qase-reporter@npm:1.2.0-alpha.3"
+  dependencies:
+    form-data: ^3.0.0
+    qaseio: ^2.0.1
+  checksum: 6c1960dbb49928c9d5b77eeb955c2a674cf28d97141d7406354b908688f0983c8da0c7d0b2d620bb39411a99663803055a5359812726982ad4e53c7c54fd8c84
+  languageName: node
+  linkType: hard
+
 "please-upgrade-node@npm:^3.2.0":
   version: 3.2.0
   resolution: "please-upgrade-node@npm:3.2.0"
@@ -29170,6 +29380,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qaseio@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "qaseio@npm:2.0.1"
+  dependencies:
+    axios: ^0.25.0
+    form-data: ^3.0.0
+  checksum: 3542f968c05294615a42bc1f57c92a4d7073055466bc2588876de09d6bcd7f7af8b4180db2c04ef01cc4e9c3326c7405c78500e6c83de9d3bb23b12f95246d79
+  languageName: node
+  linkType: hard
+
 "qs@npm:6.10.3":
   version: 6.10.3
   resolution: "qs@npm:6.10.3"
@@ -29638,12 +29858,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.30.0":
-  version: 7.30.0
-  resolution: "react-hook-form@npm:7.30.0"
+"react-hook-form@npm:^7.30.0, react-hook-form@npm:^7.34.2":
+  version: 7.34.2
+  resolution: "react-hook-form@npm:7.34.2"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: 7af442c80e1d8e04b6345f4f46177974d82488e81cc12b165d6ff1c69ba0f6234bd2ef0f7b51dda34f77b36fe74464815bbb0f4c77dc2cd9793f8e89d528ae25
+  checksum: 485cde0248e668ad1845b927f9cc05b434c384141bb03bc143a7d7cc937eebf119c935114ccbfa397b463808283dab5b2334022fe5dba975402b201e601d6876
   languageName: node
   linkType: hard
 
@@ -29657,11 +29877,10 @@ __metadata:
   linkType: hard
 
 "react-i18next@npm:^11.16.7, react-i18next@npm:^11.16.9":
-  version: 11.16.9
-  resolution: "react-i18next@npm:11.16.9"
+  version: 11.18.5
+  resolution: "react-i18next@npm:11.18.5"
   dependencies:
     "@babel/runtime": ^7.14.5
-    html-escaper: ^2.0.2
     html-parse-stringify: ^3.0.1
   peerDependencies:
     i18next: ">= 19.0.0"
@@ -29671,7 +29890,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: b79606a0c36a822b3d9a1e4f2bb4b44643c121de9425ddfeea7e63e5136fe33d4b0b42f045f14d53592dcdbde1fb43cd7be4555b22747d2e0f6f754d3a60c711
+  checksum: c5e4b5b8ecc49f799a93110cb4d99d91190a268cf3b14b48e005ac1453eefe75e10758952a7d01fef4cf55afc5a6e7170d23c41d602efaedc06d4d34a85cd725
   languageName: node
   linkType: hard
 
@@ -30787,7 +31006,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.21
     "@rocket.chat/icons": 0.31.21
-    "@rocket.chat/message-parser": 0.31.21
+    "@rocket.chat/message-parser": next
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
@@ -33760,22 +33979,6 @@ __metadata:
   bin:
     ts-jest: cli.js
   checksum: 3ef51c538b82f49b3f529331c1a017871a2f90e7a9a6e69333304755036d121818c6b120e2ce32dd161ff8bb2487efec0c790753ecd39b46a9ed1ce0d241464c
-  languageName: node
-  linkType: hard
-
-"ts-loader@npm:^8.4.0":
-  version: 8.4.0
-  resolution: "ts-loader@npm:8.4.0"
-  dependencies:
-    chalk: ^4.1.0
-    enhanced-resolve: ^4.0.0
-    loader-utils: ^2.0.0
-    micromatch: ^4.0.0
-    semver: ^7.3.4
-  peerDependencies:
-    typescript: "*"
-    webpack: "*"
-  checksum: 79da0f364c013231bff28baede3f4f4081b1cca30b24df2d9f31a0517e0524eca2c8e4d438b853b1566a3a8eb9ff51ab0b36743346f0b3d5daa7001c98e5c738
   languageName: node
   linkType: hard
 
