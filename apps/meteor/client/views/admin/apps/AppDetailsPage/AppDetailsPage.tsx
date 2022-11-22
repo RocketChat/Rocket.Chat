@@ -69,10 +69,10 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		<Page flexDirection='column'>
 			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
 				<ButtonGroup>
-					{ installed && <Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
+					{installed && <Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
 						{!isSaving && t('Save_changes')}
 						{isSaving && <Throbber inheritColor />}
-					</Button>
+					</Button>}
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow padding='x24'>
