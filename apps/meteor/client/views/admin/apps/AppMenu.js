@@ -6,6 +6,7 @@ import {
 	useTranslation,
 	useRoute,
 	useRouteParameter,
+	useToastMessageDispatch,
 	useCurrentRoute,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
@@ -15,7 +16,7 @@ import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError } from './helpers';
+import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
@@ -50,16 +51,18 @@ const openIncompatibleModal = async (app, action, cancel, setModal) => {
 
 function AppMenu({ app, ...props }) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
-	const [currentRouteName] = useCurrentRoute();
+	const [currentRouteName, currentRouteParams] = useCurrentRoute();
 	if (!currentRouteName) {
 		throw new Error('No current route name');
 	}
 	const router = useRoute(currentRouteName);
 
 	const context = useRouteParameter('context');
+	const currentTab = useRouteParameter('tab');
 
 	const setAppStatus = useEndpoint('POST', `/apps/${app.id}/status`);
 	const buildExternalUrl = useEndpoint('GET', '/apps');
@@ -76,19 +79,38 @@ function AppMenu({ app, ...props }) {
 	const button = appButtonProps(app || {});
 	const action = button?.action || '';
 
-	const closeModal = useCallback(() => {
+	const cancelAction = useCallback(() => {
 		setModal(null);
 		setLoading(false);
 	}, [setModal]);
 
-	const handleEnable = useCallback(async () => {
-		try {
-			const { status } = await setAppStatus({ status: 'manually_enabled' });
-			warnStatusChange(app.name, status);
-		} catch (error) {
-			handleAPIError(error);
+	const confirmAction = useCallback(
+		(permissionsGranted) => {
+			setModal(null);
+
+			actions[action]({ ...app, permissionsGranted }).then(() => {
+				setLoading(false);
+			});
+		},
+		[setModal, action, app, setLoading],
+	);
+
+	const showAppPermissionsReviewModal = useCallback(() => {
+		if (!isAppPurchased) {
+			setPurchased(true);
 		}
-	}, [app.name, setAppStatus]);
+
+		if (!Array.isArray(app.permissions)) {
+			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
+		}
+
+		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
+	}, [app.permissions, cancelAction, confirmAction, isAppPurchased, setModal, setPurchased]);
+
+	const closeModal = useCallback(() => {
+		setModal(null);
+		setLoading(false);
+	}, [setModal]);
 
 	const handleSubscription = useCallback(async () => {
 		if (!(await checkUserLoggedIn())) {
@@ -123,86 +145,7 @@ function AppMenu({ app, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [checkUserLoggedIn, app, setModal, closeModal, buildExternalUrl, syncApp]);
-
-	const handleViewLogs = useCallback(() => {
-		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
-	}, [app.id, app.version, context, router]);
-
-	const handleDisable = useCallback(() => {
-		const confirm = async () => {
-			closeModal();
-			try {
-				const { status } = await setAppStatus({ status: 'manually_disabled' });
-				warnStatusChange(app.name, status);
-			} catch (error) {
-				handleAPIError(error);
-			}
-		};
-		setModal(
-			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
-		);
-	}, [app.name, closeModal, setAppStatus, setModal, t]);
-
-	const handleUninstall = useCallback(() => {
-		const uninstall = async () => {
-			closeModal();
-			try {
-				await uninstallApp();
-			} catch (error) {
-				handleAPIError(error);
-			}
-		};
-
-		if (isSubscribed) {
-			const confirm = async () => {
-				await handleSubscription();
-			};
-
-			setModal(
-				<WarningModal
-					close={closeModal}
-					cancel={uninstall}
-					confirm={confirm}
-					text={t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')}
-					confirmText={t('Apps_Marketplace_Modify_App_Subscription')}
-					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
-				/>,
-			);
-		}
-
-		setModal(
-			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
-		);
-	}, [closeModal, handleSubscription, isSubscribed, setModal, t, uninstallApp]);
-
-	const cancelAction = useCallback(() => {
-		setModal(null);
-		setLoading(false);
-	}, [setModal]);
-
-	const confirmAction = useCallback(
-		(permissionsGranted) => {
-			setModal(null);
-
-			actions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
-		},
-		[setModal, action, app, setLoading],
-	);
-
-	const showAppPermissionsReviewModal = useCallback(() => {
-		if (!isAppPurchased) {
-			setPurchased(true);
-		}
-
-		if (!Array.isArray(app.permissions)) {
-			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
-		}
-
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
-	}, [app.permissions, cancelAction, confirmAction, isAppPurchased, setModal, setPurchased]);
+	}, [checkUserLoggedIn, app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const handleAcquireApp = useCallback(async () => {
 		setLoading(true);
@@ -231,23 +174,105 @@ function AppMenu({ app, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app, cancelAction, checkUserLoggedIn, closeModal, isAppPurchased, setModal, showAppPermissionsReviewModal]);
+	}, [action, app, closeModal, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
-	const incompatibleIconName = (app, action) => {
-		if (!app.versionIncompatible) {
+	const handleViewLogs = useCallback(() => {
+		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
+	}, [app.id, app.version, context, router]);
+
+	const handleDisable = useCallback(() => {
+		const confirm = async () => {
+			closeModal();
+			try {
+				const { status } = await setAppStatus({ status: 'manually_disabled' });
+				warnEnableDisableApp(app.name, status, 'disable');
+			} catch (error) {
+				handleAPIError(error);
+			}
+		};
+		setModal(
+			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
+		);
+	}, [app.name, closeModal, setAppStatus, setModal, t]);
+
+	const handleEnable = useCallback(async () => {
+		try {
+			const { status } = await setAppStatus({ status: 'manually_enabled' });
+			warnEnableDisableApp(app.name, status, 'enable');
+		} catch (error) {
+			handleAPIError(error);
+		}
+	}, [app.name, setAppStatus]);
+
+	const handleUninstall = useCallback(() => {
+		const uninstall = async () => {
+			closeModal();
+			try {
+				const { success } = await uninstallApp();
+				if (success) {
+					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
+					if (context === 'details' && currentTab !== 'details') {
+						router.replace({ ...currentRouteParams, tab: 'details' });
+					}
+				}
+			} catch (error) {
+				handleAPIError(error);
+			}
+		};
+
+		if (isSubscribed) {
+			const confirm = async () => {
+				await handleSubscription();
+			};
+
+			setModal(
+				<WarningModal
+					close={closeModal}
+					cancel={uninstall}
+					confirm={confirm}
+					text={t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')}
+					confirmText={t('Apps_Marketplace_Modify_App_Subscription')}
+					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
+				/>,
+			);
+		}
+
+		setModal(
+			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
+		);
+	}, [
+		app?.name,
+		closeModal,
+		context,
+		currentTab,
+		dispatchToastMessage,
+		handleSubscription,
+		isSubscribed,
+		currentRouteParams,
+		router,
+		setModal,
+		t,
+		uninstallApp,
+	]);
+
+	const incompatibleIconName = useCallback(
+		(app, action) => {
+			if (!app.versionIncompatible) {
+				return 'card';
+			}
+
+			if (action === 'subscribe' && !isSubscribed) {
+				return 'warning';
+			}
+
+			if (action === 'install') {
+				return 'warning';
+			}
+
 			return 'card';
-		}
-
-		if (action === 'subscribe' && !isSubscribed) {
-			return 'warning';
-		}
-
-		if (action === 'install') {
-			return 'warning';
-		}
-
-		return 'card';
-	};
+		},
+		[isSubscribed],
+	);
 
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
@@ -353,6 +378,7 @@ function AppMenu({ app, ...props }) {
 		handleDisable,
 		handleEnable,
 		handleUninstall,
+		incompatibleIconName,
 	]);
 
 	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' {...props} />;

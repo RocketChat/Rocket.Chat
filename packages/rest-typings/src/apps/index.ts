@@ -23,7 +23,10 @@ export type AppsEndpoints = {
 			| (() => {
 					app: App;
 			  });
-		DELETE: () => void;
+		DELETE: () => {
+			app: App;
+			success: boolean;
+		};
 		POST: (params: { marketplace: boolean; version: string; permissionsGranted: IPermission[]; appId: string }) => {
 			app: App;
 		};
@@ -55,9 +58,9 @@ export type AppsEndpoints = {
 
 	'/apps/:id/settings': {
 		GET: () => {
-			settings: { [key: string]: ISetting };
+			settings: ISetting[];
 		};
-		POST: (params: { settings: ISetting[] }) => { updated: { [key: string]: ISetting } };
+		POST: (params: { settings: ISetting[] }) => { updated: ISetting[]; success: boolean };
 	};
 
 	'/apps/:id/screenshots': {
