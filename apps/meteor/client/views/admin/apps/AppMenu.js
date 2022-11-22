@@ -238,14 +238,19 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const incompatibleIconName = useCallback(
 		(app, action) => {
 			if (!app.versionIncompatible) {
+				if (action === 'update') {
+					return 'refresh';
+				}
+
 				return 'card';
 			}
 
+			// Now we are handling an incompatible app
 			if (action === 'subscribe' && !isSubscribed) {
 				return 'warning';
 			}
 
-			if (action === 'install') {
+			if (action === 'install' || action === 'update') {
 				return 'warning';
 			}
 
@@ -256,6 +261,11 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const handleUpdate = useCallback(async () => {
 		setLoading(true);
+
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'update', closeModal, setModal);
+			return;
+		}
 
 		const isLoggedIn = await checkUserLoggedIn();
 
@@ -318,7 +328,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					update: {
 						label: (
 							<Box>
-								<Icon name='refresh' size='x16' marginInlineEnd='x4' />
+								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
 								{t('Update')}
 							</Box>
 						),
