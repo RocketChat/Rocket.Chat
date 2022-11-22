@@ -10,35 +10,15 @@ import {
 	useCurrentRoute,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
+import semver from 'semver';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
-
-const installApp = async ({ id, name, version, permissionsGranted }) => {
-	try {
-		const { status } = await Apps.installApp(id, version, permissionsGranted);
-		warnStatusChange(name, status);
-	} catch (error) {
-		handleAPIError(error);
-	}
-};
-
-const actions = {
-	purchase: installApp,
-	install: installApp,
-	update: async ({ id, name, marketplaceVersion, permissionsGranted }) => {
-		try {
-			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
-			warnStatusChange(name, status);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	},
-};
+import { appEnabledStatuses, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
+import { marketplaceActions } from './helpers/marketplaceActions';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -49,7 +29,7 @@ const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	}
 };
 
-function AppMenu({ app, ...props }) {
+function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -88,7 +68,7 @@ function AppMenu({ app, ...props }) {
 		(permissionsGranted) => {
 			setModal(null);
 
-			actions[action]({ ...app, permissionsGranted }).then(() => {
+			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
 				setLoading(false);
 			});
 		},
@@ -274,6 +254,22 @@ function AppMenu({ app, ...props }) {
 		[isSubscribed],
 	);
 
+	const handleUpdate = useCallback(async () => {
+		setLoading(true);
+
+		const isLoggedIn = await checkUserLoggedIn();
+
+		if (!isLoggedIn) {
+			setLoading(false);
+			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		showAppPermissionsReviewModal();
+	}, [checkUserLoggedIn, setModal, showAppPermissionsReviewModal]);
+
+	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
+
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
 			...(canAppBeSubscribed &&
@@ -315,6 +311,18 @@ function AppMenu({ app, ...props }) {
 							</Box>
 						),
 						action: handleViewLogs,
+					},
+				}),
+			...(canUpdate &&
+				!isAppDetailsPage && {
+					update: {
+						label: (
+							<Box>
+								<Icon name='refresh' size='x16' marginInlineEnd='x4' />
+								{t('Update')}
+							</Box>
+						),
+						action: handleUpdate,
 					},
 				}),
 			...(app.installed &&
@@ -374,6 +382,9 @@ function AppMenu({ app, ...props }) {
 		handleAcquireApp,
 		context,
 		handleViewLogs,
+		canUpdate,
+		isAppDetailsPage,
+		handleUpdate,
 		isAppEnabled,
 		handleDisable,
 		handleEnable,
