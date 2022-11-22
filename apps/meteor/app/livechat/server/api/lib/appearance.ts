@@ -1,6 +1,7 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
-export async function findAppearance() {
+export async function findAppearance(): Promise<{ appearance: ISetting[] }> {
 	const query = {
 		_id: {
 			$in: [

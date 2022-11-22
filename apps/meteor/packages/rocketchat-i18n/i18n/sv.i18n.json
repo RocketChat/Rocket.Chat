@@ -3451,7 +3451,7 @@
   "User": "Användare",
   "User__username__is_now_a_leader_of__room_name_": "Användare __username__ är nu ledare för __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Användar __username__ är nu en moderator för __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Användar __username__ är nu en ägare av __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Användar __username__ är nu en ägare av __room_name__",
   "User__username__removed_from__room_name__leaders": "Användare __username__ bort från __room_name__ ledare",
   "User__username__removed_from__room_name__moderators": "Användare __username__ togs bort från __room_name__ moderatorer",
   "User__username__removed_from__room_name__owners": "Användar __username__ avlägsnas från __room_name__ ägare",

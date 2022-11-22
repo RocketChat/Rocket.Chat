@@ -4928,7 +4928,7 @@
   "User Search (Group Validation)": "Käyttäjähaku (ryhmän validointi)",
   "User__username__is_now_a_leader_of__room_name_": "Käyttäjä __username__ on nyt johtaja __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Käyttäjä __username__ on nyt __room_name__ moderaattori",
-  "User__username__is_now_a_owner_of__room_name_": "Käyttäjä __username__ on nyt huoneen __room_name__ omistaja",
+  "User__username__is_now_an_owner_of__room_name_": "Käyttäjä __username__ on nyt __room_name__ omistaja",
   "User__username__muted_in_room__roomName__": "Käyttäjä __username__ mykistetty huoneessa __roomName__",
   "User__username__removed_from__room_name__leaders": "Käyttäjän __username__ poistettu __room_name__ -johtajista",
   "User__username__removed_from__room_name__moderators": "Käyttäjä __username__ on poistettu huoneen __room_name__  valvojista",

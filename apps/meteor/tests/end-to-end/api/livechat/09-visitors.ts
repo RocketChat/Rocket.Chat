@@ -554,6 +554,39 @@ describe('LIVECHAT - visitors', function () {
 				.then(() => done())
 				.catch(done);
 		});
+
+		it('should return a list of chats when filtered by ', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => Promise.all([createLivechatRoom(createdVisitor.token), createdVisitor]))
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor]) => Promise.all([createAgent(), room, visitor]))
+				.then(([agent, room, visitor]: [ILivechatAgent, IOmnichannelRoom, ILivechatVisitor]) => {
+					return Promise.all([room, visitor, takeInquiry(room._id, agent._id)]);
+				})
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor, any]) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?source=api`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							console.log(res.body);
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.length.of.at.least(1);
+							expect(res.body.history[0]).to.have.property('_id');
+							expect(res.body.history[0]).to.have.property('name');
+							expect(res.body.history[0]).to.have.property('createdAt');
+							expect(res.body.history[0]).to.have.property('endedAt');
+							expect(res.body.history[0]).to.have.property('status');
+							expect(res.body.history[0]).to.have.property('visitor');
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
 	});
 
 	describe('livechat/visitor.status', () => {

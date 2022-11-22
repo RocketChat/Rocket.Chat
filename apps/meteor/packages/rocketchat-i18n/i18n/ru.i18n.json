@@ -4640,7 +4640,7 @@
   "User Search (Group Validation)": "Поиск пользователей (проверка группы)",
   "User__username__is_now_a_leader_of__room_name_": "Пользователь __username__ теперь лидер канала __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Пользователь  __username__ теперь является модератором __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Пользователь __username__ теперь является владельцем __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Пользователь __username__ теперь является владельцем __room_name__",
   "User__username__muted_in_room__roomName__": "Пользователь __username__ заглушен в чате __roomName__",
   "User__username__removed_from__room_name__leaders": "Пользователь __username__ исключен из лидеров канала __room_name__",
   "User__username__removed_from__room_name__moderators": "Пользователь __username__ удален из модераторов __room_name__",

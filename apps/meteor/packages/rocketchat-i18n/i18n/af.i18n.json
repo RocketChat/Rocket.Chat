@@ -2581,7 +2581,7 @@
   "User": "gebruiker",
   "User__username__is_now_a_leader_of__room_name_": "Gebruiker __username__ is nou 'n leier van __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Gebruiker __username__ is nou 'n moderator van __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Gebruiker __username__ is nou 'n eienaar van __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Gebruiker __username__ is nou 'n eienaar van __room_name__",
   "User__username__removed_from__room_name__leaders": "Gebruiker __username__ verwyder van __room_name__ leiers",
   "User__username__removed_from__room_name__moderators": "Gebruiker __username__ verwyder van __room_name__ moderators",
   "User__username__removed_from__room_name__owners": "Gebruiker __username__ verwyder van __room_name__ eienaars",
