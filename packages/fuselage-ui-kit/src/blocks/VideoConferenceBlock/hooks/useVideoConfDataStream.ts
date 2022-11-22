@@ -14,28 +14,40 @@ const useStreamBySubPath = (
   subpath: string,
   callback: () => void
 ) => {
-  useEffect(() => {
-    if (!ee.has(subpath)) {
-      events.set(
-        subpath,
-        streamer(subpath, () => {
-          ee.emit(subpath);
-        })
-      );
+  const maybeSubscribe = useCallback(() => {
+    // If we're already subscribed, don't do it again
+    if (events.has(subpath)) {
+      return;
     }
 
-    return () => {
-      if (!ee.has(subpath)) {
-        events.delete(subpath);
-      }
-    };
-  }, [streamer, subpath, callback]);
+    events.set(
+      subpath,
+      streamer(subpath, () => {
+        ee.emit(subpath);
+      })
+    );
+  }, [streamer, subpath]);
+
+  const maybeUnsubscribe = useCallback(() => {
+    // If someone is still listening, don't unsubscribe
+    if (ee.has(subpath)) {
+      return;
+    }
+
+    const unsubscribe = events.get(subpath);
+    if (unsubscribe) {
+      unsubscribe();
+      events.delete(subpath);
+    }
+  }, [subpath]);
 
   useEffect(() => {
+    maybeSubscribe();
     ee.on(subpath, callback);
 
     return () => {
       ee.off(subpath, callback);
+      maybeUnsubscribe();
     };
   }, [callback, subpath]);
 };
