@@ -18,7 +18,8 @@ import { useForm } from '../../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
 import { useAppsReload } from './AppsContext';
-import { handleAPIError, handleInstallError } from './helpers';
+import handleAPIError from './helpers/handleAPIError';
+import handleInstallError from './helpers/handleInstallError';
 import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';

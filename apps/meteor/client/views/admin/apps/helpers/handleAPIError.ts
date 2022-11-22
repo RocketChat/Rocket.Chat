@@ -6,7 +6,7 @@ const shouldHandleErrorAsWarning = (message: string): boolean => {
 	return warnings.includes(message);
 };
 
-export const handleAPIError = (error: unknown): void => {
+const handleAPIError = (error: unknown): void => {
 	if (error instanceof Error) {
 		const { message } = error;
 
@@ -18,3 +18,5 @@ export const handleAPIError = (error: unknown): void => {
 		dispatchToastMessage({ type: 'error', message });
 	}
 };
+
+export default handleAPIError;

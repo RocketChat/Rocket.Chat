@@ -7,7 +7,10 @@ import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
-import { appButtonProps, appStatusSpanProps, handleAPIError, handleInstallError } from '../../../helpers';
+import appButtonProps from '../../../helpers/appButtonProps';
+import { appStatusSpanProps } from '../../../helpers/appStatusSpanProps';
+import handleAPIError from '../../../helpers/handleAPIError';
+import handleInstallError from '../../../helpers/handleInstallError';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 

@@ -7,7 +7,7 @@ type appButtonResponseProps = {
 	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
 
-export const appButtonProps = ({
+const appButtonProps = ({
 	installed,
 	version,
 	marketplaceVersion,
@@ -77,3 +77,5 @@ export const appButtonProps = ({
 		label: 'Install',
 	};
 };
+
+export default appButtonProps;

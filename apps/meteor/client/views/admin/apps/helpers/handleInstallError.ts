@@ -1,7 +1,7 @@
 import { t } from '../../../../../app/utils/client';
 import { dispatchToastMessage } from '../../../../lib/toast';
 
-export function handleInstallError(apiError: { xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } } }): void {
+function handleInstallError(apiError: { xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } } }): void {
 	if (!apiError.xhr || !apiError.xhr.responseJSON) {
 		return;
 	}
@@ -30,3 +30,5 @@ export function handleInstallError(apiError: { xhr: { responseJSON: { status: an
 
 	dispatchToastMessage({ type: 'error', message });
 }
+
+export default handleInstallError;

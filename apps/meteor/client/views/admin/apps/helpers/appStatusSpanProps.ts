@@ -2,8 +2,7 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { App } from '@rocket.chat/core-typings';
 
 import { appErroredStatuses } from '../helpers';
-
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
+import appEnabledStatuses from '../utils/appEnabledStatuses';
 
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';

@@ -15,7 +15,11 @@ import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import { appEnabledStatuses, warnStatusChange, handleAPIError, appButtonProps, handleInstallError } from './helpers';
+import appButtonProps from './helpers/appButtonProps';
+import handleAPIError from './helpers/handleAPIError';
+import handleInstallError from './helpers/handleInstallError';
+import warnStatusChange from './helpers/warnStatusChange.ts';
+import appEnabledStatuses from './utils/appEnabledStatuses';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
