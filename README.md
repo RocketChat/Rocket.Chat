@@ -1,5 +1,9 @@
 <img src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="500" />
 
+<h1 align="center">
+  The ultimate Free Open Source Solution for team communications.
+</h1>
+
 [Rocket.Chat](https://rocket.chat) is an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
 
 We are a MERN based application enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
@@ -16,6 +20,34 @@ Using our self-managed offerings you can deploy Rocket.Chat on your own server, 
 ## Cloud Hosted Rocket.Chat
 
 https://cloud.rocket.chat/trial
+
+## Local development
+
+### Prerequisites
+
+You can follow these instructions to setup a dev environment:
+
+- Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) (recommended)
+- Install **Meteor**: https://www.meteor.com/developers/install
+- Install **yarn**: https://yarnpkg.com/getting-started/install
+- Clone this repo: `git clone https://github.com/RocketChat/Rocket.Chat.git`
+- Run `yarn` to install dependencies
+
+### Starting Rocket.Chat
+
+```
+yarn dsv
+```
+
+After initialized, you can access the server at http://localhost:3000
+
+### Starting Rocket.Chat in microservices mode
+
+```
+yarn turbo run ms
+```
+
+After initialized, you can access the server at http://localhost:4000
 
 ## Installation
 

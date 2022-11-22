@@ -1,10 +1,11 @@
-import moment from 'moment';
+import { Emitter } from '@rocket.chat/emitter';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import moment from 'moment';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 
@@ -14,7 +15,7 @@ import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
@@ -27,19 +28,98 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { messageBoxState } from './messageBoxState';
 import { UserAction, USER_ACTIVITIES } from './UserAction';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+
+class QuotedMessages {
+	private emitter = new Emitter<{ update: void }>();
+
+	private messages: IMessage[] = [];
+
+	public get(): IMessage[] {
+		return this.messages;
+	}
+
+	public add(message: IMessage): void {
+		this.messages = [...this.messages.filter((_message) => _message._id !== message._id), message];
+		this.emitter.emit('update');
+	}
+
+	public remove(mid: IMessage['_id']): void {
+		this.messages = this.messages.filter((message) => message._id !== mid);
+		this.emitter.emit('update');
+	}
+
+	public clear(): void {
+		this.messages = [];
+		this.emitter.emit('update');
+	}
+
+	public subscribe(callback: () => void): () => void {
+		return this.emitter.on('update', callback);
+	}
+}
+
+class ComposerState {
+	private emitter = new Emitter<{ update: void }>();
+
+	private key: string;
+
+	private state: string | undefined;
+
+	public constructor(id: string) {
+		this.key = `messagebox_${id}`;
+		this.state = Meteor._localStorage.getItem(this.key) ?? undefined;
+	}
+
+	public get() {
+		return this.state;
+	}
+
+	private persist = withDebouncing({ wait: 1000 })(() => {
+		if (this.state) {
+			Meteor._localStorage.setItem(this.key, this.state);
+			return;
+		}
+
+		Meteor._localStorage.removeItem(this.key);
+	});
+
+	public update(value: string | undefined) {
+		this.state = value;
+		this.persist();
+		this.emitter.emit('update');
+	}
+
+	public subscribe(callback: () => void): () => void {
+		return this.emitter.on('update', callback);
+	}
+
+	public static purgeAll() {
+		Object.keys(Meteor._localStorage)
+			.filter((key) => key.indexOf('messagebox_') === 0)
+			.forEach((key) => Meteor._localStorage.removeItem(key));
+	}
+}
+
+type ChatMessagesParams =
+	| { rid: IRoom['_id']; tmid?: IMessage['_id']; input?: never }
+	| { rid?: never; tmid?: never; input: HTMLInputElement | HTMLTextAreaElement };
 
 export class ChatMessages {
-	editing: {
+	public quotedMessages: QuotedMessages = new QuotedMessages();
+
+	public composerState: ComposerState;
+
+	private editing: {
 		element?: HTMLElement;
 		id?: string;
 		saved?: string;
 		savedCursor?: number;
 	} = {};
 
-	records: Record<
+	private records: Record<
 		IMessage['_id'],
 		| {
 				draft: string;
@@ -47,59 +127,42 @@ export class ChatMessages {
 		| undefined
 	> = {};
 
-	wrapper: HTMLElement | undefined;
+	public wrapper: HTMLElement | undefined;
 
-	input: HTMLTextAreaElement | undefined;
+	public input: HTMLTextAreaElement | undefined;
 
-	$input: JQuery<HTMLTextAreaElement> | undefined;
+	public constructor(
+		private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] },
+		private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage,
+	) {
+		this.quotedMessages.subscribe(() => {
+			if (this.input) $(this.input).trigger('dataChange');
+		});
 
-	constructor(
-		public collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
-			direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
-			queries: unknown[];
-		} = ChatMessage,
-	) {}
+		this.composerState = new ComposerState(params.rid + (params.tmid ? `-${params.tmid}` : ''));
+	}
 
-	initializeWrapper(wrapper: HTMLElement) {
+	private setDraftAndUpdateInput(value: string | undefined) {
+		this.composerState.update(value);
+
+		if (value === undefined) return;
+
+		if (!this.input) return;
+
+		this.input.value = value;
+		$(this.input).trigger('change').trigger('input');
+	}
+
+	public initializeWrapper(wrapper: HTMLElement) {
 		this.wrapper = wrapper;
 	}
 
-	initializeInput(input: HTMLTextAreaElement, { rid, tmid }: Pick<IMessage, 'rid' | 'tmid'>) {
+	public initializeInput(input: HTMLTextAreaElement) {
 		this.input = input;
-		this.$input = $(this.input);
-
-		if (!input || !rid) {
-			return;
-		}
-
-		messageBoxState.restore({ rid, tmid }, input);
-		this.restoreReplies();
-		this.requestInputFocus();
+		this.setDraftAndUpdateInput(this.composerState.get());
 	}
 
-	async restoreReplies() {
-		const mid = FlowRouter.getQueryParam('reply');
-		if (!mid) {
-			return;
-		}
-
-		const message = Messages.findOne(mid) || (await callWithErrorHandling('getSingleMessage', mid));
-		if (!message) {
-			return;
-		}
-
-		this.$input?.data('reply', [message]).trigger('dataChange');
-	}
-
-	requestInputFocus() {
-		setTimeout(() => {
-			if (this.input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
-				this.input.focus();
-			}
-		}, 200);
-	}
-
-	recordInputAsDraft() {
+	private recordInputAsDraft() {
 		const { input } = this;
 		if (!input) {
 			return;
@@ -126,7 +189,7 @@ export class ChatMessages {
 		this.records[id] = record;
 	}
 
-	clearCurrentDraft() {
+	private clearCurrentDraft() {
 		const { id } = this.editing;
 		if (!id) {
 			return;
@@ -137,7 +200,7 @@ export class ChatMessages {
 		return !!hasValue;
 	}
 
-	resetToDraft(id: string) {
+	private resetToDraft(id: string) {
 		const { input } = this;
 		if (!input) {
 			return;
@@ -149,11 +212,11 @@ export class ChatMessages {
 		}
 
 		const oldValue = input.value;
-		messageBoxState.set(input, message.msg);
+		this.setDraftAndUpdateInput(message.msg);
 		return oldValue !== message.msg;
 	}
 
-	toPrevMessage() {
+	private toPrevMessage() {
 		const { element } = this.editing;
 		if (!element) {
 			const messages = Array.from(this.wrapper?.querySelectorAll('[data-own="true"]') ?? []);
@@ -169,7 +232,7 @@ export class ChatMessages {
 		this.clearEditing();
 	}
 
-	toNextMessage() {
+	private toNextMessage() {
 		const { element } = this.editing;
 		if (element) {
 			let next;
@@ -185,7 +248,7 @@ export class ChatMessages {
 		}
 	}
 
-	edit(element: HTMLElement, isEditingTheNextOne?: boolean) {
+	public edit(element: HTMLElement, isEditingTheNextOne?: boolean) {
 		const message = this.collection.findOne(element.dataset.id);
 		if (!message) {
 			throw new Error('Message not found');
@@ -237,15 +300,17 @@ export class ChatMessages {
 		setHighlightMessage(message._id);
 
 		if (message.attachments?.[0].description) {
-			messageBoxState.set(input, message.attachments[0].description);
-		} else if (msg) messageBoxState.set(input, msg);
+			this.setDraftAndUpdateInput(message.attachments[0].description);
+		} else if (msg) {
+			this.setDraftAndUpdateInput(msg);
+		}
 
 		const cursorPosition = isEditingTheNextOne ? 0 : input.value.length;
 		input.focus();
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
-	clearEditing() {
+	private clearEditing() {
 		const { input } = this;
 
 		if (!input) {
@@ -265,16 +330,19 @@ export class ChatMessages {
 		delete this.editing.element;
 		clearHighlightMessage();
 
-		messageBoxState.set(input, this.editing.saved || '');
+		this.setDraftAndUpdateInput(this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : input.value.length;
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
-	async send(
-		_event: Event,
-		{ rid, tmid, value, tshow }: { rid: string; tmid?: string; value: string; tshow?: boolean },
-		done: () => void = () => undefined,
-	) {
+	public async send({ value, tshow }: { value: string; tshow?: boolean }) {
+		const { rid } = this.params;
+		let { tmid } = this.params;
+
+		if (!rid) {
+			throw new Error('Room ID is required');
+		}
+
 		const threadsEnabled = settings.get('Threads_enabled');
 
 		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
@@ -287,12 +355,10 @@ export class ChatMessages {
 			throw new Error('Input is not defined');
 		}
 
-		messageBoxState.save({ rid, tmid }, this.input);
-
 		let msg = value.trim();
 		if (msg) {
-			const mention = this.$input?.data('mention-user') ?? false;
-			const replies = this.$input?.data('reply') ?? [];
+			const mention = $(this.input).data('mention-user') ?? false;
+			const replies = this.quotedMessages.get();
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);
 			}
@@ -324,11 +390,11 @@ export class ChatMessages {
 			try {
 				// @ts-ignore
 				await this.processMessageSend(message);
-				this.$input?.removeData('reply').trigger('dataChange');
+				this.quotedMessages.clear();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			return done();
+			return;
 		}
 
 		if (this.editing.id) {
@@ -341,21 +407,19 @@ export class ChatMessages {
 				if (message.attachments && message.attachments?.length > 0) {
 					// @ts-ignore
 					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
-					return done();
+					return;
 				}
 
 				this.resetToDraft(this.editing.id);
-				this.confirmDeleteMsg(message, done);
+				await this.confirmDeleteMsg(message);
 				return;
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		}
-
-		return done();
 	}
 
-	async processMessageSend(message: IMessage) {
+	private async processMessageSend(message: IMessage) {
 		if (await this.processSetReaction(message)) {
 			return;
 		}
@@ -379,7 +443,7 @@ export class ChatMessages {
 		await callWithErrorHandling('sendMessage', message);
 	}
 
-	async processSetReaction({ rid, tmid, msg }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
+	private async processSetReaction({ rid, tmid, msg }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
 		if (msg.slice(0, 2) !== '+:') {
 			return false;
 		}
@@ -397,7 +461,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	async processTooLongMessage({ msg, rid, tmid }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
+	private async processTooLongMessage({ msg, rid, tmid }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
 		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
 			return false;
@@ -427,7 +491,7 @@ export class ChatMessages {
 		};
 
 		const onClose = () => {
-			messageBoxState.set(input, msg);
+			this.setDraftAndUpdateInput(msg);
 			imperativeModal.close();
 		};
 
@@ -446,7 +510,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	async processMessageEditing(message: IMessage) {
+	private async processMessageEditing(message: IMessage) {
 		if (!message._id) {
 			return false;
 		}
@@ -460,7 +524,7 @@ export class ChatMessages {
 		return true;
 	}
 
-	async processSlashCommand(msgObject: IMessage) {
+	public async processSlashCommand(msgObject: IMessage) {
 		if (msgObject.msg[0] === '/') {
 			const match = msgObject.msg.match(/^\/([^\s]+)/m);
 			if (match) {
@@ -514,9 +578,9 @@ export class ChatMessages {
 		return false;
 	}
 
-	confirmDeleteMsg(message: IMessage, done: () => void = () => undefined) {
+	public async confirmDeleteMsg(message: IMessage) {
 		if (MessageTypes.isSystemMessage(message)) {
-			return done();
+			return;
 		}
 
 		const room =
@@ -526,44 +590,46 @@ export class ChatMessages {
 				prid: { $exists: true },
 			});
 
-		const onConfirm = () => {
-			if (this.editing.id === message._id) {
-				this.clearEditing();
-			}
+		await new Promise<void>((resolve) => {
+			const onConfirm = () => {
+				if (this.editing.id === message._id) {
+					this.clearEditing();
+				}
 
-			this.deleteMsg(message);
+				this.deleteMsg(message);
 
-			this.input?.focus();
-			done();
+				this.input?.focus();
+				resolve();
 
-			imperativeModal.close();
-			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
-		};
+				imperativeModal.close();
+				dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+			};
 
-		const onCloseModal = () => {
-			imperativeModal.close();
-			if (this.editing.id === message._id) {
-				this.clearEditing();
-			}
-			this.input?.focus();
-			done();
-		};
+			const onCloseModal = () => {
+				imperativeModal.close();
+				if (this.editing.id === message._id) {
+					this.clearEditing();
+				}
+				this.input?.focus();
+				resolve();
+			};
 
-		imperativeModal.open({
-			component: GenericModal,
-			props: {
-				title: t('Are_you_sure'),
-				children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
-				variant: 'danger',
-				confirmText: t('Yes_delete_it'),
-				onConfirm,
-				onClose: onCloseModal,
-				onCancel: onCloseModal,
-			},
+			imperativeModal.open({
+				component: GenericModal,
+				props: {
+					title: t('Are_you_sure'),
+					children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
+					variant: 'danger',
+					confirmText: t('Yes_delete_it'),
+					onConfirm,
+					onClose: onCloseModal,
+					onCancel: onCloseModal,
+				},
+			});
 		});
 	}
 
-	async deleteMsg({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
+	public async deleteMsg({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
 		const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
@@ -579,7 +645,7 @@ export class ChatMessages {
 		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
-	keydown(event: KeyboardEvent) {
+	public keydown(event: KeyboardEvent) {
 		const input = event.currentTarget as HTMLTextAreaElement;
 		const keyCode = event.which;
 		const { id } = this.editing;
@@ -631,7 +697,7 @@ export class ChatMessages {
 		}
 	}
 
-	keyup(event: KeyboardEvent, { rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+	public keyup(event: KeyboardEvent, { rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		const input = event.currentTarget as HTMLTextAreaElement;
 		const keyCode = event.which;
 
@@ -643,10 +709,10 @@ export class ChatMessages {
 			}
 		}
 
-		messageBoxState.save({ rid, tmid }, input);
+		this.setDraftAndUpdateInput(input.value);
 	}
 
-	onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {
+	public onDestroyed(rid: IRoom['_id'], tmid?: IMessage['_id']) {
 		UserAction.cancel(rid);
 		// TODO: check why we need too many ?. here :(
 		if (this.input?.parentElement?.classList.contains('editing') === true) {
@@ -654,10 +720,38 @@ export class ChatMessages {
 				this.clearCurrentDraft();
 				this.clearEditing();
 			}
-			messageBoxState.set(this.input, '');
-			messageBoxState.save({ rid, tmid }, this.input);
+			this.setDraftAndUpdateInput('');
 		}
 	}
-}
 
-export const chatMessages: Record<IRoom['_id'], ChatMessages> = {};
+	private static instances: Record<string, ChatMessages> = {};
+
+	private static getID({ rid, tmid, input }: ChatMessagesParams): string {
+		if (input) {
+			const id = Object.entries(this.instances).find(([, instance]) => instance.input === input)?.[0];
+			if (!id) throw new Error('ChatMessages: input not found');
+
+			return id;
+		}
+
+		return `${rid}${tmid ? `-${tmid}` : ''}`;
+	}
+
+	public static get(params: ChatMessagesParams): ChatMessages | undefined {
+		return this.instances[this.getID(params)];
+	}
+
+	public static set(params: ChatMessagesParams, instance: ChatMessages) {
+		this.instances[this.getID(params)] = instance;
+	}
+
+	public static delete({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
+		const id = this.getID({ rid, tmid });
+		this.instances[id].onDestroyed(rid, tmid);
+		delete this.instances[id];
+	}
+
+	public static purgeAllDrafts() {
+		ComposerState.purgeAll();
+	}
+}
