@@ -553,7 +553,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'Use_Legacy_Message_Template_alert',
+			alert: 'This_is_a_deprecated_feature_alert',
 		});
 	});
 
@@ -1144,6 +1144,7 @@ settingsRegistry.addGroup('Message', function () {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
+			alert: 'This_is_a_deprecated_feature_alert',
 		});
 
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
@@ -1223,6 +1224,7 @@ settingsRegistry.addGroup('Message', function () {
 	this.add('Message_ShowEditedStatus', true, {
 		type: 'boolean',
 		public: true,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
@@ -1259,6 +1261,7 @@ settingsRegistry.addGroup('Message', function () {
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		public: true,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
@@ -1291,6 +1294,7 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'string',
 		public: true,
 		i18nDescription: 'API_EmbedDisabledFor_Description',
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
