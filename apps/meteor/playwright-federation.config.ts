@@ -21,5 +21,4 @@ export default {
 	workers: 1,
 	retries: 2,
 	timeout: 60 * 2000,
-	maxFailures: 5,
 } as PlaywrightTestConfig;

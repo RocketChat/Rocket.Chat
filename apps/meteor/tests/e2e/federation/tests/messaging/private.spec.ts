@@ -24,6 +24,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 	let pageForServer2: Page;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
@@ -39,8 +41,6 @@ test.describe.parallel('Federation - Group Messaging', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		await setupTesting(apiServer1);
-		await setupTesting(apiServer2);
 	});
 
 	test.afterAll(async ({ apiServer1, apiServer2 }) => {
@@ -149,8 +149,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 					await pageForServer2.close();
 					await page2.close();
 				});
-				// TODO: double check this test
-				test.skip('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
+				
+				test('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 					await doLogin({

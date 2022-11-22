@@ -15,6 +15,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 	let createdChannelName: string;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
@@ -26,8 +28,6 @@ test.describe.parallel('Federation - Channel Creation', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		await setupTesting(apiServer1);
-		await setupTesting(apiServer2);
 	});
 
 	test.afterAll(async ({ apiServer1, apiServer2 }) => {
@@ -256,8 +256,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 					await page2.close();
 				});
 			});
-			// TODO: double check this test
-			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
+			
+			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				const createdChannel = faker.datatype.uuid();
 
 				test('expect to create a channel inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
@@ -1068,8 +1068,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await pageForServer2.close();
 			});
 		});
-		// TODO: double check this test
-		test.describe.skip('Removing users from room', () => {
+		
+		test.describe('Removing users from room', () => {
 			test('expect to remove the invitee from the room', async ({ browser, page, apiServer2 }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
@@ -1116,7 +1116,6 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameFromServer2)).toBeVisible();
 				await expect(poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).toBeVisible();
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
 
 				await poFederationChannelServer1.tabs.members.removeUserFromRoom(usernameWithDomainFromServer2);
 				const removedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(

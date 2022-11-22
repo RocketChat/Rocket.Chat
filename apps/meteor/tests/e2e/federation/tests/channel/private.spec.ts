@@ -15,6 +15,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 	let createdGroupName: string;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
@@ -26,8 +28,6 @@ test.describe.parallel('Federation - Group Creation', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		await setupTesting(apiServer1);
-		await setupTesting(apiServer2);
 	});
 
 	test.afterAll(async ({ apiServer1, apiServer2 }) => {
@@ -256,8 +256,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await page2.close();
 				});
 			});
-			// TODO: double check this test
-			test.describe.skip('With multiple users (when the user from Server B already exists in Server A)', () => {
+			
+			test.describe('With multiple users (when the user from Server B already exists in Server A)', () => {
 				const createdGroup = faker.datatype.uuid();
 				test('expect to create a group inviting an user from the Server B who already exist in Server A + an user from Server A only (locally)', async ({
 					browser,
@@ -317,7 +317,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 					await pageForServer2.close();
 				});
 
-				test('expect the user from Server A (locally) is able to access the previous created', async ({ browser }) => {
+				test('expect the user from Server A (locally) is able to access the previous created group', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 

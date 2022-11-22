@@ -24,6 +24,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 	let pageForServer2: Page;
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
 		userFromServer1UsernameOnly = await registerUser(apiServer1);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
@@ -39,8 +41,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		await setupTesting(apiServer1);
-		await setupTesting(apiServer2);
 	});
 
 	test.afterAll(async ({ apiServer1, apiServer2 }) => {

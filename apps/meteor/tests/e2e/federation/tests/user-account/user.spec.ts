@@ -24,6 +24,8 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 	);
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		const page = await browser.newPage();
 		poFederationChannelServer1 = new FederationChannel(page);
@@ -38,8 +40,6 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		await setupTesting(apiServer1);
-		await setupTesting(apiServer2);
 	});
 
 	test.afterAll(async ({ apiServer1, apiServer2 }) => {

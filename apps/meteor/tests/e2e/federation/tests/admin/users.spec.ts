@@ -19,6 +19,8 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 	});
 
 	test.beforeAll(async ({ apiServer1, apiServer2, browser }) => {
+		await setupTesting(apiServer1);
+		await setupTesting(apiServer2);
 		userFromServer2UsernameOnly = await registerUser(apiServer2);
 		usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 			userFromServer2UsernameOnly,
@@ -34,8 +36,6 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 			fullUsernameFromServer: fullUsernameFromServer2,
 			server: constants.RC_SERVER_1,
 		});
-		await setupTesting(apiServer1);
-		await setupTesting(apiServer2);
 	});
 
 	test.afterAll(async ({ apiServer1, apiServer2 }) => {
@@ -74,7 +74,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		).toContainText('Not possible to edit a federated user');
 	});
 
-	// TODO: these skipped tests needs a this PR to be merged: https://github.com/RocketChat/Rocket.Chat/pull/27251
+	// TODO: these skipped tests needs this PR to be merged: https://github.com/RocketChat/Rocket.Chat/pull/27251
 
 	test.skip('expect not to have the kebab menu enable, since there should not be any menu option enabled for federated users', async ({
 		page,
