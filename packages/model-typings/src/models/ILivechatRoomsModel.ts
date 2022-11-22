@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type { FindCursor, UpdateResult, AggregationCursor, Document } from 'mongodb';
 
 import type { FindPaginated } from '..';
 import type { IBaseModel } from './IBaseModel';
@@ -73,6 +73,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		served: any;
 		onlyCount?: boolean;
 		options?: any;
+		source?: string;
 	}): any;
 
 	findRoomsWithCriteria(params: {
@@ -106,4 +107,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	unsetAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
 
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
+
+	findAvailableSources(): AggregationCursor<Document>;
 }
