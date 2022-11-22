@@ -14,7 +14,9 @@ import type {
 	FederationSetupRoomDto,
 } from '../../input/RoomSenderDto';
 import { FederationServiceEE } from '../AbstractFederationService';
+// eslint-disable-next-line
 require('util').inspect.defaultOptions.depth = null;
+
 export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
@@ -58,7 +60,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {
 		const { internalInviterId, internalRoomId, invitees, inviteComesFromAnExternalHomeServer } = roomOnUsersAddedToARoomInput;
-		console.log({ roomOnUsersAddedToARoomInput })
+		console.log({ roomOnUsersAddedToARoomInput });
 
 		if (inviteComesFromAnExternalHomeServer) {
 			return;
@@ -163,7 +165,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { internalInviterId, internalRoomId, normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
-		console.log({ roomInviteUserInput })
+		console.log({ roomInviteUserInput });
 
 		const isInviteeFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
@@ -191,11 +193,11 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		if (!federatedInviteeUser) {
 			throw new Error(`User with internalUsername ${username} not found`);
 		}
-		console.log({ isInviteeFromTheSameHomeServer })
+		console.log({ isInviteeFromTheSameHomeServer });
 
 		if (isInviteeFromTheSameHomeServer) {
 			const profile = await this.bridge.getUserProfileInformation(federatedInviteeUser.getExternalId());
-			console.log({ profile })
+			console.log({ profile });
 			if (!profile) {
 				await this.bridge.createUser(
 					inviteeUsernameOnly,
@@ -205,11 +207,13 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			}
 		}
 
-		console.log({ inviting: {
-			invitee: federatedInviteeUser.getExternalId(),
-			inviter: federatedInviterUser.getExternalId(),
-			room: federatedRoom.getExternalId(),
-		} })
+		console.log({
+			inviting: {
+				invitee: federatedInviteeUser.getExternalId(),
+				inviter: federatedInviterUser.getExternalId(),
+				room: federatedRoom.getExternalId(),
+			},
+		});
 		await this.bridge.inviteToRoom(
 			federatedRoom.getExternalId(),
 			federatedInviterUser.getExternalId(),
