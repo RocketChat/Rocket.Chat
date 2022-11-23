@@ -8,6 +8,10 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Messages } from '../../../models/client';
+import {
+	hasTranslationLanguageInAttachments,
+	hasTranslationLanguageInMessage,
+} from '../../../../client/views/room/MessageList/lib/autoTranslate';
 
 Meteor.startup(() => {
 	AutoTranslate.init();
@@ -22,10 +26,7 @@ Meteor.startup(() => {
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (
-						!isTranslatedMessage(message) ||
-						(!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language]))
-					) {
+					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -34,9 +35,7 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, subscription, user }) {
-					const language = subscription?.autoTranslateLanguage || '';
-					const hasTranslationLanguage = isTranslatedMessage(message) && Boolean(message.translations?.[language]);
-					const hasAttachmentTranslationLanguage = Boolean(message.attachments?.some((attachment) => attachment?.translations?.[language]));
+					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
 					if (!user) {
 						return false;
 					}
@@ -46,7 +45,8 @@ Meteor.startup(() => {
 							message.u._id !== user._id &&
 							subscription?.autoTranslate &&
 							((isTranslatedMessage(message) && message.autoTranslateShowInverse) ||
-								(!hasTranslationLanguage && !hasAttachmentTranslationLanguage)),
+								(!hasTranslationLanguageInMessage(message, language) &&
+									!hasTranslationLanguageInAttachments(message.attachments, language))),
 					);
 				},
 				order: 90,
@@ -59,10 +59,7 @@ Meteor.startup(() => {
 				action(_, props) {
 					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
-					if (
-						!isTranslatedMessage(message) ||
-						(!message.translations?.[language] && !message.attachments?.some((attachment) => attachment?.translations?.[language]))
-					) {
+					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -71,9 +68,7 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, subscription, user }) {
-					const language = subscription?.autoTranslateLanguage || '';
-					const hasMessageTranslated = isTranslatedMessage(message) && Boolean(message.translations?.[language]);
-					const hasAttachmentTranslated = message.attachments?.some((attachment) => attachment?.translations?.[language]);
+					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
 					if (!user) {
 						return false;
 					}
@@ -84,7 +79,7 @@ Meteor.startup(() => {
 							isTranslatedMessage(message) &&
 							subscription?.autoTranslate &&
 							!message.autoTranslateShowInverse &&
-							(hasMessageTranslated || hasAttachmentTranslated),
+							(hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language)),
 					);
 				},
 				order: 90,

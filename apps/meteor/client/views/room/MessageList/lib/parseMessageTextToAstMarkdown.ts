@@ -3,6 +3,7 @@ import {
 	isE2EEMessage,
 	isOTRMessage,
 	isQuoteAttachment,
+	isTranslatedAttachment,
 	isTranslatedMessage,
 	MessageAttachment,
 	MessageQuoteAttachment,
@@ -62,7 +63,10 @@ export const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(
 		quote.attachments = quote.attachments.map((attachment) => parseMessageQuoteAttachment(attachment, parseOptions, autoTranslateOptions));
 	}
 
-	const text = (translated && autoTranslateLanguage && quote?.translations?.[autoTranslateLanguage]) || quote.text || '';
+	const text =
+		(isTranslatedAttachment(quote) && translated && autoTranslateLanguage && quote?.translations?.[autoTranslateLanguage]) ||
+		quote.text ||
+		'';
 
 	return {
 		...quote,
@@ -88,7 +92,7 @@ export const parseMessageAttachments = <T extends MessageAttachment>(
 		}
 
 		const text =
-			(translated && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
+			(isTranslatedAttachment(attachment) && translated && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
 			attachment.text ||
 			attachment.description ||
 			'';
