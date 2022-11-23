@@ -1,6 +1,17 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
-import { Box, Icon, Margins, Option, OptionColumn, OptionContent, OptionDivider, OptionTitle, RadioButton } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Icon,
+	Margins,
+	Option,
+	OptionColumn,
+	OptionContent,
+	OptionDivider,
+	OptionIcon,
+	OptionTitle,
+	RadioButton,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -132,16 +143,18 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<>
 					<OptionTitle>{t('Theme')}</OptionTitle>
 					<Option>
-						<OptionContent>
-							<Icon name='sun' />
+						<OptionIcon name='sun' />
+						<OptionContent>{t('Theme_light')}</OptionContent>
+						<OptionColumn>
 							<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
-						</OptionContent>
+						</OptionColumn>
 					</Option>
 					<Option>
-						<OptionContent>
-							<Icon name='moon' />
+						<OptionIcon name='moon' />
+						<OptionContent>{t('Theme_dark')}</OptionContent>
+						<OptionColumn>
 							<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
-						</OptionContent>
+						</OptionColumn>
 					</Option>
 					<OptionDivider />
 				</>
