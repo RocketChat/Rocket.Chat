@@ -36,7 +36,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !room) {
+				if (!params || !params.user || !room || !params.inviter) {
 					return;
 				}
 
@@ -51,7 +51,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !room) {
+				if (!params || !params.user || !room || !params.inviter) {
 					return;
 				}
 
