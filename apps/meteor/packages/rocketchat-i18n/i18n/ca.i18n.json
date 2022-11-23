@@ -4781,5 +4781,18 @@
   "Your_server_link": "El vostre enllaç del servidor",
   "Your_temporary_password_is_password": "La vostra contrasenya temporal és <strong> [contrasenya] </strong>.",
   "Your_TOTP_has_been_reset": "El vostre TOTP de dos factors s'ha restablert.",
-  "Your_workspace_is_ready": "El vostre espai de treball està a punt per utilitzar 🎉"
+  "Your_workspace_is_ready": "El vostre espai de treball està a punt per utilitzar 🎉",
+  "registration.page.login.errors.wrongCredentials": "Usuari no trobat o contrasenya incorrecta",
+  "registration.page.login.errors.loginBlockedForIp": "L'inici de sessió ha estat bloquejat temporalment per a aquesta IP",
+  "registration.page.login.errors.loginBlockedForUser": "L'inici de sessió ha estat bloquejat temporalment per a aquest usuari",
+  "registration.page.login.errors.licenseUserLimitReached": "S'ha arribat al nombre màxim d'usuaris.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Els usuaris de l'aplicació no poden accedir directament.",
+  "registration.page.registration.waitActivationWarning": "Abans de poder iniciar sessió, els comptes han de ser activats manualment per un administrador.",
+  "registration.page.resetPassword.sent": "Si l'adreça de correu-e ja està registrada, t'enviarem instruccions sobre com restablir la contrasenya. Si no reps el missatge en breu, si us plau torna i reintenta-ho.",
+  "registration.component.login": "Inicia sessió",
+  "registration.component.resetPassword": "Reinicialitza la contrasenya",
+  "registration.component.form.email": "Correu electrònic",
+  "registration.component.form.password": "Contrasenya",
+  "registration.component.form.divider": "o",
+  "registration.component.form.submit": "Envia"
 }
