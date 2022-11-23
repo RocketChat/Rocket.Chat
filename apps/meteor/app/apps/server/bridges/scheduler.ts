@@ -15,7 +15,7 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 		// This field is for internal use, no need to leak to app processor
 		delete (data as any).appId;
 
-		data.jobId = job.attrs._id.toString();
+		data.jobId = job.attrs._id?.toString();
 
 		return (processor as (jobContext: IJobContext) => Promise<void>)(data).then(() => {
 			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
@@ -106,7 +106,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		try {
 			await this.startScheduler();
 			const job = await this.scheduler.schedule(when, id, this.decorateJobData(data, appId));
-			return job.attrs._id.toString();
+			return job.attrs._id?.toString();
 		} catch (e) {
 			this.orch.getRocketChatLogger().error(e);
 		}
@@ -139,7 +139,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		this.orch.debugLog(`The App ${appId} is scheduling a recurring job (processor ${id})`);
 		try {
 			await this.startScheduler();
-			const job = await this.scheduler.every(interval, id, this.decorateJobData(data, appId), {
+			const job = await this.scheduler.every(String(interval), id, this.decorateJobData(data, appId), {
 				skipImmediate,
 			});
 			return job.attrs._id.toString();
