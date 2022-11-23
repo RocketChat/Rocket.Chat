@@ -270,6 +270,12 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).sendTyping(externalRoomId, isTyping);
 	}
 
+	public async isUserPartOfTheRoom(externalRoomId: string, externalUserId: string): Promise<boolean> {
+		const joinedRooms = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getJoinedRooms();
+
+		return joinedRooms.includes(externalRoomId);
+	}
+
 	public async sendMessageReaction(
 		externalRoomId: string,
 		externalUserId: string,
@@ -435,6 +441,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

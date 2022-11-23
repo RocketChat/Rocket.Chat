@@ -205,6 +205,10 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				);
 			}
+			const alreadyJoined = await this.bridge.isUserPartOfTheRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
+			if (alreadyJoined) {
+				return;
+			}
 		}
 
 		console.log({
@@ -219,5 +223,8 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			federatedInviterUser.getExternalId(),
 			federatedInviteeUser.getExternalId(),
 		);
+		if (isInviteeFromTheSameHomeServer) {
+			await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
+		}
 	}
 }
