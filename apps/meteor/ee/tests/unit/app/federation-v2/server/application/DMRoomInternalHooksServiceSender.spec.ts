@@ -37,7 +37,7 @@ const { FederationDMRoomInternalHooksServiceSender } = proxyquire
 		},
 	});
 
-describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSender', () => {
+describe.skip('FederationEE - Application - FederationDMRoomInternalHooksServiceSender', () => {
 	let service: typeof FederationDMRoomInternalHooksServiceSender;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
