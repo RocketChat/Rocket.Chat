@@ -12,5 +12,11 @@ addMigration({
 			// ignore
 			console.log(error);
 		}
+		try {
+			await LivechatPriority.col.dropIndex('name_1');
+		} catch (error) {
+			// ignore
+			console.log(error);
+		}
 	},
 });

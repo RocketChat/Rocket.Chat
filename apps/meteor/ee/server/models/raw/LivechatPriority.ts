@@ -30,6 +30,6 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 	}
 
 	async resetPriorities(): Promise<void> {
-		await this.updateMany({ dirty: true }, [{ $set: { dirty: false, name: '$defaultValue' } }]);
+		await this.updateMany({ dirty: true }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
 	}
 }

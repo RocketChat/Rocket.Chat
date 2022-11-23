@@ -44,15 +44,12 @@ export async function updatePriority(
 	const query = {
 		_id,
 	};
+	const update: { $set: Record<string, boolean>; $unset?: Record<string, number> } = { $set: { dirty: !data.reset } };
 	if (data.reset) {
-		data.name = '$.defaultValue';
+		update.$unset = { name: 1 };
 	}
-	const created = await LivechatPriority.findOneAndUpdate(
-		query,
-		{ $set: { dirty: !data.reset, name: data.name } },
-		{
-			returnDocument: 'after',
-		},
-	);
+	const created = await LivechatPriority.findOneAndUpdate(query, update, {
+		returnDocument: 'after',
+	});
 	return created.value as ILivechatPriority;
 }

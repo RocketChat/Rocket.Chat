@@ -177,8 +177,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('livechat/priorities', () => {
-		let priority: ILivechatPriority;
-
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-priorities', []);
 			await updatePermission('view-l-room', []);
@@ -201,25 +199,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.lengthOf(5);
 			expect(response.body.priorities[0]).to.have.property('_id');
-			expect(response.body.priorities[0]).to.have.property('name');
-			expect(response.body.priorities[0]).to.have.property('defaultValue');
+			expect(response.body.priorities[0]).to.have.property('i18n');
 			expect(response.body.priorities[0]).to.have.property('dirty');
-			priority = response.body.priorities[0];
-		});
-		it('should return an array of priorities matching text param', async () => {
-			const response = await request
-				.get(api('livechat/priorities'))
-				.set(credentials)
-				.query({
-					text: priority.name,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-			expect(response.body).to.have.property('success', true);
-			expect(response.body.priorities).to.be.an('array');
-			expect(response.body.priorities).to.have.length.greaterThan(0);
-			expect(response.body.priorities[0]).to.have.property('_id');
-			expect(response.body.priorities[0]).to.have.property('name', priority.name);
 		});
 	});
 
@@ -275,6 +256,21 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', true);
+		});
+		it('should return an array of priorities matching text param', async () => {
+			const response = await request
+				.get(api('livechat/priorities'))
+				.set(credentials)
+				.query({
+					text: priority.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.priorities).to.be.an('array');
+			expect(response.body.priorities).to.have.length.greaterThan(0);
+			expect(response.body.priorities[0]).to.have.property('_id');
+			expect(response.body.priorities[0]).to.have.property('i18n', priority.i18n);
 		});
 		it('should reset a single priority with a reset:true PUT parameter', async () => {
 			const response = await request
@@ -359,8 +355,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', false);
-			expect(response.body.name).not.eq(priority.name);
-			expect(response.body.name).to.eq(priority.defaultValue);
+			expect(response.body).to.not.have.property('name');
 		});
 		it('should change all priorities to their default', async () => {
 			const response = await request
@@ -371,7 +366,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			response.body.priorities.forEach((priority: ILivechatPriority) => {
-				expect(priority.name).to.eq(priority.defaultValue);
+				expect(priority).to.not.have.property('name');
 				expect(priority).to.have.property('dirty', false);
 			});
 		});
