@@ -7,7 +7,7 @@ import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../../app/utils/client';
 import { dispatchToastMessage } from '../../../lib/toast';
 
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED, AppStatus.INITIALIZED];
 
 interface ApiError {
 	xhr: {
@@ -37,7 +37,7 @@ type appButtonResponseProps = {
 
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
-	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
+	icon?: 'warning' | 'ban' | 'checkmark-circled' | 'check';
 	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
 	tooltipText?: string;
 };
@@ -282,10 +282,10 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	}
 
 	const isEnabled = status && appEnabledStatuses.includes(status);
+	console.log('App Status:', status);
 	if (!isEnabled) {
 		return {
 			type: 'warning',
-			icon: 'ban',
 			label: 'Disabled',
 		};
 	}
