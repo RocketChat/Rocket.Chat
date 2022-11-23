@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefixer';
+import { convertToCss } from '@rocket.chat/ui-theming/src/convertToCss';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
@@ -111,11 +112,11 @@ export const theme = new (class {
 	}
 
 	getCss() {
-		return settings.get('css') || '';
+		return (settings.get('css') || '') + convertToCss(JSON.parse(settings.get('Layout_Fuselage_Palette')));
 	}
 })();
 
-settings.watch('css', () => {
+settings.watchMultiple(['css', 'Layout_Fuselage_Palette'], () => {
 	addStyle('css-theme', theme.getCss());
 	process.emit('message', {
 		refresh: 'client',
