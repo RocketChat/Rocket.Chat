@@ -1,6 +1,17 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
-import { Box, Icon, Margins, Option, OptionColumn, OptionContent, OptionDivider, OptionTitle, ToggleSwitch } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Icon,
+	Margins,
+	Option,
+	OptionColumn,
+	OptionContent,
+	OptionDivider,
+	OptionTitle,
+	RadioButton,
+	ToggleSwitch,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
@@ -57,9 +68,6 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	useEffect(() => {
 		setPalette(themes[isDarkMode ? 'dark' : 'light']);
 	}, [isDarkMode]);
-	useEffect(() => {
-		console.log(palette);
-	}, [palette]);
 
 	const theme = useExperimentalTheme();
 
@@ -89,6 +97,10 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 		logout();
 		onClose();
 	});
+
+	const handleThemeSwitch = (): void => {
+		setIsDarkMode(!isDarkMode);
+	};
 
 	return (
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
@@ -151,13 +163,18 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					<Option>
 						<OptionContent>
 							<Icon name='sun' />
-							<ToggleSwitch onChange={(): void => setIsDarkMode(!isDarkMode)} m='x4' />
-							<Icon name='moon' />
+							<RadioButton checked={!isDarkMode} onChange={handleThemeSwitch} m='x4' />
 						</OptionContent>
 					</Option>
+					<Option>
+						<OptionContent>
+							<Icon name='moon' />
+							<RadioButton checked={isDarkMode} onChange={handleThemeSwitch} m='x4' />
+						</OptionContent>
+					</Option>
+					<OptionDivider />
 				</>
 			)}
-			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>
