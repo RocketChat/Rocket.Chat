@@ -89,7 +89,7 @@
     "webpack": "~5.68.0"
   },
   "dependencies": {
-    "@rocket.chat/ui-kit": "0.31.20",
+    "@rocket.chat/ui-kit": "next",
     "tslib": "^2.3.1"
   }
 }
