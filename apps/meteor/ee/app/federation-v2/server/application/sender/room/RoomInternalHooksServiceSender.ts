@@ -138,29 +138,37 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 	private async setupFederatedRoom(roomInviteUserInput: FederationSetupRoomDto): Promise<void> {
 		const { internalInviterId, internalRoomId } = roomInviteUserInput;
+		try {
+			const inviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
+			if (!inviterUser) {
+				await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId);
+			}
 
-		const inviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
-		if (!inviterUser) {
-			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId);
-		}
+			const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
+			if (!federatedInviterUser) {
+				throw new Error(`User with internalId ${internalInviterId} not found`);
+			}
 
-		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
-		if (!federatedInviterUser) {
-			throw new Error(`User with internalId ${internalInviterId} not found`);
-		}
+			const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+			if (internalFederatedRoom) {
+				return;
+			}
+			const internalRoom = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
+			if (!internalRoom || !internalRoom.name) {
+				throw new Error(`Room with internalId ${internalRoomId} not found`);
+			}
+			const roomName = internalRoom.fname || internalRoom.name;
+			const externalRoomId = await this.bridge.createRoom(
+				federatedInviterUser.getExternalId(),
+				internalRoom.t,
+				roomName,
+				internalRoom.topic,
+			);
 
-		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
-		if (internalFederatedRoom) {
-			return;
+			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoom._id, externalRoomId);
+		} catch (error) {
+			console.error(error);
 		}
-		const internalRoom = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
-		if (!internalRoom || !internalRoom.name) {
-			throw new Error(`Room with internalId ${internalRoomId} not found`);
-		}
-		const roomName = internalRoom.fname || internalRoom.name;
-		const externalRoomId = await this.bridge.createRoom(federatedInviterUser.getExternalId(), internalRoom.t, roomName, internalRoom.topic);
-
-		await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoom._id, externalRoomId);
 	}
 
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
@@ -205,10 +213,10 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				);
 			}
-			const alreadyJoined = await this.bridge.isUserPartOfTheRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
-			if (alreadyJoined) {
-				return;
-			}
+			// const alreadyJoined = await this.bridge.isUserPartOfTheRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
+			// if (alreadyJoined) {
+			// 	return;
+			// }
 		}
 
 		console.log({
@@ -226,5 +234,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
 		}
+		console.log(await this.bridge.getRoomMembers(federatedRoom.getExternalId(), federatedInviterUser.getExternalId()));
 	}
 }

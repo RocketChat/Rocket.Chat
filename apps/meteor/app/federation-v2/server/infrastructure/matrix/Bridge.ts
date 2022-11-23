@@ -354,6 +354,13 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
+	public async getRoomMembers(externalRoomId: string, externalUserId: string): Promise<any[]> {
+		console.log({
+			joinedUsers: await this.bridgeInstance.getIntent(externalUserId).matrixClient.getJoinedRoomMembers(externalRoomId),
+		});
+		return this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomMembers(externalRoomId);
+	}
+
 	public async sendReplyMessageFileToRoom(
 		externalRoomId: string,
 		externaSenderId: string,
