@@ -2,7 +2,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
 import {
 	Box,
-	Icon,
 	Margins,
 	Option,
 	OptionColumn,
@@ -24,7 +23,7 @@ import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
-import { useExperimentalTheme } from '../../views/hooks/useExperimentalTheme';
+import { useIsExperimentalThemeEnabled } from '../../views/hooks/useExperimentalTheme';
 import EditStatusModal from './EditStatusModal';
 
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
@@ -57,7 +56,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 	const [selectedTheme, setTheme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
 
-	const isExperimentalThemeEnabled = useExperimentalTheme();
+	const isExperimentalThemeEnabled = useIsExperimentalThemeEnabled();
 
 	const { username, avatarETag, status, statusText } = user;
 

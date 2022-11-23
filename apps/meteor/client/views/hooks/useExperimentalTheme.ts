@@ -15,3 +15,8 @@ export const useExperimentalTheme = (): boolean => {
 
 	return value;
 };
+
+export const useIsExperimentalThemeEnabled = (): boolean => {
+	const [value] = useSessionStorage('rc-experimental-theme', false);
+	return value;
+};
