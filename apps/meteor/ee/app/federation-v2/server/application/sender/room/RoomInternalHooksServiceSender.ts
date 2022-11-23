@@ -36,17 +36,50 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		if (invitees.length === 0) {
 			return;
 		}
-		await Promise.all(
-			invitees.map((member) =>
-				this.inviteUserToAFederatedRoom({
-					internalInviterId,
-					internalRoomId,
-					inviteeUsernameOnly: member.inviteeUsernameOnly,
-					normalizedInviteeId: member.normalizedInviteeId,
-					rawInviteeId: member.rawInviteeId,
-				}),
-			),
+		const localUsers = invitees.filter((user) =>
+			FederatedUserEE.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(user.rawInviteeId), this.internalHomeServerDomain),
 		);
+
+		const externalUsers = invitees.filter(
+			(user) =>
+				!FederatedUserEE.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(user.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
+		);
+
+		for await (const user of externalUsers) {
+			await this.inviteUserToAFederatedRoom({
+				internalInviterId,
+				internalRoomId,
+				inviteeUsernameOnly: user.inviteeUsernameOnly,
+				normalizedInviteeId: user.normalizedInviteeId,
+				rawInviteeId: user.rawInviteeId,
+			});
+		}
+
+		await new Promise((r) => setTimeout(r, 5000));
+
+		for await (const user of localUsers) {
+			await this.inviteUserToAFederatedRoom({
+				internalInviterId,
+				internalRoomId,
+				inviteeUsernameOnly: user.inviteeUsernameOnly,
+				normalizedInviteeId: user.normalizedInviteeId,
+				rawInviteeId: user.rawInviteeId,
+			});
+		}
+		// await Promise.all(
+		// 	invitees.map((member) =>
+		// 		this.inviteUserToAFederatedRoom({
+		// 			internalInviterId,
+		// 			internalRoomId,
+		// 			inviteeUsernameOnly: member.inviteeUsernameOnly,
+		// 			normalizedInviteeId: member.normalizedInviteeId,
+		// 			rawInviteeId: member.rawInviteeId,
+		// 		}),
+		// 	),
+		// );
 	}
 
 	public async beforeAddUserToARoom(dmBeforeAddUserToARoomInput: FederationBeforeAddUserToARoomDto): Promise<void> {
@@ -66,17 +99,49 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			return;
 		}
 
-		await Promise.all(
-			invitees.map((member) =>
-				this.inviteUserToAFederatedRoom({
-					internalInviterId,
-					internalRoomId,
-					inviteeUsernameOnly: member.inviteeUsernameOnly,
-					normalizedInviteeId: member.normalizedInviteeId,
-					rawInviteeId: member.rawInviteeId,
-				}),
-			),
+		const localUsers = invitees.filter((user) =>
+			FederatedUserEE.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(user.rawInviteeId), this.internalHomeServerDomain),
 		);
+
+		const externalUsers = invitees.filter(
+			(user) =>
+				!FederatedUserEE.isOriginalFromTheProxyServer(
+					this.bridge.extractHomeserverOrigin(user.rawInviteeId),
+					this.internalHomeServerDomain,
+				),
+		);
+		for await (const user of externalUsers) {
+			await this.inviteUserToAFederatedRoom({
+				internalInviterId,
+				internalRoomId,
+				inviteeUsernameOnly: user.inviteeUsernameOnly,
+				normalizedInviteeId: user.normalizedInviteeId,
+				rawInviteeId: user.rawInviteeId,
+			});
+		}
+
+		await new Promise((r) => setTimeout(r, 5000));
+
+		for await (const user of localUsers) {
+			await this.inviteUserToAFederatedRoom({
+				internalInviterId,
+				internalRoomId,
+				inviteeUsernameOnly: user.inviteeUsernameOnly,
+				normalizedInviteeId: user.normalizedInviteeId,
+				rawInviteeId: user.rawInviteeId,
+			});
+		}
+		// await Promise.all(
+		// 	invitees.map((member) =>
+		// 		this.inviteUserToAFederatedRoom({
+		// 			internalInviterId,
+		// 			internalRoomId,
+		// 			inviteeUsernameOnly: member.inviteeUsernameOnly,
+		// 			normalizedInviteeId: member.normalizedInviteeId,
+		// 			rawInviteeId: member.rawInviteeId,
+		// 		}),
+		// 	),
+		// );
 	}
 
 	public async afterRoomNameChanged(internalRoomId: string, internalRoomName: string): Promise<void> {
