@@ -2778,6 +2778,7 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 
 type PUTLivechatPriority = {
 	name: string;
+	reset?: boolean;
 };
 
 const PUTLivechatPrioritySchema = {
@@ -2785,6 +2786,9 @@ const PUTLivechatPrioritySchema = {
 	properties: {
 		name: {
 			type: 'string',
+		},
+		reset: {
+			type: 'boolean',
 		},
 	},
 	additionalProperties: false,
@@ -3032,7 +3036,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities.reset': {
-		POST: () => void;
+		POST: (params: { reset: boolean }) => void;
 		GET: () => { reset: boolean };
 	};
 

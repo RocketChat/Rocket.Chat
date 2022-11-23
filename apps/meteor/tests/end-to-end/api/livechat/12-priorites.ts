@@ -276,6 +276,25 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', true);
 		});
+		it('should reset a single priority with a reset:true PUT parameter', async () => {
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: faker.random.word(),
+					reset: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			const newPriorityResponse = await request
+				.get(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(newPriorityResponse.body).to.have.property('success', true);
+			expect(newPriorityResponse.body).to.have.property('dirty', false);
+		});
 	});
 
 	describe('livechat/priorities.reset', () => {

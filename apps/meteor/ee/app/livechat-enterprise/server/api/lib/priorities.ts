@@ -37,11 +37,22 @@ export async function findPriority({
 	};
 }
 
-export async function updatePriority(_id: string, data: Pick<ILivechatPriority, 'name'>): Promise<ILivechatPriority> {
+export async function updatePriority(
+	_id: string,
+	data: Pick<ILivechatPriority & { reset: boolean }, 'name' | 'reset'>,
+): Promise<ILivechatPriority> {
 	const query = {
 		_id,
 	};
-
-	const created = await LivechatPriority.findOneAndUpdate(query, { $set: { ...data, dirty: true } }, { returnDocument: 'after' });
+	if (data.reset) {
+		data.name = '$.defaultValue';
+	}
+	const created = await LivechatPriority.findOneAndUpdate(
+		query,
+		{ $set: { dirty: !data.reset, name: data.name } },
+		{
+			returnDocument: 'after',
+		},
+	);
 	return created.value as ILivechatPriority;
 }

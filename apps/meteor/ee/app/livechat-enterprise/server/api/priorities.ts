@@ -54,10 +54,11 @@ API.v1.addRoute(
 		},
 		async put() {
 			const { priorityId } = this.urlParams;
-			const { name } = this.requestParams();
+			const { name, reset } = this.requestParams();
 
 			await updatePriority(priorityId, {
 				name,
+				reset: !!reset,
 			});
 
 			return API.v1.success();
