@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 import type { Options, Root } from '@rocket.chat/message-parser';
-import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { parseMessageAttachments } from '../../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
@@ -176,7 +175,7 @@ describe('parseMessageAttachments', () => {
 		});
 
 		it('should return correct attachment text translated parsed md when translate is active and has multiple texts', () => {
-			const quote: MessageQuoteAttachment = {
+			const quote = {
 				author_name: 'authorName',
 				author_link: 'link',
 				author_icon: 'icon',

@@ -180,7 +180,7 @@ describe('parseMessage', () => {
 		});
 
 		it('should return correct attachment translated parsed md when translate is active', () => {
-			const attachmentTranslatedMessage: ITranslatedMessage = {
+			const attachmentTranslatedMessage = {
 				...translatedMessage,
 				attachments: [
 					{
@@ -221,7 +221,7 @@ describe('parseMessage', () => {
 		});
 
 		it('should return correct attachment quote translated parsed md when translate is active', () => {
-			const attachmentTranslatedMessage: ITranslatedMessage = {
+			const attachmentTranslatedMessage = {
 				...translatedMessage,
 				attachments: [
 					{
@@ -262,7 +262,7 @@ describe('parseMessage', () => {
 		});
 
 		it('should return correct multiple attachment quote translated parsed md when translate is active', () => {
-			const attachmentTranslatedMessage: ITranslatedMessage = {
+			const attachmentTranslatedMessage = {
 				...translatedMessage,
 				attachments: [
 					{
