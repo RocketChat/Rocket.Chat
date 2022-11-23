@@ -151,7 +151,7 @@ export const palette = [
 	},
 ];
 
-export const defaultPalette = {
+export const darkPalette = {
 	...palette.reduce(
 		(rec, group) => ({
 			...rec,

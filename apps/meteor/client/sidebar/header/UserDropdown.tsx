@@ -3,7 +3,10 @@ import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings
 import { Box, Icon, Margins, Option, OptionColumn, OptionContent, OptionDivider, OptionTitle, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
+import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
+import { defaultPalette } from '@rocket.chat/ui-theming/src/palette';
+import { darkPalette } from '@rocket.chat/ui-theming/src/paletteDark';
+import React, { ReactElement, useEffect, useState } from 'react';
 
 import { AccountBox } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
@@ -19,6 +22,11 @@ import EditStatusModal from './EditStatusModal';
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
 
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
+
+const themes = {
+	light: defaultPalette,
+	dark: darkPalette,
+};
 
 const setStatus = (status: typeof userStatus.list['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
@@ -44,6 +52,14 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const logout = useLogout();
 	const { isMobile } = useLayout();
 	const [isDarkMode, setIsDarkMode] = useState(false);
+	const [palette, setPalette] = useState(themes[isDarkMode ? 'dark' : 'light']);
+
+	useEffect(() => {
+		setPalette(themes[isDarkMode ? 'dark' : 'light']);
+	}, [isDarkMode]);
+	useEffect(() => {
+		console.log(palette);
+	}, [palette]);
 
 	const theme = useExperimentalTheme();
 
@@ -129,6 +145,8 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 
 			{theme && (
 				<>
+					<PaletteStyleTag palette={palette} />
+
 					<OptionTitle>{t('Theme')}</OptionTitle>
 					<Option>
 						<OptionContent>
