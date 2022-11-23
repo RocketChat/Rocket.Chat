@@ -45,7 +45,7 @@ export interface IFederationBridge {
 	): Promise<void>;
 	getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined>;
 	joinRoom(externalRoomId: string, externalUserId: string): Promise<void>;
-	createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[], extraData?: Record<string, any>): Promise<string>;
+	createDirectMessageRoom(externalCreatorId: string, inviteesExternalIds: string[], extraData?: Record<string, any>): Promise<string>;
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
 	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<string>;
 	createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string>;

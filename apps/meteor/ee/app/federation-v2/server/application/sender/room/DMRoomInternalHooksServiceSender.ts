@@ -81,10 +81,13 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
-			const externalInviteeIds = invitees.map((invitee) => invitee.rawInviteeId);
-			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), externalInviteeIds, {
+			const inviteesExternalIds = invitees.map((invitee) => invitee.rawInviteeId);
+			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), inviteesExternalIds, {
 				internalRoomId,
 			});
+			// for await (const externalInviteeId of externalInviteeIds) {
+			// 	await this.bridge.inviteToRoom(externalRoomId, federatedInviterUser.getExternalId(), externalInviteeId);
+			// }
 			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 		}
 

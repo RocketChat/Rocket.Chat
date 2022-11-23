@@ -99,6 +99,7 @@ export class FederationRoomServiceListener extends FederationService {
 			roomType,
 			leave,
 			userProfile,
+			allInviteesExternalIdsWhenDM,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
@@ -148,6 +149,52 @@ export class FederationRoomServiceListener extends FederationService {
 				return;
 			}
 			if (isDirectMessageRoom({ t: roomType })) {
+				console.log({ allInviteesExternalIdsWhenDM });
+				if (allInviteesExternalIdsWhenDM && allInviteesExternalIdsWhenDM.length > 0) {
+					const allInvitees = await Promise.all(
+						allInviteesExternalIdsWhenDM.map(async (dmExternalInviteeId) => {
+							const invitee = await this.internalUserAdapter.getFederatedUserByExternalId(dmExternalInviteeId.externalInviteeId);
+							console.log({ invitee });
+							if (!invitee) {
+								const isDMInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+									this.bridge.extractHomeserverOrigin(dmExternalInviteeId.externalInviteeId),
+									this.internalHomeServerDomain,
+								);
+								const dmInviteeUsername = isDMInviteeFromTheSameHomeServer
+									? dmExternalInviteeId.inviteeUsernameOnly
+									: dmExternalInviteeId.normalizedInviteeId;
+								await this.createFederatedUserInternallyOnly(
+									dmExternalInviteeId.externalInviteeId,
+									dmInviteeUsername,
+									isDMInviteeFromTheSameHomeServer,
+								);
+							}
+							return (invitee ||
+								(await this.internalUserAdapter.getFederatedUserByExternalId(dmExternalInviteeId.externalInviteeId))) as FederatedUser;
+						}),
+					);
+					console.log({ allInvitees });
+					const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, [
+						federatedInviterUser,
+						...allInvitees,
+					]);
+					const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
+					await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+						createdInternalRoomId,
+						this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+					);
+					await Promise.all(
+						allInvitees
+							.filter((invitee) =>
+								FederatedUser.isOriginalFromTheProxyServer(
+									this.bridge.extractHomeserverOrigin(invitee.getExternalId()),
+									this.internalHomeServerDomain,
+								),
+							)
+							.map((invitee) => this.bridge.joinRoom(externalRoomId, invitee.getExternalId())),
+					);
+					return;
+				}
 				const members = [federatedInviterUser, federatedInviteeUser];
 				const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, members);
 				const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
@@ -158,6 +205,17 @@ export class FederationRoomServiceListener extends FederationService {
 				);
 				return;
 			}
+			// if (isDirectMessageRoom({ t: roomType })) {
+			// 	const members = [federatedInviterUser, federatedInviteeUser];
+			// 	const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, members);
+			// 	const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
+			// 	await this.bridge.joinRoom(externalRoomId, externalInviteeId);
+			// 	await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+			// 		createdInternalRoomId,
+			// 		this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+			// 	);
+			// 	return;
+			// }
 			const newFederatedRoom = FederatedRoom.createInstance(
 				externalRoomId,
 				normalizedRoomId,

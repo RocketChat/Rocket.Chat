@@ -97,6 +97,44 @@ const tryToExtractAndConvertRoomTypeFromTheRoomState = (
 	};
 };
 
+const extractAllInviteeIdsWhenDM = (
+	externalEvent: MatrixEventRoomMembershipChanged,
+): {
+	externalInviteeId: string;
+	normalizedInviteeId: string;
+	inviteeUsernameOnly: string;
+}[] => {
+	if (!externalEvent.invite_room_state && !externalEvent.unsigned?.invite_room_state) {
+		return [];
+	}
+
+	const inviteesFromRoomState = (
+		externalEvent.invite_room_state?.find((stateEvent) => stateEvent.type === MatrixEventType.ROOM_CREATED) as MatrixEventRoomCreated
+	)?.content.inviteesExternalIds;
+	if (inviteesFromRoomState) {
+		return inviteesFromRoomState.map((inviteeExternalId) => ({
+			externalInviteeId: inviteeExternalId,
+			normalizedInviteeId: removeExternalSpecificCharsFromExternalIdentifier(inviteeExternalId),
+			inviteeUsernameOnly: formatExternalUserIdToInternalUsernameFormat(inviteeExternalId),
+		}));
+	}
+
+	const inviteesFromUnsignedRoomState = (
+		externalEvent.unsigned?.invite_room_state?.find(
+			(stateEvent) => stateEvent.type === MatrixEventType.ROOM_CREATED,
+		) as MatrixEventRoomCreated
+	)?.content.inviteesExternalIds;
+	if (inviteesFromUnsignedRoomState) {
+		return inviteesFromUnsignedRoomState.map((inviteeExternalId) => ({
+			externalInviteeId: inviteeExternalId,
+			normalizedInviteeId: removeExternalSpecificCharsFromExternalIdentifier(inviteeExternalId),
+			inviteeUsernameOnly: formatExternalUserIdToInternalUsernameFormat(inviteeExternalId),
+		}));
+	}
+
+	return [];
+};
+
 export class MatrixRoomReceiverConverter {
 	public static toRoomCreateDto(externalEvent: MatrixEventRoomCreated): FederationRoomCreateInputDto {
 		return new FederationRoomCreateInputDto({
@@ -137,6 +175,7 @@ export class MatrixRoomReceiverConverter {
 				avatarUrl: externalEvent.content?.avatar_url,
 				displayName: externalEvent.content?.displayname,
 			},
+			...(externalEvent.content?.is_direct ? { allInviteesExternalIdsWhenDM: extractAllInviteeIdsWhenDM(externalEvent) } : {}),
 		});
 	}
 

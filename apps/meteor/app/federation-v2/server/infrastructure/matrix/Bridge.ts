@@ -143,26 +143,29 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async createDirectMessageRoom(
 		externalCreatorId: string,
-		externalInviteeIds: string[],
+		inviteesExternalIds: string[],
 		extraData: Record<string, any> = {},
 	): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = MatrixRoomVisibility.PRIVATE;
 		const preset = MatrixRoomType.PRIVATE;
+
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
 			options: {
 				visibility,
 				preset,
 				is_direct: true,
-				invite: externalInviteeIds,
+				invite: inviteesExternalIds,
 				creation_content: {
 					was_internally_programatically_created: true,
 					...extraData,
+					inviteesExternalIds,
 				},
 			},
 		});
+		intent.matrixClient.inviteUser;
 		return matrixRoom.room_id;
 	}
 
