@@ -1,6 +1,5 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { Avatar } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
   VideoConfMessageSkeleton,
   VideoConfMessage,
@@ -44,7 +43,6 @@ const VideoConferenceBlock = ({
     return <></>;
   }
 
-  const getUserAvatarPath = useUserAvatarPath();
   const result = useVideoConfDataStream({ rid, callId });
 
   const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
@@ -115,22 +113,7 @@ const VideoConferenceBlock = ({
             {data.type !== 'direct' &&
               (data.users.length ? (
                 <>
-                  <VideoConfMessageUserStack>
-                    {data.users.map(({ username }, index) => {
-                      if (index + 1 > MAX_USERS) {
-                        return <></>;
-                      }
-
-                      return (
-                        <Avatar
-                          size='x28'
-                          key={index}
-                          data-tooltip={username}
-                          url={getUserAvatarPath(username as string)}
-                        />
-                      );
-                    })}
-                  </VideoConfMessageUserStack>
+                  <VideoConfMessageUserStack users={data.users} />
                   <VideoConfMessageFooterText>
                     {data.users.length > MAX_USERS
                       ? t('__usersCount__member_joined', {
@@ -187,22 +170,7 @@ const VideoConferenceBlock = ({
           </VideoConfMessageButton>
           {data.users.length && (
             <>
-              <VideoConfMessageUserStack>
-                {data.users.map(({ username }, index) => {
-                  if (index + 1 > MAX_USERS) {
-                    return <></>;
-                  }
-
-                  return (
-                    <Avatar
-                      size='x28'
-                      key={index}
-                      data-tooltip={username}
-                      url={getUserAvatarPath(username as string)}
-                    />
-                  );
-                })}
-              </VideoConfMessageUserStack>
+              <VideoConfMessageUserStack users={data.users} />
               <VideoConfMessageFooterText>
                 {data.users.length > MAX_USERS
                   ? t('__usersCount__member_joined', {

@@ -95,13 +95,7 @@ export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
 			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-			<VideoConfMessageUserStack>
-				{Array(3)
-					.fill('')
-					.map((_, index) => (
-						<Avatar key={index} size='x28' url={avatarUrl} />
-					))}
-			</VideoConfMessageUserStack>
+			<VideoConfMessageUserStack users={Array(3).fill('')} />
 			<VideoConfMessageFooterText>Joined</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
@@ -119,13 +113,7 @@ export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
-			<VideoConfMessageUserStack>
-				{Array(3)
-					.fill('')
-					.map((_, index) => (
-						<Avatar key={index} size='x28' url={avatarUrl} />
-					))}
-			</VideoConfMessageUserStack>
+			<VideoConfMessageUserStack users={Array(3).fill('')} />
 			<VideoConfMessageFooterText>Joined</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
