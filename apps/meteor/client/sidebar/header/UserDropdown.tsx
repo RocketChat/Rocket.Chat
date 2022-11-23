@@ -1,12 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
 import { Box, Icon, Margins, Option, OptionColumn, OptionContent, OptionDivider, OptionTitle, RadioButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
-import { defaultPalette } from '@rocket.chat/ui-theming/src/palette';
-import { darkPalette } from '@rocket.chat/ui-theming/src/paletteDark';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement } from 'react';
 
 import { AccountBox } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
@@ -22,11 +19,6 @@ import EditStatusModal from './EditStatusModal';
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
 
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
-
-const themes = {
-	light: defaultPalette,
-	dark: darkPalette,
-};
 
 const setStatus = (status: typeof userStatus.list['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
@@ -51,14 +43,10 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountRoute = useRoute('account-index');
 	const logout = useLogout();
 	const { isMobile } = useLayout();
-	const [isDarkMode, setIsDarkMode] = useState(false);
-	const [palette, setPalette] = useState(themes[isDarkMode ? 'dark' : 'light']);
 
-	useEffect(() => {
-		setPalette(themes[isDarkMode ? 'dark' : 'light']);
-	}, [isDarkMode]);
+	const [selectedTheme, setTheme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
 
-	const theme = useExperimentalTheme();
+	const isExperimentalThemeEnabled = useExperimentalTheme();
 
 	const { username, avatarETag, status, statusText } = user;
 
@@ -86,10 +74,6 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 		logout();
 		onClose();
 	});
-
-	const handleThemeSwitch = (): void => {
-		setIsDarkMode(!isDarkMode);
-	};
 
 	return (
 		<Box display='flex' flexDirection='column' w={!isMobile ? '244px' : undefined}>
@@ -144,21 +128,19 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus}></Option>
 			<OptionDivider />
 
-			{theme && (
+			{isExperimentalThemeEnabled && (
 				<>
-					<PaletteStyleTag palette={palette} />
-
 					<OptionTitle>{t('Theme')}</OptionTitle>
 					<Option>
 						<OptionContent>
 							<Icon name='sun' />
-							<RadioButton checked={!isDarkMode} onChange={handleThemeSwitch} m='x4' />
+							<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
 						</OptionContent>
 					</Option>
 					<Option>
 						<OptionContent>
 							<Icon name='moon' />
-							<RadioButton checked={isDarkMode} onChange={handleThemeSwitch} m='x4' />
+							<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
 						</OptionContent>
 					</Option>
 					<OptionDivider />
