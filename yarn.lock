@@ -5703,25 +5703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-ui-kit@npm:next":
-  version: 0.32.0-dev.159
-  resolution: "@rocket.chat/fuselage-ui-kit@npm:0.32.0-dev.159"
-  dependencies:
-    "@rocket.chat/ui-kit": ~0.32.0-dev.144
-    tslib: ^2.3.1
-  peerDependencies:
-    "@rocket.chat/fuselage": "*"
-    "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/fuselage-polyfills": "*"
-    "@rocket.chat/icons": "*"
-    "@rocket.chat/styled": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-  checksum: 1c9cd6f5324d0a3ee155b5e3e1daae49d9d977c3bff452cb280cf0aed3e25f4194d547646b272b932d254c12c3408715f7fa4dc13c60a6d8b74d43e103662ecf
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit":
+"@rocket.chat/fuselage-ui-kit@workspace:^, @rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-ui-kit@workspace:packages/fuselage-ui-kit"
   dependencies:
@@ -6028,7 +6010,7 @@ __metadata:
     "@rocket.chat/fuselage-polyfills": next
     "@rocket.chat/fuselage-toastbar": next
     "@rocket.chat/fuselage-tokens": next
-    "@rocket.chat/fuselage-ui-kit": next
+    "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": next
     "@rocket.chat/layout": next
@@ -6659,7 +6641,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-kit@npm:next, @rocket.chat/ui-kit@npm:~0.32.0-dev.144":
+"@rocket.chat/ui-kit@npm:next":
   version: 0.32.0-dev.144
   resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.144"
   checksum: cca97d3313f00aee391ac242b6077f2ed3f66f5f6d5fa10fa791bd8b633b6d936f134f9d3f64d671c929e4dc64ff325103a165a4ecf66e813053f73919e597e0
