@@ -150,7 +150,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await page2.close();
 				});
 
-				test.skip('expect to send a message from Server A (user 2) to Server B', async ({ browser, page }) => {
+				test('expect to send a message from Server A (user 2) to Server B', async ({ browser, page }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
