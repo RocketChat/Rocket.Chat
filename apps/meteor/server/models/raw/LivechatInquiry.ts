@@ -93,7 +93,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async getSortingQuery(): Promise<Document[]> {
+	async getSortingQuery(sort: Record<string, 1 | -1>): Promise<Document[]> {
 		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
 		const $sort: { 'R.priorityWeight'?: number; 'estimatedServiceTimeAt'?: number; 'ts'?: number } = {};
 		const filter = [];
@@ -132,7 +132,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			default:
 				break;
 		}
-		filter.push(...[{ $sort: { ...$sort } }]);
+		filter.push(...[{ $sort: { ...$sort, ...sort } }]);
 		return filter;
 	}
 }

@@ -47,7 +47,7 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 				],
 			},
 		},
-		...(await LivechatInquiry.getSortingQuery()),
+		...(await LivechatInquiry.getSortingQuery(sort)),
 	];
 	const cursor = LivechatInquiry.col.aggregate(filter, options);
 
