@@ -200,7 +200,7 @@ export class LivechatInquiry extends Base {
 					...(department && { department }),
 				},
 			},
-			...(await this.getSortingQuery()),
+			...(await this.getSortingQuery({})),
 			{
 				$group: {
 					_id: 1,
