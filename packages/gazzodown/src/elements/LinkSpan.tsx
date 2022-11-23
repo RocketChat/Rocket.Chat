@@ -34,23 +34,29 @@ type LinkSpanProps = {
 
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 	const children = useMemo(() => {
-		switch (label.type) {
-			case 'PLAIN_TEXT':
-				return <PlainSpan text={label.value} />;
+		const labelArray = Array.isArray(label) ? label : [label];
 
-			case 'STRIKE':
-				return <StrikeSpan children={label.value} />;
+		const labelElements = labelArray.map((child, index) => {
+			switch (child.type) {
+				case 'PLAIN_TEXT':
+					return <PlainSpan key={index} text={child.value} />;
 
-			case 'ITALIC':
-				return <ItalicSpan children={label.value} />;
+				case 'STRIKE':
+					return <StrikeSpan key={index} children={child.value} />;
 
-			case 'BOLD':
-				return <BoldSpan children={label.value} />;
+				case 'ITALIC':
+					return <ItalicSpan key={index} children={child.value} />;
 
-			default:
-				return null;
-		}
-	}, [label.type, label.value]);
+				case 'BOLD':
+					return <BoldSpan key={index} children={child.value} />;
+
+				default:
+					return null;
+			}
+		});
+
+		return labelElements;
+	}, [label]);
 
 	if (isExternal(href)) {
 		return (

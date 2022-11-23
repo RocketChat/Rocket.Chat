@@ -13,7 +13,7 @@ type FirstStepProps = {
 	onConfirm: () => void;
 	onToggleAllRooms: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
-	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
+	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	eligibleRoomsLength: number | undefined;
 	selectedRooms: { [key: string]: Serialized<IRoom> };
 };
