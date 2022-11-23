@@ -1,8 +1,9 @@
-import { isOauthAppsGetParams, isUpdateOAuthAppParams } from '@rocket.chat/rest-typings';
+import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
+import { addOAuthApp } from '../../../oauth2-server-config/server/admin/methods/addOAuthApp';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -62,6 +63,21 @@ API.v1.addRoute(
 			const result = Meteor.call('updateOAuthApp', _id, this.bodyParams);
 
 			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.create',
+	{
+		authRequired: true,
+		validateParams: isOauthAppsAddParams,
+	},
+	{
+		async post() {
+			const application = await addOAuthApp(this.bodyParams, this.userId);
+
+			return API.v1.success({ application });
 		},
 	},
 );

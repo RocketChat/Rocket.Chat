@@ -2,6 +2,12 @@ import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 
 import type { OauthAppsGetParams, UpdateOAuthAppParams } from '..';
 
+export type OauthAppsAddParams = {
+	name: string;
+	active: boolean;
+	redirectUri: string;
+};
+
 export type OAuthAppsEndpoint = {
 	'/v1/oauth-apps.list': {
 		GET: (params: { uid: IUser['_id'] }) => {
@@ -13,6 +19,10 @@ export type OAuthAppsEndpoint = {
 		GET: (params: OauthAppsGetParams) => {
 			oauthApp: IOAuthApps;
 		};
+	};
+
+	'/v1/oauth-apps.create': {
+		POST: (params: OauthAppsAddParams) => { application: IOAuthApps };
 	};
 
 	'/v1/oauth-apps/:_id': {

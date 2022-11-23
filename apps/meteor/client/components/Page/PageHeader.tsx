@@ -18,7 +18,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 	const { isMobile } = useLayout();
 
 	return (
-		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'neutral-200' : 'transparent'} {...props}>
+		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'} {...props}>
 			<Box
 				marginBlock='x16'
 				marginInline='x24'
@@ -27,7 +27,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 				flexDirection='row'
 				flexWrap='nowrap'
 				alignItems='center'
-				color='neutral-800'
+				color='default'
 				{...props}
 			>
 				{isMobile && (
@@ -36,7 +36,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 					</TemplateHeader.ToolBox>
 				)}
 				{onClickBack && <IconButton small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
-				<Box is='h2' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>
+				<Box is='h1' fontScale='h2' flexGrow={1} id='PageHeader-title' data-qa-type='PageHeader-title'>
 					{title}
 				</Box>
 				{children}

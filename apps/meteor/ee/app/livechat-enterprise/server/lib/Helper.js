@@ -164,12 +164,12 @@ export const setPredictedVisitorAbandonmentTime = async (room) => {
 	}
 
 	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
-	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
+	await LivechatRoomsRaw.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 };
 
 export const updatePredictedVisitorAbandonment = async () => {
 	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
-		LivechatRooms.unsetPredictedVisitorAbandonment();
+		await LivechatRoomsRaw.unsetAllPredictedVisitorAbandonment();
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
 		const promisesArray = [];
@@ -234,12 +234,19 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 	});
 };
 
-export const removePriorityFromRooms = (priorityId) => {
-	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
-		updateInquiryQueuePriority(room._id);
-	});
+export const removePriorityFromRooms = async (priorityId) => {
+	const result = await Promise.allSettled(
+		LivechatRoomsRaw.findOpenRoomsByPriorityId(priorityId).forEach((room) => {
+			updateInquiryQueuePriority(room._id);
+		}),
+	);
+	const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+	if (rejected.length) {
+		logger.error({ msg: `Error while removing priority from ${rejected.length} rooms`, reason: rejected[0] });
+		logger.debug({ msg: 'Rejection results', rejected });
+	}
 
-	LivechatRooms.unsetPriorityById(priorityId);
+	await LivechatRoomsRaw.unsetPriorityByIdFromAllOpenRooms(priorityId);
 };
 
 export const updatePriorityInquiries = (priority) => {
