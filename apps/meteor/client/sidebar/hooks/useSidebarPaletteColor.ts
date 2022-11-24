@@ -163,6 +163,7 @@ const getStyle = (
 			--rcx-sidebar-item-color-hover: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-item-color-selected: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-footer-highlight-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
+			--rcx-sidebar-item-color-highlighted: ${toVar(colors.white)};
 
 		}
 
