@@ -11,7 +11,7 @@ import { MessageActionMenu } from './MessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
 	if (message.t === 'videoconf') {
-		return message.t;
+		return 'videoconf';
 	}
 	if (isRoomFederated(room)) {
 		return 'federated';

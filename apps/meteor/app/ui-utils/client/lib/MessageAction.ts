@@ -41,7 +41,7 @@ export type MessageActionContext =
 	| 'starred'
 	| 'mentions'
 	| 'federated'
-	| 'videconf';
+	| 'videoconf';
 
 type MessageActionConditionProps = {
 	message: IMessage;
