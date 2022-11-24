@@ -24,6 +24,7 @@ import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
 import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
+import { federationQueueInstance } from '..';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -237,6 +238,9 @@ export class FederationRoomServiceListener extends FederationService {
 				createdInternalRoomId,
 				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
 			);
+			const events = await this.bridge.getRoomEvents(externalRoomId, externalInviteeId, [externalInviterId, externalInviteeId]);
+			console.log({ events })
+			events.forEach((event) => federationQueueInstance.addToQueue(event));
 		}
 
 		const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));

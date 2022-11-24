@@ -86,4 +86,5 @@ export interface IFederationBridge {
 	setUserDisplayName(externalUserId: string, displayName: string): Promise<void>;
 	isUserPartOfTheRoom(externalRoomId: string, externalUserId: string): Promise<boolean>;
 	getRoomMembers(externalRoomId: string, externalUserId: string): Promise<any[]>;
+	getRoomEvents(externalRoomId: string, externalUserId: string, excludingUserIds: string[]): Promise<any[]>;
 }

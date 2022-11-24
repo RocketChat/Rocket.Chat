@@ -106,6 +106,12 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId);
 	}
 
+	public async getRoomEvents(externalRoomId: string, externalUserId: string, excludingUserIds: string[]): Promise<any[]> {
+		const events = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomState(externalRoomId);
+
+		return events.filter((event) => event.type === 'm.room.member' && event.content.membership === 'join' && !excludingUserIds.includes(event.state_key));
+	}
+
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
 		try {
 			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
@@ -165,7 +171,6 @@ export class MatrixBridge implements IFederationBridge {
 				},
 			},
 		});
-		intent.matrixClient.inviteUser;
 		return matrixRoom.room_id;
 	}
 
@@ -358,9 +363,6 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async getRoomMembers(externalRoomId: string, externalUserId: string): Promise<any[]> {
-		console.log({
-			joinedUsers: await this.bridgeInstance.getIntent(externalUserId).matrixClient.getJoinedRoomMembers(externalRoomId),
-		});
 		return this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomMembers(externalRoomId);
 	}
 

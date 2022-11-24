@@ -5,7 +5,6 @@ import { FederationFactory } from './infrastructure/Factory';
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
 export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
-export const queueInstance = FederationFactory.buildFederationQueue();
 rocketSettingsAdapter.initialize();
 export const federationQueueInstance = FederationFactory.buildFederationQueue();
 export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
