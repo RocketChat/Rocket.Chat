@@ -1,4 +1,13 @@
-import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
+import {
+	FindOneOptions,
+	Cursor,
+	UpdateQuery,
+	FilterQuery,
+	UpdateWriteOpResult,
+	Collection,
+	WithoutProjection,
+	IndexSpecification,
+} from 'mongodb';
 import { compact } from 'lodash';
 import type { ISubscription, IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 
@@ -9,6 +18,10 @@ type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
 	constructor(public readonly col: Collection<T>, private readonly models: { Users: UsersRaw }, trash?: Collection<T>) {
 		super(col, trash);
+	}
+
+	protected modelIndexes(): IndexSpecification[] {
+		return [{ key: { E2EKey: 1 }, unique: true, sparse: true }];
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {
