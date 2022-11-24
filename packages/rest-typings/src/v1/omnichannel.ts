@@ -2776,15 +2776,7 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
-type PUTLivechatPriority =
-	| {
-			name?: string;
-			reset: boolean;
-	  }
-	| {
-			name: string;
-			reset?: boolean;
-	  };
+type PUTLivechatPriority = { name: string } | { reset: true };
 
 const PUTLivechatPrioritySchema = {
 	type: 'object',
@@ -2797,7 +2789,6 @@ const PUTLivechatPrioritySchema = {
 		},
 	},
 	additionalProperties: false,
-	required: [],
 };
 
 export const isPUTLivechatPriority = ajv.compile<PUTLivechatPriority>(PUTLivechatPrioritySchema);

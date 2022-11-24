@@ -269,8 +269,41 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.length.greaterThan(0);
-			expect(response.body.priorities[0]).to.have.property('_id');
-			expect(response.body.priorities[0]).to.have.property('i18n', priority.i18n);
+			const pos = response.body.priorities.findIndex((p: ILivechatPriority) => p._id === priority._id);
+			expect(response.body.priorities[pos]).to.have.property('_id');
+			expect(response.body.priorities[pos]).to.have.property('i18n', priority.i18n);
+		});
+		it('should not reset a priority with a reset:false PUT parameter', async () => {
+			const newName = faker.random.word();
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: newName,
+					reset: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			const newPriorityResponse = await request
+				.get(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(newPriorityResponse.body).to.have.property('success', true);
+			expect(newPriorityResponse.body).to.have.property('dirty', true);
+			expect(newPriorityResponse.body).to.have.property('name', newName);
+		});
+		it('should fail to update a non-existing priority', async () => {
+			const response = await request
+				.put(api('livechat/priorities/123'))
+				.set(credentials)
+				.send({
+					name: faker.random.word(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
 		});
 		it('should reset a single priority with a reset:true PUT parameter', async () => {
 			const response = await request

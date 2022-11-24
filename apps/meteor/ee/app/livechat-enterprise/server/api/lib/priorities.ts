@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatPriority } from '@rocket.chat/models';
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
-import type { FindOptions } from 'mongodb';
+import type { FindOptions, UpdateFilter } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 type FindPriorityParams = {
@@ -40,16 +40,22 @@ export async function findPriority({
 export async function updatePriority(
 	_id: string,
 	data: Pick<ILivechatPriority & { reset: boolean }, 'name' | 'reset'>,
-): Promise<ILivechatPriority> {
+): Promise<ILivechatPriority | null> {
 	const query = {
 		_id,
 	};
-	const update: { $set: Record<string, boolean>; $unset?: Record<string, 1 | ''> } = { $set: { dirty: !data.reset } };
-	if (data.reset) {
-		update.$unset = { name: 1 };
-	}
+	const update: Pick<UpdateFilter<ILivechatPriority>, '$set' | '$unset'> = {
+		...((data.reset && {
+			$set: { dirty: false },
+			$unset: { name: 1 },
+		}) || {
+			$set: { name: data.name, dirty: true },
+		}),
+	};
+
 	const created = await LivechatPriority.findOneAndUpdate(query, update, {
 		returnDocument: 'after',
 	});
-	return created.value as ILivechatPriority;
+
+	return created.value;
 }
