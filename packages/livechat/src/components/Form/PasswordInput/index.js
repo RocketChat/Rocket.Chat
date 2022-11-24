@@ -1,19 +1,7 @@
 import { createClassName, memo } from '../../helpers';
 import styles from './styles.scss';
 
-
-export const PasswordInput = memo(({
-	name,
-	value,
-	placeholder,
-	disabled,
-	small,
-	error,
-	onChange,
-	onInput,
-	className,
-	style = {},
-}) => (
+export const PasswordInput = memo(({ name, value, placeholder, disabled, small, error, onChange, onInput, className, style = {} }) => (
 	<input
 		type='password'
 		name={name}

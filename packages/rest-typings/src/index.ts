@@ -34,11 +34,13 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
+import type { MailerEndpoints } from './v1/mailer';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
+import type { ImportEndpoints } from './v1/import';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
@@ -77,10 +79,12 @@ export interface Endpoints
 		AssetsEndpoints,
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
+		MailerEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
-		AutoTranslateEndpoints {}
+		AutoTranslateEndpoints,
+		ImportEndpoints {}
 
 type OperationsByPathPatternAndMethod<
 	TEndpoints extends Endpoints,
@@ -215,6 +219,9 @@ export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
 export * from './v1/subscriptionsEndpoints';
+export * from './v1/mailer';
+export * from './v1/mailer/MailerParamsPOST';
+export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
 export * from './v1/invites';
 export * from './v1/dm';
@@ -232,6 +239,10 @@ export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
+export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
+export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
+export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
@@ -239,13 +250,6 @@ export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
-export * from './v1/import/UploadImportFileParamsPOST';
-export * from './v1/import/DownloadPublicImportFileParamsPOST';
-export * from './v1/import/StartImportParamsPOST';
-export * from './v1/import/GetImportFileDataParamsGET';
-export * from './v1/import/GetImportProgressParamsGET';
-export * from './v1/import/GetLatestImportOperationsParamsGET';
-export * from './v1/import/DownloadPendingFilesParamsPOST';
-export * from './v1/import/DownloadPendingAvatarsParamsPOST';
-export * from './v1/import/GetCurrentImportOperationParamsGET';
+export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/email-inbox';

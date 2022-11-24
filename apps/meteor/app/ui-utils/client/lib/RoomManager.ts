@@ -60,7 +60,7 @@ const openedRooms: Record<
 		template?: Blaze.View;
 		streamActive?: boolean;
 		unreadSince: ReactiveVar<Date | undefined>;
-		lastSeen?: Date;
+		lastSeen: Date;
 		unreadFirstId?: string;
 	}
 > = {};
@@ -105,9 +105,8 @@ function closeOlderRooms() {
 	if (Object.keys(openedRooms).length <= maxRoomsOpen) {
 		return;
 	}
-
 	const roomsToClose = Object.values(openedRooms)
-		.sort((a, b) => (a.lastSeen?.getTime() ?? 0) - (b.lastSeen?.getTime() ?? 0))
+		.sort((a, b) => b.lastSeen.getTime() - a.lastSeen.getTime())
 		.slice(maxRoomsOpen);
 	return Array.from(roomsToClose).map((roomToClose) => close(roomToClose.typeName));
 }
@@ -194,7 +193,7 @@ const computation = Tracker.autorun(() => {
 								}
 							}
 
-							msg.name = room.name;
+							msg.name = room.name || '';
 
 							handleTrackSettingsChange(msg);
 
@@ -225,6 +224,7 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 			active: false,
 			ready: false,
 			unreadSince: new ReactiveVar(undefined),
+			lastSeen: new Date(),
 		};
 	}
 

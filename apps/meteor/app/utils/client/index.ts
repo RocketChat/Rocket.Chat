@@ -9,6 +9,5 @@ export { getUserNotificationPreference } from '../lib/getUserNotificationPrefere
 export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
-export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient } from './lib/RestApiClient';
 export { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';

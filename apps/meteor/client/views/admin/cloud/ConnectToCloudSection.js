@@ -4,6 +4,7 @@ import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '
 import React, { useState } from 'react';
 
 import Subtitle from '../../../components/Subtitle';
+import { queryClient } from '../../../lib/queryClient';
 
 function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {
 	const t = useTranslation();
@@ -36,6 +37,7 @@ function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			await (onRegisterStatusChange && onRegisterStatusChange());
+			queryClient.invalidateQueries(['getRegistrationStatus']);
 			setConnecting(false);
 		}
 	};
@@ -43,7 +45,7 @@ function ConnectToCloudSection({ onRegisterStatusChange, ...props }) {
 	return (
 		<Box is='section' {...props}>
 			<Subtitle>{t('Cloud_registration_required')}</Subtitle>
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>{t('Cloud_registration_required_description')}</p>
 			</Box>
 			<ButtonGroup>

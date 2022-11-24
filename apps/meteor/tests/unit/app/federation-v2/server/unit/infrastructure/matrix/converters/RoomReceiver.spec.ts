@@ -5,20 +5,22 @@ import { MatrixRoomReceiverConverter } from '../../../../../../../../../app/fede
 import {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
-	FederationRoomSendInternalMessageDto,
+	FederationRoomReceiveExternalMessageDto,
 	FederationRoomChangeTopicDto,
 	FederationRoomChangeNameDto,
 	FederationRoomChangeJoinRulesDto,
+	FederationRoomRedactEventDto,
 } from '../../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
 import { MatrixEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
-import { RoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentSetRoomJoinRules';
-import { AddMemberToRoomMembership } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/IMatrixEventContent/IMatrixEventContentAddMemberToRoom';
 import { EVENT_ORIGIN } from '../../../../../../../../../app/federation-v2/server/domain/IFederationBridge';
+import { MatrixRoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomJoinRules';
+import { RoomMembershipChangedEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomMembershipChanged';
 
 describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {
 		const event = {
-			content: { was_internally_programatically_created: true, name: 'roomName' },
+			content: { was_internally_programatically_created: true, name: 'roomName', internalRoomId: 'internalRoomId' },
+			event_id: 'eventId',
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};
@@ -36,7 +38,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should return the external room name and room type when the room state is present on the event and it has the correct events', () => {
 			const state = [
 				{ type: MatrixEventType.ROOM_NAME_CHANGED, content: { name: event.content.name } },
-				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.JOIN } },
+				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.JOIN } },
 			];
 			const result = MatrixRoomReceiverConverter.toRoomCreateDto({ unsigned: { invite_room_state: state } } as any);
 			expect(result.externalRoomName).to.be.equal(event.content.name);
@@ -46,7 +48,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should convert to the expected (private) room type when the join rule is equal to INVITE', () => {
 			const state = [
 				{ type: MatrixEventType.ROOM_NAME_CHANGED, content: { name: event.content.name } },
-				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.INVITE } },
+				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.INVITE } },
 			];
 			const result = MatrixRoomReceiverConverter.toRoomCreateDto({ unsigned: { invite_room_state: state } } as any);
 			expect(result.externalRoomName).to.be.equal(event.content.name);
@@ -54,7 +56,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		});
 
 		it('should convert to the expected (channel) room type when the join rule is equal to JOIN', () => {
-			const state = [{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.JOIN } }];
+			const state = [{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.JOIN } }];
 			const result = MatrixRoomReceiverConverter.toRoomCreateDto({ invite_room_state: state } as any);
 			expect(result.roomType).to.be.equal(RoomType.CHANNEL);
 		});
@@ -72,11 +74,15 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toRoomCreateDto(event as any);
 			expect(result).to.be.eql({
+				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				externalInviterId: '@marcos.defendi:matrix.org',
 				normalizedInviterId: 'marcos.defendi:matrix.org',
 				wasInternallyProgramaticallyCreated: true,
+				externalRoomName: undefined,
+				roomType: undefined,
+				internalRoomId: 'internalRoomId',
 			});
 		});
 	});
@@ -84,6 +90,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 	describe('#toChangeRoomMembershipDto()', () => {
 		const event = {
 			content: { name: 'roomName' },
+			event_id: 'eventId',
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 			state_key: '@marcos.defendi2:matrix.org',
@@ -104,7 +111,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should return the external room name and room type when the room state is present on the event and it has the correct events', () => {
 			const state = [
 				{ type: MatrixEventType.ROOM_NAME_CHANGED, content: { name: event.content.name } },
-				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.JOIN } },
+				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.JOIN } },
 			];
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ unsigned: { invite_room_state: state } } as any, 'domain');
 			expect(result.externalRoomName).to.be.equal(event.content.name);
@@ -114,7 +121,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should convert to the expected (private) room type when the join rule is equal to INVITE', () => {
 			const state = [
 				{ type: MatrixEventType.ROOM_NAME_CHANGED, content: { name: event.content.name } },
-				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.INVITE } },
+				{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.INVITE } },
 			];
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ unsigned: { invite_room_state: state } } as any, 'domain');
 			expect(result.externalRoomName).to.be.equal(event.content.name);
@@ -122,13 +129,13 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		});
 
 		it('should convert to the expected (channel) room type when the join rule is equal to JOIN', () => {
-			const state = [{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.JOIN } }];
+			const state = [{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.JOIN } }];
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ invite_room_state: state } as any, 'domain');
 			expect(result.roomType).to.be.equal(RoomType.CHANNEL);
 		});
 
 		it('should convert to the expected (direct) room type when the join rule is equal to INVITE and its a direct message', () => {
-			const state = [{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: RoomJoinRules.INVITE } }];
+			const state = [{ type: MatrixEventType.ROOM_JOIN_RULES_CHANGED, content: { join_rule: MatrixRoomJoinRules.INVITE } }];
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
 				{
 					invite_room_state: state,
@@ -162,7 +169,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should set leave to true if its a LEAVE event', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
 				{
-					content: { membership: AddMemberToRoomMembership.LEAVE },
+					content: { membership: RoomMembershipChangedEventType.LEAVE },
 				} as any,
 				'domain',
 			);
@@ -172,7 +179,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should set leave to false if its NOT a LEAVE event', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
 				{
-					content: { membership: AddMemberToRoomMembership.JOIN },
+					content: { membership: RoomMembershipChangedEventType.JOIN },
 				} as any,
 				'domain',
 			);
@@ -184,14 +191,26 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 			expect(result.eventOrigin).to.be.equal(EVENT_ORIGIN.REMOTE);
 		});
 
-		it('should set the event origin as LOCAL if the inviter is NOT different home servers', () => {
+		it('should set the event origin as LOCAL if the inviter is NOT from a different home server', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto({ sender: 'a:domain' } as any, 'domain');
 			expect(result.eventOrigin).to.be.equal(EVENT_ORIGIN.LOCAL);
+		});
+
+		it('should return the user profile properties when the event contains those infos', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{ ...event, content: { avatar_url: 'avatarUrl', displayname: 'displayname', membership: 'join' } } as any,
+				'domain',
+			);
+			expect(result.userProfile).to.be.eql({
+				avatarUrl: 'avatarUrl',
+				displayName: 'displayname',
+			});
 		});
 
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(event as any, 'domain');
 			expect(result).to.be.eql({
+				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				externalInviterId: '@marcos.defendi:matrix.org',
@@ -202,47 +221,59 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				inviterUsernameOnly: 'marcos.defendi',
 				eventOrigin: EVENT_ORIGIN.REMOTE,
 				leave: false,
+				externalRoomName: undefined,
+				roomType: undefined,
+				userProfile: {
+					avatarUrl: undefined,
+					displayName: undefined,
+				},
 			});
 		});
 	});
 
 	describe('#toSendRoomMessageDto()', () => {
 		const event = {
-			content: { body: 'msg' },
+			event_id: 'eventId',
+			content: { 'body': 'msg', 'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } } },
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};
 
-		it('should return an instance of FederationRoomSendInternalMessageDto', () => {
-			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto({} as any)).to.be.instanceOf(FederationRoomSendInternalMessageDto);
+		it('should return an instance of FederationRoomReceiveExternalMessageDto', () => {
+			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain')).to.be.instanceOf(
+				FederationRoomReceiveExternalMessageDto,
+			);
 		});
 
 		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto({ room_id: event.room_id } as any);
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
 			expect(result.externalRoomId).to.be.equal('!roomId:matrix.org');
 			expect(result.normalizedRoomId).to.be.equal('roomId');
 		});
 
 		it('should convert the sender id to the a rc-format like (without any @ in it)', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto({ sender: event.sender } as any);
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
 			expect(result.normalizedSenderId).to.be.equal('marcos.defendi:matrix.org');
 		});
 
 		it('should convert the event properly', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any);
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
 			expect(result).to.be.eql({
+				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				externalSenderId: '@marcos.defendi:matrix.org',
 				normalizedSenderId: 'marcos.defendi:matrix.org',
-				text: 'msg',
+				messageText: 'msg',
+				replyToEventId: 'replyToEventId',
 			});
 		});
 	});
 
 	describe('#toRoomChangeJoinRulesDto()', () => {
 		const event = {
-			content: { join_rule: RoomJoinRules.JOIN },
+			event_id: 'eventId',
+			content: { join_rule: MatrixRoomJoinRules.JOIN },
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};
@@ -258,18 +289,19 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		});
 
 		it('should convert to the expected (private) room type when the join rule is equal to INVITE', () => {
-			const result = MatrixRoomReceiverConverter.toRoomChangeJoinRulesDto({ content: { join_rule: RoomJoinRules.INVITE } } as any);
+			const result = MatrixRoomReceiverConverter.toRoomChangeJoinRulesDto({ content: { join_rule: MatrixRoomJoinRules.INVITE } } as any);
 			expect(result.roomType).to.be.equal(RoomType.PRIVATE_GROUP);
 		});
 
 		it('should convert to the expected (channel) room type when the join rule is equal to JOIN', () => {
-			const result = MatrixRoomReceiverConverter.toRoomChangeJoinRulesDto({ content: { join_rule: RoomJoinRules.JOIN } } as any);
+			const result = MatrixRoomReceiverConverter.toRoomChangeJoinRulesDto({ content: { join_rule: MatrixRoomJoinRules.JOIN } } as any);
 			expect(result.roomType).to.be.equal(RoomType.CHANNEL);
 		});
 
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toRoomChangeJoinRulesDto(event as any);
 			expect(result).to.be.eql({
+				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				roomType: RoomType.CHANNEL,
@@ -279,6 +311,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 
 	describe('#toRoomChangeNameDto()', () => {
 		const event = {
+			event_id: 'eventId',
 			content: { name: '@roomName' },
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
@@ -302,6 +335,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toRoomChangeNameDto(event as any);
 			expect(result).to.be.eql({
+				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				normalizedRoomName: 'roomName',
@@ -312,6 +346,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 
 	describe('#toRoomChangeTopicDto()', () => {
 		const event = {
+			event_id: 'eventId',
 			content: { topic: 'room topic' },
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
@@ -330,9 +365,99 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toRoomChangeTopicDto(event as any);
 			expect(result).to.be.eql({
+				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				roomTopic: 'room topic',
+				externalSenderId: '@marcos.defendi:matrix.org',
+			});
+		});
+	});
+
+	describe('#toSendRoomFileMessageDto()', () => {
+		const event = {
+			event_id: 'eventId',
+			content: {
+				'body': 'filename',
+				'url': 'url',
+				'info': { mimetype: 'mime', size: 12 },
+				'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } },
+			},
+			room_id: '!roomId:matrix.org',
+			sender: '@marcos.defendi:matrix.org',
+		};
+
+		it('should throw an error if the url is not present in the file event', () => {
+			expect(() => MatrixRoomReceiverConverter.toSendRoomFileMessageDto({ content: {} } as any)).to.throw(
+				Error,
+				'Missing url in the file message',
+			);
+		});
+
+		it('should throw an error if the mimetype is not present in the file event', () => {
+			expect(() => MatrixRoomReceiverConverter.toSendRoomFileMessageDto({ content: { url: 'url' } } as any)).to.throw(
+				Error,
+				'Missing mimetype in the file message',
+			);
+		});
+
+		it('should throw an error if the size is not present in the file event', () => {
+			expect(() =>
+				MatrixRoomReceiverConverter.toSendRoomFileMessageDto({ content: { url: 'url', info: { mimetype: 'mime' } } } as any),
+			).to.throw(Error, 'Missing size in the file message');
+		});
+
+		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
+			const result = MatrixRoomReceiverConverter.toSendRoomFileMessageDto({ room_id: event.room_id, content: event.content } as any);
+			expect(result.externalRoomId).to.be.equal('!roomId:matrix.org');
+			expect(result.normalizedRoomId).to.be.equal('roomId');
+		});
+
+		it('should convert the event properly', () => {
+			const result = MatrixRoomReceiverConverter.toSendRoomFileMessageDto(event as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				externalSenderId: '@marcos.defendi:matrix.org',
+				normalizedSenderId: 'marcos.defendi:matrix.org',
+				messageBody: {
+					filename: event.content.body,
+					url: event.content.url,
+					mimetype: event.content.info.mimetype,
+					size: event.content.info.size,
+					messageText: event.content.body,
+				},
+				replyToEventId: 'replyToEventId',
+			});
+		});
+	});
+
+	describe('#toRoomRedactEventDto()', () => {
+		const event = {
+			event_id: 'eventId',
+			redacts: '$eventId',
+			room_id: '!roomId:matrix.org',
+			sender: '@marcos.defendi:matrix.org',
+		};
+
+		it('should return an instance of FederationRoomRedactEventDto', () => {
+			expect(MatrixRoomReceiverConverter.toRoomRedactEventDto({} as any)).to.be.instanceOf(FederationRoomRedactEventDto);
+		});
+
+		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
+			const result = MatrixRoomReceiverConverter.toRoomRedactEventDto({ room_id: event.room_id } as any);
+			expect(result.externalRoomId).to.be.equal('!roomId:matrix.org');
+			expect(result.normalizedRoomId).to.be.equal('roomId');
+		});
+
+		it('should convert the event properly', () => {
+			const result = MatrixRoomReceiverConverter.toRoomRedactEventDto(event as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				redactsEvent: '$eventId',
 				externalSenderId: '@marcos.defendi:matrix.org',
 			});
 		});

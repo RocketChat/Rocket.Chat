@@ -22,6 +22,7 @@ export type UsersSetPreferencesParamsPOST = {
 		pushNotifications?: string;
 		enableAutoAway?: boolean;
 		highlights?: string[];
+		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
 		messageViewMode?: number;
 		hideUsernames?: boolean;
@@ -37,6 +38,9 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
+		dontAskAgainList?: Array<{ action: string; label: string }>;
+		receiveLoginDetectionEmail?: boolean;
+		useLegacyMessageTemplate?: boolean;
 	};
 };
 
@@ -68,6 +72,11 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				convertAsciiEmoji: {
 					type: 'boolean',
+					nullable: true,
+				},
+				alsoSendThreadToChannel: {
+					type: 'string',
+					enum: ['default', 'always', 'never'],
 					nullable: true,
 				},
 				saveMobileBandwidth: {
@@ -170,6 +179,25 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				muteFocusedConversations: {
+					type: 'boolean',
+					nullable: true,
+				},
+				dontAskAgainList: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							action: { type: 'string' },
+							label: { type: 'string' },
+						},
+					},
+					nullable: true,
+				},
+				useLegacyMessageTemplate: {
+					type: 'boolean',
+					nullable: true,
+				},
+				receiveLoginDetectionEmail: {
 					type: 'boolean',
 					nullable: true,
 				},

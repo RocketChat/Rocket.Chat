@@ -1,9 +1,9 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { LivechatRoomsProps } from '@rocket.chat/rest-typings';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { memo, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ComponentProps, memo, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	GenericTableBody,
@@ -17,14 +17,13 @@ import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import Chat from '../directory/chats/Chat';
 import CustomFieldsVerticalBar from './CustomFieldsVerticalBar';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';
-import { useAllCustomFields } from './useAllCustomFields';
+import { useAllCustomFields } from './hooks/useAllCustomFields';
+import { useCurrentChats } from './hooks/useCurrentChats';
 
 type useQueryType = (
 	debouncedParams: {
@@ -39,85 +38,84 @@ type useQueryType = (
 		itemsPerPage: 25 | 50 | 100;
 		current: number;
 	},
-	customFields: { [key: string]: string },
+	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
-) => LivechatRoomsProps | undefined;
+) => GETLivechatRoomsParams;
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery: useQueryType = (
+const currentChatQuery: useQueryType = (
 	{ guest, servedBy, department, status, from, to, tags, itemsPerPage, current },
 	customFields,
 	[column, direction],
-) =>
-	useMemo(() => {
-		const query: {
-			agents?: string[];
-			offset?: number;
-			roomName?: string;
-			departmentId?: string;
-			open?: boolean;
-			createdAt?: string;
-			closedAt?: string;
-			tags?: string[];
-			onhold?: boolean;
-			customFields?: string;
-			sort: string;
-			count?: number;
-		} = {
-			...(guest && { roomName: guest }),
-			sort: JSON.stringify({
-				[column]: sortDir(direction),
-				ts: column === 'ts' ? sortDir(direction) : undefined,
+) => {
+	const query: {
+		agents?: string[];
+		offset?: number;
+		roomName?: string;
+		departmentId?: string;
+		open?: boolean;
+		createdAt?: string;
+		closedAt?: string;
+		tags?: string[];
+		onhold?: boolean;
+		customFields?: string;
+		sort: string;
+		count?: number;
+	} = {
+		...(guest && { roomName: guest }),
+		sort: JSON.stringify({
+			[column]: sortDir(direction),
+			ts: column === 'ts' ? sortDir(direction) : undefined,
+		}),
+		...(itemsPerPage && { count: itemsPerPage }),
+		...(current && { offset: current }),
+	};
+
+	if (from || to) {
+		query.createdAt = JSON.stringify({
+			...(from && {
+				start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
 			}),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		};
+			...(to && {
+				end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
+			}),
+		});
+	}
 
-		if (from || to) {
-			query.createdAt = JSON.stringify({
-				...(from && {
-					start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
-				}),
-				...(to && {
-					end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).format('YYYY-MM-DDTHH:mm:ss'),
-				}),
-			});
-		}
+	if (status !== 'all') {
+		query.open = status === 'opened' || status === 'onhold';
+		query.onhold = status === 'onhold';
+	}
+	if (servedBy && servedBy !== 'all') {
+		query.agents = [servedBy];
+	}
+	if (department && department !== 'all') {
+		query.departmentId = department;
+	}
 
-		if (status !== 'all') {
-			query.open = status === 'opened' || status === 'onhold';
-			query.onhold = status === 'onhold';
-		}
-		if (servedBy && servedBy !== 'all') {
-			query.agents = [servedBy];
-		}
-		if (department && department !== 'all') {
-			query.departmentId = department;
-		}
+	if (tags && tags.length > 0) {
+		query.tags = tags;
+	}
 
-		if (tags && tags.length > 0) {
-			query.tags = tags;
+	if (customFields && Object.keys(customFields).length > 0) {
+		const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''));
+		if (Object.keys(customFieldsQuery).length > 0) {
+			query.customFields = JSON.stringify(customFieldsQuery);
 		}
+	}
 
-		if (customFields && Object.keys(customFields).length > 0) {
-			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== ''));
-			if (Object.keys(customFieldsQuery).length > 0) {
-				query.customFields = JSON.stringify(customFieldsQuery);
-			}
-		}
-
-		return query;
-	}, [guest, column, direction, itemsPerPage, current, from, to, status, servedBy, department, tags, customFields]);
+	return query;
+};
 
 const CurrentChatsRoute = (): ReactElement => {
-	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('fname');
-	const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
+	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts', 'desc');
+	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 	const [params, setParams] = useState({
 		guest: '',
 		fname: '',
 		servedBy: '',
-		status: '',
+		status: 'all',
 		department: '',
 		from: '',
 		to: '',
@@ -128,26 +126,16 @@ const CurrentChatsRoute = (): ReactElement => {
 	const t = useTranslation();
 	const id = useRouteParameter('id');
 
-	const onHeaderClick = useMutableCallback((id) => {
-		if (sortBy === id) {
-			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
-		}
-	});
-
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedCustomFields = useDebouncedValue(customFields, 500);
-
-	const debouncedSort = useDebouncedValue(
-		useMemo(() => [sortBy, sortDirection], [sortBy, sortDirection]),
-		500,
-	) as ['fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open', 'asc' | 'desc'];
-
-	const query = useQuery(debouncedParams, debouncedCustomFields, debouncedSort);
+	const query = useMemo(
+		() => currentChatQuery(params, customFields, [sortBy, sortDirection]),
+		[customFields, params, sortBy, sortDirection],
+	);
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
 
-	const { reload, ...result } = useEndpointData('/v1/livechat/rooms', query);
+	const result = useCurrentChats(query);
+
 	const { data: allCustomFields } = useAllCustomFields();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
@@ -188,15 +176,11 @@ const CurrentChatsRoute = (): ReactElement => {
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
 						{getStatusText(open, onHold)}
 					</GenericTableCell>
-					{canRemoveClosedChats && !open && (
-						<GenericTableCell withTruncatedText>
-							<RemoveChatButton _id={_id} reload={reload} />
-						</GenericTableCell>
-					)}
+					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
 				</GenericTableRow>
 			);
 		},
-		[canRemoveClosedChats, onRowClick, reload, t],
+		[canRemoveClosedChats, onRowClick, t],
 	);
 
 	if (!canViewCurrentChats) {
@@ -211,7 +195,7 @@ const CurrentChatsRoute = (): ReactElement => {
 				<Page.Header title={t('Current_Chats')} />
 				<Box pi='24px'>
 					<FilterByText
-						setFilter={setParams}
+						setFilter={setParams as ComponentProps<typeof FilterByText>['setFilter']}
 						setCustomFields={setCustomFields}
 						customFields={customFields}
 						hasCustomFields={hasCustomFields}
@@ -224,7 +208,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='fname'
 								direction={sortDirection}
 								active={sortBy === 'fname'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='fname'
 								data-qa='current-chats-header-name'
 							>
@@ -234,7 +218,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='departmentId'
 								direction={sortDirection}
 								active={sortBy === 'departmentId'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='departmentId'
 								data-qa='current-chats-header-department'
 							>
@@ -244,7 +228,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='servedBy'
 								direction={sortDirection}
 								active={sortBy === 'servedBy'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='servedBy'
 								data-qa='current-chats-header-servedBy'
 							>
@@ -254,7 +238,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='ts'
 								direction={sortDirection}
 								active={sortBy === 'ts'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='ts'
 								data-qa='current-chats-header-startedAt'
 							>
@@ -264,7 +248,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='lm'
 								direction={sortDirection}
 								active={sortBy === 'lm'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='lm'
 								data-qa='current-chats-header-lastMessage'
 							>
@@ -274,7 +258,7 @@ const CurrentChatsRoute = (): ReactElement => {
 								key='open'
 								direction={sortDirection}
 								active={sortBy === 'open'}
-								onClick={onHeaderClick}
+								onClick={setSort}
 								sort='open'
 								w='x100'
 								data-qa='current-chats-header-status'
@@ -288,15 +272,15 @@ const CurrentChatsRoute = (): ReactElement => {
 							)}
 						</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
-							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}
-							{result.phase === AsyncStatePhase.RESOLVED && result.value.rooms.map((room) => renderRow({ ...room }))}
+							{result.isLoading && <GenericTableLoadingTable headerCells={4} />}
+							{result.isSuccess && result.data.rooms.map((room) => renderRow({ ...room }))}
 						</GenericTableBody>
 					</GenericTable>
-					{result.phase === AsyncStatePhase.RESOLVED && (
+					{result.isSuccess && (
 						<Pagination
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={result.value.total}
+							count={result.data.total}
 							onSetItemsPerPage={setItemsPerPage}
 							onSetCurrent={setCurrent}
 							{...paginationProps}

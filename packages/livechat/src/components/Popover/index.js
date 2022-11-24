@@ -3,19 +3,13 @@ import { Component, createContext } from 'preact';
 import { createClassName, normalizeDOMRect } from '../helpers';
 import styles from './styles.scss';
 
-
 const PopoverContext = createContext();
 
-
 const PopoverOverlay = ({ children, className, visible, ...props }) => (
-	<div
-		className={createClassName(styles, 'popover__overlay', { visible }, [className])}
-		{...props}
-	>
+	<div className={createClassName(styles, 'popover__overlay', { visible }, [className])} {...props}>
 		{children}
 	</div>
 );
-
 
 export class PopoverContainer extends Component {
 	state = {
@@ -89,9 +83,6 @@ export class PopoverContainer extends Component {
 	);
 }
 
-
 export const PopoverTrigger = ({ children, ...props }) => (
-	<PopoverContext.Consumer>
-		{({ open }) => children[0]({ pop: open.bind(null, children[1], props) })}
-	</PopoverContext.Consumer>
+	<PopoverContext.Consumer>{({ open }) => children[0]({ pop: open.bind(null, children[1], props) })}</PopoverContext.Consumer>
 );

@@ -8,7 +8,6 @@ import { screenCentered, gazzoAvatar } from '../../helpers.stories';
 import { FooterOptions } from '../Footer';
 import Menu from '../Menu';
 
-
 const alerts = [
 	{ id: 1, children: 'Success alert', success: true },
 	{ id: 2, children: 'Warning alert', warning: true, timeout: 0 },
@@ -37,9 +36,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('minimized', () => (
@@ -60,9 +57,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('expanded', () => (
@@ -83,9 +78,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('windowed', () => (
@@ -106,9 +99,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('with agent (email)', () => (
@@ -138,9 +129,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('with agent (phone)', () => (
@@ -170,9 +159,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('with agent', () => (
@@ -203,9 +190,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('with hidden agent', () => (
@@ -227,9 +212,7 @@ storiesOf('Components/Screen', module)
 			onRestore={action('restore')}
 			onOpenWindow={action('openWindow')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	))
 	.add('with multiple alerts', () => (
@@ -252,9 +235,7 @@ storiesOf('Components/Screen', module)
 			onOpenWindow={action('openWindow')}
 			onDismissAlert={action('dismiss alert')}
 		>
-			<Screen.Content>
-				{text('content', 'Content')}
-			</Screen.Content>
+			<Screen.Content>{text('content', 'Content')}</Screen.Content>
 		</Screen>
 	));
 storiesOf('Components/Screen/Footer', module)
@@ -301,9 +282,7 @@ storiesOf('Components/Screen/Footer', module)
 			onOpenWindow={action('openWindow')}
 		>
 			<Screen.Content />
-			<Screen.Footer>
-				{text('content', 'Lorem ipsum dolor sit amet, his id atqui repudiare.')}
-			</Screen.Footer>
+			<Screen.Footer>{text('content', 'Lorem ipsum dolor sit amet, his id atqui repudiare.')}</Screen.Footer>
 		</Screen>
 	))
 	.add('with options', () => (
@@ -331,7 +310,9 @@ storiesOf('Components/Screen/Footer', module)
 						<Menu.Group>
 							<Menu.Item onClick={action('changeDepartment')}>{i18next.t('change_department')}</Menu.Item>
 							<Menu.Item onClick={action('removeUserData')}>{i18next.t('forget_remove_my_data')}</Menu.Item>
-							<Menu.Item danger onClick={action('finishChat')}>{i18next.t('finish_this_chat')}</Menu.Item>
+							<Menu.Item danger onClick={action('finishChat')}>
+								{i18next.t('finish_this_chat')}
+							</Menu.Item>
 						</Menu.Group>
 					</FooterOptions>
 				}

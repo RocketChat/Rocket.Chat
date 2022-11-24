@@ -19,8 +19,8 @@
   "A_new_owner_will_be_assigned_automatically_to__count__rooms": "سيتم تعيين مالك جديد تلقائيًا إلى <span style=\"font-weight: bold;\">__count__</span> من الغرف.",
   "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "سيتم تعيين مالك جديد تلقائيًا إلى الغرفة <span style=\"font-weight: bold;\"> __roomName__ </span>.",
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "سيتم تعيين مالك جديد تلقائيًا إلى هذه الغرف البالغ عددها <span style=\"font-weight: bold;\">__count__</span> :<br/> __rooms__.",
-  "Accept": "قبول",
   "Accept_Call": "قبول المكالمة",
+  "Accept": "قبول",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "قبول طلبات الدردشة الواردة عبر القناة متعددة الاتجاهات وإن لم يكن هناك وكلاء على الإنترنت",
   "Accept_new_livechats_when_agent_is_idle": "قبول طلبات الدردشة الجديدة عبر القناة متعددة الاتجاهات عندما يكون الوكيل معطلاً",
   "Accept_with_no_online_agents": "القبول حال عدم وجدود وكلاء على الإنترنت",
@@ -1975,7 +1975,6 @@
   "files": "الملفات",
   "Files": "الملفات",
   "Files_only": "إزالة الملفات المرفقة فقط، والحفاظ على الرسائل",
-  "files_pruned": "الملفات المنقحة",
   "FileSize_Bytes": "__fileSize__ بايت",
   "FileSize_KB": "__fileSize__ كيلوبايت",
   "FileSize_MB": "__fileSize__ ميجابايت",
@@ -2116,6 +2115,7 @@
   "Global_purge_override_warning": "توجد سياسة عامة للاحتفاظ. إذا تركت \"تجاوز نهج الاستبقاء العام\" قيد إيقاف التشغيل، فيمكنك فقط تطبيق سياسة أكثر صرامة من السياسة العامة.",
   "Global_Search": "بحث عام",
   "Go_to_your_workspace": "الانتقال إلى مساحة العمل الخاصة بك",
+  "Hold_Call": "إخفاء المكالمة",
   "GoogleCloudStorage": "التخزين السحابي على Google",
   "GoogleNaturalLanguage_ServiceAccount_Description": "ملف JSON لمفتاح حساب الخدمة. يمكن العثور على مزيد من المعلومات [هنا](https://cloud.google.com/natural-language/docs/common/auth#set_up_a_service_account)",
   "GoogleTagManager_id": "معرف مدير علامات Google",
@@ -2160,7 +2160,6 @@
   "Highlights_List": "تظليل الكلمات",
   "History": "المحفوظات",
   "Hold_Time": "إخفاء الاسم",
-  "Hold_Call": "إخفاء المكالمة",
   "Home": "الصفحة الرئيسية",
   "Host": "مضيف",
   "Hospitality_Businness": "أعمال الضيافة",
@@ -2401,6 +2400,7 @@
   "italics": "مائل",
   "Items_per_page:": "عناصر لكل صفحة:",
   "Job_Title": "المسمى الوظيفي",
+  "Join": "انضمام",
   "Join_audio_call": "انضمام إلى مكالمة صوتية",
   "Join_call": "انضمام إلى مكالمة",
   "Join_Chat": "انضمام إلى دردشة",
@@ -2823,6 +2823,7 @@
   "manage-email-inbox_description": "إذن لإدارة صناديق البريد الإلكتروني",
   "manage-emoji": "إدارة الرموز التعبيرية",
   "manage-emoji_description": "إذن لإدارة الرموز التعبيرية للخادم",
+  "messages_pruned": "تم تنقيح الرسائل",
   "manage-incoming-integrations": "إدارة عمليات التكامل الواردة",
   "manage-incoming-integrations_description": "إذن لإدارة عمليات تكامل الخادم الواردة",
   "manage-integrations": "إدارة عمليات التكامل",
@@ -3028,7 +3029,6 @@
   "MessageBox_view_mode": "وضع عرض MessageBox",
   "messages": "الرسائل",
   "Messages": "الرسائل",
-  "messages_pruned": "تم تنقيح الرسائل",
   "Messages_sent": "تم إرسال الرسائل",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "سيتم نشر الرسائل التي تم إرسالها إلى خطاف الويب الوارد هنا.",
   "Meta": "التعريف",
@@ -3699,20 +3699,20 @@
   "Role_Mapping": "تعيين الدور",
   "Role_removed": "تمت إزالة الدور",
   "Room": "غرفة",
-  "room_allowed_reacting": "يُسمح لـ Room بالتفاعل من قِبل  <em>__user_by__</em>",
+  "room_allowed_reacting": "يُسمح لـ Room بالتفاعل من قِبل  __user_by__",
   "Room_announcement_changed_successfully": "تم تغيير إعلان Room بنجاح",
   "Room_archivation_state": "الحالة",
   "Room_archivation_state_false": "نشط",
   "Room_archivation_state_true": "مؤرشف",
   "Room_archived": "Room مؤرشفة",
-  "room_changed_announcement": "تم تغيير إعلان Room إلى: <em>__room_announcement__</em> من قِبل <em>__user_by__</em>",
-  "room_changed_avatar": "تم تغيير الصورة الرمزية لـ Room من قِبل <em>__user_by__</em>",
-  "room_changed_description": "تم تغيير وصف Room إلى: <em>__room_description__</em> من قِبل<em>__user_by__</em>",
-  "room_changed_privacy": "تم تغيير نوع Room إلى:  <em>__room_type__</em> من قِبل <em>__user_by__</em>",
-  "room_changed_topic": "تم تغيير موضوع Room إلى: <em>__room_topic__</em> من قِبل <em>__user_by__</em>",
+  "room_changed_announcement": "تم تغيير إعلان Room إلى: __room_announcement__ من قِبل __user_by__",
+  "room_changed_avatar": "تم تغيير الصورة الرمزية لـ Room من قِبل __user_by__",
+  "room_changed_description": "تم تغيير وصف Room إلى: __room_description__ من قِبل__user_by__",
+  "room_changed_privacy": "تم تغيير نوع Room إلى:  __room_type__ من قِبل __user_by__",
+  "room_changed_topic": "تم تغيير موضوع Room إلى: __room_topic__ من قِبل __user_by__",
   "Room_default_change_to_private_will_be_default_no_more": "هذه قناة افتراضية وسيؤدي تغييرها إلى مجموعة خاصة إلى عدم جعلها قناة افتراضية بعد الآن. هل تريد المتابعة؟",
   "Room_description_changed_successfully": "تم تغيير وصف Room بنجاح",
-  "room_disallowed_reacting": "غير مسموح لـ Room بالتفاعل من قِبل <em>__user_by__</em>",
+  "room_disallowed_reacting": "غير مسموح لـ Room بالتفاعل من قِبل __user_by__",
   "Room_Edit": "تحرير Room",
   "Room_has_been_archived": "تمت أرشفة Room",
   "Room_has_been_deleted": "تم حذف Room",
@@ -3723,13 +3723,13 @@
   "room_account_deactivated": "تم إلغاء تنشيط هذا الحساب",
   "room_is_read_only": "هذه الغرفة للقراءة فقط",
   "room_name": "اسم الغرفة",
-  "Room_name_changed": "تم تغيير اسم Room إلى:  <em>__room_name__</em> من قِبل <em>__user_by__</em>",
+  "Room_name_changed": "تم تغيير اسم Room إلى:  __room_name__ من قِبل __user_by__",
   "Room_name_changed_successfully": "تم تغيير اسم Room بنجاح",
   "Room_not_exist_or_not_permission": "هذه الغرفة غير موجودة أو قد لا يكون لديك إذن بالوصول إليها",
   "Room_not_found": "لم يتم العثور على Room",
   "Room_password_changed_successfully": "تم تغيير كلمة مرور Room بنجاح",
-  "room_removed_read_only": "تمت إضافة إذن كتابي بـ Room من قِبل <em>__user_by__</em>",
-  "room_set_read_only": "تم تعيين Room للقراءة فقط من قِبل <em>__user_by__</em>",
+  "room_removed_read_only": "تمت إضافة إذن كتابي بـ Room من قِبل __user_by__",
+  "room_set_read_only": "تم تعيين Room للقراءة فقط من قِبل __user_by__",
   "Room_topic_changed_successfully": "تم تغيير موضوع Room بنجاح",
   "Room_type_changed_successfully": "تم تغيير نوع Room بنجاح",
   "Room_type_of_default_rooms_cant_be_changed": "هذه غرفة افتراضية ولا يمكن تغيير النوع، يرجى استشارة المسؤول الخاص بك.",
@@ -4525,14 +4525,14 @@
   "User Search (Group Validation)": "البحث عن المستخدم (التحقق من المجموعة)",
   "User__username__is_now_a_leader_of__room_name_": "أصبح المستخدم __username__ الآن قائدًا لـ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "المستخدم __username__ هو الآن مشرف على __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
   "User__username__muted_in_room__roomName__": "تم كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User__username__removed_from__room_name__leaders": "تمت إزالة المستخدم __username__ من قادة __room_name__",
   "User__username__removed_from__room_name__moderators": "تمت إزالة المستخدم __username__ من مشرفي __room_name__",
   "User__username__removed_from__room_name__owners": "تمت إزالة المستخدم __username__ من مالكي __room_name__",
   "User__username__unmuted_in_room__roomName__": "تم إلغاء كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User_added": "تمت إضافة المستخدم",
-  "User_added_by": "تمت إضافة المستخدم <em>__user_added__</em> من قِبل <em>__user_by__</em>.",
+  "User_added_by": "تمت إضافة المستخدم __user_added__ من قِبل __user_by__.",
   "User_added_successfully": "تمت إضافة المستخدم بنجاح",
   "User_and_group_mentions_only": "إشارات المستخدم والمجموعة فقط",
   "User_cant_be_empty": "لا يمكن أن يكون المستخدم فارغًا",
@@ -4566,19 +4566,19 @@
   "User_management": "إدارة المستخدم",
   "User_mentions_only": "إشارات المستخدم فقط",
   "User_muted": "تم كتم صوت المستخدم",
-  "User_muted_by": "تم كتم صوت المستخدم <em>__user_muted__</em> من قِبل <em>__user_by__</em>.",
+  "User_muted_by": "تم كتم صوت المستخدم __user_muted__ من قِبل __user_by__.",
   "User_not_found": "لم يتم العثور على المستخدم",
   "User_not_found_or_incorrect_password": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
   "User_or_channel_name": "اسم المستخدم أو القناة",
   "User_Presence": "حضور المستخدم",
   "User_removed": "تمت إزالة المستخدم",
-  "User_removed_by": "تمت إزالة المستخدم <em>__user_removed__</em> من قِبل <em>__user_by__</em>.",
+  "User_removed_by": "تمت إزالة المستخدم __user_removed__ من قِبل __user_by__.",
   "User_sent_a_message_on_channel": "<strong>__username__</strong> أرسل رسالة على <strong>__channel__</strong>",
   "User_sent_a_message_to_you": " <strong>__username__</strong> أرسل إليك رسالة",
   "user_sent_an_attachment": "__user__ أرسل مرفقًا",
   "User_Settings": "إعدادات المستخدم",
   "User_started_a_new_conversation": "__username__ بدأ محادثة جديدة",
-  "User_unmuted_by": "تم إلغاء كتم صوت المستخدم <em>__user_unmuted__</em> من قِبل <em>__user_by__</em>.",
+  "User_unmuted_by": "تم إلغاء كتم صوت المستخدم __user_unmuted__ من قِبل __user_by__.",
   "User_unmuted_in_room": "تم إلغاء كتم صوت المستخدم في الغرفة",
   "User_updated_successfully": "تم تحديث المستخدم بنجاح",
   "User_uploaded_a_file_on_channel": "قام <strong>__username__</strong> بتحميل ملف على <strong>__channel__</strong>",
@@ -4901,13 +4901,29 @@
   "Your_TOTP_has_been_reset": "تمت إعادة تعيين TOTP الثنائي.",
   "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة للاستخدام 🎉",
   "Zapier": "Zapier",
+  "registration.page.login.errors.wrongCredentials": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
+  "registration.page.login.errors.loginBlockedForIp": "تم حظر تسجيل الدخول مؤقتًا لعنوان IP هذا",
+  "registration.page.login.errors.loginBlockedForUser": "تم حظر تسجيل الدخول مؤقتا لهذا المستخدم",
+  "registration.page.login.errors.licenseUserLimitReached": "تم بلوغ الحد الأقصى لعدد المستخدمين.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "لا يُسمح لمستخدمي التطبيق بتسجيل الدخول مباشرة.",
+  "registration.page.registration.waitActivationWarning": "قبل أن تتمكن من تسجيل الدخول، يجب تفعيل حسابك يدويًا بواسطة المسؤول.",
+  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
+  "registration.page.login.forgot": "نسيت كلمة السر",
+  "registration.page.resetPassword.sent": "إن كان البريد الإلكتروني مسجلاً، فسنرسل تعليمات إعادة تعيين كلمة المرور الخاصة بك. إذا لم تتلقَّ بريداً إلكترونيًا في وقت قريب، فيرجى العودة والمحاولة مرة أخرى.",
+  "registration.component.login": "تسجيل الدخول",
+  "registration.component.resetPassword": "إعادة تعيين كلمة السر",
+  "registration.component.form.emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
+  "registration.component.form.email": "البريد الإلكتروني",
+  "registration.component.form.password": "كلمة المرور",
+  "registration.component.form.divider": "أو",
+  "registration.component.form.submit": "إرسال",
+  "registration.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.steps": "الخطوة {{currentStep}} من {{stepCount}}",
   "onboarding.component.form.action.back": "عودة",
   "onboarding.component.form.action.next": "التالي",
   "onboarding.component.form.action.skip": "تخطي هذه الخطوة",
   "onboarding.component.form.action.register": "تسجيل",
   "onboarding.component.form.action.confirm": "تأكيد",
-  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.termsAndConditions": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>",
   "onboarding.component.emailCodeFallback": "ألم تتلق رسالة بريد إلكتروني؟ <1>إعادة الإرسال</1> or <3>تغيير البريد الإلكتروني</3>",
   "onboarding.page.form.title": "دعنا <1>نطلق</1> مساحة العمل الخاصة بك",
