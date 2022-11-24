@@ -1,6 +1,41 @@
 
 # 5.4.0 (Under Release Candidate Process)
 
+## 5.4.0-rc.1
+`2022-11-24  ·  4 🔍  ·  6 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix typo in pa-in.js ([#26717](https://github.com/RocketChat/Rocket.Chat/pull/26717) by [@eltociear](https://github.com/eltociear))
+
+- Chore: Remove role requirement to use change streams ([#27281](https://github.com/RocketChat/Rocket.Chat/pull/27281))
+
+  We used to require the `clusterMonitor` role to be able to use Change Streams because we performed a `serverStatus` command, to be able to check if the requirements for change streams are met (like using wired tiger for example). But since our minimum MongoDB supported version is now 4.2, and MMAPv1 [was removed on this version](https://www.mongodb.com/docs/v4.2/core/storage-engines/), there is no need to check that.
+
+  The new approach is just try to use change streams, if it fails for any reason, fallback to oplog.
+
+  If oplog fails as well, we're now halting the process, since it wasn't able to establish a connection for reading real time data, something that is crucial for the application. An additional check was added to make sure `$MONGO_OPLOG_URL` is pointing to the `local` database.
+
+- Regression: Remove actions from VideoConf Message Block ([#27344](https://github.com/RocketChat/Rocket.Chat/pull/27344))
+
+- Regression: Team name validation on Create Team Modal ([#27345](https://github.com/RocketChat/Rocket.Chat/pull/27345))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@eltociear](https://github.com/eltociear)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 5.4.0-rc.0
 `2022-11-23  ·  9 🎉  ·  13 🚀  ·  61 🐛  ·  64 🔍  ·  53 👩‍💻👨‍💻`
 
@@ -669,6 +704,73 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.3.2
+`2022-11-18  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.3.2 ([#27297](https://github.com/RocketChat/Rocket.Chat/pull/27297))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+
+# 5.3.1
+`2022-11-14  ·  5 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- File upload receiving whole file to apply limits ([#27105](https://github.com/RocketChat/Rocket.Chat/pull/27105))
+
+- Hide system messages setting not being respected. ([#27151](https://github.com/RocketChat/Rocket.Chat/pull/27151))
+
+  There was a query missing the parameters in the client.
+
+  Also added a few tests to help reduce the risk of this happening again.
+
+- Multi instance error message ([#27243](https://github.com/RocketChat/Rocket.Chat/pull/27243))
+
+- Next schedule check for Apps ([#27240](https://github.com/RocketChat/Rocket.Chat/pull/27240))
+
+- User merge by e-mail on OAuth is case-sensitive ([#27167](https://github.com/RocketChat/Rocket.Chat/pull/27167))
+
+  - Ignore case when searching for a user by email.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Check for Cloud client secret to check if workspace is registered ([#27229](https://github.com/RocketChat/Rocket.Chat/pull/27229))
+
+- Release 5.3.1 ([#27261](https://github.com/RocketChat/Rocket.Chat/pull/27261))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@casalsgh](https://github.com/casalsgh)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 5.3.0
 `2022-11-01  ·  3 🎉  ·  4 🚀  ·  13 🐛  ·  23 🔍  ·  23 👩‍💻👨‍💻`
