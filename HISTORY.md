@@ -1,4 +1,30 @@
 
+# 5.3.3
+`2022-11-24  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Create unique index for `E2EKey` field ([#27301](https://github.com/RocketChat/Rocket.Chat/pull/27301))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.3.2
 `2022-11-18  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
