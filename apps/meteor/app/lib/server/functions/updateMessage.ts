@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -47,7 +47,12 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	const { _id, ...editedMessage } = message;
 
-	Messages.update({ _id }, { $set: editedMessage });
+	if (!editedMessage.msg) {
+		delete editedMessage.md;
+	}
+
+	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
+	Messages.update({ _id }, { $set: editedMessage, ...(!editedMessage.md && { $unset: { md: 1 } }) });
 
 	const room = Rooms.findOneById(message.rid);
 

@@ -12,6 +12,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';
+import { omit } from '../../../../lib/utils/omit';
 
 const wrap =
 	(fn) =>
@@ -227,13 +228,13 @@ export class CachedCollection extends Emitter {
 		const data = await call(this.methodName);
 		this.log(`${data.length} records loaded from server`);
 		data.forEach((record) => {
-			callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
-			this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
+			const newRecord = callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
+			this.collection.direct.upsert({ _id: newRecord._id }, omit(newRecord, '_id'));
 
-			this.onSyncData('changed', record);
+			this.onSyncData('changed', newRecord);
 
-			if (record._updatedAt && record._updatedAt > this.updatedAt) {
-				this.updatedAt = record._updatedAt;
+			if (newRecord._updatedAt && newRecord._updatedAt > this.updatedAt) {
+				this.updatedAt = newRecord._updatedAt;
 			}
 		});
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
@@ -274,30 +275,25 @@ export class CachedCollection extends Emitter {
 	}
 
 	async setupListener(eventType, eventName) {
-		const { RoomManager } = await import('../../../ui-utils');
 		const { ChatRoom, CachedChatRoom } = await import('../../../models');
 		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
-			callbacks.run(`cachedCollection-received-${this.name}`, record, t);
+			const newRecord = callbacks.run(`cachedCollection-received-${this.name}`, record, t);
 			if (t === 'removed') {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
-					room = ChatRoom.findOne(record.rid);
+					room = ChatRoom.findOne(newRecord.rid);
 					if (room) {
 						this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
 					}
 				} else {
 					room = this.collection.findOne({
-						_id: record._id,
+						_id: newRecord._id,
 					});
 				}
-				if (room) {
-					room.name && RoomManager.close(room.t + room.name);
-					!room.name && RoomManager.close(room.t + room._id);
-				}
-				this.collection.remove(record._id);
+				this.collection.remove(newRecord._id);
 			} else {
-				const { _id, ...recordData } = record;
+				const { _id, ...recordData } = newRecord;
 				this.collection.direct.upsert({ _id }, recordData);
 			}
 			this.save();
@@ -355,10 +351,10 @@ export class CachedCollection extends Emitter {
 
 		for (const record of changes) {
 			const action = record._deletedAt ? 'removed' : 'changed';
-			callbacks.run(`cachedCollection-sync-${this.name}`, record, action);
-			const actionTime = record._deletedAt || record._updatedAt;
-			const { _id, ...recordData } = record;
-			if (record._deletedAt) {
+			const newRecord = callbacks.run(`cachedCollection-sync-${this.name}`, record, action);
+			const actionTime = newRecord._deletedAt || newRecord._updatedAt;
+			const { _id, ...recordData } = newRecord;
+			if (newRecord._deletedAt) {
 				this.collection.direct.remove({ _id });
 			} else {
 				this.collection.direct.upsert({ _id }, recordData);
@@ -366,7 +362,7 @@ export class CachedCollection extends Emitter {
 			if (actionTime > this.updatedAt) {
 				this.updatedAt = actionTime;
 			}
-			this.onSyncData(action, record);
+			this.onSyncData(action, newRecord);
 		}
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 

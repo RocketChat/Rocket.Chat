@@ -3,18 +3,17 @@ import { EmailInbox } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
-import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 
 API.v1.addRoute(
 	'email-inbox.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, query } = this.parseJsonQuery();
-			const emailInboxes = await findEmailInboxes({ userId: this.userId, query, pagination: { offset, count, sort } });
+			const emailInboxes = await findEmailInboxes({ query, pagination: { offset, count, sort } });
 
 			return API.v1.success(emailInboxes);
 		},
@@ -23,21 +22,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
-
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
 				active: Boolean,
 				name: String,
 				email: String,
-				description: String,
-				senderInfo: String,
-				department: String,
+				description: Match.Maybe(String),
+				senderInfo: Match.Maybe(String),
+				department: Match.Maybe(String),
 				smtp: Match.ObjectIncluding({
 					server: String,
 					port: Number,
@@ -64,7 +59,7 @@ API.v1.addRoute(
 				_id = emailInbox.insertedId.toString();
 			} else {
 				_id = emailInboxParams._id;
-				await updateEmailInbox(this.userId, { ...emailInboxParams, _id });
+				await updateEmailInbox({ ...emailInboxParams, _id });
 			}
 			return API.v1.success({ _id });
 		},
@@ -73,7 +68,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
 			check(this.urlParams, {
@@ -84,15 +79,15 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
-			const emailInboxes = await findOneEmailInbox({ userId: this.userId, _id });
+			const emailInbox = await findOneEmailInbox({ _id });
 
-			return API.v1.success(emailInboxes);
+			if (!emailInbox) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.success(emailInbox);
 		},
 		async delete() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -103,7 +98,6 @@ API.v1.addRoute(
 			}
 
 			const emailInboxes = await EmailInbox.findOneById(_id);
-
 			if (!emailInboxes) {
 				return API.v1.notFound();
 			}
@@ -115,12 +109,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox.search',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
 			check(this.queryParams, {
 				email: String,
 			});
@@ -138,12 +129,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'email-inbox.send-test/:_id',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -152,7 +140,7 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInbox = await findOneEmailInbox({ userId: this.userId, _id });
+			const emailInbox = await findOneEmailInbox({ _id });
 
 			if (!emailInbox) {
 				return API.v1.notFound();

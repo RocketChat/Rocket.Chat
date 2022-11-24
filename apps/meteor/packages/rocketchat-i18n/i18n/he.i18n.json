@@ -737,6 +737,7 @@
   "is_typing": "מקליד/ה",
   "It_works": "זה עובד",
   "italics": "נוטה",
+  "Join": "הצטרפות",
   "Join_audio_call": "הצטרף לשיחת אודיו",
   "Join_Chat": "הצטרף לשיחה",
   "Join_default_channels": "הצטרפות לערוצי בררת המחדל",
@@ -1415,7 +1416,7 @@
   "User Search": "חיפוש משתמשים",
   "User__username__is_now_a_leader_of__room_name_": "המשתמש __username__ הוא עכשיו המנהיג של __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "המשתמש __username__ עכשיו מנחה של __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "המשתמש __username__ עכשיו בעלים של __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "המשתמש __username__ עכשיו בעלים של __room_name__",
   "User__username__removed_from__room_name__leaders": "המשתמש __username__ הוסר ממנהיגי  __room_name__",
   "User__username__removed_from__room_name__moderators": "המשתמש __username__ הוסר ממנחי__room_name__",
   "User__username__removed_from__room_name__owners": "המשתמש __username__ הוסר מבעלי __room_name__",
@@ -1544,5 +1545,11 @@
   "your_message": "ההודעה שלך",
   "Your_password_is_wrong": "הסיסמה שלך שגויה!",
   "Your_push_was_sent_to_s_devices": "הודעת ה-push נשלח בהצלחה ל-%s מכשירים",
-  "Your_question": "השאלה שלך"
+  "Your_question": "השאלה שלך",
+  "registration.page.login.errors.wrongCredentials": "המשתמש לא נמצא או הסיסמה לא נכונה",
+  "registration.page.registration.waitActivationWarning": "לפני שתוכל להתחבר, החשבון שלך חייב לעבור אישור על ידי האדמין.",
+  "registration.component.login": "התחברות",
+  "registration.component.resetPassword": "איפוס ססמה",
+  "registration.component.form.email": "דוא״ל",
+  "registration.component.form.submit": "שליחה"
 }

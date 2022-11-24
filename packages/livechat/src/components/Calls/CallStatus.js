@@ -7,6 +7,7 @@ export const CallStatus = {
 	ENDED: 'ended',
 };
 
-export const isCallOngoing = (callStatus) => callStatus === CallStatus.IN_PROGRESS
-	|| callStatus === CallStatus.IN_PROGRESS_DIFFERENT_TAB
-	|| callStatus === CallStatus.IN_PROGRESS_SAME_TAB;
+export const isCallOngoing = (callStatus) =>
+	callStatus === CallStatus.IN_PROGRESS ||
+	callStatus === CallStatus.IN_PROGRESS_DIFFERENT_TAB ||
+	callStatus === CallStatus.IN_PROGRESS_SAME_TAB;

@@ -2,7 +2,7 @@ import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Button, Box, Select
 import { useUserPreference, useSetting, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState, useMemo, ReactElement } from 'react';
 
-import { KonchatNotification } from '../../../../app/ui';
+import { KonchatNotification } from '../../../../app/ui/client';
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';
 
@@ -26,6 +26,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	const userDesktopNotifications = useUserPreference('desktopNotifications');
 	const userMobileNotifications = useUserPreference('pushNotifications');
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
+	const userReceiveLoginDetectionEmail = useUserPreference('receiveLoginDetectionEmail');
 
 	const defaultDesktopNotifications = useSetting(
 		'Accounts_Default_User_Preferences_desktopNotifications',
@@ -35,25 +36,42 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	) as keyof typeof notificationOptionsLabelMap;
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
 
+	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
+	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
+	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
+
 	const { values, handlers, commit } = useForm(
 		{
 			desktopNotificationRequireInteraction: userDesktopNotificationRequireInteraction,
 			desktopNotifications: userDesktopNotifications,
 			pushNotifications: userMobileNotifications,
 			emailNotificationMode: userEmailNotificationMode,
+			receiveLoginDetectionEmail: userReceiveLoginDetectionEmail,
 		},
 		onChange,
 	);
 
-	const { desktopNotificationRequireInteraction, desktopNotifications, pushNotifications, emailNotificationMode } = values as {
+	const {
+		desktopNotificationRequireInteraction,
+		desktopNotifications,
+		pushNotifications,
+		emailNotificationMode,
+		receiveLoginDetectionEmail,
+	} = values as {
 		desktopNotificationRequireInteraction: boolean;
 		desktopNotifications: string | number | readonly string[];
 		pushNotifications: string | number | readonly string[];
 		emailNotificationMode: string;
+		receiveLoginDetectionEmail: boolean;
 	};
 
-	const { handleDesktopNotificationRequireInteraction, handleDesktopNotifications, handlePushNotifications, handleEmailNotificationMode } =
-		handlers;
+	const {
+		handleDesktopNotificationRequireInteraction,
+		handleDesktopNotifications,
+		handlePushNotifications,
+		handleEmailNotificationMode,
+		handleReceiveLoginDetectionEmail,
+	} = handlers;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
@@ -118,7 +136,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 					</Field.Row>
 				</Field>
 				<Field>
-					<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Notification_RequireInteraction')}</Field.Label>
 						<Field.Row>
 							<ToggleSwitch checked={desktopNotificationRequireInteraction} onChange={handleDesktopNotificationRequireInteraction} />
@@ -153,6 +171,18 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
 					</Field.Hint>
 				</Field>
+
+				{showNewLoginEmailPreference && (
+					<Field>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+							<Field.Label>{t('Receive_Login_Detection_Emails')}</Field.Label>
+							<Field.Row>
+								<ToggleSwitch checked={receiveLoginDetectionEmail} onChange={handleReceiveLoginDetectionEmail} />
+							</Field.Row>
+						</Box>
+						<Field.Hint>{t('Receive_Login_Detection_Emails_Description')}</Field.Hint>
+					</Field>
+				)}
 			</FieldGroup>
 		</Accordion.Item>
 	);

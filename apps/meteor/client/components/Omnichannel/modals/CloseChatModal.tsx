@@ -58,7 +58,7 @@ const CloseChatModal = ({
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
 		const cannotSendComment = (commentRequired && !comment) || errors.comment;
-		return cannotSendTag || cannotSendComment;
+		return Boolean(cannotSendTag || cannotSendComment);
 	}, [comment, commentRequired, errors, tagRequired, tags]);
 
 	useEffect(() => {
@@ -87,11 +87,21 @@ const CloseChatModal = ({
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Box color='neutral-600'>{t('Close_room_description')}</Box>
+				<Box color='annotation'>{t('Close_room_description')}</Box>
 				<Field marginBlock='x15'>
 					<Field.Label required={commentRequired}>{t('Comment')}</Field.Label>
 					<Field.Row>
-						<TextInput {...register('comment')} error={errors.comment} flexGrow={1} placeholder={t('Please_add_a_comment')} />
+						<TextInput
+							{...register('comment')}
+							error={
+								errors.comment &&
+								t('error-the-field-is-required', {
+									field: t('Comment'),
+								})
+							}
+							flexGrow={1}
+							placeholder={t('Please_add_a_comment')}
+						/>
 					</Field.Row>
 					<Field.Error>{errors.comment?.message}</Field.Error>
 				</Field>

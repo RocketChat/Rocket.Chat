@@ -298,6 +298,66 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include({ ...expectedSetting });
 	});
 
+	it('should respect override via environment when changing settings props', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('group', function () {
+			this.section('section', function () {
+				this.add('my_setting', 0, {
+					type: 'int',
+					sorter: 0,
+				});
+			});
+		});
+
+		const expectedSetting = {
+			value: 0,
+			type: 'int',
+			sorter: 0,
+			group: 'group',
+			section: 'section',
+			packageValue: 0,
+			hidden: false,
+			blocked: false,
+			secret: false,
+			i18nLabel: 'my_setting',
+			i18nDescription: 'my_setting_Description',
+			autocomplete: true,
+		};
+
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+
+		process.env.OVERWRITE_SETTING_my_setting = '1';
+		await settingsRegistry.addGroup('group', function () {
+			// removed section
+			this.add('my_setting', 0, {
+				type: 'int',
+				sorter: 0,
+			});
+		});
+
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(1);
+
+		const { section: _section, ...removedSection } = expectedSetting;
+
+		const settingWithoutSection = {
+			...removedSection,
+			value: 1,
+			processEnvValue: 1,
+			valueSource: 'processEnvValue',
+		};
+
+		expect(Settings.findOne({ _id: 'my_setting' }))
+			.to.include({ ...settingWithoutSection })
+			.to.not.have.any.keys('section');
+	});
+
 	it('should call `settings.get` callback on setting added', async () => {
 		return new Promise(async (resolve) => {
 			const settings = new CachedSettings();

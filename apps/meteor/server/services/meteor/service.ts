@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
-import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
@@ -16,10 +15,9 @@ import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager'
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
+import { ListenersModule } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
-import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 import { use } from '../../../app/settings/server/Middleware';
 import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
@@ -148,38 +146,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		// TODO: May need to merge with https://github.com/RocketChat/Rocket.Chat/blob/0ddc2831baf8340cbbbc432f88fc2cb97be70e9b/ee/server/services/Presence/Presence.ts#L28
-		if (isPresenceMonitorEnabled()) {
-			this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
-				if (clientAction === 'removed') {
-					UserPresenceMonitor.processUserSession(
-						{
-							_id: userSession._id,
-							connections: [
-								{
-									fake: true,
-								},
-							],
-						},
-						'removed',
-					);
-				}
-
-				UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
-			});
-		}
-
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
 			if (clientAction === 'removed') {
-				UserPresence.removeConnectionsByInstanceId(id);
 				matrixBroadCastActions?.removed?.(id);
 				return;
 			}
 
-			if (clientAction === 'inserted') {
-				if (data?.extraInformation?.port) {
-					matrixBroadCastActions?.added?.(data);
-				}
+			if (clientAction === 'inserted' && data?.extraInformation?.port) {
+				matrixBroadCastActions?.added?.(data);
 			}
 		});
 
@@ -216,7 +190,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			switch (clientAction) {
 				case 'updated':
 				case 'inserted':
-					const agent: IUser | undefined = await Users.findOneAgentById(id, {
+					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(id, {
 						projection: {
 							status: 1,
 							statusLivechat: 1,

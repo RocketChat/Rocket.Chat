@@ -5,8 +5,7 @@ import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-context
 import React, { ReactElement } from 'react';
 
 import PlanTag from '../../../components/PlanTag';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useLicense } from '../../../hooks/useLicense';
 import Feature from './Feature';
 import OfflineLicenseModal from './OfflineLicenseModal';
 
@@ -19,10 +18,9 @@ const LicenseCard = (): ReactElement => {
 
 	const isAirGapped = true;
 
-	const { value, phase, error } = useEndpointData('/v1/licenses.get');
-	const endpointLoading = phase === AsyncStatePhase.LOADING;
+	const { data, isError, isLoading } = useLicense();
 
-	const { modules = [] } = endpointLoading || error || !value?.licenses.length ? {} : value.licenses[0];
+	const { modules = [] } = isLoading || isError || !data?.licenses?.length ? {} : data?.licenses[0];
 
 	const hasEngagement = modules.includes('engagement-dashboard');
 	const hasOmnichannel = modules.includes('livechat-enterprise');
@@ -52,7 +50,7 @@ const LicenseCard = (): ReactElement => {
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Features')}</Card.Col.Title>
 						<Margins block='x4'>
-							{endpointLoading ? (
+							{isLoading ? (
 								<>
 									<Skeleton width='40x' />
 									<Skeleton width='40x' />

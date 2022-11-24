@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
@@ -14,11 +13,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { RoomManager, RoomHistoryManager } from '..';
-import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
-import BlazeTemplate from '../../../../client/views/root/BlazeTemplate';
+import { omit } from '../../../../lib/utils/omit';
+import { RoomSkeleton, RoomProvider, Room, RoomNotFound } from '../../../../client/views/room';
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	setTimeout(() => {
@@ -32,7 +31,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 			try {
 				const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
-				Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
+				Rooms.upsert({ _id: room._id }, omit(room, '_id'));
 
 				if (room._id !== name && type === 'd') {
 					// Redirect old url using username to rid
@@ -40,30 +39,30 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 				}
 
+				RoomManager.open({ typeName: type + name, rid: room._id });
+
+				c.stop();
 				if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 					return;
 				}
 
-				RoomManager.open({ typeName: type + name, rid: room._id });
-
 				if (render) {
 					appLayout.render(
 						<MainLayout>
-							<BlazeTemplate template='room' />
+							<Suspense fallback={<RoomSkeleton />}>
+								<RoomProvider rid={room._id}>
+									<Room />
+								</RoomProvider>
+							</Suspense>
 						</MainLayout>,
 					);
 				}
-
-				c.stop();
 
 				if (RoomManager.currentTracker) {
 					RoomManager.currentTracker = undefined;
 				}
 
-				NewRoomManager.open(room._id);
-				Session.set('openedRoom', room._id);
-
-				fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
+				fireGlobalEvent('room-opened', omit(room, 'usernames'));
 
 				Session.set('editRoomTitle', false);
 				// KonchatNotification.removeRoomNotification(params._id)
@@ -108,10 +107,9 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 						console.error(error);
 					}
 				}
-				Session.set('roomNotFound', { type, name, error });
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='roomNotFound' />
+						<RoomNotFound />
 					</MainLayout>,
 				);
 			}
