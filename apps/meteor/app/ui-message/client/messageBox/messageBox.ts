@@ -144,12 +144,6 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 			input.focus();
 		});
 	};
-
-	const { chatContext } = this.data;
-
-	chatContext?.composer.quotedMessages.subscribe(() => {
-		this.replyMessageData.set(chatContext?.composer.quotedMessages.get());
-	});
 });
 
 Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
@@ -189,7 +183,9 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const { rid, tmid, onInputChanged, onResize } = Template.currentData() as MessageBoxTemplateInstance['data'];
+		const { rid, tmid, onInputChanged, onResize, chatContext } = Template.currentData() as MessageBoxTemplateInstance['data'];
+
+		let unsubscribeToQuotedMessages: (() => void) | undefined;
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message') as HTMLTextAreaElement;
@@ -200,6 +196,12 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 
 			this.input = input;
 			onInputChanged?.(input);
+
+			unsubscribeToQuotedMessages?.();
+
+			unsubscribeToQuotedMessages = chatContext?.composer?.quotedMessages.subscribe(() => {
+				this.replyMessageData.set(chatContext?.composer?.quotedMessages.get() ?? []);
+			});
 
 			if (input && rid) {
 				this.popupConfig.set({
@@ -282,7 +284,7 @@ Template.messageBox.helpers({
 	},
 	onDismissReply() {
 		const { chatContext } = (Template.instance() as MessageBoxTemplateInstance).data;
-		return (mid: IMessage['_id']) => chatContext?.composer.dismissQuotedMessage(mid);
+		return (mid: IMessage['_id']) => chatContext?.composer?.dismissQuotedMessage(mid);
 	},
 	isEmojiEnabled() {
 		return getUserPreference(Meteor.userId(), 'useEmojis');
@@ -491,7 +493,7 @@ Template.messageBox.events({
 		}
 	},
 	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
-		const { rid, tmid, chatContext } = this;
+		const { rid, tmid } = this;
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (!Object.values<number>(keyCodes).includes(keyCode)) {
@@ -501,8 +503,6 @@ Template.messageBox.events({
 				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			}
 		}
-
-		chatContext?.setDraftAndUpdateInput(input.value);
 	},
 	'paste .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const originalEvent = event.originalEvent as ClipboardEvent | undefined;
@@ -550,7 +550,11 @@ Template.messageBox.events({
 			instance.data.onUploadFiles?.(files);
 		}
 	},
-	'input .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
+	'input .js-input-message'(
+		this: MessageBoxTemplateInstance['data'],
+		_event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
+		instance: MessageBoxTemplateInstance,
+	) {
 		const { input } = instance;
 		if (!input) {
 			return;
@@ -561,11 +565,12 @@ Template.messageBox.events({
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
-
-		const { rid, tmid, onValueChanged } = this;
-		onValueChanged?.call(this, event, { rid, tmid });
 	},
-	'propertychange .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
+	'propertychange .js-input-message'(
+		this: MessageBoxTemplateInstance['data'],
+		event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
+		instance: MessageBoxTemplateInstance,
+	) {
 		const originalEvent = event.originalEvent as { propertyName: string } | undefined;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
@@ -585,9 +590,6 @@ Template.messageBox.events({
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
-
-		const { rid, tmid, onValueChanged } = this;
-		onValueChanged?.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
 		instance.send(event as unknown as Event);

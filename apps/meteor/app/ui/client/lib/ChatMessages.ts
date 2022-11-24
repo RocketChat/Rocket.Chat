@@ -1,4 +1,3 @@
-import { Emitter } from '@rocket.chat/emitter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +8,14 @@ import type { IMessage, IRoom, SlashCommand } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 
 import { KonchatNotification } from './notification';
-import { fileUpload } from './fileUpload';
+import {
+	uploadFiles,
+	wipeFailedUploads,
+	getUploads,
+	subscribeToUploads,
+	cancelUpload,
+	uploadFile,
+} from '../../../../client/lib/chats/uploads';
 import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
@@ -27,87 +33,12 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { call } from '../../../../client/lib/utils/call';
+import type { ChatAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createAllMessages } from '../../../../client/lib/chats/allMessages';
+import { createComposer } from '../../../../client/lib/chats/composer';
 
-class QuotedMessages {
-	private emitter = new Emitter<{ update: void }>();
-
-	private messages: IMessage[] = [];
-
-	public get(): IMessage[] {
-		return this.messages;
-	}
-
-	public add(message: IMessage): void {
-		this.messages = [...this.messages.filter((_message) => _message._id !== message._id), message];
-		this.emitter.emit('update');
-	}
-
-	public remove(mid: IMessage['_id']): void {
-		this.messages = this.messages.filter((message) => message._id !== mid);
-		this.emitter.emit('update');
-	}
-
-	public clear(): void {
-		this.messages = [];
-		this.emitter.emit('update');
-	}
-
-	public subscribe(callback: () => void): () => void {
-		return this.emitter.on('update', callback);
-	}
-}
-
-class ComposerState {
-	private emitter = new Emitter<{ update: void }>();
-
-	private key: string;
-
-	private state: string | undefined;
-
-	public constructor(id: string) {
-		this.key = `messagebox_${id}`;
-		this.state = Meteor._localStorage.getItem(this.key) ?? undefined;
-	}
-
-	public get() {
-		return this.state;
-	}
-
-	private persist = withDebouncing({ wait: 1000 })(() => {
-		if (this.state) {
-			Meteor._localStorage.setItem(this.key, this.state);
-			return;
-		}
-
-		Meteor._localStorage.removeItem(this.key);
-	});
-
-	public update(value: string | undefined) {
-		this.state = value;
-		this.persist();
-		this.emitter.emit('update');
-	}
-
-	public subscribe(callback: () => void): () => void {
-		return this.emitter.on('update', callback);
-	}
-
-	public static purgeAll() {
-		Object.keys(Meteor._localStorage)
-			.filter((key) => key.indexOf('messagebox_') === 0)
-			.forEach((key) => Meteor._localStorage.removeItem(key));
-	}
-}
-
-interface IMessageProcessor {
-	process(message: IMessage): Promise<boolean>;
-}
-
-const performSlashCommand = (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => call('slashCommand', params);
-
-class SlashCommandProcessor implements IMessageProcessor {
+class SlashCommands {
 	public constructor(private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>) {}
 
 	private parse(msg: string): { command: SlashCommand<string>; params: string } | undefined {
@@ -175,7 +106,7 @@ class SlashCommandProcessor implements IMessageProcessor {
 			} as const;
 
 			try {
-				const result = await performSlashCommand({ cmd: commandName, params, msg: message, triggerId });
+				const result = await call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
 				handleResult?.(undefined, result, data);
 			} catch (error: unknown) {
 				handleResult?.(error, undefined, data);
@@ -193,12 +124,8 @@ class SlashCommandProcessor implements IMessageProcessor {
 	}
 }
 
-export class ChatMessages {
-	public quotedMessages: QuotedMessages = new QuotedMessages();
-
-	public composerState: ComposerState;
-
-	public slashCommandProcessor: IMessageProcessor | undefined;
+export class ChatMessages implements ChatAPI {
+	private slashCommands: SlashCommands | undefined;
 
 	private messageEditingState: {
 		element?: HTMLElement;
@@ -308,9 +235,9 @@ export class ChatMessages {
 			setHighlightMessage(message._id);
 
 			if (message.attachments?.[0].description) {
-				this.setDraftAndUpdateInput(message.attachments[0].description);
+				this.composer?.setText(message.attachments[0].description);
 			} else if (msg) {
-				this.setDraftAndUpdateInput(msg);
+				this.composer?.setText(msg);
 			}
 
 			const cursorPosition = cursorAtStart ? 0 : input.value.length;
@@ -321,32 +248,24 @@ export class ChatMessages {
 
 	public input: HTMLTextAreaElement | undefined;
 
+	public composer: ChatAPI['composer'];
+
+	public allMessages: ChatAPI['allMessages'];
+
 	public constructor(
 		private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] },
 		private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage,
 	) {
-		this.quotedMessages.subscribe(() => {
-			if (this.input) $(this.input).trigger('dataChange');
-		});
+		this.slashCommands = new SlashCommands(collection);
 
-		this.composerState = new ComposerState(params.rid + (params.tmid ? `-${params.tmid}` : ''));
-		this.slashCommandProcessor = new SlashCommandProcessor(collection);
-	}
-
-	public setDraftAndUpdateInput(value: string | undefined) {
-		this.composerState.update(value);
-
-		if (value === undefined) return;
-
-		if (!this.input) return;
-
-		this.input.value = value;
-		$(this.input).trigger('change').trigger('input');
+		this.allMessages = createAllMessages();
 	}
 
 	public initializeInput(input: HTMLTextAreaElement) {
 		this.input = input;
-		this.setDraftAndUpdateInput(this.composerState.get());
+
+		this.composer?.release();
+		this.composer = createComposer(input, this.params);
 	}
 
 	private recordInputAsDraft() {
@@ -395,7 +314,7 @@ export class ChatMessages {
 		}
 
 		const oldValue = input.value;
-		this.setDraftAndUpdateInput(message.msg);
+		this.composer?.setText(message.msg);
 		return oldValue !== message.msg;
 	}
 
@@ -419,12 +338,12 @@ export class ChatMessages {
 		delete this.messageEditingState.element;
 		clearHighlightMessage();
 
-		this.setDraftAndUpdateInput(this.messageEditingState.savedValue || '');
+		this.composer?.setText(this.messageEditingState.savedValue || '');
 		const cursorPosition = this.messageEditingState.savedCursorPosition ? this.messageEditingState.savedCursorPosition : input.value.length;
 		input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
-	public async send({ value, tshow }: { value: string; tshow?: boolean }) {
+	public async sendMessage({ text, tshow }: { text: string; tshow?: boolean }) {
 		const { rid } = this.params;
 		let { tmid } = this.params;
 
@@ -442,10 +361,10 @@ export class ChatMessages {
 			throw new Error('Input is not defined');
 		}
 
-		let msg = value.trim();
+		let msg = text.trim();
 		if (msg) {
 			const mention = $(this.input).data('mention-user') ?? false;
-			const replies = this.quotedMessages.get();
+			const replies = this.composer?.quotedMessages.get() ?? [];
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);
 			}
@@ -477,7 +396,7 @@ export class ChatMessages {
 			try {
 				// @ts-ignore
 				await this.processMessageSend(message);
-				this.quotedMessages.clear();
+				this.composer?.dismissAllQuotedMessages();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -523,7 +442,7 @@ export class ChatMessages {
 
 		KonchatNotification.removeRoomNotification(message.rid);
 
-		if (await this.slashCommandProcessor?.process(message)) {
+		if (await this.slashCommands?.process(message)) {
 			return;
 		}
 
@@ -577,12 +496,12 @@ export class ChatMessages {
 				type: contentType,
 				lastModified: Date.now(),
 			});
-			fileUpload([file], this, { rid, tmid });
+			uploadFiles([file], { chat: this, rid, tmid });
 			imperativeModal.close();
 		};
 
 		const onClose = () => {
-			this.setDraftAndUpdateInput(msg);
+			this.composer?.setText(msg);
 			imperativeModal.close();
 		};
 
@@ -697,16 +616,33 @@ export class ChatMessages {
 	}
 
 	private release() {
-		const { tmid } = this.params;
-		// TODO: check why we need too many ?. here :(
-		if (this.input?.parentElement?.classList.contains('editing') === true) {
+		this.composer?.release();
+		if (this.messageEditingState.id) {
+			const { tmid } = this.params;
 			if (!tmid) {
 				this.clearCurrentDraft();
 				this.clearEditing();
 			}
-			this.setDraftAndUpdateInput('');
+			this.composer?.clear();
 		}
 	}
+
+	public readonly uploads = {
+		get: getUploads,
+		subscribe: subscribeToUploads,
+	};
+
+	public uploadFiles = (files: readonly File[]): Promise<void> => {
+		return uploadFiles(files, { chat: this, ...this.params });
+	};
+
+	public uploadFile = (file: File, { description, msg }: { description?: string; msg?: string }): Promise<void> => {
+		return uploadFile(file, { description, msg, ...this.params });
+	};
+
+	public wipeFailedUploads = wipeFailedUploads;
+
+	public cancelUpload = cancelUpload;
 
 	private static refs = new Map<string, { instance: ChatMessages; count: number }>();
 
@@ -737,9 +673,5 @@ export class ChatMessages {
 			this.refs.delete(id);
 			ref.instance.release();
 		}
-	}
-
-	public static purgeAllDrafts() {
-		ComposerState.purgeAll();
 	}
 }

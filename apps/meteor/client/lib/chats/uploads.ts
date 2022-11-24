@@ -1,77 +1,50 @@
-import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { Mongo } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/client';
-import { UserAction, USER_ACTIVITIES } from './UserAction';
-import { fileUploadIsValidContentType, APIClient } from '../../../utils/client';
-import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
-import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import type { ChatMessages } from './ChatMessages';
-import { getErrorMessage } from '../../../../client/lib/errorHandling';
-import { Rooms } from '../../../models/client';
-import { getRandomId } from '../../../../lib/random';
+import { Rooms } from '../../../app/models/client';
+import { settings } from '../../../app/settings/client';
+import type { ChatMessages } from '../../../app/ui/client/lib/ChatMessages';
+import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
+import { fileUploadIsValidContentType, APIClient } from '../../../app/utils/client';
+import { getRandomId } from '../../../lib/random';
+import FileUploadModal from '../../views/room/modals/FileUploadModal';
+import { getErrorMessage } from '../errorHandling';
+import { imperativeModal } from '../imperativeModal';
+import { prependReplies } from '../utils/prependReplies';
+import type { Upload } from './Upload';
 
-export type Uploading = {
-	readonly id: string;
-	readonly name: string;
-	readonly percentage: number;
-	readonly error?: Error;
+let uploads: readonly Upload[] = [];
+
+const emitter = new Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }>();
+
+const updateUploads = (update: (uploads: readonly Upload[]) => readonly Upload[]): void => {
+	uploads = update(uploads);
+	emitter.emit('update');
 };
 
-declare module 'meteor/session' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Session {
-		function get(key: 'uploading'): readonly Uploading[];
-		function set(key: 'uploading', param: readonly Uploading[]): void;
-	}
-}
+export const getUploads = (): readonly Upload[] => uploads;
 
-Session.setDefault('uploading', []);
+export const subscribeToUploads = (callback: () => void): (() => void) => emitter.on('update', callback);
 
-let uploads: readonly Uploading[] = [];
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		uploads = Session.get('uploading');
-	});
-});
-
-export const getUploads = (): readonly Uploading[] => uploads;
-
-export const subscribeToUploads = (callback: () => void): (() => void) => {
-	const computation = Tracker.autorun(() => {
-		Session.get('uploading');
-		callback();
-	});
-
-	return () => computation.stop();
+export const cancelUpload = (id: Upload['id']): void => {
+	emitter.emit(`cancelling-${id}`);
 };
 
-const updateUploads = (update: (uploads: readonly Uploading[]) => readonly Uploading[]) => {
-	Session.set('uploading', update(Session.get('uploading')));
-};
-
-export const cancelUpload = (id: Uploading['id']) => {
-	Session.set(`uploading-cancel-${id}`, true);
-};
-
-export const uploadFileWithMessage = async (
-	rid: string,
+export const uploadFile = async (
+	file: File,
 	{
 		description,
 		msg,
-		file,
+		rid,
+		tmid,
 	}: {
-		file: File;
 		description?: string;
 		msg?: string;
+		rid: string;
+		tmid?: string;
 	},
-	tmid?: string,
 ): Promise<void> => {
 	const id = getRandomId();
 
@@ -96,7 +69,7 @@ export const uploadFileWithMessage = async (
 				},
 				{
 					load: (event) => {
-						return resolve(event);
+						resolve(event);
 					},
 					progress: (event) => {
 						if (!event.lengthComputable) {
@@ -120,7 +93,7 @@ export const uploadFileWithMessage = async (
 							}),
 						);
 					},
-					error: (error) => {
+					error: (event) => {
 						updateUploads((uploads) =>
 							uploads.map((upload) => {
 								if (upload.id !== id) {
@@ -134,33 +107,25 @@ export const uploadFileWithMessage = async (
 								};
 							}),
 						);
-						reject(error);
+						reject(event);
 					},
 				},
 			);
 
-			if (getUploads().length) {
+			if (uploads.length) {
 				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 			}
 
-			Tracker.autorun((computation) => {
-				const abortRequested = Session.get(`uploading-cancel-${id}`);
-				if (!abortRequested) {
-					return;
-				}
-				computation.stop();
-				Session.delete(`uploading-cancel-${id}`);
-
+			emitter.once(`cancelling-${id}`, () => {
 				xhr.abort();
-
 				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 			});
 		});
 
 		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 	} catch (error: unknown) {
-		updateUploads((uploads) => {
-			return uploads.map((upload) => {
+		updateUploads((uploads) =>
+			uploads.map((upload) => {
 				if (upload.id !== id) {
 					return upload;
 				}
@@ -170,10 +135,10 @@ export const uploadFileWithMessage = async (
 					percentage: 0,
 					error: new Error(getErrorMessage(error)),
 				};
-			});
-		});
+			}),
+		);
 	} finally {
-		if (!getUploads().length) {
+		if (!uploads.length) {
 			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
 	}
@@ -183,24 +148,14 @@ export const wipeFailedUploads = (): void => {
 	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
 };
 
-/** @deprecated */
-export const fileUpload = async (
-	files: File[],
-	chatMessages: ChatMessages,
-	{
-		rid,
-		tmid,
-	}: {
-		rid: string;
-		tmid?: string;
-	},
+export const uploadFiles = async (
+	files: readonly File[],
+	{ chat, rid, tmid }: { chat: ChatMessages; rid: IRoom['_id']; tmid?: IMessage['_id'] },
 ): Promise<void> => {
 	const threadsEnabled = settings.get('Threads_enabled') as boolean;
 
-	const input = chatMessages?.input;
-
-	const replies = chatMessages?.quotedMessages.get() ?? [];
-	const mention = input ? $(input).data('mention-user') : false;
+	const replies = chat.composer?.quotedMessages.get() ?? [];
+	const mention = chat.input ? $(chat.input).data('mention-user') : false;
 
 	let msg = '';
 
@@ -214,10 +169,12 @@ export const fileUpload = async (
 
 	const room = (Rooms as Mongo.Collection<IRoom>).findOne({ _id: rid }, { reactive: false });
 
+	const queue = [...files];
+
 	const uploadNextFile = (): void => {
-		const file = files.pop();
+		const file = queue.pop();
 		if (!file) {
-			chatMessages?.quotedMessages.clear();
+			chat.composer?.dismissAllQuotedMessages();
 			return;
 		}
 
@@ -226,7 +183,7 @@ export const fileUpload = async (
 			props: {
 				file,
 				fileName: file.name,
-				fileDescription: input?.value ?? '',
+				fileDescription: chat.composer?.text ?? '',
 				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
@@ -237,16 +194,13 @@ export const fileUpload = async (
 						writable: true,
 						value: fileName,
 					});
-					uploadFileWithMessage(
+					uploadFile(file, {
+						description,
+						msg,
 						rid,
-						{
-							description,
-							msg,
-							file,
-						},
 						tmid,
-					);
-					chatMessages?.setDraftAndUpdateInput('');
+					});
+					chat.composer?.clear();
 					imperativeModal.close();
 					uploadNextFile();
 				},

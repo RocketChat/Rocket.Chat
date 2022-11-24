@@ -16,7 +16,6 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
-import { cancelUpload, getUploads, subscribeToUploads, Uploading } from '../../../../../app/ui/client/lib/fileUpload';
 import { CommonRoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/CommonRoomTemplateInstance';
 import { getCommonRoomEvents } from '../../../../../app/ui/client/views/app/lib/getCommonRoomEvents';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
@@ -26,6 +25,7 @@ import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrd
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
+import { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
@@ -125,7 +125,7 @@ const RoomBody = (): ReactElement => {
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
-	const uploads = useSyncExternalStore(subscribeToUploads, getUploads);
+	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
 
 	const messageViewMode = useMemo(() => {
 		const modes = ['', 'cozy', 'compact'] as const;
@@ -208,9 +208,12 @@ const RoomBody = (): ReactElement => {
 		readMessage.readNow(room._id);
 	}, [room._id]);
 
-	const handleUploadProgressClose = useCallback((id: Uploading['id']) => {
-		cancelUpload(id);
-	}, []);
+	const handleUploadProgressClose = useCallback(
+		(id: Upload['id']) => {
+			chat.cancelUpload(id);
+		},
+		[chat],
+	);
 
 	const retentionPolicy = useRetentionPolicy(room);
 
@@ -555,9 +558,13 @@ const RoomBody = (): ReactElement => {
 				return;
 			}
 
-			chat.composer.quoteMessage(message);
+			chat.composer?.quoteMessage(message);
 		});
 	}, [chat.allMessages, chat.composer, replyMID]);
+
+	useEffect(() => {
+		chat.wipeFailedUploads();
+	}, [chat]);
 
 	return (
 		<>

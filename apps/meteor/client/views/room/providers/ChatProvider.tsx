@@ -3,10 +3,6 @@ import React, { ReactElement, ReactNode, useEffect, useMemo } from 'react';
 import { ChatMessages } from '../../../../app/ui/client/lib/ChatMessages';
 import { ChatContext } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
-import { useAllMessages } from './hooks/useAllMessages';
-import { useComposer } from './hooks/useComposer';
-import { useSendMessage } from './hooks/useSendMessage';
-import { useUploadFiles } from './hooks/useUploadFiles';
 
 type ChatProviderProps = {
 	children: ReactNode;
@@ -25,15 +21,7 @@ const ChatProvider = ({ children, tmid }: ChatProviderProps): ReactElement => {
 		[rid, tmid],
 	);
 
-	const composer = useComposer({ chatMessages });
-	const allMessages = useAllMessages();
-	const sendMessage = useSendMessage({ chatMessages, tmid });
-	const uploadFiles = useUploadFiles({ chatMessages, tmid, composer });
-
-	const value = useMemo(
-		() => Object.assign(chatMessages, { composer, allMessages, sendMessage, uploadFiles }),
-		[allMessages, chatMessages, composer, sendMessage, uploadFiles],
-	);
+	const value = useMemo(() => chatMessages, [chatMessages]);
 
 	return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

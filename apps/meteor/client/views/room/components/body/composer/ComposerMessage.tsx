@@ -1,5 +1,5 @@
 import { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
@@ -78,6 +78,8 @@ const ComposerMessage = ({
 		onUploadFiles,
 	]);
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const footerRef = useCallback(
 		(footer: HTMLElement | null) => {
 			if (footer) {
@@ -96,11 +98,23 @@ const ComposerMessage = ({
 						},
 						onSend: async (
 							_event: Event,
-							params: {
+							{
+								value: text,
+								tshow,
+							}: {
 								value: string;
 								tshow?: boolean;
 							},
-						) => chatMessagesInstance?.send(params),
+						): Promise<void> => {
+							try {
+								await chatMessagesInstance?.sendMessage({
+									text,
+									tshow,
+								});
+							} catch (error) {
+								dispatchToastMessage({ type: 'error', message: error });
+							}
+						},
 					}),
 					footer,
 				);
@@ -112,7 +126,7 @@ const ComposerMessage = ({
 				messageBoxViewRef.current = undefined;
 			}
 		},
-		[chatMessagesInstance],
+		[chatMessagesInstance, dispatchToastMessage],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));

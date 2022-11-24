@@ -1,5 +1,6 @@
 import { IMessage, MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import React, { ReactElement, ReactNode } from 'react';
 
@@ -33,24 +34,31 @@ const usePerformActionMutation = (
 		switch (processingType) {
 			case 'sendMessage':
 				if (!msg) return;
-				await chat.sendMessage(msg);
+				await chat.sendMessage({ text: msg });
 				return;
 
 			case 'respondWithMessage':
 				if (!msg) return;
-				await chat.composer.replyWith(msg);
+				await chat.composer?.replyWith(msg);
 				return;
 
 			case 'respondWithQuotedMessage':
 				if (!mid) return;
 				const message = await chat.allMessages.getOneByID(mid);
-				await chat.composer.quoteMessage(message);
+				await chat.composer?.quoteMessage(message);
 		}
 	}, options);
 };
 
 const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAttachmentButtonProps): ReactElement => {
-	const performActionMutation = usePerformActionMutation();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const performActionMutation = usePerformActionMutation({
+		onError: (error) => {
+			console.error(error);
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+	});
 
 	return (
 		<Button

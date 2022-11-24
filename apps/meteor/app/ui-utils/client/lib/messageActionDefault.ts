@@ -80,7 +80,7 @@ Meteor.startup(async function () {
 			const $input = $(input);
 
 			$input.focus().data('mention-user', false).trigger('dataChange');
-			chat.composer.quoteMessage(message);
+			chat.composer?.quoteMessage(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {

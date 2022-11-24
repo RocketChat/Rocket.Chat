@@ -22,6 +22,7 @@ import './thread.html';
 import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
 import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
@@ -129,9 +130,12 @@ Template.thread.helpers({
 			subscription,
 			rid,
 			tmid,
-			onSend: (
+			onSend: async (
 				_event: Event,
-				params: {
+				{
+					value: text,
+					tshow,
+				}: {
 					value: string;
 					tshow?: boolean;
 				},
@@ -140,7 +144,15 @@ Template.thread.helpers({
 				if (alsoSendPreferenceState === 'default') {
 					instance.state.set('sendToChannel', false);
 				}
-				return chatContext.send(params);
+
+				try {
+					await chatContext.sendMessage({
+						text,
+						tshow,
+					});
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
 			},
 			onInputChanged: (input: HTMLTextAreaElement): void => {
 				chatContext.initializeInput(input);
