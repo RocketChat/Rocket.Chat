@@ -108,7 +108,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async getRoomEvents(externalRoomId: string, externalUserId: string, excludingUserIds: string[]): Promise<any[]> {
 		const events = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomState(externalRoomId);
-
+		console.log({ allEvents: events });
 		return events.filter(
 			(event) => event.type === 'm.room.member' && event.content.membership === 'join' && !excludingUserIds.includes(event.state_key),
 		);

@@ -47,7 +47,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				),
 		);
-		for await (const user of [...externalUsers, ...localUsers]) {
+		for await (const user of [...localUsers, ...externalUsers]) {
 			await this.inviteUserToAFederatedRoom({
 				internalInviterId,
 				internalRoomId,
@@ -98,7 +98,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				),
 		);
-		for await (const user of [...externalUsers, ...localUsers]) {
+		for await (const user of [...localUsers, ...externalUsers]) {
 			await this.inviteUserToAFederatedRoom({
 				internalInviterId,
 				internalRoomId,
