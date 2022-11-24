@@ -44,7 +44,7 @@ export async function updatePriority(
 	const query = {
 		_id,
 	};
-	const update: { $set: Record<string, boolean>; $unset?: Record<string, number> } = { $set: { dirty: !data.reset } };
+	const update: { $set: Record<string, boolean>; $unset?: Record<string, 1 | ''> } = { $set: { dirty: !data.reset } };
 	if (data.reset) {
 		update.$unset = { name: 1 };
 	}
