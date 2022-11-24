@@ -276,8 +276,5 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
 		}
-		// This is a workaround nedded because on the latest version of Matrix Servers, they are not handling very well with concurrent and rate limited requests for invites
-		// This is not a problem at all since we are inviting remote users in async processes only, we are not blocking the room creation for example
-		await new Promise((resolve) => setTimeout(resolve, 3000));
 	}
 }

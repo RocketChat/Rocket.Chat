@@ -31,13 +31,13 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 				remove.getCall(1).calledWith('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room'),
 			).to.be.equal(true);
 			expect(
-				remove.getCall(2).calledWith('afterAddedToRoom', 'federation-v2-after-add-users-to-a-room'),
+				remove.getCall(2).calledWith('federation.afterAddUsersToARoom', 'federation-v2-after-add-users-to-a-room'),
 			).to.be.equal(true);
 			expect(
 				remove.getCall(3).calledWith('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room'),
 			).to.be.equal(true);
 			expect(
-				remove.getCall(4).calledWith('federation.beforeAddUserAToRoom', 'federation-v2-before-add-user-to-the-room'),
+				remove.getCall(4).calledWith('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room'),
 			).to.be.equal(true);
 			expect(
 				remove.getCall(5).calledWith('afterRoomNameChange', 'federation-v2-after-room-name-changed'),

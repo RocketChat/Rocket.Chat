@@ -18,14 +18,15 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static onUsersAddedToARoom(callback: (room: IRoom, inviter: IUser, addedUsers: IUser[]) => Promise<void>): void {
+	public static onUsersAddedToARoom(callback: (room: IRoom, inviter: IUser, addedUsers: IUser[] | string[]) => Promise<void>): void {
 		callbacks.add(
-			'afterAddedToRoom',
-			(params: { user: IUser; inviter: IUser }, room: IRoom): void => {
+			'federation.afterAddUsersToARoom',
+			(params: { invitees: IUser[] | string[]; inviter: IUser }, room: IRoom): void => {
+				console.log({ params });
 				if (!room || !isRoomFederated(room)) {
 					return;
 				}
-				Promise.await(callback(room, params.inviter, [params.user]));
+				Promise.await(callback(room, params.inviter, params.invitees));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-add-users-to-a-room',
@@ -53,7 +54,7 @@ export class FederationHooksEE {
 
 	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom) => Promise<void>): void {
 		callbacks.add(
-			'federation.beforeAddUserAToRoom',
+			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string }, room: IRoom): void => {
 				if (!room || !isRoomFederated(room)) {
 					return;
@@ -90,9 +91,9 @@ export class FederationHooksEE {
 	public static removeAll(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
-		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-users-to-a-room');
+		callbacks.remove('federation.afterAddUsersToARoom', 'federation-v2-after-add-users-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
-		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-before-add-user-to-the-room');
+		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room');
 		callbacks.remove('afterRoomNameChange', 'federation-v2-after-room-name-changed');
 		callbacks.remove('afterRoomTopicChange', 'federation-v2-after-room-topic-changed');
 	}

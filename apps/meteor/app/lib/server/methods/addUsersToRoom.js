@@ -7,6 +7,7 @@ import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
 import { api } from '../../../../server/sdk/api';
 import { Federation } from '../../../federation-v2/server/Federation';
+import { callbacks } from '../../../../lib/callbacks';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -87,6 +88,7 @@ Meteor.methods({
 				});
 			}
 		});
+		callbacks.runAsync('federation.afterAddUsersToARoom', { invitees: data.users, inviter: user }, room);
 
 		return true;
 	},

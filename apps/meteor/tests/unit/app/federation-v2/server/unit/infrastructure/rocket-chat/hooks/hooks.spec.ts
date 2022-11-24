@@ -27,7 +27,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
             FederationHooks.removeCEValidation();
             expect(remove.calledTwice).to.be.equal(true);
             expect(
-                remove.firstCall.calledWith('federation.beforeAddUserAToRoom', 'federation-v2-can-add-federated-user-to-federated-room'),
+                remove.firstCall.calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room'),
             ).to.be.equal(true);
             expect(
                 remove.secondCall.calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
