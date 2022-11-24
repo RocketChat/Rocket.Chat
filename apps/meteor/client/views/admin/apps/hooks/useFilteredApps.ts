@@ -33,7 +33,7 @@ export const useFilteredApps = ({
 	purchaseType?: string;
 	sortingMethod?: string;
 	status?: string;
-}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
+}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] }> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
 			return undefined;
@@ -89,7 +89,7 @@ export const useFilteredApps = ({
 		const end = current + itemsPerPage;
 		const slice = filtered.slice(offset, end);
 
-		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
+		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText, allApps: filtered };
 	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
