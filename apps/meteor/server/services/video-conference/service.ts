@@ -479,6 +479,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
 		const record = {
+			t: 'videoconf',
 			msg: '',
 			groupable: false,
 			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
