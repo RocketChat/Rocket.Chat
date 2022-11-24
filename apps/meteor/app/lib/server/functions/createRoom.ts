@@ -168,7 +168,7 @@ export const createRoom = function <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
 	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);

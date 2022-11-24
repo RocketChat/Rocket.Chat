@@ -154,12 +154,12 @@ export class FederationRoomServiceListener extends FederationService {
 				return;
 			}
 			if (isDirectMessageRoom({ t: roomType })) {
-				console.log({ allInviteesExternalIdsWhenDM });
+				// console.log({ allInviteesExternalIdsWhenDM });
 				if (allInviteesExternalIdsWhenDM && allInviteesExternalIdsWhenDM.length > 0) {
 					const allInvitees = await Promise.all(
 						allInviteesExternalIdsWhenDM.map(async (dmExternalInviteeId) => {
 							const invitee = await this.internalUserAdapter.getFederatedUserByExternalId(dmExternalInviteeId.externalInviteeId);
-							console.log({ invitee });
+							// console.log({ invitee });
 							if (!invitee) {
 								const isDMInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 									this.bridge.extractHomeserverOrigin(dmExternalInviteeId.externalInviteeId),
@@ -178,13 +178,13 @@ export class FederationRoomServiceListener extends FederationService {
 								(await this.internalUserAdapter.getFederatedUserByExternalId(dmExternalInviteeId.externalInviteeId))) as FederatedUser;
 						}),
 					);
-					console.log({ allInvitees });
-					console.log({ federatedInviterUser });
+					// console.log({ allInvitees });
+					// console.log({ federatedInviterUser });
 					const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, [
 						federatedInviterUser,
 						...allInvitees,
 					]);
-					console.log({ newFederatedRoom });
+					// console.log({ newFederatedRoom });
 					const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
 					await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
 						createdInternalRoomId,
@@ -249,7 +249,7 @@ export class FederationRoomServiceListener extends FederationService {
 			federatedRoom.getInternalId(),
 			federatedInviteeUser.getInternalId(),
 		);
-		console.log({ inviteeAlreadyJoinedTheInternalRoom });
+		// console.log({ inviteeAlreadyJoinedTheInternalRoom });
 		if (!leave && inviteeAlreadyJoinedTheInternalRoom) {
 			return;
 		}

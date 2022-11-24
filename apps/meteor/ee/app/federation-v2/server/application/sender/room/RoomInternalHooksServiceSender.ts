@@ -47,8 +47,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				),
 		);
-
-		for await (const user of externalUsers) {
+		for await (const user of [...externalUsers, ...localUsers]) {
 			await this.inviteUserToAFederatedRoom({
 				internalInviterId,
 				internalRoomId,
@@ -58,15 +57,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			});
 		}
 
-		for await (const user of localUsers) {
-			await this.inviteUserToAFederatedRoom({
-				internalInviterId,
-				internalRoomId,
-				inviteeUsernameOnly: user.inviteeUsernameOnly,
-				normalizedInviteeId: user.normalizedInviteeId,
-				rawInviteeId: user.rawInviteeId,
-			});
-		}
 		// await Promise.all(
 		// 	invitees.map((member) =>
 		// 		this.inviteUserToAFederatedRoom({
@@ -108,7 +98,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				),
 		);
-		for await (const user of externalUsers) {
+		for await (const user of [...externalUsers, ...localUsers]) {
 			await this.inviteUserToAFederatedRoom({
 				internalInviterId,
 				internalRoomId,
@@ -118,15 +108,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			});
 		}
 
-		for await (const user of localUsers) {
-			await this.inviteUserToAFederatedRoom({
-				internalInviterId,
-				internalRoomId,
-				inviteeUsernameOnly: user.inviteeUsernameOnly,
-				normalizedInviteeId: user.normalizedInviteeId,
-				rawInviteeId: user.rawInviteeId,
-			});
-		}
 		// await Promise.all(
 		// 	invitees.map((member) =>
 		// 		this.inviteUserToAFederatedRoom({
@@ -295,6 +276,8 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		if (isInviteeFromTheSameHomeServer) {
 			await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
 		}
-		console.log(await this.bridge.getRoomMembers(federatedRoom.getExternalId(), federatedInviterUser.getExternalId()));
+		// This is a workaround nedded because on the latest version of Matrix Servers, they are not handling very well with concurrent and rate limited requests for invites
+		// This is not a problem at all since we are inviting remote users in async processes only, we are not blocking the room creation for example
+		await new Promise((resolve) => setTimeout(resolve, 3000));
 	}
 }
