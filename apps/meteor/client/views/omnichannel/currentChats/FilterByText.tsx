@@ -12,7 +12,7 @@ import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
 type FilterByTextType = FC<{
-	setFilter: Dispatch<SetStateAction<any>>;
+	setFilter: Dispatch<SetStateAction<Record<string, any>>>;
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
 	customFields: { [key: string]: string } | undefined;
 	hasCustomFields: boolean;
@@ -69,16 +69,17 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 
 	useEffect(() => {
-		setFilter({
+		setFilter((data) => ({
+			...data,
 			guest,
 			servedBy,
 			status,
-			...(department?.value && department.value !== 'all' && { department: department.value }),
+			department: department?.value && department.value !== 'all' ? department.value : '',
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
 			customFields,
-		});
+		}));
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
 
 	const handleClearFilters = useMutableCallback(() => {
@@ -148,7 +149,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} label={t('All')} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (

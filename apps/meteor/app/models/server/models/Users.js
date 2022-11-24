@@ -689,7 +689,7 @@ export class Users extends Base {
 
 	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
 		const query = {
-			'emails.address': String(emailAddress).trim().toLowerCase(),
+			'emails.address': new RegExp(`^${escapeRegExp(String(emailAddress).trim())}$`, 'i'),
 			[`services.${serviceName}.id`]: userId,
 		};
 
@@ -1076,16 +1076,6 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				lastLogin: new Date(),
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
-	updateStatusById(_id, status) {
-		const update = {
-			$set: {
-				status,
 			},
 		};
 

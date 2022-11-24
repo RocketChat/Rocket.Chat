@@ -3,16 +3,21 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
+const sendMessageStub = sinon.stub();
+const sendQuoteMessageStub = sinon.stub();
 const { FederationRoomServiceSender } = proxyquire
 	.noCallThru()
 	.load('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
-		mongodb: {
+		'mongodb': {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
 					return 'hexString';
 				}
 			},
 			'@global': true,
+		},
+		'./MessageSenders': {
+			getExternalMessageSender: () => ({ sendMessage: sendMessageStub, sendQuoteMessage: sendQuoteMessageStub }),
 		},
 	});
 
@@ -50,13 +55,26 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		createFederatedRoom: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
 		getFederatedUserByInternalUsername: sinon.stub(),
+		getInternalUserByUsername: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
+	};
+	const fileAdapter = {
+		getBufferForAvatarFile: sinon.stub().resolves(undefined),
+	};
+	const messageAdapter = {
+		getMessageById: sinon.stub(),
+		setExternalFederationEventOnMessage: sinon.stub(),
+	};
+	const notificationsAdapter = {
+		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
+		broadcastUserTypingOnRoom: sinon.stub(),
 	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
@@ -68,10 +86,20 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		joinRoom: sinon.stub(),
 		leaveRoom: sinon.stub(),
 		kickUserFromRoom: sinon.stub(),
+		redactEvent: sinon.stub(),
+		updateMessage: sinon.stub(),
 	};
 
 	beforeEach(() => {
-		service = new FederationRoomServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationRoomServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			fileAdapter as any,
+			messageAdapter as any,
+			settingsAdapter as any,
+			notificationsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -81,9 +109,11 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.createFederatedRoom.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
+		userAdapter.getInternalUserByUsername.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.sendMessage.reset();
 		bridge.createUser.reset();
@@ -92,6 +122,12 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.joinRoom.reset();
 		bridge.leaveRoom.reset();
 		bridge.kickUserFromRoom.reset();
+		bridge.redactEvent.reset();
+		bridge.updateMessage.reset();
+		messageAdapter.getMessageById.reset();
+		messageAdapter.setExternalFederationEventOnMessage.reset();
+		sendMessageStub.reset();
+		sendQuoteMessageStub.reset();
 	});
 
 	describe('#createDirectMessageRoomAndInviteUser()', () => {
@@ -394,6 +430,16 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			);
 		});
 
+		it('should NOT send any message if the message was already sent through federation', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves({});
+			roomAdapter.getFederatedRoomByInternalId.resolves({});
+
+			await service.sendExternalMessage({ internalRoomId: 'internalRoomId', message: { federation: { eventId: 'eventId' } } } as any);
+
+			expect(sendMessageStub.called).to.be.false;
+			expect(sendQuoteMessageStub.called).to.be.false;
+		});
+
 		it('should send the message through the bridge', async () => {
 			const user = FederatedUser.createInstance('externalInviterId', {
 				name: 'normalizedInviterId',
@@ -405,7 +451,219 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			await service.sendExternalMessage({ message: { msg: 'text' } } as any);
 
-			expect(bridge.sendMessage.calledWith(room.getExternalId(), user.getExternalId(), 'text')).to.be.true;
+			expect(sendMessageStub.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
+		});
+
+		describe('Quoting messages', () => {
+			it('should NOT send a quote message if the current attachment does not have a valid message_link (with a valid msg to reply to)', async () => {
+				userAdapter.getFederatedUserByInternalId.resolves({});
+				roomAdapter.getFederatedRoomByInternalId.resolves({});
+
+				await service.sendExternalMessage({
+					internalRoomId: 'internalRoomId',
+					message: { attachments: [{ message_link: 'http://localhost:3000/group/1' }] },
+				} as any);
+
+				expect(sendMessageStub.called).to.be.false;
+				expect(sendQuoteMessageStub.called).to.be.false;
+			});
+
+			it('should send a quote message if the current attachment is valid', async () => {
+				const user = FederatedUser.createInstance('externalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: true,
+				});
+				const originalSender = FederatedUser.createInstance('originalSenderExternalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: true,
+				});
+				const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+				userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+				userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(originalSender);
+				roomAdapter.getFederatedRoomByInternalId.resolves(room);
+				messageAdapter.getMessageById.resolves({ federation: { eventId: 'eventId' } });
+				const message = {
+					_id: '_id',
+					msg: 'message',
+					attachments: [{ message_link: 'http://localhost:3000/group/1?msg=1' }],
+				};
+				await service.sendExternalMessage({
+					internalRoomId: 'internalRoomId',
+					message,
+				} as any);
+
+				expect(sendQuoteMessageStub.calledWith(room.getExternalId(), user.getExternalId(), message, { federation: { eventId: 'eventId' } }))
+					.to.be.true;
+				expect(sendMessageStub.called).to.be.false;
+			});
+		});
+	});
+
+	describe('#afterMessageDeleted()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should not delete the message remotely if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
+
+			expect(bridge.redactEvent.called).to.be.false;
+		});
+
+		it('should not delete the message remotely if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
+
+			expect(bridge.redactEvent.called).to.be.false;
+		});
+
+		it('should not delete the message remotely if the message is not an external one', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
+
+			expect(bridge.redactEvent.called).to.be.false;
+		});
+
+		it('should not delete the message remotely if the message was already deleted (it was just updated to keep the chat history)', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterMessageDeleted(
+				{
+					msg: 'msg',
+					federation: { eventId: 'id' },
+					editedAt: new Date(),
+					editedBy: 'id',
+					t: 'rm',
+					u: { _id: 'id' },
+				} as any,
+				'internalRoomId',
+			);
+
+			expect(bridge.redactEvent.called).to.be.false;
+		});
+
+		it('should not delete the message remotely if the user is not from the same home server', async () => {
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterMessageDeleted(
+				{
+					msg: 'msg',
+					federationEventId: 'id',
+					u: { _id: 'id' },
+				} as any,
+				'internalRoomId',
+			);
+
+			expect(bridge.redactEvent.called).to.be.false;
+		});
+
+		it('should delete the message remotely', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterMessageDeleted(
+				{
+					msg: 'msg',
+					federation: { eventId: 'federationEventId' },
+					u: { _id: 'id' },
+				} as any,
+				'internalRoomId',
+			);
+
+			expect(bridge.redactEvent.calledWith(room.getExternalId(), user.getExternalId(), 'federationEventId')).to.be.true;
+		});
+	});
+
+	describe('#afterMessageUpdated()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should not update the message remotely if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			await service.afterMessageUpdated({ msg: 'msg' } as any, 'internalRoomId', 'internalUserId');
+
+			expect(bridge.updateMessage.called).to.be.false;
+		});
+
+		it('should not update the message remotely if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			await service.afterMessageUpdated({ msg: 'msg' } as any, 'internalRoomId', 'internalUserId');
+
+			expect(bridge.updateMessage.called).to.be.false;
+		});
+
+		it('should not update the message remotely if the message is not an external one', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterMessageUpdated({ msg: 'msg' } as any, 'internalRoomId', 'internalUserId');
+
+			expect(bridge.updateMessage.called).to.be.false;
+		});
+
+		it('should not update the message remotely if it was updated not by the sender', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterMessageUpdated(
+				{ msg: 'msg', federation: { eventId: 'federationEventId' }, u: { _id: 'sender' } } as any,
+				'internalRoomId',
+				'internalUserId',
+			);
+
+			expect(bridge.updateMessage.called).to.be.false;
+		});
+
+		it('should not update the message remotely if the user is not from the same home server', async () => {
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+
+			await service.afterMessageUpdated(
+				{
+					msg: 'msg',
+					editedAt: new Date(),
+					editedBy: 'id',
+					federation: { eventId: 'federationEventId' },
+					u: { _id: 'internalUserId' },
+				} as any,
+				'internalRoomId',
+				'internalUserId',
+			);
+
+			expect(bridge.updateMessage.called).to.be.false;
+		});
+
+		it('should update the message remotely', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+
+			await service.afterMessageUpdated(
+				{
+					msg: 'msg',
+					editedAt: new Date(),
+					editedBy: 'id',
+					federation: { eventId: 'federationEventId' },
+					u: { _id: 'internalUserId' },
+				} as any,
+				'internalRoomId',
+				'internalUserId',
+			);
+
+			expect(bridge.updateMessage.calledWith(room.getExternalId(), user.getExternalId(), 'federationEventId', 'msg')).to.be.true;
 		});
 	});
 });

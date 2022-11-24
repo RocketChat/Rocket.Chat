@@ -39,4 +39,16 @@ describe('Federation[Server] - Federation', () => {
 			expect(Federation.isAFederatedUsername('user:domain.com')).to.be.false;
 		});
 	});
+
+	describe('#escapeExternalFederationId()', () => {
+		it('should replace all "$" with "__sign__"', () => {
+			expect(Federation.escapeExternalFederationEventId('$stri$ng')).to.be.equal('__sign__stri__sign__ng');
+		});
+	});
+
+	describe('#unescapeExternalFederationEventId()', () => {
+		it('should replace all "__sign__" with "$"', () => {
+			expect(Federation.unescapeExternalFederationEventId('__sign__stri__sign__ng')).to.be.equal('$stri$ng');
+		});
+	});
 });

@@ -17,12 +17,13 @@ import type {
 	ISocketConnection,
 	ISubscription,
 	IUser,
-	IUserSession,
 	IUserStatus,
 	IInvite,
 	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
+	AtLeast,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';
@@ -86,14 +87,18 @@ export type EventSignatures = {
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
+	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
-	'presence.status'(data: { user: Partial<IUser> }): void;
+	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'presence.status'(data: {
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		previousStatus: UserStatus | undefined;
+	}): void;
 	'watch.messages'(data: { clientAction: ClientAction; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: ClientAction; role: Partial<IRole> }): void;
 	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
 	'watch.subscriptions'(data: { clientAction: ClientAction; subscription: Partial<ISubscription> }): void;
-	'watch.userSessions'(data: { clientAction: ClientAction; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
 	'watch.users'(data: {
@@ -134,4 +139,5 @@ export type EventSignatures = {
 	'call.callerhangup'(userId: string, data: { roomId: string }): void;
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
+	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
 };
