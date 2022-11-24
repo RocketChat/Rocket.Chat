@@ -1,5 +1,4 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import $ from 'jquery';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -34,9 +33,8 @@ import {
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import { call } from '../../../../client/lib/utils/call';
-import type { ChatAPI } from '../../../../client/lib/chats/ChatAPI';
+import type { ChatAPI, ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createAllMessages } from '../../../../client/lib/chats/allMessages';
-import { createComposer } from '../../../../client/lib/chats/composer';
 
 class SlashCommands {
 	public constructor(private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>) {}
@@ -261,11 +259,9 @@ export class ChatMessages implements ChatAPI {
 		this.allMessages = createAllMessages();
 	}
 
-	public initializeInput(input: HTMLTextAreaElement) {
-		this.input = input;
-
+	public setComposer(composer: ComposerAPI): void {
 		this.composer?.release();
-		this.composer = createComposer(input, this.params);
+		this.composer = composer;
 	}
 
 	private recordInputAsDraft() {
@@ -363,7 +359,7 @@ export class ChatMessages implements ChatAPI {
 
 		let msg = text.trim();
 		if (msg) {
-			const mention = $(this.input).data('mention-user') ?? false;
+			const mention = false;
 			const replies = this.composer?.quotedMessages.get() ?? [];
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);

@@ -72,15 +72,8 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
-			const input = chat?.input;
-			if (!input) {
-				return;
-			}
 
-			const $input = $(input);
-
-			$input.focus().data('mention-user', false).trigger('dataChange');
-			chat.composer?.quoteMessage(message);
+			chat?.composer?.quoteMessage(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {

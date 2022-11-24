@@ -2,21 +2,24 @@ import { IMessage } from '@rocket.chat/core-typings';
 
 import { Upload } from './Upload';
 
-export type ChatAPI = {
-	readonly composer?: {
-		release(): void;
-		readonly text: string;
-		setText(text: string): void;
-		clear(): void;
-		replyWith(text: string): Promise<void>;
-		quoteMessage(message: IMessage): Promise<void>;
-		dismissQuotedMessage(mid: IMessage['_id']): Promise<void>;
-		dismissAllQuotedMessages(): Promise<void>;
-		readonly quotedMessages: {
-			get(): IMessage[];
-			subscribe(callback: () => void): () => void;
-		};
+export type ComposerAPI = {
+	release(): void;
+	readonly text: string;
+	setText(text: string): void;
+	clear(): void;
+	replyWith(text: string): Promise<void>;
+	quoteMessage(message: IMessage): Promise<void>;
+	dismissQuotedMessage(mid: IMessage['_id']): Promise<void>;
+	dismissAllQuotedMessages(): Promise<void>;
+	readonly quotedMessages: {
+		get(): IMessage[];
+		subscribe(callback: () => void): () => void;
 	};
+};
+
+export type ChatAPI = {
+	readonly composer?: ComposerAPI;
+	readonly setComposer: (composer: ComposerAPI) => void;
 	readonly allMessages: {
 		findOneByID(mid: IMessage['_id']): Promise<IMessage | undefined>;
 		getOneByID(mid: IMessage['_id']): Promise<IMessage>;

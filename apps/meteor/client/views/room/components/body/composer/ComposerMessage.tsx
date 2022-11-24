@@ -87,15 +87,6 @@ const ComposerMessage = ({
 					Template.messageBox,
 					(): MessageBoxTemplateInstance['data'] => ({
 						...messageBoxViewDataRef.current.get(),
-						onInputChanged: (input: HTMLTextAreaElement): void => {
-							chatMessagesInstance?.initializeInput(input);
-
-							setTimeout(() => {
-								if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
-									input.focus();
-								}
-							}, 200);
-						},
 						onSend: async (
 							_event: Event,
 							{

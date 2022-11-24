@@ -9,6 +9,8 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 import type { ContextType } from 'react';
+import { Emitter } from '@rocket.chat/emitter';
+import $ from 'jquery';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
@@ -24,11 +26,96 @@ import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
-
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBox.html';
+
+const createComposer = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();
+
+	let _quotedMessages: IMessage[] = [];
+
+	const persist = withDebouncing({ wait: 1000 })(() => {
+		if (input.value) {
+			Meteor._localStorage.setItem(storageID, input.value);
+			return;
+		}
+
+		Meteor._localStorage.removeItem(storageID);
+	});
+
+	const notifyQuotedMessagesUpdate = (): void => {
+		emitter.emit('quotedMessagesUpdate');
+	};
+
+	input.value = Meteor._localStorage.getItem(storageID) ?? '';
+	input.addEventListener('input', persist);
+
+	const release = (): void => {
+		input.removeEventListener('input', persist);
+	};
+
+	const setText = (text: string): void => {
+		input.value = text;
+		persist();
+		$(input).trigger('change').trigger('input');
+	};
+
+	const clear = (): void => {
+		setText('');
+	};
+
+	const replyWith = async (text: string): Promise<void> => {
+		if (input) {
+			input.value = text;
+			input.focus();
+		}
+	};
+
+	const quoteMessage = async (message: IMessage): Promise<void> => {
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+		notifyQuotedMessagesUpdate();
+		input.focus();
+	};
+
+	const dismissQuotedMessage = async (mid: IMessage['_id']): Promise<void> => {
+		_quotedMessages = _quotedMessages.filter((message) => message._id !== mid);
+		notifyQuotedMessagesUpdate();
+	};
+
+	const dismissAllQuotedMessages = async (): Promise<void> => {
+		_quotedMessages = [];
+		notifyQuotedMessagesUpdate();
+	};
+
+	const quotedMessages = {
+		get: () => _quotedMessages,
+		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
+	};
+
+	return {
+		release,
+		get text(): string {
+			return input.value;
+		},
+		setText,
+		clear,
+		replyWith,
+		quoteMessage,
+		dismissQuotedMessage,
+		dismissAllQuotedMessages,
+		quotedMessages,
+	};
+};
+
+export const purgeAllDrafts = (): void => {
+	Object.keys(Meteor._localStorage)
+		.filter((key) => key.indexOf('messagebox_') === 0)
+		.forEach((key) => Meteor._localStorage.removeItem(key));
+};
 
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
@@ -41,7 +128,6 @@ export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 		},
 	) => Promise<void>;
 	onResize?: () => void;
-	onInputChanged?: (input: HTMLTextAreaElement) => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
@@ -183,7 +269,7 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const { rid, tmid, onInputChanged, onResize, chatContext } = Template.currentData() as MessageBoxTemplateInstance['data'];
+		const { rid, tmid, onResize, chatContext } = Template.currentData() as MessageBoxTemplateInstance['data'];
 
 		let unsubscribeToQuotedMessages: (() => void) | undefined;
 
@@ -195,7 +281,18 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			}
 
 			this.input = input;
-			onInputChanged?.(input);
+
+			if (chatContext) {
+				chatContext.input = input;
+				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+				chatContext.setComposer(createComposer(input, storageID));
+			}
+
+			setTimeout(() => {
+				if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
+					input.focus();
+				}
+			}, 200);
 
 			unsubscribeToQuotedMessages?.();
 

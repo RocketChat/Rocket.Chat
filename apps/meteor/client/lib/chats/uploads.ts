@@ -155,7 +155,7 @@ export const uploadFiles = async (
 	const threadsEnabled = settings.get('Threads_enabled') as boolean;
 
 	const replies = chat.composer?.quotedMessages.get() ?? [];
-	const mention = chat.input ? $(chat.input).data('mention-user') : false;
+	const mention = false;
 
 	let msg = '';
 
