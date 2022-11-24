@@ -97144,6 +97144,220 @@
           ]
         }
       ]
+    },
+    "4.8.7": {
+      "node_version": "14.18.3",
+      "npm_version": "6.14.15",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.0.8": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.1.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.2.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.3.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27261",
+          "title": "Release 5.3.1",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "matheusbsilva137",
+            "ggazzo",
+            "sampaiodiego",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "27243",
+          "title": "[FIX] Multi instance error message",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27240",
+          "title": "[FIX] Next schedule check for Apps",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "27151",
+          "title": "[FIX] Hide system messages setting not being respected.",
+          "userLogin": "gabriellsh",
+          "description": "There was a query missing the parameters in the client.\r\n\r\nAlso added a few tests to help reduce the risk of this happening again.",
+          "milestone": "5.3.1",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27229",
+          "title": "Chore: Check for Cloud client secret to check if workspace is registered",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "27105",
+          "title": "[FIX] File upload receiving whole file to apply limits",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.3.1",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "ggazzo",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "27167",
+          "title": "[FIX] User merge by e-mail on OAuth is case-sensitive",
+          "userLogin": "matheusbsilva137",
+          "description": "- Ignore case when searching for a user by email.",
+          "milestone": "5.3.1",
+          "contributors": [
+            "matheusbsilva137",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "5.3.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27297",
+          "title": "Release 5.3.2",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "filipemarins",
+            "ggazzo",
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "5.3.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "5.4.0-rc.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27281",
+          "title": "Chore: Remove role requirement to use change streams",
+          "userLogin": "sampaiodiego",
+          "description": "We used to require the `clusterMonitor` role to be able to use Change Streams because we performed a `serverStatus` command, to be able to check if the requirements for change streams are met (like using wired tiger for example). But since our minimum MongoDB supported version is now 4.2, and MMAPv1 [was removed on this version](https://www.mongodb.com/docs/v4.2/core/storage-engines/), there is no need to check that.\r\n\r\nThe new approach is just try to use change streams, if it fails for any reason, fallback to oplog.\r\n\r\nIf oplog fails as well, we're now halting the process, since it wasn't able to establish a connection for reading real time data, something that is crucial for the application. An additional check was added to make sure `$MONGO_OPLOG_URL` is pointing to the `local` database.",
+          "milestone": "5.4.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27344",
+          "title": "Regression: Remove actions from VideoConf Message Block",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "26717",
+          "title": "Chore: Fix typo in pa-in.js",
+          "userLogin": "eltociear",
+          "contributors": [
+            "eltociear",
+            "web-flow",
+            "debdutdeb",
+            "ggazzo",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27345",
+          "title": "Regression: Team name validation on Create Team Modal",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
