@@ -239,7 +239,7 @@ export class FederationRoomServiceListener extends FederationService {
 				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
 			);
 			const events = await this.bridge.getRoomEvents(externalRoomId, externalInviteeId, [externalInviterId, externalInviteeId]);
-			console.log({ events })
+			console.log({ events });
 			events.forEach((event) => federationQueueInstance.addToQueue(event));
 		}
 
