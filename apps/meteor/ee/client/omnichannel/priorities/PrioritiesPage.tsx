@@ -42,7 +42,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				setResetting(true);
 				setModal(null);
 
-				await resetPriorities();
+				await resetPriorities({ reset: isResetting });
 				await refetch();
 
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
