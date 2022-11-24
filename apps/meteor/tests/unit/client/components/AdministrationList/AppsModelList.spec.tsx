@@ -67,7 +67,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const button = screen.getByText('Installed');
 
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace', { context: 'installed' }));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace', { context: 'installed', page: 'list' }));
 			await waitFor(() => expect(closeList).to.have.been.called());
 		});
 
