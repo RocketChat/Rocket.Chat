@@ -1,13 +1,23 @@
-import { IMessage, isRoomFederated, IUser } from '@rocket.chat/core-typings';
+import { IMessage, isRoomFederated, IUser, IRoom } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo, useMemo } from 'react';
 
-import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { MessageAction, MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
 import { MessageActionMenu } from './MessageActionMenu';
+
+const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
+	if (message.t === 'videoconf') {
+		return message.t;
+	}
+	if (isRoomFederated(room)) {
+		return 'federated';
+	}
+	return 'message';
+};
 
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
@@ -17,8 +27,8 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
 	const user = useUser() as IUser;
-	const federationContext = isRoomFederated(room) ? 'federated' : '';
-	const context = federationContext || 'message';
+
+	const context = getMessageContext(message, room);
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 

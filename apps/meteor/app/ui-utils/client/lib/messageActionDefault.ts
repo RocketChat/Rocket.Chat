@@ -79,7 +79,7 @@ Meteor.startup(async function () {
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
-		context: ['message', 'message-mobile', 'threads', 'federated'],
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const chatMessagesInstance = getChatMessagesFrom(message);
@@ -253,7 +253,7 @@ Meteor.startup(async function () {
 		id: 'reaction-list',
 		icon: 'emoji',
 		label: 'Reactions',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'videoconf'],
 		action(_, { tabbar, ...props }) {
 			const { message: { reactions = {}, rid } = messageArgs(this).msg } = props;
 
