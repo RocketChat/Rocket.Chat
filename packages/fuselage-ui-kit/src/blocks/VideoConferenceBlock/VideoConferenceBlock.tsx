@@ -168,7 +168,7 @@ const VideoConferenceBlock = ({
           <VideoConfMessageButton primary onClick={joinHandler}>
             {t('Join')}
           </VideoConfMessageButton>
-          {data.users.length && (
+          {Boolean(data.users.length) && (
             <>
               <VideoConfMessageUserStack users={data.users} />
               <VideoConfMessageFooterText>
