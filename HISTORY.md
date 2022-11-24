@@ -1,6 +1,18 @@
 
+# 5.1.5
+`2022-11-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 5.1.4
-`2022-09-27  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+`2022-09-28  ·  1 🐛  ·  2 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.19.3`
@@ -10018,7 +10030,7 @@
 - [@ggazzo](https://github.com/ggazzo)
 
 # 3.18.6
-`2022-05-26  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2022-05-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - MongoDB: `3.4, 3.6, 4.0, 4.2`
