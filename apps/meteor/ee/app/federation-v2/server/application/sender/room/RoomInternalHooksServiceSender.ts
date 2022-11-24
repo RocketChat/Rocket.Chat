@@ -58,8 +58,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 			});
 		}
 
-		await new Promise((r) => setTimeout(r, 5000));
-
 		for await (const user of localUsers) {
 			await this.inviteUserToAFederatedRoom({
 				internalInviterId,
@@ -119,8 +117,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 				rawInviteeId: user.rawInviteeId,
 			});
 		}
-
-		await new Promise((r) => setTimeout(r, 5000));
 
 		for await (const user of localUsers) {
 			await this.inviteUserToAFederatedRoom({
