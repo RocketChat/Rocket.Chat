@@ -11,7 +11,7 @@ const AvatarUrlProvider: FC = ({ children }) => {
 		() => ({
 			getUserPathAvatar: ((): ((uid: string, etag?: string) => string) => {
 				if (externalProviderUrl) {
-					return (uid: string): string => externalProviderUrl.trim().replace(/\/+$/, '').replace('{username}', uid);
+					return (uid: string): string => externalProviderUrl.trim().replace(/\/+$/, '').replace(/\{username\}/g, uid);
 				}
 				if (cdnAvatarUrl) {
 					return (uid: string, etag?: string): string => `${cdnAvatarUrl}/avatar/${uid}${etag ? `?etag=${etag}` : ''}`;
