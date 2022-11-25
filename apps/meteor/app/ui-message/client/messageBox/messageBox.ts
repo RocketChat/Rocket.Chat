@@ -68,6 +68,10 @@ const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): Compo
 		setText('');
 	};
 
+	const focus = (): void => {
+		input.focus();
+	};
+
 	const replyWith = async (text: string): Promise<void> => {
 		if (input) {
 			input.value = text;
@@ -96,6 +100,14 @@ const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): Compo
 		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
 	};
 
+	const setEditingMode = (editing: boolean): void => {
+		if (editing) {
+			input.parentElement?.classList.add('editing');
+		} else {
+			input.parentElement?.classList.remove('editing');
+		}
+	};
+
 	return {
 		release,
 		get text(): string {
@@ -103,11 +115,13 @@ const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): Compo
 		},
 		setText,
 		clear,
+		focus,
 		replyWith,
 		quoteMessage,
 		dismissQuotedMessage,
 		dismissAllQuotedMessages,
 		quotedMessages,
+		setEditingMode,
 	};
 };
 

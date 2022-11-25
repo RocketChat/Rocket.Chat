@@ -217,7 +217,7 @@ export interface ServerMethods {
 	'unreadMessages': (...args: any[]) => any;
 	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
-	'updateMessage': (message: IMessage) => void;
+	'updateMessage': (message: Pick<IMessage, '_id'> & Partial<Omit<IMessage, '_id'>>) => void;
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;

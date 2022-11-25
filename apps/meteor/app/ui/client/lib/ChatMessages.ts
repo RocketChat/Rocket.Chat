@@ -1,20 +1,16 @@
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import type { IMessage, IRoom, SlashCommand } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 
 import { KonchatNotification } from './notification';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
-import { t, slashCommands, APIClient } from '../../../utils/client';
+import { t } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { ChatMessage } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
-import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
@@ -30,96 +26,9 @@ import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../clie
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { getRandomId } from '../../../../lib/random';
-
-class SlashCommands {
-	public constructor(private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>) {}
-
-	private parse(msg: string): { command: SlashCommand<string>; params: string } | undefined {
-		const match = msg.match(/^\/([^\s]+)(.*)/m);
-
-		if (!match) {
-			return undefined;
-		}
-
-		const [, cmd, params] = match;
-		const command = slashCommands.commands[cmd];
-
-		if (!command) {
-			return undefined;
-		}
-
-		return { command, params };
-	}
-
-	private handleUnrecognizedCommand(commandName: string, { rid }: Pick<IMessage, 'rid'>): void {
-		console.error(TAPi18n.__('No_such_command', { command: escapeHTML(commandName) }));
-		const invalidCommandMsg: Partial<IMessage> = {
-			_id: Random.id(),
-			rid,
-			ts: new Date(),
-			msg: TAPi18n.__('No_such_command', { command: escapeHTML(commandName) }),
-			u: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-				name: 'Rocket.Cat',
-			},
-			private: true,
-		};
-
-		this.collection.upsert({ _id: invalidCommandMsg._id }, { $set: invalidCommandMsg });
-	}
-
-	public async process(message: IMessage): Promise<boolean> {
-		const match = this.parse(message.msg);
-
-		if (!match) {
-			return false;
-		}
-
-		const { command, params } = match;
-
-		const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
-
-		if (!permission || hasAtLeastOnePermission(permission, message.rid)) {
-			if (clientOnly) {
-				handleOnClient?.(commandName, params, message);
-				return true;
-			}
-
-			await APIClient.post('/v1/statistics.telemetry', {
-				params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
-			});
-
-			const triggerId = generateTriggerId(appId);
-
-			const data = {
-				cmd: commandName,
-				params,
-				msg: message,
-			} as const;
-
-			try {
-				const result = await call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
-				handleResult?.(undefined, result, data);
-			} catch (error: unknown) {
-				handleResult?.(error, undefined, data);
-			}
-
-			return true;
-		}
-
-		if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
-			this.handleUnrecognizedCommand(commandName, message);
-			return true;
-		}
-
-		return false;
-	}
-}
+import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 
 export class ChatMessages implements ChatAPI {
-	private slashCommands: SlashCommands | undefined;
-
 	private messageEditingState: {
 		element?: HTMLElement;
 		id?: string;
@@ -171,18 +80,14 @@ export class ChatMessages implements ChatAPI {
 
 			this.clearEditing();
 		},
-		editMessage: (mid: IMessage['_id'], { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
+		editMessage: async (mid: IMessage['_id'], { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			const { tmid } = this.params;
 			const element = document.getElementById(tmid ? `thread-${mid}` : mid);
 			if (!element) {
 				throw new Error('Message element not found');
 			}
 
-			const message = this.collection.findOne(mid);
-			if (!message) {
-				throw new Error('Message not found');
-			}
-
+			const message = await this.data.getMessageByID(mid);
 			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 			const editAllowed = settings.get('Message_AllowEditing');
 			const editOwn = message?.u && message.u._id === Meteor.userId();
@@ -223,7 +128,7 @@ export class ChatMessages implements ChatAPI {
 
 			this.messageEditingState.element = element;
 			this.messageEditingState.id = message._id;
-			input.parentElement?.classList.add('editing');
+			this.composer?.setEditingMode(true);
 			element.classList.add('editing');
 			setHighlightMessage(message._id);
 
@@ -233,8 +138,8 @@ export class ChatMessages implements ChatAPI {
 				this.composer?.setText(msg);
 			}
 
+			this.composer?.focus();
 			const cursorPosition = cursorAtStart ? 0 : input.value.length;
-			input.focus();
 			input.setSelectionRange(cursorPosition, cursorPosition);
 		},
 	};
@@ -251,9 +156,7 @@ export class ChatMessages implements ChatAPI {
 		private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] },
 		private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage,
 	) {
-		this.slashCommands = new SlashCommands(collection);
-
-		this.data = createDataAPI({ rid: params.rid });
+		this.data = createDataAPI({ rid: params.rid, tmid: params.tmid });
 		this.uploads = createUploadsAPI({ rid: params.rid, tmid: params.tmid });
 	}
 
@@ -263,8 +166,7 @@ export class ChatMessages implements ChatAPI {
 	}
 
 	private recordInputAsDraft() {
-		const { input } = this;
-		if (!input) {
+		if (!this.input) {
 			return;
 		}
 
@@ -276,7 +178,7 @@ export class ChatMessages implements ChatAPI {
 		if (!message) {
 			throw new Error('Message not found');
 		}
-		const draft = input.value;
+		const draft = this.input.value;
 
 		if (draft === message.msg) {
 			this.clearCurrentDraft();
@@ -324,7 +226,7 @@ export class ChatMessages implements ChatAPI {
 		}
 
 		this.recordInputAsDraft();
-		this.input.parentElement?.classList.remove('editing');
+		this.composer?.setEditingMode(false);
 		this.messageEditingState.element.classList.remove('editing');
 		delete this.messageEditingState.id;
 		delete this.messageEditingState.element;
@@ -354,27 +256,30 @@ export class ChatMessages implements ChatAPI {
 
 		KonchatNotification.removeRoomNotification(message.rid);
 
-		if (await this.slashCommands?.process(message)) {
+		if (await this.flows.processSlashCommand(message)) {
 			return;
 		}
 
 		await callWithErrorHandling('sendMessage', message);
 	}
 
-	private async processSetReaction({ rid, tmid, msg }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
-		if (msg.slice(0, 2) !== '+:') {
+	private async processSetReaction({ msg }: Pick<IMessage, 'msg'>) {
+		const match = msg.trim().match(/^+(:.*?:)$/m);
+		if (!match) {
 			return false;
 		}
 
-		const reaction = msg.slice(1).trim();
+		const [, reaction] = match;
 		if (!emoji.list[reaction]) {
 			return false;
 		}
 
-		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
+		const lastMessage = await this.data.findLastMessage();
+
 		if (!lastMessage) {
-			throw new Error('Message not found');
+			return false;
 		}
+
 		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 		return true;
 	}
@@ -478,7 +383,7 @@ export class ChatMessages implements ChatAPI {
 					if (this.messageEditingState.id === message._id) {
 						this.clearEditing();
 					}
-					this.input?.focus();
+					this.composer?.focus();
 
 					resolve();
 				}
@@ -490,7 +395,7 @@ export class ChatMessages implements ChatAPI {
 				if (this.messageEditingState.id === message._id) {
 					this.clearEditing();
 				}
-				this.input?.focus();
+				this.composer?.focus();
 
 				resolve();
 			};
@@ -581,7 +486,7 @@ export class ChatMessages implements ChatAPI {
 				try {
 					// @ts-ignore
 					await this.processMessageSend(message);
-					this.composer?.dismissAllQuotedMessages();
+					chat.composer?.dismissAllQuotedMessages();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
@@ -589,7 +494,7 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			if (this.messageEditingState.id) {
-				const message = this.collection.findOne(this.messageEditingState.id);
+				const message = await chat.data.getMessageByID(this.messageEditingState.id);
 				if (!message) {
 					throw new Error('Message not found');
 				}
@@ -609,6 +514,7 @@ export class ChatMessages implements ChatAPI {
 				}
 			}
 		}).bind(this, this),
+		processSlashCommand: processSlashCommand.bind(null, this),
 	};
 
 	private static refs = new Map<string, { instance: ChatMessages; count: number }>();

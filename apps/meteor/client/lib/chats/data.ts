@@ -5,9 +5,13 @@ import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { call } from '../utils/call';
 import { DataAPI } from './ChatAPI';
 
-export const createDataAPI = ({ rid }: { rid: IRoom['_id'] }): DataAPI => {
+const messagesCollection = Messages as Mongo.Collection<IMessage>;
+const roomsCollection = Rooms as Mongo.Collection<IRoom>;
+const subscriptionsCollection = Subscriptions as Mongo.Collection<ISubscription>;
+
+export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | undefined> =>
-		(Messages as Mongo.Collection<IMessage>).findOne({ _id: mid }, { reactive: false }) ?? call('getSingleMessage', mid);
+		messagesCollection.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);
@@ -19,7 +23,27 @@ export const createDataAPI = ({ rid }: { rid: IRoom['_id'] }): DataAPI => {
 		return message;
 	};
 
-	const findRoom = async (): Promise<IRoom | undefined> => (Rooms as Mongo.Collection<IRoom>).findOne({ _id: rid }, { reactive: false });
+	const findLastMessage = async (): Promise<IMessage | undefined> =>
+		messagesCollection.findOne({ rid, tmid: tmid ?? { $exists: false }, _hidden: { $ne: true } }, { sort: { ts: -1 }, reactive: false });
+
+	const getLastMessage = async (): Promise<IMessage> => {
+		const message = await findLastMessage();
+
+		if (!message) {
+			throw new Error('Message not found');
+		}
+
+		return message;
+	};
+	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
+		messagesCollection.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
+	};
+
+	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
+		await call('deleteMessage', { _id: mid });
+	};
+
+	const findRoom = async (): Promise<IRoom | undefined> => roomsCollection.findOne({ _id: rid }, { reactive: false });
 
 	const getRoom = async (): Promise<IRoom> => {
 		const room = await findRoom();
@@ -32,7 +56,7 @@ export const createDataAPI = ({ rid }: { rid: IRoom['_id'] }): DataAPI => {
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
-		(Rooms as Mongo.Collection<IRoom>).findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
+		roomsCollection.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
 
 	const getDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom> => {
 		const discussion = await findDiscussionByID(drid);
@@ -45,7 +69,7 @@ export const createDataAPI = ({ rid }: { rid: IRoom['_id'] }): DataAPI => {
 	};
 
 	const findSubscriptionByRoomID = async (rid: IRoom['_id']): Promise<ISubscription | undefined> =>
-		(Subscriptions as Mongo.Collection<ISubscription>).findOne({ rid }, { reactive: false });
+		subscriptionsCollection.findOne({ rid }, { reactive: false });
 
 	const getSubscriptionByRoomID = async (rid: IRoom['_id']): Promise<ISubscription> => {
 		const subscription = await findSubscriptionByRoomID(rid);
@@ -57,19 +81,18 @@ export const createDataAPI = ({ rid }: { rid: IRoom['_id'] }): DataAPI => {
 		return subscription;
 	};
 
-	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
-		await call('deleteMessage', { _id: mid });
-	};
-
 	return {
 		findMessageByID,
 		getMessageByID,
+		findLastMessage,
+		getLastMessage,
+		pushEphemeralMessage,
+		deleteMessage,
 		findRoom,
 		getRoom,
 		findDiscussionByID,
 		getDiscussionByID,
 		findSubscriptionByRoomID,
 		getSubscriptionByRoomID,
-		deleteMessage,
 	};
 };
