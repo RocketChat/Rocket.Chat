@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericTable from '../../../../client/components/GenericTable';
@@ -34,6 +34,11 @@ function SlasPage({ data, header, setParams, params, title, renderRow, children 
 		}),
 	);
 
+	const renderFilter = useCallback(
+		({ onChange = (): void => undefined, ...props }): ReactElement => <FilterByText onChange={onChange} {...props} />,
+		[],
+	);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -52,9 +57,7 @@ function SlasPage({ data, header, setParams, params, title, renderRow, children 
 						total={data?.total}
 						setParams={setParams}
 						params={params}
-						renderFilter={({ onChange = (): void => undefined, ...props }): ReactElement => (
-							<FilterByText onChange={(params): void => onChange(params as GenericTableParams)} {...props} />
-						)}
+						renderFilter={renderFilter}
 					/>
 				</Page.Content>
 			</Page>
