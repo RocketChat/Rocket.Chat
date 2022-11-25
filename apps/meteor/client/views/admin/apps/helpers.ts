@@ -282,7 +282,6 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	}
 
 	const isEnabled = status && appEnabledStatuses.includes(status);
-	console.log('App Status:', status);
 	if (!isEnabled) {
 		return {
 			type: 'warning',
