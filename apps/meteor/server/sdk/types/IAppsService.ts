@@ -6,7 +6,7 @@ import type { SettingValue } from '@rocket.chat/core-typings';
 import type { AppsPersistenceModel } from '../../../app/models/server';
 
 export interface IAppsService {
-	triggerEvent: (event: string, payload: Record<string, any>) => Promise<any>;
+	triggerEvent: (event: string, ...payload: any) => Promise<any>;
 	updateAppsMarketplaceInfo: (apps: Array<IAppInfo>) => Promise<ProxiedApp[] | undefined>;
 	initialize: () => void;
 	load: () => Promise<void>;

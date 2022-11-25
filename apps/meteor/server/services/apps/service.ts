@@ -41,7 +41,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		this.apps.load();
 	}
 
-	async triggerEvent(event: string, payload: Record<string, any>): Promise<any> {
+	async triggerEvent(event: string, ...payload: any): Promise<any> {
 		return this.apps.triggerEvent(event, payload);
 	}
 
