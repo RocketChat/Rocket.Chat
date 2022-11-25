@@ -33,7 +33,7 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
-api.registerService(new AppsOrchestratorService());
+api.registerService(new AppsOrchestratorService(db));
 api.registerService(new AppsStatisticsService());
 api.registerService(new AppsConverterService());
 api.registerService(new AppsManagerService());

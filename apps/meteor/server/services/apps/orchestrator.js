@@ -25,7 +25,8 @@ function isTesting() {
 }
 
 export class AppServerOrchestrator {
-	constructor() {
+	constructor(db) {
+		this.db = db;
 		this._isInitialized = false;
 	}
 
@@ -43,7 +44,7 @@ export class AppServerOrchestrator {
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
+		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath, this.db);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
