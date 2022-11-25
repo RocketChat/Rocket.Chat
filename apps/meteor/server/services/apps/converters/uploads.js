@@ -7,8 +7,8 @@ export class AppUploadsConverter {
 		this.orch = orch;
 	}
 
-	convertById(id) {
-		const upload = Promise.await(Uploads.findOneById(id));
+	async convertById(id) {
+		const upload = await Uploads.findOneById(id);
 
 		return this.convertToApp(upload);
 	}
