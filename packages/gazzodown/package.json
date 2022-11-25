@@ -19,7 +19,7 @@
 		"@storybook/addon-interactions": "~6.5.10",
 		"@storybook/addon-links": "~6.5.10",
 		"@storybook/builder-webpack4": "~6.5.10",
-		"@storybook/manager-webpack4": "~6.5.10",
+		"@storybook/manager-webpack4": "~6.5.13",
 		"@storybook/react": "~6.5.10",
 		"@storybook/testing-library": "~0.0.13",
 		"@testing-library/jest-dom": "^5.16.5",
