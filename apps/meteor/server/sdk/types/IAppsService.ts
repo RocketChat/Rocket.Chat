@@ -1,3 +1,4 @@
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
@@ -16,6 +17,7 @@ export interface IAppsService {
 	isInitialized: () => boolean;
 	getPersistenceModel: () => AppsPersistenceModel;
 	getMarketplaceUrl: () => string;
+	getProvidedComponents: () => IExternalComponent[];
 	rocketChatLoggerWarn<T>(obj: T, args: any[]): void;
 	rocketChatLoggerError<T>(obj: T, args: any[]): void;
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem> | undefined;
