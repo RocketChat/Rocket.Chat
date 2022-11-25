@@ -32,7 +32,7 @@ test.describe('Omnichannel SLA Policies', () => {
 		await poOmnichannelSlaPolicies.sidenav.linkSlaPolicies.click();
 	});
 
-	test.only('Manage SLAs', async () => {
+	test('Manage SLAs', async () => {
 		await test.step('Add new SLA', async () => {
 			await poOmnichannelSlaPolicies.btnNew.click();
 
