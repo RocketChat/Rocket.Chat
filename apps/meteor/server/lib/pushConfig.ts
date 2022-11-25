@@ -111,6 +111,7 @@ settings.watch<boolean>('Push_enable', async function (enabled) {
 			passphrase: settings.get('Push_apn_passphrase'),
 			key: settings.get('Push_apn_key'),
 			cert: settings.get('Push_apn_cert'),
+			gateway: 'gateway.push.apple.com',			
 		};
 
 		if (settings.get('Push_production') !== true) {
