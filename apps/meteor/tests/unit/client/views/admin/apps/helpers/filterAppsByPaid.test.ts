@@ -2,7 +2,7 @@
 import type { PurchaseType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { filterAppsByPaid } from '../../../../../../../client/views/admin/apps/helpers/filterAppsByPaid';
+import { filterAppsByPaid } from '../../../../../../../client/views/marketplace/helpers/filterAppsByPaid';
 
 describe('filterAppsByPaid', () => {
 	it('should return true if both app purchase type is subscription and app price exists and is not 0', () => {
