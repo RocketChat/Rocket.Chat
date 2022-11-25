@@ -1128,6 +1128,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 					constants.RC_SERVER_1.username,
 				);
 
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				await poFederationChannelServer2.sidenav.openChat(channelName);
 				const removedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
 					`removed ${usernameFromServer2}`,
 				);

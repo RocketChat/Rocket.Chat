@@ -126,6 +126,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.tabs.btnUserInfo.click();
 				await poFederationChannelServer1.content.sendMessage('hello world');
+				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
 				await poFederationChannelServer2.tabs.btnUserInfo.click();
@@ -180,6 +181,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
+					await page.waitForTimeout(2000);
 
 					await poFederationChannelServer2.sidenav.openDMMultipleChat(userCreatedWithDomainFromServer1);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
@@ -267,6 +269,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
+					await page.waitForTimeout(2000);
 
 					await poFederationChannelServer2.sidenav.openDMMultipleChat(usernameOriginalFromServer1OnlyWithDomain);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
@@ -353,6 +356,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.tabs.btnUserInfo.click();
 				await poFederationChannelServer1.content.sendMessage('hello world');
+				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
 				await poFederationChannelServer2.tabs.btnUserInfo.click();
@@ -409,6 +413,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.tabs.btnUserInfo.click();
 				await poFederationChannelServer1.content.sendMessage('hello world');
+				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.tabs.btnUserInfo.click();
@@ -457,6 +462,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
 				await poFederationChannelServer2.tabs.btnUserInfo.click();
 				await poFederationChannelServer2.content.sendMessage('hello world');
+				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.sidenav.logout();
 				await doLogin({
@@ -523,6 +529,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
 				await poFederationChannelServer2.tabs.btnUserInfo.click();
 				await poFederationChannelServer2.content.sendMessage('hello world');
+				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 				await poFederationChannelServer1.tabs.btnUserInfo.click();
@@ -580,6 +587,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
+					await page.waitForTimeout(2000);
 
 					await poFederationChannelServer2.sidenav.openDMMultipleChat(usernameOriginalFromServer1OnlyWithDomain);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
@@ -671,6 +679,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await poFederationChannelServer1.content.sendMessage('hello world');
 					await poFederationChannelServer1.tabs.btnTabMembers.click();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
+					await page.waitForTimeout(2000);
 
 					await poFederationChannelServer2.sidenav.openDMMultipleChat(usernameOriginalFromServer1OnlyWithDomain);
 					await poFederationChannelServer2.tabs.btnTabMembers.click();
@@ -770,6 +779,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
+					await page.waitForTimeout(2000);
 
 					await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
 
@@ -798,6 +808,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
+					await page.waitForTimeout(2000);
 
 					await expect(poFederationChannelServer1.tabs.btnThread).toBeDisabled();
 
@@ -826,6 +837,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
+					await page.waitForTimeout(2000);
 
 					await expect(poFederationChannelServer1.tabs.btnDiscussion).toBeDisabled();
 
@@ -859,6 +871,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
+					await page.waitForTimeout(2000);
 
 					await expect(poFederationChannelServer1.tabs.btnRoomInfo).not.toBeVisible();
 
@@ -890,6 +903,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 					await poFederationChannelServer1.sidenav.openChat(usernameWithDomainFromServer2);
 					await poFederationChannelServer1.content.sendMessage('hello world');
+					await page.waitForTimeout(2000);
 
 					await expect(poFederationChannelServer1.tabs.btnTabMembers).not.toBeVisible();
 
