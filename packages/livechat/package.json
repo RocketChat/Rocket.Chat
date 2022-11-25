@@ -35,7 +35,7 @@
 		"@storybook/addon-knobs": "~6.4.0",
 		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/addon-viewport": "~6.5.10",
-		"@storybook/react": "~6.5.10",
+		"@storybook/react": "~6.5.13",
 		"@storybook/theming": "~6.5.10",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "^8.1.0",
