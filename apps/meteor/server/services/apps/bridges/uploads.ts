@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 
+import { Upload } from '../../../sdk';
 import { FileUpload } from '../../../../app/file-upload/server';
 import { determineFileType } from '../../../../app/apps/lib/misc/determineFileType';
 import type { AppServerOrchestrator } from '../orchestrator';
@@ -49,27 +49,27 @@ export class AppUploadBridge extends UploadBridge {
 			throw new Error('Missing user to perform the upload operation');
 		}
 
-		const fileStore = FileUpload.getStore('Uploads');
-
 		details.type = determineFileType(buffer, details.name);
 
-		return new Promise(
-			Meteor.bindEnvironment((resolve, reject) => {
-				try {
-					Meteor.runAsUser(details.userId, () => {
-						const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
-						this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
-						if (details.visitorToken) {
-							Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-						} else {
-							Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
-						}
-						resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
-					});
-				} catch (err) {
-					reject(err);
-				}
-			}),
-		);
+		const uploadDetails = getUploadDetails(details);
+		const uploadedFile = await Upload.uploadFile({ buffer, details: uploadDetails, userId: details.userId });
+
+		if (details.visitorToken) {
+			await Upload.sendFileLivechatMessage({
+				file: uploadedFile,
+				roomId: details.rid,
+				visitorToken: details.visitorToken,
+			});
+		} else {
+			await Upload.sendFileMessage({
+				roomId: details.rid,
+				file: uploadedFile,
+				userId: details.userId,
+			});
+		}
+
+		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
+
+		return this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile);
 	}
 }

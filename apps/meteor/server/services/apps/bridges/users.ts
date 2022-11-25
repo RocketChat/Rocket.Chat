@@ -3,8 +3,9 @@ import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 
-import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../../app/lib/server/functions';
+import { checkUsernameAvailability, deleteUser } from '../../../../app/lib/server/functions';
 import { Users } from '../../../../app/models/server';
+import { User as UserService } from '../../../sdk';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
@@ -51,10 +52,10 @@ export class AppUserBridge extends UserBridge {
 					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
 				}
 
-				Users.insert(user);
+				await Users.insert(user);
 
 				if (options?.avatarUrl) {
-					setUserAvatar(user, options.avatarUrl, '', 'local');
+					await UserService.setUserAvatar({ user, dataURI: options.avatarUrl, contentType: '', service: 'local' }); // TODO: testar pq não esta funcionan
 				}
 
 				break;
