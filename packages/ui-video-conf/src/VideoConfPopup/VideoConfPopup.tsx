@@ -24,7 +24,7 @@ const VideoConfPopup = forwardRef(function VideoConfPopup(
 ): ReactElement {
 	return (
 		<VideoConfPopupContainer ref={ref} position={position}>
-			<Box p='x24' maxWidth='x276'>
+			<Box p='x24' maxWidth='x276' color='default'>
 				{children}
 			</Box>
 		</VideoConfPopupContainer>
