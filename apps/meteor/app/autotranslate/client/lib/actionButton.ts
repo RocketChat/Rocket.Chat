@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { isTranslatedMessage } from '@rocket.chat/core-typings';
 
 import { AutoTranslate } from './autotranslate';
 import { settings } from '../../../settings/client';
@@ -41,12 +40,11 @@ Meteor.startup(() => {
 					}
 
 					return Boolean(
-						message?.u &&
+						(message?.u &&
 							message.u._id !== user._id &&
 							subscription?.autoTranslate &&
-							((isTranslatedMessage(message) && message.autoTranslateShowInverse) ||
-								(!hasTranslationLanguageInMessage(message, language) &&
-									!hasTranslationLanguageInAttachments(message.attachments, language))),
+							(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse) ||
+							(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)),
 					);
 				},
 				order: 90,
@@ -76,9 +74,8 @@ Meteor.startup(() => {
 					return Boolean(
 						message?.u &&
 							message.u._id !== user._id &&
-							isTranslatedMessage(message) &&
 							subscription?.autoTranslate &&
-							!message.autoTranslateShowInverse &&
+							!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
 							(hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language)),
 					);
 				},

@@ -1,4 +1,4 @@
-import { IMessage, isTranslatedMessage, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autoTranslate';
@@ -21,13 +21,10 @@ export const useAutoTranslate = (subscription?: ISubscription): AutoTranslateOpt
 		showAutoTranslate: autoTranslateEnabled
 			? (message: IMessage): boolean =>
 					!isOwnUserMessage(message, subscription) &&
-					isTranslatedMessage(message) &&
-					!message.autoTranslateShowInverse &&
-					Boolean(
-						autoTranslateLanguage &&
-							(hasTranslationLanguageInMessage(message, autoTranslateLanguage) ||
-								hasTranslationLanguageInAttachments(message.attachments, autoTranslateLanguage)),
-					)
+					!!autoTranslateLanguage &&
+					!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
+					(hasTranslationLanguageInMessage(message, autoTranslateLanguage) ||
+						hasTranslationLanguageInAttachments(message.attachments, autoTranslateLanguage))
 			: (): boolean => false,
 	};
 };
