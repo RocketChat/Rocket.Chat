@@ -2,9 +2,10 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
+import type { ICreateDiscussionParams, ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
 import { Authorization } from '../../sdk';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { create as createDiscussion } from '../../../app/discussion/server/methods/createDiscussion';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -35,5 +36,28 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return true;
+	}
+
+	async createDiscussion(params: ICreateDiscussionParams): Promise<IRoom> {
+		const { parentRoomId, parentMessageId, creatorId, name, members = [], encrypted, reply } = params;
+
+		const user = await Users.findOneById<Pick<IUser, 'username'>>(creatorId, {
+			projection: { username: 1 },
+		});
+
+		if (!user || !user.username) {
+			throw new Error('User not found');
+		}
+
+		// TODO: convert `createDiscussion` function to "raw" and move to here
+		return createDiscussion({
+			prid: parentRoomId,
+			pmid: parentMessageId,
+			t_name: name,
+			users: members,
+			user,
+			encrypted,
+			reply,
+		});
 	}
 }
