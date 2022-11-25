@@ -6,6 +6,7 @@ type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
 };
 
 const PRIORITIES = {
+	// TODO: Update colors to fuselage Palette
 	1: {
 		iconName: 'chevron-double-up',
 		color: '#B30A20',
