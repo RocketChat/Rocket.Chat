@@ -1,18 +1,11 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { Mongo } from 'meteor/mongo';
 
-import { Rooms } from '../../../app/models/client';
-import { settings } from '../../../app/settings/client';
-import type { ChatMessages } from '../../../app/ui/client/lib/ChatMessages';
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
-import { fileUploadIsValidContentType, APIClient } from '../../../app/utils/client';
+import { APIClient } from '../../../app/utils/client';
 import { getRandomId } from '../../../lib/random';
-import FileUploadModal from '../../views/room/modals/FileUploadModal';
 import { getErrorMessage } from '../errorHandling';
-import { imperativeModal } from '../imperativeModal';
-import { prependReplies } from '../utils/prependReplies';
+import { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
 
 let uploads: readonly Upload[] = [];
@@ -24,15 +17,19 @@ const updateUploads = (update: (uploads: readonly Upload[]) => readonly Upload[]
 	emitter.emit('update');
 };
 
-export const getUploads = (): readonly Upload[] => uploads;
+const get = (): readonly Upload[] => uploads;
 
-export const subscribeToUploads = (callback: () => void): (() => void) => emitter.on('update', callback);
+const subscribe = (callback: () => void): (() => void) => emitter.on('update', callback);
 
-export const cancelUpload = (id: Upload['id']): void => {
+const cancel = (id: Upload['id']): void => {
 	emitter.emit(`cancelling-${id}`);
 };
 
-export const uploadFile = async (
+const wipeFailedOnes = (): void => {
+	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
+};
+
+const send = async (
 	file: File,
 	{
 		description,
@@ -144,70 +141,11 @@ export const uploadFile = async (
 	}
 };
 
-export const wipeFailedUploads = (): void => {
-	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
-};
-
-export const uploadFiles = async (
-	files: readonly File[],
-	{ chat, rid, tmid }: { chat: ChatMessages; rid: IRoom['_id']; tmid?: IMessage['_id'] },
-): Promise<void> => {
-	const threadsEnabled = settings.get('Threads_enabled') as boolean;
-
-	const replies = chat.composer?.quotedMessages.get() ?? [];
-	const mention = false;
-
-	let msg = '';
-
-	if (!mention || !threadsEnabled) {
-		msg = await prependReplies('', replies, mention);
-	}
-
-	if (mention && threadsEnabled && replies.length) {
-		tmid = replies[0]._id;
-	}
-
-	const room = (Rooms as Mongo.Collection<IRoom>).findOne({ _id: rid }, { reactive: false });
-
-	const queue = [...files];
-
-	const uploadNextFile = (): void => {
-		const file = queue.pop();
-		if (!file) {
-			chat.composer?.dismissAllQuotedMessages();
-			return;
-		}
-
-		imperativeModal.open({
-			component: FileUploadModal,
-			props: {
-				file,
-				fileName: file.name,
-				fileDescription: chat.composer?.text ?? '',
-				showDescription: room && !isRoomFederated(room),
-				onClose: (): void => {
-					imperativeModal.close();
-					uploadNextFile();
-				},
-				onSubmit: (fileName: string, description?: string): void => {
-					Object.defineProperty(file, 'name', {
-						writable: true,
-						value: fileName,
-					});
-					uploadFile(file, {
-						description,
-						msg,
-						rid,
-						tmid,
-					});
-					chat.composer?.clear();
-					imperativeModal.close();
-					uploadNextFile();
-				},
-				invalidContentType: Boolean(file.type && !fileUploadIsValidContentType(file.type)),
-			},
-		});
-	};
-
-	uploadNextFile();
-};
+export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => ({
+	get,
+	subscribe,
+	wipeFailedOnes,
+	cancel,
+	send: (file: File, { description, msg }: { description?: string; msg?: string }): Promise<void> =>
+		send(file, { description, msg, rid, tmid }),
+});

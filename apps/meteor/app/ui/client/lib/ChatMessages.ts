@@ -7,19 +7,12 @@ import type { IMessage, IRoom, SlashCommand } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 
 import { KonchatNotification } from './notification';
-import {
-	uploadFiles,
-	wipeFailedUploads,
-	getUploads,
-	subscribeToUploads,
-	cancelUpload,
-	uploadFile,
-} from '../../../../client/lib/chats/uploads';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { t, slashCommands, APIClient } from '../../../utils/client';
 import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { ChatMessage } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
@@ -33,8 +26,10 @@ import {
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import { call } from '../../../../client/lib/utils/call';
-import type { ChatAPI, ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { createAllMessages } from '../../../../client/lib/chats/allMessages';
+import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createDataAPI } from '../../../../client/lib/chats/data';
+import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
+import { getRandomId } from '../../../../lib/random';
 
 class SlashCommands {
 	public constructor(private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>) {}
@@ -246,9 +241,11 @@ export class ChatMessages implements ChatAPI {
 
 	public input: HTMLTextAreaElement | undefined;
 
-	public composer: ChatAPI['composer'];
+	public composer: ComposerAPI | undefined;
 
-	public allMessages: ChatAPI['allMessages'];
+	public readonly data: DataAPI;
+
+	public readonly uploads: UploadsAPI;
 
 	public constructor(
 		private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] },
@@ -256,10 +253,11 @@ export class ChatMessages implements ChatAPI {
 	) {
 		this.slashCommands = new SlashCommands(collection);
 
-		this.allMessages = createAllMessages();
+		this.data = createDataAPI({ rid: params.rid });
+		this.uploads = createUploadsAPI({ rid: params.rid, tmid: params.tmid });
 	}
 
-	public setComposer(composer: ComposerAPI): void {
+	public setComposerAPI(composer: ComposerAPI): void {
 		this.composer?.release();
 		this.composer = composer;
 	}
@@ -315,9 +313,7 @@ export class ChatMessages implements ChatAPI {
 	}
 
 	private clearEditing() {
-		const { input } = this;
-
-		if (!input) {
+		if (!this.input) {
 			return;
 		}
 
@@ -328,97 +324,17 @@ export class ChatMessages implements ChatAPI {
 		}
 
 		this.recordInputAsDraft();
-		input.parentElement?.classList.remove('editing');
+		this.input.parentElement?.classList.remove('editing');
 		this.messageEditingState.element.classList.remove('editing');
 		delete this.messageEditingState.id;
 		delete this.messageEditingState.element;
 		clearHighlightMessage();
 
 		this.composer?.setText(this.messageEditingState.savedValue || '');
-		const cursorPosition = this.messageEditingState.savedCursorPosition ? this.messageEditingState.savedCursorPosition : input.value.length;
-		input.setSelectionRange(cursorPosition, cursorPosition);
-	}
-
-	public async sendMessage({ text, tshow }: { text: string; tshow?: boolean }) {
-		const { rid } = this.params;
-		let { tmid } = this.params;
-
-		if (!rid) {
-			throw new Error('Room ID is required');
-		}
-
-		const threadsEnabled = settings.get('Threads_enabled');
-
-		if (!ChatSubscription.findOne({ rid })) {
-			await callWithErrorHandling('joinRoom', rid);
-		}
-
-		if (!this.input) {
-			throw new Error('Input is not defined');
-		}
-
-		let msg = text.trim();
-		if (msg) {
-			const mention = false;
-			const replies = this.composer?.quotedMessages.get() ?? [];
-			if (!mention || !threadsEnabled) {
-				msg = await prependReplies(msg, replies, mention);
-			}
-
-			if (mention && threadsEnabled && replies.length) {
-				tmid = replies[0]._id;
-			}
-		}
-
-		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
-		const originalMessage = this.collection.findOne({ _id: this.messageEditingState.id }, { fields: { tmid: 1 }, reactive: false });
-		if (originalMessage && tmid && !originalMessage.tmid) {
-			tmid = undefined;
-			tshow = undefined;
-		}
-
-		if (msg) {
-			readMessage.readNow(rid);
-			readMessage.refreshUnreadMark(rid);
-
-			const message = await onClientBeforeSendMessage({
-				_id: Random.id(),
-				rid,
-				tshow,
-				tmid,
-				msg,
-			});
-
-			try {
-				// @ts-ignore
-				await this.processMessageSend(message);
-				this.composer?.dismissAllQuotedMessages();
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			return;
-		}
-
-		if (this.messageEditingState.id) {
-			const message = this.collection.findOne(this.messageEditingState.id);
-			if (!message) {
-				throw new Error('Message not found');
-			}
-
-			try {
-				if (message.attachments && message.attachments?.length > 0) {
-					// @ts-ignore
-					await this.processMessageEditing({ _id: this.messageEditingState.id, rid, msg: '' });
-					return;
-				}
-
-				this.resetToDraft(this.messageEditingState.id);
-				await this.requestMessageDeletion(message);
-				return;
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		}
+		const cursorPosition = this.messageEditingState.savedCursorPosition
+			? this.messageEditingState.savedCursorPosition
+			: this.input.value.length;
+		this.input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
 	private async processMessageSend(message: IMessage) {
@@ -463,7 +379,7 @@ export class ChatMessages implements ChatAPI {
 		return true;
 	}
 
-	private async processTooLongMessage({ msg, rid, tmid }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
+	private async processTooLongMessage({ msg }: Pick<IMessage, 'msg'>) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
 		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
 			return false;
@@ -492,7 +408,7 @@ export class ChatMessages implements ChatAPI {
 				type: contentType,
 				lastModified: Date.now(),
 			});
-			uploadFiles([file], { chat: this, rid, tmid });
+			this.flows.uploadFiles([file]);
 			imperativeModal.close();
 		};
 
@@ -535,34 +451,47 @@ export class ChatMessages implements ChatAPI {
 			return;
 		}
 
-		const room =
-			message.drid &&
-			Rooms.findOne({
-				_id: message.drid,
-				prid: { $exists: true },
-			});
+		const room = message.drid ? await this.data.getDiscussionByID(message.drid) : undefined;
 
 		await new Promise<void>((resolve) => {
-			const onConfirm = () => {
-				if (this.messageEditingState.id === message._id) {
-					this.clearEditing();
+			const onConfirm = async () => {
+				const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
+				const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+				if (blockDeleteInMinutes && forceDelete === false) {
+					const msgTs = moment(message.ts);
+					const currentTsDiff = moment().diff(msgTs, 'minutes');
+
+					if (currentTsDiff > blockDeleteInMinutes) {
+						dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
+						return;
+					}
 				}
 
-				this.deleteMessage(message);
+				try {
+					await this.data.deleteMessage(message._id);
+					dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				} finally {
+					imperativeModal.close();
 
-				this.input?.focus();
-				resolve();
+					if (this.messageEditingState.id === message._id) {
+						this.clearEditing();
+					}
+					this.input?.focus();
 
-				imperativeModal.close();
-				dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+					resolve();
+				}
 			};
 
-			const onCloseModal = () => {
+			const onCloseModal = async () => {
 				imperativeModal.close();
+
 				if (this.messageEditingState.id === message._id) {
 					this.clearEditing();
 				}
 				this.input?.focus();
+
 				resolve();
 			};
 
@@ -579,22 +508,6 @@ export class ChatMessages implements ChatAPI {
 				},
 			});
 		});
-	}
-
-	private async deleteMessage({ _id, rid, ts }: Pick<IMessage, '_id' | 'rid' | 'ts'>) {
-		const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
-		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if (blockDeleteInMinutes && forceDelete === false) {
-			const msgTs = moment(ts);
-			const currentTsDiff = moment().diff(msgTs, 'minutes');
-
-			if (currentTsDiff > blockDeleteInMinutes) {
-				dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
-				return;
-			}
-		}
-
-		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
 	public handleEscapeKeyPress(event: JQuery.KeyDownEvent<HTMLTextAreaElement>) {
@@ -623,22 +536,80 @@ export class ChatMessages implements ChatAPI {
 		}
 	}
 
-	public readonly uploads = {
-		get: getUploads,
-		subscribe: subscribeToUploads,
+	public flows: ChatAPI['flows'] = {
+		uploadFiles: uploadFiles.bind(null, this),
+		sendMessage: (async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }) => {
+			const { rid } = this.params;
+
+			if (!(await chat.data.getSubscriptionByRoomID(rid))) {
+				try {
+					await call('joinRoom', rid);
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+					return;
+				}
+			}
+
+			let msg = text.trim();
+			if (msg) {
+				const replies = chat.composer?.quotedMessages.get() ?? [];
+				msg = await prependReplies(msg, replies);
+			}
+
+			if (msg) {
+				readMessage.readNow(rid);
+				readMessage.refreshUnreadMark(rid);
+
+				// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
+				const originalEditingMessage = this.messageEditingState.id
+					? await chat.data.getMessageByID(this.messageEditingState.id)
+					: undefined;
+				let { tmid } = this.params;
+				if (originalEditingMessage && tmid && !originalEditingMessage.tmid) {
+					tmid = undefined;
+					tshow = undefined;
+				}
+
+				const message = await onClientBeforeSendMessage({
+					_id: getRandomId(),
+					rid,
+					tshow,
+					tmid,
+					msg,
+				});
+
+				try {
+					// @ts-ignore
+					await this.processMessageSend(message);
+					this.composer?.dismissAllQuotedMessages();
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+				return;
+			}
+
+			if (this.messageEditingState.id) {
+				const message = this.collection.findOne(this.messageEditingState.id);
+				if (!message) {
+					throw new Error('Message not found');
+				}
+
+				try {
+					if (message.attachments && message.attachments?.length > 0) {
+						// @ts-ignore
+						await this.processMessageEditing({ _id: this.messageEditingState.id, rid, msg: '' });
+						return;
+					}
+
+					this.resetToDraft(this.messageEditingState.id);
+					await this.requestMessageDeletion(message);
+					return;
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			}
+		}).bind(this, this),
 	};
-
-	public uploadFiles = (files: readonly File[]): Promise<void> => {
-		return uploadFiles(files, { chat: this, ...this.params });
-	};
-
-	public uploadFile = (file: File, { description, msg }: { description?: string; msg?: string }): Promise<void> => {
-		return uploadFile(file, { description, msg, ...this.params });
-	};
-
-	public wipeFailedUploads = wipeFailedUploads;
-
-	public cancelUpload = cancelUpload;
 
 	private static refs = new Map<string, { instance: ChatMessages; count: number }>();
 

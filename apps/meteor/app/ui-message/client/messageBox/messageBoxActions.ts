@@ -51,7 +51,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				return file;
 			});
 
-			chat?.uploadFiles(filesToUpload);
+			chat?.flows.uploadFiles(filesToUpload);
 			$input.remove();
 		});
 

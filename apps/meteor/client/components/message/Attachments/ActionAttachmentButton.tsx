@@ -34,7 +34,7 @@ const usePerformActionMutation = (
 		switch (processingType) {
 			case 'sendMessage':
 				if (!msg) return;
-				await chat.sendMessage({ text: msg });
+				await chat.flows.sendMessage({ text: msg });
 				return;
 
 			case 'respondWithMessage':
@@ -44,7 +44,7 @@ const usePerformActionMutation = (
 
 			case 'respondWithQuotedMessage':
 				if (!mid) return;
-				const message = await chat.allMessages.getOneByID(mid);
+				const message = await chat.data.getMessageByID(mid);
 				await chat.composer?.quoteMessage(message);
 		}
 	}, options);

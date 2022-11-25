@@ -33,7 +33,7 @@ import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBox.html';
 
-const createComposer = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();
 
 	let _quotedMessages: IMessage[] = [];
@@ -285,7 +285,7 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			if (chatContext) {
 				chatContext.input = input;
 				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
-				chatContext.setComposer(createComposer(input, storageID));
+				chatContext.setComposerAPI(createComposerAPI(input, storageID));
 			}
 
 			setTimeout(() => {

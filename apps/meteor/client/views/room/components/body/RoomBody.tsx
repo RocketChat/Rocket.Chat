@@ -210,7 +210,7 @@ const RoomBody = (): ReactElement => {
 
 	const handleUploadProgressClose = useCallback(
 		(id: Upload['id']) => {
-			chat.cancelUpload(id);
+			chat.uploads.cancel(id);
 		},
 		[chat],
 	);
@@ -541,7 +541,7 @@ const RoomBody = (): ReactElement => {
 
 	const handleUploadFiles = useCallback(
 		(files: readonly File[]): void => {
-			chat.uploadFiles(files);
+			chat.flows.uploadFiles(files);
 		},
 		[chat],
 	);
@@ -553,17 +553,17 @@ const RoomBody = (): ReactElement => {
 			return;
 		}
 
-		chat.allMessages.getOneByID(replyMID).then((message) => {
+		chat.data.getMessageByID(replyMID).then((message) => {
 			if (!message) {
 				return;
 			}
 
 			chat.composer?.quoteMessage(message);
 		});
-	}, [chat.allMessages, chat.composer, replyMID]);
+	}, [chat.data, chat.composer, replyMID]);
 
 	useEffect(() => {
-		chat.wipeFailedUploads();
+		chat.uploads.wipeFailedOnes();
 	}, [chat]);
 
 	return (

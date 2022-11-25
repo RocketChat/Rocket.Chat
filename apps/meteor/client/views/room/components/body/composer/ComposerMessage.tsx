@@ -98,7 +98,7 @@ const ComposerMessage = ({
 							},
 						): Promise<void> => {
 							try {
-								await chatMessagesInstance?.sendMessage({
+								await chatMessagesInstance?.flows.sendMessage({
 									text,
 									tshow,
 								});

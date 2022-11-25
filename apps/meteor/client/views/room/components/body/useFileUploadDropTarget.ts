@@ -44,7 +44,7 @@ export const useFileUploadDropTarget = (
 			return file;
 		});
 
-		chat?.uploadFiles(uploads);
+		chat?.flows.uploadFiles(uploads);
 	});
 
 	const allOverlayProps = useMemo(() => {

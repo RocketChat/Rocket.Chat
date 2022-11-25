@@ -144,7 +144,7 @@ Template.thread.helpers({
 					instance.state.set('sendToChannel', false);
 				}
 
-				await chatContext.sendMessage({
+				await chatContext.flows.sendMessage({
 					text,
 					tshow,
 				});
@@ -155,7 +155,7 @@ Template.thread.helpers({
 			onNavigateToPreviousMessage: () => chatContext.messageEditing.toPreviousMessage(instance.wrapper),
 			onNavigateToNextMessage: () => chatContext.messageEditing.toNextMessage(),
 			onUploadFiles: (files: readonly File[]) => {
-				return chatContext.uploadFiles(files);
+				return chatContext.flows.uploadFiles(files);
 			},
 		};
 	},
@@ -292,7 +292,7 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 			throw new Error('No rid found');
 		}
 
-		this.data.chatContext?.uploadFiles(files);
+		this.data.chatContext?.flows.uploadFiles(files);
 	};
 
 	this.autorun(() => {

@@ -41,7 +41,7 @@ Meteor.startup(function () {
 						component: WebdavFilePickerModal,
 						props: {
 							onUpload: async (file, description) =>
-								chat.uploadFile(file, {
+								chat.uploads.send(file, {
 									description,
 								}),
 							onClose: imperativeModal.close,
