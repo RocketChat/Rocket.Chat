@@ -244,7 +244,7 @@
 		"@tanstack/react-query": "^4.16.1",
 		"@types/cookie": "^0.5.1",
 		"@types/katex": "^0.14.0",
-		"@types/lodash": "^4.14.182",
+		"@types/lodash": "^4.14.190",
 		"@types/lodash.debounce": "^4.0.7",
 		"@types/object-path": "^0.11.1",
 		"@types/proxy-from-env": "^1.0.1",
