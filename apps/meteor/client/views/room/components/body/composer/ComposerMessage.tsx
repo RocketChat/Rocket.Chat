@@ -19,6 +19,8 @@ export type ComposerMessageProps = {
 };
 
 const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerMessageProps): ReactElement => {
+
+	//INITIAL STAGE
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
 
