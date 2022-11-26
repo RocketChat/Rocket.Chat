@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import React, { ContextType, memo, ReactElement, useCallback, useEffect, useRef } from 'react';
 
-import { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
+import type { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';

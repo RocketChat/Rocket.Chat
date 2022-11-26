@@ -264,7 +264,7 @@ export class ChatMessages implements ChatAPI {
 	}
 
 	private async processSetReaction({ msg }: Pick<IMessage, 'msg'>) {
-		const match = msg.trim().match(/^+(:.*?:)$/m);
+		const match = msg.trim().match(/^\+(:.*?:)$/m);
 		if (!match) {
 			return false;
 		}

@@ -125,12 +125,6 @@ const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): Compo
 	};
 };
 
-export const purgeAllDrafts = (): void => {
-	Object.keys(Meteor._localStorage)
-		.filter((key) => key.indexOf('messagebox_') === 0)
-		.forEach((key) => Meteor._localStorage.removeItem(key));
-};
-
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
