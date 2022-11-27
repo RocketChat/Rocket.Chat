@@ -73,7 +73,7 @@ const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 			siteName: meta.ogSiteName || meta.oembedProviderName,
 			siteUrl: meta.ogUrl || meta.oembedProviderUrl,
 			title: meta.ogTitle || meta.twitterTitle || meta.title || meta.pageTitle || meta.oembedTitle,
-			description: meta.ogDescription || meta.twitterDescription || meta.description,
+			description: meta.description || meta.ogDescription || meta.twitterDescription,
 			authorName: meta.oembedAuthorName,
 			authorUrl: meta.oembedAuthorUrl,
 			...(image && {
