@@ -661,7 +661,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await page.waitForTimeout(2000);
 				await poFederationChannelServerUser2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				
+
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
 
 				const reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
@@ -753,7 +753,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await page.waitForTimeout(2000);
 				await poFederationChannelServer2.sidenav.openChat(adminUsernameWithDomainFromServer1);
-				
+
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
 				await poFederationChannelServer1.content.reactToMessage('grin');
 				await page.waitForTimeout(2000);
@@ -1060,7 +1060,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
 				await expect(poFederationChannelServerUser2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				
+
 				await poFederationChannelServer1.content.deleteLastMessage();
 				await page.waitForTimeout(2000);
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server B');
