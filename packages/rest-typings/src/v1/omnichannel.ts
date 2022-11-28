@@ -2776,7 +2776,7 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
-type PUTLivechatPriority = { name: string } | { reset: true };
+type PUTLivechatPriority = { name?: string; reset?: boolean };
 
 const PUTLivechatPrioritySchema = {
 	type: 'object',
