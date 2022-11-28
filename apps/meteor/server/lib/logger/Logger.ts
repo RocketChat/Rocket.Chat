@@ -118,4 +118,8 @@ export class Logger {
 	subscription(msg: string, ...args: any[]): void {
 		this.logger.subscription(msg, ...args);
 	}
+
+	fatal(err: unknown, ...args: any[]): void {
+		this.logger.fatal(err, ...args);
+	}
 }
