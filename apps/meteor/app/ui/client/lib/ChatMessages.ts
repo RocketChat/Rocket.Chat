@@ -446,7 +446,7 @@ export class ChatMessages implements ChatAPI {
 		sendMessage: (async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }) => {
 			const { rid } = this.params;
 
-			if (!(await chat.data.getSubscriptionByRoomID(rid))) {
+			if (!(await chat.data.findSubscriptionByRoomID(rid))) {
 				try {
 					await call('joinRoom', rid);
 				} catch (error) {
@@ -475,16 +475,15 @@ export class ChatMessages implements ChatAPI {
 					tshow = undefined;
 				}
 
-				const message = await onClientBeforeSendMessage({
+				const message = (await onClientBeforeSendMessage({
 					_id: getRandomId(),
 					rid,
 					tshow,
 					tmid,
 					msg,
-				});
+				})) as IMessage;
 
 				try {
-					// @ts-ignore
 					await this.processMessageSend(message);
 					chat.composer?.dismissAllQuotedMessages();
 				} catch (error) {
@@ -501,8 +500,7 @@ export class ChatMessages implements ChatAPI {
 
 				try {
 					if (message.attachments && message.attachments?.length > 0) {
-						// @ts-ignore
-						await this.processMessageEditing({ _id: this.messageEditingState.id, rid, msg: '' });
+						await this.processMessageEditing({ _id: this.messageEditingState.id, rid, msg: '' } as IMessage);
 						return;
 					}
 
