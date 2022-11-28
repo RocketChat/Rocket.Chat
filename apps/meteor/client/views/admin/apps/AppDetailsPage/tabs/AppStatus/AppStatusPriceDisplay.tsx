@@ -1,4 +1,4 @@
-import type { AppPricingPlan } from '@rocket.chat/core-typings';
+import type { AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, useMemo } from 'react';
@@ -6,7 +6,7 @@ import React, { FC, useMemo } from 'react';
 import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
 
 type AppStatusPriceDisplayProps = {
-	purchaseType: string;
+	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
 	price: number;
 	showType?: boolean;
