@@ -84,7 +84,7 @@ API.v1.addRoute(
 				await findInquiries({
 					userId: this.userId,
 					department,
-					status: 'queued',
+					status: LivechatInquiryStatus.QUEUED,
 					pagination: {
 						offset,
 						count,

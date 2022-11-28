@@ -4523,7 +4523,7 @@
   "User Search (Group Validation)": "البحث عن المستخدم (التحقق من المجموعة)",
   "User__username__is_now_a_leader_of__room_name_": "أصبح المستخدم __username__ الآن قائدًا لـ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "المستخدم __username__ هو الآن مشرف على __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
   "User__username__muted_in_room__roomName__": "تم كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User__username__removed_from__room_name__leaders": "تمت إزالة المستخدم __username__ من قادة __room_name__",
   "User__username__removed_from__room_name__moderators": "تمت إزالة المستخدم __username__ من مشرفي __room_name__",

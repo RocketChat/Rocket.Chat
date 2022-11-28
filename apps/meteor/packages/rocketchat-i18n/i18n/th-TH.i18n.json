@@ -2572,7 +2572,7 @@
   "User": "ผู้ใช้งาน",
   "User__username__is_now_a_leader_of__room_name_": "ขณะนี้ผู้ใช้ __username__ เป็นผู้นำของ __room_name__ แล้ว",
   "User__username__is_now_a_moderator_of__room_name_": "ขณะนี้ผู้ใช้ __username__ เป็นผู้ดำเนินการ __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "ขณะนี้ผู้ใช้ __username__ เป็นเจ้าของ __room_name__ แล้ว",
+  "User__username__is_now_an_owner_of__room_name_": "ขณะนี้ผู้ใช้ __username__ เป็นเจ้าของ __room_name__ แล้ว",
   "User__username__removed_from__room_name__leaders": "ลบผู้ใช้ __username__ ออกจากผู้นำ __room_name__ แล้ว",
   "User__username__removed_from__room_name__moderators": "ลบผู้ใช้ __username__ ออกจาก __room_name__ moderators",
   "User__username__removed_from__room_name__owners": "ลบผู้ใช้ __username__ ออกจากเจ้าของ __room_name__ แล้ว",

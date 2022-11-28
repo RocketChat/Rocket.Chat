@@ -2,6 +2,8 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { adminUsername } from '../../data/user.js';
 
 describe('[Subscriptions]', function () {
 	this.retries(0);
@@ -162,7 +164,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
+					expect(res.body).to.have.property('error', 'error-invalid-subscription');
 				})
 				.end(done);
 		});
@@ -177,7 +179,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
+					expect(res.body).to.have.property('error', 'error-invalid-subscription');
 				})
 				.end(done);
 		});
@@ -192,7 +194,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
+					expect(res.body).to.have.property('error', 'error-invalid-subscription');
 				})
 				.end(done);
 		});
@@ -207,7 +209,7 @@ describe('[Subscriptions]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-room-does-not-exist');
+					expect(res.body).to.have.property('error', 'error-invalid-subscription');
 				})
 				.end(done);
 		});
@@ -223,6 +225,107 @@ describe('[Subscriptions]', function () {
 					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
+		});
+
+		describe('should handle threads correctly', () => {
+			let threadId;
+			let user;
+			let threadUserCredentials;
+
+			before(async () => {
+				user = await createUser({ username: 'testthread123', password: 'testthread123' });
+				threadUserCredentials = await login('testthread123', 'testthread123');
+				request
+					.post(api('chat.sendMessage'))
+					.set(threadUserCredentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: 'Starting a Thread',
+						},
+					})
+					.end((_, res) => {
+						threadId = res.body.message._id;
+					});
+			});
+
+			after((done) => {
+				deleteUser(user).then(done);
+			});
+
+			it('should mark threads as read', async () => {
+				await request
+					.post(api('chat.sendMessage'))
+					.set(threadUserCredentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: `@${adminUsername} making admin follow this thread`,
+							tmid: threadId,
+						},
+					});
+				await request
+					.post(api('subscriptions.read'))
+					.set(credentials)
+					.send({
+						rid: testChannel._id,
+						readThreads: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.not.have.property('tunread');
+					});
+			});
+
+			it('should not mark threads as read', async () => {
+				await request
+					.post(api('chat.sendMessage'))
+					.set(threadUserCredentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: `@${adminUsername} making admin follow this thread`,
+							tmid: threadId,
+						},
+					});
+				await request
+					.post(api('subscriptions.read'))
+					.set(credentials)
+					.send({
+						rid: testChannel._id,
+						readThreads: false,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.have.property('tunread');
+						expect(res.body.subscription.tunread).to.be.an('array');
+						expect(res.body.subscription.tunread).to.deep.equal([threadId]);
+					});
+			});
 		});
 	});
 
