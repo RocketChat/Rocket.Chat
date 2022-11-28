@@ -532,7 +532,7 @@ const RoomBody = (): ReactElement => {
 	}, [sendToBottomIfNecessary]);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
-		chat.messageEditing.toPreviousMessage(wrapperRef.current ?? undefined);
+		chat.messageEditing.toPreviousMessage();
 	}, [chat.messageEditing]);
 
 	const handleNavigateToNextMessage = useCallback((): void => {

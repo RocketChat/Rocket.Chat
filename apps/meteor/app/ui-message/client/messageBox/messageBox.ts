@@ -58,8 +58,26 @@ const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): Compo
 		input.removeEventListener('input', persist);
 	};
 
-	const setText = (text: string): void => {
+	const setText = (
+		text: string,
+		{
+			selection,
+		}: {
+			selection?:
+				| { readonly start?: number; readonly end?: number }
+				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
+		} = {},
+	): void => {
 		input.value = text;
+
+		if (typeof selection === 'function') {
+			selection = selection({ start: input.selectionStart, end: input.selectionEnd });
+		}
+
+		if (selection) {
+			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
+		}
+
 		persist();
 		$(input).trigger('change').trigger('input');
 	};
@@ -112,6 +130,12 @@ const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): Compo
 		release,
 		get text(): string {
 			return input.value;
+		},
+		get selection(): { start: number; end: number } {
+			return {
+				start: input.selectionStart,
+				end: input.selectionEnd,
+			};
 		},
 		setText,
 		clear,
@@ -554,9 +578,22 @@ Template.messageBox.events({
 
 		switch (event.key) {
 			case 'Escape': {
-				chatContext?.handleEscapeKeyPress(event);
+				const currentEditing = chatContext?.currentEditing;
 
-				if (!event.isDefaultPrevented() && !input.value.trim()) this.onEscape?.();
+				if (currentEditing) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					currentEditing.reset().then((reset) => {
+						if (!reset) {
+							currentEditing?.cancel();
+						}
+					});
+
+					return;
+				}
+
+				if (!input.value.trim()) this.onEscape?.();
 				return;
 			}
 
@@ -565,15 +602,15 @@ Template.messageBox.events({
 					return;
 				}
 
-				event.preventDefault();
-				event.stopPropagation();
-
 				if (input.selectionEnd === 0) {
-					this.onNavigateToPreviousMessage?.();
-				}
+					event.preventDefault();
+					event.stopPropagation();
 
-				if (event.altKey) {
-					input.setSelectionRange(0, 0);
+					this.onNavigateToPreviousMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(0, 0);
+					}
 				}
 
 				return;
@@ -584,15 +621,15 @@ Template.messageBox.events({
 					return;
 				}
 
-				event.preventDefault();
-				event.stopPropagation();
-
 				if (input.selectionEnd === input.value.length) {
-					this.onNavigateToNextMessage?.();
-				}
+					event.preventDefault();
+					event.stopPropagation();
 
-				if (event.altKey) {
-					input.setSelectionRange(input.value.length, input.value.length);
+					this.onNavigateToNextMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(input.value.length, input.value.length);
+					}
 				}
 			}
 		}

@@ -134,7 +134,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
-			chat?.messageEditing.editMessage(message._id);
+			chat?.messageEditing.editMessage(message);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
@@ -175,7 +175,7 @@ Meteor.startup(async function () {
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
-			chat?.requestMessageDeletion(message);
+			chat?.flows.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room }) {
 			if (!subscription) {

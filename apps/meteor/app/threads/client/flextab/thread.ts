@@ -152,7 +152,7 @@ Template.thread.helpers({
 			onEscape: () => {
 				instance.closeThread();
 			},
-			onNavigateToPreviousMessage: () => chatContext.messageEditing.toPreviousMessage(instance.wrapper),
+			onNavigateToPreviousMessage: () => chatContext.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chatContext.messageEditing.toNextMessage(),
 			onUploadFiles: (files: readonly File[]) => {
 				return chatContext.flows.uploadFiles(files);
@@ -188,8 +188,6 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
-
-	Object.assign(this.data.chatContext, { collection: this.Threads });
 
 	const preferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 

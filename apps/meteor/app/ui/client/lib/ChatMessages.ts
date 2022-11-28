@@ -1,15 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
 
 import { KonchatNotification } from './notification';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { t } from '../../../utils/client';
-import { messageProperties, MessageTypes, readMessage } from '../../../ui-utils/client';
+import { messageProperties } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
-import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { ChatMessage } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
@@ -21,12 +17,13 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { call } from '../../../../client/lib/utils/call';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { getRandomId } from '../../../../lib/random';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
+import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
+import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
 
 export class ChatMessages implements ChatAPI {
 	private messageEditingState: {
@@ -39,108 +36,76 @@ export class ChatMessages implements ChatAPI {
 		drafts: {},
 	};
 
-	public messageEditing = {
-		toPreviousMessage: (wrapper: HTMLElement | undefined) => {
-			if (!this.messageEditingState.element) {
-				const mid = (Array.from(wrapper?.querySelectorAll('[data-own="true"]') ?? []).pop() as HTMLElement | undefined)?.dataset.id;
-				if (mid) this.messageEditing.editMessage(mid);
+	public messageEditing: ChatAPI['messageEditing'] = {
+		toPreviousMessage: async () => {
+			if (!this.composer) {
 				return;
 			}
 
-			for (
-				let previous = (this.messageEditingState.element.previousElementSibling ?? undefined) as HTMLElement | undefined;
-				previous;
-				previous = previous.previousElementSibling as HTMLElement | undefined
-			) {
-				if (previous.matches('[data-own="true"]') && previous.dataset.id) {
-					this.messageEditing.editMessage(previous.dataset.id);
-					return;
+			if (!this.currentEditing) {
+				const lastMessage = await this.data.findLastOwnMessage();
+
+				if (lastMessage) {
+					this.messageEditing.editMessage(lastMessage);
 				}
+
+				return;
 			}
 
-			this.clearEditing();
+			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
+			const previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
+
+			if (previousMessage) {
+				this.messageEditing.editMessage(previousMessage);
+				return;
+			}
+
+			await this.currentEditing.stop();
 		},
-		toNextMessage: () => {
-			if (!this.messageEditingState.element) {
-				this.clearEditing();
+		toNextMessage: async () => {
+			if (!this.composer || !this.currentEditing) {
 				return;
 			}
 
-			let next: HTMLElement | undefined;
-			for (
-				next = (this.messageEditingState.element.nextElementSibling ?? undefined) as HTMLElement | undefined;
-				next;
-				next = next.nextElementSibling as HTMLElement | undefined
-			) {
-				if (next.matches('[data-own="true"]') && next.dataset.id) {
-					this.messageEditing.editMessage(next.dataset.id, { cursorAtStart: true });
-					return;
-				}
+			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
+			const nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
+
+			if (nextMessage) {
+				this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });
+				return;
 			}
 
-			this.clearEditing();
+			await this.currentEditing.stop();
 		},
-		editMessage: async (mid: IMessage['_id'], { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
-			const { tmid } = this.params;
-			const element = document.getElementById(tmid ? `thread-${mid}` : mid);
-			if (!element) {
-				throw new Error('Message element not found');
-			}
-
-			const message = await this.data.getMessageByID(mid);
-			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
-			const editAllowed = settings.get('Message_AllowEditing');
-			const editOwn = message?.u && message.u._id === Meteor.userId();
-
-			if (!hasPermission && (!editAllowed || !editOwn)) {
+		getDraft: async (mid) => this.messageEditingState.drafts[mid],
+		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
+			if (!this.composer) {
+				this.currentEditing?.stop();
 				return;
 			}
 
-			if (MessageTypes.isSystemMessage(message)) {
+			if (!(await this.data.canUpdateMessage(message))) {
+				this.currentEditing?.stop();
 				return;
 			}
 
-			const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-			if (blockEditInMinutes && blockEditInMinutes !== 0) {
-				let msgTs;
-				if (message.ts) {
-					msgTs = moment(message.ts);
-				}
-				if (msgTs) {
-					const currentTsDiff = moment().diff(msgTs, 'minutes');
+			const text = message.attachments?.[0].description || (await this.messageEditing.getDraft(message._id)) || message.msg;
+			const cursorPosition = cursorAtStart ? 0 : text.length;
 
-					if (currentTsDiff > blockEditInMinutes) {
-						return;
-					}
-				}
-			}
+			this.currentEditing?.stop();
 
-			const draft = this.messageEditingState.drafts[message._id];
-			const msg = draft || message.msg;
+			const element = document.getElementById(this.params.tmid ? `thread-${message._id}` : message._id);
 
-			this.clearEditing();
-
-			const { input } = this;
-
-			if (!input) {
-				return;
-			}
-
-			this.messageEditingState.element = element;
 			this.messageEditingState.id = message._id;
-			this.composer?.setEditingMode(true);
-			element.classList.add('editing');
-			setHighlightMessage(message._id);
-
-			if (message.attachments?.[0].description) {
-				this.composer?.setText(message.attachments[0].description);
-			} else if (msg) {
-				this.composer?.setText(msg);
+			if (element) {
+				this.messageEditingState.element = element;
+				element.classList.add('editing');
 			}
+			setHighlightMessage(message._id);
+			this.composer?.setEditingMode(true);
 
+			this.composer.setText(text, { selection: { start: cursorPosition, end: cursorPosition } });
 			this.composer?.focus();
-			const cursorPosition = cursorAtStart ? 0 : input.value.length;
-			input.setSelectionRange(cursorPosition, cursorPosition);
 		},
 	};
 
@@ -152,10 +117,7 @@ export class ChatMessages implements ChatAPI {
 
 	public readonly uploads: UploadsAPI;
 
-	public constructor(
-		private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] },
-		private collection: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> = ChatMessage,
-	) {
+	public constructor(private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		this.data = createDataAPI({ rid: params.rid, tmid: params.tmid });
 		this.uploads = createUploadsAPI({ rid: params.rid, tmid: params.tmid });
 	}
@@ -165,27 +127,66 @@ export class ChatMessages implements ChatAPI {
 		this.composer = composer;
 	}
 
-	private recordInputAsDraft() {
-		if (!this.input) {
-			return;
+	public get currentEditing() {
+		if (!this.composer || !this.messageEditingState.id) {
+			return undefined;
 		}
 
-		if (!this.messageEditingState.id) {
-			return;
-		}
+		return {
+			mid: this.messageEditingState.id,
+			reset: async (): Promise<boolean> => {
+				if (!this.composer || !this.messageEditingState.id) {
+					return false;
+				}
 
-		const message = this.collection.findOne(this.messageEditingState.id);
-		if (!message) {
-			throw new Error('Message not found');
-		}
-		const draft = this.input.value;
+				const message = await this.data.findMessageByID(this.messageEditingState.id);
+				if (this.composer.text !== message?.msg) {
+					this.composer.setText(message?.msg ?? '');
+					return true;
+				}
 
-		if (draft === message.msg) {
-			this.clearCurrentDraft();
-			return;
-		}
+				return false;
+			},
+			stop: async (): Promise<void> => {
+				if (!this.composer || !this.messageEditingState.id) {
+					return;
+				}
 
-		this.messageEditingState.drafts[this.messageEditingState.id] ||= draft;
+				if (!this.messageEditingState.element) {
+					this.messageEditingState.savedValue = this.composer?.text;
+					this.messageEditingState.savedCursorPosition = this.composer?.selection.start;
+					return;
+				}
+
+				const message = await this.data.findMessageByID(this.messageEditingState.id);
+				const draft = this.composer.text;
+
+				if (draft === message?.msg) {
+					this.clearCurrentDraft();
+				} else {
+					this.messageEditingState.drafts[this.messageEditingState.id] ||= draft;
+				}
+
+				this.composer?.setEditingMode(false);
+				this.messageEditingState.element.classList.remove('editing');
+				delete this.messageEditingState.id;
+				delete this.messageEditingState.element;
+				clearHighlightMessage();
+
+				const cursorPosition = this.messageEditingState.savedCursorPosition
+					? this.messageEditingState.savedCursorPosition
+					: this.composer.text.length;
+				this.composer?.setText(this.messageEditingState.savedValue || '', { selection: { start: cursorPosition, end: cursorPosition } });
+			},
+			cancel: async (): Promise<void> => {
+				if (!this.composer || !this.messageEditingState.id) {
+					return;
+				}
+
+				delete this.messageEditingState.drafts[this.messageEditingState.id];
+				this.currentEditing?.stop();
+			},
+		};
 	}
 
 	private clearCurrentDraft() {
@@ -193,50 +194,7 @@ export class ChatMessages implements ChatAPI {
 			return;
 		}
 
-		const hasValue = this.messageEditingState.drafts[this.messageEditingState.id];
 		delete this.messageEditingState.drafts[this.messageEditingState.id];
-		return !!hasValue;
-	}
-
-	private resetToDraft(id: string) {
-		const { input } = this;
-		if (!input) {
-			return;
-		}
-
-		const message = this.collection.findOne(id);
-		if (!message) {
-			throw new Error('Message not found');
-		}
-
-		const oldValue = input.value;
-		this.composer?.setText(message.msg);
-		return oldValue !== message.msg;
-	}
-
-	private clearEditing() {
-		if (!this.input) {
-			return;
-		}
-
-		if (!this.messageEditingState.element) {
-			this.messageEditingState.savedValue = this.input?.value;
-			this.messageEditingState.savedCursorPosition = this.input?.selectionEnd;
-			return;
-		}
-
-		this.recordInputAsDraft();
-		this.composer?.setEditingMode(false);
-		this.messageEditingState.element.classList.remove('editing');
-		delete this.messageEditingState.id;
-		delete this.messageEditingState.element;
-		clearHighlightMessage();
-
-		this.composer?.setText(this.messageEditingState.savedValue || '');
-		const cursorPosition = this.messageEditingState.savedCursorPosition
-			? this.messageEditingState.savedCursorPosition
-			: this.input.value.length;
-		this.input.setSelectionRange(cursorPosition, cursorPosition);
 	}
 
 	private async processMessageSend(message: IMessage) {
@@ -250,7 +208,8 @@ export class ChatMessages implements ChatAPI {
 			return;
 		}
 
-		if (this.messageEditingState.id && (await this.processMessageEditing({ ...message, _id: this.messageEditingState.id }))) {
+		if (this.messageEditingState.id && (await this.flows.processMessageEditing({ ...message, _id: this.messageEditingState.id }))) {
+			this.currentEditing?.stop();
 			return;
 		}
 
@@ -337,105 +296,13 @@ export class ChatMessages implements ChatAPI {
 		return true;
 	}
 
-	private async processMessageEditing(message: IMessage) {
-		if (!message._id) {
-			return false;
-		}
-
-		if (MessageTypes.isSystemMessage(message)) {
-			return false;
-		}
-
-		this.clearEditing();
-		await callWithErrorHandling('updateMessage', message);
-		return true;
-	}
-
-	public async requestMessageDeletion(message: IMessage) {
-		if (MessageTypes.isSystemMessage(message)) {
-			return;
-		}
-
-		const room = message.drid ? await this.data.getDiscussionByID(message.drid) : undefined;
-
-		await new Promise<void>((resolve) => {
-			const onConfirm = async () => {
-				const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
-				const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-				if (blockDeleteInMinutes && forceDelete === false) {
-					const msgTs = moment(message.ts);
-					const currentTsDiff = moment().diff(msgTs, 'minutes');
-
-					if (currentTsDiff > blockDeleteInMinutes) {
-						dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
-						return;
-					}
-				}
-
-				try {
-					await this.data.deleteMessage(message._id);
-					dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				} finally {
-					imperativeModal.close();
-
-					if (this.messageEditingState.id === message._id) {
-						this.clearEditing();
-					}
-					this.composer?.focus();
-
-					resolve();
-				}
-			};
-
-			const onCloseModal = async () => {
-				imperativeModal.close();
-
-				if (this.messageEditingState.id === message._id) {
-					this.clearEditing();
-				}
-				this.composer?.focus();
-
-				resolve();
-			};
-
-			imperativeModal.open({
-				component: GenericModal,
-				props: {
-					title: t('Are_you_sure'),
-					children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
-					variant: 'danger',
-					confirmText: t('Yes_delete_it'),
-					onConfirm,
-					onClose: onCloseModal,
-					onCancel: onCloseModal,
-				},
-			});
-		});
-	}
-
-	public handleEscapeKeyPress(event: JQuery.KeyDownEvent<HTMLTextAreaElement>) {
-		if (this.messageEditingState.id) {
-			event.preventDefault();
-			event.stopPropagation();
-
-			const reset = this.resetToDraft(this.messageEditingState.id);
-
-			if (!reset) {
-				this.clearCurrentDraft();
-				this.clearEditing();
-			}
-		}
-	}
-
 	private release() {
 		this.composer?.release();
-		if (this.messageEditingState.id) {
+		if (this.currentEditing) {
 			const { tmid } = this.params;
 			if (!tmid) {
 				this.clearCurrentDraft();
-				this.clearEditing();
+				this.currentEditing.stop();
 			}
 			this.composer?.clear();
 		}
@@ -444,11 +311,9 @@ export class ChatMessages implements ChatAPI {
 	public flows: ChatAPI['flows'] = {
 		uploadFiles: uploadFiles.bind(null, this),
 		sendMessage: (async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }) => {
-			const { rid } = this.params;
-
-			if (!(await chat.data.findSubscriptionByRoomID(rid))) {
+			if (!(await chat.data.isSubscribedToRoom())) {
 				try {
-					await call('joinRoom', rid);
+					await chat.data.joinRoom();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 					return;
@@ -456,25 +321,27 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			let msg = text.trim();
-			if (msg) {
-				const replies = chat.composer?.quotedMessages.get() ?? [];
-				msg = await prependReplies(msg, replies);
+
+			if (!msg && !chat.currentEditing) {
+				// Nothing to do
+				return;
 			}
 
 			if (msg) {
-				readMessage.readNow(rid);
-				readMessage.refreshUnreadMark(rid);
+				const replies = chat.composer?.quotedMessages.get() ?? [];
+				msg = await prependReplies(msg, replies);
+
+				await chat.data.markRoomAsRead();
 
 				// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
-				const originalEditingMessage = this.messageEditingState.id
-					? await chat.data.getMessageByID(this.messageEditingState.id)
-					: undefined;
+				const originalEditingMessage = chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : undefined;
 				let { tmid } = this.params;
 				if (originalEditingMessage && tmid && !originalEditingMessage.tmid) {
 					tmid = undefined;
 					tshow = undefined;
 				}
 
+				const { rid } = this.params;
 				const message = (await onClientBeforeSendMessage({
 					_id: getRandomId(),
 					rid,
@@ -492,20 +359,22 @@ export class ChatMessages implements ChatAPI {
 				return;
 			}
 
-			if (this.messageEditingState.id) {
-				const message = await chat.data.getMessageByID(this.messageEditingState.id);
-				if (!message) {
-					throw new Error('Message not found');
+			if (chat.currentEditing) {
+				const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
+
+				if (!originalMessage) {
+					dispatchToastMessage({ type: 'warning', message: t('Message_not_found') });
+					return;
 				}
 
 				try {
-					if (message.attachments && message.attachments?.length > 0) {
-						await this.processMessageEditing({ _id: this.messageEditingState.id, rid, msg: '' } as IMessage);
+					if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' })) {
+						chat.currentEditing.stop();
 						return;
 					}
 
-					this.resetToDraft(this.messageEditingState.id);
-					await this.requestMessageDeletion(message);
+					await chat.currentEditing?.reset();
+					await chat.flows.requestMessageDeletion(originalMessage);
 					return;
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -513,6 +382,8 @@ export class ChatMessages implements ChatAPI {
 			}
 		}).bind(this, this),
 		processSlashCommand: processSlashCommand.bind(null, this),
+		processMessageEditing: processMessageEditing.bind(null, this),
+		requestMessageDeletion: requestMessageDeletion.bind(this, this),
 	};
 
 	private static refs = new Map<string, { instance: ChatMessages; count: number }>();

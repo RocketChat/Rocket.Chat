@@ -1,11 +1,19 @@
-import { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { Upload } from './Upload';
 
 export type ComposerAPI = {
 	release(): void;
 	readonly text: string;
-	setText(text: string): void;
+	readonly selection: { readonly start: number; readonly end: number };
+	setText(
+		text: string,
+		options?: {
+			selection?:
+				| { readonly start?: number; readonly end?: number }
+				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
+		},
+	): void;
 	clear(): void;
 	focus(): void;
 	replyWith(text: string): Promise<void>;
@@ -24,14 +32,24 @@ export type DataAPI = {
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
 	getLastMessage(): Promise<IMessage>;
+	findLastOwnMessage(): Promise<IMessage | undefined>;
+	getLastOwnMessage(): Promise<IMessage>;
+	findPreviousOwnMessage(message: IMessage): Promise<IMessage | undefined>;
+	getPreviousOwnMessage(message: IMessage): Promise<IMessage>;
+	findNextOwnMessage(message: IMessage): Promise<IMessage | undefined>;
+	getNextOwnMessage(message: IMessage): Promise<IMessage>;
 	pushEphemeralMessage(message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void>;
+	canUpdateMessage(message: IMessage): Promise<boolean>;
+	updateMessage(message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>): Promise<void>;
+	canDeleteMessage(message: IMessage): Promise<boolean>;
 	deleteMessage(mid: IMessage['_id']): Promise<void>;
 	findRoom(): Promise<IRoom | undefined>;
 	getRoom(): Promise<IRoom>;
+	isSubscribedToRoom(): Promise<boolean>;
+	joinRoom(): Promise<void>;
+	markRoomAsRead(): Promise<void>;
 	findDiscussionByID(drid: IRoom['_id']): Promise<IRoom | undefined>;
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
-	findSubscriptionByRoomID(rid: IRoom['_id']): Promise<ISubscription | undefined>;
-	getSubscriptionByRoomID(rid: IRoom['_id']): Promise<ISubscription>;
 };
 
 export type UploadsAPI = {
@@ -47,9 +65,25 @@ export type ChatAPI = {
 	readonly setComposerAPI: (composer: ComposerAPI) => void;
 	readonly data: DataAPI;
 	readonly uploads: UploadsAPI;
+	readonly messageEditing: {
+		toPreviousMessage(): Promise<void>;
+		toNextMessage(): Promise<void>;
+		getDraft(mid: IMessage['_id']): Promise<string | undefined>;
+		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
+	};
+	readonly currentEditing:
+		| {
+				readonly mid: IMessage['_id'];
+				reset(): Promise<boolean>;
+				stop(): Promise<void>;
+				cancel(): Promise<void>;
+		  }
+		| undefined;
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
 		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<void>;
 		readonly processSlashCommand: (message: IMessage) => Promise<boolean>;
+		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
+		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
 	};
 };
