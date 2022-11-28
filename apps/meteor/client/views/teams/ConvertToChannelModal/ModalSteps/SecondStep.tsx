@@ -13,7 +13,7 @@ type SecondStepsProps = {
 	deletedRooms: {
 		[key: string]: Serialized<IRoom>;
 	};
-	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
+	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };
 
 const SecondStep: FC<SecondStepsProps> = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }) => {
