@@ -1890,52 +1890,82 @@ describe('[Channels]', function () {
 				.then(() => done());
 		});
 
-		it('should fail to convert channel if lacking edit-room permission', (done) => {
-			updatePermission('create-team', []).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
-					request
-						.post(api('channels.convertToTeam'))
-						.set(credentials)
-						.send({ channelId: this.newChannel._id })
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-						})
-						.end(done);
+		it('should fail to convert channel if lacking edit-room permission', async () => {
+			await updatePermission('create-team', []);
+			await updatePermission('edit-room', ['admin']);
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
 				});
-			});
 		});
 
-		it('should fail to convert channel if lacking create-team permission', (done) => {
-			updatePermission('create-team', ['admin']).then(() => {
-				updatePermission('edit-room', []).then(() => {
-					request
-						.post(api('channels.convertToTeam'))
-						.set(credentials)
-						.send({ channelId: this.newChannel._id })
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-						})
-						.end(done);
+		it('should fail to convert channel if lacking create-team permission', async () => {
+			await updatePermission('create-team', ['admin']);
+			await updatePermission('edit-room', []);
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
 				});
-			});
 		});
 
-		it('should successfully convert a channel to a team', (done) => {
-			updatePermission('create-team', ['admin']).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
-					request
-						.post(api('channels.convertToTeam'))
-						.set(credentials)
-						.send({ channelId: this.newChannel._id })
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-						})
-						.end(done);
+		it(`should return an error when the channel's name and id are sent as parameter`, (done) => {
+			request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({
+					channelName: this.newChannel.name,
+					channelId: this.newChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').include(`must match exactly one schema in oneOf`);
+				})
+				.end(done);
+		});
+
+		it(`should successfully convert a channel to a team when the channel's id is sent as parameter`, async () => {
+			await updatePermission('create-team', ['admin']);
+			await updatePermission('edit-room', ['admin']);
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
 				});
-			});
+		});
+
+		it(`should successfully convert a channel to a team when the channel's name is sent as parameter`, async () => {
+			await request
+				.post(api('teams.convertToChannel'))
+				.set(credentials)
+				.send({ teamName: this.newChannel.name })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				});
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelName: this.newChannel.name })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				});
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {
