@@ -1,3 +1,4 @@
+<!-- Initial Commit -->
 <template name="message">
 	<li data-qa-id="UserMessage" id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-own={{isOwnMessageAndNotSystem}} data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}" data-qa-type="message">
 		{{#if isThreadReply}}
