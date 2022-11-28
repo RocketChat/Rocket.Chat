@@ -1,6 +1,5 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Document } from 'mongodb';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
 import { Base } from './_Base';
 
@@ -15,6 +14,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		this.tryEnsureIndex({ estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
+		this.tryEnsureIndex({ priorityId: 1, priorityWeight: 1 });
 		this.tryEnsureIndex({ 'v.token': 1, 'status': 1 }); // visitor token and status
 		this.tryEnsureIndex({ locked: 1, lockedAt: 1 }, { sparse: true }); // locked and lockedAt
 	}
@@ -200,7 +200,7 @@ export class LivechatInquiry extends Base {
 					...(department && { department }),
 				},
 			},
-			...(await this.getSortingQuery({})),
+			// ...(await this.getSortingQuery({})),
 			{
 				$group: {
 					_id: 1,
@@ -241,49 +241,6 @@ export class LivechatInquiry extends Base {
 		}
 
 		return collectionObj.aggregate(aggregate).toArray();
-	}
-
-	async getSortingQuery(sort: Record<string, -1 | 1>): Promise<Document[]> {
-		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
-		const $sort: { 'R.priorityWeight'?: number; 'estimatedServiceTimeAt'?: number; 'ts'?: number } = {};
-		const filter = [];
-		switch (sortMechanism?.value) {
-			case 'Priority':
-				$sort['R.priorityWeight'] = -1;
-				filter.push(
-					...[
-						{
-							$lookup: {
-								from: 'rocketchat_room',
-								localField: 'rid',
-								foreignField: '_id',
-								as: 'R',
-								pipeline: [
-									{
-										$project: {
-											priorityId: 1,
-											priorityWeight: 1,
-											_id: 0,
-										},
-									},
-								],
-							},
-						},
-						{ $unwind: '$R' },
-					],
-				);
-				break;
-			case 'SLAs':
-				$sort.estimatedServiceTimeAt = 1;
-				break;
-			case 'Timestamp':
-				$sort.ts = -1;
-				break;
-			default:
-				break;
-		}
-		filter.push(...[{ $sort: { ...$sort, ...sort } }]);
-		return filter;
 	}
 
 	removeDefaultAgentById(inquiryId: string): UpdateResult {

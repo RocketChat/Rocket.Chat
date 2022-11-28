@@ -1,5 +1,5 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, SortDirection } from 'mongodb';
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
@@ -93,35 +93,76 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async getSortingQuery(sort: Record<string, 1 | -1>): Promise<Document[]> {
+	async getCurrentSortedQueueAsync({
+		_id,
+		department,
+	}: {
+		_id: string;
+		department: string;
+	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }> {
+		const filter = [
+			{
+				$match: {
+					status: 'queued',
+					...(department && { department }),
+				},
+			},
+			{ $sort: await this.getSortingQuery() },
+			{
+				$group: {
+					_id: 1,
+					inquiry: {
+						$push: {
+							_id: '$_id',
+							rid: '$rid',
+							name: '$name',
+							ts: '$ts',
+							status: '$status',
+							department: '$department',
+						},
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$inquiry',
+					includeArrayIndex: 'position',
+				},
+			},
+			{
+				$project: {
+					_id: '$inquiry._id',
+					rid: '$inquiry.rid',
+					name: '$inquiry.name',
+					ts: '$inquiry.ts',
+					status: '$inquiry.status',
+					department: '$inquiry.department',
+					position: 1,
+				},
+			},
+		] as UpdateFilter<ILivechatInquiryRecord>[];
+
+		// To get the current room position in the queue, we need to apply the next $match after the $project
+		if (_id) {
+			filter.push({ $match: { _id } });
+		}
+
+		return this.col.aggregate(filter).toArray() as unknown as Promise<
+			Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }
+		>;
+	}
+
+	async getSortingQuery(): Promise<{
+		[key: string]: SortDirection;
+	}> {
 		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
-		const $sort: { 'R.priorityWeight'?: number; 'estimatedServiceTimeAt'?: number; 'ts'?: number } = {};
-		const filter = [];
+
+		const $sort: {
+			[key: string]: SortDirection;
+		} = {};
 		switch (sortMechanism?.value) {
 			case 'Priority':
-				$sort['R.priorityWeight'] = -1;
-				filter.push(
-					...[
-						{
-							$lookup: {
-								from: 'rocketchat_room',
-								localField: 'rid',
-								foreignField: '_id',
-								as: 'R',
-								pipeline: [
-									{
-										$project: {
-											priorityId: 1,
-											priorityWeight: 1,
-											_id: 0,
-										},
-									},
-								],
-							},
-						},
-						{ $unwind: '$R' },
-					],
-				);
+				$sort.priorityWeight = -1;
 				break;
 			case 'SLAs':
 				$sort.estimatedServiceTimeAt = 1;
@@ -130,9 +171,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				$sort.ts = -1;
 				break;
 			default:
+				$sort.ts = -1;
 				break;
 		}
-		filter.push(...[{ $sort: { ...$sort, ...sort } }]);
-		return filter;
+		return $sort;
 	}
 }

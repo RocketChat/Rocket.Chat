@@ -1,5 +1,7 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
+import type { Filter } from 'mongodb';
 
 const agentDepartments = async (userId: string) => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
@@ -38,37 +40,27 @@ export async function findInquiries({
 	};
 }) {
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
-	const options = [
-		{
-			$limit: count,
-		},
-		{
-			$skip: offset,
-		},
-	];
+	const defaultSort = await LivechatInquiry.getSortingQuery();
+	const options = {
+		limit: count,
+		skip: offset,
+		sort: { ...sort, ...(defaultSort as object) },
+	};
 
-	const filter = [
-		{
-			$match: {
-				$and: [
-					{ ...(status && { status }) },
-					{
-						$or: [
-							{
-								$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
-							},
-							{ ...(department && { department }) },
-							// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
-							{ department: { $exists: false } },
-						],
-					},
-				],
+	const filter: Filter<ILivechatInquiryRecord> = {
+		$or: [
+			{
+				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
 			},
-		},
-		...(await LivechatInquiry.getSortingQuery(sort)),
-		...options,
-	];
-	const cursor = LivechatInquiry.col.aggregate<ILivechatInquiryRecord>(filter);
+			{ ...((!!department && { department }) || {}) },
+			// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
+			{ department: { $exists: false } },
+		],
+	};
+	if (status && status in LivechatInquiryStatus) {
+		filter.status = status as LivechatInquiryStatus;
+	}
+	const cursor = LivechatInquiry.find(filter, options);
 
 	const [inquiries, total] = await Promise.all([cursor.toArray(), LivechatInquiry.col.countDocuments()]);
 

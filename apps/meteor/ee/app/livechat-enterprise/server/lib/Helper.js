@@ -5,10 +5,11 @@ import {
 	LivechatRooms as LivechatRoomsRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
+	LivechatInquiry,
 } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users, LivechatInquiry, Messages } from '../../../../../app/models/server';
+import { Users, Messages } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';

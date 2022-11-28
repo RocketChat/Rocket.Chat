@@ -1354,7 +1354,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400);
 		});
 	});
-	(IS_EE ? describe : describe.skip)('priority integration', async () => {
+	(IS_EE ? describe : describe.skip)('Room prioritization', async () => {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
 		this.afterAll(async () => {
