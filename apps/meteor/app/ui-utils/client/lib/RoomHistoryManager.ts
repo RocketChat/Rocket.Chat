@@ -169,7 +169,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, false);
 
 		this.unqueue();
 
