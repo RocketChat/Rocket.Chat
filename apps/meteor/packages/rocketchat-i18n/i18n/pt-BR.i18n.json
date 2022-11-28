@@ -5,7 +5,7 @@
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ salas vazias serão removidas automaticamente:<br/> __rooms__.",
   "__count__message_pruned": "__count__ mensagem apagada",
   "__count__message_pruned_plural": "__count__ mensagens apagadas",
-  "__usersCount__members_joined": "+ __usersCount__ membros entraram",
+  "__usersCount__member_joined_plural": "+ __usersCount__ membros entraram",
   "__usersCount__people_will_be_invited": "__usersCount__ usuários vão ser convidados",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ não pertence mais a __role__, por __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ foi definido como __role__ por __user_by__",
