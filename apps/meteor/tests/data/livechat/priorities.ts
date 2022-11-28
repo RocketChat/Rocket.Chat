@@ -3,7 +3,7 @@ import { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { DummyResponse } from './utils';
 
-export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
+export const saveSLAWithDeprecatedMeteorMethod = (): Promise<IOmnichannelServiceLevelAgreements> => {
     return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:saveSLA`))
@@ -11,7 +11,7 @@ export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveSLA',
-					params: [undefined, { name: faker.name.firstName(), description: faker.lorem.sentence(), dueTimeInMinutes: `${faker.datatype.number({ min: 10 })}` }],
+					params: [undefined, generateRandomSLA()],
 					id: '101',
 					msg: 'method',
 				}),
@@ -21,6 +21,23 @@ export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
 					return reject(err);
 				}
 				resolve(JSON.parse(res.body.message).result);
+			});
+	});
+};
+
+export const saveSLA = (): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updated'>> => {
+    return new Promise((resolve, reject) => {
+		request
+			.post(api('livechat/sla'))
+			.set(credentials)
+			.send(
+				generateRandomSLA(),
+			)
+			.end((err: Error, res: DummyResponse<{ sla: Omit<IOmnichannelServiceLevelAgreements, '_updated'> }, 'unwrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.sla);
 			});
 	});
 };
@@ -60,4 +77,12 @@ export const deleteSLA = (id: string): Promise<void> => {
 				resolve();
 			});
 	});
+}
+
+export const generateRandomSLA = (): Omit<IOmnichannelServiceLevelAgreements, '_updatedAt' | '_id'> => {
+	return {
+		name: faker.name.firstName(),
+		description: faker.lorem.sentence(),
+		dueTimeInMinutes: faker.datatype.number({ min: 10 }),
+	};
 }
