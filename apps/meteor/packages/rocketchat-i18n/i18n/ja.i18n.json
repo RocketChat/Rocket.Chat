@@ -4476,7 +4476,7 @@
   "User Search (Group Validation)": "ユーザー検索（グループ検証）",
   "User__username__is_now_a_leader_of__room_name_": "ユーザー__username__は__room_name__のリーダーになりました",
   "User__username__is_now_a_moderator_of__room_name_": "ユーザー__username__は、これより__room_name__のモデレーターです",
-  "User__username__is_now_a_owner_of__room_name_": "ユーザー__username__は、これより__room_name__の所有者です",
+  "User__username__is_now_an_owner_of__room_name_": "ユーザー__username__は、これより__room_name__の所有者です",
   "User__username__muted_in_room__roomName__": "ルーム__roomName__でユーザー__username__がミュートされました",
   "User__username__removed_from__room_name__leaders": "ユーザー__username__を__room_name__のリーダーから削除しました",
   "User__username__removed_from__room_name__moderators": "ユーザー__username__を__room_name__のモデレーターから削除しました",

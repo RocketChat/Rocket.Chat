@@ -1,3 +1,5 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
@@ -929,12 +931,15 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
+	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, source, options = {} }) {
 		const match = {
 			$match: {
 				'v._id': visitorId,
 				...(open !== undefined && { open: { $exists: open } }),
 				...(served !== undefined && { servedBy: { $exists: served } }),
+				...(source && {
+					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
+				}),
 			},
 		};
 		const lookup = {
@@ -946,7 +951,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const matchMessages = searchText && {
-			$match: { 'messages.msg': { $regex: `.*${searchText}.*` } },
+			$match: { 'messages.msg': { $regex: `.*${escapeRegExp(searchText)}.*` } },
 		};
 
 		const params = [match, lookup];
@@ -1021,7 +1026,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
 		}
 		if (roomName) {
-			query.fname = new RegExp(roomName, 'i');
+			query.fname = new RegExp(escapeRegExp(roomName), 'i');
 		}
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
@@ -1234,5 +1239,49 @@ export class LivechatRoomsRaw extends BaseRaw {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	findAvailableSources() {
+		return this.col.aggregate([
+			{
+				$group: {
+					_id: 0,
+					types: {
+						$addToSet: {
+							$cond: {
+								if: {
+									$eq: ['$source.type', 'app'],
+								},
+								then: '$$REMOVE',
+								else: { type: '$source.type' },
+							},
+						},
+					},
+					apps: {
+						$addToSet: {
+							$cond: {
+								if: {
+									$eq: ['$source.type', 'app'],
+								},
+								else: '$$REMOVE',
+								then: {
+									type: '$source.type',
+									id: '$source.id',
+									alias: '$source.alias',
+									sidebarIcon: '$source.sidebarIcon',
+									defaultIcon: '$source.defaultIcon',
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					fullTypes: { $setUnion: ['$types', '$apps'] },
+				},
+			},
+		]);
 	}
 }

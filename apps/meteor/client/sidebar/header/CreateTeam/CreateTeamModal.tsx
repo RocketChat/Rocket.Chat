@@ -42,7 +42,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			return;
 		}
 
-		if (!teamNameRegex?.test(name)) {
+		if (teamNameRegex && !teamNameRegex?.test(name)) {
 			return t('error-invalid-name');
 		}
 

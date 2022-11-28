@@ -2576,7 +2576,7 @@
   "User": "Defnyddiwr",
   "User__username__is_now_a_leader_of__room_name_": "Defnyddiwr __username__ bellach yn arweinydd __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Defnyddiwr __username__ bellach yn safonwr __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Defnyddiwr __username__ bellach yn berchennog __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Defnyddiwr __username__ bellach yn berchennog __room_name__",
   "User__username__removed_from__room_name__leaders": "Defnyddiwr __username__ wedi'i dynnu oddi wrth __room_name__ leaders",
   "User__username__removed_from__room_name__moderators": "Defnyddiwr __username__ wedi'i dynnu oddi wrth __room_name__ cymedrolwyr",
   "User__username__removed_from__room_name__owners": "Defnyddiwr __username__ wedi'i dynnu oddi wrth __room_name__ perchnogion",

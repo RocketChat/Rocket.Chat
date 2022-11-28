@@ -20,6 +20,8 @@ const validateDateParams = (property: string, date?: string) => {
 	return parsedDate;
 };
 
+const isBoolean = (value?: string | boolean): boolean => value === 'true' || value === 'false' || typeof value === 'boolean';
+
 API.v1.addRoute(
 	'livechat/rooms',
 	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
@@ -59,7 +61,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
-					open: open && open === 'true',
+					...(isBoolean(open) && { open: open === 'true' }),
 					createdAt: createdAtParam,
 					closedAt: closedAtParam,
 					tags,
@@ -99,6 +101,18 @@ API.v1.addRoute(
 				return API.v1.failure({ error: 'Error unsetting priority' });
 			}
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/rooms/filters',
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		async get() {
+			return API.v1.success({
+				filters: (await LivechatRooms.findAvailableSources().toArray())[0].fullTypes,
+			});
 		},
 	},
 );

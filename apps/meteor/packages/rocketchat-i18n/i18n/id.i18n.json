@@ -2589,7 +2589,7 @@
   "User": "Pemakai",
   "User__username__is_now_a_leader_of__room_name_": "Pengguna __username__ sekarang menjadi pemimpin __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Pengguna __username__ sekarang menjadi moderator dari __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Pengguna __username__ sekarang menjadi pemilik __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Pengguna __username__ sekarang menjadi pemilik __room_name__",
   "User__username__removed_from__room_name__leaders": "Pengguna __username__ dihapus dari __room_name__ pemimpin",
   "User__username__removed_from__room_name__moderators": "Pengguna __username__ dihapus dari moderator __room_name__",
   "User__username__removed_from__room_name__owners": "Pengguna __username__ dihapus dari pemilik __room_name__",

@@ -1,14 +1,17 @@
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
-import type { Filter } from 'mongodb';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-const agentDepartments = async (userId: string) => {
+const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
 	return (await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()).map(({ _id }) => _id);
 };
 
-const applyDepartmentRestrictions = async (userId: string, filterDepartment?: string) => {
+const applyDepartmentRestrictions = async (
+	userId: IUser['_id'],
+	filterDepartment?: string,
+): Promise<{ $in: string[] } | { $exists: false } | string> => {
 	const allowedDepartments = await agentDepartments(userId);
 	if (allowedDepartments && Array.isArray(allowedDepartments) && allowedDepartments.length > 0) {
 		if (!filterDepartment) {
@@ -30,15 +33,11 @@ export async function findInquiries({
 	status,
 	pagination: { offset, count, sort },
 }: {
-	userId: string;
+	userId: IUser['_id'];
 	department?: string;
-	status?: string;
-	pagination: {
-		offset: number;
-		count: number;
-		sort: Record<string, 1 | -1>;
-	};
-}) {
+	status?: LivechatInquiryStatus;
+	pagination: { offset: number; count: number; sort: Record<string, number> };
+}): Promise<PaginatedResult<{ inquiries: Array<ILivechatInquiryRecord> }>> {
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
 	const defaultSort = await LivechatInquiry.getSortingQuery();
 	const options = {
@@ -60,9 +59,11 @@ export async function findInquiries({
 	if (status && status in LivechatInquiryStatus) {
 		filter.status = status as LivechatInquiryStatus;
 	}
-	const cursor = LivechatInquiry.find(filter, options);
 
-	const [inquiries, total] = await Promise.all([cursor.toArray(), LivechatInquiry.col.countDocuments()]);
+	// @ts-ignore - LivechatInquiry has a ref to messages
+	const { cursor, totalCount } = LivechatInquiry.findPaginated(filter, options);
+
+	const [inquiries, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		inquiries,
@@ -72,7 +73,7 @@ export async function findInquiries({
 	};
 }
 
-export async function findOneInquiryByRoomId({ roomId }: { roomId: string }) {
+export async function findOneInquiryByRoomId({ roomId }: { roomId: IRoom['_id'] }): Promise<{ inquiry: ILivechatInquiryRecord | null }> {
 	return {
 		inquiry: await LivechatInquiry.findOneByRoomId(roomId, {}),
 	};
