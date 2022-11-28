@@ -19,7 +19,7 @@ export const palette = [
 		description: 'Use as a container on top of the background',
 		list: [
 			{ name: 'surface-light', token: 'N900', color: '#1F2329' },
-			{ name: 'surface-tint', token: 'N800', color: '#2F343D' },
+			{ name: 'surface-tint', token: '', color: '#282C34' },
 			{ name: 'surface-neutral', token: '', color: '#3A404B' },
 			{ name: 'surface-disabled', token: 'N800', color: '#2F343D' },
 			{ name: 'surface-hover', token: '', color: '#23282E' },
@@ -95,7 +95,7 @@ export const palette = [
 			{ name: 'button-background-secondary-press', token: '', color: '#454C59' },
 			{ name: 'button-background-secondary-focus', token: 'N800', color: '#2F343D' },
 			{ name: 'button-background-secondary-keyfocus', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-disabled', token: '', color: '#282C33' },
+			{ name: 'button-background-secondary-disabled', token: '', color: '#2F343D' },
 		],
 	},
 	{
@@ -106,7 +106,7 @@ export const palette = [
 			{ name: 'button-background-secondary-danger-press', token: '', color: '#454C59' },
 			{ name: 'button-background-secondary-danger-focus', token: 'N800', color: '#2F343D' },
 			{ name: 'button-background-secondary-danger-keyfocus', token: 'N800', color: '#2F343D' },
-			{ name: 'button-background-secondary-danger-disabled', token: '', color: '#282C33' },
+			{ name: 'button-background-secondary-danger-disabled', token: '', color: '#2F343D' },
 		],
 	},
 	{
