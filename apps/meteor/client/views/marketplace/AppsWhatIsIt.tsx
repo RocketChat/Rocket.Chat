@@ -13,7 +13,7 @@ const AppsWhatIsIt: FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<false | Error>(false);
 
-	const appsRouter = useRoute('admin-marketplace');
+	const appsRouter = useRoute('marketplace-all');
 	const enableAppsEngine = useMethod('apps/go-enable');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 

@@ -12,8 +12,8 @@ const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const canManageApps = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
-	const appsWhatIsItRoute = useRoute('admin-apps-disabled');
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const appsWhatIsItRoute = useRoute('marketplace-disabled');
+	const marketplaceRoute = useRoute('marketplace-all');
 
 	useEffect(() => {
 		let mounted = true;
@@ -56,6 +56,8 @@ const AppsRoute = (): ReactElement => {
 	if (isLoading) {
 		return <PageSkeleton />;
 	}
+
+	console.log('Page: ', page);
 
 	return (
 		<AppsProvider>

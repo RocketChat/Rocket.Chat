@@ -62,12 +62,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-federation-data'),
 	},
 	{
-		icon: 'cube',
-		href: 'admin-marketplace',
-		i18nLabel: 'Apps',
-		permissionGranted: (): boolean => hasPermission('manage-apps'),
-	},
-	{
 		icon: 'mail',
 		href: 'admin-email-inboxes',
 		i18nLabel: 'Email_Inboxes',
