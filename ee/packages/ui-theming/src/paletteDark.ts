@@ -69,10 +69,10 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
-			{ name: 'badge-background-primary', token: '', color: '#3976D1' },
-			{ name: 'badge-background-secondary', token: 'N700', color: '#6C727A' },
-			{ name: 'badge-background-warning', token: '', color: '#C0830C' },
-			{ name: 'badge-background-danger', token: '', color: '#BB3E4E' },
+			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
+			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
+			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
+			{ name: 'badge-background-level-4', token: '', color: '#BB3E4E' },
 		],
 	},
 	{
