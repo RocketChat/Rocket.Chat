@@ -2,6 +2,7 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { Filter } from 'mongodb';
 
 const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
