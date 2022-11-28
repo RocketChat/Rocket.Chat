@@ -1062,6 +1062,32 @@ const LivechatPrioritiesPropsSchema = {
 
 export const isLivechatPrioritiesProps = ajv.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
 
+type CreateOrUpdateLivechatSlaProps = {
+	name: string;
+	description?: string;
+	dueTimeInMinutes: number;
+};
+
+const CreateOrUpdateLivechatSlaPropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+			nullable: true,
+		},
+		dueTimeInMinutes: {
+			type: 'number',
+		},
+	},
+	required: ['name', 'dueTimeInMinutes'],
+	additionalProperties: false,
+};
+
+export const isCreateOrUpdateLivechatSlaProps = ajv.compile<CreateOrUpdateLivechatSlaProps>(CreateOrUpdateLivechatSlaPropsSchema);
+
 type POSTOmnichannelContactProps = {
 	_id?: string;
 	token: string;
@@ -3015,10 +3041,12 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/sla': {
 		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ sla: IOmnichannelServiceLevelAgreements[] }>;
+		POST: (params: CreateOrUpdateLivechatSlaProps) => { sla: Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'> };
 	};
 
 	'/v1/livechat/sla/:slaId': {
 		GET: () => IOmnichannelServiceLevelAgreements;
+		PUT: (params: CreateOrUpdateLivechatSlaProps) => { sla: Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'> };
 		DELETE: () => void;
 	};
 

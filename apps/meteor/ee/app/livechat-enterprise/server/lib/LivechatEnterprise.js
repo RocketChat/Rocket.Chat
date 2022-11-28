@@ -134,17 +134,17 @@ export const LivechatEnterprise = {
 	},
 
 	// make async
-	saveSLA(_id, slaData) {
+	async saveSLA(_id, slaData) {
 		check(_id, Match.Maybe(String));
 
 		check(slaData, {
 			name: String,
 			description: Match.Optional(String),
-			dueTimeInMinutes: String,
+			dueTimeInMinutes: Number,
 		});
 
-		const oldSLA = _id && Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
-		const sla = Promise.await(OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id));
+		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const sla = await OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id);
 		if (!oldSLA) {
 			return sla;
 		}
@@ -153,7 +153,7 @@ export const LivechatEnterprise = {
 		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			Promise.await(updateSLAInquiries(sla));
+			await updateSLAInquiries(sla);
 		}
 
 		return sla;
