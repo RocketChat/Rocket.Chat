@@ -133,7 +133,6 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	// make async
 	async saveSLA(_id, slaData) {
 		check(_id, Match.Maybe(String));
 
