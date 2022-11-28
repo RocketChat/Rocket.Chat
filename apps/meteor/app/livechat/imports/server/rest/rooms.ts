@@ -1,4 +1,3 @@
-
 import { isGETLivechatRoomsParams, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 

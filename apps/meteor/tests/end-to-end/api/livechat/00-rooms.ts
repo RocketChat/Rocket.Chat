@@ -1516,8 +1516,8 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.send()
 				.expect(403);
-    });
-  });
+		});
+	});
 	describe('livechat/rooms/filters', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
