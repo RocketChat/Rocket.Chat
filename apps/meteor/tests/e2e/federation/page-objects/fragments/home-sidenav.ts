@@ -64,13 +64,17 @@ export class FederationSidenav {
 
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
+		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
+		await this.page.waitForTimeout(2000);
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+		await this.page.waitForTimeout(2000);
 	}
 
 	async openDMMultipleChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
+		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
+		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
 		await this.page.waitForTimeout(2000);
 		await this.page.locator('[data-qa="sidebar-item-title"]').nth(1).click();
 		await this.page.waitForTimeout(2000);
