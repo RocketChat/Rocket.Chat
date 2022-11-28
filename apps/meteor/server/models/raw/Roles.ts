@@ -131,7 +131,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
 		const query: Filter<IRole> = {
-			name: {
+			_id: {
 				$in: ids,
 			},
 		};

@@ -30,13 +30,13 @@ const InformationPage = memo(function InformationPage({
 }: InformationPageProps) {
 	const t = useTranslation();
 
-	const isEnterprise = useIsEnterprise();
+	const { data } = useIsEnterprise();
 
 	if (!info) {
 		return null;
 	}
 
-	const warningMultipleInstances = !isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
+	const warningMultipleInstances = !data?.isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
 	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (
