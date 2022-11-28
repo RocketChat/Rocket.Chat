@@ -1,4 +1,16 @@
 
+# 5.3.3
+`2022-11-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 5.3.2
 `2022-11-18  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
