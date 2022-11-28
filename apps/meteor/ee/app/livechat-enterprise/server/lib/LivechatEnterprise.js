@@ -159,21 +159,20 @@ export const LivechatEnterprise = {
 		return sla;
 	},
 
-	removeSLA(_id) {
+	async removeSLA(_id) {
 		check(_id, String);
 
-		const sla = Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } }));
-
+		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
 		if (!sla) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid sla', {
-				method: 'livechat:removeSLA',
-			});
+			throw new Error(`SLA with id ${_id} not found`);
 		}
-		const removed = Promise.await(OmnichannelServiceLevelAgreements.removeById(_id));
-		if (removed) {
-			removeSLAFromRooms(_id);
+
+		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
+		if (!removedResult || removedResult.deletedCount !== 1) {
+			throw new Error(`Error removing SLA with id ${_id}`);
 		}
-		return removed;
+
+		await removeSLAFromRooms(_id);
 	},
 
 	updateRoomSLA(roomId, user, sla) {

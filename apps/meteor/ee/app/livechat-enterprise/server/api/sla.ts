@@ -3,6 +3,7 @@ import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { findSLA } from './lib/sla';
+import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/sla',
@@ -53,7 +54,8 @@ API.v1.addRoute(
 		},
 		async delete() {
 			const { slaId } = this.urlParams;
-			await OmnichannelServiceLevelAgreements.removeById(slaId);
+
+			await LivechatEnterprise.removeSLA(slaId);
 
 			return API.v1.success();
 		},

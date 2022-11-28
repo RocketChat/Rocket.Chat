@@ -1,6 +1,6 @@
 import faker from '@faker-js/faker';
 import { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
-import { credentials, methodCall, request } from '../api-data';
+import { api, credentials, methodCall, request } from '../api-data';
 import { DummyResponse } from './utils';
 
 export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
@@ -25,7 +25,7 @@ export const saveSLA = (): Promise<IOmnichannelServiceLevelAgreements> => {
 	});
 };
 
-export const deleteSLA = (id: string): Promise<void> => {
+export const deleteSLAWithDeprecatedMeteorMethod = (id: string): Promise<void> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:removeSLA`))
@@ -38,6 +38,21 @@ export const deleteSLA = (id: string): Promise<void> => {
 					msg: 'method',
 				}),
 			})
+			.end((err: Error, _res: DummyResponse<void,'not-wrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve();
+			});
+	});
+}
+
+export const deleteSLA = (id: string): Promise<void> => {
+	return new Promise((resolve, reject) => {
+		request
+			.delete(api(`livechat/sla/${id}`))
+			.set(credentials)
+			.send()
 			.end((err: Error, _res: DummyResponse<void,'not-wrapped'>) => {
 				if (err) {
 					return reject(err);
