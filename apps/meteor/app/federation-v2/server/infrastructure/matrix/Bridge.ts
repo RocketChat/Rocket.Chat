@@ -11,6 +11,7 @@ import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definit
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
+import { RoomMembershipChangedEventType } from './definitions/events/RoomMembershipChanged';
 
 let MatrixUserInstance: any;
 
@@ -106,17 +107,22 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId);
 	}
 
-	public async getRoomEvents(externalRoomId: string, externalUserId: string, excludingUserIds: string[]): Promise<any[]> {
+	public async getRoomHistoricalJoinEvents(
+		externalRoomId: string,
+		externalUserId: string,
+		excludingUserIds: string[] = [],
+	): Promise<any[]> {
 		const events = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomState(externalRoomId);
-		console.log({ allEvents: events });
-		const roomCreator = events.find((event) => event.type === 'm.room.create')?.content?.creator;
-		console.log({ roomCreator });
+		const roomCreator = events.find((event) => event.type === MatrixEventType.ROOM_CREATED)?.content?.creator;
 		if (!roomCreator) {
 			return [];
 		}
 		return events
 			.filter(
-				(event) => event.type === 'm.room.member' && event.content.membership === 'join' && !excludingUserIds.includes(event.state_key),
+				(event) =>
+					event.type === MatrixEventType.ROOM_MEMBERSHIP_CHANGED &&
+					event.content.membership === RoomMembershipChangedEventType.JOIN &&
+					!excludingUserIds.includes(event.state_key),
 			)
 			.map((event) => ({
 				...event,
@@ -290,12 +296,6 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).sendTyping(externalRoomId, isTyping);
 	}
 
-	public async isUserPartOfTheRoom(externalRoomId: string, externalUserId: string): Promise<boolean> {
-		const joinedRooms = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getJoinedRooms();
-
-		return joinedRooms.includes(externalRoomId);
-	}
-
 	public async sendMessageReaction(
 		externalRoomId: string,
 		externalUserId: string,
@@ -372,10 +372,6 @@ export class MatrixBridge implements IFederationBridge {
 			}
 			return '';
 		}
-	}
-
-	public async getRoomMembers(externalRoomId: string, externalUserId: string): Promise<any[]> {
-		return this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomMembers(externalRoomId);
 	}
 
 	public async sendReplyMessageFileToRoom(
@@ -465,7 +461,6 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
-					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

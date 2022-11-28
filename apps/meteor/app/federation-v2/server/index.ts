@@ -14,13 +14,14 @@ const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 export const rocketNotificationAdapter = FederationFactory.buildRocketNotificationAdapter();
 export const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
 
-const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
+const federationRoomServiceListener = FederationFactory.buildRoomServiceListener(
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
 	rocketFileAdapter,
 	rocketSettingsAdapter,
 	rocketNotificationAdapter,
+	federationQueueInstance,
 	federationBridge,
 );
 
@@ -43,7 +44,7 @@ const federationUserServiceReceiver = FederationFactory.buildUserServiceReceiver
 );
 
 const federationEventsHandler = FederationFactory.buildFederationEventHandler(
-	federationRoomServiceReceiver,
+	federationRoomServiceListener,
 	federationMessageServiceReceiver,
 	federationUserServiceReceiver,
 	rocketSettingsAdapter,

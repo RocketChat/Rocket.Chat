@@ -81,8 +81,8 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 		const internalFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 
 		if (!internalFederatedRoom && isInviterFromTheSameHomeServer) {
-			const inviteesExternalIds = invitees.map((invitee) => invitee.rawInviteeId);
-			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), inviteesExternalIds, {
+			const allInviteeExternalIds = invitees.map((invitee) => invitee.rawInviteeId);
+			const externalRoomId = await this.bridge.createDirectMessageRoom(federatedInviterUser.getExternalId(), allInviteeExternalIds, {
 				internalRoomId,
 			});
 			const inviteesFromTheSameHomeServer = invitees.filter((invitee) =>
@@ -91,7 +91,6 @@ export class FederationDMRoomInternalHooksServiceSender extends FederationServic
 					this.internalHomeServerDomain,
 				),
 			);
-			console.log({ inviteesFromTheSameHomeServer });
 			await Promise.all(inviteesFromTheSameHomeServer.map((invitee) => this.bridge.joinRoom(externalRoomId, invitee.rawInviteeId)));
 			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 		}
