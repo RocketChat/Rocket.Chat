@@ -97358,6 +97358,82 @@
           ]
         }
       ]
+    },
+    "5.4.0-rc.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27391",
+          "title": "[FIX] Thread messages being included in the room history even though they are not displayed",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "27386",
+          "title": "Chore: Update dark theme tokens",
+          "userLogin": "juliajforesti",
+          "description": "Update dark theme tokens: \r\n- surface-tint \r\n- button-background-secondary-disabled \r\n- button-background-secondary-danger-disabled\r\n- all status-background\r\n- all status-font",
+          "contributors": [
+            "juliajforesti",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "26858",
+          "title": "[FIX] `channels.convertToTeam` endpoint doesn't work when only the `channelName` param is provided",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix the `channels.convertToTeam` endpoint not working when the `channelName` is sent as parameter.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "27363",
+          "title": "Chore: Update badge tokens",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti"
+          ]
+        },
+        {
+          "pr": "27382",
+          "title": "Regression: VideoConf default info modal not showing meeting URL as a link",
+          "userLogin": "pierre-lehnen-rc",
+          "description": "Before:\r\n![image](https://user-images.githubusercontent.com/55164754/204304308-87f6e6d3-8411-4974-8628-d81fd9aa07e5.png)\r\n\r\n\r\nAfter:\r\n![image](https://user-images.githubusercontent.com/55164754/204303619-6bc7b014-7b11-40a5-a1de-1530e76fff8b.png)",
+          "milestone": "5.4.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27375",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-11-28Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "27365",
+          "title": "Regression: Update VideoConf components colors",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
