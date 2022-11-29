@@ -21,7 +21,7 @@ export async function findUsersToAutocomplete({
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
-	const options: FindOptions<IUser> = {
+	const options = {
 		projection: {
 			name: 1,
 			username: 1,
@@ -53,7 +53,7 @@ export async function findUsersToAutocomplete({
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
 		conditions,
-		options,
+		options as FindOptions<IUser>,
 	).toArray();
 
 	return {

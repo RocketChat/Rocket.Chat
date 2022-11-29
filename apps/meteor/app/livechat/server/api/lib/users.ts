@@ -57,7 +57,7 @@ export async function findAgents({
 }: {
 	text: string | undefined;
 	pagination: PaginationWithSort;
-}): Promise<ReturnType<typeof findUsers>> {
+}): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	return findUsers<ILivechatAgent>({
 		role: 'livechat-agent',
 		text,
@@ -75,7 +75,7 @@ export async function findManagers({
 }: {
 	text: string | undefined;
 	pagination: IPaginationOptions & { sort: { [k: string]: SortDirection } };
-}): Promise<ReturnType<typeof findUsers>> {
+}): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	return findUsers<ILivechatAgent>({
 		role: 'livechat-manager',
 		text,
