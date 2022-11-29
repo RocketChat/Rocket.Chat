@@ -10,7 +10,7 @@
     "@storybook/addon-actions": "~6.5.12",
     "@storybook/addon-docs": "~6.5.12",
     "@storybook/addon-essentials": "~6.5.12",
-    "@storybook/builder-webpack4": "~6.5.12",
+    "@storybook/builder-webpack4": "~6.5.13",
     "@storybook/manager-webpack4": "~6.5.12",
     "@storybook/react": "~6.5.12",
     "@storybook/testing-library": "~0.0.13",

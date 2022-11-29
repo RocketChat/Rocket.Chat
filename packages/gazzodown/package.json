@@ -18,7 +18,7 @@
 		"@storybook/addon-essentials": "~6.5.10",
 		"@storybook/addon-interactions": "~6.5.10",
 		"@storybook/addon-links": "~6.5.10",
-		"@storybook/builder-webpack4": "~6.5.10",
+		"@storybook/builder-webpack4": "~6.5.13",
 		"@storybook/manager-webpack4": "~6.5.10",
 		"@storybook/react": "~6.5.10",
 		"@storybook/testing-library": "~0.0.13",
