@@ -21,22 +21,32 @@ import { IS_EE } from '../../../e2e/config/constants';
 			.then(done);
 	});
 
+	const removePermissions = (perms: string[]) => {
+		Promise.allSettled(perms.map((perm) => updatePermission(perm, [])));
+	};
+	const addPermissions = (perms: { [key: string]: string[] }) => {
+		Promise.allSettled(Object.keys(perms).map((k) => updatePermission(k, Object.values(perms[k]))));
+	};
+
 	this.afterAll(async () => {
-		await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-		await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-		await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
+		addPermissions({
+			'manage-livechat-priorities': ['admin', 'livechat-manager'],
+			'manage-livechat-sla': ['admin', 'livechat-manager'],
+			'view-l-room': ['admin', 'livechat-manager', 'livechat-agent'],
+		});
 	});
 
 	describe('livechat/sla', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-sla', []);
-			await updatePermission('view-l-room', []);
+			removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of slas', async () => {
-			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent', 'admin', 'livechat-manager']);
+			addPermissions({
+				'manage-livechat-sla': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const sla = await saveSLA();
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 			expect(response.body).to.have.property('success', true);
@@ -52,14 +62,15 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/sla/:slaId', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-sla', []);
-			await updatePermission('view-l-room', []);
+			removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create, find and delete an sla', async () => {
-			await updatePermission('manage-livechat-sla', ['admin']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			addPermissions({
+				'manage-livechat-sla': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const sla = await saveSLA();
 			const response = await request
 				.get(api(`livechat/sla/${sla._id}`))
@@ -76,9 +87,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/inquiry.setSLA', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-priorities', []);
-			await updatePermission('manage-livechat-sla', []);
-			await updatePermission('view-l-room', []);
+			removePermissions(['manage-livechat-sla', 'view-l-room', 'manage-livechat-priorities']);
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
@@ -91,9 +100,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if roomId is not in request body', async () => {
-			await updatePermission('manage-livechat-priorities', ['admin']);
-			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			addPermissions({
+				'manage-livechat-sla': ['admin', 'livechat-manager'],
+				'manage-livechat-priorities': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
@@ -180,8 +191,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let priority: ILivechatPriority;
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-priorities', []);
-			await updatePermission('view-l-room', []);
+			removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request
 				.get(api('livechat/priorities'))
 				.set(credentials)
@@ -190,8 +200,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of priorities', async () => {
-			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			addPermissions({
+				'manage-livechat-priorities': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const response = await request
 				.get(api('livechat/priorities'))
 				.set(credentials)
@@ -227,16 +239,17 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let priority: ILivechatPriority;
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-priorities', []);
-			await updatePermission('view-l-room', []);
+			removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
 			expect(response.body?.error).to.contain('error-unauthorized');
 		});
 		it('should return a priority by id', async () => {
-			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			addPermissions({
+				'manage-livechat-priorities': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const {
 				body: { priorities },
 			} = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);

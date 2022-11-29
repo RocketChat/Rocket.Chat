@@ -211,8 +211,8 @@ export const updateRoomSLAHistory = (rid, user, sla) => {
 	Messages.createSLAHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
-export const updateInquiryQueueSla = (roomId, sla) => {
-	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
+export const updateInquiryQueueSla = async (roomId, sla) => {
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
 	if (!inquiry) {
 		return;
 	}
@@ -233,12 +233,7 @@ export const updateInquiryQueueSla = (roomId, sla) => {
 };
 
 export const removeSLAFromRooms = async (slaId) => {
-	const result = await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
-		updateInquiryQueueSla(room._id);
-	});
-
-	console.log('result', result);
-
+	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach(async (room) => updateInquiryQueueSla(room._id));
 	await LivechatRoomsRaw.unsetSlaById(slaId);
 };
 
@@ -285,7 +280,7 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	const { _id: rid, departmentId: department } = room;
-	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
+	const inquiry = LivechatInquiry.findOneByRoomId(rid, { projection: { _id: 1, status: 1 } });
 	if (!inquiry) {
 		return null;
 	}

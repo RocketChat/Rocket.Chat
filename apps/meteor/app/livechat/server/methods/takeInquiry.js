@@ -27,7 +27,7 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneOnlineAgentById(Meteor.userId(), {
-			fields: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
+			project: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
 		});
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
