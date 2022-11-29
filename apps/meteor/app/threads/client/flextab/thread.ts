@@ -22,6 +22,7 @@ import './thread.html';
 import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
 import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import type MessageHighlightContext from '../../../../client/views/room/MessageList/contexts/MessageHighlightContext';
 
 export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
@@ -34,6 +35,7 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	};
 	chatContext: ContextType<typeof ChatContext>;
 	messageContext: ContextType<typeof MessageContext>;
+	messageHighlightContext: () => ContextType<typeof MessageHighlightContext>;
 }> & {
 	firstNode: HTMLElement;
 	wrapper?: HTMLElement;
@@ -49,6 +51,7 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 		loading?: boolean;
 		sendToChannel: boolean;
 		jump?: string | null;
+		editingMID?: IMessage['_id'];
 	}>;
 	closeThread: () => void;
 	loadMore: () => Promise<void>;
@@ -95,6 +98,14 @@ Template.thread.helpers({
 		const tmid = state.get('tmid');
 
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
+	},
+	customClass(msg: IMessage) {
+		const { state } = Template.instance() as ThreadTemplateInstance;
+		return msg._id === state.get('editingMID') ? 'editing' : '';
+	},
+	customClassMain() {
+		const { state } = Template.instance() as ThreadTemplateInstance;
+		return ['thread-main', state.get('tmid') === state.get('editingMID') ? 'editing' : ''].filter(Boolean).join(' ');
 	},
 	_messageContext(this: { mainMessage: IMessage }) {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });
@@ -222,6 +233,7 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 		const messages = await callWithErrorHandling('getThreadMessages', { tmid });
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
+		upsertMessageBulk({ msgs: messages }, Messages);
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
@@ -385,6 +397,12 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		if (!threads) {
 			this.closeThread();
 		}
+	});
+
+	this.autorun(() => {
+		const { messageHighlightContext } = Template.currentData() as ThreadTemplateInstance['data'];
+
+		this.state.set('editingMID', messageHighlightContext()?.highlightMessageId);
 	});
 });
 

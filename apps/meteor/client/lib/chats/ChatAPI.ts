@@ -47,6 +47,9 @@ export type DataAPI = {
 	updateMessage(message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>): Promise<void>;
 	canDeleteMessage(message: IMessage): Promise<boolean>;
 	deleteMessage(mid: IMessage['_id']): Promise<void>;
+	getDraft(mid: IMessage['_id'] | undefined): Promise<string | undefined>;
+	discardDraft(mid: IMessage['_id'] | undefined): Promise<void>;
+	saveDraft(mid: IMessage['_id'] | undefined, text: string): Promise<void>;
 	findRoom(): Promise<IRoom | undefined>;
 	getRoom(): Promise<IRoom>;
 	isSubscribedToRoom(): Promise<boolean>;
@@ -72,7 +75,6 @@ export type ChatAPI = {
 	readonly messageEditing: {
 		toPreviousMessage(): Promise<void>;
 		toNextMessage(): Promise<void>;
-		getDraft(mid: IMessage['_id']): Promise<string | undefined>;
 		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
 	};
 	readonly currentEditing:

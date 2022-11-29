@@ -185,6 +185,18 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		await call('deleteMessage', { _id: mid });
 	};
 
+	const drafts = new Map<IMessage['_id'] | undefined, string>();
+
+	const getDraft = async (mid: IMessage['_id'] | undefined): Promise<string | undefined> => drafts.get(mid);
+
+	const discardDraft = async (mid: IMessage['_id'] | undefined): Promise<void> => {
+		drafts.delete(mid);
+	};
+
+	const saveDraft = async (mid: IMessage['_id'] | undefined, draft: string): Promise<void> => {
+		drafts.set(mid, draft);
+	};
+
 	const findRoom = async (): Promise<IRoom | undefined> => roomsCollection.findOne({ _id: rid }, { reactive: false });
 
 	const getRoom = async (): Promise<IRoom> => {
@@ -236,6 +248,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		updateMessage,
 		canDeleteMessage,
 		deleteMessage,
+		getDraft,
+		saveDraft,
+		discardDraft,
 		findRoom,
 		getRoom,
 		isSubscribedToRoom,

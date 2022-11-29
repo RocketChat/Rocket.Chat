@@ -4,6 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
 import Header from '../Header';
+import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
@@ -26,42 +27,44 @@ const Room = (): ReactElement => {
 
 	return (
 		<ChatProvider>
-			<RoomLayout
-				aria-label={t('Channel')}
-				data-qa-rc-room={room._id}
-				header={<Header room={room} />}
-				body={<RoomBody />}
-				aside={
-					(tab && (
-						<ErrorBoundary fallback={null}>
-							<SelectedMessagesProvider>
-								{typeof tab.template === 'string' && (
-									<VerticalBarOldActions {...tab} name={tab.template} tabBar={toolbox} rid={room._id} _id={room._id} />
-								)}
-								{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
+			<MessageHighlightProvider>
+				<RoomLayout
+					aria-label={t('Channel')}
+					data-qa-rc-room={room._id}
+					header={<Header room={room} />}
+					body={<RoomBody />}
+					aside={
+						(tab && (
+							<ErrorBoundary fallback={null}>
+								<SelectedMessagesProvider>
+									{typeof tab.template === 'string' && (
+										<VerticalBarOldActions {...tab} name={tab.template} tabBar={toolbox} rid={room._id} _id={room._id} />
+									)}
+									{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
+										<Suspense fallback={<VerticalBarSkeleton />}>
+											{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
+										</Suspense>
+									)}
+								</SelectedMessagesProvider>
+							</ErrorBoundary>
+						)) ||
+						(appsContextualBarContext && (
+							<ErrorBoundary fallback={null}>
+								<SelectedMessagesProvider>
 									<Suspense fallback={<VerticalBarSkeleton />}>
-										{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
+										<AppsContextualBar
+											viewId={appsContextualBarContext.viewId}
+											roomId={appsContextualBarContext.roomId}
+											payload={appsContextualBarContext.payload}
+											appId={appsContextualBarContext.appId}
+										/>
 									</Suspense>
-								)}
-							</SelectedMessagesProvider>
-						</ErrorBoundary>
-					)) ||
-					(appsContextualBarContext && (
-						<ErrorBoundary fallback={null}>
-							<SelectedMessagesProvider>
-								<Suspense fallback={<VerticalBarSkeleton />}>
-									<AppsContextualBar
-										viewId={appsContextualBarContext.viewId}
-										roomId={appsContextualBarContext.roomId}
-										payload={appsContextualBarContext.payload}
-										appId={appsContextualBarContext.appId}
-									/>
-								</Suspense>
-							</SelectedMessagesProvider>
-						</ErrorBoundary>
-					))
-				}
-			/>
+								</SelectedMessagesProvider>
+							</ErrorBoundary>
+						))
+					}
+				/>
+			</MessageHighlightProvider>
 		</ChatProvider>
 	);
 };

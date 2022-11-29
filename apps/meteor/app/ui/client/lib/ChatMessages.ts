@@ -16,15 +16,7 @@ import { processSetReaction } from '../../../../client/lib/chats/flows/processSe
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 
 export class ChatMessages implements ChatAPI {
-	private messageEditingState: {
-		element?: HTMLElement;
-		id?: string;
-		savedValue?: string;
-		savedCursorPosition?: number;
-		drafts: Record<IMessage['_id'], string | undefined>;
-	} = {
-		drafts: {},
-	};
+	private currentEditingMID?: string;
 
 	public messageEditing: ChatAPI['messageEditing'] = {
 		toPreviousMessage: async () => {
@@ -36,7 +28,8 @@ export class ChatMessages implements ChatAPI {
 				const lastMessage = await this.data.findLastOwnMessage();
 
 				if (lastMessage) {
-					this.messageEditing.editMessage(lastMessage);
+					await this.data.saveDraft(undefined, this.composer.text);
+					await this.messageEditing.editMessage(lastMessage);
 				}
 
 				return;
@@ -46,10 +39,11 @@ export class ChatMessages implements ChatAPI {
 			const previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
 
 			if (previousMessage) {
-				this.messageEditing.editMessage(previousMessage);
+				await this.messageEditing.editMessage(previousMessage);
 				return;
 			}
 
+			this.composer.setText((await this.data.getDraft(undefined)) ?? '');
 			await this.currentEditing.stop();
 		},
 		toNextMessage: async () => {
@@ -66,31 +60,19 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			await this.currentEditing.stop();
+			this.composer.setText((await this.data.getDraft(undefined)) ?? '');
 		},
-		getDraft: async (mid) => this.messageEditingState.drafts[mid],
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
-			if (!this.composer) {
-				this.currentEditing?.stop();
-				return;
-			}
-
-			if (!(await this.data.canUpdateMessage(message))) {
-				this.currentEditing?.stop();
-				return;
-			}
-
-			const text = message.attachments?.[0].description || (await this.messageEditing.getDraft(message._id)) || message.msg;
+			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0].description || message.msg;
 			const cursorPosition = cursorAtStart ? 0 : text.length;
 
 			this.currentEditing?.stop();
 
-			const element = document.getElementById(this.params.tmid ? `thread-${message._id}` : message._id);
-
-			this.messageEditingState.id = message._id;
-			if (element) {
-				this.messageEditingState.element = element;
-				element.classList.add('editing');
+			if (!this.composer || !(await this.data.canUpdateMessage(message))) {
+				return;
 			}
+
+			this.currentEditingMID = message._id;
 			setHighlightMessage(message._id);
 			this.composer?.setEditingMode(true);
 
@@ -127,18 +109,18 @@ export class ChatMessages implements ChatAPI {
 	}
 
 	public get currentEditing() {
-		if (!this.composer || !this.messageEditingState.id) {
+		if (!this.composer || !this.currentEditingMID) {
 			return undefined;
 		}
 
 		return {
-			mid: this.messageEditingState.id,
+			mid: this.currentEditingMID,
 			reset: async (): Promise<boolean> => {
-				if (!this.composer || !this.messageEditingState.id) {
+				if (!this.composer || !this.currentEditingMID) {
 					return false;
 				}
 
-				const message = await this.data.findMessageByID(this.messageEditingState.id);
+				const message = await this.data.findMessageByID(this.currentEditingMID);
 				if (this.composer.text !== message?.msg) {
 					this.composer.setText(message?.msg ?? '');
 					return true;
@@ -147,42 +129,29 @@ export class ChatMessages implements ChatAPI {
 				return false;
 			},
 			stop: async (): Promise<void> => {
-				if (!this.composer || !this.messageEditingState.id) {
+				if (!this.composer || !this.currentEditingMID) {
 					return;
 				}
 
-				if (!this.messageEditingState.element) {
-					this.messageEditingState.savedValue = this.composer?.text;
-					this.messageEditingState.savedCursorPosition = this.composer?.selection.start;
-					return;
-				}
-
-				const message = await this.data.findMessageByID(this.messageEditingState.id);
+				const message = await this.data.findMessageByID(this.currentEditingMID);
 				const draft = this.composer.text;
 
 				if (draft === message?.msg) {
-					delete this.messageEditingState.drafts[this.messageEditingState.id];
+					await this.data.discardDraft(this.currentEditingMID);
 				} else {
-					this.messageEditingState.drafts[this.messageEditingState.id] ||= draft;
+					await this.data.saveDraft(this.currentEditingMID, (await this.data.getDraft(this.currentEditingMID)) || draft);
 				}
 
-				this.composer?.setEditingMode(false);
-				this.messageEditingState.element.classList.remove('editing');
-				delete this.messageEditingState.id;
-				delete this.messageEditingState.element;
+				this.composer.setEditingMode(false);
+				this.currentEditingMID = undefined;
 				clearHighlightMessage();
-
-				const cursorPosition = this.messageEditingState.savedCursorPosition
-					? this.messageEditingState.savedCursorPosition
-					: this.composer.text.length;
-				this.composer?.setText(this.messageEditingState.savedValue || '', { selection: { start: cursorPosition, end: cursorPosition } });
 			},
 			cancel: async (): Promise<void> => {
-				if (!this.messageEditingState.id) {
+				if (!this.currentEditingMID) {
 					return;
 				}
 
-				delete this.messageEditingState.drafts[this.messageEditingState.id];
+				await this.data.discardDraft(this.currentEditingMID);
 				this.currentEditing?.stop();
 			},
 		};

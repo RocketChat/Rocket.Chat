@@ -2,6 +2,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import React, { useEffect, useRef, useState, useCallback, useMemo, FC, useContext } from 'react';
@@ -10,6 +11,7 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import MessageHighlightContext from '../MessageList/contexts/MessageHighlightContext';
 import { ChatContext } from '../contexts/ChatContext';
 import { MessageContext } from '../contexts/MessageContext';
 import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
@@ -103,6 +105,12 @@ const ThreadComponent: FC<{
 	const chatContext = useContext(ChatContext);
 	const messageContext = useContext(MessageContext);
 
+	const messageHighlightContext = useContext(MessageHighlightContext);
+	const { current: messageHighlightContextReactiveVar } = useRef(new ReactiveVar(messageHighlightContext));
+	useEffect(() => {
+		messageHighlightContextReactiveVar.set(messageHighlightContext);
+	}, [messageHighlightContext, messageHighlightContextReactiveVar]);
+
 	const [viewData, setViewData] = useState(() => ({
 		mainMessage: threadMessage,
 		jump,
@@ -112,6 +120,7 @@ const ThreadComponent: FC<{
 		tabBar: { openRoomInfo },
 		chatContext,
 		messageContext,
+		messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 	}));
 
 	useEffect(() => {
@@ -129,9 +138,20 @@ const ThreadComponent: FC<{
 				tabBar: { openRoomInfo },
 				chatContext,
 				messageContext,
+				messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 			};
 		});
-	}, [chatContext, following, jump, messageContext, openRoomInfo, room._id, subscription, threadMessage]);
+	}, [
+		chatContext,
+		following,
+		jump,
+		messageContext,
+		messageHighlightContextReactiveVar,
+		openRoomInfo,
+		room._id,
+		subscription,
+		threadMessage,
+	]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {
