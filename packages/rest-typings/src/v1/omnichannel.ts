@@ -2472,6 +2472,23 @@ const GETLivechatRoomsParamsSchema = {
 
 export const isGETLivechatRoomsParams = ajv.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
 
+export type POSTLivechatRoomPriorityParams = {
+	priorityId: string;
+};
+
+const POSTLivechatRoomPriorityParamsSchema = {
+	type: 'object',
+	properties: {
+		priorityId: {
+			type: 'string',
+		},
+	},
+	required: ['priorityId'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomPriorityParams = ajv.compile<POSTLivechatRoomPriorityParams>(POSTLivechatRoomPriorityParamsSchema);
+
 type GETLivechatQueueParams = PaginatedRequest<{ agentId?: string; departmentId?: string; includeOfflineAgents?: string }>;
 
 const GETLivechatQueueParamsSchema = {
@@ -3152,6 +3169,10 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/rooms': {
 		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
+	};
+	'/v1/livechat/room/:rid/priority': {
+		POST: (params: POSTLivechatRoomPriorityParams) => { roomId: string; priorityId: string };
+		DELETE: () => { success: boolean };
 	};
 	'/v1/livechat/queue': {
 		GET: (params: GETLivechatQueueParams) => PaginatedResult<{

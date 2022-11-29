@@ -1,4 +1,4 @@
-import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import { isGETLivechatRoomsParams, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
@@ -70,6 +70,37 @@ API.v1.addRoute(
 					options: { offset, count, sort, fields },
 				}),
 			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/rooms/:rid/priority',
+	{
+		authRequired: true,
+		validateParams: { POST: isPOSTLivechatRoomPriorityParams },
+		permissionsRequired: {
+			POST: { permissions: ['view-l-room'], operation: 'hasAny' },
+			DELETE: { permissions: ['view-l-room'], operation: 'hasAny' },
+		},
+	},
+	{
+		async post() {
+			const { rid } = this.urlParams;
+			const { priorityId } = this.bodyParams;
+			const result = await LivechatRooms.setPriorityByRoomId(rid, priorityId);
+			if (!result) {
+				return API.v1.failure({ error: 'Error setting priority' });
+			}
+			return API.v1.success({ roomId: rid, priorityId });
+		},
+		async delete() {
+			const { rid } = this.urlParams;
+			const result = await LivechatRooms.unsetPriorityByRoomId(rid);
+			if (!result) {
+				return API.v1.failure({ error: 'Error unsetting priority' });
+			}
+			return API.v1.success();
 		},
 	},
 );
