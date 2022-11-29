@@ -1,4 +1,7 @@
 export * from './models/IAnalyticsModel';
+export * from './models/IAppsLogsModel';
+export * from './models/IAppsModel';
+export * from './models/IAppsPersistenceModel';
 export * from './models/IAvatarsModel';
 export * from './models/IBannersDismissModel';
 export * from './models/IBannersModel';
