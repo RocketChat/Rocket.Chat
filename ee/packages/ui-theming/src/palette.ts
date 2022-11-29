@@ -70,10 +70,10 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
-			{ name: 'button-background-primary', token: '', color: '#1D74F5' },
-			{ name: 'button-background-secondary', token: 'N700', color: '#6C727A' },
-			{ name: 'button-background-warning', token: '', color: '#F38C39' },
-			{ name: 'button-background-danger', token: '', color: '#F5455C' },
+			{ name: 'badge-background-level-1', token: 'N700', color: '#6C727A' },
+			{ name: 'badge-background-level-2', token: '', color: '#1D74F5' },
+			{ name: 'badge-background-level-3', token: '', color: '#F38C39' },
+			{ name: 'badge-background-level-4', token: '', color: '#F5455C' },
 		],
 	},
 	{
