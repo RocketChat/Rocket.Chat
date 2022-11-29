@@ -55,7 +55,7 @@ export class AppUserBridge extends UserBridge {
 				await Users.insert(user);
 
 				if (options?.avatarUrl) {
-					await UserService.setUserAvatar({ user, dataURI: options.avatarUrl, contentType: '', service: 'local' }); // TODO: testar pq não esta funcionan
+					await UserService.setUserAvatar({ user, dataURI: options.avatarUrl, contentType: '', service: 'local' });
 				}
 
 				break;
