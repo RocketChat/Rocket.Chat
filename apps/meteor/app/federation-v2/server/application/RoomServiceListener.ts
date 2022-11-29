@@ -292,11 +292,17 @@ export class FederationRoomServiceListener extends FederationService {
 		const members = [federatedInviterUser, federatedInviteeUser];
 		const newFederatedRoom = DirectMessageFederatedRoom.createInstance(externalRoomId, federatedInviterUser, members);
 		const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoomForDirectMessage(newFederatedRoom);
-		await this.bridge.joinRoom(externalRoomId, federatedInviteeUser.getExternalId());
+		const isInviteeFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedInviteeUser.getExternalId()),
+			this.internalHomeServerDomain,
+		);
 		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
 			createdInternalRoomId,
 			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
 		);
+		if (isInviteeFromTheSameHomeServer) {
+			await this.bridge.joinRoom(externalRoomId, federatedInviteeUser.getExternalId());
+		}
 	}
 
 	public async onExternalMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {

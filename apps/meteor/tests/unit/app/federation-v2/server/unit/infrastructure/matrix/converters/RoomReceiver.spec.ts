@@ -16,7 +16,7 @@ import { EVENT_ORIGIN } from '../../../../../../../../../app/federation-v2/serve
 import { MatrixRoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomJoinRules';
 import { RoomMembershipChangedEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomMembershipChanged';
 
-describe.skip('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
+describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', () => {
 	describe('#toRoomCreateDto()', () => {
 		const event = {
 			content: { was_internally_programatically_created: true, name: 'roomName', internalRoomId: 'internalRoomId' },
@@ -207,6 +207,84 @@ describe.skip('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverte
 			});
 		});
 
+		it('should add the allInviteesExternalIdsWhenDM as an empty array property when the event is a direct message but the event does not contain room histocial data', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{
+					...event,
+					content: {
+						avatar_url: 'avatarUrl',
+						displayname: 'displayname',
+						membership: 'join',
+						is_direct: true,
+					},
+				} as any,
+				'domain',
+			);
+			expect(result.allInviteesExternalIdsWhenDM).to.be.eql([]);
+		});
+
+		it('should add the allInviteesExternalIdsWhenDM property when the event is a direct message and the event contains the room historical data inside of invite_room_state', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{
+					...event,
+					content: {
+						avatar_url: 'avatarUrl',
+						displayname: 'displayname',
+						membership: 'join',
+						is_direct: true,
+					},
+					invite_room_state: [
+						{
+							type: MatrixEventType.ROOM_CREATED,
+							content: {
+								inviteesExternalIds: ['@a:matrix.org'],
+							},
+						},
+					],
+				} as any,
+				'domain',
+			);
+			expect(result.allInviteesExternalIdsWhenDM).to.be.eql([
+				{
+					externalInviteeId: '@a:matrix.org',
+					normalizedInviteeId: 'a:matrix.org',
+					inviteeUsernameOnly: 'a',
+				},
+			]);
+		});
+
+		it('should add the allInviteesExternalIdsWhenDM property when the event is a direct message and the event contains the room historical data inside of unsigned.invite_room_state', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{
+					...event,
+					content: {
+						avatar_url: 'avatarUrl',
+						displayname: 'displayname',
+						membership: 'join',
+						is_direct: true,
+					},
+					unsigned: {
+						invite_room_state: [
+							{
+								type: MatrixEventType.ROOM_CREATED,
+								content: {
+									inviteesExternalIds: ['@a:matrix.org'],
+								},
+							},
+						],
+					},
+				} as any,
+				'domain',
+			);
+			expect(result.allInviteesExternalIdsWhenDM).to.be.eql([
+				{
+					externalInviteeId: '@a:matrix.org',
+					normalizedInviteeId: 'a:matrix.org',
+					inviteeUsernameOnly: 'a',
+				},
+			]);
+		});
+
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(event as any, 'domain');
 			expect(result).to.be.eql({
@@ -223,6 +301,7 @@ describe.skip('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverte
 				leave: false,
 				externalRoomName: undefined,
 				roomType: undefined,
+				allInviteesExternalIdsWhenDM: [],
 				userProfile: {
 					avatarUrl: undefined,
 					displayName: undefined,

@@ -143,7 +143,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		externalRoomName,
 		externalEventId,
 		userProfile,
-		allInviteesExternalIdsWhenDM,
+		allInviteesExternalIdsWhenDM = [],
 	}: IFederationChangeMembershipInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalInviterId = externalInviterId;
