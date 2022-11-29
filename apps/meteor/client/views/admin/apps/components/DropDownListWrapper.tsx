@@ -7,6 +7,11 @@ const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { o
 		const target = useRef<HTMLElement>(null);
 		useOutsideClick([target], onClose);
 
+		function getWindowSize(): { innerWidth: number; innerHeight: number } {
+			const { innerWidth, innerHeight } = window;
+			return { innerWidth, innerHeight };
+		}
+
 		const [windowSize, setWindowSize] = useState(getWindowSize());
 
 		useEffect(() => {
@@ -21,11 +26,6 @@ const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { o
 			};
 		}, []);
 
-		function getWindowSize(): { innerWidth: number; innerHeight: number } {
-			const { innerWidth, innerHeight } = window;
-			return { innerWidth, innerHeight };
-		}
-
 		return (
 			<Box ref={target} maxHeight={16} maxWidth={224} zIndex='99999' position='relative' overflowY='initial'>
 				<div
@@ -35,7 +35,6 @@ const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { o
 									position: 'absolute',
 									top: 40,
 									right: 2.8,
-									textAlign: 'center',
 							  }
 							: {
 									position: 'relative',

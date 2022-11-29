@@ -18,6 +18,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentPro
 				borderColor={props.selectedCategoriesCount ? 'none' : 'light'}
 				borderWidth={props.selectedCategoriesCount ? 'none' : 'x2'}
 				bg={props.selectedCategoriesCount ? 'primary' : 'alternative'}
+				mis='x8'
 			>
 				{props.selectedCategoriesCount > 0 && (
 					<Box

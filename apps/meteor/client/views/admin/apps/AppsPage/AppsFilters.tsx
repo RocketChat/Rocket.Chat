@@ -51,16 +51,11 @@ const AppsFilters = ({
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
-				<RadioDropDown
-					group={freePaidFilterStructure}
-					onSelected={freePaidFilterOnSelected}
-					mie={hasFilterStackMargin}
-					mb={hasNotFilterStackMargin}
-				/>
+				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mb={hasNotFilterStackMargin} />
 				<RadioDropDown
 					group={statusFilterStructure}
 					onSelected={statusFilterOnSelected}
-					mie={hasFilterStackMargin}
+					mis={hasFilterStackMargin}
 					mbe={hasNotFilterStackMargin}
 				/>
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
