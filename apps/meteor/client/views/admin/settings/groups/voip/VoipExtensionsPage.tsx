@@ -15,7 +15,7 @@ const VoipExtensionsPage: FC = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ current: number; itemsPerPage: 25 | 50 | 100 }>({
 		current: 0,
 		itemsPerPage: 25,
 	});
@@ -29,7 +29,7 @@ const VoipExtensionsPage: FC = () => {
 		[itemsPerPage, current],
 	);
 
-	const { value: data, reload } = useEndpointData('omnichannel/extensions', query);
+	const { value: data, reload } = useEndpointData('/v1/omnichannel/extensions', query);
 
 	const header = useMemo(
 		() =>

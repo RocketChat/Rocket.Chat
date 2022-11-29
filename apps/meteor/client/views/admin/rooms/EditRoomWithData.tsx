@@ -12,13 +12,13 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		error,
 		reload,
 	} = useEndpointData(
-		'rooms.adminRooms.getRoom',
+		'/v1/rooms.adminRooms.getRoom',
 		useMemo(() => ({ rid }), [rid]),
 	);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
-			<Box w='full' pb='x24'>
+			<Box w='full' p='x24'>
 				<Skeleton mbe='x4' />
 				<Skeleton mbe='x8' />
 				<Skeleton mbe='x4' />

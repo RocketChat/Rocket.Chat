@@ -26,7 +26,11 @@ describe('[Assets]', function () {
 			request
 				.post(api('assets.setAsset'))
 				.set(credentials)
-				.attach('logo', imgURL)
+				.attach('asset', imgURL)
+
+				.field({
+					assetName: 'logo',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {

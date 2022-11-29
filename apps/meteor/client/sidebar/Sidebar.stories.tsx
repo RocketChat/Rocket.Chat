@@ -1,5 +1,5 @@
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
+import { UserContext, SettingsContext, LoginService } from '@rocket.chat/ui-contexts';
 import { Meta, Story } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import React, { ContextType } from 'react';
@@ -12,7 +12,6 @@ export default {
 } as Meta;
 
 const settings: Record<string, ISetting> = {
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	UI_Use_Real_Name: {
 		_id: 'UI_Use_Real_Name',
 		blocked: false,
@@ -31,14 +30,8 @@ const settings: Record<string, ISetting> = {
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
 	isLoading: false,
-	querySetting: (_id) => ({
-		getCurrentValue: () => settings[_id],
-		subscribe: () => () => undefined,
-	}),
-	querySettings: () => ({
-		getCurrentValue: () => [],
-		subscribe: () => () => undefined,
-	}),
+	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
+	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,
 };
 
@@ -87,24 +80,19 @@ const userContextValue: ContextType<typeof UserContext> = {
 		roles: ['admin'],
 		type: 'user',
 	},
-	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => ({
-		getCurrentValue: () => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
-		subscribe: () => () => undefined,
-	}),
-	querySubscriptions: () => ({
-		getCurrentValue: () => subscriptions,
-		subscribe: () => () => undefined,
-	}),
-	querySubscription: () => ({
-		getCurrentValue: () => undefined,
-		subscribe: () => () => undefined,
-	}),
-	loginWithPassword: () => Promise.resolve(undefined),
-	logout: () => Promise.resolve(undefined),
-	queryRoom: () => ({
-		getCurrentValue: () => undefined,
-		subscribe: () => () => undefined,
-	}),
+	queryPreference: <T,>(pref: string | ObjectId, defaultValue: T) => [
+		() => () => undefined,
+		() => (typeof pref === 'string' ? (userPreferences[pref] as T) : defaultValue),
+	],
+	querySubscriptions: () => [() => () => undefined, () => subscriptions],
+	querySubscription: () => [() => () => undefined, () => undefined],
+	queryRoom: () => [() => () => undefined, () => undefined],
+
+	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
+	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
+	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
+	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
+	logout: () => Promise.resolve(),
 };
 
 export const Sidebar: Story = () => (

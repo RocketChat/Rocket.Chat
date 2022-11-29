@@ -1,74 +1,53 @@
 import { Meteor } from 'meteor/meteor';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	SlashCommand,
+	SlashCommandOptions,
+	RequiredField,
+	SlashCommandPreviewItem,
+	SlashCommandPreviews,
+} from '@rocket.chat/core-typings';
 
-type SlashCommandCallback<T extends string> = (command: T, params: string, message: IMessage, triggerId: string) => void;
-
-type SlashCommandPreviewItem = {
-	id: string;
-	type: 'image' | 'video' | 'audio' | 'text' | 'other';
-	value: string;
-};
-
-type SlashCommandPreviews = {
-	i18nTitle: string;
-	items: SlashCommandPreviewItem[];
-};
-
-type SlashCommandPreviewer = (command: string, params: string, message: IMessage) => SlashCommandPreviews | undefined;
-
-type SlashCommandPreviewCallback = (
-	command: string,
-	params: string,
-	message: IMessage,
-	preview: SlashCommandPreviewItem,
-	triggerId: string,
-) => void;
-
-type SlashCommandOptions = {
-	params?: string;
+export interface ISlashCommandAddParams<T extends string> {
+	command: string;
+	callback?: SlashCommand<T>['callback'];
+	options?: SlashCommandOptions;
+	result?: SlashCommand['result'];
+	providesPreview?: boolean;
+	previewer?: SlashCommand['previewer'];
+	previewCallback?: SlashCommand['previewCallback'];
+	appId?: string;
 	description?: string;
-	permission?: string | string[];
-	clientOnly?: boolean;
-};
-
-type SlashCommand<T extends string> = {
-	command: T;
-	callback?: SlashCommandCallback<T>;
-	params: SlashCommandOptions['params'];
-	description: SlashCommandOptions['description'];
-	permission: SlashCommandOptions['permission'];
-	clientOnly?: SlashCommandOptions['clientOnly'];
-	result?: (err: Meteor.Error, result: never, data: { cmd: T; params: string; msg: IMessage }) => void;
-	providesPreview: boolean;
-	previewer?: SlashCommandPreviewer;
-	previewCallback?: SlashCommandPreviewCallback;
-};
+}
 
 export const slashCommands = {
-	commands: {} as Record<string, SlashCommand<string>>,
-	add<T extends string>(
-		command: T,
-		callback?: SlashCommand<T>['callback'],
-		options: SlashCommandOptions = {},
-		result?: SlashCommand<T>['result'],
+	commands: {} as Record<string, SlashCommand>,
+	add<T extends string>({
+		command,
+		callback,
+		options = {},
+		result,
 		providesPreview = false,
-		previewer?: SlashCommand<T>['previewer'],
-		previewCallback?: SlashCommand<T>['previewCallback'],
-	): void {
+		previewer,
+		previewCallback,
+		appId,
+		description = '',
+	}: ISlashCommandAddParams<T>): void {
 		this.commands[command] = {
 			command,
 			callback,
 			params: options.params,
-			description: options.description,
+			description: options.description || description,
 			permission: options.permission,
 			clientOnly: options.clientOnly || false,
 			result,
-			providesPreview,
+			providesPreview: Boolean(providesPreview),
 			previewer,
 			previewCallback,
-		} as SlashCommand<string>;
+			appId,
+		} as SlashCommand;
 	},
-	run(command: string, params: string, message: IMessage, triggerId: string): void {
+	run(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>, triggerId?: string | undefined): void {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;

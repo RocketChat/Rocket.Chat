@@ -1,19 +1,20 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { isVoipRoom } from '@rocket.chat/core-typings';
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { memo, ReactElement, useMemo } from 'react';
 
 import BurgerMenu from '../../../components/BurgerMenu';
-import TemplateHeader from '../../../components/Header';
 import DirectRoomHeader from './DirectRoomHeader';
 import OmnichannelRoomHeader from './Omnichannel/OmnichannelRoomHeader';
 import VoipRoomHeader from './Omnichannel/VoipRoomHeader';
 import RoomHeader from './RoomHeader';
 
-type HeaderProps = {
-	room: IRoom;
+type HeaderProps<T> = {
+	room: T;
 };
 
-const Header = ({ room }: HeaderProps): ReactElement | null => {
+const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 
 	const slots = useMemo(
@@ -39,7 +40,7 @@ const Header = ({ room }: HeaderProps): ReactElement | null => {
 		return <OmnichannelRoomHeader slots={slots} />;
 	}
 
-	if (room.t === 'v') {
+	if (isVoipRoom(room)) {
 		return <VoipRoomHeader slots={slots} room={room} />;
 	}
 

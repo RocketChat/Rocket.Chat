@@ -7,7 +7,7 @@ import { APIClient } from '../../../utils/client';
 
 Template.authorize.onCreated(async function () {
 	this.oauthApp = new ReactiveVar({});
-	const { oauthApp } = await APIClient.v1.get(`oauth-apps.get?clientId=${this.data.client_id()}`);
+	const { oauthApp } = await APIClient.get(`/v1/oauth-apps.get`, { clientId: this.data.client_id() });
 	this.oauthApp.set(oauthApp);
 });
 

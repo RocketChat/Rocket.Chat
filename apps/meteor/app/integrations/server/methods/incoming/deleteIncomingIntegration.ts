@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Integrations } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization/server';
-import { Integrations } from '../../../../models/server/raw';
 
 Meteor.methods({
 	async deleteIncomingIntegration(integrationId) {

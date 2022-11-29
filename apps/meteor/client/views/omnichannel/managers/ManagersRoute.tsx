@@ -42,7 +42,7 @@ const ManagersRoute = (): ReactElement => {
 		500,
 	);
 
-	const { reload, ...result } = useEndpointData('livechat/users/manager', query);
+	const { reload, ...result } = useEndpointData('/v1/livechat/users/manager', query);
 	const canViewManagers = usePermission('manage-livechat-managers');
 
 	if (!canViewManagers) {
@@ -82,7 +82,7 @@ const ManagersRoute = (): ReactElement => {
 								{t('Remove')}
 							</GenericTableHeaderCell>
 						</GenericTableHeader>
-						<GenericTableBody>
+						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
 							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
 							{result.phase === AsyncStatePhase.RESOLVED &&
 								result.value.users.length > 0 &&

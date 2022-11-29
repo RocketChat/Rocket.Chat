@@ -14,7 +14,6 @@ type RoomSettings = {
 	systemMessages: unknown;
 	default: unknown;
 	joinCode: unknown;
-	tokenpass: unknown;
 	streamingOptions: unknown;
 	retentionEnabled: unknown;
 	retentionMaxAge: unknown;

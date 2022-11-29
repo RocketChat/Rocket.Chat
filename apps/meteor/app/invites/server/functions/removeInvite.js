@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Invites } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization';
-import { Invites } from '../../../models/server/raw';
 
 export const removeInvite = async (userId, invite) => {
 	if (!userId || !invite) {

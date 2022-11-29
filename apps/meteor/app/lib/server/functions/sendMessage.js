@@ -1,14 +1,16 @@
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages } from '../../../models';
+import { Messages } from '../../../models/server';
 import { Apps } from '../../../apps/server';
-import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
+import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 /**
  * IMPORTANT
@@ -243,7 +245,10 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
-		if (message._id && upsert) {
+		if (message.t === 'otr') {
+			const otrStreamer = notifications.streamRoomMessage;
+			otrStreamer.emit(message.rid, message, user, room);
+		} else if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
 			Messages.upsert(
@@ -271,6 +276,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
+
 		// Execute all callbacks
 		callbacks.runAsync('afterSaveMessage', message, room);
 		return message;

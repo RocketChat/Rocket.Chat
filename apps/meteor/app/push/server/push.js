@@ -12,8 +12,6 @@ import { settings } from '../../settings/server';
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
 
-appTokensCollection._ensureIndex({ userId: 1 });
-
 export class PushClass {
 	options = {};
 
@@ -152,7 +150,7 @@ export class PushClass {
 				return;
 			}
 
-			logger.error(`Error sending push to gateway (${tries} try) ->`, error);
+			logger.error({ msg: `Error sending push to gateway (${tries} try) ->`, err: error });
 
 			if (tries <= 4) {
 				// [1, 2, 4, 8, 16] minutes (total 31)

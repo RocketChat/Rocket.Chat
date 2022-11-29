@@ -5,6 +5,7 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 	MessageStatusPrivateIndicator,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
@@ -36,30 +37,34 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 
 	return (
 		<MessageHeaderTemplate>
-			<MessageName
-				title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
-				data-username={user.username}
-				onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
-				style={{ cursor: 'pointer' }}
-			>
-				{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
-			</MessageName>
-			{showUsername && (
-				<MessageUsername
+			<MessageNameContainer>
+				<MessageName
+					{...(!showUsername && { 'data-qa-type': 'username' })}
+					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
 					data-username={user.username}
 					onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 					style={{ cursor: 'pointer' }}
 				>
-					@{user.username}
-				</MessageUsername>
-			)}
+					{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
+				</MessageName>
+				{showUsername && (
+					<>
+						{' '}
+						<MessageUsername
+							data-username={user.username}
+							data-qa-type='username'
+							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+							style={{ cursor: 'pointer' }}
+						>
+							@{user.username}
+						</MessageUsername>
+					</>
+				)}
+			</MessageNameContainer>
 
 			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
-			{message.private && (
-				// The MessageStatusPrivateIndicator component should not have name prop, it should be fixed on fuselage
-				<MessageStatusPrivateIndicator name='message'>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>
-			)}
+			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<MessageIndicators message={message} />
 		</MessageHeaderTemplate>
 	);

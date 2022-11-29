@@ -1,4 +1,4 @@
-import { ActionButton, Icon } from '@rocket.chat/fuselage';
+import { IconButton, Icon } from '@rocket.chat/fuselage';
 import React, { ReactElement, memo, MouseEventHandler, ComponentProps } from 'react';
 
 const VerticalBarAction = ({
@@ -8,6 +8,6 @@ const VerticalBarAction = ({
 	name: ComponentProps<typeof Icon>['name'];
 	title?: string;
 	onClick?: MouseEventHandler<HTMLOrSVGElement>;
-}): ReactElement => <ActionButton flexShrink={0} icon={name} ghost {...props} tiny />;
+}): ReactElement => <IconButton flexShrink={0} icon={name} {...props} tiny />;
 
 export default memo(VerticalBarAction);

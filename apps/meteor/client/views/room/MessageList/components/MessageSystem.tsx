@@ -9,14 +9,15 @@ import {
 	MessageSystemBlock,
 	CheckBox,
 	MessageUsername,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
-import Attachments from '../../../../components/Message/Attachments';
-import MessageActions from '../../../../components/Message/MessageActions';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import Attachments from '../../../../components/message/Attachments';
+import MessageActions from '../../../../components/message/MessageActions';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { UserPresence } from '../../../../lib/presence';
@@ -44,27 +45,42 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	useCountSelected();
 
 	return (
-		<MessageSystemTemplate onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
+		<MessageSystemTemplate
+			onClick={isSelecting ? toggleSelected : undefined}
+			isSelected={isSelected}
+			data-qa-selected={isSelected}
+			data-qa='system-message'
+			data-system-message-type={message.t}
+		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageSystemName onClick={user.username !== undefined ? openUserCard(user.username) : undefined} style={{ cursor: 'pointer' }}>
-						{getUserDisplayName(user.name, user.username, showRealName)}
-					</MessageSystemName>
-					{showUsername && (
-						<MessageUsername
-							data-username={user.username}
+					<MessageNameContainer>
+						<MessageSystemName
 							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 							style={{ cursor: 'pointer' }}
 						>
-							@{user.username}
-						</MessageUsername>
-					)}
+							{getUserDisplayName(user.name, user.username, showRealName)}
+						</MessageSystemName>
+						{showUsername && (
+							<>
+								{' '}
+								<MessageUsername
+									data-username={user.username}
+									onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+									style={{ cursor: 'pointer' }}
+								>
+									@{user.username}
+								</MessageUsername>
+							</>
+						)}
+					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody
+							data-qa-type='system-message-body'
 							dangerouslySetInnerHTML={{
 								__html: messageType.render
 									? messageType.render(message)

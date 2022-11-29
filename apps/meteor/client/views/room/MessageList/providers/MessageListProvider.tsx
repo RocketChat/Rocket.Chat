@@ -1,9 +1,18 @@
-import { IRoom, IMessage, isTranslatedMessage, isMessageReactionsNormalized } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
+import {
+	IRoom,
+	IMessage,
+	isTranslatedMessage,
+	isMessageReactionsNormalized,
+	MessageAttachment,
+	isThreadMainMessage,
+} from '@rocket.chat/core-typings';
+import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo, FC, memo } from 'react';
 
+import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
+import { useRoom } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
 import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
@@ -13,7 +22,7 @@ const fields = {};
 export const MessageListProvider: FC<{
 	rid: IRoom['_id'];
 }> = memo(function MessageListProvider({ rid, ...props }) {
-	const reactToMessage = useEndpoint('POST', 'chat.react');
+	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
@@ -21,14 +30,17 @@ export const MessageListProvider: FC<{
 
 	const { isMobile } = useLayout();
 
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
 	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
 	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
+	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
-	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
+	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const showRoles = displayRolesGlobal && hideRolesPreference;
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
@@ -38,6 +50,7 @@ export const MessageListProvider: FC<{
 
 	const context: MessageListContextValue = useMemo(
 		() => ({
+			showColors,
 			useReactionsFilter: (message: IMessage): ((reaction: string) => string[]) => {
 				const { reactions } = message;
 				return !showRealName
@@ -48,7 +61,7 @@ export const MessageListProvider: FC<{
 								return [];
 							}
 							if (!isMessageReactionsNormalized(message)) {
-								return (message.reactions && message.reactions[reaction]?.usernames.map((username) => `@${username}`)) || [];
+								return message.reactions?.[reaction]?.usernames.filter((user) => user !== username).map((username) => `@${username}`) || [];
 							}
 							if (!username) {
 								return message.reactions[reaction].names;
@@ -64,16 +77,36 @@ export const MessageListProvider: FC<{
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>
-							Boolean(message.reactions && message.reactions[reaction].usernames.includes(username))
+							Boolean(message.reactions?.[reaction].usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
-				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1)
+				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
+			autoTranslateLanguage,
 			useShowTranslated:
 				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
 					? ({ message }): boolean =>
-							message.u && message.u._id !== uid && isTranslatedMessage(message) && Boolean(message.translations[autoTranslateLanguage])
+							Boolean(message.u) &&
+							message.u?._id !== uid &&
+							isTranslatedMessage(message) &&
+							Boolean(message.translations[autoTranslateLanguage]) &&
+							!message.autoTranslateShowInverse
 					: (): boolean => false,
+			useTranslateProvider:
+				autoTranslateEnabled && autoTranslateLanguage
+					? ({ message }): string | boolean =>
+							isTranslatedMessage(message) && AutoTranslate.providersMetadata[message.translationProvider]?.displayName
+					: (): boolean => false,
+			useTranslateAttachments:
+				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
+					? ({ message }): MessageAttachment[] =>
+							(isTranslatedMessage(message) &&
+								message.u?._id !== uid &&
+								message.attachments &&
+								AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage, !!message.autoTranslateShowInverse)) ||
+							message.attachments ||
+							[]
+					: ({ message }): MessageAttachment[] => message.attachments || [],
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
@@ -130,10 +163,11 @@ export const MessageListProvider: FC<{
 			katexParenthesisSyntaxEnabled,
 			highlights,
 			reactToMessage,
+			showColors,
 		],
 	);
 
-	const room = useUserRoom(rid);
+	const room = useRoom();
 
 	if (!room) {
 		throw new Error('Room not found');

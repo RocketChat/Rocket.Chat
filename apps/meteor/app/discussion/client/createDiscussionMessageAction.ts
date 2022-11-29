@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../settings/client';
 import { hasPermission } from '../../authorization/client';
 import { MessageAction } from '../../ui-utils/client';
-import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
@@ -26,7 +26,7 @@ Meteor.startup(function () {
 				imperativeModal.open({
 					component: CreateDiscussion,
 					props: {
-						defaultParentRoom: room.prid || room._id,
+						defaultParentRoom: room?.prid || room?._id,
 						onClose: imperativeModal.close,
 						parentMessageId: message._id,
 						nameSuggestion: message?.msg?.substr(0, 140),
@@ -51,6 +51,10 @@ Meteor.startup(function () {
 				}
 				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 				if (isLivechatRoom) {
+					return false;
+				}
+
+				if (!user) {
 					return false;
 				}
 

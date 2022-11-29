@@ -1,5 +1,5 @@
-import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
+import type { App } from '@rocket.chat/core-typings';
 
 export interface IDetailedDescription {
 	raw: string;
@@ -110,26 +110,6 @@ export enum EAppPurchaseType {
 	PurchaseTypeSubscription = 'subscription',
 }
 
-export interface IAppFromMarketplace {
-	appId: string;
-	latest: ILatest;
-	isAddon: boolean;
-	isEnterpriseOnly: boolean;
-	isBundle: boolean;
-	bundledAppIds: any[];
-	bundledIn: IBundledIn[];
-	isPurchased: boolean;
-	isSubscribed: boolean;
-	subscriptionInfo: ISubscriptionInfo;
-	price: number;
-	purchaseType: EAppPurchaseType;
-	isUsageBased: boolean;
-	createdAt: Date;
-	modifiedAt: Date;
-	pricingPlans: IPricingPlan[];
-	addonId: string;
-}
-
 export interface ILanguageInfo {
 	Params: string;
 	Description: string;
@@ -148,7 +128,6 @@ export interface IAppLanguage {
 
 export interface IAppExternalURL {
 	url: string;
-	success: boolean;
 }
 
 export interface ICategory {
@@ -159,13 +138,13 @@ export interface ICategory {
 	title: string;
 }
 
-export interface IDeletedInstalledApp {
-	app: IAppInfo;
-	success: boolean;
-}
+// export interface IDeletedInstalledApp {
+// 	app: IAppInfo;
+// 	success: boolean;
+// }
 
 export interface IAppSynced {
-	app: IAppFromMarketplace;
+	app: App;
 	success: boolean;
 }
 
@@ -191,14 +170,5 @@ export interface ISettings {
 
 export interface ISettingsReturn {
 	settings: ISettings;
-	success: boolean;
-}
-
-export interface ISettingsPayload {
-	settings: ISetting[];
-}
-
-export interface ISettingsSetReturn {
-	updated: ISettings;
 	success: boolean;
 }

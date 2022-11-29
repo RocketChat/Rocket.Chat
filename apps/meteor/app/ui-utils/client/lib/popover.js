@@ -2,10 +2,11 @@ import './popover.html';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 
-import { messageBox } from './messageBox';
+import { messageBox } from './messageBox.ts';
 import { MessageAction } from './MessageAction';
-import { isRtl } from '../../../utils/client';
+import { isRTLScriptLanguage } from '../../../../client/lib/utils/isRTLScriptLanguage';
 
 export const popover = {
 	renderedPopover: null,
@@ -55,7 +56,7 @@ Template.popover.onRendered(function () {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
-		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rtlDirection = isRTLScriptLanguage(Meteor._localStorage.getItem('userLanguage')) ^ /inverted/.test(direction) ? 'left' : 'right';
 		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
 		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
 

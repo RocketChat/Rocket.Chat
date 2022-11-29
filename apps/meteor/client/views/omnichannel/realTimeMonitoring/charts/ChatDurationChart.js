@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { secondsToHHMMSS } from '../../../../../app/utils/lib/timeConverter';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
@@ -13,13 +13,13 @@ import { useUpdateChartData } from './useUpdateChartData';
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
 	callbacks: {
-		title(tooltipItem, data) {
-			return data.labels[tooltipItem[0].index];
+		title([ctx]) {
+			const { dataset } = ctx;
+			return dataset.label;
 		},
-		label(tooltipItem, data) {
-			const { datasetIndex, index } = tooltipItem;
-			const { data: datasetData, label } = data.datasets[datasetIndex];
-			return `${label}: ${secondsToHHMMSS(datasetData[index])}`;
+		label(ctx) {
+			const { dataset, dataIndex } = ctx;
+			return `${dataset.label}: ${secondsToHHMMSS(dataset.data[dataIndex])}`;
 		},
 	},
 };
@@ -45,7 +45,7 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
+	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.chatDurationChart = reload;
 

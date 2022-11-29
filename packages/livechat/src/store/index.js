@@ -34,7 +34,7 @@ export const initialState = () => ({
 	minimized: true,
 	unread: null,
 	incomingCallAlert: null,
-	ongoingCall: null,	// TODO: store call info like url, startTime, timeout, etc here
+	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 });
 
@@ -48,17 +48,16 @@ if (process.env.NODE_ENV === 'development') {
 	});
 }
 
-
 const StoreContext = createContext();
 
 export class Provider extends Component {
-	static displayName = 'StoreProvider'
+	static displayName = 'StoreProvider';
 
-	state = { ...store.state, dispatch: store.setState.bind(store) }
+	state = { ...store.state, dispatch: store.setState.bind(store) };
 
 	handleStoreChange = () => {
 		this.setState({ ...store.state });
-	}
+	};
 
 	componentDidMount() {
 		store.on('change', this.handleStoreChange);
@@ -68,11 +67,7 @@ export class Provider extends Component {
 		store.off('change', this.handleStoreChange);
 	}
 
-	render = ({ children }) => (
-		<StoreContext.Provider value={this.state}>
-			{children}
-		</StoreContext.Provider>
-	)
+	render = ({ children }) => <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
 }
 
 export const { Consumer } = StoreContext;

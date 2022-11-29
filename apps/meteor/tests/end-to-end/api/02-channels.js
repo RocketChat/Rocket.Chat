@@ -184,6 +184,27 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
+		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/channels.online]', () => {
@@ -284,11 +305,13 @@ describe('[Channels]', function () {
 		before(() => updateSetting('VoIP_Enabled', true));
 		const createVoipRoom = async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
+			const testUserCredentials = await login(testUser.username, password);
 			const visitor = await createVisitor();
 			const roomResponse = await createRoom({
 				token: visitor.token,
 				type: 'v',
 				agentId: testUser._id,
+				credentials: testUserCredentials,
 			});
 			return roomResponse.body.room;
 		};
@@ -340,12 +363,48 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 
+		it('should succeed when searching by roomId even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
 		it('should succeed when searching by roomName', (done) => {
 			request
 				.get(api('channels.files'))
 				.set(credentials)
 				.query({
 					roomName: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should succeed when searching by roomName even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomName: 'general',
+					count: 5,
+					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -818,20 +877,40 @@ describe('[Channels]', function () {
 		});
 	});
 
-	it('/channels.history', (done) => {
-		request
-			.get(api('channels.history'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('messages');
-			})
-			.end(done);
+	describe('/channels.history', () => {
+		it('should return an array of members by channel', (done) => {
+			request
+				.get(api('channels.history'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
+
+		it('should return an array of members by channel even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.history'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
 	});
 
 	it('/channels.archive', (done) => {
@@ -964,23 +1043,68 @@ describe('[Channels]', function () {
 			})
 			.end(done);
 	});
-	it('/channels.members', (done) => {
-		request
-			.get(api('channels.members'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('members').and.to.be.an('array');
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
-				expect(res.body).to.have.property('offset');
-			})
-			.end(done);
+
+	describe('/channels.members', () => {
+		it('should return an array of members by channel', (done) => {
+			request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+				})
+				.end(done);
+		});
+
+		it('should return an array of members by channel even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+				})
+				.end(done);
+		});
+
+		it('should return an filtered array of members by channel', (done) => {
+			request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					filter: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+				})
+				.end(done);
+		});
 	});
 
 	it('/channels.rename', async () => {
@@ -1531,12 +1655,32 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.getAllUserMentionsByChannel', () => {
-		it('should return and array of mentions by channel', (done) => {
+		it('should return an array of mentions by channel', (done) => {
 			request
 				.get(api('channels.getAllUserMentionsByChannel'))
 				.set(credentials)
 				.query({
 					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('mentions').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+		it('should return an array of mentions by channel even requested with count and offset params', (done) => {
+			request
+				.get(api('channels.getAllUserMentionsByChannel'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+					count: 5,
+					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1714,6 +1858,24 @@ describe('[Channels]', function () {
 					.end(done);
 			});
 		});
+		it('should return the messages list when the setting "Accounts_AllowAnonymousRead" is enabled even requested with count and offset params', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
+				request
+					.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+						count: 5,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('messages').that.is.an('array');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/channels.convertToTeam', () => {
@@ -1728,52 +1890,82 @@ describe('[Channels]', function () {
 				.then(() => done());
 		});
 
-		it('should fail to convert channel if lacking edit-room permission', (done) => {
-			updatePermission('create-team', []).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
-					request
-						.post(api('channels.convertToTeam'))
-						.set(credentials)
-						.send({ channelId: this.newChannel._id })
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-						})
-						.end(done);
+		it('should fail to convert channel if lacking edit-room permission', async () => {
+			await updatePermission('create-team', []);
+			await updatePermission('edit-room', ['admin']);
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
 				});
-			});
 		});
 
-		it('should fail to convert channel if lacking create-team permission', (done) => {
-			updatePermission('create-team', ['admin']).then(() => {
-				updatePermission('edit-room', []).then(() => {
-					request
-						.post(api('channels.convertToTeam'))
-						.set(credentials)
-						.send({ channelId: this.newChannel._id })
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-						})
-						.end(done);
+		it('should fail to convert channel if lacking create-team permission', async () => {
+			await updatePermission('create-team', ['admin']);
+			await updatePermission('edit-room', []);
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
 				});
-			});
 		});
 
-		it('should successfully convert a channel to a team', (done) => {
-			updatePermission('create-team', ['admin']).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
-					request
-						.post(api('channels.convertToTeam'))
-						.set(credentials)
-						.send({ channelId: this.newChannel._id })
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-						})
-						.end(done);
+		it(`should return an error when the channel's name and id are sent as parameter`, (done) => {
+			request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({
+					channelName: this.newChannel.name,
+					channelId: this.newChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').include(`must match exactly one schema in oneOf`);
+				})
+				.end(done);
+		});
+
+		it(`should successfully convert a channel to a team when the channel's id is sent as parameter`, async () => {
+			await updatePermission('create-team', ['admin']);
+			await updatePermission('edit-room', ['admin']);
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
 				});
-			});
+		});
+
+		it(`should successfully convert a channel to a team when the channel's name is sent as parameter`, async () => {
+			await request
+				.post(api('teams.convertToChannel'))
+				.set(credentials)
+				.send({ teamName: this.newChannel.name })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				});
+
+			await request
+				.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelName: this.newChannel.name })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				});
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {
@@ -1846,9 +2038,95 @@ describe('[Channels]', function () {
 			const channelInfoResponse = await request.get(api('channels.info')).set(credentials).query({ roomId: testChannel._id });
 			const { channel } = channelInfoResponse.body;
 
-			console.log('channel: ', channel);
-
 			return expect(channel.usersCount).to.be.equals(3);
+		});
+	});
+
+	context("Setting: 'Use Real Name': true", () => {
+		before(async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+
+			await request
+				.post(api('channels.join'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id', channel._id);
+				});
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: channel._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+		after(async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+
+			await request
+				.post(api('channels.leave'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id', channel._id);
+				});
+		});
+
+		it('/channels.list', (done) => {
+			request
+				.get(api('channels.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('channels').and.to.be.an('array');
+
+					const retChannel = res.body.channels.find(({ _id }) => _id === channel._id);
+
+					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
+		});
+
+		it('/channels.list.joined', (done) => {
+			request
+				.get(api('channels.list.joined'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('channels').and.to.be.an('array');
+
+					const retChannel = res.body.channels.find(({ _id }) => _id === channel._id);
+
+					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
 		});
 	});
 });

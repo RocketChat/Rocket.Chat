@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Invites } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
-import { Invites } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
@@ -54,10 +54,11 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user)) as [];
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user)) as {};
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
-			const avatarData = avatarSuggestions[+service];
+			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
 			if (service !== 'gravatar') {
 				// eslint-disable-next-line dot-notation
 				setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);

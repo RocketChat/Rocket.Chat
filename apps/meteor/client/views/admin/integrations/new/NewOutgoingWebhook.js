@@ -47,7 +47,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		}),
 		[formValues, triggerWords, urls],
 	);
-	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
+	const saveIntegration = useEndpointAction('POST', '/v1/integrations.create', params, t('Integration_added'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveIntegration();

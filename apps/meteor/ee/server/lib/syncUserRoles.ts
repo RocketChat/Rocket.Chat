@@ -1,10 +1,10 @@
 import type { IUser, IRole, AtLeast } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
 import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../server/lib/roles/removeUserFromRoles';
-import { Users } from '../../../app/models/server/raw';
 import { canAddNewUser } from '../../app/license/server/license';
 
 type setUserRolesOptions = {

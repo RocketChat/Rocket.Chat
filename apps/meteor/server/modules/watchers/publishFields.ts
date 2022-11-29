@@ -21,6 +21,9 @@ export const subscriptionFields = {
 	desktopNotifications: 1,
 	mobilePushNotifications: 1,
 	emailNotifications: 1,
+	desktopPrefOrigin: 1,
+	mobilePrefOrigin: 1,
+	emailPrefOrigin: 1,
 	unreadAlert: 1,
 	_updatedAt: 1,
 	blocked: 1,
@@ -61,7 +64,6 @@ export const roomFields = {
 	unmuted: 1,
 	_updatedAt: 1,
 	archived: 1,
-	jitsiTimeout: 1,
 	description: 1,
 	default: 1,
 	customFields: 1,
@@ -84,7 +86,6 @@ export const roomFields = {
 	reactWhenReadOnly: 1,
 	sysMes: 1,
 	sentiment: 1,
-	tokenpass: 1,
 	streamingOptions: 1,
 	broadcast: 1,
 	encrypted: 1,
@@ -105,7 +106,7 @@ export const roomFields = {
 	queuedAt: 1,
 
 	// Federation fields
-	bridged: 1,
+	federated: 1,
 
 	// fields used by DMs
 	usernames: 1,

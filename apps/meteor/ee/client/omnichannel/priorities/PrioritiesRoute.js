@@ -61,7 +61,7 @@ function PrioritiesRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('livechat/priorities.list', query);
+	const { value: data = {}, reload } = useEndpointData('/v1/livechat/priorities', query);
 
 	const header = useMemo(
 		() =>

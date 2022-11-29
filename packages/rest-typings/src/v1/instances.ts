@@ -1,7 +1,7 @@
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 
 export type InstancesEndpoints = {
-	'instances.get': {
+	'/v1/instances.get': {
 		GET: () => {
 			instances: (
 				| IInstanceStatus

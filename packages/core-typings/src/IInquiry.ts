@@ -1,3 +1,4 @@
+import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
@@ -17,7 +18,8 @@ export interface IVisitor {
 	_id: string;
 	username: string;
 	token: string;
-	status: string;
+	status: 'online' | 'busy' | 'away' | 'offline';
+	phone?: string | null;
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
@@ -33,5 +35,11 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	estimatedServiceTimeAt: string;
 	department: string;
 	estimatedInactivityCloseTimeAt: Date;
+	locked?: boolean;
+	lockedAt?: Date;
 	lastMessage?: IMessage & { token?: string };
+	defaultAgent?: {
+		agentId: IUser['_id'];
+		username?: IUser['username'];
+	};
 }

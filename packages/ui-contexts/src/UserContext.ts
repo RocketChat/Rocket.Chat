@@ -1,7 +1,6 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import type { ObjectId, FilterQuery } from 'mongodb';
+import type { ObjectId, Filter } from 'mongodb';
 import { createContext } from 'react';
-import type { Subscription, Unsubscribe } from 'use-subscription';
 
 export type SubscriptionQuery =
 	| {
@@ -28,36 +27,58 @@ export type FindOptions = {
 	sort?: Sort;
 };
 
+export type LoginService = {
+	clientConfig: unknown;
+
+	title: string;
+	service: string;
+
+	buttonLabelText?: string;
+	buttonLabelColor?: string;
+	buttonColor?: string;
+};
+
 export type UserContextValue = {
 	userId: string | null;
 	user: IUser | null;
+	queryPreference: <T>(
+		key: string | ObjectId,
+		defaultValue?: T,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined];
+	querySubscription: (
+		query: Filter<Pick<ISubscription, 'rid' | 'name'>>,
+		fields?: Fields,
+		sort?: Sort,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISubscription | undefined];
+	queryRoom: (
+		query: Filter<Pick<IRoom, '_id'>>,
+		fields?: Fields,
+		sort?: Sort,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IRoom | undefined];
+	querySubscriptions: (
+		query: SubscriptionQuery,
+		options?: FindOptions,
+	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => Array<ISubscription> | []];
+
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
+	loginWithToken: (user: string) => Promise<void>;
 	logout: () => Promise<void>;
-	queryPreference: <T>(key: string | ObjectId, defaultValue?: T) => Subscription<T | undefined>;
-	querySubscription: (query: FilterQuery<ISubscription>, fields?: Fields, sort?: Sort) => Subscription<ISubscription | undefined>;
-	queryRoom: (query: FilterQuery<IRoom>, fields?: Fields, sort?: Sort) => Subscription<IRoom | undefined>;
-	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription<Array<ISubscription> | []>;
+
+	queryAllServices(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => LoginService[]];
+	loginWithService<T extends LoginService>(service: T): () => Promise<true>;
 };
 
 export const UserContext = createContext<UserContextValue>({
 	userId: null,
 	user: null,
-	loginWithPassword: async () => undefined,
+	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
+	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],
+	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],
+	querySubscriptions: () => [() => (): void => undefined, (): [] => []],
+
+	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
+	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
+	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
+	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
 	logout: () => Promise.resolve(),
-	queryPreference: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	querySubscription: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	queryRoom: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
-	querySubscriptions: () => ({
-		getCurrentValue: (): [] => [],
-		subscribe: (): Unsubscribe => (): void => undefined,
-	}),
 });

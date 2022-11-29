@@ -1,5 +1,5 @@
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 export function getWorkspaceKey() {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();

@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState, ReactElement, ContextType } from
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -34,7 +35,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 		registerType: 'registered',
 		updates: false,
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
 };
 
@@ -54,7 +54,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const defineUsername = useMethod('setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const createRegistrationIntent = useEndpoint('POST', 'cloud.createRegistrationIntent');
+	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
@@ -172,6 +172,8 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		try {
 			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
+			queryClient.invalidateQueries(['licenses']);
+			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({
 				...prevState,

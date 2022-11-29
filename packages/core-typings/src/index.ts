@@ -1,7 +1,10 @@
 export * from './Apps';
+export * from './AppOverview';
+export * from './FeaturedApps';
 export * from './IRoom';
 export * from './UIKit';
 export * from './IMessage';
+export * from './federation';
 export * from './Serialized';
 export * from './ISetting';
 export * from './ISubscription';
@@ -25,8 +28,10 @@ export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';
 export * from './ICronJobs';
+export * from './IRocketChatAssets';
 export * from './IPushToken';
 export * from './IPushNotificationConfig';
+export * from './SlashCommands';
 
 export * from './IUserDataFile';
 export * from './IUserSession';
@@ -35,10 +40,7 @@ export * from './IUser';
 
 export * from './ee/ILicense/ILicense';
 
-export * from './IImportUser';
-export * from './IImportRecord';
-export * from './IImportMessage';
-export * from './IImportChannel';
+export * from './import';
 export * from './IIncomingMessage';
 export * from './IExportOperation';
 export * from './INotification';
@@ -57,6 +59,7 @@ export * from './IEmailMessageHistory';
 export * from './ReadReceipt';
 export * from './IUpload';
 export * from './IOEmbedCache';
+export * from './IOembed';
 // TODO: not sure if this is the right place to put this
 
 export * from './IEmailInbox';
@@ -66,7 +69,6 @@ export * from './IMethodThisType';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
-export * from './Federation';
 export * from './ISmarshHistory';
 export * from './IReport';
 
@@ -104,5 +106,12 @@ export * from './IVoipServerConfig';
 export * from './IVoipServerConnectivityStatus';
 export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
+export * from './ILivechatPriority';
+export * from './ILogs';
 
 export * from './IAutoTranslate';
+export * from './IVideoConference';
+export * from './VideoConferenceCapabilities';
+export * from './VideoConferenceOptions';
+
+export * from './SpotlightUser';

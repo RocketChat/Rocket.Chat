@@ -1,6 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
@@ -10,15 +10,15 @@ import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 
 const subscriptionFields = {};
 
-const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
-	const getMessage = useEndpoint('GET', 'chat.getMessage');
+const useThreadMessage = (tmid: string): IMessage | undefined => {
+	const [message, setMessage] = useState<IMessage | undefined>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
+	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
 		async (params) => {
 			const { message } = await getMessage(params);
@@ -62,7 +62,7 @@ const ThreadComponent: FC<{
 	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
-	const openUserInfo = useTabBarOpenUserInfo();
+	const openRoomInfo = useTabBarOpenUserInfo();
 
 	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
@@ -72,8 +72,8 @@ const ThreadComponent: FC<{
 	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const followMessage = useMethod('followMessage');
-	const unfollowMessage = useMethod('unfollowMessage');
+	const followMessage = useEndpoint('POST', '/v1/chat.followMessage');
+	const unfollowMessage = useEndpoint('POST', '/v1/chat.unfollowMessage');
 
 	const setFollowing = useCallback<(following: boolean) => void>(
 		async (following) => {
@@ -84,7 +84,7 @@ const ThreadComponent: FC<{
 				}
 
 				await unfollowMessage({ mid });
-			} catch (error) {
+			} catch (error: unknown) {
 				dispatchToastMessage({
 					type: 'error',
 					message: error,
@@ -104,7 +104,7 @@ const ThreadComponent: FC<{
 		following,
 		subscription,
 		rid: room._id,
-		tabBar: { openUserInfo },
+		tabBar: { openRoomInfo },
 	}));
 
 	useEffect(() => {
@@ -119,10 +119,10 @@ const ThreadComponent: FC<{
 				following,
 				subscription,
 				rid: room._id,
-				tabBar: { openUserInfo },
+				tabBar: { openRoomInfo },
 			};
 		});
-	}, [following, jump, openUserInfo, room._id, subscription, threadMessage]);
+	}, [following, jump, openRoomInfo, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

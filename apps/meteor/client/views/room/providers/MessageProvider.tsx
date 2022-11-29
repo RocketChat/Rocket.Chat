@@ -1,6 +1,6 @@
 import { IMessage } from '@rocket.chat/core-typings';
 import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, MouseEvent } from 'react';
+import React, { ReactNode, useMemo, memo, MouseEvent, UIEvent } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
@@ -10,7 +10,7 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
-import { useTabBarOpen } from './ToolboxProvider';
+import { useTabBarOpen } from '../contexts/ToolboxContext';
 
 export const MessageProvider = memo(function MessageProvider({
 	rid,
@@ -80,12 +80,13 @@ export const MessageProvider = memo(function MessageProvider({
 		return {
 			oembedEnabled,
 			oembedMaxWidth: isMobile ? ('100%' as const) : ('368px' as `${number}px`),
+			oembedMaxHeight: '368px' as `${number}px`,
 			broadcast: Boolean(broadcast),
 			actions: {
 				runActionLink,
 				openUserCard:
 					(username: string) =>
-					(e: MouseEvent<HTMLDivElement>): void => {
+					(e: UIEvent): void => {
 						openUserCard({
 							username,
 							rid,

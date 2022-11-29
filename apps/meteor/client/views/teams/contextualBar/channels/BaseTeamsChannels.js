@@ -66,7 +66,7 @@ const BaseTeamsChannels = ({
 					</Box>
 				)}
 				{!loading && channels.length === 0 && (
-					<Box textAlign='center' p='x12' color='neutral-600'>
+					<Box textAlign='center' p='x12' color='annotation'>
 						{t('No_channels_in_team')}
 					</Box>
 				)}
@@ -83,20 +83,22 @@ const BaseTeamsChannels = ({
 				)}
 			</VerticalBar.Content>
 
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{onClickAddExisting && (
-						<Button onClick={onClickAddExisting} width='50%'>
-							{t('Team_Add_existing')}
-						</Button>
-					)}
-					{onClickCreateNew && (
-						<Button onClick={onClickCreateNew} width='50%'>
-							{t('Create_new')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</VerticalBar.Footer>
+			{(onClickAddExisting || onClickCreateNew) && (
+				<VerticalBar.Footer>
+					<ButtonGroup stretch>
+						{onClickAddExisting && (
+							<Button onClick={onClickAddExisting} width='50%'>
+								{t('Team_Add_existing')}
+							</Button>
+						)}
+						{onClickCreateNew && (
+							<Button onClick={onClickCreateNew} width='50%'>
+								{t('Create_new')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</VerticalBar.Footer>
+			)}
 		</>
 	);
 };

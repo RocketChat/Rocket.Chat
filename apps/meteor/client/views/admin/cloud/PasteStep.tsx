@@ -1,6 +1,8 @@
-import { Box, Button, ButtonGroup, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ChangeEvent, FC, useState } from 'react';
+
+import { queryClient } from '../../../lib/queryClient';
 
 type PasteStepProps = {
 	onBackButtonClick: () => void;
@@ -18,13 +20,14 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 		setCloudKey(e.currentTarget.value);
 	};
 
-	const registerManually = useEndpoint('POST', 'cloud.manualRegister');
+	const registerManually = useEndpoint('POST', '/v1/cloud.manualRegister');
 
 	const handleFinishButtonClick = async (): Promise<void> => {
 		setLoading(true);
 
 		try {
 			await registerManually({ cloudBlob: cloudKey });
+			queryClient.invalidateQueries(['licenses']);
 			dispatchToastMessage({ type: 'success', message: t('Cloud_register_success') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
@@ -62,14 +65,14 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup>
+				<Modal.FooterControllers>
 					<Button disabled={isLoading} onClick={onBackButtonClick}>
 						{t('Back')}
 					</Button>
 					<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
 						{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</>
 	);

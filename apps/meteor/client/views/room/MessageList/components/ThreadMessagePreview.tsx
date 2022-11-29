@@ -14,26 +14,28 @@ import {
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
+import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
-import MessageContentBody from './MessageContentBody';
+import ThreadMessagePreviewBody from './ThreadMessagePreviewBody';
 
-export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
+const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
 	const {
 		actions: { openThread },
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
-	const body = useMessageBody(parentMessage.value);
+	const body = useMessageBody(parentMessage.data);
 	const t = useTranslation();
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
+
+	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
 
 	return (
 		<ThreadMessageTemplate
@@ -48,22 +50,30 @@ export const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boo
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
 					<ThreadMessageContainer>
-						<ThreadMessageOrigin>{parentMessage.phase === AsyncStatePhase.RESOLVED ? body : <Skeleton />}</ThreadMessageOrigin>
+						<ThreadMessageOrigin system={!!messageType}>
+							{parentMessage.isSuccess && !messageType && <ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />}
+							{messageType && t(messageType.message, messageType.data ? messageType.data(message) : {})}
+							{parentMessage.isLoading && <Skeleton />}
+						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!message.ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow
+				onClick={!(message as { ignored?: boolean }).ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}
+			>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{message.ignored ? t('Message_Ignored') : <MessageContentBody isThreadPreview message={message} />}
+						{(message as { ignored?: boolean }).ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
 		</ThreadMessageTemplate>
 	);
 };
+
+export default ThreadMessagePreview;
