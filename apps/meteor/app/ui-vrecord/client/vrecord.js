@@ -6,6 +6,15 @@ import _ from 'underscore';
 import { VRecDialog } from './VRecDialog';
 import { VideoRecorder, UserAction, USER_ACTIVITIES } from '../../ui/client';
 
+/**
+ * @typedef {import('meteor/blaze').Blaze.TemplateInstance<{}> & {
+ * 	rid: ReactiveVar<string>,
+ * 	tmid: ReactiveVar<string | undefined>;
+ *  time: ReactiveVar<string>;
+ *	chat?: import('../../../client/lib/chats/ChatAPI').ChatAPI;
+ * }} VRecDialogTemplateInstance
+ */
+
 Template.vrecDialog.helpers({
 	recordIcon() {
 		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recording.get()) {
@@ -73,14 +82,16 @@ Template.vrecDialog.events({
 			);
 		}
 	},
-
+	/**
+	 * @param {JQuery.ClickEvent} e
+	 * @param {VRecDialogTemplateInstance} instance
+	 */
 	'click .vrec-dialog .ok'(e, instance) {
 		const [rid, tmid] = [instance.rid.get(), instance.tmid.get()];
 		const cb = (blob) => {
 			const fileName = `${TAPi18n.__('Video record')}.webm`;
 			const file = new File([blob], fileName, { type: 'video/webm' });
-			console.log(instance.chat);
-			instance.chat?.uploadFiles([file]);
+			instance.chat?.flows.uploadFiles([file]);
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
