@@ -43,16 +43,14 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 		});
 	});
 
-	const input = useChat()?.input;
+	const composer = useChat()?.composer;
 
 	const onClickUse = (e: MouseEvent<HTMLOrSVGElement>, text: string): void => {
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (input) {
-			input.value = text;
-			input.focus();
-		}
+		composer?.setText(text);
+		composer?.focus();
 	};
 
 	const onClickCreate = (): void => {

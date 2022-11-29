@@ -315,7 +315,6 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			this.input = input;
 
 			if (chatContext) {
-				chatContext.input = input;
 				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
 				chatContext.setComposerAPI(createComposerAPI(input, storageID));
 			}

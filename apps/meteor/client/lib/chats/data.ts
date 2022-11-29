@@ -6,7 +6,10 @@ import { hasAtLeastOnePermission } from '../../../app/authorization/client';
 import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
+import { getRandomId } from '../../../lib/random';
+import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { call } from '../utils/call';
+import { prependReplies } from '../utils/prependReplies';
 import { DataAPI } from './ChatAPI';
 
 const messagesCollection = Messages as Mongo.Collection<IMessage>;
@@ -14,6 +17,26 @@ const roomsCollection = Rooms as Mongo.Collection<IRoom>;
 const subscriptionsCollection = Subscriptions as Mongo.Collection<ISubscription>;
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
+	const composeMessage = async (
+		text: string,
+		{ sendToChannel, quotedMessages, originalMessage }: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
+	): Promise<IMessage> => {
+		const msg = await prependReplies(text, quotedMessages);
+
+		const effectiveRID = originalMessage?.rid ?? rid;
+		const effectiveTMID = originalMessage ? originalMessage.tmid : tmid;
+
+		return (await onClientBeforeSendMessage({
+			_id: originalMessage?._id ?? getRandomId(),
+			rid: effectiveRID,
+			...(effectiveTMID && {
+				tmid: effectiveTMID,
+				...(sendToChannel && { tshow: sendToChannel }),
+			}),
+			msg,
+		})) as IMessage;
+	};
+
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | undefined> =>
 		messagesCollection.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
 
@@ -197,6 +220,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	return {
+		composeMessage,
 		findMessageByID,
 		getMessageByID,
 		findLastMessage,

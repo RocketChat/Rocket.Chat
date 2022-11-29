@@ -114,7 +114,7 @@ const RoomBody = (): ReactElement => {
 	const handleNewMessageButtonClick = useCallback(() => {
 		atBottomRef.current = true;
 		sendToBottomIfNecessary();
-		chat.input?.focus();
+		chat.composer?.focus();
 	}, [chat, sendToBottomIfNecessary]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {

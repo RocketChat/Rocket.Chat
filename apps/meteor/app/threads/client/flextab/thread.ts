@@ -269,18 +269,19 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	const observer = new ResizeObserver(this.sendToBottomIfNecessary);
 	observer.observe(list);
 
-	this.onTextDrop = (text: string) => {
-		const input = this.data.chatContext?.input;
+	this.onTextDrop = (droppedText: string) => {
+		const composer = this.data.chatContext?.composer;
 
-		if (!input) {
+		if (!composer) {
 			return;
 		}
 
-		const initText = input.value.slice(0, input.selectionStart ?? undefined);
-		const finalText = input.value.slice(input.selectionEnd ?? undefined, input.value.length);
+		const { text, selection } = composer;
 
-		input.value = initText + text + finalText;
-		$(input).change().trigger('input');
+		const initText = text.slice(0, selection.start ?? undefined);
+		const finalText = text.slice(selection.end ?? undefined, text.length);
+
+		composer.setText(initText + droppedText + finalText);
 	};
 
 	this.onFileDrop = (files) => {

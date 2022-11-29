@@ -1,18 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { KonchatNotification } from './notification';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
-import { t } from '../../../utils/client';
-import { messageProperties } from '../../../ui-utils/client';
-import { settings } from '../../../settings/client';
-import { emoji } from '../../../emoji/client';
-import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import GenericModal from '../../../../client/components/GenericModal';
-import { prependReplies } from '../../../../client/lib/utils/prependReplies';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
@@ -20,10 +8,12 @@ import {
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
-import { getRandomId } from '../../../../lib/random';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
+import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
+import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 
 export class ChatMessages implements ChatAPI {
 	private messageEditingState: {
@@ -109,17 +99,26 @@ export class ChatMessages implements ChatAPI {
 		},
 	};
 
-	public input: HTMLTextAreaElement | undefined;
-
 	public composer: ComposerAPI | undefined;
 
 	public readonly data: DataAPI;
 
 	public readonly uploads: UploadsAPI;
 
+	public readonly flows: ChatAPI['flows'];
+
 	public constructor(private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		this.data = createDataAPI({ rid: params.rid, tmid: params.tmid });
 		this.uploads = createUploadsAPI({ rid: params.rid, tmid: params.tmid });
+		this.flows = {
+			uploadFiles: uploadFiles.bind(null, this),
+			sendMessage: sendMessage.bind(this, this),
+			processSlashCommand: processSlashCommand.bind(null, this),
+			processTooLongMessage: processTooLongMessage.bind(null, this),
+			processMessageEditing: processMessageEditing.bind(null, this),
+			processSetReaction: processSetReaction.bind(null, this),
+			requestMessageDeletion: requestMessageDeletion.bind(this, this),
+		};
 	}
 
 	public setComposerAPI(composer: ComposerAPI): void {
@@ -162,7 +161,7 @@ export class ChatMessages implements ChatAPI {
 				const draft = this.composer.text;
 
 				if (draft === message?.msg) {
-					this.clearCurrentDraft();
+					delete this.messageEditingState.drafts[this.messageEditingState.id];
 				} else {
 					this.messageEditingState.drafts[this.messageEditingState.id] ||= draft;
 				}
@@ -179,7 +178,7 @@ export class ChatMessages implements ChatAPI {
 				this.composer?.setText(this.messageEditingState.savedValue || '', { selection: { start: cursorPosition, end: cursorPosition } });
 			},
 			cancel: async (): Promise<void> => {
-				if (!this.composer || !this.messageEditingState.id) {
+				if (!this.messageEditingState.id) {
 					return;
 				}
 
@@ -189,202 +188,15 @@ export class ChatMessages implements ChatAPI {
 		};
 	}
 
-	private clearCurrentDraft() {
-		if (!this.messageEditingState.id) {
-			return;
-		}
-
-		delete this.messageEditingState.drafts[this.messageEditingState.id];
-	}
-
-	private async processMessageSend(message: IMessage) {
-		if (await this.processSetReaction(message)) {
-			return;
-		}
-
-		this.clearCurrentDraft();
-
-		if (await this.processTooLongMessage(message)) {
-			return;
-		}
-
-		if (this.messageEditingState.id && (await this.flows.processMessageEditing({ ...message, _id: this.messageEditingState.id }))) {
-			this.currentEditing?.stop();
-			return;
-		}
-
-		KonchatNotification.removeRoomNotification(message.rid);
-
-		if (await this.flows.processSlashCommand(message)) {
-			return;
-		}
-
-		await callWithErrorHandling('sendMessage', message);
-	}
-
-	private async processSetReaction({ msg }: Pick<IMessage, 'msg'>) {
-		const match = msg.trim().match(/^\+(:.*?:)$/m);
-		if (!match) {
-			return false;
-		}
-
-		const [, reaction] = match;
-		if (!emoji.list[reaction]) {
-			return false;
-		}
-
-		const lastMessage = await this.data.findLastMessage();
-
-		if (!lastMessage) {
-			return false;
-		}
-
-		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
-		return true;
-	}
-
-	private async processTooLongMessage({ msg }: Pick<IMessage, 'msg'>) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
-		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
-			return false;
-		}
-
-		if (
-			!settings.get('FileUpload_Enabled') ||
-			!settings.get('Message_AllowConvertLongMessagesToAttachment') ||
-			this.messageEditingState.id
-		) {
-			throw new Error(t('Message_too_long'));
-		}
-
-		const { input } = this;
-		const user = Meteor.user();
-
-		if (!input || !user) {
-			throw new Error('Input or user is not defined');
-		}
-
-		const onConfirm = () => {
-			const contentType = 'text/plain';
-			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${user.username} - ${new Date()}.txt`;
-			const file = new File([messageBlob], fileName, {
-				type: contentType,
-				lastModified: Date.now(),
-			});
-			this.flows.uploadFiles([file]);
-			imperativeModal.close();
-		};
-
-		const onClose = () => {
-			this.composer?.setText(msg);
-			imperativeModal.close();
-		};
-
-		imperativeModal.open({
-			component: GenericModal,
-			props: {
-				title: t('Message_too_long'),
-				children: t('Send_it_as_attachment_instead_question'),
-				onConfirm,
-				onClose,
-				onCancel: onClose,
-				variant: 'warning',
-			},
-		});
-
-		return true;
-	}
-
 	private release() {
 		this.composer?.release();
 		if (this.currentEditing) {
-			const { tmid } = this.params;
-			if (!tmid) {
-				this.clearCurrentDraft();
-				this.currentEditing.stop();
+			if (!this.params.tmid) {
+				this.currentEditing.cancel();
 			}
 			this.composer?.clear();
 		}
 	}
-
-	public flows: ChatAPI['flows'] = {
-		uploadFiles: uploadFiles.bind(null, this),
-		sendMessage: (async (chat: ChatAPI, { text, tshow }: { text: string; tshow?: boolean }) => {
-			if (!(await chat.data.isSubscribedToRoom())) {
-				try {
-					await chat.data.joinRoom();
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-					return;
-				}
-			}
-
-			let msg = text.trim();
-
-			if (!msg && !chat.currentEditing) {
-				// Nothing to do
-				return;
-			}
-
-			if (msg) {
-				const replies = chat.composer?.quotedMessages.get() ?? [];
-				msg = await prependReplies(msg, replies);
-
-				await chat.data.markRoomAsRead();
-
-				// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
-				const originalEditingMessage = chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : undefined;
-				let { tmid } = this.params;
-				if (originalEditingMessage && tmid && !originalEditingMessage.tmid) {
-					tmid = undefined;
-					tshow = undefined;
-				}
-
-				const { rid } = this.params;
-				const message = (await onClientBeforeSendMessage({
-					_id: getRandomId(),
-					rid,
-					tshow,
-					tmid,
-					msg,
-				})) as IMessage;
-
-				try {
-					await this.processMessageSend(message);
-					chat.composer?.dismissAllQuotedMessages();
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-				return;
-			}
-
-			if (chat.currentEditing) {
-				const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
-
-				if (!originalMessage) {
-					dispatchToastMessage({ type: 'warning', message: t('Message_not_found') });
-					return;
-				}
-
-				try {
-					if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' })) {
-						chat.currentEditing.stop();
-						return;
-					}
-
-					await chat.currentEditing?.reset();
-					await chat.flows.requestMessageDeletion(originalMessage);
-					return;
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			}
-		}).bind(this, this),
-		processSlashCommand: processSlashCommand.bind(null, this),
-		processMessageEditing: processMessageEditing.bind(null, this),
-		requestMessageDeletion: requestMessageDeletion.bind(this, this),
-	};
 
 	private static refs = new Map<string, { instance: ChatMessages; count: number }>();
 

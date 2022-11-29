@@ -28,6 +28,10 @@ export type ComposerAPI = {
 };
 
 export type DataAPI = {
+	composeMessage(
+		text: string,
+		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
+	): Promise<IMessage>;
 	findMessageByID(mid: IMessage['_id']): Promise<IMessage | undefined>;
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
@@ -83,7 +87,9 @@ export type ChatAPI = {
 		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
 		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<void>;
 		readonly processSlashCommand: (message: IMessage) => Promise<boolean>;
+		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
+		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
 	};
 };
