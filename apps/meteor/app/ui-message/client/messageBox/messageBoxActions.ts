@@ -5,7 +5,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox } from '../../../ui-utils/client';
-import { fileUpload } from '../../../ui';
+import { fileUpload } from '../../../ui/client';
 import { settings } from '../../../settings/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ShareLocationModal from '../../../../client/views/room/ShareLocation/ShareLocationModal';
@@ -53,7 +53,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement | undefined, { rid, tmid });
+			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement, { rid, tmid });
 			$input.remove();
 		});
 

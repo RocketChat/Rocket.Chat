@@ -7,13 +7,13 @@ import type {
 	ILivechatDepartment,
 	ILoginToken,
 	ILivechatBusinessHour,
+	UserStatus,
 } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: Array<IRole['_id']>): Promise<UpdateResult>;
-
 	findUsersInRoles<T = IUser>(
 		roles: Array<IRole['_id']>,
 		scope?: IRole['scope'],
@@ -324,4 +324,16 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeRoomByRoomId(rid: IRoom['_id']): Promise<UpdateResult | Document>;
 
 	findOneByResetToken<T = IUser>(token: ILoginToken['hashedToken'], options?: FindOptions<T extends IUser ? IUser : T>): Promise<T | null>;
+
+	updateStatusById(
+		userId: string,
+		{
+			statusDefault,
+			status,
+			statusConnection,
+			statusText,
+		}: { statusDefault?: string; status: UserStatus; statusConnection: UserStatus; statusText?: string },
+	): Promise<UpdateResult>;
+
+	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
 }

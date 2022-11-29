@@ -21,33 +21,27 @@ test.describe.serial('administration-menu', () => {
 	});
 
 	test('expect open info page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Manage workspace');
+		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
 
 		await expect(page).toHaveURL('admin/info');
 	});
 
 	test('expect open omnichannel page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Manage Omnichannel');
+		await poHomeDiscussion.sidenav.openAdministrationByLabel('Omnichannel');
 
 		await expect(page).toHaveURL('omnichannel/current');
-	});
-
-	test('expect open settings page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace settings');
-
-		await expect(page).toHaveURL('admin/settings');
 	});
 
 	test('expect open app marketplace page', async ({ page }) => {
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Marketplace');
 
-		await expect(page).toHaveURL('admin/marketplace');
+		await expect(page).toHaveURL('admin/marketplace/all/list');
 	});
 
 	test('expect open app installed page', async ({ page }) => {
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Installed');
 
-		await expect(page).toHaveURL('admin/marketplace/installed');
+		await expect(page).toHaveURL('admin/marketplace/installed/list');
 	});
 
 	test.describe('user', () => {

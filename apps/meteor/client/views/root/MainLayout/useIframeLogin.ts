@@ -1,4 +1,4 @@
-import { iframeLogin } from '../../../../app/ui-utils/client';
+import { iframeLogin } from '../../../../app/ui-utils/client/lib/IframeLogin';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 const pollIframeLoginUrl = (): string | undefined => {

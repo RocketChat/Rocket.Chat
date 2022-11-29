@@ -72,7 +72,7 @@
     "@storybook/react": "~6.5.10",
     "@storybook/source-loader": "~6.5.10",
     "@storybook/theming": "~6.5.10",
-    "@tanstack/react-query": "^4.2.1",
+    "@tanstack/react-query": "^4.16.1",
     "@types/react": "~17.0.48",
     "@types/react-dom": "~17.0.17",
     "babel-loader": "~8.2.3",
@@ -87,5 +87,9 @@
     "tslib": "^2.3.1",
     "typescript": "~4.3.5",
     "webpack": "~5.68.0"
+  },
+  "dependencies": {
+    "@rocket.chat/ui-kit": "next",
+    "tslib": "^2.3.1"
   }
 }
