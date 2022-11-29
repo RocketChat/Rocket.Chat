@@ -6,7 +6,7 @@ import { AppEvents } from '../../../../app/apps/client/communication';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import { AsyncState, AsyncStatePhase } from '../../../lib/asyncState';
 import { AppsContext } from './AppsContext';
-import { handleAPIError } from './helpers/handleAPIError';
+import handleAPIError from './helpers/handleAPIError';
 import { App } from './types';
 
 type ListenersMapping = {
