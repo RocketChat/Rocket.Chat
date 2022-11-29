@@ -166,7 +166,7 @@ export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc: any, el: any) {
+		const orStmt = (searchFields || []).reduce(function (acc: Array<Record<string, RegExp>>, el: keyof IUser) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -203,7 +203,7 @@ export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm as string) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce(function (acc: Record<keyof IUser, RegExp>, el: keyof IUser) {
+		const orStmt = (searchFields || []).reduce(function (acc: Array<Record<string, RegExp>>, el: keyof IUser) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -1351,5 +1351,18 @@ export class UsersRaw extends BaseRaw<IUser> implements IUsersModel {
 		options: FindOptions<T extends IUser ? IUser : T> = {},
 	): Promise<T | null> {
 		return this.findOne({ 'services.password.reset.token': token }, options);
+	}
+
+	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$set: {
+					'federation.avatarUrl': federationAvatarUrl,
+				},
+			},
+		);
 	}
 }

@@ -206,21 +206,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	updateStatusByAppId(appId: string, status: IUser['status']): Promise<Document | UpdateResult>;
 
-	updateStatusById(
-		userId: IUser['_id'],
-		{
-			status,
-			statusConnection,
-			statusDefault,
-			statusText,
-		}: {
-			status: IUser['status'];
-			statusConnection: IUser['statusConnection'];
-			statusDefault?: IUser['statusDefault'];
-			statusText?: IUser['statusText'];
-		},
-	): Promise<UpdateResult>;
-
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult>;
 
 	openAgentBusinessHoursByBusinessHourIdsAndAgentId(
@@ -335,5 +320,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		}: { statusDefault?: string; status: UserStatus; statusConnection: UserStatus; statusText?: string },
 	): Promise<UpdateResult>;
 
-	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
+	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
 }
