@@ -39,7 +39,7 @@ export async function findPriority({
 
 export async function updatePriority(
 	_id: string,
-	data: Pick<ILivechatPriority & { reset: boolean }, 'name' | 'reset'>,
+	data: Pick<ILivechatPriority, 'name'> & { reset: boolean },
 ): Promise<ILivechatPriority | null> {
 	const query = {
 		_id,
@@ -56,6 +56,10 @@ export async function updatePriority(
 	const created = await LivechatPriority.findOneAndUpdate(query, update, {
 		returnDocument: 'after',
 	});
+
+	if (!created.ok || created.lastErrorObject !== undefined) {
+		throw Error('Error updating priority');
+	}
 
 	return created.value;
 }

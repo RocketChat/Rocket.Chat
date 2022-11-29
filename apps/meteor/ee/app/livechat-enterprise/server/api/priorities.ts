@@ -60,10 +60,6 @@ API.v1.addRoute(
 				name,
 				reset: Boolean(reset),
 			});
-
-			if (!ok) {
-				return API.v1.failure('Error updating priority');
-			}
 			return API.v1.success();
 		},
 	},
