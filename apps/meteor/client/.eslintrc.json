@@ -160,6 +160,7 @@
             ]
           }
         ],
+				"no-empty-function": "off",
         "no-extra-parens": "off",
 				"no-redeclare": "off",
         "no-spaced-func": "off",

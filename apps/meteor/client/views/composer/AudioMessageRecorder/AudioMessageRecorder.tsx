@@ -4,16 +4,19 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { AudioRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { ChatAPI } from '../../../lib/chats/ChatAPI';
+import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid: IMessage['_id'];
+	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 };
 
-const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
@@ -138,6 +141,8 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		await stopRecording();
 	});
 
+	const chat = useChat() ?? chatContext;
+
 	const handleDoneButtonClick = useMutableCallback(async () => {
 		setState('loading');
 
@@ -146,7 +151,7 @@ const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactEl
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
-		await fileUpload([{ file, name: fileName }], undefined, { rid, tmid });
+		await chat?.flows.uploadFiles([file]);
 	});
 
 	if (!isAllowed) {
