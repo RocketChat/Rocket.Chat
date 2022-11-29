@@ -7,28 +7,39 @@ import { FederationRoomInternalHooksServiceSender } from '../application/sender/
 import { FederationRoomServiceSenderEE } from '../application/sender/room/RoomServiceSender';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
-import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from './rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSender';
 import { FederationHooksEE } from './rocket-chat/hooks';
 import type { RocketChatMessageAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatFileAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
+import { RocketChatNotificationAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Notification';
 
 export class FederationFactoryEE {
 	public static buildRoomServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketFiledapter: RocketChatFileAdapter,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationRoomServiceSenderEE {
-		return new FederationRoomServiceSenderEE(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, rocketFiledapter, bridge);
+		return new FederationRoomServiceSenderEE(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketMessageAdapter,
+			rocketSettingsAdapter,
+			rocketNotificationAdapter,
+			bridge,
+		);
 	}
 
 	public static buildRoomInternalHooksServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		bridge: IFederationBridgeEE,
@@ -36,6 +47,7 @@ export class FederationFactoryEE {
 		return new FederationRoomInternalHooksServiceSender(
 			rocketRoomAdapter,
 			rocketUserAdapter,
+			rocketFileAdapter,
 			rocketSettingsAdapter,
 			rocketMessageAdapter,
 			bridge,
@@ -45,10 +57,17 @@ export class FederationFactoryEE {
 	public static buildDMRoomInternalHooksServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationDMRoomInternalHooksServiceSender {
-		return new FederationDMRoomInternalHooksServiceSender(rocketRoomAdapter, rocketUserAdapter, rocketSettingsAdapter, bridge);
+		return new FederationDMRoomInternalHooksServiceSender(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketSettingsAdapter,
+			bridge,
+		);
 	}
 
 	public static buildBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {

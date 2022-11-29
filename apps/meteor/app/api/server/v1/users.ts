@@ -11,6 +11,8 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
+	isUsersCheckUsernameAvailabilityParamsGET,
+	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -58,6 +60,20 @@ API.v1.addRoute(
 				statusCode: 307,
 				body: url,
 			};
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.getAvatarSuggestion',
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			const suggestions = Meteor.call('getAvatarSuggestion');
+
+			return API.v1.success({ suggestions });
 		},
 	},
 );
@@ -152,7 +168,7 @@ API.v1.addRoute(
 							language: user.language,
 						},
 					},
-				},
+				} as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
 	},
@@ -189,18 +205,18 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const [image, fields] = await getUploadFormData(
+			const image = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{
-					field: 'image',
-				},
+				{ field: 'image', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
 			}
+
+			const { fields, fileBuffer, mimetype } = image;
 
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
@@ -220,7 +236,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
+			setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},
@@ -501,8 +517,12 @@ API.v1.addRoute(
 				return API.v1.failure('Username is already in use');
 			}
 
+			const { secret: secretURL, ...params } = this.bodyParams;
 			// Register the user
-			const userId = Meteor.call('registerUser', this.bodyParams);
+			const userId = Meteor.call('registerUser', {
+				...params,
+				...(secretURL && { secretURL }),
+			});
 
 			// Now set their username
 			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
@@ -588,6 +608,22 @@ API.v1.addRoute(
 	{
 		get() {
 			const result = Meteor.call('getUsernameSuggestion');
+
+			return API.v1.success({ result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.checkUsernameAvailability',
+	{
+		authRequired: true,
+		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
+	},
+	{
+		get() {
+			const { username } = this.queryParams;
+			const result = Meteor.call('checkUsernameAvailability', username);
 
 			return API.v1.success({ result });
 		},
@@ -715,6 +751,24 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		return API.v1.success();
 	},
 });
+
+API.v1.addRoute(
+	'users.sendConfirmationEmail',
+	{
+		authRequired: true,
+		validateParams: isUsersSendConfirmationEmailParamsPOST,
+	},
+	{
+		post() {
+			const { email } = this.bodyParams;
+
+			if (Meteor.call('sendConfirmationEmail', email)) {
+				return API.v1.success();
+			}
+			return API.v1.failure();
+		},
+	},
+);
 
 API.v1.addRoute(
 	'users.presence',

@@ -144,7 +144,7 @@ export const normalizeTransferHistoryMessage = (transferData, sender, t) => {
 		return;
 	}
 
-	const { transferredBy, transferredTo, nextDepartment, scope } = transferData;
+	const { transferredBy, transferredTo, nextDepartment, scope, comment } = transferData;
 	const from = transferredBy && (transferredBy.name || transferredBy.username);
 
 	const transferTypes = {
@@ -170,6 +170,8 @@ export const normalizeTransferHistoryMessage = (transferData, sender, t) => {
 			}
 			return t('from_returned_the_chat_to_the_queue', { from });
 		},
+		autoTransferUnansweredChatsToAgent: () => t('the_chat_was_transferred_to_another_agent_due_to_unanswered', { duration: comment }),
+		autoTransferUnansweredChatsToQueue: () => t('the_chat_was_moved_back_to_queue_due_to_unanswered', { duration: comment }),
 	};
 
 	return transferTypes[scope]();
