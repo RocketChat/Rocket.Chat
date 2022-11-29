@@ -7,7 +7,7 @@ import faker from '@faker-js/faker';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { saveSLA, deleteSLA } from '../../../data/livechat/priorities';
 import { createAgent, createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateManyPermissions, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', function () {
@@ -21,11 +21,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 			.then(done);
 	});
 
-	const removePermissions = (perms: string[]) => {
-		Promise.allSettled(perms.map((perm) => updatePermission(perm, [])));
+	const removePermissions = async (perms: string[]) => {
+		await updateManyPermissions(Object.fromEntries(perms.map((name) => [name, []])));
 	};
-	const addPermissions = (perms: { [key: string]: string[] }) => {
-		Promise.allSettled(Object.keys(perms).map((k) => updatePermission(k, Object.values(perms[k]))));
+	const addPermissions = async (perms: { [key: string]: string[] }) => {
+		await updateManyPermissions(perms);
 	};
 
 	this.afterAll(async () => {
@@ -38,16 +38,18 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/sla', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			removePermissions(['manage-livechat-sla', 'view-l-room']);
+			await removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of slas', async () => {
-			addPermissions({
+			await addPermissions({
 				'manage-livechat-sla': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});
 			const sla = await saveSLA();
+			expect(sla).to.not.be.undefined;
+			expect(sla).to.have.property('_id');
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.sla).to.be.an('array').with.lengthOf.greaterThan(0);
@@ -62,12 +64,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/sla/:slaId', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			removePermissions(['manage-livechat-sla', 'view-l-room']);
+			await removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create, find and delete an sla', async () => {
-			addPermissions({
+			await addPermissions({
 				'manage-livechat-sla': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});
@@ -87,7 +89,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/inquiry.setSLA', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			removePermissions(['manage-livechat-sla', 'view-l-room', 'manage-livechat-priorities']);
+			await removePermissions(['manage-livechat-sla', 'view-l-room', 'manage-livechat-priorities']);
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
@@ -100,7 +102,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if roomId is not in request body', async () => {
-			addPermissions({
+			await addPermissions({
 				'manage-livechat-sla': ['admin', 'livechat-manager'],
 				'manage-livechat-priorities': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
@@ -191,7 +193,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let priority: ILivechatPriority;
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			removePermissions(['manage-livechat-priorities', 'view-l-room']);
+			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request
 				.get(api('livechat/priorities'))
 				.set(credentials)
@@ -200,7 +202,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of priorities', async () => {
-			addPermissions({
+			await addPermissions({
 				'manage-livechat-priorities': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});
@@ -239,14 +241,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let priority: ILivechatPriority;
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			removePermissions(['manage-livechat-priorities', 'view-l-room']);
+			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
 			expect(response.body?.error).to.contain('error-unauthorized');
 		});
 		it('should return a priority by id', async () => {
-			addPermissions({
+			await addPermissions({
 				'manage-livechat-priorities': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});

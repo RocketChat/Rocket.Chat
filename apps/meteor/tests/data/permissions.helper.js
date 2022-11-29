@@ -13,6 +13,17 @@ export const updatePermission = (permission, roles) =>
 			.end(() => setTimeout(resolve, delay));
 	});
 
+export const updateManyPermissions = (permissions) =>
+	new Promise((resolve) => {
+		request
+			.post(api('permissions.update'))
+			.set(credentials)
+			.send({ permissions: Object.keys(permissions).map((k) => ({_id: k, roles: permissions[k] }))})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(() => setTimeout(resolve, delay));
+	});
+
 export const updateSetting = (setting, value) =>
 	new Promise((resolve) => {
 		request
