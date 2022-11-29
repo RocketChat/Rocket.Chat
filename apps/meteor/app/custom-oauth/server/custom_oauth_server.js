@@ -350,7 +350,7 @@ export class CustomOAuth {
 					user.services[serviceName] &&
 					user.services[serviceName].id === serviceData.id &&
 					user.name === serviceData.name &&
-					user.email === serviceData.email
+					(this.keyField === 'email' || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
 					return;
 				}
@@ -363,6 +363,7 @@ export class CustomOAuth {
 				const update = {
 					$set: {
 						name: serviceData.name,
+						...(this.keyField === 'username' && serviceData.email && { emails: [{ address: serviceData.email, verified: true }] }),
 						[serviceIdKey]: serviceData.id,
 					},
 				};
