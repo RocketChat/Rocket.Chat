@@ -238,12 +238,6 @@ const settingSavers: Record<string, (context: SaverContext) => Promise<void>> = 
 			saveRoomSystemMessages(rid, value);
 		}
 	},
-	async joinCode({ value, rid }: { value: string; rid: IRoom['_id'] }) {
-		await Rooms.setJoinCodeById(rid, String(value));
-	},
-	async default({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
-		await Rooms.saveDefaultById(rid, value);
-	},
 	async featured({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
 		await Rooms.saveFeaturedById(rid, value);
 	},
