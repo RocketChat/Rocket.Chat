@@ -1,7 +1,23 @@
 import { t } from '../../../../../app/utils/client';
 import { dispatchToastMessage } from '../../../../lib/toast';
 
-function handleInstallError(apiError: { xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } } }): void {
+interface ApiError {
+	xhr: {
+		responseJSON: {
+			error: string;
+			status: string;
+			messages: string[];
+			payload?: any;
+		};
+	};
+}
+
+export function handleInstallError(apiError: ApiError | Error): void {
+	if (apiError instanceof Error) {
+		dispatchToastMessage({ type: 'error', message: apiError.message });
+		return;
+	}
+
 	if (!apiError.xhr || !apiError.xhr.responseJSON) {
 		return;
 	}

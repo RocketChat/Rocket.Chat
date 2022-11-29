@@ -7,7 +7,7 @@ import React, { ReactElement } from 'react';
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
-import { appIncompatibleStatusProps } from '../helpers';
+import appIncompatibleStatusProps from '../helpers/appIncompatibleStatusProps';
 import AppStatus from './tabs/AppStatus';
 
 const versioni18nKey = (app: App): string => {

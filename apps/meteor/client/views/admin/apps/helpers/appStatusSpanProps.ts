@@ -1,14 +1,9 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { App } from '@rocket.chat/core-typings';
 
-import { appErroredStatuses } from '../helpers';
 import appEnabledStatuses from '../utils/appEnabledStatuses';
-
-type appStatusSpanResponseProps = {
-	type?: 'failed' | 'warning';
-	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
-};
+import appErroredStatuses from '../utils/appErroredStatuses';
+import { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
 
 export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
