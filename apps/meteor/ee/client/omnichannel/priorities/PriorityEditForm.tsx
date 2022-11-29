@@ -57,7 +57,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 				<Controller
 					name='name'
 					control={control}
-					rules={{ required: t('The_field_is_required', t('Name')) }}
+					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
 							_id={_id}
