@@ -92,11 +92,11 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		if (!priority) {
 			throw new Error('Priority not found');
 		}
-		return this.findOneAndUpdate({ _id: roomId }, { $set: { priorityId, priorityWeight: priority.sortItem } });
+		return this.updateOne({ _id: roomId }, { $set: { priorityId, priorityWeight: priority.sortItem } });
 	}
 
 	async unsetPriorityByRoomId(roomId: string): Promise<ModifyResult> {
-		return this.findOneAndUpdate({ _id: roomId }, { $unset: { priorityId: 1, priorityWeight: 1 } });
+		return this.updateOne({ _id: roomId }, { $unset: { priorityId: 1, priorityWeight: 1 } });
 	}
 
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {

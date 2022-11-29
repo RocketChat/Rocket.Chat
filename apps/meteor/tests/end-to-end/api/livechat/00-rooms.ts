@@ -1442,7 +1442,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400);
 		});
 	});
-	(IS_EE ? describe : describe.skip)('Room prioritization', async () => {
+	(IS_EE ? describe : describe.skip)('priority integration', async () => {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
 		this.afterAll(async () => {
@@ -1518,7 +1518,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(403);
 		});
 	});
-
 	describe('livechat/rooms/filters', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
