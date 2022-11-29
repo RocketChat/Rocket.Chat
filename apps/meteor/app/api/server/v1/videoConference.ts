@@ -114,7 +114,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.info',
-	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
+	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 } },
 	{
 		async get() {
 			const { callId } = this.queryParams;

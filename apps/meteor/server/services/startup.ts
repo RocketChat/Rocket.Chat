@@ -28,6 +28,7 @@ import { AppsVideoManagerService } from './apps/videoManagerService';
 import { UploadService } from './upload/service';
 import { CloudService } from './cloud/service';
 import { UserService } from './user/service';
+import { FederationService } from './federation/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -57,6 +58,7 @@ api.registerService(new UserService());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
+api.registerService(new FederationService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

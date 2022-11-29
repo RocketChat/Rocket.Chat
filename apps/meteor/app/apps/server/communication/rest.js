@@ -13,6 +13,7 @@ import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { Apps, AppsConverter, AppsManager } from '../../../../server/sdk';
 
+const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
 	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
@@ -59,6 +60,22 @@ export class AppsRestApi {
 		};
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+
+		this.api.addRoute(
+			'incompatibleModal',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const { action, appId, appVersion } = this.queryParams;
+
+					return API.v1.success({
+						url: `${baseUrl}/apps/${appId}/incompatible/${appVersion}/${action}?workspaceId=${workspaceId}&rocketChatVersion=${rocketChatVersion}`,
+					});
+				},
+			},
+		);
 
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
@@ -125,7 +142,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
@@ -208,13 +225,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -492,13 +512,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
