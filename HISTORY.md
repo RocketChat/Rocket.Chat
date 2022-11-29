@@ -1,6 +1,37 @@
 
+# 5.3.4
+`2022-11-28  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Thread messages being included in the room history even though they are not displayed ([#27391](https://github.com/RocketChat/Rocket.Chat/pull/27391))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.3.3 ([#27340](https://github.com/RocketChat/Rocket.Chat/pull/27340))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+
 # 5.3.3
 `2022-11-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
 
 ### 🐛 Bug fixes
 
