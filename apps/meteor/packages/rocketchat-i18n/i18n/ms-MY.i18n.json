@@ -2588,7 +2588,7 @@
   "User": "Pengguna",
   "User__username__is_now_a_leader_of__room_name_": "Pengguna __username__ kini menjadi pemimpin __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ pengguna kini merupakan moderator __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ pengguna kini merupakan pemilik __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ pengguna kini merupakan pemilik __room_name__",
   "User__username__removed_from__room_name__leaders": "Pengguna __username__ dikeluarkan daripada pemimpin __room_name__",
   "User__username__removed_from__room_name__moderators": "__username__ Pengguna dikeluarkan dari moderator __room_name__",
   "User_added": "Pengguna ditambah.",

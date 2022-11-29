@@ -4245,7 +4245,7 @@
   "User Search (Group Validation)": "使用者搜尋 (群組驗證)",
   "User__username__is_now_a_leader_of__room_name_": "使用者 __username__現在是__room_name__的管理者",
   "User__username__is_now_a_moderator_of__room_name_": "使用者__username__現在是__room_name__的主持人",
-  "User__username__is_now_a_owner_of__room_name_": "使用者__username__現在是__room_name__的擁有者",
+  "User__username__is_now_an_owner_of__room_name_": "使用者__username__現在是__room_name__的擁有者",
   "User__username__muted_in_room__roomName__": "使用者 __username__ 在房間 __roomName__ 中已靜音",
   "User__username__removed_from__room_name__leaders": "使用者 __username__ 已從 __room_name__ 管理者中移除",
   "User__username__removed_from__room_name__moderators": "使用者__username__從__room_name__刪除主持人身份",

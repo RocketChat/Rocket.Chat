@@ -18,7 +18,7 @@ export abstract class FederationService {
 		this.internalHomeServerDomain = this.internalSettingsAdapter.getHomeServerDomain();
 	}
 
-	protected async createFederatedUser(
+	protected async createFederatedUserInternallyOnly(
 		externalUserId: string,
 		username: string,
 		existsOnlyOnProxyServer = false,
@@ -42,25 +42,36 @@ export abstract class FederationService {
 		if (!insertedUser) {
 			return;
 		}
-		await this.updateUserAvatarInternally(insertedUser);
+		await this.updateUserAvatarInternally(insertedUser, externalUserProfileInformation?.avatarUrl);
+		await this.updateUserDisplayNameInternally(insertedUser, externalUserProfileInformation?.displayName);
 	}
 
-	protected async updateUserAvatarInternally(federatedUser: FederatedUser): Promise<void> {
-		const externalUserProfileInformation = await this.bridge.getUserProfileInformation(federatedUser.getExternalId());
-		if (!externalUserProfileInformation?.avatarUrl) {
+	protected async updateUserAvatarInternally(federatedUser: FederatedUser, avatarUrl?: string): Promise<void> {
+		if (!avatarUrl) {
 			return;
 		}
-		if (!federatedUser.isRemote() || !federatedUser.shouldUpdateFederationAvatar(externalUserProfileInformation.avatarUrl)) {
+		if (!federatedUser.isRemote()) {
 			return;
 		}
-		await this.internalUserAdapter.setAvatar(
-			federatedUser,
-			this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), externalUserProfileInformation.avatarUrl),
-		);
-		await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), externalUserProfileInformation.avatarUrl);
+		if (federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
+			await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl));
+			await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), avatarUrl);
+		}
 	}
 
-	protected async createFederatedUserForInviterUsingLocalInformation(internalInviterId: string): Promise<string> {
+	protected async updateUserDisplayNameInternally(federatedUser: FederatedUser, displayName?: string): Promise<void> {
+		if (!displayName) {
+			return;
+		}
+		if (!federatedUser.isRemote()) {
+			return;
+		}
+		if (federatedUser.shouldUpdateDisplayName(displayName)) {
+			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReference(), displayName);
+		}
+	}
+
+	protected async createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId: string): Promise<string> {
 		const internalUser = await this.internalUserAdapter.getInternalUserById(internalInviterId);
 		if (!internalUser || !internalUser?.username) {
 			throw new Error(`Could not find user id for ${internalInviterId}`);
@@ -68,7 +79,7 @@ export abstract class FederationService {
 		const name = internalUser.name || internalUser.username;
 		const externalInviterId = await this.bridge.createUser(internalUser.username, name, this.internalHomeServerDomain);
 		const existsOnlyOnProxyServer = true;
-		await this.createFederatedUser(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
+		await this.createFederatedUserInternallyOnly(externalInviterId, internalUser.username, existsOnlyOnProxyServer, name);
 		await this.updateUserAvatarExternally(
 			internalUser,
 			(await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId)) as FederatedUser,

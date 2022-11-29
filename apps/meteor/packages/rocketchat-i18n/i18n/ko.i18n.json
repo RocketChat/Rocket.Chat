@@ -3793,7 +3793,7 @@
   "User Search (Group Validation)": "사용자 검색 (그룹 검증)",
   "User__username__is_now_a_leader_of__room_name_": "__username__님은 이제 __room_name__ 의 리더입니다.",
   "User__username__is_now_a_moderator_of__room_name_": "__username__님은 이제 __room_name__ 의 운영자입니다.",
-  "User__username__is_now_a_owner_of__room_name_": "__username__님은 이제 __room_name__ 의 소유자입니다.",
+  "User__username__is_now_an_owner_of__room_name_": "__username__님은 이제 __room_name__ 의 소유자입니다.",
   "User__username__muted_in_room__roomName__": "__username__ 사용자가 __roomName__ 에서 음소거되었습니다.",
   "User__username__removed_from__room_name__leaders": "__username__님은 __room_name__ 의 리더가 아닙니다.",
   "User__username__removed_from__room_name__moderators": "__username__님은 __room_name__ 의 운영자가 아닙니다.",

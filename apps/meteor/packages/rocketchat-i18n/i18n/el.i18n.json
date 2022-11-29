@@ -2588,7 +2588,7 @@
   "User": "Μεταχειριζόμενος",
   "User__username__is_now_a_leader_of__room_name_": "Ο χρήστης __username__ είναι τώρα ηγέτης της __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "χρήστη __username__ χρήστης είναι πλέον επόπτης της __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "χρήστη __username__ χρήστης είναι τώρα ένας ιδιοκτήτης των __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "χρήστη __username__ χρήστης είναι τώρα ένας ιδιοκτήτης των __room_name__",
   "User__username__removed_from__room_name__leaders": "Ο χρήστης __username__ αφαιρέθηκε από τους αρχηγούς __room_name__",
   "User__username__removed_from__room_name__moderators": "χρήστη __username__ χρήστης απομακρύνεται από τους συντονιστές __room_name__",
   "User__username__removed_from__room_name__owners": "χρήστη __username__ χρήστης απομακρύνεται από __room_name__ ιδιοκτήτες",

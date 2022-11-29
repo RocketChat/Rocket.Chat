@@ -4496,7 +4496,7 @@
   "User Search (Group Validation)": "Gebruikers zoeken (groepsvalidatie)",
   "User__username__is_now_a_leader_of__room_name_": "Gebruiker __username__ is nu een leider van __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Gebruiker __username__ is nu een moderator van __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Gebruiker __username__ is nu eigenaar van __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Gebruiker __username__ is nu eigenaar van __room_name__",
   "User__username__muted_in_room__roomName__": "Gebruiker __username__ gedempt in kamer __roomName__",
   "User__username__removed_from__room_name__leaders": "Gebruiker __username__ verwijderd uit __room_name__ leiders",
   "User__username__removed_from__room_name__moderators": "Gebruiker __username__ verwijderd uit __room_name__ moderators",

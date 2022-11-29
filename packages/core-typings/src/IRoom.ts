@@ -190,6 +190,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id: string;
 		username: IUser['username'];
 	};
+	closingMessage?: IMessage;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
