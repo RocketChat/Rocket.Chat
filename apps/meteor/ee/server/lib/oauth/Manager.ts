@@ -50,9 +50,31 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
+			const roles = Promise.await(
+				Roles.find(
+					{},
+					{
+						projection: {
+							_id: 1,
+							name: 1,
+						},
+					},
+				).toArray(),
+			);
+
+			const allowedRoles = rolesToSync
+				.map((role) => {
+					const savedRole = roles.find((r) => r._id === role) ?? roles.find((r) => r.name === role);
+
+					if (!savedRole) return '';
+
+					return savedRole._id;
+				})
+				.filter(Boolean);
+
 			Promise.await(
 				syncUserRoles(user._id, rolesFromSSO, {
-					allowedRoles: rolesToSync,
+					allowedRoles,
 				}),
 			);
 		}
