@@ -1,7 +1,6 @@
 import type { Job } from '@rocket.chat/agenda';
 import { Agenda } from '@rocket.chat/agenda';
 import { ObjectID } from 'bson';
-import { MongoInternals } from 'meteor/mongo';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
@@ -40,7 +39,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: this.orch.db,
 			db: { collection: 'rocketchat_apps_scheduler' },
 			// this ensures the same job doesn't get executed multiple times in a cluster
 			defaultConcurrency: 1,

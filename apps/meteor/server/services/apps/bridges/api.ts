@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
@@ -75,7 +74,7 @@ export class AppApisBridge extends ApiBridge {
 		}
 
 		if (router[method] instanceof Function) {
-			router[method](routePath, this._authMiddleware(endpoint, appId), Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
+			router[method](routePath, this._authMiddleware(endpoint, appId), this._appApiExecutor(endpoint, appId));
 		}
 	}
 
@@ -89,7 +88,7 @@ export class AppApisBridge extends ApiBridge {
 
 	private _authMiddleware(endpoint: IApiEndpoint, _appId: string): RequestHandler {
 		const authFunction = authenticationMiddleware({ rejectUnauthorized: !!endpoint.authRequired });
-		return Meteor.bindEnvironment(authFunction);
+		return authFunction;
 	}
 
 	private _verifyApi(api: IApi, endpoint: IApiEndpoint): void {

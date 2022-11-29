@@ -2,7 +2,6 @@ import type { IOAuthApp, IOAuthAppParams } from '@rocket.chat/apps-engine/defini
 import { OAuthAppsBridge } from '@rocket.chat/apps-engine/server/bridges/OAuthAppsBridge';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';
-import { Random } from 'meteor/random';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { AppServerOrchestrator } from '../orchestrator';
@@ -28,8 +27,8 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 				...oAuthApp,
 				_id: uuidv4(),
 				appId,
-				clientId: clientId ?? Random.id(),
-				clientSecret: clientSecret ?? Random.secret(),
+				clientId: clientId ?? uuidv4(),
+				clientSecret: clientSecret ?? uuidv4(),
 				_createdAt: new Date(),
 				_createdBy: {
 					_id,

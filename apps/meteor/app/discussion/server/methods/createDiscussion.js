@@ -37,7 +37,7 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 	return Messages.insert(welcomeMessage);
 };
 
-const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
+export const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message = false;
 	if (pmid) {

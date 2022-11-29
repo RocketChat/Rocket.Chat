@@ -25,7 +25,19 @@ export interface ICreateRoomParams {
 	extraData?: Partial<ICreateRoomExtraData>;
 	options?: ICreateRoomOptions;
 }
+
+export interface ICreateDiscussionParams {
+	parentRoomId: string;
+	parentMessageId: string;
+	creatorId: string;
+	name: string;
+	members: Array<string>;
+	encrypted?: boolean;
+	reply?: string;
+}
+
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
 	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	createDiscussion(params: ICreateDiscussionParams): Promise<IRoom>;
 }
