@@ -33,7 +33,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 		handleSubmit,
 		setError,
 		watch,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useForm<LoginRegisterPayload>();
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
@@ -63,7 +63,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
 			<Form.Header>
-				<Form.Title id={formLabelId}>{t('Register')}</Form.Title>
+				<Form.Title id={formLabelId}>{t('Create_an_account')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
@@ -215,8 +215,8 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' primary>
-						{t('Register')}
+					<Button type='submit' disabled={isSubmitting} primary>
+						{t('Join_your_team')}
 					</Button>
 				</ButtonGroup>
 				<ActionLink

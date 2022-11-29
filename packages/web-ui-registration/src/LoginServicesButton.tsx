@@ -1,12 +1,11 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, Icon } from '@rocket.chat/fuselage';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
 
-const ServicesButton = <T extends LoginService>({
-	buttonLabelColor,
-	buttonColor,
+const LoginServicesButton = <T extends LoginService>({
 	buttonLabelText,
+	icon,
 	title,
 	clientConfig,
 	service,
@@ -17,21 +16,22 @@ const ServicesButton = <T extends LoginService>({
 	className?: string;
 	disabled?: boolean;
 }): ReactElement => {
-	const handler = useLoginWithService({ service, buttonLabelColor, buttonColor, buttonLabelText, title, clientConfig, ...props });
+	const handler = useLoginWithService({ service, buttonLabelText, title, clientConfig, ...props });
+
 	return (
 		<Button
-			primary
 			className={className}
 			onClick={handler}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
-			backgroundColor={buttonColor}
-			borderColor={buttonColor}
-			color={buttonLabelColor}
 			disabled={disabled}
+			alignItems='center'
+			display='flex'
+			justifyContent='center'
 		>
+			{icon && <Icon size='x20' mie='x4' name={icon as ComponentProps<typeof Icon>['name']} />}
 			{buttonLabelText || title}
 		</Button>
 	);
 };
 
-export default ServicesButton;
+export default LoginServicesButton;

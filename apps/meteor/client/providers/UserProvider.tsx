@@ -17,16 +17,19 @@ const getUser = (): IUser | null => Meteor.user() as IUser | null;
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
 const config: Record<string, Partial<LoginService>> = {
-	'facebook': { buttonColor: '#325c99' },
-	'twitter': { buttonColor: '#02acec' },
-	'google': { buttonColor: '#dd4b39' },
-	'github': { buttonColor: '#4c4c4c', title: 'GitHub' },
-	'github_enterprise': { buttonColor: '#4c4c4c', title: 'GitHub Enterprise' },
-	'gitlab': { buttonColor: '#373d47', title: 'GitLab' },
-	'trello': { buttonColor: '#026aa7' },
-	'meteor-developer': { buttonColor: '#de4f4f', title: 'Meteor' },
-	'wordpress': { buttonColor: '#1e8cbe', title: 'WordPress' },
-	'linkedin': { buttonColor: '#1b86bc' },
+	'apple': { title: 'Sign in with Apple', icon: 'apple' },
+	'facebook': { title: 'Sign in with Facebook', icon: 'facebook' },
+	'twitter': { title: 'Sign in with Twitter', icon: 'twitter' },
+	'google': { title: 'Sign in with Google', icon: 'google' },
+	'github': { title: 'Sign in with Github', icon: 'github' },
+	'github_enterprise': { title: 'Sign in with Github Enterprise', icon: 'github' },
+	'gitlab': { title: 'Sign in with Gitlab', icon: 'gitlab' },
+	'dolphin': { title: 'Sign in with Dolphin', icon: 'dophin' },
+	'drupal': { title: 'Sign in with Drupal', icon: 'drupal' },
+	'nextcloud': { title: 'Sign in with Nextcloud' },
+	'meteor-developer': { title: 'Sign in with Meteor', icon: 'meteor' },
+	'wordpress': { title: 'Sign in with WordPress', icon: 'wordpress' },
+	'linkedin': { title: 'Sign in with Linkedin', icon: 'linkedin' },
 };
 
 const logout = (): Promise<void> =>
