@@ -259,6 +259,11 @@ Meteor.startup(function () {
 			};
 		},
 	});
+	MessageTypes.registerType({
+		id: 'videoconf',
+		system: false,
+		message: 'Video_Conference',
+	});
 });
 
 export const MessageTypesValues = [
