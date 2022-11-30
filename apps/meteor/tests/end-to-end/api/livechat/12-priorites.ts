@@ -206,7 +206,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/priorities/:priorityId', () => {
 		let priority: ILivechatPriority;
-
+		const name = faker.random.word();
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-priorities', []);
 			await updatePermission('view-l-room', []);
@@ -242,7 +242,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.send({
-					name: faker.random.word(),
+					name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -262,7 +262,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.get(api('livechat/priorities'))
 				.set(credentials)
 				.query({
-					text: priority.name,
+					text: name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -270,17 +270,17 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.length.greaterThan(0);
 			const pos = response.body.priorities.findIndex((p: ILivechatPriority) => p._id === priority._id);
+			expect(pos).to.be.greaterThan(-1);
 			expect(response.body.priorities[pos]).to.have.property('_id');
 			expect(response.body.priorities[pos]).to.have.property('i18n', priority.i18n);
 		});
-		it('should not reset a priority with a reset:false PUT parameter', async () => {
+		it('should edit a priority with a PUT', async () => {
 			const newName = faker.random.word();
 			const response = await request
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.send({
 					name: newName,
-					reset: false,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -310,7 +310,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.send({
-					name: faker.random.word(),
 					reset: true,
 				})
 				.expect('Content-Type', 'application/json')
@@ -323,6 +322,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(newPriorityResponse.body).to.have.property('success', true);
 			expect(newPriorityResponse.body).to.have.property('dirty', false);
+			expect(newPriorityResponse.body).to.not.have.property('name');
 		});
 	});
 

@@ -57,7 +57,7 @@ export async function updatePriority(
 		returnDocument: 'after',
 	});
 
-	if (!created.ok || created.lastErrorObject !== undefined) {
+	if (!created.ok || !created.value) {
 		throw Error('Error updating priority');
 	}
 
