@@ -7,7 +7,7 @@ import faker from '@faker-js/faker';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { saveSLA, deleteSLA } from '../../../data/livechat/priorities';
 import { createAgent, createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
-import { updateManyPermissions, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { addPermissions, removePermissions, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', function () {
@@ -20,13 +20,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
 			.then(done);
 	});
-
-	const removePermissions = async (perms: string[]) => {
-		await updateManyPermissions(Object.fromEntries(perms.map((name) => [name, []])));
-	};
-	const addPermissions = async (perms: { [key: string]: string[] }) => {
-		await updateManyPermissions(perms);
-	};
 
 	this.afterAll(async () => {
 		addPermissions({
@@ -356,7 +349,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', false);
 			expect(response.body.name).not.eq(priority.name);
-			expect(response.body.name).to.eq(priority.defaultValue);
 		});
 		it('should change all priorities to their default', async () => {
 			const response = await request
@@ -367,7 +359,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			response.body.priorities.forEach((priority: ILivechatPriority) => {
-				expect(priority.name).to.eq(priority.defaultValue);
 				expect(priority).to.have.property('dirty', false);
 			});
 		});

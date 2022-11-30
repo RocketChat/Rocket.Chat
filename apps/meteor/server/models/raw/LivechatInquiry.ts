@@ -2,9 +2,9 @@ import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, SortDirection } from 'mongodb';
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
+import { settings } from '../../../app/settings/server';
 
 // @ts-ignore Circular reference on field 'attachments'
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
@@ -155,7 +155,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async getSortingQuery(): Promise<{
 		[key: string]: SortDirection;
 	}> {
-		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
+		const sortMechanism = await settings.get('Omnichannel_sorting_mechanism');
 
 		const $sort: {
 			[key: string]: SortDirection;

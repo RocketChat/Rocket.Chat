@@ -46,7 +46,6 @@ export async function findInquiries({
 		skip: offset,
 		sort: { ...sort, ...(defaultSort as object) },
 	};
-
 	const filter: Filter<ILivechatInquiryRecord> = {
 		$or: [
 			{
@@ -58,7 +57,7 @@ export async function findInquiries({
 		],
 	};
 	if (status && status in LivechatInquiryStatus) {
-		filter.status = status as LivechatInquiryStatus;
+		filter.status = status;
 	}
 
 	// @ts-ignore - LivechatInquiry has a ref to messages
