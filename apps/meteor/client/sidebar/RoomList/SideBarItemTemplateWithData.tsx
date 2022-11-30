@@ -61,7 +61,6 @@ type RoomListRowProps = {
 	isAnonymous?: boolean;
 
 	room: ISubscription & IRoom;
-	lastMessage?: IMessage;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
@@ -224,7 +223,7 @@ export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
 	if (prevProps.room.alert !== nextProps.room.alert) {
 		return false;
 	}
-	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room.v.status !== nextProps.room.v.status) {
+	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
 		return false;
 	}
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
