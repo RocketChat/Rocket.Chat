@@ -45,6 +45,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator('footer div div div:nth-child(3) button');
 	}
 
+	get firstAutoMessage(): Locator {
+		return this.page.locator('div.message-text__WwYco p');
+	}
+
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.type(liveChatUser.name);
@@ -54,4 +58,5 @@ export class OmnichannelLiveChat {
 		}
 		await this.btnSendMessage(buttonLabel).click();
 	}
+
 }
