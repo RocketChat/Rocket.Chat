@@ -1103,6 +1103,7 @@
   "convert-team_description": "Permission to convert team to channel",
   "Conversation": "Conversation",
   "Conversation_closed": "Conversation closed: __comment__.",
+  "Conversation_closed_without_comment": "Conversation closed",
   "Conversation_closing_tags": "Conversation closing tags",
   "Conversation_closing_tags_description": "Closing tags will be automatically assigned to conversations at closing.",
   "Conversation_finished": "Conversation Finished",
@@ -5528,5 +5529,7 @@
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
   "onboarding.form.standaloneServerForm.manuallyIntegrate": "Need to manually integrate with external services",
   "Something_Went_Wrong": "Something went wrong",
-  "Toolbox_room_actions": "Primary Room actions"
+  "Toolbox_room_actions": "Primary Room actions",
+  "Theme_light": "Light",
+  "Theme_dark": "Dark"
 }
