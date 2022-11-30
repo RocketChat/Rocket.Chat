@@ -74,9 +74,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		).toContainText('Not possible to edit a federated user');
 	});
 
-	// TODO: these skipped tests needs this PR to be merged: https://github.com/RocketChat/Rocket.Chat/pull/27251
-
-	test.skip('expect not to have the kebab menu enable, since there should not be any menu option enabled for federated users', async ({
+	test('expect not to have the kebab menu enable, since there should not be any menu option enabled for federated users', async ({
 		page,
 	}) => {
 		await poFederationAdmin.inputSearchUsers.type(usernameWithDomainFromServer2);
@@ -84,7 +82,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		await expect(page.locator('[data-testid="menu"]')).not.toBeVisible();
 	});
 
-	test.skip('expect to federated users (remote only) not being counted as a seat cap in an EE environment', async ({
+	test('expect to federated users (remote only) not being counted as a seat cap in an EE environment', async ({
 		browser,
 		page,
 		apiServer2,
@@ -109,7 +107,7 @@ test.describe.parallel('Federation - Admin Panel - Users', () => {
 		await page2.close();
 	});
 
-	test.skip('expect to federated users (but local ones) being counted as a seat cap in an EE environment', async ({
+	test('expect to federated users (but local ones) being counted as a seat cap in an EE environment', async ({
 		browser,
 		page,
 		apiServer1,
