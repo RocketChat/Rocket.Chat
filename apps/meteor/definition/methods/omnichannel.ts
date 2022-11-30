@@ -30,7 +30,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:removeBusinessHour': (...args: any[]) => any;
 		'livechat:removeCustomField': (...args: any[]) => any;
 		'livechat:removeMonitor': (...args: any[]) => any;
-		'livechat:removeSLA': (...args: any[]) => any;
 		'livechat:removeRoom': (rid: IRoom['_id']) => void;
 		'livechat:removeTag': (...args: any[]) => any;
 		'livechat:removeTrigger': (...args: any[]) => any;
@@ -44,7 +43,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:saveCustomField': (...args: any[]) => any;
 		'livechat:saveDepartment': (...args: any[]) => any;
 		'livechat:saveIntegration': (...args: any[]) => any;
-		'livechat:saveSLA': (...args: any[]) => any;
 		'livechat:saveTag': (...args: any[]) => any;
 		'livechat:saveTrigger': (...args: any[]) => any;
 		'livechat:saveUnit': (...args: any[]) => any;

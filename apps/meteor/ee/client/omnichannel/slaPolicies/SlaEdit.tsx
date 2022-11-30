@@ -59,10 +59,11 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		}
 
 		try {
+			const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
 			if (slaId) {
-				await updateSLA({ name, description, dueTimeInMinutes: Number(dueTimeInMinutes) });
+				await updateSLA(payload);
 			} else {
-				await saveSLA({ name, description, dueTimeInMinutes: Number(dueTimeInMinutes) });
+				await saveSLA(payload);
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });

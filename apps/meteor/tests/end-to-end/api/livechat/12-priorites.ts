@@ -29,7 +29,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/sla', () => {
 		// GET
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
 			await updatePermission('view-l-room', []);
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(403);
@@ -50,7 +50,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteSLA(sla._id);
 		});
 		// POST
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [POST] livechat/sla endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
 			const response = await request
 				.post(api('livechat/sla'))
@@ -85,7 +85,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/sla/:slaId', () => {
 		// GET
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla/:slaId endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
 			await updatePermission('view-l-room', []);
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
@@ -107,7 +107,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(deleteResponse).to.not.be.rejected;
 		});
 		// PUT
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
 
 			const response = await request
@@ -141,7 +141,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteSLA(response.body.sla._id);
 		});
 		// DELETE
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [DELETE] livechat/sla/:slaId endpoint', async () => {
 			await updatePermission('manage-livechat-sla', []);
 			const response = await request
 				.delete(api('livechat/sla/123'))
