@@ -82,6 +82,16 @@ export const palette = [
 		],
 	},
 	{
+		category: 'Elevation',
+		description: 'Elevation border and shadow levels',
+		list: [
+			{ name: 'shadow-elevation-border', token: '', color: '#EBECEF' },
+			{ name: 'shadow-elevation-1', token: '', color: 'rgba(47, 52, 61, 0.1)' },
+			{ name: 'shadow-elevation-2x', token: '', color: 'rgba(47, 52, 61, 0.08)' },
+			{ name: 'shadow-elevation-2y', token: '', color: 'rgba(47, 52, 61, 0.12)' },
+		],
+	},
+	{
 		category: 'Button',
 		description: 'Primary Background',
 		list: [
