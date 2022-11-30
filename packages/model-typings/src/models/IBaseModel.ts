@@ -5,6 +5,7 @@ import type {
 	DeleteOptions,
 	DeleteResult,
 	Document,
+	EnhancedOmit,
 	Filter,
 	FindCursor,
 	FindOneAndUpdateOptions,
@@ -13,27 +14,13 @@ import type {
 	InsertOneOptions,
 	InsertOneResult,
 	ModifyResult,
-	ObjectId,
+	OptionalId,
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
 	WithId,
 } from 'mongodb';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-
-type EnhancedOmit<T, K> = string | number extends keyof T
-	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
-	: T extends any
-	? Pick<T, Exclude<keyof T, K>> // discriminated unions
-	: never;
-
-type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
-	? Record<string, unknown> extends U
-		? Exclude<U, Record<string, unknown>>
-		: unknown extends U
-		? ObjectId
-		: U
-	: ObjectId;
 
 export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
@@ -42,8 +29,7 @@ export type ResultFields<Base, Defaults> = Defaults extends void
 	? Pick<Defaults, keyof Defaults>
 	: Omit<Defaults, keyof Defaults>;
 
-export type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
-export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & {
+export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;
 };
 
