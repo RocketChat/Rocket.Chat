@@ -1,4 +1,4 @@
-import type { FederationRoomServiceListener } from '../../../application/RoomServiceListener';
+import type { FederationRoomServiceListener } from '../../../application/listener/RoomServiceListener';
 import type { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
 import { MatrixRoomReceiverConverter } from '../converters/RoomReceiver';
 import { MatrixBaseEventHandler } from './BaseEvent';

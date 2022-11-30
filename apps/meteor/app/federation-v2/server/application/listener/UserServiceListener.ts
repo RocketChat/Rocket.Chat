@@ -1,10 +1,10 @@
-import type { IFederationBridge } from '../domain/IFederationBridge';
-import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
-import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
-import { FederationService } from './AbstractFederationService';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
+import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
+import { FederationService } from '../AbstractFederationService';
 import type { FederationUserTypingStatusEventDto } from './input/UserReceiverDto';
 
 export class FederationUserServiceListener extends FederationService {

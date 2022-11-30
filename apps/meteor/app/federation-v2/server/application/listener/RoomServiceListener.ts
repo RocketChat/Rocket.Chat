@@ -1,14 +1,14 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 
-import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
-import { FederatedUser } from '../domain/FederatedUser';
-import { EVENT_ORIGIN } from '../domain/IFederationBridge';
-import type { IFederationBridge } from '../domain/IFederationBridge';
-import type { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
-import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import { DirectMessageFederatedRoom, FederatedRoom } from '../../domain/FederatedRoom';
+import { FederatedUser } from '../../domain/FederatedUser';
+import { EVENT_ORIGIN } from '../../domain/IFederationBridge';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
 import type {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
@@ -20,10 +20,10 @@ import type {
 	FederationRoomRedactEventDto,
 	FederationRoomEditExternalMessageDto,
 } from './input/RoomReceiverDto';
-import { FederationService } from './AbstractFederationService';
-import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
+import { FederationService } from '../AbstractFederationService';
+import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
-import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
+import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
