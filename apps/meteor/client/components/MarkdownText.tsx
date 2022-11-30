@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import React, { ComponentProps, FC, useMemo } from 'react';
@@ -67,6 +68,11 @@ const inlineWithoutBreaksOptions = {
 	renderer: inlineWithoutBreaks,
 };
 
+const getRegexp = (schemeSetting: string): RegExp => {
+	const schemes = schemeSetting ? schemeSetting.split(',').join('|') : '';
+	return new RegExp(`^(${schemes}):`, 'gim');
+};
+
 const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	content,
 	variant = 'document',
@@ -78,6 +84,8 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	const sanitizer = dompurify.sanitize;
 
 	let markedOptions: marked.MarkedOptions;
+
+	const schemes = useSetting('Markdown_SupportSchemesForLink') as string;
 
 	switch (variant) {
 		case 'inline':
@@ -109,8 +117,8 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 			}
 		})();
 
-		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
+		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(schemes) });
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, schemes]);
 
 	return __html ? (
 		<Box

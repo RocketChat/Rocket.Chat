@@ -55,7 +55,7 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 						<ToggleSwitch checked={useLegacyMessageTemplate} onChange={handleUseLegacyMessageTemplate} />
 					</Field.Row>
 				</Field>
-				<Callout type='warning'>{t('Use_Legacy_Message_Template_alert')}</Callout>
+				<Callout type='warning'>{t('This_is_a_deprecated_feature_alert')}</Callout>
 			</FieldGroup>
 		</Accordion.Item>
 	);
