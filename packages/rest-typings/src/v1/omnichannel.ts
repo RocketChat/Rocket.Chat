@@ -2812,14 +2812,14 @@ type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T
 
 type PUTLivechatPriority = XOR<{ name: string }, { reset: boolean }>;
 const PUTLivechatPrioritySchema = {
-	anyOf: [
+	oneOf: [
 		{
 			type: 'object',
 			properties: {
 				name: {
 					type: 'string',
 				},
-				required: ['name'],
+				required: true,
 			},
 			additionalProperties: false,
 		},
@@ -2829,7 +2829,7 @@ const PUTLivechatPrioritySchema = {
 				reset: {
 					type: 'boolean',
 				},
-				required: ['reset'],
+				required: true,
 			},
 			additionalProperties: false,
 		},
