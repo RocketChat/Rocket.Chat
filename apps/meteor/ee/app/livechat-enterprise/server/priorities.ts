@@ -33,6 +33,6 @@ export const createDefaultPriorities = async (): Promise<void> => {
 	const priorities = await LivechatPriority.find().toArray();
 
 	if (!priorities.length) {
-		console.error(await LivechatPriority.insertMany(defaultPriorities));
+		await LivechatPriority.insertMany(defaultPriorities);
 	}
 };
