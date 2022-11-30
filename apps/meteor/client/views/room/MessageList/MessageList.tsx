@@ -9,7 +9,7 @@ import { MessageProvider } from '../providers/MessageProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import Message from './components/Message';
 import MessageSystem from './components/MessageSystem';
-import { ThreadMessagePreview } from './components/ThreadMessagePreview';
+import ThreadMessagePreview from './components/ThreadMessagePreview';
 import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
