@@ -65,7 +65,7 @@ export const palette = [
 	},
 ];
 
-export const paletteDarkSidebar = {
+export const sidebarPaletteDark = {
 	...palette.reduce(
 		(rec, group) => ({
 			...rec,

@@ -1,4 +1,5 @@
 import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
+import { PaletteStyleTag as SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
 import React, { FC, Fragment, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -19,6 +20,7 @@ const AppLayout: FC = () => {
 	return (
 		<>
 			{theme && <PaletteStyleTag />}
+			<SidebarPaletteStyleTag />
 			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
 			{portals.map(({ key, node }) => (
 				<Fragment key={key} children={node} />
