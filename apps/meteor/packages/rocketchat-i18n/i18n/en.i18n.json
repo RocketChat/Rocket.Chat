@@ -1104,6 +1104,7 @@
   "convert-team_description": "Permission to convert team to channel",
   "Conversation": "Conversation",
   "Conversation_closed": "Conversation closed: __comment__.",
+  "Conversation_closed_without_comment": "Conversation closed",
   "Conversation_closing_tags": "Conversation closing tags",
   "Conversation_closing_tags_description": "Closing tags will be automatically assigned to conversations at closing.",
   "Conversation_finished": "Conversation Finished",
