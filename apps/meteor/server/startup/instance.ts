@@ -2,13 +2,8 @@ import os from 'os';
 
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 
 import { startStreamBroadcast } from '../stream/streamBroadcast';
-import { Logger } from '../lib/logger/Logger';
-
-const logger = new Logger('InstanceStartup');
 
 Meteor.startup(function () {
 	const instance = {
@@ -29,10 +24,6 @@ Meteor.startup(function () {
 	};
 
 	InstanceStatus.registerInstance('rocket.chat', instance);
-
-	if (Promise.await(InstanceStatusRaw.getActiveInstanceCount()) > 1) {
-		logger.warn(TAPi18n.__('Multiple_monolith_instances_alert'));
-	}
 
 	return startStreamBroadcast();
 });

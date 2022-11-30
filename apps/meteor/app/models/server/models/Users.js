@@ -689,7 +689,7 @@ export class Users extends Base {
 
 	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
 		const query = {
-			'emails.address': String(emailAddress).trim().toLowerCase(),
+			'emails.address': new RegExp(`^${escapeRegExp(String(emailAddress).trim())}$`, 'i'),
 			[`services.${serviceName}.id`]: userId,
 		};
 

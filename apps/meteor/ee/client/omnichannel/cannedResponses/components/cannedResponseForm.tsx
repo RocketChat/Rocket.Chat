@@ -75,7 +75,6 @@ const CannedResponseForm: FC<{
 								{...(isMonitor && { onlyMyDepartments: isMonitor })}
 								value={departmentId}
 								onChange={handleDepartmentId}
-								error={errors.departmentId}
 							/>
 							<Field.Error>{errors.departmentId}</Field.Error>
 						</Field>
