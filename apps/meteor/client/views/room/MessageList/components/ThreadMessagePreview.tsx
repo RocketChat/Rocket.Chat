@@ -56,9 +56,7 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 									{(parentMessage.data as { ignored?: boolean })?.ignored ? (
 										t('Message_Ignored')
 									) : (
-										<>
-											<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
-										</>
+										<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
 									)}
 								</>
 							)}
