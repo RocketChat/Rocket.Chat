@@ -9,8 +9,6 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 import type { ContextType } from 'react';
-import { Emitter } from '@rocket.chat/emitter';
-import $ from 'jquery';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
@@ -26,141 +24,17 @@ import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
-import './userActionIndicator.ts';
-import './messageBox.html';
-
-const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
-	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();
-
-	let _quotedMessages: IMessage[] = [];
-
-	const persist = withDebouncing({ wait: 1000 })(() => {
-		if (input.value) {
-			Meteor._localStorage.setItem(storageID, input.value);
-			return;
-		}
-
-		Meteor._localStorage.removeItem(storageID);
-	});
-
-	const notifyQuotedMessagesUpdate = (): void => {
-		emitter.emit('quotedMessagesUpdate');
-	};
-
-	input.value = Meteor._localStorage.getItem(storageID) ?? '';
-	input.addEventListener('input', persist);
-
-	const release = (): void => {
-		input.removeEventListener('input', persist);
-	};
-
-	const setText = (
-		text: string,
-		{
-			selection,
-		}: {
-			selection?:
-				| { readonly start?: number; readonly end?: number }
-				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
-		} = {},
-	): void => {
-		input.value = text;
-
-		if (typeof selection === 'function') {
-			selection = selection({ start: input.selectionStart, end: input.selectionEnd });
-		}
-
-		if (selection) {
-			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
-		}
-
-		persist();
-		$(input).trigger('change').trigger('input');
-	};
-
-	const clear = (): void => {
-		setText('');
-	};
-
-	const focus = (): void => {
-		input.focus();
-	};
-
-	const replyWith = async (text: string): Promise<void> => {
-		if (input) {
-			input.value = text;
-			input.focus();
-		}
-	};
-
-	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
-		notifyQuotedMessagesUpdate();
-		input.focus();
-	};
-
-	const dismissQuotedMessage = async (mid: IMessage['_id']): Promise<void> => {
-		_quotedMessages = _quotedMessages.filter((message) => message._id !== mid);
-		notifyQuotedMessagesUpdate();
-	};
-
-	const dismissAllQuotedMessages = async (): Promise<void> => {
-		_quotedMessages = [];
-		notifyQuotedMessagesUpdate();
-	};
-
-	const quotedMessages = {
-		get: () => _quotedMessages,
-		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
-	};
-
-	const setEditingMode = (editing: boolean): void => {
-		if (editing) {
-			input.parentElement?.classList.add('editing');
-		} else {
-			input.parentElement?.classList.remove('editing');
-		}
-	};
-
-	return {
-		release,
-		get text(): string {
-			return input.value;
-		},
-		get selection(): { start: number; end: number } {
-			return {
-				start: input.selectionStart,
-				end: input.selectionEnd,
-			};
-		},
-		setText,
-		clear,
-		focus,
-		replyWith,
-		quoteMessage,
-		dismissQuotedMessage,
-		dismissAllQuotedMessages,
-		quotedMessages,
-		setEditingMode,
-	};
-};
+import { createComposerAPI } from './createComposerAPI';
 
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	onSend?: (
-		event: Event,
-		params: {
-			value: string;
-			tshow?: boolean;
-		},
-	) => Promise<void>;
+	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
 	onResize?: () => void;
 	onEscape?: () => void;
+	onEnter?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
@@ -257,7 +131,7 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 
 		UserAction.stop(this.data.rid, USER_ACTIVITIES.USER_TYPING, { tmid: this.data.tmid });
 
-		onSend?.call(this.data, event, { value, tshow }).then(() => {
+		onSend?.call(this.data, { value, tshow }).then(() => {
 			autogrow?.update();
 			input.focus();
 		});
@@ -480,35 +354,6 @@ const handleFormattingShortcut = (event: KeyboardEvent, instance: MessageBoxTemp
 	return true;
 };
 
-let sendOnEnter;
-let sendOnEnterActive: boolean | undefined;
-
-Tracker.autorun(() => {
-	sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
-	sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' || (sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
-});
-
-const handleSubmit = (event: KeyboardEvent, instance: MessageBoxTemplateInstance) => {
-	const { which: keyCode } = event;
-
-	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
-
-	if (!isSubmitKey) {
-		return false;
-	}
-
-	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
-	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
-
-	if (isSending) {
-		instance.send(event);
-		return true;
-	}
-
-	instance.insertNewLine();
-	return true;
-};
-
 Template.messageBox.events({
 	async 'click .js-join'(event: JQuery.ClickEvent) {
 		event.stopPropagation();
@@ -519,120 +364,34 @@ Template.messageBox.events({
 
 		await call('joinRoom', this.rid, joinCode);
 	},
-	'click .js-emoji-picker'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
-		event.stopPropagation();
-		event.preventDefault();
 
-		if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
-			return;
-		}
-
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
-			return;
-		}
-
-		EmojiPicker.open(instance.source, (emoji: string) => {
-			const emojiValue = `:${emoji}: `;
-
-			const { input } = instance;
-
-			const caretPos = input.selectionStart;
-			const textAreaTxt = input.value;
-
-			input.focus();
-			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
-				input.focus();
-			}
-
-			input.selectionStart = caretPos + emojiValue.length;
-			input.selectionEnd = caretPos + emojiValue.length;
-		});
-	},
 	'focus .js-input-message'(event: JQuery.FocusEvent) {
 		KonchatNotification.removeRoomNotification(this.rid);
 		lastFocusedInput = event.currentTarget;
 	},
-	'keydown .js-input-message'(
-		this: MessageBoxTemplateInstance['data'],
-		event: JQuery.KeyDownEvent<HTMLTextAreaElement>,
-		instance: MessageBoxTemplateInstance,
-	) {
-		const { originalEvent } = event;
-		if (!originalEvent) {
-			throw new Error('Event is not an original event');
-		}
+	// 'keydown .js-input-message'(
+	// 	this: MessageBoxTemplateInstance['data'],
+	// 	event: JQuery.KeyDownEvent<HTMLTextAreaElement>,
+	// 	// instance: MessageBoxTemplateInstance,
+	// ) {
+	// 	const { originalEvent } = event;
+	// 	if (!originalEvent) {
+	// 		throw new Error('Event is not an original event');
+	// 	}
 
-		const isEventHandled = handleFormattingShortcut(originalEvent, instance) || handleSubmit(originalEvent, instance);
+	// 	// const isEventHandled = handleFormattingShortcut(originalEvent, instance) || handleSubmit(originalEvent, instance);
 
-		if (isEventHandled) {
-			event.preventDefault();
-			event.stopPropagation();
-			return;
-		}
+	// 	// if (isEventHandled) {
+	// 	// 	event.preventDefault();
+	// 	// 	event.stopPropagation();
+	// 	// 	return;
+	// 	// }
 
-		const { chatContext } = this;
-		const { currentTarget: input } = event;
+	// 	const { chatContext } = this;
+	// 	const { currentTarget: input } = event;
 
-		switch (event.key) {
-			case 'Escape': {
-				const currentEditing = chatContext?.currentEditing;
-
-				if (currentEditing) {
-					event.preventDefault();
-					event.stopPropagation();
-
-					currentEditing.reset().then((reset) => {
-						if (!reset) {
-							currentEditing?.cancel();
-						}
-					});
-
-					return;
-				}
-
-				if (!input.value.trim()) this.onEscape?.();
-				return;
-			}
-
-			case 'ArrowUp': {
-				if (event.shiftKey) {
-					return;
-				}
-
-				if (input.selectionEnd === 0) {
-					event.preventDefault();
-					event.stopPropagation();
-
-					this.onNavigateToPreviousMessage?.();
-
-					if (event.altKey) {
-						input.setSelectionRange(0, 0);
-					}
-				}
-
-				return;
-			}
-
-			case 'ArrowDown': {
-				if (event.shiftKey) {
-					return;
-				}
-
-				if (input.selectionEnd === input.value.length) {
-					event.preventDefault();
-					event.stopPropagation();
-
-					this.onNavigateToNextMessage?.();
-
-					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
-					}
-				}
-			}
-		}
-	},
+	// 	}
+	// },
 	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
 		const { rid, tmid } = this;
 		const { currentTarget: input, which: keyCode } = event;
@@ -732,46 +491,7 @@ Template.messageBox.events({
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
 	},
-	async 'click .js-send'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
-		instance.send(event as unknown as Event);
-	},
-	'click .js-action-menu'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
-		const groups = messageBox.actions.get();
-		const config = {
-			popoverClass: 'message-box',
-			columns: [
-				{
-					groups: Object.keys(groups).map((group) => {
-						const items = groups[group].map((item) => {
-							return {
-								icon: item.icon,
-								name: t(item.label),
-								type: 'messagebox-action',
-								id: item.id,
-							};
-						});
-						return {
-							title: t(group),
-							items,
-						};
-					}),
-				},
-			],
-			offsetVertical: 10,
-			direction: 'top-inverted',
-			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
-			data: {
-				rid: this.rid,
-				tmid: this.tmid,
-				prid: this.subscription.prid,
-				messageBox: instance.firstNode,
-				chat: instance.data.chatContext,
-			},
-			activeElement: event.currentTarget,
-		};
-
-		popover.open(config);
-	},
+	'click .js-action-menu'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {},
 	'click .js-message-actions .js-message-action'(
 		this: { rid: IRoom['_id']; tmid?: IMessage['_id']; subscription: IRoom },
 		event: JQuery.ClickEvent,

@@ -1,7 +1,6 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 
-		{{> userActionIndicator rid=rid tmid=tmid}}
 
 		{{#if popupConfig}}
 			{{> messagePopupConfig popupConfig}}
@@ -47,34 +46,5 @@
 					{{/if}}
 				{{/if}}
 			{{/if}}
-
-			<span class="rc-message-box__action-label js-message-actions" data-small>
-				{{#each action in actions}}
-					<span class="js-message-action" data-id="{{action.id}}">
-						{{> icon block="rc-message-box__action" icon=action.icon }}
-					</span>
-				{{/each}}
-			</span>
-
-			<span class="rc-message-box__send js-message-action js-send" disabled="{{isSendIconDisabled}}" data-small>
-				{{> icon block="rc-message-box__action" icon="send"}}
-			</span>
-		</label>
-
-		{{#if showFormattingTips}}
-			<div class="rc-message-box__toolbar-formatting">
-				{{#each formattingButton in formattingButtons}}
-					{{#if formattingButton.icon}}
-						<button class="rc-message-box__toolbar-formatting-item js-format" data-id="{{formattingButton.label}}" title="{{_ formattingButton.label}}">
-							{{> icon block="rc-message-box__toolbar-formatting-icon" icon=formattingButton.icon }}
-						</button>
-					{{else}}
-						<span class="rc-message-box__toolbar-formatting-item" title="{{_ formattingButton.label}}">
-							<a href="{{formattingButton.link}}" target="_blank" rel="noopener noreferrer" class="rc-message-box__toolbar-formatting-link">{{formattingButton.text}}</a>
-						</span>
-					{{/if}}
-				{{/each}}
-			</div>
-		{{/if}}
 	</div>
 </template>

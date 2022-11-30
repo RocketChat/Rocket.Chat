@@ -6,6 +6,7 @@ export type ComposerAPI = {
 	release(): void;
 	readonly text: string;
 	readonly selection: { readonly start: number; readonly end: number };
+	insertText(text: string): void;
 	setText(
 		text: string,
 		options?: {
