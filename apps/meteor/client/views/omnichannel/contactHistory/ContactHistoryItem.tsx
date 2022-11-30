@@ -24,7 +24,7 @@ function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItem
 	const t = useTranslation();
 	const formatDate = useFormatDateAndTime();
 	const username = history.servedBy?.username;
-	const hasClosingMessage = history.closingMessage && history.closingMessage.msg !== '';
+	const hasClosingMessage = !!history.closingMessage?.msg;
 	const onClick = (): void => {
 		setChatId(history._id);
 	};
