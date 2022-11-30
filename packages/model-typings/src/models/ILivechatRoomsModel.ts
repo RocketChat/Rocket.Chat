@@ -98,4 +98,8 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 
 	findOpen(): any;
+
+	findOpenByVisitorTokenAndDepartmentId(visitorToken: string, departmentId: string, options?: any): any;
+
+	findOpenByVisitorToken(visitorToken: string, options?: any): any;
 }

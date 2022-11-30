@@ -20,7 +20,8 @@ import type {
 	InsertManyResult,
 	InsertOneResult,
 	DeleteResult,
-	DeleteOptions,
+	CreateIndexesOptions,
+	IndexSpecification,DeleteOptions,
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import type { IRocketChatRecord, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
@@ -77,6 +78,14 @@ export abstract class BaseRaw<T, C extends DefaultFields<T> = undefined> impleme
 
 	protected modelIndexes(): IndexDescription[] | void {
 		// noop
+	}
+
+	tryEnsureIndex(index: IndexSpecification, options: CreateIndexesOptions): Promise<string> {
+		return this.col.createIndex(index, options);
+	}
+
+	tryDropIndex(index: string): Promise<Document> {
+		return this.col.dropIndex(index);
 	}
 
 	getCollectionName(): string {
