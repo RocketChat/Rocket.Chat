@@ -17,19 +17,20 @@ const getUser = (): IUser | null => Meteor.user() as IUser | null;
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
 const config: Record<string, Partial<LoginService>> = {
-	'apple': { title: 'Sign in with Apple', icon: 'apple' },
-	'facebook': { title: 'Sign in with Facebook', icon: 'facebook' },
-	'twitter': { title: 'Sign in with Twitter', icon: 'twitter' },
-	'google': { title: 'Sign in with Google', icon: 'google' },
-	'github': { title: 'Sign in with Github', icon: 'github' },
-	'github_enterprise': { title: 'Sign in with Github Enterprise', icon: 'github' },
-	'gitlab': { title: 'Sign in with Gitlab', icon: 'gitlab' },
-	'dolphin': { title: 'Sign in with Dolphin', icon: 'dophin' },
-	'drupal': { title: 'Sign in with Drupal', icon: 'drupal' },
-	'nextcloud': { title: 'Sign in with Nextcloud' },
-	'meteor-developer': { title: 'Sign in with Meteor', icon: 'meteor' },
-	'wordpress': { title: 'Sign in with WordPress', icon: 'wordpress' },
-	'linkedin': { title: 'Sign in with Linkedin', icon: 'linkedin' },
+	'apple': { title: 'Apple', icon: 'apple' },
+	'facebook': { title: 'Facebook', icon: 'facebook' },
+	'twitter': { title: 'Twitter', icon: 'twitter' },
+	'google': { title: 'Google', icon: 'google' },
+	'github': { title: 'Github', icon: 'github' },
+	'github_enterprise': { title: 'Github Enterprise', icon: 'github' },
+	'gitlab': { title: 'Gitlab', icon: 'gitlab' },
+	'dolphin': { title: 'Dolphin', icon: 'dophin' },
+	'drupal': { title: 'Drupal', icon: 'drupal' },
+	'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
+	'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
+	'meteor-developer': { title: 'Meteor', icon: 'meteor' },
+	'wordpress': { title: 'WordPress', icon: 'wordpress' },
+	'linkedin': { title: 'Linkedin', icon: 'linkedin' },
 };
 
 const logout = (): Promise<void> =>
