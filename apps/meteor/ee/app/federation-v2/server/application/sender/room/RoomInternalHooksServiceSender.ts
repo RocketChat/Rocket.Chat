@@ -12,7 +12,7 @@ import type {
 	FederationOnUsersAddedToARoomDto,
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
-} from '../../input/RoomSenderDto';
+} from '../input/RoomSenderDto';
 import { FederationServiceEE } from '../AbstractFederationService';
 
 export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {

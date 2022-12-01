@@ -1,4 +1,4 @@
 export enum MatrixRoomVisibility {
 	PRIVATE = 'private',
-	PUBLIC = 'public ',
+	PUBLIC = 'public',
 }

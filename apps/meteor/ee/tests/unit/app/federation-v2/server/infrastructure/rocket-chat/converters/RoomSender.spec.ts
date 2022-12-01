@@ -4,7 +4,7 @@ import {
 	FederationRoomInviteUserDto,
 	FederationOnRoomCreationDto,
 	FederationSetupRoomDto,
-} from '../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
+} from '../../../../../../../../app/federation-v2/server/application/sender/input/RoomSenderDto';
 import { FederationRoomSenderConverterEE } from '../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
 describe('FederationEE - Infrastructure - Matrix - FederationRoomSenderConverterEE', () => {

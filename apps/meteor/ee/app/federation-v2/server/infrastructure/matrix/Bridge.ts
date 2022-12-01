@@ -8,7 +8,7 @@ import type { MatrixEventRoomTopicChanged } from '../../../../../../app/federati
 import { MatrixEventType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
-import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import type { IFederationBridgeEE, IFederationPublicRoomsResult, IFederationSearchPublicRoomsParams } from '../../domain/IFederationBridge';
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
 	constructor(
@@ -37,11 +37,13 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				topic: roomTopic,
 				visibility,
 				preset: matrixRoomType,
+				room_alias_name: roomName,
 				creation_content: {
 					was_internally_programatically_created: true,
 				},
 			},
 		});
+		await intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
 
 		return matrixRoom.room_id;
 	}
@@ -74,5 +76,18 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 
 	public async setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
+	}
+
+	public async searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult> {
+		const { serverName, limit, roomName, pageToken } = params;
+		try {
+			return await this.bridgeInstance.getIntent().matrixClient.doRequest('POST', `/_matrix/client/v3/publicRooms?server=${ serverName }`, {}, {
+				filter: { generic_search_term: roomName },
+				limit,
+				...(pageToken ? { since: pageToken } : {}),
+			});
+		} catch (error) {
+			throw new Error('Invalid server name');
+		}
 	}
 }

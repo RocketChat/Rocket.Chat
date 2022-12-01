@@ -8,7 +8,7 @@ import type {
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationOnDirectMessageRoomCreationDto,
 	FederationRoomInviteUserDto,
-} from '../../input/RoomSenderDto';
+} from '../input/RoomSenderDto';
 import { FederationServiceEE } from '../AbstractFederationService';
 
 export class FederationDMRoomInternalHooksServiceSender extends FederationServiceEE {

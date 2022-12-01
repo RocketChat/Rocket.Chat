@@ -14,6 +14,7 @@ import { FederationFactoryEE } from './infrastructure/Factory';
 const federationBridgeEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapterEE = FederationFactoryEE.buildRocketRoomAdapter();
 const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
+const rocketMessageAdapterEE = FederationFactoryEE.buildRocketMessageAdapter();
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
@@ -39,6 +40,16 @@ export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.
 	rocketUserAdapterEE,
 	rocketFileAdapter,
 	rocketSettingsAdapter,
+	federationBridgeEE,
+);
+
+export const federationRoomApplicationServiceEE = FederationFactoryEE.buildRoomApplicationService(
+	rocketSettingsAdapter,
+	rocketUserAdapterEE,
+	rocketFileAdapter,
+	rocketRoomAdapterEE,
+	rocketNotificationAdapter,
+	rocketMessageAdapterEE,
 	federationBridgeEE,
 );
 
@@ -95,6 +106,7 @@ onToggledFeature('federation', {
 			rocketSettingsAdapter,
 		);
 		await import('./infrastructure/rocket-chat/slash-commands');
+		await import('../../../server/api/federation');
 	},
 	down: async () => {
 		await federationBridgeEE.stop();
