@@ -262,13 +262,9 @@ export abstract class BaseRaw<
 			} as unknown as TDeleted;
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne(
-				{ _id } as Filter<TDeleted>,
-				{ $set: trash },
-				{
-					upsert: true,
-				},
-			);
+			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+				upsert: true,
+			});
 		}
 
 		if (options) {

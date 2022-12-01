@@ -37,7 +37,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));
 
-	// @ts-ignore-error
 	registerModel('IMessagesModel', () => new MessagesRaw(db));
 
 	registerModel(
