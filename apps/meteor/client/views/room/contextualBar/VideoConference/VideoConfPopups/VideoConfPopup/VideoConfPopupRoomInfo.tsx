@@ -30,7 +30,7 @@ const VideoConfPopupRoomInfo = ({ room }: { room: IRoom }): ReactElement => {
 
 	return (
 		<VideoConfPopupInfo avatar={avatar} icon={<RoomIcon placement='default' room={room} />}>
-			{room.name}
+			{room.fname || room.name}
 		</VideoConfPopupInfo>
 	);
 };

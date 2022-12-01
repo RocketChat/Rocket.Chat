@@ -14,6 +14,7 @@ import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji/client';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
+import type { ChatMessages } from '../../../ui/client';
 import { fileUpload, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
 import { t, getUserPreference } from '../../../utils/client';
@@ -25,9 +26,6 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
-import './messageBoxAudioMessage.ts';
-import './messageBoxNotSubscribed.ts';
-import './messageBoxReadOnly.ts';
 import './messageBox.html';
 
 type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
@@ -36,15 +34,13 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	onSend: (
 		event: Event,
 		params: {
-			rid: string;
-			tmid?: string;
 			value: string;
 			tshow?: boolean;
 		},
-		done?: () => void,
-	) => void;
+	) => Promise<void>;
 	tshow: IMessage['tshow'];
 	subscription: ISubscription & IRoom;
+	chatMessagesInstance: ChatMessages;
 }> & {
 	state: ReactiveDict<{
 		mustJoinWithCode?: boolean;
@@ -120,16 +116,12 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 
 		const {
 			autogrow,
-			data: { rid, tmid, onSend, tshow },
+			data: { onSend, tshow },
 		} = this;
 		const { value } = input;
 		this.set('');
 
-		if (!onSend) {
-			return;
-		}
-
-		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
+		onSend?.call(this.data, event, { value, tshow }).then(() => {
 			autogrow?.update();
 			input.focus();
 		});
@@ -138,6 +130,12 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 
 Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 	let inputSetup = false;
+
+	const { chatMessagesInstance } = this.data;
+
+	chatMessagesInstance.quotedMessages.subscribe(() => {
+		this.replyMessageData.set(chatMessagesInstance.quotedMessages.get());
+	});
 
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
@@ -149,10 +147,6 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			if (this.source) {
 				inputSetup = true;
 			}
-			$input.on('dataChange', () => {
-				const messages = $input.data('reply') || [];
-				this.replyMessageData.set(messages);
-			});
 		}
 
 		if (!room) {
@@ -262,6 +256,10 @@ Template.messageBox.helpers({
 	replyMessageData() {
 		return (Template.instance() as MessageBoxTemplateInstance).replyMessageData.get();
 	},
+	onDismissReply() {
+		const { chatMessagesInstance } = (Template.instance() as MessageBoxTemplateInstance).data;
+		return (mid: IMessage['_id']) => chatMessagesInstance.quotedMessages.remove(mid);
+	},
 	isEmojiEnabled() {
 		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
@@ -281,6 +279,7 @@ Template.messageBox.helpers({
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
+
 		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
 	formattingButtons() {
@@ -300,7 +299,9 @@ Template.messageBox.helpers({
 	isFederatedRoom() {
 		const { rid } = Template.currentData();
 
-		return isRoomFederated(ChatRoom.findOne(rid));
+		const room = ChatRoom.findOne(rid);
+
+		return room && isRoomFederated(room);
 	},
 });
 

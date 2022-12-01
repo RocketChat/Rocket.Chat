@@ -23,6 +23,12 @@ declare module 'meteor/accounts-base' {
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Record<string, any> | undefined;
 
+		function updateOrCreateUserFromExternalService(
+			serviceName: string,
+			serviceData: Record<string, unknown>,
+			options: Record<string, unknown>,
+		): Record<string, unknown>;
+
 		export class ConfigError extends Error {}
 
 		export class LoginCancelledError extends Error {

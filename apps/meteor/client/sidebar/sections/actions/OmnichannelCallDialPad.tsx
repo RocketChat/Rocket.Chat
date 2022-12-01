@@ -14,11 +14,11 @@ export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {
 
 	return (
 		<Sidebar.TopBar.Action
-			title={outBoundCallsAllowed ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
 			icon='dialpad'
 			onClick={(): void => openDialModal()}
 			disabled={!outBoundCallsEnabledForUser}
 			aria-label={t('Open_Dialpad')}
+			data-tooltip={outBoundCallsAllowed ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
 			{...props}
 		/>
 	);

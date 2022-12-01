@@ -557,6 +557,7 @@
   "is_typing": "كىرگۈزۈلۈۋاتىدۇ",
   "It_works": "ئۇتۇقلۇق بولدى",
   "italics": "يانتۇ خەت نۇسخىسى",
+  "Join": "قوشۇلۇش",
   "Join_audio_call": "ئاۋازلىق سۆھبەتكە قوشۇلۇش",
   "Join_default_channels": "بەلگىلەنگەن قانالغا قوشۇلۇش",
   "Join_the_Community": "ئىجتىمائىي رايونغا قوشۇلۇش",
@@ -1126,7 +1127,7 @@
   "Use_uploaded_avatar": "باش سۈرئەتنى چىقىرىشنى ئىشلىتىش",
   "Use_url_for_avatar": "باش سۈرئەتكە ئۇلانما ئىشلىتىش",
   "User__username__is_now_a_moderator_of__room_name_": "دىكى يېغىن رەئىسى بولۇپ بولدى__room_name__ ئاللىبۇرۇن__username__ ئەزا",
-  "User__username__is_now_a_owner_of__room_name_": "نىڭ ئىگىدارى __room_name__ ھازىر بولسا __username__ ئەزا",
+  "User__username__is_now_an_owner_of__room_name_": "نىڭ ئىگىدارى __room_name__ ھازىر بولسا __username__ ئەزا",
   "User__username__removed_from__room_name__moderators": "ئۆي يېغىن رەئىسىدىن يۇيۇۋېتىلدى.__room_name__نى ئاللىبۇرۇن __username__ ئەزا",
   "User__username__removed_from__room_name__owners": "ئۆينىڭ ئىگىدارىدىن يۇيۇۋېتىلدى.__room_name__ نى __username__ئەزا",
   "User_added": "بۇ ئەزا ئاللىبۇرۇن قېتىلدى.__user_added__",
@@ -1238,5 +1239,14 @@
   "Your_file_has_been_deleted": "سىزنىڭ ھۆججىتىڭىز ئاللىبۇرۇن يۇيۇۋېتىلدى .",
   "Your_mail_was_sent_to_s": "يوللاندى %s سىزنىڭ ئىلخىتىڭىز ئاللىبۇرۇن",
   "Your_password_is_wrong": "پارول خاتا !",
-  "Your_push_was_sent_to_s_devices": "ئۈسكىنىگە يوللاندى %s سىزنىڭ ئىتتىرگىنىڭىز"
+  "Your_push_was_sent_to_s_devices": "ئۈسكىنىگە يوللاندى %s سىزنىڭ ئىتتىرگىنىڭىز",
+  "registration.page.login.errors.wrongCredentials": "ئەزا يوق ياكى پارول خاتا",
+  "registration.page.registration.waitActivationWarning": "سىزنىڭ ئاكونتىڭىز چوقۇم باشقۇرغۇچى قولى بىلەن قوزغاتقاندىن كېيىن ئاندىن كىرگىلى بولىدۇ.",
+  "registration.page.login.forgot": "پارولنى ئۇنتۇپ قېلىش",
+  "registration.component.login": "كىرىش",
+  "registration.component.resetPassword": "پارولنى قايتا بېكىتىش",
+  "registration.component.form.emailOrUsername": "ئىلخەت ياكى ئەزا نامى",
+  "registration.component.form.email": "ئىلخەت",
+  "registration.component.form.password": "پارول",
+  "registration.component.form.submit": "تاپشۇرۇش"
 }

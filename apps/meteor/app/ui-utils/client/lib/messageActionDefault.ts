@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -28,12 +29,12 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 Meteor.startup(async function () {
-	const { chatMessages } = await import('../../../ui');
+	const { ChatMessages } = await import('../../../ui/client');
 
-	const getChatMessagesFrom = (msg: IMessage): ChatMessages => {
+	const getChatMessagesFrom = (msg: IMessage): ChatMessages | undefined => {
 		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
-		return chatMessages[`${rid}-${tmid}`] || chatMessages[rid];
+		return ChatMessages.get({ rid, tmid }) ?? ChatMessages.get({ rid });
 	};
 
 	MessageAction.addButton({
@@ -61,7 +62,7 @@ Meteor.startup(async function () {
 			}
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (user._id !== message.u._id && !hasPermission('create-d')) {
+			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
 				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
@@ -78,21 +79,19 @@ Meteor.startup(async function () {
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			const { input } = getChatMessagesFrom(message);
+			const chatMessagesInstance = getChatMessagesFrom(message);
+			const input = chatMessagesInstance?.input;
 			if (!input) {
 				return;
 			}
 
 			const $input = $(input);
 
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message);
-
-			$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
+			$input.focus().data('mention-user', false).trigger('dataChange');
+			chatMessagesInstance.quotedMessages.add(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {
@@ -150,18 +149,21 @@ Meteor.startup(async function () {
 		id: 'edit-message',
 		icon: 'edit',
 		label: 'Edit',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
 			if (!element) {
 				throw new Error('Message not found');
 			}
-			getChatMessagesFrom(message).edit(element);
+			getChatMessagesFrom(message)?.edit(element);
 		},
-		condition({ message, subscription, settings }) {
+		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
 				return false;
+			}
+			if (isRoomFederated(room)) {
+				return message.u._id === Meteor.userId();
 			}
 			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.Message_AllowEditing;
@@ -191,15 +193,18 @@ Meteor.startup(async function () {
 		id: 'delete-message',
 		icon: 'trash',
 		label: 'Delete',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).confirmDeleteMsg(message);
+			getChatMessagesFrom(message)?.confirmDeleteMsg(message);
 		},
 		condition({ message, subscription, room }) {
 			if (!subscription) {
 				return false;
+			}
+			if (isRoomFederated(room)) {
+				return message.u._id === Meteor.userId();
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
@@ -300,6 +305,10 @@ Meteor.startup(async function () {
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
+				return false;
+			}
+
+			if (!user) {
 				return false;
 			}
 

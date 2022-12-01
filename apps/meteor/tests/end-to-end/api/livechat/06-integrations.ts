@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -36,6 +37,19 @@ describe('LIVECHAT - Integrations', function () {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body.settings).to.be.an('array');
+						const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
+						expect(settingIds).to.include.members([
+							'Livechat_webhookUrl',
+							'Livechat_secret_token',
+							'Livechat_webhook_on_start',
+							'Livechat_webhook_on_close',
+							'Livechat_webhook_on_chat_taken',
+							'Livechat_webhook_on_chat_queued',
+							'Livechat_webhook_on_forward',
+							'Livechat_webhook_on_offline_msg',
+							'Livechat_webhook_on_visitor_message',
+							'Livechat_webhook_on_agent_message',
+						]);
 					})
 					.end(done);
 			});
@@ -127,6 +141,32 @@ describe('LIVECHAT - Integrations', function () {
 							});
 					})
 					.then(() => done());
+			});
+		});
+	});
+
+	describe('Livechat - Webhooks', () => {
+		describe('livechat/webhook.test', () => {
+			it('should fail when user doesnt have view-livechat-webhooks permission', async () => {
+				await updatePermission('view-livechat-webhooks', []);
+				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(403);
+				expect(response.body).to.have.property('success', false);
+			});
+			it('should fail if setting Livechat_webhookUrl is not set', async () => {
+				await updateSetting('Livechat_webhookUrl', '');
+				await updatePermission('view-livechat-webhooks', ['admin', 'livechat-manager']);
+				await setTimeout(() => null, 1000);
+				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
+				expect(response.body).to.have.property('success', false);
+			});
+			it('should return true if webhook test went good', async () => {
+				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/200');
+				const response = await request.post(api('livechat/webhook.test')).set(credentials).expect(200);
+				expect(response.body.success).to.be.true;
+			});
+			it('should fail if webhook test went bad', async () => {
+				await updateSetting('Livechat_webhookUrl', 'https://httpbin.org/status/400');
+				await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 			});
 		});
 	});
