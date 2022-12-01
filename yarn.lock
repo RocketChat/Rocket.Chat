@@ -5851,14 +5851,14 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/layout@npm:next":
-  version: 0.32.0-dev.92
-  resolution: "@rocket.chat/layout@npm:0.32.0-dev.92"
+  version: 0.32.0-dev.102
+  resolution: "@rocket.chat/layout@npm:0.32.0-dev.102"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: 17.0.2
     react-dom: 17.0.2
     react-i18next: ~11.15.4
-  checksum: 5338b0b44fded01b5fe237fde73594c428c2f17b268cbbe76da75296ee4ac7ada6c3ce49d58858b98b15060664ea0c6b06563bf58b33f1e803e69a02e3501131
+  checksum: ded739fadfac1fae89060d5b4b13cd4057683f7737b39be8146f63f554bbd81d7b6406c5b40b8439c592a45d8c08bbc1cdd37d1cde0652f468a20a85ede3b20b
   languageName: node
   linkType: hard
 
