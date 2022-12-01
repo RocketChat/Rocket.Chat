@@ -2,7 +2,7 @@ import { Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction, MessageComposerToolbarActions } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo, MouseEventHandler, ReactElement, useEffect, useRef, useReducer, FormEvent } from 'react';
+import React, { memo, MouseEventHandler, ReactElement, useEffect, useRef, useReducer, FormEvent, useCallback } from 'react';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -18,6 +18,9 @@ import { useComposeChainEvents } from '../hooks/useComposeChainEvents';
 import { useMessageComposerArrowNavigation } from '../hooks/useMessageComposerArrowNavigation';
 import { useMessageComposerHandleSubmit } from '../hooks/useMessageComposerHandleSubmit';
 import MessageBoxReplies from './MessageBoxReplies';
+import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
+
 
 type MessageBoxProps = {} & MessageBoxTemplateInstance['data'];
 
@@ -108,6 +111,8 @@ export const MessageBox = ({
 
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
 
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid),[] )
+
 	// TODO: Chat context should contain isEditing state
 	return (
 		<div className={['rc-message-box rc-new', isEmbedded && 'rc-message-box--embedded'].filter(Boolean).join(' ')}>
@@ -134,11 +139,11 @@ export const MessageBox = ({
 					onKeyDown={handler}
 				/>
 				<MessageComposerToolbarActions>
-					<Button mini primary>
-						{t('join')}
-					</Button>
 
-					{!typing ? (
+					{!canSend ?
+					<Button small primary>
+						{t('join')}
+					</Button>: !typing ? (
 						<>
 							<AudioMessageRecorder rid={rid} tmid={tmid} />
 
