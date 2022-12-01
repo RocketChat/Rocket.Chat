@@ -3461,7 +3461,7 @@
   "User Search (Group Validation)": "მომხმარებლის ძებნა (ჯგუფის ვალიდაცია)",
   "User__username__is_now_a_leader_of__room_name_": "მომხმარებელი __username__ ახლა ლიდერია __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "მომხმარებელი __username__  __room_name__-ის ახლა მოდერატორია",
-  "User__username__is_now_a_owner_of__room_name_": "მომხმარებელი __username__   __room_name__-ის მფლობელი",
+  "User__username__is_now_an_owner_of__room_name_": "მომხმარებელი __username__   __room_name__-ის მფლობელი",
   "User__username__removed_from__room_name__leaders": "მომხმარებელი __username__ ამოღებულია__room_name__ლიდერებიდან",
   "User__username__removed_from__room_name__moderators": "მომხმარებელი __username__  ამოღებულია __room_name__ მოდერატორებიდან",
   "User__username__removed_from__room_name__owners": "მომხმარებელი __username__ ამოღებულია __room_name__  მფლობელებიდან",
@@ -3716,5 +3716,16 @@
   "Your_question": "თქვენი შეკითხვა",
   "Your_server_link": "თქვენი სერვერის მისამართი",
   "Your_temporary_password_is_password": "თქვენი დროებითი პაროლია არის <strong>[password]</strong>",
-  "Your_workspace_is_ready": "თქვენი სამუშაო გარემო მზად არის სამუშაოდ 🎉"
+  "Your_workspace_is_ready": "თქვენი სამუშაო გარემო მზად არის სამუშაოდ 🎉",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "აპლიკაციის მომხამრებლებს არ აქვთ უფლება პირდაპირ შემოვიდნენ",
+  "registration.page.registration.waitActivationWarning": "სანამ შეხვალთ, თქვენი ანგარიში ხელით უნდა გააქტიურდეს ადმინისტრატორის მიერ.",
+  "registration.page.login.forgot": "დაგავიწყდათ პაროლი?",
+  "registration.page.resetPassword.sent": "თუ ეს ელ.ფოსტა დარეგისტრირებულია, ჩვენ გამოგიგზავნით ინსტრუქციას, თუ როგორ შეგიძლიათ თქვენი პაროლის გადატვირთვა. თუ მალევე არ მიიღებთ მეილს გთხოვთ სცადოთ ხელახლა.",
+  "registration.component.login": "შესვლა",
+  "registration.component.resetPassword": "პაროლის განახლება",
+  "registration.component.form.emailOrUsername": "ელ.ფოსტის ან მომხმარებლის სახელი",
+  "registration.component.form.email": "ელ.ფოსტა",
+  "registration.component.form.password": "პაროლი",
+  "registration.component.form.divider": "ან",
+  "registration.component.form.submit": "წარდგენა"
 }
