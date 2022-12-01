@@ -1,14 +1,15 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
-import { MessageComposerAction } from '@rocket.chat/ui-composer';
+import { MessageComposerAction, MessageComposerToolbarActions } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo, MouseEventHandler, ReactElement, useEffect, useRef } from 'react';
+import React, { memo, MouseEventHandler, ReactElement, useEffect, useRef, useReducer, FormEvent } from 'react';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
 import { applyFormatting, formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
+import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
@@ -21,6 +22,11 @@ import MessageBoxReplies from './MessageBoxReplies';
 type MessageBoxProps = {} & MessageBoxTemplateInstance['data'];
 
 // eslint-disable-next-line react/display-name, arrow-body-style
+
+const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
+	return Boolean(event.target.value.trim());
+};
+
 export const MessageBox = ({
 	rid,
 	tmid,
@@ -32,6 +38,8 @@ export const MessageBox = ({
 	showFormattingTips,
 	subscription,
 }: MessageBoxProps): ReactElement => {
+	const [typing, setTyping] = useReducer(reducer, false);
+
 	const t = useTranslation();
 
 	const chat = useChat();
@@ -83,7 +91,7 @@ export const MessageBox = ({
 		onSend?.({
 			value: text,
 		}).then(() => {
-			chat?.composer?.setText('');
+			chat?.composer?.clear();
 		});
 	});
 
@@ -108,13 +116,16 @@ export const MessageBox = ({
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 			<div ref={shadowRef} style={shadowStyle} />
 			<div className='rc-message-box__container'>
-				<MessageComposerAction icon='emoji' disabled={!useEmojis} onClick={handleOpenEmojiPicker} />
+				<MessageComposerToolbarActions>
+					<MessageComposerAction icon='emoji' disabled={!useEmojis} onClick={handleOpenEmojiPicker} />
+				</MessageComposerToolbarActions>
 				<Box
 					is='textarea'
 					mi='x8'
 					ref={textareaRef}
 					aria-label={t('Message')}
 					name='msg'
+					onChange={setTyping}
 					style={textAreaStyle}
 					maxLength={Number.isInteger(maxLength) ? parseInt(maxLength as string) : undefined}
 					placeholder={t('Message')}
@@ -122,46 +133,58 @@ export const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 				/>
+				<MessageComposerToolbarActions>
+					<Button mini primary>
+						{t('join')}
+					</Button>
 
-				<MessageComposerAction onClick={handleSendMessage} icon='send' />
-				<MessageComposerAction
-					onClick={(event): void => {
-						const groups = messageBox.actions.get();
-						const config = {
-							popoverClass: 'message-box',
-							columns: [
-								{
-									groups: Object.keys(groups).map((group) => {
-										const items = groups[group].map((item) => ({
-											icon: item.icon,
-											name: t(item.label),
-											type: 'messagebox-action',
-											id: item.id,
-										}));
-										return {
-											title: t(group),
-											items,
-										};
-									}),
-								},
-							],
-							offsetVertical: 10,
-							direction: 'top-inverted',
-							currentTarget: event.currentTarget,
-							data: {
-								rid,
-								tmid,
-								prid: subscription?.prid,
-								messageBox: textareaRef.current,
-								chat,
-							},
-							activeElement: event.currentTarget,
-						};
+					{!typing ? (
+						<>
+							<AudioMessageRecorder rid={rid} tmid={tmid} />
 
-						popover.open(config);
-					}}
-					icon='plus'
-				/>
+							<MessageComposerAction
+								onClick={(event): void => {
+									const groups = messageBox.actions.get();
+									const config = {
+										popoverClass: 'message-box',
+										columns: [
+											{
+												groups: Object.entries(groups).map(([name, group]) => {
+													const items = group.map((item) => ({
+														icon: item.icon,
+														name: t(item.label),
+														type: 'messagebox-action',
+														id: item.id,
+													}));
+													return {
+														title: t.has(name) && t(name),
+														items,
+													};
+												}),
+											},
+										],
+										offsetVertical: 10,
+										direction: 'top-inverted',
+										currentTarget: event.currentTarget,
+										data: {
+											rid,
+											tmid,
+											prid: subscription?.prid,
+											messageBox: textareaRef.current,
+											chat,
+										},
+										activeElement: event.currentTarget,
+									};
+
+									popover.open(config);
+								}}
+								icon='plus'
+							/>
+						</>
+					) : (
+						<MessageComposerAction onClick={handleSendMessage} icon='send' />
+					)}
+				</MessageComposerToolbarActions>
 			</div>
 
 			{showFormattingTips && (
@@ -189,7 +212,7 @@ export const MessageBox = ({
 							) : (
 								<span className='rc-message-box__toolbar-formatting-item' title={label}>
 									<a href={link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
-										{text}
+										{label || text}
 									</a>
 								</span>
 							),

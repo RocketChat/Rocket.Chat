@@ -1,22 +1,22 @@
 import { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { AudioRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
-import { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	tmid: IMessage['_id'];
-	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
+	tmid?: IMessage['_id'];
 };
 
-const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, tmid }: AudioMessageRecorderProps): ReactElement | null => {
+	const chatContext = useChat();
 	const t = useTranslation();
 
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
@@ -158,30 +158,40 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		return null;
 	}
 
+	if (state === 'idle') {
+		return (
+			<MessageComposerAction
+				icon='mic'
+				className='rc-message-box__icon rc-message-box__audio-message-mic'
+				data-qa-id='audio-record'
+				onClick={handleRecordButtonClick}
+			/>
+		);
+	}
+
 	return (
 		<div className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
-					<div className='rc-message-box__icon rc-message-box__audio-message-cancel' onClick={handleCancelButtonClick}>
-						<Icon name='circle-cross' size={24} />
-					</div>
-					<div className='rc-message-box__audio-message-timer'>
+					<MessageComposerAction
+						icon='circle-cross'
+						className='rc-message-box__icon rc-message-box__audio-message-cancel'
+						onClick={handleCancelButtonClick}
+					/>
+					<Box className='rc-message-box__audio-message-timer' color='default'>
 						<span className='rc-message-box__audio-message-timer-dot'></span>
 						<span className='rc-message-box__audio-message-timer-text'>{time}</span>
-					</div>
-					<div className='rc-message-box__icon rc-message-box__audio-message-done' onClick={handleDoneButtonClick}>
-						<Icon name='circle-check' size={24} />
-					</div>
+					</Box>
+					<MessageComposerAction
+						icon='circle-check'
+						className='rc-message-box__icon rc-message-box__audio-message-done'
+						onClick={handleDoneButtonClick}
+					/>
 				</>
-			)}
-			{state === 'idle' && (
-				<div className='rc-message-box__icon rc-message-box__audio-message-mic' data-qa-id='audio-record' onClick={handleRecordButtonClick}>
-					<Icon name='mic' size={24} />
-				</div>
 			)}
 			{state === 'loading' && (
 				<div className='rc-message-box__icon'>
-					<Throbber inheritColor size='x12' />
+					<Throbber inheritColor size='x12' />a
 				</div>
 			)}
 		</div>
