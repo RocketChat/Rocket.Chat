@@ -634,6 +634,8 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.list]', () => {
+		let user;
+
 		it('should query all users in the system', (done) => {
 			request
 				.get(api('users.list'))
@@ -646,6 +648,77 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 					const myself = res.body.users.find((user) => user.username === adminUsername);
 					expect(myself).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
+		before((done) =>
+			setCustomFields({ customFieldText }, (error) => {
+				if (error) {
+					return done(error);
+				}
+
+				const username = `customField_${apiUsername}`;
+				const email = `customField_${apiEmail}`;
+				const customFields = { customFieldText: 'success' };
+
+				request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						customFields,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
+						expect(res.body).to.not.have.nested.property('user.e2e');
+						user = res.body.user;
+					})
+					.end(done);
+			}),
+		);
+
+		after((done) => clearCustomFields(done));
+
+		it('should query all users in the system by custom fields', (done) => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					customFields: 1,
+				}),
+				query: JSON.stringify({
+					'customFields.customFieldText': 'success',
+				}),
+			};
+
+			request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const queriedUser = res.body.users.find((u) => u._id === user._id);
+					expect(queriedUser).to.have.property('customFields', { customFieldText: 'success' });
 				})
 				.end(done);
 		});
