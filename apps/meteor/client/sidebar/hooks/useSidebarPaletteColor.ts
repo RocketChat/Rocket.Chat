@@ -165,6 +165,8 @@ const getStyle = (
 			--rcx-sidebar-footer-highlight-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-item-color-highlighted: ${toVar(colors.white)};
 
+			--rcx-sidebar-color-background: ${toVar(colors.sidebarSurface)};
+
 		}
 
 		.rcx-badge--danger {
