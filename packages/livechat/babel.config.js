@@ -4,6 +4,7 @@ module.exports = {
 			useBuiltIns: 'entry',
 			corejs: 3,
 		}],
+		'@babel/preset-typescript',
 	],
 	plugins: [
 		'@babel/plugin-proposal-class-properties',
