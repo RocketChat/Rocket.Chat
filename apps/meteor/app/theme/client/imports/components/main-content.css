@@ -1,8 +1,6 @@
 .main-content {
 	position: relative;
 
-	z-index: 2;
-
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 100%;

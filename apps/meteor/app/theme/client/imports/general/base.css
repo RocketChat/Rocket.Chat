@@ -91,6 +91,8 @@ button {
 
 	align-items: stretch;
 
+	transform: scale(1);
+
 	&.animated-hidden {
 		visibility: hidden;
 
