@@ -97434,6 +97434,138 @@
           ]
         }
       ]
+    },
+    "5.3.4": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27392",
+          "title": "Release 5.3.4",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27391",
+          "title": "[FIX] Thread messages being included in the room history even though they are not displayed",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "27340",
+          "title": "Release 5.3.3",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "5.4.0-rc.3": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27410",
+          "title": "i18n: Language update from LingoHub 🤖 on 2022-11-29Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27369",
+          "title": "Regression: Quoting Issue",
+          "userLogin": "henit-chobisa",
+          "milestone": "5.4.0",
+          "contributors": [
+            "henit-chobisa",
+            "yash-rajpal",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27402",
+          "title": "Regression: Update VideoConfListItem Color Tokens",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27384",
+          "title": "Regression: Old threads not opening",
+          "userLogin": "yash-rajpal",
+          "milestone": "5.4.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        }
+      ]
+    },
+    "5.4.0-rc.4": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27408",
+          "title": "Chore: Update tokens",
+          "userLogin": "juliajforesti",
+          "description": "Add/update tokens on light and dark palette:\r\n- update stroke-extra-light color\r\n- add status-warning-2\r\n- add status-service-3\r\n- add font-pure-white\r\n- add font-pure-black",
+          "contributors": [
+            "juliajforesti",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27411",
+          "title": "Regression: Login and Registration UI Tweaks",
+          "userLogin": "dougfabris",
+          "milestone": "5.4.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "27406",
+          "title": "Regression: Fix issues with ContactHistoryItem",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.4.0",
+          "contributors": [
+            "MartinSchoeler",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
