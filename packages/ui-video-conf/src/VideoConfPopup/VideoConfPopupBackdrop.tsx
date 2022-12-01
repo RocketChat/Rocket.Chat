@@ -6,6 +6,7 @@ const backdropStyle = css`
 	position: fixed;
 	top: 0;
 	min-width: 276px;
+	z-index: 2;
 	[dir='ltr'] & {
 		right: 0;
 	}
