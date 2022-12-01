@@ -59,7 +59,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 	public async onUsersAddedToARoom(roomOnUsersAddedToARoomInput: FederationOnUsersAddedToARoomDto): Promise<void> {
 		const { internalInviterId, internalRoomId, invitees, inviteComesFromAnExternalHomeServer } = roomOnUsersAddedToARoomInput;
 
-		if (inviteComesFromAnExternalHomeServer) {
+		if (inviteComesFromAnExternalHomeServer || !internalInviterId) {
 			return;
 		}
 

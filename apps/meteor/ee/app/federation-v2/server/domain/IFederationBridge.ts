@@ -5,7 +5,7 @@ import type { IFederationBridge } from '../../../../../app/federation-v2/server/
 export interface IFederationPaginationParams {
 	limit?: number;
 	pageToken?: string;
-};
+}
 
 export interface IFederationSearchPublicRoomsParams extends IFederationPaginationParams {
 	serverName: string;

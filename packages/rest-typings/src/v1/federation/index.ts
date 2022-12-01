@@ -1,6 +1,6 @@
 export type FederationPaginatedRequest<T = Record<string, boolean | number | string | object>> = {
 	count?: number;
-    pageToken?: string;
+	pageToken?: string;
 } & T;
 
 export type FederationPaginatedResult<T = Record<string, boolean | number | string | object>> = {

@@ -14,7 +14,6 @@ import { FederationFactoryEE } from './infrastructure/Factory';
 const federationBridgeEE = FederationFactoryEE.buildBridge(rocketSettingsAdapter, federationQueueInstance);
 const rocketRoomAdapterEE = FederationFactoryEE.buildRocketRoomAdapter();
 const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
-const rocketMessageAdapterEE = FederationFactoryEE.buildRocketMessageAdapter();
 
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
@@ -47,9 +46,6 @@ export const federationRoomApplicationServiceEE = FederationFactoryEE.buildRoomA
 	rocketSettingsAdapter,
 	rocketUserAdapterEE,
 	rocketFileAdapter,
-	rocketRoomAdapterEE,
-	rocketNotificationAdapter,
-	rocketMessageAdapterEE,
 	federationBridgeEE,
 );
 

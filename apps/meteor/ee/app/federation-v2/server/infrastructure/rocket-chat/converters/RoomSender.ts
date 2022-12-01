@@ -2,7 +2,6 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
 import {
-	convertExternalRoomIdToInternalRoomIdFormat,
 	extractServerNameFromExternalIdentifier,
 	formatExternalUserIdToInternalUsernameFormat,
 	isAnExternalIdentifierFormat,
@@ -192,11 +191,9 @@ export class FederationRoomSenderConverterEE {
 		});
 	}
 
-	public static toJoinPublicRoomDto(internalUserId: string, externalRoomId: string, externalRoomName: string): FederationJoinPublicRoomInputDto {
+	public static toJoinPublicRoomDto(internalUserId: string, externalRoomId: string): FederationJoinPublicRoomInputDto {
 		return new FederationJoinPublicRoomInputDto({
 			externalRoomId,
-			externalRoomName,
-			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalRoomId),
 			internalUserId,
 		});
 	}

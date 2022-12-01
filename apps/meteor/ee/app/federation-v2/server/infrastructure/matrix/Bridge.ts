@@ -10,6 +10,8 @@ import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infra
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult, IFederationSearchPublicRoomsParams } from '../../domain/IFederationBridge';
 
+const DEFAULT_TIMEOUT_IN_MS = 10000;
+
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
 	constructor(
 		protected appServiceId: string,
@@ -81,11 +83,17 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 	public async searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult> {
 		const { serverName, limit, roomName, pageToken } = params;
 		try {
-			return await this.bridgeInstance.getIntent().matrixClient.doRequest('POST', `/_matrix/client/v3/publicRooms?server=${ serverName }`, {}, {
-				filter: { generic_search_term: roomName },
-				limit,
-				...(pageToken ? { since: pageToken } : {}),
-			});
+			return await this.bridgeInstance.getIntent().matrixClient.doRequest(
+				'POST',
+				`/_matrix/client/v3/publicRooms?server=${serverName}`,
+				{},
+				{
+					filter: { generic_search_term: roomName },
+					limit,
+					...(pageToken ? { since: pageToken } : {}),
+				},
+				DEFAULT_TIMEOUT_IN_MS,
+			);
 		} catch (error) {
 			throw new Error('Invalid server name');
 		}

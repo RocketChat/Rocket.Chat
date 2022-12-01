@@ -1,18 +1,16 @@
 export interface IFederationPagination {
-    count?: number;
-    pageToken?: string;
+	count?: number;
+	pageToken?: string;
 }
 
 export interface IFederationRoomSearchPublicRoomsInputDto extends IFederationPagination {
-    serverName: string;
-    roomName?: string;
+	serverName: string;
+	roomName?: string;
 }
 
 export interface IFederationRoomJoinPublicRoomInputDto {
-    externalRoomId: string;
-    internalUserId: string;
-    externalRoomName: string;
-    normalizedRoomId: string;
+	externalRoomId: string;
+	internalUserId: string;
 }
 
 export class FederationPagination {
@@ -25,10 +23,12 @@ export class FederationPagination {
 
 	pageToken?: string;
 }
+export const isAValidExternalRoomIdFormat = (externalRoomId: string): boolean =>
+	Boolean(externalRoomId && externalRoomId.charAt(0) === '!' && externalRoomId.includes(':'));
 
 export class FederationSearchPublicRoomsInputDto extends FederationPagination {
 	constructor({ serverName, roomName, count, pageToken }: IFederationRoomSearchPublicRoomsInputDto) {
-        super({ count, pageToken });
+		super({ count, pageToken });
 		this.serverName = serverName;
 		this.roomName = roomName;
 	}
@@ -39,18 +39,19 @@ export class FederationSearchPublicRoomsInputDto extends FederationPagination {
 }
 
 export class FederationJoinPublicRoomInputDto {
-	constructor({ externalRoomId, internalUserId, externalRoomName, normalizedRoomId }: IFederationRoomJoinPublicRoomInputDto) {
+	constructor({ externalRoomId, internalUserId }: IFederationRoomJoinPublicRoomInputDto) {
+		this.validateExternalRoomId(externalRoomId);
 		this.externalRoomId = externalRoomId;
 		this.internalUserId = internalUserId;
-		this.externalRoomName = externalRoomName;
-		this.normalizedRoomId = normalizedRoomId;
 	}
 
 	externalRoomId: string;
 
 	internalUserId: string;
 
-	externalRoomName: string;
-
-	normalizedRoomId: string;
+	private validateExternalRoomId(externalRoomId: string): void {
+		if (!isAValidExternalRoomIdFormat(externalRoomId)) {
+			throw new Error('Invalid external room id format');
+		}
+	}
 }

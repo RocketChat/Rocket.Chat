@@ -10,7 +10,7 @@ import {
 	FederationRoomChangeNameDto,
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomRedactEventDto,
-} from '../../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
+} from '../../../../../../../../../app/federation-v2/server/application/listener/input/RoomReceiverDto';
 import { MatrixEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { EVENT_ORIGIN } from '../../../../../../../../../app/federation-v2/server/domain/IFederationBridge';
 import { MatrixRoomJoinRules } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomJoinRules';
