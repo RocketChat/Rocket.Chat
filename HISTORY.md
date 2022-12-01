@@ -1,6 +1,61 @@
 
 # 5.4.0 (Under Release Candidate Process)
 
+## 5.4.0-rc.4
+`2022-11-30  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update tokens ([#27408](https://github.com/RocketChat/Rocket.Chat/pull/27408))
+
+  Add/update tokens on light and dark palette:  
+  - update stroke-extra-light color  
+  - add status-warning-2  
+  - add status-service-3  
+  - add font-pure-white  
+  - add font-pure-black
+
+- Regression: Fix issues with ContactHistoryItem ([#27406](https://github.com/RocketChat/Rocket.Chat/pull/27406))
+
+- Regression: Login and Registration UI Tweaks ([#27411](https://github.com/RocketChat/Rocket.Chat/pull/27411))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliajforesti](https://github.com/juliajforesti)
+
+## 5.4.0-rc.3
+`2022-11-30  ·  4 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- i18n: Language update from LingoHub 🤖 on 2022-11-29Z ([#27410](https://github.com/RocketChat/Rocket.Chat/pull/27410))
+
+- Regression: Old threads not opening ([#27384](https://github.com/RocketChat/Rocket.Chat/pull/27384))
+
+- Regression: Quoting Issue ([#27369](https://github.com/RocketChat/Rocket.Chat/pull/27369) by [@henit-chobisa](https://github.com/henit-chobisa))
+
+- Regression: Update VideoConfListItem Color Tokens ([#27402](https://github.com/RocketChat/Rocket.Chat/pull/27402))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@henit-chobisa](https://github.com/henit-chobisa)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 5.4.0-rc.2
 `2022-11-28  ·  2 🐛  ·  5 🔍  ·  5 👩‍💻👨‍💻`
 
@@ -754,6 +809,34 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.3.4
+`2022-11-29  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Thread messages being included in the room history even though they are not displayed ([#27391](https://github.com/RocketChat/Rocket.Chat/pull/27391))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.3.3 ([#27340](https://github.com/RocketChat/Rocket.Chat/pull/27340))
+
+- Release 5.3.4 ([#27392](https://github.com/RocketChat/Rocket.Chat/pull/27392))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
 
 # 5.3.2
 `2022-11-18  ·  1 🔍  ·  3 👩‍💻👨‍💻`
