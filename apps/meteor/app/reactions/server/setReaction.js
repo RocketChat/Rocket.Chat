@@ -11,8 +11,9 @@ import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 import { AppEvents, Apps } from '../../apps/server/orchestrator';
 
-const removeUserReaction = (message, reaction, username) => {
+const removeUserReaction = (message, reaction, username, name) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	message.reactions[reaction].names.splice(message.reactions[reaction].names.indexOf(name), 1);
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
@@ -58,7 +59,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 
 	if (userAlreadyReacted) {
 		const oldMessage = JSON.parse(JSON.stringify(message));
-		removeUserReaction(message, reaction, user.username);
+		removeUserReaction(message, reaction, user.username, user.name);
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
