@@ -15,8 +15,18 @@ const AppsRoute = (): ReactElement => {
 	const appsWhatIsItRoute = useRoute('marketplace-disabled');
 	const marketplaceRoute = useRoute('marketplace-all');
 
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+	const page = useRouteParameter('page');
+
+	const isMarketplace = !context;
+
 	useEffect(() => {
 		let mounted = true;
+
+		if (!context) {
+			marketplaceRoute.replace({ context: 'all', page: 'list' });
+		}
 
 		const initialize = async (): Promise<void> => {
 			if (!canManageApps) {
@@ -40,14 +50,7 @@ const AppsRoute = (): ReactElement => {
 		return (): void => {
 			mounted = false;
 		};
-	}, [canManageApps, isAppsEngineEnabled, appsWhatIsItRoute, marketplaceRoute]);
-
-	const context = useRouteParameter('context');
-
-	const isMarketplace = !context;
-
-	const id = useRouteParameter('id');
-	const page = useRouteParameter('page');
+	}, [canManageApps, isAppsEngineEnabled, appsWhatIsItRoute, marketplaceRoute, context]);
 
 	if (!canManageApps) {
 		return <NotAuthorizedPage />;
