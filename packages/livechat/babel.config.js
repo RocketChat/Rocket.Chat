@@ -6,8 +6,6 @@ module.exports = {
 				useBuiltIns: 'entry',
 				corejs: 3,
 			},
-			'@babel/env',
-			['@babel/typescript', { jsxPragma: 'h' }],
 		],
 	],
 	plugins: [

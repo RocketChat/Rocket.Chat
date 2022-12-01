@@ -1,32 +1,15 @@
 {
 	"compilerOptions": {
 		"module": "CommonJS",
+		"moduleResolution": "node",
 		"target": "es2018",
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
-		"jsx": "preserve",
-		"jsxFactory": "h",
-		"jsxFragmentFactory": "Fragment",
-
-		/* Strict Type-Checking Options */
-		"strict": true,
 		"noImplicitAny": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": false,
-
-		/* Additional Checks */
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noImplicitReturns": false,
-		"noFallthroughCasesInSwitch": false,
-
-		/* Module Resolution Options */
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
 		"esModuleInterop": true,
-		"preserveSymlinks": true
-
 	},
 	"exclude": [
 		"./node_modules",
