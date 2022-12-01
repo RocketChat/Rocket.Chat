@@ -1,4 +1,4 @@
-import { Pagination, Divider } from '@rocket.chat/fuselage';
+import { Pagination, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useMemo, useState } from 'react';
@@ -116,23 +116,23 @@ const AppsPageContent = (): ReactElement => {
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
-					<>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
-						{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
+					<Box display='flex' flexDirection='column' height='100%' overflow='hidden'>
+						<Box overflowY='scroll'>
+							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
+							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
+						</Box>
 						{Boolean(appsResult.value.count) && (
-							<>
-								<Divider />
-								<Pagination
-									current={current}
-									itemsPerPage={itemsPerPage}
-									count={appsResult.value.total}
-									onSetItemsPerPage={onSetItemsPerPage}
-									onSetCurrent={onSetCurrent}
-									{...paginationProps}
-								/>
-							</>
+							<Pagination
+								divider
+								current={current}
+								itemsPerPage={itemsPerPage}
+								count={appsResult.value.total}
+								onSetItemsPerPage={onSetItemsPerPage}
+								onSetCurrent={onSetCurrent}
+								{...paginationProps}
+							/>
 						)}
-					</>
+					</Box>
 				)}
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />

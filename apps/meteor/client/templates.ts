@@ -56,6 +56,10 @@ createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
 
+createTemplateForComponent('marketplaceFlex', () => import('./views/marketplace/MarketplaceSidebar'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
+});
+
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
 });

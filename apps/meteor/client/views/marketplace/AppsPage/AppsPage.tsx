@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Skeleton, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { useRoute, useSetting, useMethod, useTranslation, useCurrentRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, ReactElement } from 'react';
 
@@ -41,10 +41,6 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 		context && router.push({ context, page: 'install' });
 	};
 
-	const handleMarketplaceTabClick = (): void => router.push({ context: 'all', page: 'list' });
-
-	const handleInstalledTabClick = (): void => router.push({ context: 'installed', page: 'list' });
-
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Apps')}>
@@ -67,15 +63,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Tabs>
-				<Tabs.Item onClick={handleMarketplaceTabClick} selected={context === 'all'}>
-					{t('Marketplace')}
-				</Tabs.Item>
-				<Tabs.Item onClick={handleInstalledTabClick} selected={context === 'installed'}>
-					{t('Installed')}
-				</Tabs.Item>
-			</Tabs>
-			<Page.Content overflowY='auto'>
+			<Page.Content>
 				<AppsPageContent />
 			</Page.Content>
 		</Page>

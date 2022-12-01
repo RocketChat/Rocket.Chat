@@ -12,7 +12,6 @@ type FeaturedSectionsProps = {
 
 const FeaturedAppsSections = ({ appsResult }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
-
 	const featuredApps = useFeaturedApps();
 
 	if (featuredApps.isSuccess) {
