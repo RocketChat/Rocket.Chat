@@ -89,9 +89,9 @@ button {
 
 	max-height: 100%;
 
-	align-items: stretch;
-
 	transform: scale(1);
+
+	align-items: stretch;
 
 	&.animated-hidden {
 		visibility: hidden;
