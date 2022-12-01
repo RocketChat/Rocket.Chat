@@ -29,7 +29,7 @@ if (process.env.DISABLE_MESSAGE_PARSER !== 'true') {
 
 			return message;
 		},
-		callbacks.priority.HIGH,
+		callbacks.priority.MEDIUM,
 		'markdownParser',
 	);
 }

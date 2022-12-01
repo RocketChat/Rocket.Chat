@@ -1,5 +1,5 @@
 import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import { Tile, Pagination } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
@@ -52,9 +52,10 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 	return (
 		<>
 			{users.length === 0 && (
-				<Tile fontScale='p2' elevation='0' color='info' textAlign='center'>
-					{t('No_data_found')}
-				</Tile>
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
 			)}
 			{users.length > 0 && (
 				<>

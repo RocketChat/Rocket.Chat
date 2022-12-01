@@ -1,3 +1,4 @@
+import type { RocketChatFileAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatSettingsAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedRoomEE } from '../../../domain/FederatedRoom';
@@ -18,11 +19,12 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
+		protected internalFileAdapter: RocketChatFileAdapter,
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected bridge: IFederationBridgeEE,
 	) {
-		super(bridge, internalUserAdapter, internalSettingsAdapter);
+		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
 	}
 
 	public async onRoomCreated(roomOnCreationInput: FederationOnRoomCreationDto): Promise<void> {
@@ -136,7 +138,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 		const inviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!inviterUser) {
-			await this.createFederatedUserForInviterUsingLocalInformation(internalInviterId);
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId);
 		}
 
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
@@ -180,7 +182,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(username);
 		if (!inviteeUser) {
 			const existsOnlyOnProxyServer = isInviteeFromTheSameHomeServer;
-			await this.createFederatedUser(rawInviteeId, username, existsOnlyOnProxyServer);
+			await this.createFederatedUserInternallyOnly(rawInviteeId, username, existsOnlyOnProxyServer);
 		}
 
 		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByInternalUsername(username));
