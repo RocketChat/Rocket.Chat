@@ -3,11 +3,14 @@ import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResu
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-import mem from 'mem';
+// import mem from 'mem';
 
 import { BaseRaw } from './BaseRaw';
 
-const cachedSortSetting = mem(async () => Settings.findOneById('Omnichannel_sorting_mechanism'), { maxAge: 60 * 1000 });
+const cachedSortSetting = async () => Settings.findOneById('Omnichannel_sorting_mechanism');
+// mem(
+// 	, { maxAge: 60000 } //60s
+// );
 // @ts-ignore Circular reference on field 'attachments'
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
