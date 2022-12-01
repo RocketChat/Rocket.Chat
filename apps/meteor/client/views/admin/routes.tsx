@@ -24,13 +24,6 @@ registerAdminRoute('/apps/what-is-it', {
 registerAdminRoute('/marketplace/:context?/:page?/:id?/:version?/:tab?', {
 	name: 'admin-marketplace',
 	component: lazy(() => import('./apps/AppsRoute')),
-	triggersEnter: [
-		(context, redirect): void => {
-			if (!context.params.context) {
-				redirect('/admin/marketplace/all/list');
-			}
-		},
-	],
 });
 
 registerAdminRoute('/info', {
