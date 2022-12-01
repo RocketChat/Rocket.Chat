@@ -44,7 +44,7 @@ test.describe.serial('omnichannel-triggers', () => {
 		await expect(poOmnichannelTriggers.toastMessage).toBeVisible();
 	});
 
-	test('expect update trigger name', async ({}) => {
+	test('expect update trigger name', async () => {
 		const newTriggerName = `edited-${triggersName}`;
 		await poOmnichannelTriggers.firstRowInTable.click();
 		await poOmnichannelTriggers.Name.fill(newTriggerName);
@@ -78,7 +78,7 @@ test.describe.serial('omnichannel-triggers', () => {
 		await expect(poLiveChat.firstAutoMessage).toHaveText(triggerMessage);
 	});
 
-	test('expect deleting trigger', async ({}) => {
+	test('expect deleting trigger', async () => {
 		await poOmnichannelTriggers.btnDeletefirstRowInTable.click();
 		await poOmnichannelTriggers.btnModalRemove.click();
 
