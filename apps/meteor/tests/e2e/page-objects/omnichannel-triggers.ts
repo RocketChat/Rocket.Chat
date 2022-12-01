@@ -16,15 +16,15 @@ export class OmnichannelTriggers {
 		return this.page.locator('text= New');
 	}
 
-    get Name(): Locator {
+	get Name(): Locator {
 		return this.page.locator('[placeholder="Name"]');
 	}
 
-    get Description(): Locator {
+	get Description(): Locator {
 		return this.page.locator('[placeholder="Description"]');
-	}  
+	}
 
-    get visitorTimeOnSite(): Locator {
+	get visitorTimeOnSite(): Locator {
 		return this.page.locator('text=Visitor time on site');
 	}
 
@@ -36,15 +36,15 @@ export class OmnichannelTriggers {
 		return this.page.locator('text=Chat opened by the visitor');
 	}
 
-    get addTime(): Locator {
+	get addTime(): Locator {
 		return this.page.locator('[placeholder="Time in seconds"]');
 	}
 
-    get impersonateAgent(): Locator {
+	get impersonateAgent(): Locator {
 		return this.page.locator('text=Impersonate next agent from queue');
 	}
 
-    get impersonateAgentListBox(): Locator {
+	get impersonateAgentListBox(): Locator {
 		return this.page.locator('ol[role="listbox"] >> text=Impersonate next agent from queue');
 	}
 
@@ -56,11 +56,11 @@ export class OmnichannelTriggers {
 		return this.page.locator('[placeholder="Name of agent"]');
 	}
 
-    get textArea(): Locator {
+	get textArea(): Locator {
 		return this.page.locator('textarea');
 	}
 
-    get saveBtn(): Locator {
+	get saveBtn(): Locator {
 		return this.page.locator('text=Save');
 	}
 
@@ -73,7 +73,8 @@ export class OmnichannelTriggers {
 	}
 
 	get toastMessage(): Locator {
-		return this.page.locator('text=Saved');	}
+		return this.page.locator('text=Saved');
+	}
 
 	get inputSearch() {
 		return this.page.locator('[placeholder="Search"]');
@@ -94,5 +95,4 @@ export class OmnichannelTriggers {
 	get removeToastMessage(): Locator {
 		return this.page.locator('text=Trigger removed');
 	}
-
 }
