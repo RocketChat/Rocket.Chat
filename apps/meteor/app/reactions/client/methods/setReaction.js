@@ -36,6 +36,10 @@ Meteor.methods({
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
 
+			if (message.reactions[reaction].names && message.reactions[reaction].names.indexOf(user.name) !== -1) {
+				message.reactions[reaction].names.splice(message.reactions[reaction].names.indexOf(user.name), 1);
+			}
+
 			if (message.reactions[reaction].usernames.length === 0) {
 				delete message.reactions[reaction];
 			}
@@ -55,9 +59,11 @@ Meteor.methods({
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
 					usernames: [],
+					names: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
+			message.reactions[reaction].names.push(user.name);
 
 			Messages.setReactions(messageId, message.reactions);
 			callbacks.run('setReaction', messageId, reaction);
