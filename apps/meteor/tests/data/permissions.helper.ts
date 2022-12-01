@@ -9,7 +9,7 @@ export const updatePermission = (permission:string, roles:string[]):Promise<void
 			.send({ permissions: [{ _id: permission, roles }] })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?:Error) => !err && resolve() || reject(err));
+			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
 	});
 
 export const updateManyPermissions = (permissions: { [key: string]: string[] }):Promise<void|Error> =>
@@ -20,7 +20,7 @@ export const updateManyPermissions = (permissions: { [key: string]: string[] }):
 			.send({ permissions: Object.keys(permissions).map((k) => ({_id: k, roles: permissions[k] }))})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?:Error) => !err && resolve() || reject(err));
+			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
 	});
 
 export const updateSetting = (setting:string, value:ISetting['value']):Promise<void|Error> =>
@@ -31,7 +31,7 @@ export const updateSetting = (setting:string, value:ISetting['value']):Promise<v
 			.send({ value })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?:Error) => !err && resolve() || reject(err));
+			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
 	});
 
 export const removePermissions = async (perms: string[]) => {
