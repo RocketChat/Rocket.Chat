@@ -41,12 +41,6 @@ export async function updatePriority(
 	_id: string,
 	data: Pick<ILivechatPriority, 'name'> & { reset?: boolean },
 ): Promise<ILivechatPriority | null> {
-	if (typeof data.name !== 'undefined' && typeof data.name !== 'string') {
-		throw new Error('The "name" field must be a string');
-	}
-	if (typeof data.reset !== 'undefined' && typeof data.reset !== 'boolean') {
-		throw new Error('The "reset" field must be a boolean');
-	}
 	const query = {
 		_id,
 	};

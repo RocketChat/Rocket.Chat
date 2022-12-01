@@ -294,6 +294,46 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(newPriorityResponse.body).to.have.property('dirty', true);
 			expect(newPriorityResponse.body).to.have.property('name', newName);
 		});
+		it('should fail to edit a priority with a PUT if using too many parameters', async () => {
+			const newName = faker.random.word();
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: newName,
+					reset: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('invalid-params');
+		});
+		it('should fail to edit a priority with a PUT if using an object as name', async () => {
+			const newName = faker.random.word();
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: { name: newName },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('invalid-params');
+		});
+		it('should not fail to edit a priority with a PUT if using a boolean as name (it becomes a string)', async () => {
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+		});
 		it('should fail to update a non-existing priority', async () => {
 			const response = await request
 				.put(api('livechat/priorities/123'))
