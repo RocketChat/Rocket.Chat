@@ -20,7 +20,7 @@ const AppLayout: FC = () => {
 	return (
 		<>
 			{theme && <PaletteStyleTag />}
-			<SidebarPaletteStyleTag />
+			{theme && <SidebarPaletteStyleTag />}
 			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
 			{portals.map(({ key, node }) => (
 				<Fragment key={key} children={node} />

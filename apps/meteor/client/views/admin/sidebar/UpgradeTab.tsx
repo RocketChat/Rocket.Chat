@@ -32,9 +32,9 @@ const UpgradeTab = ({ type, currentPath, trialEndDate }: UpgradeTabProps): React
 	const displayEmoji = isFullyFeature(type);
 
 	return (
-		<Sidebar.GenericItem active={currentPath === path} href={String(path)} customColors={customColors} textColor='alternative'>
+		<Sidebar.GenericItem active={currentPath === path} href={String(path)} featured>
 			<Icon name='arrow-stack-up' size='x20' mi='x4' />
-			<Box withTruncatedText fontScale='p2' mi='x4' color='alternative'>
+			<Box withTruncatedText fontScale='p2' mi='x4'>
 				{t(label)} {displayEmoji && <Emoji emojiHandle=':zap:' />}
 			</Box>
 		</Sidebar.GenericItem>

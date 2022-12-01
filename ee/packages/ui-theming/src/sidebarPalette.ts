@@ -40,8 +40,8 @@ export const palette = [
 		category: 'Stroke',
 		description: "Use as component's outline, stroke, dividers",
 		list: [
-			{ name: 'stroke-default', token: '', color: '#1D2025' },
-			{ name: 'stroke-focus', token: '', color: '#cbced1' },
+			{ name: 'stroke-default', token: '', color: '#cbced1' },
+			{ name: 'stroke-focus', token: '', color: '#EBECEF' },
 		],
 	},
 	{

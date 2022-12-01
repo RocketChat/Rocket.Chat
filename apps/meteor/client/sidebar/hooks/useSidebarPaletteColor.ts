@@ -174,9 +174,7 @@ const getStyle = (
 			--rcx-badge-colors-primary-background-color: ${toVar(colors.b500)}
 		}
 
-		.rcx-sidebar {
-			background-color: ${toVar(colors.sidebarSurface)};
-		}
+
 		`
 )(isIE11 ? ':root' : modifier);
 
