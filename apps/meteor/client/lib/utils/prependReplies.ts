@@ -22,5 +22,5 @@ export const prependReplies = async (msg: string, replies: IMessage[] = [], ment
 	);
 
 	chunks.push(msg);
-	return chunks.join(' ');
+	return chunks.join('\n');
 };
