@@ -208,8 +208,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.lengthOf(5);
 			expect(response.body.priorities[0]).to.have.property('_id');
-			expect(response.body.priorities[0]).to.have.property('name');
-			expect(response.body.priorities[0]).to.have.property('defaultValue');
+			expect(response.body.priorities[0]).to.have.property('i18n');
 			expect(response.body.priorities[0]).to.have.property('dirty');
 			priority = response.body.priorities[0];
 		});
@@ -226,7 +225,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.priorities).to.be.an('array');
 			expect(response.body.priorities).to.have.length.greaterThan(0);
 			expect(response.body.priorities[0]).to.have.property('_id');
-			expect(response.body.priorities[0]).to.have.property('name', priority.name);
 		});
 	});
 

@@ -23,7 +23,7 @@ describe('LIVECHAT - Agents', function () {
 	before((done) => {
 		updateSetting('Livechat_enabled', true)
 			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
-			.then(createAgent)
+			.then(() => createAgent())
 			.then((createdAgent) => {
 				agent = createdAgent;
 			})

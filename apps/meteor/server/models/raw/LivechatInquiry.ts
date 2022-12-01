@@ -2,10 +2,12 @@ import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, SortDirection } from 'mongodb';
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
+import mem from 'mem';
 
 import { BaseRaw } from './BaseRaw';
-import { settings } from '../../../app/settings/server';
 
+const cachedSortSetting = mem(async () => Settings.findOneById('Omnichannel_sorting_mechanism'), { maxAge: 60 * 1000 });
 // @ts-ignore Circular reference on field 'attachments'
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -155,8 +157,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async getSortingQuery(): Promise<{
 		[key: string]: SortDirection;
 	}> {
-		const sortMechanism = await settings.get('Omnichannel_sorting_mechanism');
-
+		const sortMechanism = await cachedSortSetting();
 		const $sort: {
 			[key: string]: SortDirection;
 		} = {};

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
-import { updatePermission } from '../../data/permissions.helper.js';
+import { updatePermission } from '../../data/permissions.helper';
 import { createUser, login } from '../../data/users.helper';
 import { adminUsername, password } from '../../data/user';
 

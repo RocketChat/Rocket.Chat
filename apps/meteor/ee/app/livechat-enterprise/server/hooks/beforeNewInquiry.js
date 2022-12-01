@@ -20,8 +20,13 @@ callbacks.add(
 			projection: { _id: 1, priorityWeight: 1 },
 		});
 		const [sla, priority] = Promise.await([slaP, priorityP]);
-		if ((!sla && !priority) || (sla && priority)) {
+		if (!sla && !priority) {
 			throw new Meteor.Error('error-invalid-priority', 'Invalid sla or priority', {
+				function: 'livechat.beforeInquiry',
+			});
+		}
+		if (sla && priority) {
+			throw new Meteor.Error('error-invalid-state', 'You cannot have both sla and priority assigned to the same inquiry at a time', {
 				function: 'livechat.beforeInquiry',
 			});
 		}
