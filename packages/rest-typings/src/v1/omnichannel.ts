@@ -2807,10 +2807,7 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
-type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
-type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
-
-type PUTLivechatPriority = XOR<{ name: string }, { reset: boolean }>;
+type PUTLivechatPriority = { name: string } | { reset: boolean };
 const PUTLivechatPrioritySchema = {
 	oneOf: [
 		{
