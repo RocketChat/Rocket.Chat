@@ -1,5 +1,6 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { RefObject, useEffect, useMemo } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { RefObject } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { ChatMessages } from '../../../../../app/ui/client';
 

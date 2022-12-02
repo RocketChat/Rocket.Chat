@@ -1,4 +1,4 @@
-import { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { Messages } from '../../../app/models/client';

@@ -1,9 +1,12 @@
-import { IMessage, isRoomFederated, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { memo, useMemo } from 'react';
 
-import { MessageAction, MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';

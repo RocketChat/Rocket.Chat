@@ -1,5 +1,6 @@
 import { Box, Field, Flex, PasswordInput } from '@rocket.chat/fuselage';
-import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 

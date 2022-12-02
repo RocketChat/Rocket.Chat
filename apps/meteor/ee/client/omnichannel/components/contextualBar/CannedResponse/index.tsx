@@ -1,6 +1,7 @@
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEvent, useCallback, useMemo, useState } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { ChatMessages } from '../../../../../../app/ui/client';
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';

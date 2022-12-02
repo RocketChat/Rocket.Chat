@@ -1,8 +1,10 @@
-import { IWebdavNode, IWebdavAccountIntegration, IRoom } from '@rocket.chat/core-typings';
-import { Modal, Box, IconButton, Select, SelectOption } from '@rocket.chat/fuselage';
+import type { IWebdavNode, IWebdavAccountIntegration, IRoom } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Box, IconButton, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useState, ReactElement, useEffect, useCallback, MouseEvent } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { uploadFileWithMessage } from '../../../../../app/ui/client/lib/fileUpload';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client';

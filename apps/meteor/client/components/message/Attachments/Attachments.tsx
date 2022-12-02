@@ -1,5 +1,6 @@
-import { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
-import React, { ReactElement } from 'react';
+import type { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import Item from './Item';

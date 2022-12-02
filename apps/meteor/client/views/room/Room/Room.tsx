@@ -1,5 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { createElement, memo, ReactElement, Suspense } from 'react';
+import type { ReactElement } from 'react';
+import React, { createElement, memo, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';

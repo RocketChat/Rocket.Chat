@@ -1,4 +1,5 @@
-import { IMessage, isEditedMessage, isOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
@@ -10,13 +11,14 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, UIEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactElement, UIEvent } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
-import { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
-import { CommonRoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/CommonRoomTemplateInstance';
+import type { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
+import type { CommonRoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/CommonRoomTemplateInstance';
 import { getCommonRoomEvents } from '../../../../../app/ui/client/views/app/lib/getCommonRoomEvents';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';

@@ -4,7 +4,8 @@ import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useE
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';

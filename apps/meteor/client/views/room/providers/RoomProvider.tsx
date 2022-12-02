@@ -1,6 +1,7 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
+import type { ReactNode, ContextType, ReactElement } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client';

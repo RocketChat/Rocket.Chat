@@ -1,8 +1,9 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Icon, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { AudioRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
 

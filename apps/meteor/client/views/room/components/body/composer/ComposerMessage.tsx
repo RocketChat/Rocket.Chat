@@ -1,12 +1,13 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client';
-import { ChatMessages } from '../../../../../../app/ui/client';
+import type { ChatMessages } from '../../../../../../app/ui/client';
 import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';

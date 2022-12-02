@@ -2,7 +2,8 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useCurrentRoute, useQueryStringParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';

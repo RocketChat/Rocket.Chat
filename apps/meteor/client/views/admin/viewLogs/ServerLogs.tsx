@@ -1,7 +1,8 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useStream, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useRef, useState, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import { ansispan } from './ansispan';
 

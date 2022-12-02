@@ -1,9 +1,10 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
-import { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
