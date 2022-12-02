@@ -30,7 +30,7 @@
 		"@rocket.chat/fuselage-tokens": "0.31.22",
 		"@rocket.chat/logo": "0.31.22",
 		"@storybook/addon-actions": "~6.5.10",
-		"@storybook/addon-backgrounds": "~6.5.10",
+		"@storybook/addon-backgrounds": "~6.5.14",
 		"@storybook/addon-essentials": "~6.5.10",
 		"@storybook/addon-knobs": "~6.4.0",
 		"@storybook/addon-postcss": "~2.0.0",
