@@ -1,7 +1,7 @@
 import { App, AppPermission } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
-import { handleAPIError, warnStatusChange } from '../helpers';
+import { handleAPIError, warnAppInstall } from '../helpers';
 
 type installAppProps = App & {
 	permissionsGranted: AppPermission[];
@@ -11,7 +11,7 @@ export const installApp = async ({ id, name, marketplaceVersion, permissionsGran
 	try {
 		const { status } = await Apps.installApp(id, marketplaceVersion, permissionsGranted);
 		if (status) {
-			warnStatusChange(name, status);
+			warnAppInstall(name, status);
 		}
 	} catch (error) {
 		handleAPIError(error);

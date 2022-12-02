@@ -5,7 +5,7 @@ type SubscriptionsGet = { updatedSince?: string };
 
 type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 
-type SubscriptionsRead = { rid: IRoom['_id'] } | { roomId: IRoom['_id'] };
+type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId: IRoom['_id']; readThreads?: boolean };
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
 
@@ -48,6 +48,10 @@ const SubscriptionsReadSchema = {
 				rid: {
 					type: 'string',
 				},
+				readThreads: {
+					type: 'boolean',
+					nullable: true,
+				},
 			},
 			required: ['rid'],
 			additionalProperties: false,
@@ -57,6 +61,10 @@ const SubscriptionsReadSchema = {
 			properties: {
 				roomId: {
 					type: 'string',
+				},
+				readThreads: {
+					type: 'boolean',
+					nullable: true,
 				},
 			},
 			required: ['roomId'],

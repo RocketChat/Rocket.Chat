@@ -28,6 +28,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'waitingResponse'
 		| 'responseBy'
 		| 'priorityId'
+		| 'priorityWeight'
 		| 'slaId'
 		| 'livechatData'
 		| 'departmentId'

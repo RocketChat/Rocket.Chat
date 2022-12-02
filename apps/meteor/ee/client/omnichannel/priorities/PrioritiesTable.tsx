@@ -4,6 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import GenericTable, { GenericTableCell, GenericTableRow } from '../../../../client/components/GenericTable';
+import { PriorityIcon } from './PriorityIcon';
 
 type PrioritiesTableProps = {
 	data?: Serialized<PaginatedResult<{ priorities: ILivechatPriority[] }>>;
@@ -14,9 +15,11 @@ export const PrioritiesTable = ({ data, onRowClick }: PrioritiesTableProps): Rea
 	const t = useTranslation();
 
 	const renderRow = useCallback(
-		({ _id, icon, name, i18n, dirty }) => (
+		({ _id, name, i18n, sortItem, dirty }) => (
 			<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-row-id={_id}>
-				<GenericTableCell withTruncatedText>{icon}</GenericTableCell>
+				<GenericTableCell withTruncatedText>
+					<PriorityIcon level={sortItem} />
+				</GenericTableCell>
 				<GenericTableCell withTruncatedText>{dirty ? name : t(i18n)}</GenericTableCell>
 			</GenericTableRow>
 		),

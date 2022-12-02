@@ -1,4 +1,5 @@
-import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import { isGETLivechatRoomsParams, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
@@ -18,6 +19,8 @@ const validateDateParams = (property: string, date?: string) => {
 	}
 	return parsedDate;
 };
+
+const isBoolean = (value?: string | boolean): boolean => value === 'true' || value === 'false' || typeof value === 'boolean';
 
 API.v1.addRoute(
 	'livechat/rooms',
@@ -58,7 +61,7 @@ API.v1.addRoute(
 					agents,
 					roomName,
 					departmentId,
-					open: open && open === 'true',
+					...(isBoolean(open) && { open: open === 'true' }),
 					createdAt: createdAtParam,
 					closedAt: closedAtParam,
 					tags,
@@ -67,6 +70,49 @@ API.v1.addRoute(
 					options: { offset, count, sort, fields },
 				}),
 			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/rooms/:rid/priority',
+	{
+		authRequired: true,
+		validateParams: { POST: isPOSTLivechatRoomPriorityParams },
+		permissionsRequired: {
+			POST: { permissions: ['view-l-room'], operation: 'hasAny' },
+			DELETE: { permissions: ['view-l-room'], operation: 'hasAny' },
+		},
+	},
+	{
+		async post() {
+			const { rid } = this.urlParams;
+			const { priorityId } = this.bodyParams;
+			const result = await LivechatRooms.setPriorityByRoomId(rid, priorityId);
+			if (!result) {
+				return API.v1.failure({ error: 'Error setting priority' });
+			}
+			return API.v1.success({ roomId: rid, priorityId });
+		},
+		async delete() {
+			const { rid } = this.urlParams;
+			const result = await LivechatRooms.unsetPriorityByRoomId(rid);
+			if (!result) {
+				return API.v1.failure({ error: 'Error unsetting priority' });
+			}
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/rooms/filters',
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		async get() {
+			return API.v1.success({
+				filters: (await LivechatRooms.findAvailableSources().toArray())[0].fullTypes,
+			});
 		},
 	},
 );

@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, UpdateResult, Document, FindOptions } from 'mongodb';
+import { LivechatPriority } from '@rocket.chat/models';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -21,6 +22,8 @@ declare module '@rocket.chat/model-typings' {
 		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
 		unsetSlaById(slaId: string): Promise<UpdateResult | Document>;
 		findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+		setPriorityByRoomId(roomId: string, priorityId: string): Promise<UpdateResult>;
+		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
 	}
 }
 
@@ -82,6 +85,18 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		};
 
 		return this.find(query, options);
+	}
+
+	async setPriorityByRoomId(roomId: string, priorityId: string): Promise<UpdateResult> {
+		const priority = await LivechatPriority.findOneById(priorityId);
+		if (!priority) {
+			throw new Error('Priority not found');
+		}
+		return this.updateOne({ _id: roomId }, { $set: { priorityId, priorityWeight: priority.sortItem } });
+	}
+
+	async unsetPriorityByRoomId(roomId: string): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $unset: { priorityId: 1, priorityWeight: 1 } });
 	}
 
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
