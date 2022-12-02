@@ -205,7 +205,7 @@
 		"@react-aria/color": "^3.0.0-beta.15",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
-		"@rocket.chat/apps-engine": "1.36.0-alpha.0.77",
+		"@rocket.chat/apps-engine": "1.36.0",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
