@@ -1218,4 +1218,17 @@ export class UsersRaw extends BaseRaw {
 	findOneByResetToken(token, options) {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
+
+	setFederationAvatarUrlById(userId, federationAvatarUrl) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$set: {
+					'federation.avatarUrl': federationAvatarUrl,
+				},
+			},
+		);
+	}
 }

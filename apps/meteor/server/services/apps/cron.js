@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -9,7 +8,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
-const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
+async function notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -26,32 +25,29 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 	const rocketCatMessage = 'There is one or more apps in an invalid state. Go to Administration > Apps to review.';
 	const link = '/admin/apps';
 
-	Promise.await(
-		sendMessagesToAdmins({
-			msgs: ({ adminUser }) => ({
-				msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
-			}),
-			banners: ({ adminUser }) => {
-				Promise.await(Users.removeBannerById(adminUser._id, { id }));
-
-				return [
-					{
-						id,
-						priority: 10,
-						title,
-						text,
-						modifiers: ['danger'],
-						link,
-					},
-				];
-			},
+	await sendMessagesToAdmins({
+		msgs: ({ adminUser }) => ({
+			msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(rocketCatMessage, adminUser.language)}`,
 		}),
-	);
+		banners: ({ adminUser }) => {
+			Users.removeBannerById(adminUser._id, { id });
+
+			return [
+				{
+					id,
+					priority: 10,
+					title,
+					text,
+					modifiers: ['danger'],
+					link,
+				},
+			];
+		},
+	});
 
 	return apps;
-});
-
-const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdminsAboutRenewedApps(apps) {
+}
+async function notifyAdminsAboutRenewedApps(apps) {
 	if (!apps) {
 		return;
 	}
@@ -66,17 +62,15 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdmi
 
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
-	Promise.await(
-		sendMessagesToAdmins({
-			msgs: ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
-		}),
-	);
-});
+	await sendMessagesToAdmins({
+		msgs: ({ adminUser }) => ({ msg: `${TAPi18n.__(rocketCatMessage, adminUser.language)}` }),
+	});
+}
 
-export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {
-	const token = Promise.await(getWorkspaceAccessToken());
-	const baseUrl = Promise.await(Apps.getMarketplaceUrl());
-	const workspaceIdSetting = Promise.await(Settings.getValueById('Cloud_Workspace_Id'));
+export const appsUpdateMarketplaceInfo = async () => {
+	const token = await getWorkspaceAccessToken();
+	const baseUrl = await Apps.getMarketplaceUrl();
+	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = Promise.await(Users.getActiveLocalUserCount());
 
@@ -99,8 +93,8 @@ export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUp
 		Apps.debugLog(err);
 	}
 
-	Promise.await(Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps));
-});
+	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
+};
 
 SyncedCron.add({
 	name: 'Apps-Engine:check',

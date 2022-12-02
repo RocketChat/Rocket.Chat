@@ -672,4 +672,12 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.findOne(query, options);
 	}
+
+	findFederatedRooms(options) {
+		const query = {
+			federated: true,
+		};
+
+		return this.find(query, options);
+	}
 }

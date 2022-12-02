@@ -1,5 +1,6 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
+import type { Db } from 'mongodb';
 
 import { AppFileSystemSourceStorage } from './AppFileSystemSourceStorage';
 import { AppGridFSSourceStorage } from './AppGridFSSourceStorage';
@@ -11,11 +12,11 @@ export class ConfigurableAppSourceStorage extends AppSourceStorage {
 
 	private storage: AppSourceStorage;
 
-	constructor(readonly storageType: string, filesystemStoragePath: string) {
+	constructor(readonly storageType: string, filesystemStoragePath: string, db: Db) {
 		super();
 
 		this.filesystem = new AppFileSystemSourceStorage();
-		this.gridfs = new AppGridFSSourceStorage();
+		this.gridfs = new AppGridFSSourceStorage(db);
 
 		this.setStorage(storageType);
 		this.setFileSystemStoragePath(filesystemStoragePath);

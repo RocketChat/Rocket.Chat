@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { v4 as uuid } from 'uuid';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type {
 	ILivechatMessage,
@@ -91,7 +91,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const result = await getRoom({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
-			rid: Random.id(),
+			rid: uuid(),
 			roomInfo: {
 				source: {
 					type: OmnichannelSourceType.APP,

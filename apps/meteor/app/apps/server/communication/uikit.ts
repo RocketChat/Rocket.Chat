@@ -168,7 +168,8 @@ router.post('/:appId', async (req, res, next) => {
 
 		const result = await (UiKitCoreApp as any)[type](payload); // TO-DO: fix type
 
-		res.send(result);
+		// Using ?? to always send something in the response, even if the app had no result.
+		res.send(result ?? {});
 	} catch (e) {
 		if (e instanceof Error) res.status(500).send({ error: e.message });
 		else res.status(500).send({ error: e });

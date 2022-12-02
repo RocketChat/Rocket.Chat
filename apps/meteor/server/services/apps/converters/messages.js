@@ -1,5 +1,5 @@
 import { Messages, Rooms, Users } from '@rocket.chat/models';
-import { Random } from 'meteor/random';
+import { v4 as uuid } from 'uuid';
 
 import { transformMappedData } from '../../../../app/apps/lib/misc/transformMappedData';
 
@@ -119,7 +119,7 @@ export class AppMessagesConverter {
 		const attachments = this._convertAppAttachments(message.attachments);
 
 		const newMessage = {
-			_id: message.id || Random.id(),
+			_id: message.id || uuid(),
 			...('threadId' in message && { tmid: message.threadId }),
 			rid: room._id,
 			u,

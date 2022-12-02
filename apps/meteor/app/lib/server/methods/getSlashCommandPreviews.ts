@@ -4,7 +4,8 @@ import { slashCommands } from '../../../utils/server';
 
 Meteor.methods({
 	getSlashCommandPreviews(command) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getSlashCommandPreview',
 			});
@@ -23,6 +24,6 @@ Meteor.methods({
 			});
 		}
 
-		return slashCommands.getPreviews(command.cmd, command.params, command.msg);
+		return slashCommands.getPreviews(command.cmd, command.params, command.msg, userId);
 	},
 });

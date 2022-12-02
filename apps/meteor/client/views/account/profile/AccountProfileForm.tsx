@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { IUser } from '@rocket.chat/core-typings';
 import {
 	Field,
@@ -13,7 +14,7 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, TranslationKey, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { Dispatch, ReactElement, SetStateAction, useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -37,12 +38,21 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const checkUsernameAvailability = useMethod('checkUsernameAvailability');
-	const getAvatarSuggestions = useMethod('getAvatarSuggestion');
-	const sendConfirmationEmail = useMethod('sendConfirmationEmail');
+	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
+	const getAvatarSuggestions = useEndpoint('GET', '/v1/users.getAvatarSuggestion');
+	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const [usernameError, setUsernameError] = useState<string | undefined>();
-	const [avatarSuggestions, setAvatarSuggestions] = useSafely(useState());
+	const [avatarSuggestions, setAvatarSuggestions] = useSafely(
+		useState<{
+			[key: string]: {
+				blob: string;
+				contentType: string;
+				service: string;
+				url: string;
+			};
+		}>({}),
+	);
 
 	const {
 		allowRealNameChange,
@@ -79,7 +89,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			return;
 		}
 		try {
-			await sendConfirmationEmail(email);
+			await sendConfirmationEmail({ email });
 			dispatchToastMessage({ type: 'success', message: t('Verification_email_sent') });
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -99,7 +109,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 			if (!namesRegex.test(username)) {
 				return setUsernameError(t('error-invalid-username'));
 			}
-			const isAvailable = await checkUsernameAvailability(username);
+			const isAvailable = await checkUsernameAvailability({ username });
 			if (!isAvailable) {
 				return setUsernameError(t('Username_already_exist'));
 			}
@@ -111,11 +121,11 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 
 	useEffect(() => {
 		const getSuggestions = async (): Promise<void> => {
-			const suggestions = await getAvatarSuggestions();
+			const { suggestions } = await getAvatarSuggestions();
 			setAvatarSuggestions(suggestions);
 		};
 		getSuggestions();
-	}, [getAvatarSuggestions, setAvatarSuggestions]);
+	}, [getAvatarSuggestions, setAvatarSuggestions, user]);
 
 	useEffect(() => {
 		checkUsername(username);
@@ -177,7 +187,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							username={username}
 							setAvatarObj={handleAvatar}
 							disabled={!allowUserAvatarChange}
-							suggestions={avatarSuggestions}
+							suggestions={avatarSuggestions as any}
 						/>
 					</Field>
 				),
@@ -318,7 +328,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 							{useMemo(
 								() => (
 									<Field>
-										<Field.Label>{t('Password')}</Field.Label>
+										<Field.Label>{t('New_password')}</Field.Label>
 										<Field.Row>
 											<PasswordInput
 												autoComplete='off'
@@ -360,7 +370,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 					</Grid.Item>
 				</Grid>
 			</Field>
-			<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
+			<CustomFieldsForm jsonCustomFields={undefined} customFieldsData={customFields} setCustomFieldsData={handleCustomFields} />
 		</FieldGroup>
 	);
 };

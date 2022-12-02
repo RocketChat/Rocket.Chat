@@ -1,14 +1,14 @@
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { ISubscription, IUser as ICoreUser, RoomType as CoreRoomType } from '@rocket.chat/core-typings';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { Meteor } from 'meteor/meteor';
-import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../orchestrator';
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
+import { Room } from '../../../sdk';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -20,39 +20,31 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
 		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
-		let method: string;
+		let roomType: CoreRoomType;
 
 		switch (room.type) {
 			case RoomType.CHANNEL:
-				method = 'createChannel';
+				roomType = 'c';
 				break;
 			case RoomType.PRIVATE_GROUP:
-				method = 'createPrivateGroup';
+				roomType = 'p';
 				break;
 			case RoomType.DIRECT_MESSAGE:
-				method = 'createDirectMessage';
+				roomType = 'd';
 				break;
 			default:
 				throw new Error('Only channels, private groups and direct messages can be created.');
 		}
 
-		let rid = '';
-		Meteor.runAsUser(room.creator.id, () => {
-			const extraData = Object.assign({}, rcRoom);
-			delete extraData.name;
-			delete extraData.t;
-			delete extraData.ro;
-			delete extraData.customFields;
-			let info;
-			if (room.type === RoomType.DIRECT_MESSAGE) {
-				info = Meteor.call(method, ...members);
-			} else {
-				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
-			}
-			rid = info.rid;
-		});
+		const extraData = Object.assign({}, rcRoom);
+		delete extraData.name;
+		delete extraData.t;
+		delete extraData.ro;
+		delete extraData.customFields;
 
-		return rid;
+		const { _id } = await Room.create(room.creator.id, { name: rcRoom.name, type: roomType, readOnly: rcRoom.ro, extraData, members });
+
+		return _id;
 	}
 
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {
@@ -155,20 +147,17 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		const discussion = {
-			prid: rcRoom.prid,
-			t_name: rcRoom.fname,
-			pmid: rcMessage ? rcMessage._id : undefined,
+			parentRoomId: rcRoom.prid,
+			parentMessageId: rcMessage ? rcMessage._id : undefined,
+			creatorId: room.creator.id,
+			name: rcRoom.fname,
+			members: members.length > 0 ? members : [],
 			reply: reply && reply.trim() !== '' ? reply : undefined,
-			users: members.length > 0 ? members : [],
 		};
 
-		let rid = '';
-		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call('createDiscussion', discussion);
-			rid = info.rid;
-		});
+		const { _id } = await Room.createDiscussion(discussion);
 
-		return rid;
+		return _id;
 	}
 
 	protected getModerators(roomId: string, appId: string): Promise<IUser[]> {

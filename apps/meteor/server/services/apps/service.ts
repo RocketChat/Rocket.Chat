@@ -2,6 +2,8 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { SettingValue } from '@rocket.chat/core-typings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { Db } from 'mongodb';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 
 import type { AppsPersistenceModel } from '../../../app/models/server';
 import type { IAppsService } from '../../sdk/types/IAppsService';
@@ -27,10 +29,10 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		marketplaceUrl: 'https://marketplace.rocket.chat',
 	};
 
-	constructor() {
+	constructor(db: Db) {
 		super();
 
-		this.apps = OrchestratorFactory.getOrchestrator();
+		this.apps = OrchestratorFactory.getOrchestrator(db);
 	}
 
 	async started(): Promise<void> {
@@ -41,7 +43,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		this.apps.load();
 	}
 
-	async triggerEvent(event: string, payload: Record<string, any>): Promise<any> {
+	async triggerEvent(event: string, ...payload: any): Promise<any> {
 		return this.apps.triggerEvent(event, payload);
 	}
 
@@ -83,6 +85,10 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 
 	rocketChatLoggerWarn<T>(obj: T, args: any[]) {
 		return this.apps.getRocketChatLogger()?.warn(obj, args);
+	}
+
+	getProvidedComponents(): IExternalComponent[] {
+		return this.apps.getProvidedComponents();
 	}
 
 	rocketChatLoggerError<T>(obj: T, args: any[]) {

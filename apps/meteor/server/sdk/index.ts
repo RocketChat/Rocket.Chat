@@ -25,6 +25,9 @@ import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import type { IAppsConverterService } from './types/IAppsConverterService';
 import type { IAppsManagerService } from './types/IAppsManagerService';
 import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
+import type { IUploadService } from './types/IUploadService';
+import type { ICloudService } from './types/ICloudService';
+import type { IUserService } from './types/IUserService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -37,6 +40,9 @@ export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-ap
 export const NPS = proxifyWithWait<INPSService>('nps');
 export const Team = proxifyWithWait<ITeamService>('team');
 export const Room = proxifyWithWait<IRoomService>('room');
+export const Upload = proxifyWithWait<IUploadService>('upload');
+export const User = proxifyWithWait<IUserService>('user');
+export const Cloud = proxifyWithWait<ICloudService>('cloud');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Voip = proxifyWithWait<IVoipService>('voip');
 export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichannel-voip');

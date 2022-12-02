@@ -47,7 +47,13 @@ export const slashCommands = {
 			appId,
 		} as SlashCommand;
 	},
-	run(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>, triggerId?: string | undefined): void {
+	run(
+		command: string,
+		params: string,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+		triggerId?: string | undefined,
+		userId?: string,
+	): void {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;
@@ -57,9 +63,9 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		return cmd.callback(command, params, message, triggerId);
+		return cmd.callback(command, params, message, triggerId, userId);
 	},
-	getPreviews(command: string, params: string, message: IMessage): SlashCommandPreviews | undefined {
+	getPreviews(command: string, params: string, message: IMessage, userId?: string): SlashCommandPreviews | undefined {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
 			return;
@@ -69,7 +75,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = cmd.previewer(command, params, message);
+		const previewInfo = Promise.await(cmd.previewer(command, params, message, userId)) as SlashCommandPreviews; // TODO: check if works correctly
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -82,7 +88,14 @@ export const slashCommands = {
 
 		return previewInfo;
 	},
-	executePreview(command: string, params: string, message: IMessage, preview: SlashCommandPreviewItem, triggerId: string): void {
+	executePreview(
+		command: string,
+		params: string,
+		message: IMessage,
+		preview: SlashCommandPreviewItem,
+		triggerId: string,
+		userId?: string,
+	): void {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewCallback !== 'function') {
 			return;
@@ -97,13 +110,14 @@ export const slashCommands = {
 			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return cmd.previewCallback(command, params, message, preview, triggerId);
+		return cmd.previewCallback(command, params, message, preview, triggerId, userId);
 	},
 };
 
 Meteor.methods({
 	slashCommand(command) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'slashCommand',
 			});
@@ -114,6 +128,6 @@ Meteor.methods({
 				method: 'executeSlashCommandPreview',
 			});
 		}
-		return slashCommands.run(command.cmd, command.params, command.msg, command.triggerId);
+		return slashCommands.run(command.cmd, command.params, command.msg, command.triggerId, userId);
 	},
 });

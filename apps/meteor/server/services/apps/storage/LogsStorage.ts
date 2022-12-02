@@ -3,7 +3,6 @@ import { AppConsole } from '@rocket.chat/apps-engine/server/logging';
 import type { IAppLogStorageFindOptions } from '@rocket.chat/apps-engine/server/storage';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppsLogsModel } from '@rocket.chat/model-typings';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 export class AppRealLogsStorage extends AppLogStorage {
 	constructor(private db: IAppsLogsModel) {
@@ -21,8 +20,6 @@ export class AppRealLogsStorage extends AppLogStorage {
 
 	public async storeEntries(appId: string, logger: AppConsole): Promise<ILoggerStorageEntry> {
 		const item = AppConsole.toStorageEntry(appId, logger);
-
-		item.instanceId = InstanceStatus.id();
 
 		const { insertedId } = await this.db.insertOne(item);
 
