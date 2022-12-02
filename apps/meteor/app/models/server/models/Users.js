@@ -8,7 +8,7 @@ import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server';
 
-export const queryStatusAgentOnline = (extraFilters = {}) => ({
+const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
 	...(!settings.get('Livechat_enabled_when_agent_idle') && {

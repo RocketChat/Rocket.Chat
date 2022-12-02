@@ -1,6 +1,6 @@
-import { LivechatInquiry, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { Users, LivechatInquiry } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { RoutingManager } from '../lib/RoutingManager';
 
@@ -12,12 +12,7 @@ Meteor.methods({
 			});
 		}
 
-		const [inquiry, user] = await Promise.all([
-			LivechatInquiry.findOneById(inquiryId),
-			Users.findOneOnlineAgentById(Meteor.userId(), {
-				project: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
-			}),
-		]);
+		const inquiry = LivechatInquiry.findOneById(inquiryId);
 
 		if (!inquiry) {
 			throw new Meteor.Error('error-not-found', 'Inquiry not found', {
@@ -30,6 +25,10 @@ Meteor.methods({
 				method: 'livechat:takeInquiry',
 			});
 		}
+
+		const user = Users.findOneOnlineAgentById(Meteor.userId(), {
+			project: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
+		});
 
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
