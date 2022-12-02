@@ -7,13 +7,13 @@ export class AppUsersConverter {
 	}
 
 	convertById(userId) {
-		const user = Promise.await(Users.findOneById(userId));
+		const user = Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
 
 	convertByUsername(username) {
-		const user = Promise.await(Users.findOneByUsername(username));
+		const user = Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}

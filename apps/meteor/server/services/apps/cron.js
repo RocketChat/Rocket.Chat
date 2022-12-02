@@ -72,7 +72,7 @@ export const appsUpdateMarketplaceInfo = async () => {
 	const baseUrl = await Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
-	const currentSeats = Promise.await(Users.getActiveLocalUserCount());
+	const currentSeats = await Users.getActiveLocalUserCount();
 
 	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
 	const options = {

@@ -9,7 +9,7 @@ export class AppMessagesConverter {
 	}
 
 	convertById(msgId) {
-		const msg = Promise.await(Messages.findOneById(msgId));
+		const msg = Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
@@ -37,7 +37,7 @@ export class AppMessagesConverter {
 			token: 'token',
 			blocks: 'blocks',
 			room: (message) => {
-				const result = Promise.await(this.orch.getConverters().get('rooms').convertById(message.rid));
+				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
 				delete message.rid;
 				return result;
 			},
@@ -61,7 +61,7 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				let user = Promise.await(this.orch.getConverters().get('users').convertById(message.u._id));
+				let user = this.orch.getConverters().get('users').convertById(message.u._id);
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {
@@ -82,7 +82,7 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		const room = Promise.await(Rooms.findOneById(message.room.id));
+		const room = Rooms.findOneById(message.room.id);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');
@@ -90,7 +90,7 @@ export class AppMessagesConverter {
 
 		let u;
 		if (message.sender && message.sender.id) {
-			const user = Promise.await(Users.findOneById(message.sender.id));
+			const user = Users.findOneById(message.sender.id);
 
 			if (user) {
 				u = {
@@ -109,7 +109,7 @@ export class AppMessagesConverter {
 
 		let editedBy;
 		if (message.editor) {
-			const editor = Promise.await(Users.findOneById(message.editor.id));
+			const editor = Users.findOneById(message.editor.id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,

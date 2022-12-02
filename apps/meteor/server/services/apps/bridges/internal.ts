@@ -16,13 +16,11 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
-		const records = Promise.await(
-			Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
-				projection: {
-					'u.username': 1,
-				},
-			}).toArray(),
-		);
+		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+			projection: {
+				'u.username': 1,
+			},
+		}).toArray();
 
 		if (!records || records.length === 0) {
 			return [];

@@ -8,7 +8,7 @@ export class AppDepartmentsConverter {
 	}
 
 	convertById(id) {
-		const department = Promise.await(LivechatDepartment.findOneById(id));
+		const department = LivechatDepartment.findOneById(id);
 
 		return this.convertDepartment(department);
 	}

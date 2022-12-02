@@ -9,13 +9,13 @@ export class AppRoomsConverter {
 	}
 
 	convertById(roomId) {
-		const room = Promise.await(Rooms.findOneById(roomId));
+		const room = Rooms.findOneById(roomId);
 
 		return this.convertRoom(room);
 	}
 
 	convertByName(roomName) {
-		const room = Promise.await(Rooms.findOneByName(roomName));
+		const room = Rooms.findOneByName(roomName);
 
 		return this.convertRoom(room);
 	}
@@ -27,7 +27,7 @@ export class AppRoomsConverter {
 
 		let u;
 		if (room.creator) {
-			const creator = Promise.await(Users.findOneById(room.creator.id));
+			const creator = Users.findOneById(room.creator.id);
 			u = {
 				_id: creator._id,
 				username: creator.username,
@@ -36,7 +36,7 @@ export class AppRoomsConverter {
 
 		let v;
 		if (room.visitor) {
-			const visitor = Promise.await(LivechatVisitors.findOneById(room.visitor.id));
+			const visitor = LivechatVisitors.findOneById(room.visitor.id);
 			v = {
 				_id: visitor._id,
 				username: visitor.username,
@@ -47,13 +47,13 @@ export class AppRoomsConverter {
 
 		let departmentId;
 		if (room.department) {
-			const department = Promise.await(LivechatDepartment.findOneById(room.department.id));
+			const department = LivechatDepartment.findOneById(room.department.id);
 			departmentId = department._id;
 		}
 
 		let servedBy;
 		if (room.servedBy) {
-			const user = Promise.await(Users.findOneById(room.servedBy.id));
+			const user = Users.findOneById(room.servedBy.id);
 			servedBy = {
 				_id: user._id,
 				username: user.username,
@@ -62,7 +62,7 @@ export class AppRoomsConverter {
 
 		let closedBy;
 		if (room.closedBy) {
-			const user = Promise.await(Users.findOneById(room.closedBy.id));
+			const user = Users.findOneById(room.closedBy.id);
 			closedBy = {
 				_id: user._id,
 				username: user.username,
