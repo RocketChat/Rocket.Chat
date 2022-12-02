@@ -268,7 +268,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const converter = this.orch.getConverters()?.get('departments');
 		const boundConverter = converter.convertDepartment.bind(converter);
 
-		return LivechatDepartment.findEnabledWithAgents().toArray().map(boundConverter);
+		return (await LivechatDepartment.findEnabledWithAgents().toArray()).map(boundConverter);
 	}
 
 	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {

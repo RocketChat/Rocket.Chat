@@ -78,9 +78,9 @@ export class AppMessageBridge extends MessageBridge {
 
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const users = await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } })
-			.toArray()
-			.map((s: ISubscription) => s.u._id);
+		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map(
+			(s: ISubscription) => s.u._id,
+		);
 
 		const usersToNotify = await Users.findByIds(users, { projection: { _id: 1 } }).toArray();
 
