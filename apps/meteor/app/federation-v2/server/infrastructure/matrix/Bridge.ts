@@ -11,7 +11,6 @@ import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definit
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
-import { formatExternalUserIdToInternalUsernameFormat } from './converters/RoomReceiver';
 
 let MatrixUserInstance: any;
 
@@ -103,8 +102,8 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async joinRoom(externalRoomId: string, externalUserId: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId);
+	public async joinRoom(externalRoomId: string, externalUserId: string, viaServers?: string[]): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId, viaServers);
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
@@ -240,27 +239,6 @@ export class MatrixBridge implements IFederationBridge {
 
 	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
 		return this.isUserIdFromTheSameHomeserver(externalRoomId, domain);
-	}
-
-	public async getRoomCreatorExternalUserId(
-		externalUserId: string,
-		externalRoomId: string,
-	): Promise<{ id: string; username: string } | undefined> {
-		const includeEvents = ['join'];
-		const excludeEvents = ['leave', 'ban'];
-		const members = await this.bridgeInstance
-			.getIntent(externalUserId)
-			.matrixClient.getRoomMembers(externalRoomId, undefined, includeEvents as any[], excludeEvents as any[]);
-
-		const result = members.sort((a, b) => a.timestamp - b.timestamp).shift();
-		if (!result) {
-			return;
-		}
-
-		return {
-			id: result.sender,
-			username: formatExternalUserIdToInternalUsernameFormat(result.sender),
-		};
 	}
 
 	public logFederationStartupInfo(info?: string): void {
@@ -457,6 +435,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

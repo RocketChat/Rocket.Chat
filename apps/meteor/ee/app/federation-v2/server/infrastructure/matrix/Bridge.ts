@@ -2,6 +2,7 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import type { IFederationBridgeRegistrationFile } from '../../../../../../app/federation-v2/server/domain/IFederationBridge';
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
+import { formatExternalUserIdToInternalUsernameFormat } from '../../../../../../app/federation-v2/server/infrastructure/matrix/converters/RoomReceiver';
 import type { AbstractMatrixEvent } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomNameChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomNameChanged';
 import type { MatrixEventRoomTopicChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomTopicChanged';
@@ -85,7 +86,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		try {
 			return await this.bridgeInstance.getIntent().matrixClient.doRequest(
 				'POST',
-				`/_matrix/client/v3/publicRooms?server=${serverName}`,
+				`/_matrix/client/r0/publicRooms?server=${serverName}`,
 				{},
 				{
 					filter: { generic_search_term: roomName },
@@ -97,5 +98,34 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		} catch (error) {
 			throw new Error('Invalid server name');
 		}
+	}
+
+	public async getRoomData(
+		externalUserId: string,
+		externalRoomId: string,
+	): Promise<{ creator: { id: string; username: string }; name: string } | undefined> {
+		const includeEvents = ['join'];
+		const excludeEvents = ['leave', 'ban'];
+		const members = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.getRoomMembers(externalRoomId, undefined, includeEvents as any[], excludeEvents as any[]);
+
+		const oldestFirst = members.sort((a, b) => a.timestamp - b.timestamp).shift();
+		if (!oldestFirst) {
+			return;
+		}
+
+		const roomName = await this.getRoomName(externalRoomId, externalUserId);
+		if (!roomName) {
+			return;
+		}
+
+		return {
+			creator: {
+				id: oldestFirst.sender,
+				username: formatExternalUserIdToInternalUsernameFormat(oldestFirst.sender),
+			},
+			name: roomName,
+		};
 	}
 }

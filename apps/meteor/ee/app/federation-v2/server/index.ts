@@ -46,6 +46,8 @@ export const federationRoomApplicationServiceEE = FederationFactoryEE.buildRoomA
 	rocketSettingsAdapter,
 	rocketUserAdapterEE,
 	rocketFileAdapter,
+	rocketRoomAdapterEE,
+	rocketNotificationAdapter,
 	federationBridgeEE,
 );
 

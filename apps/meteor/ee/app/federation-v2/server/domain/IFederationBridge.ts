@@ -41,4 +41,8 @@ export interface IFederationBridgeEE extends IFederationBridge {
 	setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void>;
 	setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void>;
 	searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult>;
+	getRoomData(
+		externalUserId: string,
+		externalRoomId: string,
+	): Promise<{ creator: { id: string; username: string }; name: string } | undefined>;
 }

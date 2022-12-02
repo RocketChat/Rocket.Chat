@@ -137,64 +137,8 @@ export class FederationRoomServiceListener extends FederationService {
 			await this.updateUserDisplayNameInternally(federatedInviteeUser, userProfile?.displayName);
 		}
 
-		if (wasGeneratedOnTheProxyServer) {
-			if (externalInviterId === externalInviteeId && !leave) {
-				if (FederatedRoom.isOriginalFromTheProxyServer(externalRoomId, this.internalHomeServerDomain)) {
-					const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
-					if (!federatedRoom) {
-						return;
-					}
-
-					await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-						federatedRoom.getInternalId(),
-						this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-					);
-					await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
-					return;
-				}
-				if (!affectedFederatedRoom) {
-					const externalCreator = await this.bridge.getRoomCreatorExternalUserId(externalInviteeId, externalRoomId);
-					if (!externalCreator) {
-						return;
-					}
-					const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalCreator.id);
-					if (!creatorUser) {
-						await this.createFederatedUserInternallyOnly(externalCreator.id, externalCreator.username, false);
-					}
-					const federatedCreatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalCreator.id);
-					if (!federatedCreatorUser) {
-						return;
-					}
-					const newFederatedRoom = FederatedRoom.createInstance(
-						externalRoomId,
-						normalizedRoomId,
-						federatedCreatorUser,
-						RoomType.CHANNEL,
-						externalRoomName,
-					);
-					const internalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
-					const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
-					if (!federatedRoom) {
-						return;
-					}
-					await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-						internalRoomId,
-						this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-					);
-					await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
-					return;
-				}
-				const federatedRoom = affectedFederatedRoom || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
-				if (!federatedRoom) {
-					return;
-				}
-				await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-					federatedRoom.getInternalId(),
-					this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-				);
-				await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
-				return;
-			}
+		if (wasGeneratedOnTheProxyServer && ((externalInviterId === externalInviteeId && !leave) || !affectedFederatedRoom)) {
+			return;
 		}
 
 		if (!wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {

@@ -11,6 +11,8 @@ export interface IFederationRoomSearchPublicRoomsInputDto extends IFederationPag
 export interface IFederationRoomJoinPublicRoomInputDto {
 	externalRoomId: string;
 	internalUserId: string;
+	normalizedRoomId: string;
+	externalRoomHomeServerName: string;
 }
 
 export class FederationPagination {
@@ -39,13 +41,19 @@ export class FederationSearchPublicRoomsInputDto extends FederationPagination {
 }
 
 export class FederationJoinPublicRoomInputDto {
-	constructor({ externalRoomId, internalUserId }: IFederationRoomJoinPublicRoomInputDto) {
+	constructor({ externalRoomId, internalUserId, normalizedRoomId, externalRoomHomeServerName }: IFederationRoomJoinPublicRoomInputDto) {
 		this.validateExternalRoomId(externalRoomId);
 		this.externalRoomId = externalRoomId;
 		this.internalUserId = internalUserId;
+		this.normalizedRoomId = normalizedRoomId;
+		this.externalRoomHomeServerName = externalRoomHomeServerName;
 	}
 
 	externalRoomId: string;
+
+	normalizedRoomId: string;
+
+	externalRoomHomeServerName: string;
 
 	internalUserId: string;
 

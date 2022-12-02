@@ -99,9 +99,18 @@ export class FederationFactoryEE {
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		rocketUserAdapter: RocketChatUserAdapterEE,
 		rocketFileAdapter: RocketChatFileAdapter,
+		rocketRoomAdapter: RocketChatRoomAdapterEE,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
 	): FederationRoomApplicationServiceEE {
-		return new FederationRoomApplicationServiceEE(rocketSettingsAdapter, rocketFileAdapter, rocketUserAdapter, bridge);
+		return new FederationRoomApplicationServiceEE(
+			rocketSettingsAdapter,
+			rocketFileAdapter,
+			rocketUserAdapter,
+			rocketRoomAdapter,
+			rocketNotificationAdapter,
+			bridge,
+		);
 	}
 
 	public static setupListeners(
