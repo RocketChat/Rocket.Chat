@@ -13,6 +13,7 @@ export const adminFields: Partial<Record<keyof IRoom, 1>> = {
 	muted: 1,
 	unmuted: 1,
 	ro: 1,
+	reactWhenReadOnly: 1,
 	default: 1,
 	favorite: 1,
 	featured: 1,

@@ -7,6 +7,7 @@ settingsRegistry.add('IssueLinks_Enabled', false, {
 	group: 'Message',
 	section: 'Issue_Links',
 	public: true,
+	alert: 'This_is_a_deprecated_feature_alert',
 });
 
 settingsRegistry.add('IssueLinks_Template', '', {
@@ -16,4 +17,5 @@ settingsRegistry.add('IssueLinks_Template', '', {
 	group: 'Message',
 	section: 'Issue_Links',
 	public: true,
+	alert: 'This_is_a_deprecated_feature_alert',
 });

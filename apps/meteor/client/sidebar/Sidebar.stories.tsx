@@ -1,5 +1,5 @@
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
+import { UserContext, SettingsContext, LoginService } from '@rocket.chat/ui-contexts';
 import { Meta, Story } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import React, { ContextType } from 'react';
@@ -86,9 +86,13 @@ const userContextValue: ContextType<typeof UserContext> = {
 	],
 	querySubscriptions: () => [() => () => undefined, () => subscriptions],
 	querySubscription: () => [() => () => undefined, () => undefined],
-	loginWithPassword: () => Promise.resolve(undefined),
-	logout: () => Promise.resolve(undefined),
 	queryRoom: () => [() => () => undefined, () => undefined],
+
+	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
+	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
+	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
+	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
+	logout: () => Promise.resolve(),
 };
 
 export const Sidebar: Story = () => (

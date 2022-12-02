@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+import { queryClient } from '../lib/queryClient';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
 
@@ -80,9 +81,23 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 		[cachedCollection],
 	);
 
+	const settingsChangeCallback = (changes: { _id: string }[]): void => {
+		changes.forEach((val) => {
+			switch (val._id) {
+				case 'Enterprise_License':
+					queryClient.invalidateQueries(['licenses']);
+					break;
+
+				default:
+					break;
+			}
+		});
+	};
+
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
 		async (changes) => {
+			await settingsChangeCallback(changes);
 			await saveSettings(changes);
 		},
 		[saveSettings],

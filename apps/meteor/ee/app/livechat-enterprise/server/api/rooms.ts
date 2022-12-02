@@ -11,7 +11,7 @@ API.v1.addRoute(
 	'livechat/room.onHold',
 	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'] },
 	{
-		post() {
+		async post() {
 			const { roomId } = this.bodyParams;
 			if (!roomId || roomId.trim() === '') {
 				return API.v1.failure('Invalid room Id');
@@ -49,7 +49,7 @@ API.v1.addRoute(
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
-			LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
+			await LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
 
 			return API.v1.success();
 		},

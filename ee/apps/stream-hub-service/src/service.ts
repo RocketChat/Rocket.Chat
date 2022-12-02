@@ -5,12 +5,9 @@ import { api } from '../../../../apps/meteor/server/sdk/api';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
+import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const PORT = process.env.PORT || 3035;
-
-const instancePing = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10000;
-
-const maxDocMs = instancePing * 4; // 4 times the ping interval
 
 (async () => {
 	const db = await getConnection();
@@ -25,9 +22,10 @@ const maxDocMs = instancePing * 4; // 4 times the ping interval
 	const { StreamHub } = await import('./StreamHub');
 	const { DatabaseWatcher } = await import('../../../../apps/meteor/server/database/DatabaseWatcher');
 
-	const watcher = new DatabaseWatcher({ db });
+	// TODO having to import Logger to pass as a param is a temporary solution. logger should come from the service (either from broker or api)
+	const watcher = new DatabaseWatcher({ db, logger: Logger });
 
-	api.registerService(new StreamHub(watcher));
+	api.registerService(new StreamHub(watcher, Logger));
 
 	await api.start();
 
@@ -36,8 +34,7 @@ const maxDocMs = instancePing * 4; // 4 times the ping interval
 			try {
 				await api.nodeList();
 
-				const lastDocMs = watcher.getLastDocDelta();
-				if (lastDocMs > maxDocMs) {
+				if (watcher.isLastDocDelayed()) {
 					throw new Error('not healthy');
 				}
 			} catch (err) {

@@ -68,14 +68,14 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			logger.info('Message sent: %s', info.messageId);
 			return info;
 		})
-		.catch((error) => {
-			logger.error('Error sending Email reply: %s', error.message);
+		.catch((err) => {
+			logger.error({ msg: 'Error sending Email reply', err });
 
 			if (!options?.msgId) {
 				return;
 			}
 
-			sendErrorReplyMessage(error.message, options);
+			sendErrorReplyMessage(err.message, options);
 		});
 }
 
