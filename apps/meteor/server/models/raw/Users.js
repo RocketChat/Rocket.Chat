@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { queryStatusAgentOnline } from '../../../app/models/server/models/Users';
 
 export class UsersRaw extends BaseRaw {
 	constructor(db, trash) {
@@ -1181,5 +1182,9 @@ export class UsersRaw extends BaseRaw {
 				},
 			},
 		);
+	}
+
+	findOneOnlineAgentById(userId, options) {
+		return this.findOne(queryStatusAgentOnline({ _id: userId }), options);
 	}
 }

@@ -358,7 +358,8 @@ describe('LIVECHAT - Agents', function () {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
-			await takeInquiry(inq._id);
+			const roomUpdate = await takeInquiry(inq._id);
+			expect(roomUpdate).to.have.property('success', true);
 
 			const { body } = await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`));
 			expect(body).to.have.property('success', true);

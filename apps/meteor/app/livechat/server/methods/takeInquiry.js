@@ -12,7 +12,12 @@ Meteor.methods({
 			});
 		}
 
-		const inquiry = LivechatInquiry.findOneById(inquiryId);
+		const [inquiry, user] = await Promise.all([
+			LivechatInquiry.findOneById(inquiryId),
+			Users.findOneOnlineAgentById(Meteor.userId(), {
+				project: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
+			}),
+		]);
 
 		if (!inquiry) {
 			throw new Meteor.Error('error-not-found', 'Inquiry not found', {
@@ -26,9 +31,6 @@ Meteor.methods({
 			});
 		}
 
-		const user = Users.findOneOnlineAgentById(Meteor.userId(), {
-			project: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
-		});
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 				method: 'livechat:takeInquiry',
