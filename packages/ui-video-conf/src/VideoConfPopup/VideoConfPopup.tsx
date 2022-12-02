@@ -9,6 +9,7 @@ export const VideoConfPopupContainer = styled('div', ({ position: _position, ...
 	box-shadow: 0px 0px 2px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
 	background-color: ${Palette.surface['surface-light'].toString()};
+	border: 1px solid ${Palette.stroke['stroke-extra-light'].toString()}
 	border-radius: 0.25rem;
 	top: ${(p): string => (p.position ? `${p.position}px` : '0')};
 	left: -${(p): string => (p.position ? `${p.position}px` : '0')};
