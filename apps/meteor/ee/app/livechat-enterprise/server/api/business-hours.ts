@@ -3,7 +3,7 @@ import { findBusinessHours } from '../business-hour/lib/business-hour';
 
 API.v1.addRoute(
 	'livechat/business-hours',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'] },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();

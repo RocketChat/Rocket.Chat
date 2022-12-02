@@ -19,8 +19,8 @@
   "A_new_owner_will_be_assigned_automatically_to__count__rooms": "سيتم تعيين مالك جديد تلقائيًا إلى <span style=\"font-weight: bold;\">__count__</span> من الغرف.",
   "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "سيتم تعيين مالك جديد تلقائيًا إلى الغرفة <span style=\"font-weight: bold;\"> __roomName__ </span>.",
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "سيتم تعيين مالك جديد تلقائيًا إلى هذه الغرف البالغ عددها <span style=\"font-weight: bold;\">__count__</span> :<br/> __rooms__.",
-  "Accept": "قبول",
   "Accept_Call": "قبول المكالمة",
+  "Accept": "قبول",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "قبول طلبات الدردشة الواردة عبر القناة متعددة الاتجاهات وإن لم يكن هناك وكلاء على الإنترنت",
   "Accept_new_livechats_when_agent_is_idle": "قبول طلبات الدردشة الجديدة عبر القناة متعددة الاتجاهات عندما يكون الوكيل معطلاً",
   "Accept_with_no_online_agents": "القبول حال عدم وجدود وكلاء على الإنترنت",
@@ -1975,7 +1975,6 @@
   "files": "الملفات",
   "Files": "الملفات",
   "Files_only": "إزالة الملفات المرفقة فقط، والحفاظ على الرسائل",
-  "files_pruned": "الملفات المنقحة",
   "FileSize_Bytes": "__fileSize__ بايت",
   "FileSize_KB": "__fileSize__ كيلوبايت",
   "FileSize_MB": "__fileSize__ ميجابايت",
@@ -2116,6 +2115,7 @@
   "Global_purge_override_warning": "توجد سياسة عامة للاحتفاظ. إذا تركت \"تجاوز نهج الاستبقاء العام\" قيد إيقاف التشغيل، فيمكنك فقط تطبيق سياسة أكثر صرامة من السياسة العامة.",
   "Global_Search": "بحث عام",
   "Go_to_your_workspace": "الانتقال إلى مساحة العمل الخاصة بك",
+  "Hold_Call": "إخفاء المكالمة",
   "GoogleCloudStorage": "التخزين السحابي على Google",
   "GoogleNaturalLanguage_ServiceAccount_Description": "ملف JSON لمفتاح حساب الخدمة. يمكن العثور على مزيد من المعلومات [هنا](https://cloud.google.com/natural-language/docs/common/auth#set_up_a_service_account)",
   "GoogleTagManager_id": "معرف مدير علامات Google",
@@ -2160,7 +2160,6 @@
   "Highlights_List": "تظليل الكلمات",
   "History": "المحفوظات",
   "Hold_Time": "إخفاء الاسم",
-  "Hold_Call": "إخفاء المكالمة",
   "Home": "الصفحة الرئيسية",
   "Host": "مضيف",
   "Hospitality_Businness": "أعمال الضيافة",
@@ -4526,7 +4525,7 @@
   "User Search (Group Validation)": "البحث عن المستخدم (التحقق من المجموعة)",
   "User__username__is_now_a_leader_of__room_name_": "أصبح المستخدم __username__ الآن قائدًا لـ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "المستخدم __username__ هو الآن مشرف على __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
   "User__username__muted_in_room__roomName__": "تم كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User__username__removed_from__room_name__leaders": "تمت إزالة المستخدم __username__ من قادة __room_name__",
   "User__username__removed_from__room_name__moderators": "تمت إزالة المستخدم __username__ من مشرفي __room_name__",
@@ -4902,13 +4901,29 @@
   "Your_TOTP_has_been_reset": "تمت إعادة تعيين TOTP الثنائي.",
   "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة للاستخدام 🎉",
   "Zapier": "Zapier",
+  "registration.page.login.errors.wrongCredentials": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
+  "registration.page.login.errors.loginBlockedForIp": "تم حظر تسجيل الدخول مؤقتًا لعنوان IP هذا",
+  "registration.page.login.errors.loginBlockedForUser": "تم حظر تسجيل الدخول مؤقتا لهذا المستخدم",
+  "registration.page.login.errors.licenseUserLimitReached": "تم بلوغ الحد الأقصى لعدد المستخدمين.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "لا يُسمح لمستخدمي التطبيق بتسجيل الدخول مباشرة.",
+  "registration.page.registration.waitActivationWarning": "قبل أن تتمكن من تسجيل الدخول، يجب تفعيل حسابك يدويًا بواسطة المسؤول.",
+  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
+  "registration.page.login.forgot": "نسيت كلمة السر",
+  "registration.page.resetPassword.sent": "إن كان البريد الإلكتروني مسجلاً، فسنرسل تعليمات إعادة تعيين كلمة المرور الخاصة بك. إذا لم تتلقَّ بريداً إلكترونيًا في وقت قريب، فيرجى العودة والمحاولة مرة أخرى.",
+  "registration.component.login": "تسجيل الدخول",
+  "registration.component.resetPassword": "إعادة تعيين كلمة السر",
+  "registration.component.form.emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
+  "registration.component.form.email": "البريد الإلكتروني",
+  "registration.component.form.password": "كلمة المرور",
+  "registration.component.form.divider": "أو",
+  "registration.component.form.submit": "إرسال",
+  "registration.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.steps": "الخطوة {{currentStep}} من {{stepCount}}",
   "onboarding.component.form.action.back": "عودة",
   "onboarding.component.form.action.next": "التالي",
   "onboarding.component.form.action.skip": "تخطي هذه الخطوة",
   "onboarding.component.form.action.register": "تسجيل",
   "onboarding.component.form.action.confirm": "تأكيد",
-  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.termsAndConditions": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>",
   "onboarding.component.emailCodeFallback": "ألم تتلق رسالة بريد إلكتروني؟ <1>إعادة الإرسال</1> or <3>تغيير البريد الإلكتروني</3>",
   "onboarding.page.form.title": "دعنا <1>نطلق</1> مساحة العمل الخاصة بك",

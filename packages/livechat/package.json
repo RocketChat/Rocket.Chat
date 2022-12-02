@@ -20,7 +20,8 @@
 		"eslint": "eslint src",
 		"stylelint": "stylelint 'src/**/*.scss'",
 		"storybook": "start-storybook -p 9001 -c .storybook",
-		"build-storybook": "build-storybook"
+		"build-storybook": "build-storybook",
+		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
 	"devDependencies": {
 		"@babel/eslint-parser": "^7.18.9",
@@ -73,7 +74,6 @@
 		"stylelint": "^14.9.1",
 		"stylelint-order": "^5.0.0",
 		"svg-loader": "^0.0.2",
-		"ts-loader": "^8.4.0",
 		"typescript": "~4.5.5",
 		"url-loader": "^4.1.1",
 		"webpack": "^4.44.1",

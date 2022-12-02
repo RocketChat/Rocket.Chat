@@ -46,10 +46,10 @@ export interface IVideoConference extends IRocketChatRecord {
 	};
 	url?: string;
 
-	createdBy: Pick<IUser, '_id' | 'username' | 'name'>;
+	createdBy: Pick<Required<IUser>, '_id' | 'username' | 'name'>;
 	createdAt: Date;
 
-	endedBy?: Pick<IUser, '_id' | 'username' | 'name'>;
+	endedBy?: Pick<Required<IUser>, '_id' | 'username' | 'name'>;
 	endedAt?: Date;
 
 	providerName: string;

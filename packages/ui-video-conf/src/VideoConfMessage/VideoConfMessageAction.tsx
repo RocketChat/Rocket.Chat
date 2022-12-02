@@ -1,15 +1,7 @@
-import { Box, Button } from '@rocket.chat/fuselage';
-import type { AllHTMLAttributes, ReactElement, ReactNode } from 'react';
+import { IconButton } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactElement } from 'react';
 
-const VideoConfMessageAction = ({
-	children,
-	primary,
-	...props
-}: { children: ReactNode; primary?: boolean } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>): ReactElement => (
-	<Box mi='x4'>
-		<Button small primary={primary} {...props}>
-			{children}
-		</Button>
-	</Box>
+const VideoConfMessageAction = ({ icon = 'info', ...props }: ComponentProps<typeof IconButton>): ReactElement => (
+	<IconButton icon={icon} small {...props} />
 );
 export default VideoConfMessageAction;

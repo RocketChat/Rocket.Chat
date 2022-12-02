@@ -28,7 +28,7 @@ API.v1.addRoute(
 			const room = guest && findOpenRoom(token);
 			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
 
-			const extra = await getExtraConfigInfo(room);
+			const extra = room && (await getExtraConfigInfo(room));
 			return API.v1.success({
 				config: { ...config, online: status, ...extra, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
 			});

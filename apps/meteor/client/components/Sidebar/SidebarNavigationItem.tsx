@@ -25,14 +25,15 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(pathSection, params);
-	const isActive = path === currentPath || false;
+	const isActive = currentPath?.includes(path as string);
+
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
 	return (
 		<SidebarGenericItem active={isActive} href={path} key={path}>
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
-			<Box withTruncatedText fontScale='p2' mi='x4' color='info'>
+			<Box withTruncatedText fontScale='p2' mi='x4' color='hint'>
 				{label} {tag && <Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>{tag}</Tag>}
 			</Box>
 		</SidebarGenericItem>
