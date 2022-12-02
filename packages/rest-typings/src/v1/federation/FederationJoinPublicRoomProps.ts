@@ -14,6 +14,7 @@ const FederationJoinPublicRoomPropsSchema = {
 	properties: {
 		externalRoomId: {
 			type: 'string',
+			format: 'matrix-room-id',
 		},
 	},
 	additionalProperties: false,

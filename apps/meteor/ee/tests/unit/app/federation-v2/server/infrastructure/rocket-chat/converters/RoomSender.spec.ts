@@ -206,4 +206,21 @@ describe('FederationEE - Infrastructure - Matrix - FederationRoomSenderConverter
 			]);
 		});
 	});
+
+	describe('#toJoinPublicRoomDto()', () => {
+		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
+			const result = FederationRoomSenderConverterEE.toJoinPublicRoomDto('internalUserId', '!externalRoomId:server.com');
+			expect(result.externalRoomId).to.be.equal('!externalRoomId:server.com');
+			expect(result.normalizedRoomId).to.be.equal('externalRoomId');
+		});
+
+		it('should return the dto correctly', () => {
+			const result = FederationRoomSenderConverterEE.toJoinPublicRoomDto('internalUserId', '!externalRoomId:server.com');
+
+			expect(result.externalRoomId).to.be.equal('!externalRoomId:server.com');
+			expect(result.normalizedRoomId).to.be.equal('externalRoomId');
+			expect(result.internalUserId).to.be.equal('internalUserId');
+			expect(result.externalRoomHomeServerName).to.be.equal('server.com');
+		});
+	});
 });

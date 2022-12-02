@@ -67,7 +67,8 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		}
 		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
 		if (!creatorUser) {
-			await this.createFederatedUserInternallyOnly(externalRoomData.creator.id, externalRoomData.creator.username, false);
+			const existsOnlyOnProxyServer = false;
+			await this.createFederatedUserInternallyOnly(externalRoomData.creator.id, externalRoomData.creator.username, existsOnlyOnProxyServer);
 		}
 		const federatedCreatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
 		if (!federatedCreatorUser) {
@@ -111,10 +112,10 @@ class RoomMapper {
 				joinedMembers: room.num_joined_members,
 				topic: room.topic,
 			})),
-			count: rooms.chunk.length,
-			total: rooms.total_room_count_estimate,
-			...(rooms.next_batch ? { nextPageToken: rooms.next_batch } : {}),
-			...(rooms.prev_batch ? { prevPageToken: rooms.prev_batch } : {}),
+			count: rooms?.chunk?.length || 0,
+			total: rooms?.total_room_count_estimate || 0,
+			...(rooms?.next_batch ? { nextPageToken: rooms.next_batch } : {}),
+			...(rooms?.prev_batch ? { prevPageToken: rooms.prev_batch } : {}),
 		};
 	}
 }

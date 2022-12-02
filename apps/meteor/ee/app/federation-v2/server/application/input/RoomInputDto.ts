@@ -4,7 +4,7 @@ export interface IFederationPagination {
 }
 
 export interface IFederationRoomSearchPublicRoomsInputDto extends IFederationPagination {
-	serverName: string;
+	serverName?: string;
 	roomName?: string;
 }
 
@@ -35,7 +35,7 @@ export class FederationSearchPublicRoomsInputDto extends FederationPagination {
 		this.roomName = roomName;
 	}
 
-	serverName: string;
+	serverName?: string;
 
 	roomName?: string;
 }

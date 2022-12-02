@@ -43,7 +43,7 @@ const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
 
 import { EVENT_ORIGIN } from '../../../../../../../app/federation-v2/server/domain/IFederationBridge';
 
-describe.skip('Federation - Application - FederationRoomServiceListener', () => {
+describe('Federation - Application - FederationRoomServiceListener', () => {
 	let service: typeof FederationRoomServiceListener;
 	const roomAdapter = {
 		getFederatedRoomByExternalId: sinon.stub(),
@@ -269,6 +269,32 @@ describe.skip('Federation - Application - FederationRoomServiceListener', () => 
 
 			await expect(service.onChangeRoomMembership({ externalRoomId: 'externalRoomId', eventOrigin: EVENT_ORIGIN.REMOTE } as any)).not.to.be
 				.rejected;
+		});
+
+		it('should NOT process the method logic if the event was generated on the proxy home server and it is a join event (by user himself)', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
+
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				externalInviterId: 'same',
+				externalInviteeId: 'same',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+			} as any);
+			expect(userAdapter.createFederatedUser.called).to.be.false;
+		});
+
+		it('should NOT process the method logic if the event was generated on the proxy home server, it is NOT a join event (by user himself), but the room does not exists yet', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			userAdapter.getFederatedUserByExternalId.onFirstCall().resolves(undefined);
+
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				externalInviterId: 'externalInviterId',
+				externalInviteeId: 'externalInviteeId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+			} as any);
+			expect(userAdapter.createFederatedUser.called).to.be.false;
 		});
 
 		it('should NOT create the inviter if it already exists', async () => {

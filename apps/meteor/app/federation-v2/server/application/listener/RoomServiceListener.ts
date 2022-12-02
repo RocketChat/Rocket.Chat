@@ -102,6 +102,20 @@ export class FederationRoomServiceListener extends FederationService {
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		const isUserJoiningByHimself = externalInviterId === externalInviteeId && !leave;
+
+		if (userProfile?.avatarUrl) {
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
+			federatedUser && (await this.updateUserAvatarInternally(federatedUser, userProfile?.avatarUrl));
+		}
+		if (userProfile?.displayName) {
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
+			federatedUser && (await this.updateUserDisplayNameInternally(federatedUser, userProfile?.displayName));
+		}
+
+		if (wasGeneratedOnTheProxyServer && (isUserJoiningByHimself || !affectedFederatedRoom)) {
+			return;
+		}
 
 		const isInviterFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(externalInviterId),
@@ -128,17 +142,6 @@ export class FederationRoomServiceListener extends FederationService {
 
 		if (!federatedInviteeUser || !federatedInviterUser) {
 			throw new Error('Invitee or inviter user not found');
-		}
-
-		if (userProfile?.avatarUrl) {
-			await this.updateUserAvatarInternally(federatedInviteeUser, userProfile?.avatarUrl);
-		}
-		if (userProfile?.displayName) {
-			await this.updateUserDisplayNameInternally(federatedInviteeUser, userProfile?.displayName);
-		}
-
-		if (wasGeneratedOnTheProxyServer && ((externalInviterId === externalInviteeId && !leave) || !affectedFederatedRoom)) {
-			return;
 		}
 
 		if (!wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {

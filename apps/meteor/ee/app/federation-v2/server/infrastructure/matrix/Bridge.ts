@@ -82,7 +82,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 	}
 
 	public async searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult> {
-		const { serverName, limit, roomName, pageToken } = params;
+		const { serverName, limit = 100, roomName, pageToken } = params;
 		try {
 			return await this.bridgeInstance.getIntent().matrixClient.doRequest(
 				'POST',

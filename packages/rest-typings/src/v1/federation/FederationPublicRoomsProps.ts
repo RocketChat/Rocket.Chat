@@ -5,7 +5,7 @@ import type { FederationPaginatedRequest } from '.';
 const ajv = new Ajv();
 
 export type FederationSearchPublicRoomsProps = FederationPaginatedRequest<{
-	serverName: string;
+	serverName?: string;
 	roomName?: string;
 }>;
 
