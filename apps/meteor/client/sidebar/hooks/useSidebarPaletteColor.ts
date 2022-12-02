@@ -159,7 +159,7 @@ const getStyle = (
 			--rcx-color-foreground-hint: ${toVar(colors.n600)};
 
 			--rcx-sidebar-title-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
-			--rcx-sidebar-item-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
+
 			--rcx-sidebar-item-color-hover: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-item-color-selected: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-footer-highlight-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});

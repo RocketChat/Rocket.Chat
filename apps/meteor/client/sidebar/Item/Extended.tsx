@@ -1,4 +1,4 @@
-import { Sidebar, IconButton, IconProps } from '@rocket.chat/fuselage';
+import { Box, Sidebar, IconButton, IconProps } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useState, VFC } from 'react';
 
@@ -52,32 +52,34 @@ const Extended: VFC<ExtendedProps> = ({
 	};
 
 	return (
-		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...({ href } as any)} clickable={!!href}>
-			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
-			<Sidebar.Item.Content>
+		<Box color='annotation'>
+			<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...({ href } as any)} clickable={!!href}>
+				{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 				<Sidebar.Item.Content>
-					<Sidebar.Item.Wrapper>
-						{icon}
-						<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
-							{title}
-						</Sidebar.Item.Title>
-						{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
-					</Sidebar.Item.Wrapper>
+					<Sidebar.Item.Content>
+						<Sidebar.Item.Wrapper>
+							{icon}
+							<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
+								{title}
+							</Sidebar.Item.Title>
+							{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
+						</Sidebar.Item.Wrapper>
+					</Sidebar.Item.Content>
+					<Sidebar.Item.Content>
+						<Sidebar.Item.Wrapper>
+							<Sidebar.Item.Subtitle className={(unread && 'rcx-sidebar-item--highlighted') as string}>{subtitle}</Sidebar.Item.Subtitle>
+							<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
+							{menu && (
+								<Sidebar.Item.Menu {...handleMenuEvent}>
+									{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
+								</Sidebar.Item.Menu>
+							)}
+						</Sidebar.Item.Wrapper>
+					</Sidebar.Item.Content>
 				</Sidebar.Item.Content>
-				<Sidebar.Item.Content>
-					<Sidebar.Item.Wrapper>
-						<Sidebar.Item.Subtitle className={(unread && 'rcx-sidebar-item--highlighted') as string}>{subtitle}</Sidebar.Item.Subtitle>
-						<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
-						{menu && (
-							<Sidebar.Item.Menu {...handleMenuEvent}>
-								{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
-							</Sidebar.Item.Menu>
-						)}
-					</Sidebar.Item.Wrapper>
-				</Sidebar.Item.Content>
-			</Sidebar.Item.Content>
-			{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
-		</Sidebar.Item>
+				{actions && <Sidebar.Item.Container>{<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>}</Sidebar.Item.Container>}
+			</Sidebar.Item>
+		</Box>
 	);
 };
 
