@@ -884,6 +884,11 @@ settingsRegistry.addGroup('General', function () {
 		type: 'boolean',
 	});
 
+	this.add('Extra_CSP_Domains', '', {
+		type: 'string',
+		multiline: true,
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
