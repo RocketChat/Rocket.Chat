@@ -97566,6 +97566,129 @@
           ]
         }
       ]
+    },
+    "5.4.0-rc.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27435",
+          "title": "[FIX] Fix watch db being started on Micro Services env",
+          "userLogin": "ggazzo",
+          "milestone": "5.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "26951",
+          "title": "[FIX] Unable to set idleTimeLimit for users",
+          "userLogin": "debdutdeb",
+          "milestone": "5.4.0",
+          "contributors": [
+            "debdutdeb",
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "27421",
+          "title": "Regression: Elevation and components z-index fixes",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27433",
+          "title": "Chore: Update Apps-Engine to latest",
+          "userLogin": "d-gubert",
+          "milestone": "5.4.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "27359",
+          "title": "[FIX] Threads replied message not clickable on new message template",
+          "userLogin": "filipemarins",
+          "description": "Add the link to the parent message on the `ThreadMessagePreview` component;\r\nAdd `message ignored` status to the parent message too;\r\nAlso, allow clicking the message when is ignored status.",
+          "contributors": [
+            "filipemarins",
+            "guijun13",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27387",
+          "title": "[FIX] Livechat: Allow resolving external image and media blocks ",
+          "userLogin": "cauefcr",
+          "description": "Allow external urls to be viewed on livechat.",
+          "milestone": "5.5.0",
+          "contributors": [
+            "cauefcr",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27414",
+          "title": "Chore: bumping apps engine version",
+          "userLogin": "AllanPazRibeiro",
+          "milestone": "5.4.0",
+          "contributors": [
+            "AllanPazRibeiro",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27420",
+          "title": "Regression: message-box-editing-color",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti"
+          ]
+        },
+        {
+          "pr": "27422",
+          "title": "Regression: Admin menu apps option not working",
+          "userLogin": "rique223",
+          "description": "Solved a bug caused by the RC production build steps breaking the flow router triggersEnter event that did some rerouting for marketplace. Removed the cited function from the routes.tsx file, and now the rerouting is done directly inside the AppsRoute file.\r\nDemo gif:\r\n![apps_rerouting_issue](https://user-images.githubusercontent.com/43561537/205097014-644be3fd-913e-48d6-8e2b-c082bd8f80cf.gif)",
+          "milestone": "5.4.0",
+          "contributors": [
+            "rique223"
+          ]
+        },
+        {
+          "pr": "27416",
+          "title": "[FIX] Fix Piwik and add extra setting to allow workarounds",
+          "userLogin": "ggazzo",
+          "milestone": "5.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27368",
+          "title": "Regression: Bad words Filtering not working on new Message Parser",
+          "userLogin": "xareyli",
+          "description": "Was\r\n![forGH](https://user-images.githubusercontent.com/118266546/204087809-fca6152b-63db-4873-88b8-d86aeb324531.png)\r\n\r\nNow\r\n![forGH2](https://user-images.githubusercontent.com/118266546/204087822-e3273127-a4f0-4a45-a73e-910eb48c9b6f.png)",
+          "milestone": "5.4.0",
+          "contributors": [
+            "xareyli",
+            "kodiakhq[bot]",
+            "web-flow",
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
