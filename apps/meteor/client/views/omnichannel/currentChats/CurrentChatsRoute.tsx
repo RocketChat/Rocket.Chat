@@ -35,19 +35,20 @@ type useQueryType = (
 		from: string;
 		to: string;
 		tags: any[];
-		itemsPerPage: 25 | 50 | 100;
 		current: number;
 	},
 	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
+	itemsPerPage: 25 | 50 | 100,
 ) => GETLivechatRoomsParams;
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
 const currentChatQuery: useQueryType = (
-	{ guest, servedBy, department, status, from, to, tags, itemsPerPage, current },
+	{ guest, servedBy, department, status, from, to, tags, current },
 	customFields,
 	[column, direction],
+	itemsPerPage,
 ) => {
 	const query: {
 		agents?: string[];
@@ -111,6 +112,18 @@ const currentChatQuery: useQueryType = (
 const CurrentChatsRoute = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts', 'desc');
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
+
+	const t = useTranslation();
+	const id = useRouteParameter('id');
+
+	const canViewCurrentChats = usePermission('view-livechat-current-chats');
+	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
+	const directoryRoute = useRoute('omnichannel-current-chats');
+
+	const { data: allCustomFields } = useAllCustomFields();
+
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
 	const [params, setParams] = useState({
 		guest: '',
 		fname: '',
@@ -120,30 +133,20 @@ const CurrentChatsRoute = (): ReactElement => {
 		from: '',
 		to: '',
 		current: 0,
-		itemsPerPage: 25 as 25 | 50 | 100,
 		tags: [] as string[],
 	});
-	const t = useTranslation();
-	const id = useRouteParameter('id');
-
-	const query = useMemo(
-		() => currentChatQuery(params, customFields, [sortBy, sortDirection]),
-		[customFields, params, sortBy, sortDirection],
-	);
-	const canViewCurrentChats = usePermission('view-livechat-current-chats');
-	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
-	const directoryRoute = useRoute('omnichannel-current-chats');
-
-	const result = useCurrentChats(query);
-
-	const { data: allCustomFields } = useAllCustomFields();
-
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const hasCustomFields = useMemo(
 		() => !!allCustomFields?.customFields?.find((customField) => customField.scope === 'room'),
 		[allCustomFields],
 	);
+
+	const query = useMemo(
+		() => currentChatQuery(params, customFields, [sortBy, sortDirection], itemsPerPage),
+		[customFields, itemsPerPage, params, sortBy, sortDirection],
+	);
+
+	const result = useCurrentChats(query);
 
 	const onRowClick = useMutableCallback((_id) => {
 		directoryRoute.push({ id: _id });
