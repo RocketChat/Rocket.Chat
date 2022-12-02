@@ -327,7 +327,7 @@
 	--message-box-container-border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-medium))));
 	--message-box-container-border-width: var(--border);
 	--message-box-container-border-radius: var(--border-radius);
-	--message-box-editing-color: var(--rcx-color-status-background-warning, var(--rcx-color-status-warning, #ffecad));
+	--message-box-editing-color: var(--rcx-color-status-background-warning-2, #fff6d6);
 	--message-box-popover-title-text-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-popover-title-text-size: 0.75rem;
 	--message-box-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
