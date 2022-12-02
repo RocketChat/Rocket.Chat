@@ -41,7 +41,7 @@ export type UsersSetPreferencesParamsPOST = {
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		receiveLoginDetectionEmail?: boolean;
 		useLegacyMessageTemplate?: boolean;
-		idleTimeLimit?: boolean;
+		idleTimeLimit?: number;
 	};
 };
 
