@@ -134,14 +134,6 @@ export const LivechatEnterprise = {
 	},
 
 	async saveSLA(_id, slaData) {
-		check(_id, Match.Maybe(String));
-
-		check(slaData, {
-			name: String,
-			description: Match.Optional(String),
-			dueTimeInMinutes: Number,
-		});
-
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
 		const sla = await OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id);
 		if (!oldSLA) {
@@ -159,8 +151,6 @@ export const LivechatEnterprise = {
 	},
 
 	async removeSLA(_id) {
-		check(_id, String);
-
 		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
 		if (!sla) {
 			throw new Error(`SLA with id ${_id} not found`);
