@@ -1,5 +1,5 @@
 import { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { SidebarSection } from '@rocket.chat/fuselage';
+import { Box, SidebarSection } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ComponentType, memo, useMemo, ReactElement } from 'react';
 
@@ -48,7 +48,9 @@ const RoomListRow = ({ data, item }: { data: RoomListRowProps; item: ISubscripti
 			<Section aria-level='1' />
 		) : (
 			<SidebarSection aria-level='1'>
-				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
+				<Box color='secondary-info'>
+					<SidebarSection.Title>{t(item)}</SidebarSection.Title>
+				</Box>
 			</SidebarSection>
 		);
 	}
