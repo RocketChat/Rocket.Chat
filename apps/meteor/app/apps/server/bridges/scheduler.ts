@@ -114,7 +114,6 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 	private async scheduleOnceAfterRegister(job: IOnetimeSchedule, appId: string): Promise<void | string> {
 		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' }, {}, 1);
-
 		if (!scheduledJobs.length) {
 			return this.scheduleOnce(job, appId);
 		}
