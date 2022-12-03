@@ -103,6 +103,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<TextInput
 								{...register('username', {
 									required: true,
+									onChange: () => {
+										clearErrors(['username', 'password']);
+									},
 								})}
 								placeholder={t('registration.component.form.emailPlaceholder')}
 								error={
@@ -124,6 +127,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<PasswordInput
 								{...register('password', {
 									required: true,
+									onChange: () => {
+										clearErrors(['username', 'password']);
+									},
 								})}
 								error={
 									errors.password?.message ||
