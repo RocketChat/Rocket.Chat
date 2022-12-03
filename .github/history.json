@@ -95734,6 +95734,26 @@
           ]
         }
       ]
+    },
+    "5.3.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27435",
+          "title": "[FIX] Fix watch db being started on Micro Services env",
+          "userLogin": "ggazzo",
+          "milestone": "5.4.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
