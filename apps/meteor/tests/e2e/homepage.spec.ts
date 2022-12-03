@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -10,7 +11,6 @@ const CardIds = {
 	Desktop: 'homepage-desktop-apps-card',
 	Docs: 'homepage-documentation-card',
 };
-
 test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('homepage', () => {
@@ -106,7 +106,6 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Custom_Body', { value: true })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
 					200,
 				);
@@ -122,8 +121,23 @@ test.describe.serial('homepage', () => {
 				await expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
 			});
 
+			test.describe('enterprise edition', () => {
+				test.skip(!IS_EE, 'Enterprise Only');
+
+				test.beforeAll(async ({ api }) => {
+					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+				});
+
+				test('expect default layout to not be visible', async () => {
+					await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
+				});
+
+				test.afterAll(async ({ api }) => {
+					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+				});
+			});
+
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Custom_Body', { value: false })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			});
 		});

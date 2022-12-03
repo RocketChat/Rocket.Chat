@@ -65,11 +65,31 @@ declare module 'meteor/meteor' {
 			};
 
 			onMessage(message: string): void;
+
+			status(): {
+				connected: boolean;
+				retryCount?: number;
+				retryTime?: number;
+				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
+				reconnect: () => void;
+			};
 		}
 
 		const connection: IMeteorConnection;
 
 		function _relativeToSiteRootUrl(path: string): string;
 		const _localStorage: Window['localStorage'];
+
+		function loginWithLDAP(
+			username: string | object,
+			password: string,
+			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
+		): void;
+
+		function loginWithCrowd(
+			username: string | object,
+			password: string,
+			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
+		): void;
 	}
 }

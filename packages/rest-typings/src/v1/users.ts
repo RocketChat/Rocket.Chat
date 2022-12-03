@@ -1,4 +1,4 @@
-import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken } from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -9,8 +9,10 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
+import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import type { UsersSendConfirmationEmailParamsPOST } from '..';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -119,9 +121,14 @@ export type UsersEndpoints = {
 		POST: (params: Users2faSendEmailCode) => void;
 	};
 
+	'/v1/users.sendConfirmationEmail': {
+		POST: (params: UsersSendConfirmationEmailParamsPOST) => void;
+	};
+
 	'/v1/users.listTeams': {
 		GET: (params: UsersListTeamsParamsGET) => { teams: ITeam[] };
 	};
+
 	'/v1/users.autocomplete': {
 		GET: (params: UsersAutocompleteParamsGET) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
@@ -137,6 +144,7 @@ export type UsersEndpoints = {
 	'/v1/users.setAvatar': {
 		POST: (params: UsersSetAvatar) => void;
 	};
+
 	'/v1/users.resetAvatar': {
 		POST: (params: UsersResetAvatar) => void;
 	};
@@ -147,15 +155,18 @@ export type UsersEndpoints = {
 			exportOperation: IExportOperation;
 		};
 	};
+
 	'/v1/users.logoutOtherClients': {
 		POST: () => {
 			token: string;
 			tokenExpires: string;
 		};
 	};
+
 	'/v1/users.removeOtherTokens': {
 		POST: () => void;
 	};
+
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
@@ -170,6 +181,7 @@ export type UsersEndpoints = {
 				  },
 		) => void;
 	};
+
 	'/v1/users.resetTOTP': {
 		POST: (
 			params:
@@ -198,29 +210,47 @@ export type UsersEndpoints = {
 			tokens: UserPersonalTokens[];
 		};
 	};
+
 	'/v1/users.regeneratePersonalAccessToken': {
 		POST: (params: { tokenName: string }) => {
 			token: string;
 		};
 	};
+
 	'/v1/users.generatePersonalAccessToken': {
 		POST: (params: { tokenName: string; bypassTwoFactor: boolean }) => {
 			token: string;
 		};
 	};
+
 	'/v1/users.getUsernameSuggestion': {
 		GET: () => {
 			result: string;
 		};
 	};
+
+	'/v1/users.getAvatarSuggestion': {
+		GET: () => {
+			suggestions: Record<string, { blob: string; contentType: string; service: string; url: string }>;
+		};
+	};
+
+	'/v1/users.checkUsernameAvailability': {
+		GET: (params: { username: string }) => {
+			result: boolean;
+		};
+	};
+
 	'/v1/users.forgotPassword': {
 		POST: (params: { email: string }) => void;
 	};
+
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
 		};
 	};
+
 	'/v1/users.createToken': {
 		POST: () => {
 			data: {
@@ -268,7 +298,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: 'online' | 'offline' | 'away' | 'busy' }) => void;
+		POST: (params: { message?: string; status?: UserStatus }) => void;
 	};
 
 	'/v1/users.getStatus': {
@@ -295,6 +325,12 @@ export type UsersEndpoints = {
 	'/v1/users.logout': {
 		POST: (params: UserLogoutParamsPOST) => {
 			message: string;
+		};
+	};
+
+	'/v1/users.setPreferences': {
+		POST: (params: UsersSetPreferencesParamsPOST) => {
+			user: Required<Pick<IUser, '_id' | 'settings'>>;
 		};
 	};
 

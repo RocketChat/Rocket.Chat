@@ -2,6 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
+import type { IVisitor } from './IInquiry';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
@@ -24,6 +25,10 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
+	joinCodeRequired?: boolean;
+	announcementDetails?: {
+		style?: string;
+	};
 	encrypted?: boolean;
 	topic?: string;
 
@@ -127,15 +132,11 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: {
-		_id?: string;
-		token?: string;
-		status: 'online' | 'busy' | 'away' | 'offline';
-	};
+	v: IVisitor;
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
-		thread: string;
+		thread: string[];
 		replyTo: string;
 		subject: string;
 	};
@@ -173,7 +174,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
-	status?: 'queued'; // TODO: missing types for this
+
+	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;
@@ -185,10 +187,18 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id: string;
 		username: IUser['username'];
 	};
+	closingMessage?: IMessage;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	t: 'l';
+	omnichannel?: {
+		predictedVisitorAbandonmentAt: Date;
+	};
+	// sms field is used when the room is created from one of the internal SMS integrations (e.g. Twilio)
+	sms?: {
+		from: string;
+	};
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -206,12 +216,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: {
-		_id?: string;
-		token?: string;
-		status: 'online' | 'busy' | 'away' | 'offline';
-		phone?: string | null;
-	};
+	v: IVisitor;
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }
@@ -259,6 +264,7 @@ export type RoomAdminFieldsType =
 	| 'default'
 	| 'favorite'
 	| 'featured'
+	| 'reactWhenReadOnly'
 	| 'topic'
 	| 'msgs'
 	| 'archived'
@@ -272,9 +278,11 @@ export type RoomAdminFieldsType =
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
+		enabled?: boolean;
 		maxAge: number;
 		filesOnly: boolean;
 		excludePinned: boolean;
 		ignoreThreads: boolean;
+		overrideGlobal?: boolean;
 	};
 }

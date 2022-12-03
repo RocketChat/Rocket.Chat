@@ -89,8 +89,8 @@ export const ReadReceipt = {
 
 			try {
 				await ReadReceipts.insertMany(receipts);
-			} catch (e) {
-				SystemLogger.error('Error inserting read receipts per user');
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error inserting read receipts per user', err });
 			}
 		}
 	},

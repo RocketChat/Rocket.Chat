@@ -5,8 +5,8 @@ import { Match } from 'meteor/check';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t } from '../../utils/client';
-import { chatMessages } from '../../ui';
+import { APIClient, t } from '../../utils/client';
+import { ChatMessages } from '../../ui/client';
 import { popover, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models/client';
@@ -15,6 +15,7 @@ import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.body.onRendered(function () {
 	new Clipboard('.clipboard');
@@ -44,7 +45,9 @@ Template.body.onRendered(function () {
 
 				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
-						Meteor.call('readMessages', subscription.rid);
+						APIClient.post('/v1/subscriptions.read', { rid: subscription.rid, readThreads: true }).catch((err) => {
+							dispatchToastMessage({ type: 'error', message: err });
+						});
 					}
 				});
 
@@ -89,11 +92,7 @@ Template.body.onRendered(function () {
 			return;
 		}
 
-		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
-		if (!inputMessage) {
-			return;
-		}
-		inputMessage.focus();
+		ChatMessages.get({ rid: RoomManager.openedRoom })?.input.focus();
 	});
 
 	const handleMessageLinkClick = (event) => {

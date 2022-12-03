@@ -10,12 +10,11 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
+	useRoute,
 } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import { RoomManager } from '../../../../../../../app/ui-utils/client';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
@@ -25,6 +24,8 @@ import TranscriptModal from '../../../../../../components/Omnichannel/modals/Tra
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
+import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
+import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (
 	room: IOmnichannelRoom,
@@ -34,6 +35,7 @@ export const useQuickActions = (
 	getAction: (id: string) => void;
 } => {
 	const setModal = useSetModal();
+	const homeRoute = useRoute('home');
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -71,24 +73,6 @@ export const useQuickActions = (
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const closeOnHoldModal = useCallback(() => {
-		closeModal();
-		setOnHoldModalActive(false);
-	}, [closeModal]);
-
-	const methodReturn = useMethod('livechat:returnAsInquiry');
-
-	const handleMoveChat = useCallback(async () => {
-		try {
-			await methodReturn(rid);
-			closeModal();
-			Session.set('openedRoom', null);
-			FlowRouter.go('/home');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [closeModal, dispatchToastMessage, methodReturn, rid]);
-
 	const requestTranscript = useMethod('livechat:requestTranscript');
 
 	const handleRequestTranscript = useCallback(
@@ -96,7 +80,6 @@ export const useQuickActions = (
 			try {
 				await requestTranscript(rid, email, subject);
 				closeModal();
-				RoomManager.close(`l${rid}`);
 				dispatchToastMessage({
 					type: 'success',
 					message: t('Livechat_transcript_has_been_requested'),
@@ -169,13 +152,13 @@ export const useQuickActions = (
 					throw new Error(departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'));
 				}
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				FlowRouter.go('/');
+				homeRoute.push();
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, forwardChat, rid, t],
+		[closeModal, dispatchToastMessage, forwardChat, rid, homeRoute, t],
 	);
 
 	const closeChat = useMethod('livechat:closeRoom');
@@ -193,22 +176,42 @@ export const useQuickActions = (
 		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
-	const onHoldChat = useEndpoint('POST', '/v1/livechat/room.onHold');
-
-	const handleOnHoldChat = useCallback(async () => {
-		try {
-			await onHoldChat({ roomId: rid });
-			closeModal();
-			dispatchToastMessage({ type: 'success', message: t('Chat_On_Hold_Successfully') });
-		} catch (error) {
+	const returnChatToQueueMutation = useReturnChatToQueueMutation({
+		onSuccess: () => {
+			Session.set('openedRoom', null);
+			homeRoute.push();
+		},
+		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [onHoldChat, rid, closeModal, dispatchToastMessage, t]);
+		},
+		onSettled: () => {
+			closeModal();
+		},
+	});
+
+	const putChatOnHoldMutation = usePutChatOnHoldMutation({
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Chat_On_Hold_Successfully') });
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => {
+			closeModal();
+		},
+	});
 
 	const openModal = useMutableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
+				setModal(
+					<ReturnChatQueueModal
+						onMoveChat={(): void => returnChatToQueueMutation.mutate(rid)}
+						onCancel={(): void => {
+							closeModal();
+						}}
+					/>,
+				);
 				break;
 			case QuickActionsEnum.Transcript:
 				const visitorEmail = await getVisitorEmail();
@@ -242,7 +245,15 @@ export const useQuickActions = (
 				);
 				break;
 			case QuickActionsEnum.OnHoldChat:
-				setModal(<PlaceChatOnHoldModal onOnHoldChat={handleOnHoldChat} onCancel={closeOnHoldModal} />);
+				setModal(
+					<PlaceChatOnHoldModal
+						onOnHoldChat={(): void => putChatOnHoldMutation.mutate(rid)}
+						onCancel={(): void => {
+							closeModal();
+							setOnHoldModalActive(false);
+						}}
+					/>,
+				);
 				setOnHoldModalActive(true);
 				break;
 			default:
@@ -284,10 +295,8 @@ export const useQuickActions = (
 
 	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
 
-	const actionDefault = useMutableCallback((e) => {
-		const index = e.currentTarget.getAttribute('data-quick-actions');
-		const { id } = visibleActions[index];
-		openModal(id);
+	const actionDefault = useMutableCallback((actionId) => {
+		openModal(actionId);
 	});
 
 	const getAction = useMutableCallback((id) => {
