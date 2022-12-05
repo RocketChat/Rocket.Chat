@@ -1,4 +1,4 @@
-import type { Collection, Db, Filter, FindOneOptions, FindOptions, UpdateFilter, UpdateResult } from 'mongodb';
+import type { Collection, Db, Filter, FindOptions, UpdateFilter, UpdateResult } from 'mongodb';
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRoomsModel } from '@rocket.chat/model-typings';
@@ -11,7 +11,7 @@ export class RoomsRaw extends BaseRaw<any> implements IRoomsModel {
 		super(db, 'room', trash);
 	}
 
-	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOneOptions<IRoom> = {}) {
+	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}) {
 		const query: Filter<IRoom> = {
 			'_id': rid,
 			'u._id': uid,

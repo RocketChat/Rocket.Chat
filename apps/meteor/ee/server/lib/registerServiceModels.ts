@@ -2,6 +2,7 @@ import type { Collection, Db } from 'mongodb';
 import type {
 	ILivechatDepartmentAgents,
 	ILivechatInquiryRecord,
+	IRoom,
 	ISetting,
 	ISubscription,
 	RocketChatRecordDeleted,
