@@ -2,7 +2,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { VideoRecorder } from '../../ui';
+import { VideoRecorder } from '../../ui/client';
 import { t } from '../../utils/client';
 
 export const VRecDialog = new (class {

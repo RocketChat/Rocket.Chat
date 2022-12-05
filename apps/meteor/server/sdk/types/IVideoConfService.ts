@@ -8,6 +8,7 @@ import type {
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 
 export type VideoConferenceJoinOptions = {
 	mic?: boolean;
@@ -18,6 +19,7 @@ export interface IVideoConfService {
 	create(data: VideoConferenceCreateData, useAppUser?: boolean): Promise<VideoConferenceInstructions>;
 	start(caller: IUser['_id'], rid: string, options: { title?: string; allowRinging?: boolean }): Promise<VideoConferenceInstructions>;
 	join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string>;
+	getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<IBlock[]>;
 	cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null>;
 	getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null>;
