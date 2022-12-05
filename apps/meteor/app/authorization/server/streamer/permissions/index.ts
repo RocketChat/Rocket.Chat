@@ -4,7 +4,7 @@ import { Permissions } from '@rocket.chat/models';
 
 Meteor.methods({
 	async 'permissions/get'(updatedAt: Date) {
-		check(new Date(updatedAt), Match.Maybe(Date));
+		check(updatedAt, Match.Maybe(Date));
 
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
