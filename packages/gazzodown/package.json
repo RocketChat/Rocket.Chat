@@ -14,7 +14,7 @@
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-actions": "~6.5.10",
-		"@storybook/addon-docs": "~6.5.10",
+		"@storybook/addon-docs": "~6.5.14",
 		"@storybook/addon-essentials": "~6.5.10",
 		"@storybook/addon-interactions": "~6.5.10",
 		"@storybook/addon-links": "~6.5.10",
