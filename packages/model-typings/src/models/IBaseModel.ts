@@ -2,6 +2,7 @@ import type {
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
+	CreateIndexesOptions,
 	DeleteOptions,
 	DeleteResult,
 	Document,
@@ -9,6 +10,7 @@ import type {
 	FindCursor,
 	FindOneAndUpdateOptions,
 	FindOptions,
+	IndexSpecification,
 	InsertManyResult,
 	InsertOneOptions,
 	InsertOneResult,
@@ -54,6 +56,10 @@ export type FindPaginated<C> = {
 
 export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
 	col: Collection<T>;
+
+	tryEnsureIndex(index: IndexSpecification, options: CreateIndexesOptions): Promise<string>;
+
+	tryDropIndex(index: string): Promise<Document>;
 
 	getCollectionName(): string;
 

@@ -23550,7 +23550,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
   languageName: node
   linkType: hard
 

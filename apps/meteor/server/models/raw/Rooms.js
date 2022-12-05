@@ -663,6 +663,16 @@ export class RoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findDirectRoomContainingAllUsernames(usernames, options) {
+		const query = {
+			t: 'd',
+			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findFederatedRooms(options) {
 		const query = {
 			federated: true,

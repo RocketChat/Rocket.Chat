@@ -258,6 +258,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options || {});
 	}
 
+	findByRoomIdWhenUserIdExists(roomId: IRoom['_id'], options: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		return this.find({ roomId, 'u._id': { $exists: 1 } }, options);
+	}
+
+	findByRoomIdWhenUsernameExists(roomId: IRoom['_id'], options: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = { roomId, 'u.username': { $exists: 1 } };
+
+		return this.find(query, options);
+	}
+
 	async removeByRoomId(roomId: string): Promise<DeleteResult> {
 		const query = {
 			rid: roomId,

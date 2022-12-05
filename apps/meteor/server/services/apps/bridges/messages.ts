@@ -4,8 +4,8 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ISubscription } from '@rocket.chat/core-typings';
+import { Messages, Users, Subscriptions } from '@rocket.chat/models';
 
-import { Messages, Users, Subscriptions } from '../../../../app/models/server';
 import { updateMessage } from '../../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
 import { api } from '../../../sdk/api';
@@ -41,12 +41,16 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Invalid editor assigned to the message for the update.');
 		}
 
-		if (!message.id || !Messages.findOneById(message.id)) {
+		if (!message.id || !(await Messages.findOneById(message.id))) {
 			throw new Error('A message must exist to update.');
 		}
 
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
-		const editor = Users.findOneById(message.editor.id);
+		const editor = await Users.findOneById(message.editor.id);
+
+		if (!editor) {
+			throw new Error('Could not find message editor');
+		}
 
 		updateMessage(msg, editor);
 	}
@@ -74,17 +78,17 @@ export class AppMessageBridge extends MessageBridge {
 
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
-			.fetch()
-			.map((s: ISubscription) => s.u._id);
+		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map(
+			(s: ISubscription) => s.u._id,
+		);
 
-		Users.findByIds(users, { fields: { _id: 1 } })
-			.fetch()
-			.forEach(({ _id }: { _id: string }) =>
-				api.broadcast('notify.ephemeralMessage', _id, room.id, {
-					...msg,
-				}),
-			);
+		const usersToNotify = await Users.findByIds(users, { projection: { _id: 1 } }).toArray();
+
+		for (const user of usersToNotify) {
+			api.broadcast('notify.ephemeralMessage', user._id, room.id, {
+				...msg,
+			});
+		}
 	}
 
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
