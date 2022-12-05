@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "5.4.0-develop",
+	"version": "5.5.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -334,7 +334,7 @@
 		"moleculer": "^0.14.21",
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.34",
-		"mongodb": "^4.3.1",
+		"mongodb": "^4.12.1",
 		"mongodb-memory-server": "^7.6.3",
 		"nats": "^2.6.1",
 		"node-dogstatsd": "^0.0.7",
