@@ -658,8 +658,8 @@ describe('[Users]', function () {
 					return done(error);
 				}
 
-				const username = `customField_${apiUsername}`;
-				const email = `customField_${apiEmail}`;
+				const username = `customField_${Math.floor(Math.random() * 1000)}${apiUsername}`;
+				const email = `customField_+${Date.now()}${apiEmail}`;
 				const customFields = { customFieldText: 'success' };
 
 				request
@@ -718,7 +718,8 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('users');
 					const queriedUser = res.body.users.find((u) => u._id === user._id);
-					expect(queriedUser).to.have.property('customFields', { customFieldText: 'success' });
+					expect(queriedUser).to.have.property('customFields');
+					expect(queriedUser.customFields).to.have.property('customFieldText', 'success');
 				})
 				.end(done);
 		});
