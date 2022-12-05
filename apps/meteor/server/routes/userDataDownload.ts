@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 
 import { match } from 'path-to-regexp';
 import { WebApp } from 'meteor/webapp';

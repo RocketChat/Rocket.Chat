@@ -1,4 +1,4 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import type { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../app/settings/server';
