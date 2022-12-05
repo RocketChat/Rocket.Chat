@@ -204,7 +204,7 @@ export const refocusComposer = () => {
 Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	this.state = new ReactiveDict();
 	this.popupConfig = new ReactiveVar(null);
-	this.replyMessageData = new ReactiveVar(null);
+	this.replyMessageData = new ReactiveVar(this.data.chatContext?.composer?.quotedMessages.get() ?? []);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
 

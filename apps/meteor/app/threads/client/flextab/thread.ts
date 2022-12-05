@@ -393,8 +393,9 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		const { Threads, state } = Template.instance() as ThreadTemplateInstance;
 		const tmid = state.get('tmid');
 		const threads = Threads.findOne({ $or: [{ tmid }, { _id: tmid }] });
+		const isLoading = state.get('loading');
 
-		if (!threads) {
+		if (!isLoading && !threads) {
 			this.closeThread();
 		}
 	});

@@ -55,7 +55,7 @@ import '../app/tokenpass/client';
 import '../app/ui/client';
 import '../app/ui-account/client';
 import '../app/ui-clean-history/client';
-import '../app/ui-login/client';
+import '../app/ui-login';
 import '../app/ui-master/client';
 import '../app/ui-message/client';
 import '../app/ui-sidenav/client';

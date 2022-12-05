@@ -35,6 +35,871 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-crypto/ie11-detection@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "@aws-crypto/ie11-detection@npm:2.0.2"
+  dependencies:
+    tslib: ^1.11.1
+  checksum: 713293deea8eefd3ab43dc05e62228571d27754e7293f8ec2fd8a0c693fbbfc55213e6599387776e3cdbc951965dc62e24e92b9c4a853e4a50d00ae6a9f6b2bd
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/sha256-browser@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@aws-crypto/sha256-browser@npm:2.0.0"
+  dependencies:
+    "@aws-crypto/ie11-detection": ^2.0.0
+    "@aws-crypto/sha256-js": ^2.0.0
+    "@aws-crypto/supports-web-crypto": ^2.0.0
+    "@aws-crypto/util": ^2.0.0
+    "@aws-sdk/types": ^3.1.0
+    "@aws-sdk/util-locate-window": ^3.0.0
+    "@aws-sdk/util-utf8-browser": ^3.0.0
+    tslib: ^1.11.1
+  checksum: 7bc1ff042d0c53a46c0fc3824bd97fb3ed1df7dc030b8a995889471052860b8c8ade469c97866fafd8249a3144d0f48b0f1054f357e2b403606009381c4b8f0e
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/sha256-js@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@aws-crypto/sha256-js@npm:2.0.0"
+  dependencies:
+    "@aws-crypto/util": ^2.0.0
+    "@aws-sdk/types": ^3.1.0
+    tslib: ^1.11.1
+  checksum: e4abf9baec6bed19d380f92a999a41ac5bdd8890dfd45971d29054c298854c5b7087e7de633413f2e64618ef8238ccf4c0b75797c73063c74bbba3cb5d8b2581
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/sha256-js@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "@aws-crypto/sha256-js@npm:2.0.2"
+  dependencies:
+    "@aws-crypto/util": ^2.0.2
+    "@aws-sdk/types": ^3.110.0
+    tslib: ^1.11.1
+  checksum: 9125ec65a2b05fce908ac2289ba97b995a299f2d717684804211df8e8bcffd8cd9b8861582240655b88f2255c46fcee34026f75c057ffb22f44b6a76cd43f65a
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/supports-web-crypto@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "@aws-crypto/supports-web-crypto@npm:2.0.2"
+  dependencies:
+    tslib: ^1.11.1
+  checksum: 03d04d29292dc1b76db9bc6becd05f52fa79adee0ec084f971b0767f7e73250dd0422bea57636015f8c27f38aefcd1d9c58800a4749cf35339296c8d670f3ccb
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/util@npm:^2.0.0, @aws-crypto/util@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@aws-crypto/util@npm:2.0.2"
+  dependencies:
+    "@aws-sdk/types": ^3.110.0
+    "@aws-sdk/util-utf8-browser": ^3.0.0
+    tslib: ^1.11.1
+  checksum: 13cb33a39005b09c062398d361043c2224bc8ba42b1432bad52e15bc4bf9ffad4facdddc394b3cc71b3fb8d86a7ec325fd1afa107b5fde0dab84a7e32d311d7f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/abort-controller@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/abort-controller@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: eda64e8f93885a20b889374c6ae068799f9ee5ef91850a9c07e29465734a83c33b4bd37d961a61a2ff0c64ed18651a9878db40b1d7bb39aef4338a9167bfb605
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-cognito-identity@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/client-cognito-identity@npm:3.218.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/client-sts": 3.218.0
+    "@aws-sdk/config-resolver": 3.215.0
+    "@aws-sdk/credential-provider-node": 3.218.0
+    "@aws-sdk/fetch-http-handler": 3.215.0
+    "@aws-sdk/hash-node": 3.215.0
+    "@aws-sdk/invalid-dependency": 3.215.0
+    "@aws-sdk/middleware-content-length": 3.215.0
+    "@aws-sdk/middleware-endpoint": 3.215.0
+    "@aws-sdk/middleware-host-header": 3.215.0
+    "@aws-sdk/middleware-logger": 3.215.0
+    "@aws-sdk/middleware-recursion-detection": 3.215.0
+    "@aws-sdk/middleware-retry": 3.215.0
+    "@aws-sdk/middleware-serde": 3.215.0
+    "@aws-sdk/middleware-signing": 3.215.0
+    "@aws-sdk/middleware-stack": 3.215.0
+    "@aws-sdk/middleware-user-agent": 3.215.0
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/node-http-handler": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/smithy-client": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/url-parser": 3.215.0
+    "@aws-sdk/util-base64": 3.208.0
+    "@aws-sdk/util-body-length-browser": 3.188.0
+    "@aws-sdk/util-body-length-node": 3.208.0
+    "@aws-sdk/util-defaults-mode-browser": 3.215.0
+    "@aws-sdk/util-defaults-mode-node": 3.215.0
+    "@aws-sdk/util-endpoints": 3.216.0
+    "@aws-sdk/util-user-agent-browser": 3.215.0
+    "@aws-sdk/util-user-agent-node": 3.215.0
+    "@aws-sdk/util-utf8-browser": 3.188.0
+    "@aws-sdk/util-utf8-node": 3.208.0
+    tslib: ^2.3.1
+  checksum: 54c15fa5cf9179eb806ae3bec4b0b936e28a955a2fa750ba99fe687e9580618dd6190726caf770db4fa23aed35dd022406b1d3eb9112c6a04d61edacdda3c501
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-sso-oidc@npm:3.216.0":
+  version: 3.216.0
+  resolution: "@aws-sdk/client-sso-oidc@npm:3.216.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/config-resolver": 3.215.0
+    "@aws-sdk/fetch-http-handler": 3.215.0
+    "@aws-sdk/hash-node": 3.215.0
+    "@aws-sdk/invalid-dependency": 3.215.0
+    "@aws-sdk/middleware-content-length": 3.215.0
+    "@aws-sdk/middleware-endpoint": 3.215.0
+    "@aws-sdk/middleware-host-header": 3.215.0
+    "@aws-sdk/middleware-logger": 3.215.0
+    "@aws-sdk/middleware-recursion-detection": 3.215.0
+    "@aws-sdk/middleware-retry": 3.215.0
+    "@aws-sdk/middleware-serde": 3.215.0
+    "@aws-sdk/middleware-stack": 3.215.0
+    "@aws-sdk/middleware-user-agent": 3.215.0
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/node-http-handler": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/smithy-client": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/url-parser": 3.215.0
+    "@aws-sdk/util-base64": 3.208.0
+    "@aws-sdk/util-body-length-browser": 3.188.0
+    "@aws-sdk/util-body-length-node": 3.208.0
+    "@aws-sdk/util-defaults-mode-browser": 3.215.0
+    "@aws-sdk/util-defaults-mode-node": 3.215.0
+    "@aws-sdk/util-endpoints": 3.216.0
+    "@aws-sdk/util-user-agent-browser": 3.215.0
+    "@aws-sdk/util-user-agent-node": 3.215.0
+    "@aws-sdk/util-utf8-browser": 3.188.0
+    "@aws-sdk/util-utf8-node": 3.208.0
+    tslib: ^2.3.1
+  checksum: b1bce1b9594f2a0c19aabe934ee5d53becfff4f4244ce907393621d8e990df0625d0fe3ba3e1c7dba48946f43bd451d2c969b5e9fa9ee1b8504298706677bf30
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-sso@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/client-sso@npm:3.218.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/config-resolver": 3.215.0
+    "@aws-sdk/fetch-http-handler": 3.215.0
+    "@aws-sdk/hash-node": 3.215.0
+    "@aws-sdk/invalid-dependency": 3.215.0
+    "@aws-sdk/middleware-content-length": 3.215.0
+    "@aws-sdk/middleware-endpoint": 3.215.0
+    "@aws-sdk/middleware-host-header": 3.215.0
+    "@aws-sdk/middleware-logger": 3.215.0
+    "@aws-sdk/middleware-recursion-detection": 3.215.0
+    "@aws-sdk/middleware-retry": 3.215.0
+    "@aws-sdk/middleware-serde": 3.215.0
+    "@aws-sdk/middleware-stack": 3.215.0
+    "@aws-sdk/middleware-user-agent": 3.215.0
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/node-http-handler": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/smithy-client": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/url-parser": 3.215.0
+    "@aws-sdk/util-base64": 3.208.0
+    "@aws-sdk/util-body-length-browser": 3.188.0
+    "@aws-sdk/util-body-length-node": 3.208.0
+    "@aws-sdk/util-defaults-mode-browser": 3.215.0
+    "@aws-sdk/util-defaults-mode-node": 3.215.0
+    "@aws-sdk/util-endpoints": 3.216.0
+    "@aws-sdk/util-user-agent-browser": 3.215.0
+    "@aws-sdk/util-user-agent-node": 3.215.0
+    "@aws-sdk/util-utf8-browser": 3.188.0
+    "@aws-sdk/util-utf8-node": 3.208.0
+    tslib: ^2.3.1
+  checksum: 2ef01b0cf87ca4af9fb728e01674a765b84111a6e4030f8aa4dff3dbacc2a3c55861bdb3d992be84e49b625e50d497aa0f611e7e0c1de844392ee3089b9fe879
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-sts@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/client-sts@npm:3.218.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/config-resolver": 3.215.0
+    "@aws-sdk/credential-provider-node": 3.218.0
+    "@aws-sdk/fetch-http-handler": 3.215.0
+    "@aws-sdk/hash-node": 3.215.0
+    "@aws-sdk/invalid-dependency": 3.215.0
+    "@aws-sdk/middleware-content-length": 3.215.0
+    "@aws-sdk/middleware-endpoint": 3.215.0
+    "@aws-sdk/middleware-host-header": 3.215.0
+    "@aws-sdk/middleware-logger": 3.215.0
+    "@aws-sdk/middleware-recursion-detection": 3.215.0
+    "@aws-sdk/middleware-retry": 3.215.0
+    "@aws-sdk/middleware-sdk-sts": 3.215.0
+    "@aws-sdk/middleware-serde": 3.215.0
+    "@aws-sdk/middleware-signing": 3.215.0
+    "@aws-sdk/middleware-stack": 3.215.0
+    "@aws-sdk/middleware-user-agent": 3.215.0
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/node-http-handler": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/smithy-client": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/url-parser": 3.215.0
+    "@aws-sdk/util-base64": 3.208.0
+    "@aws-sdk/util-body-length-browser": 3.188.0
+    "@aws-sdk/util-body-length-node": 3.208.0
+    "@aws-sdk/util-defaults-mode-browser": 3.215.0
+    "@aws-sdk/util-defaults-mode-node": 3.215.0
+    "@aws-sdk/util-endpoints": 3.216.0
+    "@aws-sdk/util-user-agent-browser": 3.215.0
+    "@aws-sdk/util-user-agent-node": 3.215.0
+    "@aws-sdk/util-utf8-browser": 3.188.0
+    "@aws-sdk/util-utf8-node": 3.208.0
+    fast-xml-parser: 4.0.11
+    tslib: ^2.3.1
+  checksum: 1619e054c23ef3b103fe1427faad454f6dced3e8daf98c91bc2bfd93386864ae25df90b13a3e8cbe4a9d75670e42815ce414401294c99de0b3cd475d3e85167e
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/config-resolver@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/config-resolver@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/signature-v4": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-config-provider": 3.208.0
+    "@aws-sdk/util-middleware": 3.215.0
+    tslib: ^2.3.1
+  checksum: d2ec1ca0da965a0baa4610a43186654dbacdab697b826ff9ebaff3004e4cd472a17e4757ea3eac463dd88390a8ae8475090b7d88cd2a2a5cdcb99a4dbf3835d4
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-cognito-identity@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.218.0"
+  dependencies:
+    "@aws-sdk/client-cognito-identity": 3.218.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: bb7a9e9d4212dd2b393e23ecc6be6691eaea762bf8f882188fea9d426725617ea0d8d66d70e7a7c82c99baff3fab1c0f8819a7829fc329a1923e57c3ee55ac4d
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-env@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/credential-provider-env@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: fa878a7dc53e964aa6228b5879c419b6e8aebc74b1e560df8980ec51b40a998d0a43eab8c5ab366c6afae831b43d88310e776cea3f5cfdb4755067cbefde1be4
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-imds@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/credential-provider-imds@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/url-parser": 3.215.0
+    tslib: ^2.3.1
+  checksum: 341e1c1af4a3908e635558791b67346bba31ff0d6b6c5a44e1b4af912eda3163ec1edc8933c9f5e123979b0e179a160505a2407efff15c9597e91521783167b7
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-ini@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.218.0"
+  dependencies:
+    "@aws-sdk/credential-provider-env": 3.215.0
+    "@aws-sdk/credential-provider-imds": 3.215.0
+    "@aws-sdk/credential-provider-sso": 3.218.0
+    "@aws-sdk/credential-provider-web-identity": 3.215.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: d48d601c89bb35330ddd3a9c976cad6caaf484468ac5819d21d34550a653b8ff54de616973e4b79b09f3e12d404582d4e4b46977eac465411d1bae79a7db370d
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-node@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.218.0"
+  dependencies:
+    "@aws-sdk/credential-provider-env": 3.215.0
+    "@aws-sdk/credential-provider-imds": 3.215.0
+    "@aws-sdk/credential-provider-ini": 3.218.0
+    "@aws-sdk/credential-provider-process": 3.215.0
+    "@aws-sdk/credential-provider-sso": 3.218.0
+    "@aws-sdk/credential-provider-web-identity": 3.215.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: da8da825da1fca84fdb8ca3d9958be1059a3b93c868e19b0c4d6a8c628de881cf95701beec3fd107218c37e7726587197ab5a5cdf437d5c628436d17506cb1d1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-process@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/credential-provider-process@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 5e8f70e94fc4ec0d347e96b65bd18faba93c9ff7b30f9f24268789bcaa121905295c7fc575ca29842484a6315b3772214dac2621b1b85184c4ded9f924aec5c8
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-sso@npm:3.218.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.218.0"
+  dependencies:
+    "@aws-sdk/client-sso": 3.218.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/token-providers": 3.216.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 1d6b26776c83d7256336f89b33ae1a5cf7ba252af6ea54b2daaa9c5ce77a1d7b7afb08a49ef10dccbb900f12b40522e87b6561f5128b2869530f8a86ad2c6654
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-web-identity@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/credential-provider-web-identity@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: f012d3789817c42487a66058c7efadc95aa17afa02a7c652821c79195e18f20884e6b02c9b74e2a2260682f49349f7a8e9b524d3b0e1db4cace8a01a7f7dacf3
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-providers@npm:^3.186.0":
+  version: 3.218.0
+  resolution: "@aws-sdk/credential-providers@npm:3.218.0"
+  dependencies:
+    "@aws-sdk/client-cognito-identity": 3.218.0
+    "@aws-sdk/client-sso": 3.218.0
+    "@aws-sdk/client-sts": 3.218.0
+    "@aws-sdk/credential-provider-cognito-identity": 3.218.0
+    "@aws-sdk/credential-provider-env": 3.215.0
+    "@aws-sdk/credential-provider-imds": 3.215.0
+    "@aws-sdk/credential-provider-ini": 3.218.0
+    "@aws-sdk/credential-provider-node": 3.218.0
+    "@aws-sdk/credential-provider-process": 3.215.0
+    "@aws-sdk/credential-provider-sso": 3.218.0
+    "@aws-sdk/credential-provider-web-identity": 3.215.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 75200e3d75b38435780192232ca7b0daf79b7538e6e8327783e8b4fb9e0f82f783f9cb679cf1642a07feef4bf34a0c8951e27d4d1969afdcf9a59ded50905bba
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/fetch-http-handler@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/fetch-http-handler@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/querystring-builder": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-base64": 3.208.0
+    tslib: ^2.3.1
+  checksum: 7031944b65100023fdee709d4c38845fc5fe7ab01d3fabdd8fb13c32a326811c1ddcc201f6171fe5847b4bebd171a6a37c77068c5439ee29acf38078e16ef556
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/hash-node@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/hash-node@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-buffer-from": 3.208.0
+    tslib: ^2.3.1
+  checksum: 8d50f46c195b48304ba69107adf31e3380a1952920c373031c5ed31f936300c24b492ad477ae3e868a73834cffc78177294bee2a683904133ca516ebb3b64bef
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/invalid-dependency@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/invalid-dependency@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: f3ba901c3884c943909ec344bd5e17cdb13a5246a53d1e8e33fda036f45cb944dcfb52ef948d04d1d27cf514ef711ef65d1f2c3cc5048624b8fc49493d72837f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/is-array-buffer@npm:3.201.0":
+  version: 3.201.0
+  resolution: "@aws-sdk/is-array-buffer@npm:3.201.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 295450b417a9ab0b734050afff6c53aaed8a33dccd3ede60bf67fdec21f675d14ab8edc24f4e1d12aa4e99f9ccaf794aaaaff270c296c1ee38f73ea7ba7f59ce
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-content-length@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-content-length@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 7f41e88463faa0134be2c57bae62cd3c48fd2e6973d987e10a72f3c5cabc238cf5f59a9a8d6e92f5989e460f668f03c3b034fe54192391314de2431f77681aae
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-endpoint@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-endpoint@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/middleware-serde": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/signature-v4": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/url-parser": 3.215.0
+    "@aws-sdk/util-config-provider": 3.208.0
+    "@aws-sdk/util-middleware": 3.215.0
+    tslib: ^2.3.1
+  checksum: cf57854b88ca43874e25dd4d160525a9cf0844319fb20bfdbfe6100570724ecafaf1c0014c803ee477ad85fd2a2b80686ec8e7b2ae69118ac3453b05f4bffc0f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-host-header@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-host-header@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 461158ce46c5ca089d12a63b37ed064cc584b48d6b49523c11bcb690fdf811fb3d5603554d5f92c58dcf26d4948308cd7433d7a26c20a934d07e816cbf67a3a3
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-logger@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-logger@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 7d90e2195e68e1e7c04f52f8b8bdbbcc800f879200082892668477d17ae064beb6e7352540f262758b004d40560039426f6971396569c79eb9b4a51cba701081
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-recursion-detection@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-recursion-detection@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 0bf6eda1208cc39ac92ce25b82c8cddae990c960096d5cffc57646d8fddfa5e3bcfff44cf6a99e1a60b613f48bdc015a6e056c55b790a996db7b3dddf47867eb
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-retry@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-retry@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/service-error-classification": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-middleware": 3.215.0
+    tslib: ^2.3.1
+    uuid: ^8.3.2
+  checksum: 6b5d5d9a370e2c46df14654f38ae9aab639dc429f216155556706352dc607c24ad79ff5c03533c8f5e40134e6d5209ce77b3856e0ba49c93ce93255da7b3c6fe
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-sdk-sts@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-sdk-sts@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/middleware-signing": 3.215.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/signature-v4": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: bace7de141bef58b491d837e00ad4e0acbf6c4f79b8af80e0665dc36aa0cf31a21aa18101a1390096af11a76c5ffacf25995c1cf998874576b35ffd1a5146b3f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-serde@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-serde@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 45caf42bc4aaa6e1c7fd16fd8f219c0629c939c3adfb8274b6a6fed1e62ff1237ee208e387352655580a9a6c8d7fef704cff1f6f51b5bc237b98fee7b193a959
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-signing@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-signing@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/signature-v4": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-middleware": 3.215.0
+    tslib: ^2.3.1
+  checksum: a1c8c9b1a0cbde5f64ce5779f8e05494ffeed07bb7e6fe454baf9accf92bd5758dbb09cf0b5ae3f03d081e193af6197ff24659746d390d7e0c2f959f9014c073
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-stack@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-stack@npm:3.215.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: dc9c99969d178857ab975387f6326eb3c65fe1679087de719ea3dd25a3973bea310778ae45c61891de9cc41ce640f483dc9ff4f62af6669f3124029277f870aa
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-user-agent@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/middleware-user-agent@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 054f10a197876acc32d1903575855870edc9f5fe1fd7809dda47210e1b0717c7604e3cd916b34df7aa9f5cbe1ad9fa85934913ec51109a2740e3aed450587633
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/node-config-provider@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/node-config-provider@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: a23677a836a43bd0d4dd00cab64c42d1c69eafe8ccb833ea08a7b43ab0e891ad67a96757610fdd48a6d1cd749c29aaa1de14d894468c9e79e987e13d979c4382
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/node-http-handler@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/node-http-handler@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/abort-controller": 3.215.0
+    "@aws-sdk/protocol-http": 3.215.0
+    "@aws-sdk/querystring-builder": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 7b87cce3393553b9b2cd494aea49075fdafb8c7d9b4d61c44928e7e50f3f2909c6f57547ed504ce7b36b8dc17cc8fc8f0e882a7894898bb3cd5decc9e3de2d65
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/property-provider@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/property-provider@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 0cb519ff8db962b2e65867b4ae5af12b0b517ace1e6f5d5f0a0f65790d087d734004b91454a2b97d842fc7799b0f0ebe4da7209360f627eac6c07af7e6ddb55b
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/protocol-http@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/protocol-http@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: fd1d6db6168c3129b5311b42937f56731de5b536c11ffed08f8f7e3e1bbda1732e2632f642e601dd4af32722b78d179827772ae4564cea03553395dfa01e02d2
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/querystring-builder@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/querystring-builder@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-uri-escape": 3.201.0
+    tslib: ^2.3.1
+  checksum: 68584d4de16eea7c649bad71b938716917e53aa42aca9a9298a7a21b2dd2195d3e0e5719f0f4a16e448d18f4db6d8ae2ea4229dff4f6a8807712a81097b7aa4c
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/querystring-parser@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/querystring-parser@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: cfccb89aecadea63c3937e3db06690f2927aa32c8d98dd265151d971ee3221b570b715768a419777bf27a18f3c13509adbeccfbffd9e9d00ff90fbe648e36b22
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/service-error-classification@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/service-error-classification@npm:3.215.0"
+  checksum: 470cfec61df10efa304f61d44b75a8fc12fc6ded0c42dc36b7c8cbecc6b7290042e6a6b10ef28acf9e15534c234fd31475d1d0ee45522f8e49267f5eb6d8055e
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/shared-ini-file-loader@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/shared-ini-file-loader@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: b0fcdc3bf81928d3822a5e7e7c088d5ce3c07b6fe4a29692a142226d3829fd1c8ee312cf5b8ee2056893cc6e4686df886641f7cd30e27e4bbd9fcb7ee6b21377
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/signature-v4@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/signature-v4@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/is-array-buffer": 3.201.0
+    "@aws-sdk/types": 3.215.0
+    "@aws-sdk/util-hex-encoding": 3.201.0
+    "@aws-sdk/util-middleware": 3.215.0
+    "@aws-sdk/util-uri-escape": 3.201.0
+    tslib: ^2.3.1
+  checksum: 2bf3912bdf51c116abd2c3dcbbfdd669758b264066d4dd18353b984aaea2532ba6caef95043d1a58acf225a9ee59709c8593226f2acd779ad556c77b12fe0e4b
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/smithy-client@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/smithy-client@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/middleware-stack": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 4fd6d5631b738d7e7edf957335fb60c743025812183f3def0b4f83469bff95297c3c870fea790152731da9f3bd80aca4634722f6303774ae4b80a95cc17ad568
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/token-providers@npm:3.216.0":
+  version: 3.216.0
+  resolution: "@aws-sdk/token-providers@npm:3.216.0"
+  dependencies:
+    "@aws-sdk/client-sso-oidc": 3.216.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/shared-ini-file-loader": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: a54490666866fa389043e450692b137f1ffab39dbf10927b09ea52c813330dc06dd0e589a6adb653d3e8e974c484656f3234103bb3ca097b634a15d8cbb6f8c9
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/types@npm:3.215.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.110.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/types@npm:3.215.0"
+  checksum: 7b1301af4444c6d949175337546093946e22c572b40474ada534bd9a4ab37e15f5aabdeca139328b7ea45a6dd1d1a86de89097adbbb07e31365bb3e84254ea38
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/url-parser@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/url-parser@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/querystring-parser": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 50221b570ddeb9255be9a7d1afbf9114cdba126dfa48b0c7cf7b0f55e5ca6581e6fa08bc119c7cc3fcceb43d9761bfe9a0e4e7e8a09b3cf010bb1518f0a8cd92
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-base64@npm:3.208.0":
+  version: 3.208.0
+  resolution: "@aws-sdk/util-base64@npm:3.208.0"
+  dependencies:
+    "@aws-sdk/util-buffer-from": 3.208.0
+    tslib: ^2.3.1
+  checksum: 2ccab3453a3a3636f3f1397441574b3adb984e1ba3865030393108327ed7304cf80c9b31d69691e6aba85cfe6a611a881bbb724e544324240763bb4e96630ed9
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-body-length-browser@npm:3.188.0":
+  version: 3.188.0
+  resolution: "@aws-sdk/util-body-length-browser@npm:3.188.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 1b08bd1e63ec843ee336f51d894c49bf3c4c2f96e50d1711a12f7d0c5b6f7a15b490e366fec55b63e77036002994bac12927b29de2eb9ac91e4f152b1af78e58
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-body-length-node@npm:3.208.0":
+  version: 3.208.0
+  resolution: "@aws-sdk/util-body-length-node@npm:3.208.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 986b42b358656dec4e75c231213331c4f01785f9ab17c8b87b6e268b6880818a96117f1785cef9786e6c0f7e2c1332c80e8388a43bfd83e8c7224ad059a72733
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-buffer-from@npm:3.208.0":
+  version: 3.208.0
+  resolution: "@aws-sdk/util-buffer-from@npm:3.208.0"
+  dependencies:
+    "@aws-sdk/is-array-buffer": 3.201.0
+    tslib: ^2.3.1
+  checksum: 00bfa4d4494d3a1eb128e19104994d1aca8b3802e9aa218cecafb1ed3ff2ecf5c946485e06aa97ae312458842b0f31a6484dc945232f7cb0e357ba341cb2e53e
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-config-provider@npm:3.208.0":
+  version: 3.208.0
+  resolution: "@aws-sdk/util-config-provider@npm:3.208.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 97b0414b120b4eb53001f3ab2135ee94937e47bd7bd0d0de7c6a7e00a282eaa78cd84be2bfd3e389340f0c0b2f7ba60da9a403f084721970ee55b779ecf7a451
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-defaults-mode-browser@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/util-defaults-mode-browser@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    bowser: ^2.11.0
+    tslib: ^2.3.1
+  checksum: ed8a21c3d614f9b8ac64d2565c7106265d6fed0b8cda0e0b31b44f7be2fc3013aa79a9b5c113e7b016272c88d5547a07907a2f9ba626961f2b2d626866520c7e
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-defaults-mode-node@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/util-defaults-mode-node@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/config-resolver": 3.215.0
+    "@aws-sdk/credential-provider-imds": 3.215.0
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/property-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: 2dccee67d6fcc10ca5f93090b04851b561b638dacc9de1dedfc127323cdd0bd3f5bc8c5e27a87c90564b20805b8e9ba3992bebc023d76ce3d12e6f70005c7547
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-endpoints@npm:3.216.0":
+  version: 3.216.0
+  resolution: "@aws-sdk/util-endpoints@npm:3.216.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  checksum: e8e41cd2be036654ba2484647ad08bba770ffac1c264d613e5630fa922a414efee0a4fbafc6313dcd16484bfbddac99bed1413f126ce2f2d03d5a6be99d293a1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-hex-encoding@npm:3.201.0":
+  version: 3.201.0
+  resolution: "@aws-sdk/util-hex-encoding@npm:3.201.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: a27f3365dfb1e6ece79ea34fd6e2c4540eb0084536d7300ff0ff42a7334ddf07f21958c6cfd0bbeb71361ee408e16deae2c82b7c7378b048b8e81a52c75f190a
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-locate-window@npm:^3.0.0":
+  version: 3.208.0
+  resolution: "@aws-sdk/util-locate-window@npm:3.208.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 7518c110c4fa27c5e1d2d173647f1c58fc6ea244d25733c08ac441d3a2650b050ce06cecbe56b80a9997d514c9f7515b3c529c84c1e04b29aa0265d53af23c52
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-middleware@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/util-middleware@npm:3.215.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 19400d2560d70dbc0ec2087f4a76cb67ed28921028f851041da47cc55d00cc97520a5f2f0cbc1bd3a982f08d158073a32a4fa5cce5fe5459d0f734f0c20717e8
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-uri-escape@npm:3.201.0":
+  version: 3.201.0
+  resolution: "@aws-sdk/util-uri-escape@npm:3.201.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 8bd751459eaab75a9b61801f3484cfa5c4e0133381ace6ec901cb9b92b1fee99beb4ef9c0f87ade59425a882ed3a280255d9b2fd8da6a6286e49efb9af8f0d55
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-user-agent-browser@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/util-user-agent-browser@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/types": 3.215.0
+    bowser: ^2.11.0
+    tslib: ^2.3.1
+  checksum: 29a66adec383886ded80abfb41e5c66f4c07d52af5a995aa084a8eae9f4af22caf73cf2e4dbebc86c080da5b8778fed178d941f819b18a9caa082aac62cfb3d6
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-user-agent-node@npm:3.215.0":
+  version: 3.215.0
+  resolution: "@aws-sdk/util-user-agent-node@npm:3.215.0"
+  dependencies:
+    "@aws-sdk/node-config-provider": 3.215.0
+    "@aws-sdk/types": 3.215.0
+    tslib: ^2.3.1
+  peerDependencies:
+    aws-crt: ">=1.0.0"
+  peerDependenciesMeta:
+    aws-crt:
+      optional: true
+  checksum: 3f91d4bb57c4725fff15a1ef1b15b16026c38f02975af1b7567bc34fce4ef881968e1a871358f0d42f597a4ddb5c306e5bb9286809d075975715525b21f3213b
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-utf8-browser@npm:3.188.0, @aws-sdk/util-utf8-browser@npm:^3.0.0":
+  version: 3.188.0
+  resolution: "@aws-sdk/util-utf8-browser@npm:3.188.0"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: dacd27164aa0835888434e080b67f04510e2281560540ff73496f2d0aa73b0b7f830ec08491b35c3a51bf6214615579182aff8727e151e54a74a97a197a2ac31
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-utf8-node@npm:3.208.0":
+  version: 3.208.0
+  resolution: "@aws-sdk/util-utf8-node@npm:3.208.0"
+  dependencies:
+    "@aws-sdk/util-buffer-from": 3.208.0
+    tslib: ^2.3.1
+  checksum: 0f4c1d0d3f6eb40d92bc7163c6dcf97f90b3a8be05df46ba4f9bb7723a3e6acabf2cb0f2486411b03d22e8fcccae9e757ed02afad384ff5f44a3a659a78c5752
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:7.12.11":
   version: 7.12.11
   resolution: "@babel/code-frame@npm:7.12.11"
@@ -5320,12 +6185,12 @@ __metadata:
   resolution: "@rocket.chat/account-service@workspace:ee/apps/account-service"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": next
+    "@rocket.chat/string-helpers": 0.31.22
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ^8
     "@types/node": ^14.18.21
@@ -5337,7 +6202,7 @@ __metadata:
     fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^8.4.2
     polka: ^0.5.2
@@ -5360,7 +6225,7 @@ __metadata:
     human-interval: ^2.0.0
     jest: ^27.5.1
     moment-timezone: ~0.5.27
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     ts-jest: ^27.1.4
     typescript: ~4.5.5
   languageName: unknown
@@ -5385,6 +6250,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/apps-engine@npm:1.36.0":
+  version: 1.36.0
+  resolution: "@rocket.chat/apps-engine@npm:1.36.0"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.11
+  checksum: 2711a20cd128aa96eed368088ff432e70d4c964210379df5bd9a124781f6180052e750e0ba2ee20568cbff45a4e1c074c7fd0b19bfb637ab427b5823bb0e10cc
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.35.0
   resolution: "@rocket.chat/apps-engine@npm:1.35.0"
@@ -5397,21 +6277,6 @@ __metadata:
     uuid: ^3.4.0
     vm2: ^3.9.11
   checksum: 36c1aeeca2163a0bcde0de8f28eceedccb2cb0a55f014487c4924b72ba00e0969d9a28797a70aa40f8a6e3856b541608a0af251292b077e173c9e4fd9d0010f1
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/apps-engine@npm:alpha":
-  version: 1.36.0-alpha.0.75
-  resolution: "@rocket.chat/apps-engine@npm:1.36.0-alpha.0.75"
-  dependencies:
-    adm-zip: ^0.5.9
-    cryptiles: ^4.1.3
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.7.1
-    stack-trace: 0.0.10
-    uuid: ^3.4.0
-    vm2: ^3.9.11
-  checksum: 90f773f5f9be4a61bb14c50dabd992efa416617726e87aa89c0b2e04b47041dc3d429afed260d1188d9b072ad8c5998ffde12afcedbe9f7948c8ed8889178f85
   languageName: node
   linkType: hard
 
@@ -5434,12 +6299,12 @@ __metadata:
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": next
+    "@rocket.chat/string-helpers": 0.31.22
     "@types/eslint": ^8
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
@@ -5449,7 +6314,7 @@ __metadata:
     fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^8.4.2
     polka: ^0.5.2
@@ -5477,35 +6342,35 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/icons": next
-    "@rocket.chat/message-parser": next
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/icons": 0.31.22
+    "@rocket.chat/message-parser": 0.31.22
+    "@rocket.chat/ui-kit": 0.31.22
     eslint: ^8.22.0
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     prettier: ^2.7.1
     typescript: ~4.5.5
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:next, @rocket.chat/css-in-js@npm:~0.31.22-dev.26":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/css-in-js@npm:0.31.22-dev.26"
+"@rocket.chat/css-in-js@npm:0.31.22, @rocket.chat/css-in-js@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/css-in-js@npm:0.31.22"
   dependencies:
     "@emotion/hash": ^0.9.0
-    "@rocket.chat/css-supports": ~0.31.22-dev.26
-    "@rocket.chat/memo": ~0.31.22-dev.26
-    "@rocket.chat/stylis-logical-props-middleware": ~0.31.22-dev.26
+    "@rocket.chat/css-supports": ^0.31.22
+    "@rocket.chat/memo": ^0.31.22
+    "@rocket.chat/stylis-logical-props-middleware": ^0.31.22
     stylis: ~4.1.3
-  checksum: da9908711cec81f3fac5d88ad18582658e2dd595e825b07162c46e413d87d42ee0f8dc88ab504887f1c492a870f1a9c16b75c1376b9d2421f76fcbd73fd31049
+  checksum: 77566d76f8e8cdcf4bdfd89323816428ec2ad6b17c7d6375544a5de334fcc229495d17b3c6afcd7bf67ff8bc0adb94198b582d28426038540645b820d048e2d7
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:~0.31.22-dev.26":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/css-supports@npm:0.31.22-dev.26"
+"@rocket.chat/css-supports@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/css-supports@npm:0.31.22"
   dependencies:
-    "@rocket.chat/memo": ~0.31.22-dev.26
-  checksum: 229f4e0d9e75378e4de72d4efb0943ba189c28fc5a37433d25fd06409d005f9392af8b6252facd54decb2461fdada3613bd63fdbda9f289fe9103171d244781f
+    "@rocket.chat/memo": ^0.31.22
+  checksum: 1dc41a3812c5f46d76ad66fd6c393b27793ed88d96bd7b011462bf684e0bd7530810cc86a82dfaacdf67b98c836c84ffbc40b80b77993dd3086c11f36635852c
   languageName: node
   linkType: hard
 
@@ -5515,12 +6380,12 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": next
+    "@rocket.chat/string-helpers": 0.31.22
     "@types/ejson": ^2.2.0
     "@types/eslint": ^8
     "@types/meteor": 2.7.1
@@ -5536,7 +6401,7 @@ __metadata:
     fibers: ^5.0.3
     jaeger-client: ^3.19.0
     moleculer: ^0.14.21
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^7.11.0
     pino-pretty: ^7.6.1
@@ -5550,10 +6415,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/emitter@npm:next":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/emitter@npm:0.31.22-dev.26"
-  checksum: 87b6b3b0efbe61d08ba81e03bfc704e03058b401a28b9389dc883fea382793c0d57b5348c2c96c6bcec912db5207ba4975435cceee9bba4e42b4877c6827dc92
+"@rocket.chat/emitter@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/emitter@npm:0.31.22"
+  checksum: 0c14b4fffb3a89189b4f03a43be49c77f37889738fc31a0495c0591c8df232e456c2657365bed06d1396b97540c6a80a185009b9d3124c1f33c8dfac2a44d9d3
   languageName: node
   linkType: hard
 
@@ -5656,21 +6521,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:next, @rocket.chat/fuselage-hooks@npm:~0.32.0-dev.128":
-  version: 0.32.0-dev.128
-  resolution: "@rocket.chat/fuselage-hooks@npm:0.32.0-dev.128"
+"@rocket.chat/fuselage-hooks@npm:0.31.22, @rocket.chat/fuselage-hooks@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.31.22"
   dependencies:
     use-sync-external-store: ~1.2.0
   peerDependencies:
     "@rocket.chat/fuselage-tokens": "*"
     react: ^17.0.2
-  checksum: 298c9026dfc6488713cbb084266ebd65d5ef62bc475c843445da4e58b64fcba293cf90ade7fc8a6824105ec4e4b0f4d3094fdf56eefc81a6cc205ca11418e881
+  checksum: de98e0cf0e3a6b1f487087a441e46c584a01a75cd2a9118abb4e4e7eac6fb3b796976109efe1fe7f361d4d7b8dec68771adf667bcf4fb929a7887fbb161d10b9
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-polyfills@npm:next":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/fuselage-polyfills@npm:0.31.22-dev.26"
+"@rocket.chat/fuselage-polyfills@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/fuselage-polyfills@npm:0.31.22"
   dependencies:
     "@juggle/resize-observer": ^3.4.0
     clipboard-polyfill: ^3.0.3
@@ -5678,13 +6543,13 @@ __metadata:
     focus-visible: ^5.2.0
     focus-within-polyfill: ^5.2.1
     new-event-polyfill: ^1.0.1
-  checksum: e8b1df33e7dafc56332550a4f9bbd8c64f3f664f27743ddfd5df26d023f1a03c21cbafa2591da97e01dca0084c45f6a3f9c7773f420a8a0030adff884b4e034e
+  checksum: 6884bc8437c00253a136b1c89588db19029f036f7925419134f2323a36f663fe9e7e03682efe069ccaef657c1f039dcf220e3e6873679ec30280e7313a01cd65
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-toastbar@npm:next":
-  version: 0.32.0-dev.189
-  resolution: "@rocket.chat/fuselage-toastbar@npm:0.32.0-dev.189"
+"@rocket.chat/fuselage-toastbar@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/fuselage-toastbar@npm:0.31.22"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -5692,14 +6557,14 @@ __metadata:
     "@rocket.chat/styled": "*"
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: cb00b9a9e00c6bb20368453f2d10e77a8c0b1e6bbd2473adac4647c6e2222cbe80449c67451b2501723c31c497c9d0622477477a470141a5f4fbab1ff1c50402
+  checksum: e3fb1126d49cc28cbcce64836e0660d8dd4ec0adb31c50af16fa71b0b04d0bffdcb0ed65ad688f1baa225022fe61cfc2b52c702cd741c748437f702cbefcc67c
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.165":
-  version: 0.32.0-dev.165
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.165"
-  checksum: 44ce5a8c2d4be5b15ba09e7334de90daca4da16531b344e6974bd69ec9bf5e842949dd453377b63670ed279630f635fd784bb4716fcab0f1a3692407f92fff2e
+"@rocket.chat/fuselage-tokens@npm:0.31.22, @rocket.chat/fuselage-tokens@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.31.22"
+  checksum: a6814211193ff7944255e06c74edec0f760a3f668eb5e227c45e0332c6e0a592829adcd09d852d1ca675ccdc7d9ead2cc5affec283b0e3830625daad11ee55f2
   languageName: node
   linkType: hard
 
@@ -5709,14 +6574,14 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": ~1.30.0
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/fuselage-hooks": next
-    "@rocket.chat/fuselage-polyfills": next
-    "@rocket.chat/icons": next
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/fuselage-hooks": 0.31.22
+    "@rocket.chat/fuselage-polyfills": 0.31.22
+    "@rocket.chat/icons": 0.31.22
     "@rocket.chat/prettier-config": next
-    "@rocket.chat/styled": next
+    "@rocket.chat/styled": 0.31.22
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": 0.31.22
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@storybook/addon-essentials": ~6.5.10
     "@storybook/addons": ~6.5.10
@@ -5758,15 +6623,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.215
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.215"
+"@rocket.chat/fuselage@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/fuselage@npm:0.31.22"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.22-dev.26
-    "@rocket.chat/css-supports": ~0.31.22-dev.26
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.165
-    "@rocket.chat/memo": ~0.31.22-dev.26
-    "@rocket.chat/styled": ~0.31.22-dev.26
+    "@rocket.chat/css-in-js": ^0.31.22
+    "@rocket.chat/css-supports": ^0.31.22
+    "@rocket.chat/fuselage-tokens": ^0.31.22
+    "@rocket.chat/memo": ^0.31.22
+    "@rocket.chat/styled": ^0.31.22
     invariant: ^2.2.4
     react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
@@ -5778,7 +6643,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 5226562b7c0c713e65d9a089a16c98ca12bd7d934101f2b8193a3c6c665a8665556d6f8d279e5d5a7cad38f22bb0248d45231a66fd60bc3c5b9068a056dd2a29
+  checksum: 5469e86a7db2c9ba6b71eb498177b138e0dfbac9fa41bf3a203ed2aa6fddeaefd8ed4438cf8e9ed60485c51417dc995118e669489e2a376cd7e87c47efb958e2
   languageName: node
   linkType: hard
 
@@ -5789,11 +6654,11 @@ __metadata:
     "@babel/core": ~7.18.13
     "@mdx-js/react": ^1.6.22
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": next
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/fuselage-tokens": next
-    "@rocket.chat/message-parser": next
-    "@rocket.chat/styled": next
+    "@rocket.chat/css-in-js": 0.31.22
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/fuselage-tokens": 0.31.22
+    "@rocket.chat/message-parser": 0.31.22
+    "@rocket.chat/styled": 0.31.22
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ~6.5.10
@@ -5843,22 +6708,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/icons@npm:next":
-  version: 0.32.0-dev.197
-  resolution: "@rocket.chat/icons@npm:0.32.0-dev.197"
-  checksum: 3c8c261cefb9497629af8fd1f76fbf84d57665ee26225de8846cb655055df5bcd3e3ff5af532a1a779f2e60fa56506eba48483961d490c7b54a701264b5d2a12
+"@rocket.chat/icons@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/icons@npm:0.31.22"
+  checksum: 33d393502bf131a85ded67747221ecca6b2d2c97b54ad051d954cf6bae129ae6c765266b11856e6c394a9f9538d2ef993bf845e9036abc8010864ee2a9c7951e
   languageName: node
   linkType: hard
 
 "@rocket.chat/layout@npm:next":
-  version: 0.32.0-dev.92
-  resolution: "@rocket.chat/layout@npm:0.32.0-dev.92"
+  version: 0.32.0-dev.102
+  resolution: "@rocket.chat/layout@npm:0.32.0-dev.102"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: 17.0.2
     react-dom: 17.0.2
     react-i18next: ~11.15.4
-  checksum: 5338b0b44fded01b5fe237fde73594c428c2f17b268cbbe76da75296ee4ac7ada6c3ce49d58858b98b15060664ea0c6b06563bf58b33f1e803e69a02e3501131
+  checksum: ded739fadfac1fae89060d5b4b13cd4057683f7737b39be8146f63f554bbd81d7b6406c5b40b8439c592a45d8c08bbc1cdd37d1cde0652f468a20a85ede3b20b
   languageName: node
   linkType: hard
 
@@ -5869,10 +6734,10 @@ __metadata:
     "@babel/eslint-parser": ^7.18.9
     "@babel/preset-env": ^7.18.10
     "@rocket.chat/eslint-config": ^0.4.0
-    "@rocket.chat/fuselage-tokens": next
-    "@rocket.chat/logo": next
+    "@rocket.chat/fuselage-tokens": 0.31.22
+    "@rocket.chat/logo": 0.31.22
     "@rocket.chat/sdk": ^1.0.0-alpha.42
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": 0.31.22
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-backgrounds": ~6.5.10
     "@storybook/addon-essentials": ~6.5.10
@@ -5943,31 +6808,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/logo@npm:next":
-  version: 0.32.0-dev.165
-  resolution: "@rocket.chat/logo@npm:0.32.0-dev.165"
+"@rocket.chat/logo@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/logo@npm:0.31.22"
   dependencies:
-    "@rocket.chat/fuselage-hooks": ~0.32.0-dev.128
-    "@rocket.chat/styled": ~0.31.22-dev.26
+    "@rocket.chat/fuselage-hooks": ^0.31.22
+    "@rocket.chat/styled": ^0.31.22
     tslib: ^2.3.1
   peerDependencies:
     react: 17.0.2
     react-dom: 17.0.2
-  checksum: b65ce64ff99384964107474387316189959a1c057fb3ffc3a2af27451384279c22887893116e66e4a9d33ef3a23f088a386b37ca2c91779a749d8d290630c6b9
+  checksum: 6099c3fc2ffa99eee7b2c05b49d875628b9214d338f27484406a0a5aab61766b5c640ea9409dffbe0f8e96d2c6cf26587d923a77c4c913fae2c85cad637afd55
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:next, @rocket.chat/memo@npm:~0.31.22-dev.26":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/memo@npm:0.31.22-dev.26"
-  checksum: b7777726e54a02f9b9212101966bb12ad62a2ad7f2946b1d5b52ebc9fc7d2c2a37230613c91e176583fa55a002c0b227ec4c6095deb4b38d3d7de6e69e745edc
+"@rocket.chat/memo@npm:0.31.22, @rocket.chat/memo@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/memo@npm:0.31.22"
+  checksum: 61b0ff9b0fa952ef4a3899ffc7d6fe4e96ced5dfd867dcd18521876a8d9a0888aaa73869d471229c145ba5f437a2be629c7d4914b14f08495a3882a6027c9dca
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.163
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.163"
-  checksum: 60e63e916d56aceaca5a59e24c662e96ce42c8b9cd32da3e3a1b212fdb85c4e3e10a9387e070683896dd37c9d7e45a1e3790f298bb11c3a337539fd60a908d96
+"@rocket.chat/message-parser@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/message-parser@npm:0.31.22"
+  checksum: f5fa9ee5c239d03ad512af30c049b9d09a6b35776d2888e98a795b401b6a8f817473c94d8bd06afdb8b8f087c083646684ceb0516c11fa5e2aa8c3c9b29256ab
   languageName: node
   linkType: hard
 
@@ -5996,40 +6861,40 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": alpha
+    "@rocket.chat/apps-engine": 1.36.0
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/css-in-js": next
-    "@rocket.chat/emitter": next
+    "@rocket.chat/css-in-js": 0.31.22
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.1
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/fuselage-hooks": next
-    "@rocket.chat/fuselage-polyfills": next
-    "@rocket.chat/fuselage-toastbar": next
-    "@rocket.chat/fuselage-tokens": next
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/fuselage-hooks": 0.31.22
+    "@rocket.chat/fuselage-polyfills": 0.31.22
+    "@rocket.chat/fuselage-toastbar": 0.31.22
+    "@rocket.chat/fuselage-tokens": 0.31.22
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
-    "@rocket.chat/icons": next
+    "@rocket.chat/icons": 0.31.22
     "@rocket.chat/layout": next
     "@rocket.chat/livechat": "workspace:^"
-    "@rocket.chat/logo": next
-    "@rocket.chat/memo": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/logo": 0.31.22
+    "@rocket.chat/memo": 0.31.22
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
-    "@rocket.chat/onboarding-ui": next
+    "@rocket.chat/onboarding-ui": 0.31.22
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": next
+    "@rocket.chat/string-helpers": 0.31.22
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-composer": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": 0.31.22
     "@rocket.chat/ui-theming": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
@@ -6222,7 +7087,7 @@ __metadata:
     moleculer: ^0.14.21
     moment: ^2.29.4
     moment-timezone: ^0.5.34
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     mongodb-memory-server: ^7.6.3
     nats: ^2.6.1
     node-dogstatsd: ^0.0.7
@@ -6316,7 +7181,7 @@ __metadata:
     "@types/node-rsa": ^1.1.1
     eslint: ^8.22.0
     jest: ^27.5.1
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     ts-jest: ^27.1.5
     typescript: ~4.5.5
   languageName: unknown
@@ -6344,9 +7209,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/onboarding-ui@npm:next":
-  version: 0.32.0-dev.215
-  resolution: "@rocket.chat/onboarding-ui@npm:0.32.0-dev.215"
+"@rocket.chat/onboarding-ui@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/onboarding-ui@npm:0.31.22"
   dependencies:
     i18next: ~21.6.16
     react-hook-form: ~7.27.1
@@ -6362,7 +7227,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-i18next: ~11.15.4
-  checksum: bb14cc326190363e6715f054a2ea6c72d29ea28d24794e51efa9f8cc246f67e827f2252e1bbcaa27ec197dfd9bb7d573d4c0e21d7bed4514e4cec0d9e9dff66c
+  checksum: c2ac4f91e087353c0ad9eb61ec8ef532d5da98e50a9a6023a256c4a1dd18046e19d26d1f7c76c1396925061bf913d96bbde20c32cefa6a83f64220400082dfef
   languageName: node
   linkType: hard
 
@@ -6383,12 +7248,12 @@ __metadata:
   resolution: "@rocket.chat/presence-service@workspace:ee/apps/presence-service"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
-    "@rocket.chat/string-helpers": next
+    "@rocket.chat/string-helpers": 0.31.22
     "@types/eslint": ^8
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
@@ -6397,7 +7262,7 @@ __metadata:
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
     moleculer: ^0.14.21
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^8.4.2
     polka: ^0.5.2
@@ -6422,7 +7287,7 @@ __metadata:
     babel-jest: ^29.0.3
     eslint: ^8.21.0
     jest: ^29.0.3
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     typescript: ~4.5.5
   languageName: unknown
   linkType: soft
@@ -6443,13 +7308,13 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/message-parser": next
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/message-parser": 0.31.22
+    "@rocket.chat/ui-kit": 0.31.22
     "@types/jest": ^27.4.1
     ajv: ^8.11.0
     eslint: ^8.22.0
     jest: ^27.5.1
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     ts-jest: ^27.1.5
     typescript: ~4.5.5
   languageName: unknown
@@ -6473,12 +7338,12 @@ __metadata:
   resolution: "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": next
+    "@rocket.chat/string-helpers": 0.31.22
     "@types/bcrypt": ^5.0.0
     "@types/eslint": ^8
     "@types/node": ^14.18.21
@@ -6489,7 +7354,7 @@ __metadata:
     fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^8.4.2
     polka: ^0.5.2
@@ -6498,34 +7363,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/string-helpers@npm:next":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/string-helpers@npm:0.31.22-dev.26"
+"@rocket.chat/string-helpers@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/string-helpers@npm:0.31.22"
   dependencies:
     tslib: ^2.3.1
-  checksum: 19e708de59b58e3d7065000bb8113beedc5e3350ab793d854a7ed3ba3afaefd77d0d8f8eb611be9e0c54b6c5f0895baa5743d19f0f612ddae22b6d2f0ab870eb
+  checksum: 5c574c9b8d0b72b44e48ff91dfa83c3648d1fbc2757fc5959ea8a18fafa5959a843e89551aa3e2b7a612b6e1d929f60b5dd8dc0f522841640b7ddd0b90c31faa
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:next, @rocket.chat/styled@npm:~0.31.22-dev.26":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/styled@npm:0.31.22-dev.26"
+"@rocket.chat/styled@npm:0.31.22, @rocket.chat/styled@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/styled@npm:0.31.22"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.22-dev.26
+    "@rocket.chat/css-in-js": ^0.31.22
     tslib: ^2.3.1
-  checksum: b505cc2aa4ea990c56a8fbce8fbbd4230e1a95c6bb81dc9ed97e12be8dfe32ee0ee9000d06efb1aa3cca5cebea0f37c57264a814f20ce2c6d8794fcbbe05180f
+  checksum: 15807eb82dc74931c489fa8af98eb06b1a3c29b7dccebed5b45973e4d58759224fcedb6b809412951ade9fb84994e6138594ed407aaed2aed8b31952f9638e56
   languageName: node
   linkType: hard
 
-"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.22-dev.26":
-  version: 0.31.22-dev.26
-  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.22-dev.26"
+"@rocket.chat/stylis-logical-props-middleware@npm:^0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.22"
   dependencies:
-    "@rocket.chat/css-supports": ~0.31.22-dev.26
+    "@rocket.chat/css-supports": ^0.31.22
     tslib: ^2.3.1
   peerDependencies:
     stylis: 4.0.10
-  checksum: d97cdd54f5fa5281520858be17d8ac35cb34ab161e4b4981ddf6823b1793ca6234da9a780565cb68b9bca0457775eb39e35559522bb55fa44ded9edec03ef921
+  checksum: c11ed6a62691e623029dd6880e956f6c33a3c6e287366f3441458bf270681e18417e1abac2a8592db47bb2e3528e1766d1cfb5e1a0c24bd56503ef08c5a64511
   languageName: node
   linkType: hard
 
@@ -6534,10 +7399,10 @@ __metadata:
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
     "@babel/core": ~7.18.13
-    "@rocket.chat/css-in-js": next
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/fuselage-hooks": next
-    "@rocket.chat/icons": next
+    "@rocket.chat/css-in-js": 0.31.22
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/fuselage-hooks": 0.31.22
+    "@rocket.chat/icons": 0.31.22
     "@rocket.chat/ui-contexts": "workspace:~"
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-docs": ~6.5.10
@@ -6586,8 +7451,8 @@ __metadata:
   dependencies:
     "@babel/core": ~7.18.13
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/icons": next
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/icons": 0.31.22
     "@storybook/addon-actions": ~6.5.12
     "@storybook/addon-docs": ~6.5.12
     "@storybook/addon-essentials": ~6.5.12
@@ -6617,8 +7482,8 @@ __metadata:
   resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
-    "@rocket.chat/fuselage-hooks": next
+    "@rocket.chat/emitter": 0.31.22
+    "@rocket.chat/fuselage-hooks": 0.31.22
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/jest": ^27.4.1
     "@types/react": ~17.0.48
@@ -6626,7 +7491,7 @@ __metadata:
     "@types/use-sync-external-store": ^0.0.3
     eslint: ^8.22.0
     jest: ^27.5.1
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     react: ~17.0.2
     ts-jest: ^27.1.5
     typescript: ~4.5.5
@@ -6641,10 +7506,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-kit@npm:next":
-  version: 0.32.0-dev.150
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.150"
-  checksum: 64de6ca64a78df6e8217c5202e32930dcecc97c83687e91b90c420885044b25de4ec5b5bb512a281153819498261a4d77c07a0e66ccb6e37cd61f45643ef2644
+"@rocket.chat/ui-kit@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/ui-kit@npm:0.31.22"
+  checksum: b28d64523b005dcaeac9ed94dc8230f949eeb29eedd90a9611fb99bbb87f6135ca7d470514905656f21f45a456b9ed69f92b8dd6421857b1b3c94f7902e00ea9
   languageName: node
   linkType: hard
 
@@ -6652,10 +7517,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
-    "@rocket.chat/css-in-js": next
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/fuselage-hooks": next
-    "@rocket.chat/icons": next
+    "@rocket.chat/css-in-js": 0.31.22
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/fuselage-hooks": 0.31.22
+    "@rocket.chat/icons": 0.31.22
     "@rocket.chat/ui-contexts": "workspace:~"
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-docs": ~6.5.10
@@ -6700,13 +7565,13 @@ __metadata:
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
     "@babel/core": ~7.18.13
-    "@rocket.chat/css-in-js": next
-    "@rocket.chat/emitter": next
+    "@rocket.chat/css-in-js": 0.31.22
+    "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": next
-    "@rocket.chat/fuselage-hooks": next
-    "@rocket.chat/icons": next
-    "@rocket.chat/styled": next
+    "@rocket.chat/fuselage": 0.31.22
+    "@rocket.chat/fuselage-hooks": 0.31.22
+    "@rocket.chat/icons": 0.31.22
+    "@rocket.chat/styled": 0.31.22
     "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/addon-actions": ~6.5.10
     "@storybook/addon-docs": ~6.5.10
@@ -12482,6 +13347,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bowser@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "bowser@npm:2.11.0"
+  checksum: 29c3f01f22e703fa6644fc3b684307442df4240b6e10f6cfe1b61c6ca5721073189ca97cdeedb376081148c8518e33b1d818a57f781d70b0b70e1f31fb48814f
+  languageName: node
+  linkType: hard
+
 "boxen@npm:1.3.0, boxen@npm:^1.2.1":
   version: 1.3.0
   resolution: "boxen@npm:1.3.0"
@@ -12730,6 +13602,15 @@ __metadata:
   version: 1.1.6
   resolution: "bson@npm:1.1.6"
   checksum: 75762c9b7e0b3156cb0f38c7eb9ffcade53f0b04ac87dece9cba38f6dc570d9af91251de6a8988b294063cfaa21894c60ac9e85c34176accb3674acb092d66a7
+  languageName: node
+  linkType: hard
+
+"bson@npm:^4.7.0":
+  version: 4.7.0
+  resolution: "bson@npm:4.7.0"
+  dependencies:
+    buffer: ^5.6.0
+  checksum: 83e7b64afdad5a505073a7e6206e7b345f59e7888fbcb1948fba72b6101a1baf58b7499314f8e24b650567665f7973eda048aabbb1ddcfbadfba7d6c6b0f5e83
   languageName: node
   linkType: hard
 
@@ -17651,6 +18532,17 @@ __metadata:
   dependencies:
     punycode: ^1.3.2
   checksum: 5043d0c4a8d775ff58504d56c096563c11b113e4cb8a2668c6f824a1cd4fb3812e2fdf76537eb24a7ce4ae7def6bd9747da630c617cf2a4b6ce0c42514e4f21c
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:4.0.11":
+  version: 4.0.11
+  resolution: "fast-xml-parser@npm:4.0.11"
+  dependencies:
+    strnum: ^1.0.5
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: d8a08e4d5597e0fc00a86735195872eeb03008913e298830941516f3766e16ee555e2d431acc92e1dda887938edc445252ec5b59494aab60a8389888bd13719c
   languageName: node
   linkType: hard
 
@@ -23428,7 +24320,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
   languageName: node
   linkType: hard
 
@@ -23550,7 +24442,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: c9646e8377f8ce59648891ecdb7ebf1aea23349d145cc2f7d192785b8ede1677eb2582aa991175dcf18a63a092f81a1d3f8554a2826493f94d6db82b6007f409
   languageName: node
   linkType: hard
 
@@ -25402,6 +26294,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb-connection-string-url@npm:^2.5.4":
+  version: 2.6.0
+  resolution: "mongodb-connection-string-url@npm:2.6.0"
+  dependencies:
+    "@types/whatwg-url": ^8.2.1
+    whatwg-url: ^11.0.0
+  checksum: 1d662f0ecfe96f7a400f625c244b2e52914c98f3562ee7d19941127578b5f8237624433bdcea285a654041b945b518803512989690c74548aec5860c5541c605
+  languageName: node
+  linkType: hard
+
 "mongodb-memory-server-core@npm:7.6.3":
   version: 7.6.3
   resolution: "mongodb-memory-server-core@npm:7.6.3"
@@ -25465,6 +26367,24 @@ __metadata:
     snappy:
       optional: true
   checksum: ef7690fe6ee7d1752f121b14e59b3fabfddc60ff0536babce6c945703ad0010de9e6fa7de4c91b99275c256876a72a06899ce27893aba0838c2b542088bd1044
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:^4.12.1":
+  version: 4.12.1
+  resolution: "mongodb@npm:4.12.1"
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.0
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: 84590484b2c93bce849ec1e334b064e983444ed73942061c91e09556348c80db9d4a40544b927cd795bdfbfc51d1b713a7df5ced4ecf13cd00fab5e3c3e32ada
   languageName: node
   linkType: hard
 
@@ -30885,14 +31805,14 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": next
-    "@rocket.chat/icons": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/emitter": 0.31.22
+    "@rocket.chat/icons": 0.31.22
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": next
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/ui-kit": 0.31.22
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.3
     "@types/ejson": ^2.2.0
@@ -30913,7 +31833,7 @@ __metadata:
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.21
-    mongodb: ^4.3.1
+    mongodb: ^4.12.1
     nats: ^2.6.1
     npm-run-all: ^4.1.5
     pino: ^7.11.0
@@ -31857,6 +32777,16 @@ __metadata:
     ip: ^1.1.5
     smart-buffer: ^4.2.0
   checksum: dd9194293059d737759d5c69273850ad4149f448426249325c4bea0e340d1cf3d266c3b022694b0dcf5d31f759de23657244c481fc1e8322add80b7985c36b5e
+  languageName: node
+  linkType: hard
+
+"socks@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "socks@npm:2.7.1"
+  dependencies:
+    ip: ^2.0.0
+    smart-buffer: ^4.2.0
+  checksum: 259d9e3e8e1c9809a7f5c32238c3d4d2a36b39b83851d0f573bfde5f21c4b1288417ce1af06af1452569cd1eb0841169afd4998f0e04ba04656f6b7f0e46d748
   languageName: node
   linkType: hard
 
@@ -32835,7 +33765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^1.0.4":
+"strnum@npm:^1.0.4, strnum@npm:^1.0.5":
   version: 1.0.5
   resolution: "strnum@npm:1.0.5"
   checksum: 651b2031db5da1bf4a77fdd2f116a8ac8055157c5420f5569f64879133825915ad461513e7202a16d7fec63c54fd822410d0962f8ca12385c4334891b9ae6dd2
@@ -33937,7 +34867,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
+"tslib@npm:^1.11.1, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
