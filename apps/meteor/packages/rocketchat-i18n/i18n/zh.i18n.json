@@ -1,5 +1,4 @@
 {
-  "403": "已禁止",
   "500": "内部服务器错误",
   "__count__empty_rooms_will_be_removed_automatically": "将会自动移除 __count__ 个空聊天室。",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "将会自动移除以下 __count__ 个空聊天室：<br/>__rooms__",
