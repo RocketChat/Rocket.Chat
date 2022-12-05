@@ -51,6 +51,13 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		}
 	});
 
+	const resetName = (): void => {
+		setValue('name', t(i18n), {
+			shouldDirty: true,
+			shouldValidate: true,
+		});
+	};
+
 	return (
 		<Box is='form' display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 			<Field>
@@ -65,7 +72,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 							placeholder={t('Name')}
 							value={value}
 							hasResetButton={value !== t(i18n)}
-							onResetButtonClick={(): void => setValue('name', t(i18n), { shouldDirty: true })}
+							onResetButtonClick={resetName}
 							onChangeValue={onChange}
 							disabled={isSaving}
 						/>
