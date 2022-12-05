@@ -379,16 +379,15 @@ export class ChatMessages {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
 
-			const message = await onClientBeforeSendMessage({
+			const message = (await onClientBeforeSendMessage({
 				_id: Random.id(),
 				rid,
 				tshow,
 				tmid,
 				msg,
-			});
+			})) as IMessage;
 
 			try {
-				// @ts-ignore
 				await this.processMessageSend(message);
 				this.quotedMessages.clear();
 			} catch (error) {
@@ -405,8 +404,7 @@ export class ChatMessages {
 
 			try {
 				if (message.attachments && message.attachments?.length > 0) {
-					// @ts-ignore
-					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
+					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' } as IMessage);
 					return;
 				}
 
