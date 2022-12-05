@@ -30,7 +30,7 @@ import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 // TODO add trash param to appropiate model instances
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IRolesModel', () => new RolesRaw(db));
-	registerModel('IRoomsModel', () => new RoomsRaw(db));
+	registerModel('IRoomsModel', () => new RoomsRaw(db, trash as Collection<RocketChatRecordDeleted<IRoom>>));
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
 	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash as Collection<RocketChatRecordDeleted<ISubscription>>));
 	registerModel('ITeamModel', () => new TeamRaw(db));

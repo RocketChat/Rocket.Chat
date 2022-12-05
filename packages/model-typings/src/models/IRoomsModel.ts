@@ -50,7 +50,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	saveFeaturedById(rid: IRoom['_id'], featured: boolean): Promise<UpdateResult>;
 
-	saveRetentionEnabledById(rid: IRoom['_id'], featured: boolean): Promise<UpdateResult>;
+	saveRetentionEnabledById(rid: IRoom['_id'], enabled: boolean): Promise<UpdateResult>;
 
 	saveRetentionMaxAgeById(rid: IRoom['_id'], maxAge: number): Promise<UpdateResult>;
 

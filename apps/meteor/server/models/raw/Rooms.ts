@@ -1,15 +1,18 @@
+import type { Collection, Db, Filter, FindOneOptions, FindOptions, UpdateFilter, UpdateResult } from 'mongodb';
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IRoomsModel } from '@rocket.chat/model-typings';
+import type { IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
-export class RoomsRaw extends BaseRaw {
-	constructor(db, trash) {
+export class RoomsRaw extends BaseRaw<any> implements IRoomsModel {
+	constructor(db: Db, trash: Collection<RocketChatRecordDeleted<IRoom>> | undefined) {
 		super(db, 'room', trash);
 	}
 
-	findOneByRoomIdAndUserId(rid, uid, options = {}) {
-		const query = {
+	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOneOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = {
 			'_id': rid,
 			'u._id': uid,
 		};
@@ -17,26 +20,26 @@ export class RoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findManyByRoomIds(roomIds, options = {}) {
-		const query = {
+	findManyByRoomIds(rids: IRoom['_id'][], options: FindOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = {
 			_id: {
-				$in: roomIds,
+				$in: rids,
 			},
 		};
 
 		return this.find(query, options);
 	}
 
-	findPaginatedByIds(roomIds, options) {
+	findPaginatedByIds(rids: IRoom['_id'][], options?: FindOptions<IRoom>) {
 		return this.findPaginated(
 			{
-				_id: { $in: roomIds },
+				_id: { $in: rids },
 			},
 			options,
 		);
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
+	async getMostRecentAverageChatDurationTime(numberMostRecentChats: any, department: any) {
 		const aggregate = [
 			{
 				$match: {
@@ -61,7 +64,7 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
+	findByNameContainingAndTypes(name: string, types: any, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
@@ -92,7 +95,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
+	findByTypes(types: any, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const teamCondition = teams
 			? {}
 			: {
@@ -114,7 +117,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
+	findByNameContaining(name: string, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const teamCondition = teams
@@ -143,7 +146,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByTeamId(teamId, options = {}) {
+	findByTeamId(teamId: any, options = {}) {
 		const query = {
 			teamId,
 			teamMain: {
@@ -154,7 +157,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findPaginatedByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
+	findPaginatedByTeamIdContainingNameAndDefault(teamId: any, name: string, teamDefault: boolean, ids: any, options = {}) {
 		const query = {
 			teamId,
 			teamMain: {
@@ -168,7 +171,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
+	findByTeamIdAndRoomsId(teamId: any, rids: any, options = {}) {
 		const query = {
 			teamId,
 			_id: {
@@ -179,7 +182,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, sIds, options) {
+	findChannelAndPrivateByNameStarting(name: string, sIds: any, options: FindOptions<any> | undefined) {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query = {
@@ -210,7 +213,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findRoomsByNameOrFnameStarting(name, options) {
+	findRoomsByNameOrFnameStarting(name: string, options: FindOptions<any> | undefined) {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query = {
@@ -230,12 +233,12 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+	findRoomsWithoutDiscussionsByRoomIds(name: string, rids: IRoom['_id'][], options: FindOptions<any> | undefined) {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query = {
 			_id: {
-				$in: roomIds,
+				$in: rids,
 			},
 			t: {
 				$in: ['c', 'p'],
@@ -252,7 +255,7 @@ export class RoomsRaw extends BaseRaw {
 						$exists: true,
 					},
 					_id: {
-						$in: roomIds,
+						$in: rids,
 					},
 				},
 			],
@@ -262,12 +265,12 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findPaginatedRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+	findPaginatedRoomsWithoutDiscussionsByRoomIds(name: string, rids: IRoom['_id'][], options: FindOptions<any> | undefined) {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query = {
 			_id: {
-				$in: roomIds,
+				$in: rids,
 			},
 			t: {
 				$in: ['c', 'p'],
@@ -284,7 +287,7 @@ export class RoomsRaw extends BaseRaw {
 						$exists: true,
 					},
 					_id: {
-						$in: roomIds,
+						$in: rids,
 					},
 				},
 			],
@@ -294,7 +297,12 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(
+		_uid: IUser['_id'],
+		name: string,
+		groupsToAccept: any,
+		options: FindOptions<any> | undefined,
+	) {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query = {
@@ -312,7 +320,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	unsetTeamId(teamId, options = {}) {
+	unsetTeamId(teamId: any, options = {}) {
 		const query = { teamId };
 		const update = {
 			$unset: {
@@ -325,27 +333,27 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateMany(query, update, options);
 	}
 
-	unsetTeamById(rid, options = {}) {
+	unsetTeamById(rid: IRoom['_id'], options = {}) {
 		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
 	}
 
-	setTeamById(rid, teamId, teamDefault, options = {}) {
+	setTeamById(rid: IRoom['_id'], teamId: any, teamDefault: any, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
 	}
 
-	setTeamMainById(rid, teamId, options = {}) {
+	setTeamMainById(rid: IRoom['_id'], teamId: any, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
 	}
 
-	setTeamByIds(rids, teamId, options = {}) {
+	setTeamByIds(rids: any, teamId: any, options = {}) {
 		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
 	}
 
-	setTeamDefaultById(rid, teamDefault, options = {}) {
+	setTeamDefaultById(rid: IRoom['_id'], teamDefault: any, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	setJoinCodeById(rid, joinCode) {
+	setJoinCodeById(rid: IRoom['_id'], joinCode: string | null) {
 		let update;
 		const query = { _id: rid };
 
@@ -370,7 +378,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	saveDefaultById(_id, defaultValue) {
+	saveDefaultById(_id: any, defaultValue: any) {
 		const query = { _id };
 
 		const update = {
@@ -382,7 +390,21 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
+	findChannelsWithNumberOfMessagesBetweenDate({
+		start,
+		end,
+		startOfLastWeek,
+		endOfLastWeek,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: any;
+		end: any;
+		startOfLastWeek: any;
+		endOfLastWeek: any;
+		onlyCount?: boolean;
+		options?: any;
+	}) {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
@@ -473,7 +495,7 @@ export class RoomsRaw extends BaseRaw {
 			presentationProject,
 		];
 		const sort = { $sort: options.sort || { messages: -1 } };
-		const params = [...firstParams, sort];
+		const params: any[] = [...firstParams, sort];
 
 		if (onlyCount) {
 			params.push({ $count: 'total' });
@@ -490,11 +512,11 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
-	findOneByName(name, options = {}) {
+	findOneByName(name: any, options = {}) {
 		return this.col.findOne({ name }, options);
 	}
 
-	findDefaultRoomsForTeam(teamId) {
+	findDefaultRoomsForTeam(teamId: any) {
 		return this.col.find({
 			teamId,
 			teamDefault: true,
@@ -504,7 +526,7 @@ export class RoomsRaw extends BaseRaw {
 		});
 	}
 
-	incUsersCountByIds(ids, inc = 1) {
+	incUsersCountByIds(ids: any, inc = 1) {
 		const query = {
 			_id: {
 				$in: ids,
@@ -520,7 +542,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
-	findOneByNameOrFname(name, options = {}) {
+	findOneByNameOrFname(name: any, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
@@ -543,7 +565,7 @@ export class RoomsRaw extends BaseRaw {
 		]);
 	}
 
-	findByBroadcast(options) {
+	findByBroadcast(options: FindOptions<any> | undefined) {
 		return this.find(
 			{
 				broadcast: true,
@@ -552,7 +574,7 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	findByActiveLivestream(options) {
+	findByActiveLivestream(options: FindOptions<any> | undefined) {
 		return this.find(
 			{
 				'streamingOptions.type': 'livestream',
@@ -561,23 +583,23 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	setAsFederated(roomId) {
+	setAsFederated(roomId: any) {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
 
-	setRoomTypeById(roomId, roomType) {
+	setRoomTypeById(roomId: any, roomType: any) {
 		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
-	setRoomNameById(roomId, name, fname) {
+	setRoomNameById(roomId: any, name: any, fname: any) {
 		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
 	}
 
-	setRoomTopicById(roomId, topic) {
+	setRoomTopicById(roomId: any, topic: any) {
 		return this.updateOne({ _id: roomId }, { $set: { description: topic } });
 	}
 
-	findByE2E(options) {
+	findByE2E(options: FindOptions<any> | undefined) {
 		return this.find(
 			{
 				encrypted: true,
@@ -594,11 +616,16 @@ export class RoomsRaw extends BaseRaw {
 		});
 	}
 
-	countByType(t) {
+	countByType(t: any) {
 		return this.col.countDocuments({ t });
 	}
 
-	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, teamIds, roomIds, options) {
+	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
+		searchTerm: any,
+		teamIds: any,
+		roomIds: string | any[],
+		options: FindOptions<any> | undefined,
+	) {
 		const query = {
 			$and: [
 				{ teamMain: { $exists: false } },
@@ -644,8 +671,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findPaginatedContainingNameOrFNameInIdsAsTeamMain(searchTerm, rids, options) {
-		const query = {
+	findPaginatedContainingNameOrFNameInIdsAsTeamMain(searchTerm: any, rids: any, options: FindOptions<any> | undefined) {
+		const query: Filter<any> = {
 			teamMain: true,
 			$and: [
 				{
@@ -680,7 +707,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findPaginatedByTypeAndIds(type, ids, options) {
+	findPaginatedByTypeAndIds(type: any, ids: any, options: FindOptions<any> | undefined) {
 		const query = {
 			t: type,
 			_id: {
@@ -691,7 +718,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findOneDirectRoomContainingAllUserIDs(uid, options) {
+	findOneDirectRoomContainingAllUserIDs(uid: string | any[], options: undefined) {
 		const query = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
@@ -700,11 +727,95 @@ export class RoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findFederatedRooms(options) {
+	findFederatedRooms(options: FindOptions<any> | undefined) {
 		const query = {
 			federated: true,
 		};
 
 		return this.find(query, options);
+	}
+
+	saveFeaturedById(rid: IRoom['_id'], featured: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			[featured ? '$set' : '$unset']: {
+				featured: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionEnabledById(rid: IRoom['_id'], enabled: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			[enabled ? '$set' : '$unset']: {
+				'retention.enabled': true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionMaxAgeById(rid: IRoom['_id'], maxAge: number): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'retention.maxAge': maxAge || 30,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionExcludePinnedById(rid: IRoom['_id'], excludePinned: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			[excludePinned ? '$set' : '$unset']: {
+				'retention.excludePinned': true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionFilesOnlyById(rid: IRoom['_id'], filesOnly: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			[filesOnly ? '$set' : '$unset']: {
+				'retention.filesOnly': true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionIgnoreThreadsById(rid: IRoom['_id'], ignoreThreads: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			[ignoreThreads ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionOverrideGlobalById(rid: IRoom['_id'], overrideGlobal: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid };
+
+		const update: UpdateFilter<IRoom> = {
+			[overrideGlobal ? '$set' : '$unset']: {
+				'retention.overrideGlobal': true,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }
