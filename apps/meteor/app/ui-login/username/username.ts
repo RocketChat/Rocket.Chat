@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { Tracker } from 'meteor/tracker';
 import type { Blaze } from 'meteor/blaze';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../../settings/client';
-import { Button } from '../../../ui/client';
-import { t } from '../../../utils/client';
-import { callbacks } from '../../../../lib/callbacks';
-import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { settings } from '../../settings/client';
+import { Button } from '../../ui/client';
+import { t } from '../../utils/client';
+import { callbacks } from '../../../lib/callbacks';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import './username.html';
 
 type UsernameTemplateInstance = Blaze.TemplateInstance<Record<string, never>> & {
 	customFields: ReactiveVar<Record<
@@ -32,7 +32,6 @@ type UsernameTemplateInstance = Blaze.TemplateInstance<Record<string, never>> & 
 	}>;
 	validate: () => unknown;
 };
-
 Template.username.onCreated(function (this: UsernameTemplateInstance) {
 	this.customFields = new ReactiveVar(null);
 	this.username = new ReactiveVar({
@@ -40,7 +39,7 @@ Template.username.onCreated(function (this: UsernameTemplateInstance) {
 		username: '',
 	});
 
-	Tracker.autorun(() => {
+	this.autorun(() => {
 		const accountsCustomFields = settings.get('Accounts_CustomFields');
 		if (typeof accountsCustomFields === 'string' && accountsCustomFields.trim() !== '') {
 			try {
