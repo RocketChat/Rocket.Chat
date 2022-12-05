@@ -1,8 +1,10 @@
-import { IMessage, MessageAttachmentAction } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
-import React, { ReactElement, ReactNode } from 'react';
+import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import { useChat } from '../../../views/room/contexts/ChatContext';
 

@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { AudioRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
-import { ChatAPI } from '../../../lib/chats/ChatAPI';
+import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();

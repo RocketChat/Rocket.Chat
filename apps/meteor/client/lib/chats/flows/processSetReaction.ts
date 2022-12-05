@@ -1,8 +1,8 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { emoji } from '../../../../app/emoji/client';
 import { callWithErrorHandling } from '../../utils/callWithErrorHandling';
-import { ChatAPI } from '../ChatAPI';
+import type { ChatAPI } from '../ChatAPI';
 
 export const processSetReaction = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
 	const match = msg.trim().match(/^\+(:.*?:)$/m);

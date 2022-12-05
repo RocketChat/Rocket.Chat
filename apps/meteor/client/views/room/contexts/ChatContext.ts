@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import { ChatAPI } from '../../../lib/chats/ChatAPI';
+import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 
 type ChatContextValue = ChatAPI | undefined;
 

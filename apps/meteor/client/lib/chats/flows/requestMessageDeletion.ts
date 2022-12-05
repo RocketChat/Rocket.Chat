@@ -1,10 +1,10 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { t } from '../../../../app/utils/client';
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../imperativeModal';
 import { dispatchToastMessage } from '../../toast';
-import { ChatAPI } from '../ChatAPI';
+import type { ChatAPI } from '../ChatAPI';
 
 export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): Promise<void> => {
 	if (!(await chat.data.canDeleteMessage(message))) {
