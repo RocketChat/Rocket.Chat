@@ -4,6 +4,7 @@ import { useUser, useUserSubscription, useSettings, useTranslation } from '@rock
 import React, { FC, memo, useMemo } from 'react';
 
 import { MessageAction, MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
@@ -40,6 +41,8 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const isSelecting = useIsSelecting();
 
+	const chat = useChat();
+
 	if (isSelecting) {
 		return null;
 	}
@@ -50,7 +53,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 				<MessageToolboxItem
 					onClick={(e): void => {
 						e.stopPropagation();
-						action.action(e, { message, tabbar: toolbox, room });
+						action.action(e, { message, tabbar: toolbox, room, chat });
 					}}
 					key={action.id}
 					icon={action.icon}
@@ -65,7 +68,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 						...action,
 						action: (e): void => {
 							e.stopPropagation();
-							action.action(e, { message, tabbar: toolbox, room });
+							action.action(e, { message, tabbar: toolbox, room, chat });
 						},
 					}))}
 					data-qa-type='message-action-menu-options'
