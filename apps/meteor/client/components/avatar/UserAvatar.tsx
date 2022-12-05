@@ -1,8 +1,8 @@
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import React, { FC, memo } from 'react';
 
-import BaseAvatar, { BaseAvatarProps } from './BaseAvatar';
 import { getEmojiClassNameAndDataTitle } from '../../lib/utils/renderEmoji';
+import BaseAvatar, { BaseAvatarProps } from './BaseAvatar';
 
 type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title' | 'emoji'> & {
 	username: string;
