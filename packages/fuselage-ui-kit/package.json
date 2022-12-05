@@ -70,7 +70,7 @@
     "@storybook/builder-webpack5": "~6.5.10",
     "@storybook/manager-webpack5": "~6.5.10",
     "@storybook/react": "~6.5.10",
-    "@storybook/source-loader": "~6.5.10",
+    "@storybook/source-loader": "~6.5.14",
     "@storybook/theming": "~6.5.10",
     "@tanstack/react-query": "^4.16.1",
     "@types/react": "~17.0.48",
