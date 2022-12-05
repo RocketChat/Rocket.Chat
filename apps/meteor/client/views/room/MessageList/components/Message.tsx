@@ -53,6 +53,7 @@ const Message: FC<{
 						size={'x36'}
 						onClick={openUserCard(message.u.username)}
 						style={{ cursor: 'pointer' }}
+						emoji={message.emoji}
 					/>
 				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
