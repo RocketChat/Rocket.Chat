@@ -103,6 +103,7 @@ const getAttachmentData = function (attachment, message) {
 		video_type: attachment.video_type,
 		audio_size: attachment.audio_size,
 		audio_type: attachment.audio_type,
+		size: attachment.size,
 		url: null,
 		remote: false,
 		fileId: null,

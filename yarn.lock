@@ -4520,18 +4520,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-stately/data@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "@react-stately/data@npm:3.6.1"
-  dependencies:
-    "@babel/runtime": ^7.6.2
-    "@react-types/shared": ^3.14.1
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 79c9eae2ff674453010ed9b37fc23de687fe9dd5413c2931cadd2b7d85bcd567ed45078c0234d1c5117677321ad3eaf34952af6113546033643a7e78dde23242
-  languageName: node
-  linkType: hard
-
 "@react-stately/datepicker@npm:^3.0.2":
   version: 3.0.2
   resolution: "@react-stately/datepicker@npm:3.0.2"
@@ -5696,7 +5684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:next, @rocket.chat/fuselage-tokens@npm:~0.32.0-dev.169":
+"@rocket.chat/fuselage-tokens@npm:next":
   version: 0.32.0-dev.169
   resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.169"
   checksum: c98f477aa44e237ee05d661e05500561f2cba7da03e2a4b90f6b8ab1d4f6884c6957cbe3e158c06a8ee5c146a3770bf16b8cb46dcd8d6d108c3fcdf0b06904b9
@@ -5758,29 +5746,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.219
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.219"
-  dependencies:
-    "@rocket.chat/css-in-js": ~0.31.22-dev.30
-    "@rocket.chat/css-supports": ~0.31.22-dev.30
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.169
-    "@rocket.chat/memo": ~0.31.22-dev.30
-    "@rocket.chat/styled": ~0.31.22-dev.30
-    invariant: ^2.2.4
-    react-aria: ~3.19.0
-    react-keyed-flatten-children: ^1.3.0
-    react-stately: ~3.17.0
-  peerDependencies:
-    "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/fuselage-polyfills": "*"
-    "@rocket.chat/icons": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-virtuoso: 1.2.4
-  checksum: 2d17c6b3d6ef2b623351aaa8b0f86e5eb5d4312c4607badec6c6cd7c72a4dd7b608192501fa0554c87c2bf229de63d1300b12fd07b6d369551525d05283bb084
+"@rocket.chat/fuselage@link:../fuselage/packages/fuselage::locator=rocket.chat%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/fuselage@link:../fuselage/packages/fuselage::locator=rocket.chat%40workspace%3A."
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@rocket.chat/gazzodown@workspace:^, @rocket.chat/gazzodown@workspace:packages/gazzodown":
   version: 0.0.0-use.local
@@ -5843,12 +5813,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/icons@npm:next":
-  version: 0.32.0-dev.201
-  resolution: "@rocket.chat/icons@npm:0.32.0-dev.201"
-  checksum: ed28af2a0cce62e00fbedb0006b6b8c6720e364ebcd77887b71b218476260f748b2bbbbd51851f0f093f0f35680d66e8570ca40df10bab4f7126dedfff421431
+"@rocket.chat/icons@link:../fuselage/packages/icons::locator=rocket.chat%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/icons@link:../fuselage/packages/icons::locator=rocket.chat%40workspace%3A."
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@rocket.chat/layout@npm:next":
   version: 0.32.0-dev.102
@@ -20781,15 +20750,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "invariant@npm:2.2.4"
-  dependencies:
-    loose-envify: ^1.0.0
-  checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
-  languageName: node
-  linkType: hard
-
 "ip-address@npm:^7.1.0":
   version: 7.1.0
   resolution: "ip-address@npm:7.1.0"
@@ -23550,7 +23510,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: c9b8c0e865427112c48a9cac36f14964e130577743c29d56a6d93b5812b70846b04ccaa364acf1e8d75cee3855215ec0a2d8d9de569c80e774f10b6245f39b7d
   languageName: node
   linkType: hard
 
@@ -24093,7 +24053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -29619,7 +29579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria@npm:^3.19.0, react-aria@npm:~3.19.0":
+"react-aria@npm:^3.19.0":
   version: 3.19.0
   resolution: "react-aria@npm:3.19.0"
   dependencies:
@@ -29868,37 +29828,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
   checksum: 082c818369fb8c7ce50bbd51260b21794f58dd41e9df5e0798c10e10478fb44b9fd88247f24720d5b443d77a6ec8afa733ecdd15a7722fde85c27bb87c379962
-  languageName: node
-  linkType: hard
-
-"react-stately@npm:~3.17.0":
-  version: 3.17.0
-  resolution: "react-stately@npm:3.17.0"
-  dependencies:
-    "@react-stately/calendar": ^3.0.2
-    "@react-stately/checkbox": ^3.2.1
-    "@react-stately/collections": ^3.4.3
-    "@react-stately/combobox": ^3.2.1
-    "@react-stately/data": ^3.6.1
-    "@react-stately/datepicker": ^3.0.2
-    "@react-stately/list": ^3.5.3
-    "@react-stately/menu": ^3.4.1
-    "@react-stately/numberfield": ^3.2.1
-    "@react-stately/overlays": ^3.4.1
-    "@react-stately/radio": ^3.5.1
-    "@react-stately/searchfield": ^3.3.1
-    "@react-stately/select": ^3.3.1
-    "@react-stately/selection": ^3.10.3
-    "@react-stately/slider": ^3.2.1
-    "@react-stately/table": ^3.4.0
-    "@react-stately/tabs": ^3.2.1
-    "@react-stately/toggle": ^3.4.1
-    "@react-stately/tooltip": ^3.2.1
-    "@react-stately/tree": ^3.3.3
-    "@react-types/shared": ^3.14.1
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: da233f06f0c4a2b821755cde7b484b8cc07743b075224225a7213be1b62cf1db0966216528775d755fe83cb2a5eeda43c59684bbba47fcf2652f465557f8f4d2
   languageName: node
   linkType: hard
 

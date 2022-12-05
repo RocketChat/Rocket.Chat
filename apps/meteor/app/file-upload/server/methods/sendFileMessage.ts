@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
+import { parse } from '@rocket.chat/message-parser';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
@@ -17,6 +18,16 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 		}
 	});
 }
+
+const getFileExtension = (fileName: string): string => {
+	const arr = fileName.split('.');
+
+	if (arr.length < 2 || (arr[0] === '' && arr.length === 2)) {
+		return 'file';
+	}
+
+	return arr.pop()?.toLocaleUpperCase() || 'file';
+};
 
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
@@ -44,6 +55,7 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			description: file?.description,
+			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,
@@ -83,6 +95,7 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			description: file.description,
+			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			audio_url: fileUrl,
@@ -95,6 +108,7 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			description: file.description,
+			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			video_url: fileUrl,
@@ -106,9 +120,12 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment = {
 			title: file.name,
 			type: 'file',
+			format: getFileExtension(file.name),
 			description: file.description,
+			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
+			size: file.size as number,
 		};
 		attachments.push(attachment);
 	}
