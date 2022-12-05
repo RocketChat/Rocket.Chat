@@ -34,7 +34,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options?: any }): Promise<any[]>;
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
@@ -47,8 +47,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
 
 	addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
-
-	removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void>;
 
 	countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number>;
 

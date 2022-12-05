@@ -1,5 +1,5 @@
 import { IRoom, isVoipRoom, isDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
-import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
+import { Flex, Box, Tag, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement } from 'react';
 
@@ -32,26 +32,24 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 	return (
 		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>
 			<Flex.Item grow={1}>
-				<Margins block='x24'>
-					<Avatar.Stack>
-						{usernames.map((username, index) => (
-							<UserAvatar key={index} size='x48' username={username} />
-						))}
-					</Avatar.Stack>
-				</Margins>
+				<Box display='flex' alignItems='center' justifyContent='center'>
+					{usernames.map((username, index) => (
+						<Box is='span' mi='x4' key={index}>
+							<UserAvatar size='x48' username={username} />
+						</Box>
+					))}
+				</Box>
 			</Flex.Item>
-			<Box display='flex' color='default' fontScale='h2' flexGrow={1} justifyContent='center'>
+			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' mb='x16'>
 				{t('Direct_message_you_have_joined')}
 			</Box>
-			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
+			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>
 				{usernames.map((username, index) => (
-					<Margins inline='x4' key={index}>
-						<Box is='a' href={roomCoordinator.getRouteLink('d', { name: username }) || undefined}>
-							<Tag variant='primary' className='mention-link' data-username={username} medium>
-								{username}
-							</Tag>
-						</Box>
-					</Margins>
+					<Box mi='x4' is='a' href={roomCoordinator.getRouteLink('d', { name: username }) || undefined} key={index}>
+						<Tag icon={<Icon name='user' size='x20' />} className='mention-link' data-username={username} large>
+							{username}
+						</Tag>
+					</Box>
 				))}
 			</Box>
 		</Box>

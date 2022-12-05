@@ -5,7 +5,7 @@
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"ms": "MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint src",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
@@ -17,11 +17,11 @@
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.32.0",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "0.31.21",
+		"@rocket.chat/emitter": "0.31.22",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "0.31.21",
+		"@rocket.chat/string-helpers": "0.31.22",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
@@ -47,7 +47,7 @@
 		"@types/sharp": "^0.30.4",
 		"@types/uuid": "^8.3.4",
 		"@types/ws": "^8.5.3",
-		"eslint": "^8.21.0",
+		"eslint": "^8.22.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.1",
 		"typescript": "~4.5.5"

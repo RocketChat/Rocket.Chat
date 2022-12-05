@@ -16,7 +16,7 @@ type BaseConvertToChannelModalProps = {
 	onCancel: () => void;
 	onConfirm: () => Serialized<IRoom>[];
 	currentStep?: string;
-	rooms?: (Serialized<IRoom> & { isLastOwner?: string })[];
+	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };
 
 const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({

@@ -19,9 +19,9 @@ import React, { memo, ReactElement, useMemo } from 'react';
 import { RoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields: Fields = {
 	f: true,
@@ -160,7 +160,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
 			if (isUnread) {
-				await readMessages({ rid });
+				await readMessages({ rid, readThreads: true });
 				return;
 			}
 			await unreadMessages(null, rid);
@@ -222,7 +222,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} title={label} icon={icon} {...props} />}
+			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>
 	);
 };

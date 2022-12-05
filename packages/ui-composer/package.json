@@ -5,8 +5,8 @@
   "devDependencies": {
     "@babel/core": "~7.18.13",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "0.31.21",
-    "@rocket.chat/icons": "0.31.21",
+    "@rocket.chat/fuselage": "0.31.22",
+    "@rocket.chat/icons": "0.31.22",
     "@storybook/addon-actions": "~6.5.12",
     "@storybook/addon-docs": "~6.5.12",
     "@storybook/addon-essentials": "~6.5.12",
