@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ContextType } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -11,6 +11,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 
 const call = (method: string, ...args: any[]): Promise<any> =>
 	new Promise((resolve, reject) => {
@@ -64,7 +65,12 @@ export type MessageActionConfig = {
 	context?: MessageActionContext[];
 	action: (
 		e: Pick<Event, 'preventDefault' | 'stopPropagation'>,
-		{ message, tabbar, room }: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom },
+		{
+			message,
+			tabbar,
+			room,
+			chat,
+		}: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom; chat: ContextType<typeof ChatContext> },
 	) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 };

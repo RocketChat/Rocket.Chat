@@ -1,5 +1,4 @@
 {
-  "403": "ممنوع",
   "500": "خطای داخلی سرور",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ دیگر توسط __user_by__ __role__ نمی شود",
   "__username__was_set__role__by__user_by_": "__username__ توسط __user_by__ به عنوان __role__ تعیین شد",

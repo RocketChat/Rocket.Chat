@@ -6,9 +6,9 @@ import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { Users } from '../../../../../app/models/client';
-import { ChatMessages, fileUpload } from '../../../../../app/ui/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useChat } from '../../contexts/ChatContext';
 import { useDropTarget } from './useDropTarget';
 
 export const useFileUploadDropTarget = (
@@ -36,21 +36,17 @@ export const useFileUploadDropTarget = (
 		),
 	);
 
-	const onFileDrop = useMutableCallback(async (files: File[]) => {
-		const input = ChatMessages.get({ rid: room._id })?.input;
-		if (!input) return;
+	const chat = useChat();
 
+	const onFileDrop = useMutableCallback(async (files: File[]) => {
 		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
 
 		const uploads = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
-			return {
-				file,
-				name: file.name,
-			};
+			return file;
 		});
 
-		fileUpload(uploads, input, { rid: room._id });
+		chat?.flows.uploadFiles(uploads);
 	});
 
 	const allOverlayProps = useMemo(() => {

@@ -1,5 +1,4 @@
 {
-  "403": "নিষিদ্ধ",
   "500": "অভ্যন্তরীণ সার্ভার ত্রুটি",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ খালি ঘরগুলি স্বয়ংক্রিয়ভাবে সরানো হবে।",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ খালি ঘরগুলি স্বয়ংক্রিয়ভাবে সরানো হবে: <br/> __rooms__।",

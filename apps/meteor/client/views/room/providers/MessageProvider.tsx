@@ -13,7 +13,7 @@ import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
 import { useTabBarOpen } from '../contexts/ToolboxContext';
 
-export const MessageProvider = memo(function MessageProvider({
+const MessageProvider = memo(function MessageProvider({
 	rid,
 	broadcast,
 	children,
@@ -120,3 +120,5 @@ export const MessageProvider = memo(function MessageProvider({
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });
+
+export default MessageProvider;

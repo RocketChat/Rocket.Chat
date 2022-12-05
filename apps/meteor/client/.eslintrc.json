@@ -126,6 +126,7 @@
             "capIsNewExceptions": ["HTML.Comment", "HTML.Raw", "HTML.DIV", "SHA256"]
           }
         ],
+				"no-empty-function": "off",
         "no-extra-parens": "off",
         "prefer-arrow-callback": [
           "error",
