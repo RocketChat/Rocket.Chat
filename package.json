@@ -13,7 +13,8 @@
 		"dev": "turbo run dev --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
-		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
+		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
+		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
 		"@types/chart.js": "^2.9.37",
