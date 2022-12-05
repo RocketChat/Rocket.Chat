@@ -45,6 +45,7 @@ type CurrentData = {
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
+	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
 };
 
