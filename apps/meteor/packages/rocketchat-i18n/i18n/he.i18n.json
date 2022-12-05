@@ -1549,6 +1549,7 @@
   "registration.page.login.errors.wrongCredentials": "המשתמש לא נמצא או הסיסמה לא נכונה",
   "registration.page.registration.waitActivationWarning": "לפני שתוכל להתחבר, החשבון שלך חייב לעבור אישור על ידי האדמין.",
   "registration.component.login": "התחברות",
+  "registration.component.login.userNotFound": "המשתמש לא נמצא",
   "registration.component.resetPassword": "איפוס ססמה",
   "registration.component.form.email": "דוא״ל",
   "registration.component.form.submit": "שליחה"

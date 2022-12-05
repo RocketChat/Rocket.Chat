@@ -4792,6 +4792,7 @@
   "registration.page.registration.waitActivationWarning": "Abans de poder iniciar sessió, els comptes han de ser activats manualment per un administrador.",
   "registration.page.resetPassword.sent": "Si l'adreça de correu-e ja està registrada, t'enviarem instruccions sobre com restablir la contrasenya. Si no reps el missatge en breu, si us plau torna i reintenta-ho.",
   "registration.component.login": "Inicia sessió",
+  "registration.component.login.userNotFound": "Usuari no trobat",
   "registration.component.resetPassword": "Reinicialitza la contrasenya",
   "registration.component.form.email": "Correu electrònic",
   "registration.component.form.password": "Contrasenya",

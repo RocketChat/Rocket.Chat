@@ -2800,6 +2800,7 @@
   "registration.page.registration.waitActivationWarning": "Bevor Sie sich anmelden können, muss das Konto von einem Administrator manuell aktiviert werden.",
   "registration.page.resetPassword.sent": "Wenn diese E-Mail registriert ist, senden wir Ihnen Anweisungen zum Zurücksetzen Ihres Passworts. Wenn Sie in Kürze keine E-Mail erhalten, kommen Sie bitte zurück und versuchen Sie es erneut.",
   "registration.component.login": "Anmelden",
+  "registration.component.login.userNotFound": "Der/die Benutzer/in konnte nicht gefunden werden.",
   "registration.component.resetPassword": "Passwort zurücksetzen",
   "registration.component.form.email": "E-Mail",
   "registration.component.form.password": "Passwort",

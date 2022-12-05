@@ -2806,6 +2806,7 @@
   "registration.page.registration.waitActivationWarning": "Skôr ako sa môžete prihlásiť, váš účet musí byť ručne aktivovaný správcom.",
   "registration.page.resetPassword.sent": "Ak je tento e-mail zaregistrovaný, pošleme pokyny na obnovenie hesla. Ak v krátkom čase nedostanete e-mail, vráťte sa a skúste to znova.",
   "registration.component.login": "Prihlásiť sa",
+  "registration.component.login.userNotFound": "Užívateľ Nenájdený",
   "registration.component.resetPassword": "Obnoviť heslo",
   "registration.component.form.email": "e-mail",
   "registration.component.form.password": "Heslo",
