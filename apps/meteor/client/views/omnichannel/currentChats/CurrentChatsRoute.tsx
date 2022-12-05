@@ -35,19 +35,20 @@ type useQueryType = (
 		from: string;
 		to: string;
 		tags: any[];
-		current: number;
 	},
 	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
+	current: number,
 	itemsPerPage: 25 | 50 | 100,
 ) => GETLivechatRoomsParams;
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
 const currentChatQuery: useQueryType = (
-	{ guest, servedBy, department, status, from, to, tags, current },
+	{ guest, servedBy, department, status, from, to, tags },
 	customFields,
 	[column, direction],
+	current,
 	itemsPerPage,
 ) => {
 	const query: {
@@ -142,8 +143,8 @@ const CurrentChatsRoute = (): ReactElement => {
 	);
 
 	const query = useMemo(
-		() => currentChatQuery(params, customFields, [sortBy, sortDirection], itemsPerPage),
-		[customFields, itemsPerPage, params, sortBy, sortDirection],
+		() => currentChatQuery(params, customFields, [sortBy, sortDirection], current, itemsPerPage),
+		[customFields, itemsPerPage, params, sortBy, sortDirection, current],
 	);
 
 	const result = useCurrentChats(query);
