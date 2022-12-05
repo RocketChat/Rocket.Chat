@@ -25,11 +25,21 @@ test.use({ storageState: 'admin-session.json' });
 test.describe('Omnichannel SLA Policies', () => {
 	let poOmnichannelSlaPolicies: OmnichannelSlaPolicies;
 
+	test.beforeAll(async ({ api }) => {
+		await api.post('/livechat/users/agent', { username: 'user1' });
+		await api.post('/livechat/users/manager', { username: 'user1' });
+	});
+
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelSlaPolicies = new OmnichannelSlaPolicies(page);
 
 		await page.goto('/omnichannel');
 		await poOmnichannelSlaPolicies.sidenav.linkSlaPolicies.click();
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.delete('/livechat/users/agent/user1');
+		await api.delete('/livechat/users/manager/user1');
 	});
 
 	test('Manage SLAs', async () => {
