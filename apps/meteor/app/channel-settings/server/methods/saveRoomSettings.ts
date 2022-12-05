@@ -292,7 +292,7 @@ Meteor.methods({
 			};
 		}
 
-		let keys = Object.keys(settings);
+		const keys = Object.keys(settings);
 
 		if (!keys.every((key) => fields.includes(key))) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings provided', {
@@ -349,7 +349,6 @@ Meteor.methods({
 				delete settings.retentionIgnoreThreads;
 			}
 		});
-		keys = Object.keys(settings);
 
 		// saving data
 		for await (const setting of Object.keys(settings)) {
