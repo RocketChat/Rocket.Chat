@@ -6972,6 +6972,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ~13.5.0
     "@types/adm-zip": ^0.5.0
+    "@types/archiver": ^5.3.1
     "@types/bad-words": ^3.0.1
     "@types/bcrypt": ^5.0.0
     "@types/body-parser": ^1.19.2
@@ -9475,6 +9476,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 11dd013584e47d431bdf7c115b73cd3162c1a1eca0fbb911f691c9734e904cfe4a01ac1d2d3cbf76d0a952e01fcce8a01fd6fb1c150675a29d740a7fb15325b2
+  languageName: node
+  linkType: hard
+
+"@types/archiver@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@types/archiver@npm:5.3.1"
+  dependencies:
+    "@types/glob": "*"
+  checksum: 1c6babc7f50acf5bf7fa3d5fa76bb68702e4463e6a412d259cdddff611dbbb9832ea4b2f41d675fd95ac1aa8b087daa882423073e41db9e296f14d41f2ea88e6
   languageName: node
   linkType: hard
 
