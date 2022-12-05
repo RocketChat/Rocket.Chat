@@ -1446,7 +1446,7 @@ describe('LIVECHAT - rooms', function () {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
 		this.afterAll(async () => {
-			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
+			IS_EE && (await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']));
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 		});
 		it('should return the list of priorities', async () => {
