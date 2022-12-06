@@ -2799,6 +2799,7 @@
   "registration.page.login.forgot": "Ĉu vi forgesis vian pasvorton",
   "registration.page.resetPassword.sent": "Se ĉi tiu retpoŝto estas registrita, ni sendos instrukciojn pri kiel restarigi vian pasvorton. Se vi ne ricevos retpoŝton baldaŭ, bonvolu reveni kaj provu denove.",
   "registration.component.login": "Ensaluti",
+  "registration.component.login.userNotFound": "Uzanto ne trovita",
   "registration.component.resetPassword": "Restarigu pasvorton",
   "registration.component.form.emailOrUsername": "Retpoŝtadreso aŭ uzantnomo",
   "registration.component.form.email": "Retpoŝto",
