@@ -1,8 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useMethod, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, memo, ReactElement, Fragment } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useState, memo, Fragment } from 'react';
 
 import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';

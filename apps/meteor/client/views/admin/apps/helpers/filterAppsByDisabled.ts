@@ -1,4 +1,4 @@
-import { App } from '../types';
+import type { App } from '../types';
 import { appStatusSpanProps } from './appStatusSpanProps';
 
 export const filterAppsByDisabled = (app: App): boolean =>

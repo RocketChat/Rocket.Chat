@@ -1,5 +1,4 @@
 {
-  "403": "Kielletty",
   "500": "Sisäinen palvelinvirhe",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ tyhjää huonetta poistetaan automaattisesti.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ tyhjiä huoneita poistetaan automaattisesti:<br/> __rooms__.",
@@ -11,7 +10,7 @@
   "__username__was_set__role__by__user_by_": "__user_by__ muutti käyttäjän __username__ rooliksi __role__ ",
   "This_room_encryption_has_been_enabled_by__username_": "Tämän huoneen salauksen käynnisti __username__ ",
   "This_room_encryption_has_been_disabled_by__username_": "Tämän huoneen salauksen pysäytti __username__",
-  "Enabled_E2E_Encryption_for_this_room": "Päästä päähän salaus sallittu huoneessa",
+  "Enabled_E2E_Encryption_for_this_room": "otti E2E-salauksen käyttöön tässä huoneessa",
   "Disabled_E2E_Encryption_for_this_room": "Päästä päähän salaus ei sallittu huoneessa",
   "@username": "@kayttajatunnus",
   "@username_message": "@kayttajatunnus <message>",

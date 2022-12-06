@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, MouseEvent } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';

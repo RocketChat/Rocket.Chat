@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem as MessageSystemTemplate,
 	MessageSystemBody,
@@ -11,8 +11,10 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
@@ -20,7 +22,7 @@ import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { UserPresence } from '../../../../lib/presence';
+import type { UserPresence } from '../../../../lib/presence';
 import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../contexts/MessageListContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';

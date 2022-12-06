@@ -1,4 +1,4 @@
-import { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 

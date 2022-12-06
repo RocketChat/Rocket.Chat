@@ -1,7 +1,8 @@
 import { Box, TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { KeyboardEvent, ReactElement, useCallback } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
