@@ -25,7 +25,9 @@ const AppsRoute = (): ReactElement => {
 	useEffect(() => {
 		let mounted = true;
 
-		if (!context) {
+		// This second verification is made for people who bookmarked marketplace
+		// when it still had the 'all' context
+		if (!context || context === 'all') {
 			marketplaceRoute.replace({ context: 'explore', page: 'list' });
 		}
 
