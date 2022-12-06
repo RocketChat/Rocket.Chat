@@ -1,5 +1,6 @@
 import faker from '@faker-js/faker';
 
+import { IS_EE } from './config/constants';
 import { OmnichannelSlaPolicies } from './page-objects/omnichannel-sla-policies';
 import { test, expect } from './utils/test';
 
@@ -19,6 +20,8 @@ const EDITED_SLA = {
 	description: faker.lorem.sentence(),
 	estimatedWaitTime: faker.random.numeric(),
 };
+
+test.skip(!IS_EE, 'Omnichannel SLA Policies > Enterprise Only');
 
 test.use({ storageState: 'user1-session.json' });
 
