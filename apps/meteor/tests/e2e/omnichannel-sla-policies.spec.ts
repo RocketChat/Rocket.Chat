@@ -20,7 +20,7 @@ const EDITED_SLA = {
 	estimatedWaitTime: faker.random.numeric(),
 };
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: 'user1-session.json' });
 
 test.describe('Omnichannel SLA Policies', () => {
 	let poOmnichannelSlaPolicies: OmnichannelSlaPolicies;
