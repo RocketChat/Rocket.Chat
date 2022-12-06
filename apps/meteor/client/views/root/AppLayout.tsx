@@ -1,6 +1,7 @@
 import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
 import { PaletteStyleTag as SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
-import React, { FC, Fragment, Suspense } from 'react';
+import type { FC } from 'react';
+import React, { Fragment, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { appLayout } from '../../lib/appLayout';

@@ -1,6 +1,7 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../../lib/asyncState/AsyncStatePhase';

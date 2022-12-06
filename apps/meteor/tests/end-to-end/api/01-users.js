@@ -1648,6 +1648,7 @@ describe('[Users]', function () {
 		});
 	});
 
+	// TODO check for all response fields
 	describe('[/users.setPreferences]', () => {
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
@@ -1671,7 +1672,7 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the user try to update info of an inexistent user', (done) => {
+		it('should return an error when the user try to update info of an nonexistent user', (done) => {
 			const userPreferences = {
 				userId: 'invalid-id',
 				data: {
@@ -3235,9 +3236,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -3594,9 +3595,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {

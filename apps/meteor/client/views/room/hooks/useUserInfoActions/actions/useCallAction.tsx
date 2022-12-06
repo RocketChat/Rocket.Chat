@@ -1,11 +1,12 @@
-import { IUser, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { closeUserCard } from '../../../../../../app/ui/client/lib/UserCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/useVideoConfWarning';
 
 export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {

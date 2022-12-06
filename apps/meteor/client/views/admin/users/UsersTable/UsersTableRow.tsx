@@ -1,8 +1,10 @@
-import { IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Box, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { Roles } from '../../../../../app/models/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';

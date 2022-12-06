@@ -1,8 +1,9 @@
-import { ILivechatCustomField, ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useState, useEffect, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { debounce } from 'underscore';
 

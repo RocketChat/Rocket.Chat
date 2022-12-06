@@ -1,6 +1,8 @@
-import { Box, Icon, IconProps, Tag } from '@rocket.chat/fuselage';
+import type { IconProps } from '@rocket.chat/fuselage';
+import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import { useRoutePath } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
