@@ -1,7 +1,8 @@
-import { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import GenericTable, { GenericTableCell, GenericTableRow } from '../../../../client/components/GenericTable';
 import { PriorityIcon } from './PriorityIcon';

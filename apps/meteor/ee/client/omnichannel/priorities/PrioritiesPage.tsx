@@ -2,7 +2,8 @@ import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import Page from '../../../../client/components/Page';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
