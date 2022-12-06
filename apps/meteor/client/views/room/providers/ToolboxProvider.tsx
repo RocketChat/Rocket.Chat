@@ -1,11 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import React, { useMemo } from 'react';
 
-import { ToolboxContext, ToolboxContextValue } from '../contexts/ToolboxContext';
-import { Store } from '../lib/Toolbox/generator';
-import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
+import type { ToolboxContextValue } from '../contexts/ToolboxContext';
+import { ToolboxContext } from '../contexts/ToolboxContext';
+import type { Store } from '../lib/Toolbox/generator';
+import type { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
 import { useToolboxActions } from './hooks/useToolboxActions';
 

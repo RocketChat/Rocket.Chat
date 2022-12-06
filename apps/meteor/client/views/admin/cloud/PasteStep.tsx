@@ -1,6 +1,7 @@
 import { Box, Button, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, FC, useState } from 'react';
+import type { ChangeEvent, FC } from 'react';
+import React, { useState } from 'react';
 
 import { queryClient } from '../../../lib/queryClient';
 

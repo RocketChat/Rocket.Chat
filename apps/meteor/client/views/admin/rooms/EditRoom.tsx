@@ -1,8 +1,9 @@
-import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../components/GenericModal';

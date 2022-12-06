@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { settings } from '../../../app/settings/client';
 import { SidebarFooterWatermark } from '../../../ee/client/sidebar/footer/SidebarFooterWatermark';

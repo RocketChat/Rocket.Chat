@@ -1,6 +1,7 @@
 import type { IOmnichannelRoomFromAppSource } from '@rocket.chat/core-typings';
 import { Icon, Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';

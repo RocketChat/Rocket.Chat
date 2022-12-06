@@ -1,9 +1,9 @@
-import { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
-import { Mongo } from 'meteor/mongo';
+import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 
 import { Rooms, Subscriptions } from '../../app/models/client';
 import { callbacks } from '../../lib/callbacks';
-import { SubscriptionWithRoom } from '../definitions/SubscriptionWithRoom';
+import type { SubscriptionWithRoom } from '../definitions/SubscriptionWithRoom';
 
 const getLowerCaseNames = (
 	room: Pick<IRoom, 'name' | 'fname' | 'prid'>,

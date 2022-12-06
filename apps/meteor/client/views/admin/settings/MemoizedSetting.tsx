@@ -1,6 +1,7 @@
-import { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Callout, Field, Margins } from '@rocket.chat/fuselage';
-import React, { ElementType, memo, ReactElement, ReactNode } from 'react';
+import type { ElementType, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';

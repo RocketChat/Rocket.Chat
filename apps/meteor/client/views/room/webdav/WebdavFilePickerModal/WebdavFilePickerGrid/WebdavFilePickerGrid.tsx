@@ -1,9 +1,10 @@
-import { IWebdavNode } from '@rocket.chat/core-typings';
+import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Skeleton, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 import { getNodeIconType } from '../lib/getNodeIconType';
 import WebdavFilePickerGridItem from './WebdavFilePickerGridItem';

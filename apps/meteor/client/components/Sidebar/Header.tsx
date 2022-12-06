@@ -1,5 +1,6 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import React, { FC, ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
+import React from 'react';
 
 type HeaderProps = {
 	title?: ReactNode;

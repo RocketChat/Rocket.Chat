@@ -1,6 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
@@ -9,6 +9,7 @@ import { dispatchToastMessage } from '../../../lib/toast';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 interface ApiError {
 	xhr: {
 		responseJSON: {

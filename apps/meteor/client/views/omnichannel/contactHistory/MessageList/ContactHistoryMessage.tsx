@@ -19,7 +19,8 @@ import {
 	MessageSystemTimestamp,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
