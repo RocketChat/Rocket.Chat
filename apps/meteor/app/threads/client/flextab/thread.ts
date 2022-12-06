@@ -91,10 +91,10 @@ Template.thread.helpers({
 		return Threads.findOne({ _id: tmid });
 	},
 	tmid() {
-		return Template.instance().state.get('tmid');
+		return (Template.instance() as ThreadTemplateInstance).state.get('tmid');
 	},
 	rid() {
-		return Template.instance().state.get('rid');
+		return (Template.instance() as ThreadTemplateInstance).state.get('rid');
 	},
 	threadListStyle() {
 		return getUserPreference(Meteor.userId(), 'useLegacyMessageTemplate') ? '' : 'height:100%;';
