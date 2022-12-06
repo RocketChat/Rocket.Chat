@@ -42,6 +42,7 @@ export const palette = [
 		list: [
 			{ name: 'stroke-default', token: '', color: '#cbced1' },
 			{ name: 'stroke-focus', token: '', color: '#EBECEF' },
+			{ name: 'stroke-extra-light', token: '', color: '#1F2329' },
 		],
 	},
 	{
