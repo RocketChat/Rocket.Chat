@@ -53,13 +53,22 @@ export async function updatePriority(
 		}),
 	};
 
-	const created = await LivechatPriority.findOneAndUpdate(query, update, {
-		returnDocument: 'after',
-	});
+	try {
+		const created = await LivechatPriority.findOneAndUpdate(query, update, {
+			returnDocument: 'after',
+		});
 
-	if (!created.ok || !created.value) {
-		throw Error('Error updating priority');
+		if (!created.ok || !created.value) {
+			throw Error('Error updating priority');
+		}
+
+		return created.value;
+	} catch (error: any) {
+		// check if its a duplicate key error
+		if (error?.code === 11000) {
+			throw new Error('Error! Priority already exists');
+		}
+
+		throw error;
 	}
-
-	return created.value;
 }

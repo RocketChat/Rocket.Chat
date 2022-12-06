@@ -7,7 +7,15 @@ export class LivechatPriority extends Base {
 	constructor() {
 		super('livechat_priority');
 
-		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex(
+			{ name: 1 },
+			{
+				unique: true,
+				partialFilterExpression: {
+					$and: [{ name: { $exists: true } }, { name: { $gt: '' } }],
+				},
+			},
+		);
 		this.tryEnsureIndex({ sortItem: 1 });
 	}
 
