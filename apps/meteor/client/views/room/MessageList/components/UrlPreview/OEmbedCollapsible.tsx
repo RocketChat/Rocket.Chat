@@ -1,6 +1,7 @@
 import { MessageGenericPreview } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import MessageCollapsible from '../MessageCollapsible';
 import OEmbedPreviewContent from './OEmbedPreviewContent';

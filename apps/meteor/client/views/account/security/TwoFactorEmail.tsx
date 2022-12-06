@@ -1,6 +1,7 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, ReactElement, useCallback } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 

@@ -1,7 +1,8 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useContext, FC, ComponentProps, ReactNode } from 'react';
+import type { FC, ComponentProps, ReactNode } from 'react';
+import React, { useContext } from 'react';
 
 import BurgerMenu from '../BurgerMenu';
 import PageContext from './PageContext';

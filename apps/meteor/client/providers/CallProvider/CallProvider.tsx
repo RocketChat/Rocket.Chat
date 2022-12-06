@@ -1,9 +1,14 @@
-import {
+import type {
 	IVoipRoom,
 	IUser,
 	VoipEventDataSignature,
-	VoipClientEvents,
 	ICallerInfo,
+	ICallDetails,
+	ILivechatVisitor,
+	Serialized,
+} from '@rocket.chat/core-typings';
+import {
+	VoipClientEvents,
 	isVoipEventAgentCalled,
 	isVoipEventAgentConnected,
 	isVoipEventCallerJoined,
@@ -11,11 +16,9 @@ import {
 	isVoipEventQueueMemberRemoved,
 	isVoipEventCallAbandoned,
 	UserState,
-	ICallDetails,
-	ILivechatVisitor,
-	Serialized,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import {
 	useRoute,
 	useUser,
@@ -24,26 +27,26 @@ import {
 	useStream,
 	useSetOutputMediaDevice,
 	useSetInputMediaDevice,
-	Device,
 	useSetModal,
-	IExperimentalHTMLAudioElement,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 // import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
-import React, { useMemo, FC, useRef, useCallback, useEffect, useState } from 'react';
+import type { FC } from 'react';
+import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { OutgoingByeRequest } from 'sip.js/lib/core';
+import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { CustomSounds } from '../../../app/custom-sounds/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
 import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
-import { CallContext, CallContextValue, useIsVoipEnterprise } from '../../contexts/CallContext';
+import type { CallContextValue } from '../../contexts/CallContext';
+import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
 
 type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
 

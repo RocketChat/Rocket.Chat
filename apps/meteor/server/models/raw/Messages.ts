@@ -17,7 +17,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { BaseRaw } from './BaseRaw';
 import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
 
-// @ts-ignore Circular reference on field 'attachments'
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
@@ -347,7 +346,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{
 				$set: {
 					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
-				},
+				} as any,
 			},
 		);
 	}

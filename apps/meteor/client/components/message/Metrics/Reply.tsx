@@ -1,5 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React from 'react';
 
 import ContentItem from './ContentItem';
 

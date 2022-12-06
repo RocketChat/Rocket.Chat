@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
+import React from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import VerticalBar from '../../../../components/VerticalBar';

@@ -1,6 +1,8 @@
 import { usePrefersReducedData } from '@rocket.chat/fuselage-hooks';
-import { AttachmentContext, AttachmentContextValue, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import type { AttachmentContextValue } from '@rocket.chat/ui-contexts';
+import { AttachmentContext, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
 

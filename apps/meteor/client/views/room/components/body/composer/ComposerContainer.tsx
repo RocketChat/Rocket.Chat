@@ -1,11 +1,13 @@
 import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { useRoom } from '../../../contexts/RoomContext';
 import { ComposerAnonymous } from './ComposerAnonymous';
 import { ComposerBlocked } from './ComposerBlocked';
 import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
-import ComposerMessage, { ComposerMessageProps } from './ComposerMessage';
+import type { ComposerMessageProps } from './ComposerMessage';
+import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel/ComposerOmnichannel';
 import { ComposerReadOnly } from './ComposerReadOnly';
 import ComposerVoIP from './ComposerVoIP';

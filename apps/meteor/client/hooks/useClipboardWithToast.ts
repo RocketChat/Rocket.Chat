@@ -1,4 +1,5 @@
-import { useClipboard, UseClipboardReturn, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { UseClipboardReturn } from '@rocket.chat/fuselage-hooks';
+import { useClipboard, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 
 export default function useClipboardWithToast(text: string): UseClipboardReturn {

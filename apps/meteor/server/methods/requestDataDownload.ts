@@ -1,23 +1,22 @@
-import fs from 'fs';
-import path from 'path';
+import path, { join } from 'path';
+import { mkdir, mkdtemp } from 'fs/promises';
+import { tmpdir } from 'os';
 
-import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
+import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
-import { DataExport } from '../../app/user-data-download/server/DataExport';
-
-let tempFolder = '/tmp/userData';
-if (settings.get('UserData_FileSystemPath') != null) {
-	if (settings.get('UserData_FileSystemPath').trim() !== '') {
-		tempFolder = settings.get('UserData_FileSystemPath');
-	}
-}
+import * as dataExport from '../lib/dataExport';
 
 Meteor.methods({
 	async requestDataDownload({ fullExport = false }) {
-		const currentUserData = Meteor.user();
+		const currentUserData = Meteor.user() as IUser | null;
+
+		if (!currentUserData) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
 		const userId = currentUserData._id;
 
 		const lastOperation = await ExportOperations.findLastOperationByUser(userId, fullExport);
@@ -37,7 +36,7 @@ Meteor.methods({
 						return {
 							requested: false,
 							exportOperation: lastOperation,
-							url: DataExport.getPath(file._id),
+							url: dataExport.getPath(file._id),
 							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
@@ -52,32 +51,27 @@ Meteor.methods({
 			}
 		}
 
-		if (!fs.existsSync(tempFolder)) {
-			mkdirp.sync(tempFolder);
-		}
+		const tempFolder = settings.get<string | undefined>('UserData_FileSystemPath')?.trim() || (await mkdtemp(join(tmpdir(), 'userData')));
+		await mkdir(tempFolder, { recursive: true });
 
 		const exportOperation = {
-			userId: currentUserData._id,
-			roomList: null,
 			status: 'preparing',
+			userId: currentUserData._id,
+			roomList: undefined,
 			fileList: [],
-			generatedFile: null,
+			generatedFile: undefined,
 			fullExport,
 			userData: currentUserData,
-		};
+		} as unknown as IExportOperation; // @todo yikes!
 
 		const id = await ExportOperations.create(exportOperation);
 		exportOperation._id = id;
 
 		const folderName = path.join(tempFolder, id);
-		if (!fs.existsSync(folderName)) {
-			mkdirp.sync(folderName);
-		}
+		await mkdir(folderName, { recursive: true });
 
 		const assetsFolder = path.join(folderName, 'assets');
-		if (!fs.existsSync(assetsFolder)) {
-			mkdirp.sync(assetsFolder);
-		}
+		await mkdir(assetsFolder, { recursive: true });
 
 		exportOperation.exportPath = folderName;
 		exportOperation.assetsPath = assetsFolder;

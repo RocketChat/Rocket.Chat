@@ -1,7 +1,9 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation, TranslationKey, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
