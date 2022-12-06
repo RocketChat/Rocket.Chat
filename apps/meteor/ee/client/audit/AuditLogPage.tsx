@@ -1,7 +1,8 @@
 import { Field } from '@rocket.chat/fuselage';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import Page from '../../../client/components/Page';
 import AuditLogTable from './AuditLogTable';

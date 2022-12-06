@@ -1,12 +1,13 @@
 import { useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
+import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
-import { ThreadListProps } from './ThreadList';
+import type { ThreadListProps } from './ThreadList';
 import { useThreadsList } from './useThreadsList';
 
 const subscriptionFields = { tunread: true, tunreadUser: true, tunreadGroup: true };

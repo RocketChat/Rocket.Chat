@@ -3,7 +3,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box, Palette } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import React, { memo } from 'react';
 import semver from 'semver';
 
 import AppAvatar from '../../../components/avatar/AppAvatar';

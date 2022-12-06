@@ -1,8 +1,9 @@
-import { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useRef } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';

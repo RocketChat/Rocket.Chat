@@ -1,5 +1,6 @@
 import { Option, OptionColumn, OptionContent, OptionIcon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 type ListItemProps = {
 	text: ReactNode;

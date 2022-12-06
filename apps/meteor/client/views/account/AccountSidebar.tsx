@@ -1,5 +1,6 @@
 import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useCallback, useEffect } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { menu, SideNav } from '../../../app/ui-utils/client';

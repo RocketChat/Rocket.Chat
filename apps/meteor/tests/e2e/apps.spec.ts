@@ -8,7 +8,7 @@ const APP_TESTER = {
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe.parallel('Apps', () => {
+test.describe.serial('Apps', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeAll(async ({ api }) => {

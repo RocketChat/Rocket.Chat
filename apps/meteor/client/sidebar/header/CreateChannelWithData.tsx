@@ -1,12 +1,14 @@
-import { RoomType } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useCallback, useMemo, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
-import CreateChannel, { CreateChannelProps } from './CreateChannel';
+import type { CreateChannelProps } from './CreateChannel';
+import CreateChannel from './CreateChannel';
 
 type CreateChannelWithDataProps = {
 	onClose: () => void;
