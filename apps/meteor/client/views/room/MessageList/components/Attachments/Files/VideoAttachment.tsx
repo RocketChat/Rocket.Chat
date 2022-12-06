@@ -1,7 +1,8 @@
-import { VideoAttachmentProps } from '@rocket.chat/core-typings';
+import type { VideoAttachmentProps } from '@rocket.chat/core-typings';
 import { Box, MessageGenericPreview } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import MarkdownText from '../../../../../../components/MarkdownText';
 import { userAgentMIMETypeFallback } from '../../../../../../lib/utils/userAgentMIMETypeFallback';
