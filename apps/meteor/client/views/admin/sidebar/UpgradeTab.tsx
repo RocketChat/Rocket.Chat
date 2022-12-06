@@ -1,5 +1,4 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoutePath, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -8,12 +7,6 @@ import type { UpgradeTabVariant } from '../../../../lib/upgradeTab';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../../lib/upgradeTab';
 import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
-
-const customColors = {
-	default: colors['s2-700'],
-	hover: colors['s2-800'],
-	active: colors['s2-900'],
-};
 
 type UpgradeTabProps = { type: UpgradeTabVariant; currentPath: string; trialEndDate: string | undefined };
 
