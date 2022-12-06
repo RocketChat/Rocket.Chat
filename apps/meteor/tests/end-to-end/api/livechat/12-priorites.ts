@@ -388,6 +388,30 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error', 'Error! Priority already exists with this name');
 		});
+		it('should throw a duplicate error incase there is already a priority with same name (case insensitive)', async () => {
+			const {
+				body: { priorities },
+			} = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			// change name of first priority to a random name
+			const newNameLowercase = faker.random.word().toLowerCase();
+			await request
+				.put(api(`livechat/priorities/${priorities[0]._id}`))
+				.set(credentials)
+				.send({ name: newNameLowercase })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			// change name of second priority to the name of first priority in different case and expect error
+			const response = await request
+				.put(api(`livechat/priorities/${priorities[1]._id}`))
+				.set(credentials)
+				.send({ name: newNameLowercase.toUpperCase() })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'Error! Priority already exists with this name');
+		});
 	});
 
 	describe('livechat/priorities.reset', () => {
