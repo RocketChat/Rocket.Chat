@@ -1,4 +1,4 @@
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { t } from '../../../../../app/utils/client';
 import { dispatchToastMessage } from '../../../../lib/toast';

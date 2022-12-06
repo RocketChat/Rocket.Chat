@@ -1,7 +1,7 @@
 import { t } from '../../../../../app/utils/client';
 import { dispatchToastMessage } from '../../../../lib/toast';
 
-interface ApiError {
+interface IApiError {
 	xhr: {
 		responseJSON: {
 			error: string;
@@ -12,7 +12,7 @@ interface ApiError {
 	};
 }
 
-export function handleInstallError(apiError: ApiError | Error): void {
+export function handleInstallError(apiError: IApiError | Error): void {
 	if (apiError instanceof Error) {
 		dispatchToastMessage({ type: 'error', message: apiError.message });
 		return;

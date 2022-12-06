@@ -1,4 +1,4 @@
-import { AppPricingPlan } from '@rocket.chat/core-typings';
+import type { AppPricingPlan } from '@rocket.chat/core-typings';
 
 import { t } from '../../../../../app/utils/client';
 import { formatPrice } from './formatPrice';

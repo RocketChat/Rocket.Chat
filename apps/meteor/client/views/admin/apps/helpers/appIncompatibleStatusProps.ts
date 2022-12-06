@@ -1,5 +1,5 @@
 import { t } from '../../../../../app/utils/client';
-import { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
+import type { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
 
 const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 	icon: 'check',

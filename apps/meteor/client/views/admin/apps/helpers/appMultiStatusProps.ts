@@ -1,6 +1,6 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 
-import { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
+import type { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
 import appIncompatibleStatusProps from './appIncompatibleStatusProps';
 import { appStatusSpanProps } from './appStatusSpanProps';
 

@@ -1,4 +1,4 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 type appButtonResponseProps = {

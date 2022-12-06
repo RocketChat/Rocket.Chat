@@ -1,9 +1,9 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 
 import appEnabledStatuses from '../utils/appEnabledStatuses';
 import appErroredStatuses from '../utils/appErroredStatuses';
-import { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
+import type { appStatusSpanResponseProps } from '../utils/appStatusSpanResponseProps';
 
 export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
