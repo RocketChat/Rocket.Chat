@@ -11,8 +11,11 @@ export const PaletteStyleTag = (): ReactElement | null => {
 	const [theme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
 
 	if (theme !== 'dark') {
-		return null;
+		return createPortal(<style>{convertToCss(filterOnlyChangedColors({}, defaultSidebarPalette), '.sidebar')}</style>, document.head);
 	}
 
-	return createPortal(<style>{convertToCss(filterOnlyChangedColors(defaultSidebarPalette, sidebarPaletteDark))}</style>, document.head);
+	return createPortal(
+		<style>{convertToCss(filterOnlyChangedColors(defaultSidebarPalette, sidebarPaletteDark), '.sidebar')}</style>,
+		document.head,
+	);
 };
