@@ -1,3 +1,4 @@
+import stream from 'stream';
 import type { Readable, Writable } from 'stream';
 
 import type { WebDAVClient, FileStat, ResponseDataDetailed, WebDAVClientOptions } from 'webdav';
@@ -69,7 +70,22 @@ export class WebdavClientAdapter {
 		return this._client.createReadStream(path, options);
 	}
 
-	createWriteStream(path: string): Writable {
-		return this._client.createWriteStream(path);
+	createWriteStream(path: string, fileSize: number): Writable {
+		const ws = new stream.PassThrough();
+
+		this._client
+			.customRequest(path, {
+				method: 'PUT',
+				headers: {
+					...(fileSize ? { 'Content-Length': String(fileSize) } : {}),
+				},
+				data: ws,
+				maxRedirects: 0,
+			})
+			.catch((err) => {
+				ws.emit('error', err);
+			});
+
+		return ws;
 	}
 }

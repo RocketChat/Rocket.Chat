@@ -1,11 +1,12 @@
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import BurgerMenu from '../../../../components/BurgerMenu';
-import TemplateHeader from '../../../../components/Header';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
-import { ToolboxActionConfig } from '../../lib/Toolbox';
-import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
+import { ToolboxContext, useToolboxContext } from '../../contexts/ToolboxContext';
+import type { ToolboxActionConfig } from '../../lib/Toolbox';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
 import QuickActions from './QuickActions';
@@ -31,7 +32,7 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 	const { isMobile } = useLayout();
 	const room = useOmnichannelRoom();
 	const { visibleActions, getAction } = useQuickActions(room);
-	const context = useToolboxContext();
+	const toolbox = useToolboxContext();
 
 	const slots = useMemo(
 		() => ({
@@ -50,7 +51,7 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 		<ToolboxContext.Provider
 			value={useMemo(
 				() => ({
-					...context,
+					...toolbox,
 					actions: new Map([
 						...(isMobile
 							? (visibleActions.map((action) => [
@@ -62,10 +63,10 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 									},
 							  ]) as [string, ToolboxActionConfig][])
 							: []),
-						...(Array.from(context.actions.entries()) as [string, ToolboxActionConfig][]),
+						...(Array.from(toolbox.actions.entries()) as [string, ToolboxActionConfig][]),
 					]),
 				}),
-				[context, isMobile, visibleActions, getAction],
+				[toolbox, isMobile, visibleActions, getAction],
 			)}
 		>
 			<RoomHeader slots={slots} room={room} />

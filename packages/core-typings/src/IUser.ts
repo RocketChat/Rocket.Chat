@@ -54,10 +54,17 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
-	cloud?: unknown;
+	cloud?: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: Date;
+	};
 	google?: any;
 	facebook?: any;
 	github?: any;
+	linkedin?: any;
+	twitter?: any;
+	gitlab?: any;
 	totp?: {
 		enabled: boolean;
 		hashedBackup: string[];
@@ -129,7 +136,6 @@ export interface IUser extends IRocketChatRecord {
 		authorizedClients: string[];
 	};
 	_updatedAt: Date;
-	statusLivechat?: string;
 	e2e?: {
 		private_key: string;
 		public_key: string;
@@ -147,6 +153,9 @@ export interface IUser extends IRocketChatRecord {
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
+	federation?: {
+		avatarUrl?: string;
+	};
 }
 
 export interface IRegisterUser extends IUser {

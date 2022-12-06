@@ -5,7 +5,7 @@ import React, { useMemo, useCallback } from 'react';
 import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
 import Page from '../../../components/Page';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
-import { useExampleData } from './exampleIncomingData';
+import { useExampleData } from './useExampleIncomingData';
 
 export default function OutgoingWebhookForm({ formValues, formHandlers, append, ...props }) {
 	const t = useTranslation();

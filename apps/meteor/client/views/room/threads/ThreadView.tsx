@@ -1,6 +1,8 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Modal, Box } from '@rocket.chat/fuselage';
 import { useLayoutContextualBarExpanded, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { useCallback, useMemo, forwardRef } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 
@@ -50,18 +52,28 @@ const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(function ThreadView(
 		onToggleFollow(following);
 	}, [following, onToggleFollow]);
 
+	const expandedThreadStyle =
+		hasExpand && expanded
+			? css`
+					max-width: 855px !important;
+					@media (min-width: 780px) and (max-width: 1135px) {
+						max-width: calc(100% - var(--sidebar-width)) !important;
+					}
+			  `
+			: undefined;
+
 	return (
 		<>
 			{hasExpand && expanded && <Modal.Backdrop onClick={onClose} />}
 
 			<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 				<VerticalBar
-					className='rcx-thread-view'
+					rcx-thread-view
+					className={expandedThreadStyle}
 					position={hasExpand && expanded ? 'fixed' : 'absolute'}
 					display='flex'
 					flexDirection='column'
 					width={'full'}
-					maxWidth={hasExpand && expanded ? 855 : undefined}
 					overflow='hidden'
 					zIndex={100}
 					insetBlock={0}

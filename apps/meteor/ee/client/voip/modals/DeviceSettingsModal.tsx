@@ -1,4 +1,5 @@
-import { Modal, Field, Select, Button, SelectOption, Box } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Field, Select, Button, Box } from '@rocket.chat/fuselage';
 import {
 	useTranslation,
 	useAvailableDevices,
@@ -7,8 +8,10 @@ import {
 	useSelectedDevices,
 	useIsDeviceManagementEnabled,
 } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/CallContext';
 import { isSetSinkIdAvailable } from '../../../../client/providers/DeviceProvider/lib/isSetSinkIdAvailable';

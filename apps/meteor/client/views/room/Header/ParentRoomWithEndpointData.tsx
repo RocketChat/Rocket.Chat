@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactElement } from 'react';
+import { Header } from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import Header from '../../../components/Header';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import ParentRoom from './ParentRoom';
 

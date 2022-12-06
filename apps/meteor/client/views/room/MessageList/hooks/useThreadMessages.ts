@@ -1,4 +1,4 @@
-import { IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -7,7 +7,7 @@ import { queryClient } from '../../../../lib/queryClient';
 import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
 
 const fetchThreadMessages = async (tmid: IThreadMessage['tmid']): Promise<IThreadMessage[]> => {
-	const messages = await callWithErrorHandling('getThreadMessages', { tmid });
+	const messages = (await callWithErrorHandling('getThreadMessages', { tmid })) as IThreadMessage[];
 	return messages?.sort((a: IThreadMessage, b: IThreadMessage) => Number(a.ts) - Number(b.ts));
 };
 

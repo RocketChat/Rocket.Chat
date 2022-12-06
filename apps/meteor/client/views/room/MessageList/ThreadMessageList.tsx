@@ -1,14 +1,15 @@
 /* eslint-disable react/no-multi-comp */
-import { IThreadMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IThreadMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useUserSubscription, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, Fragment, memo, ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { Fragment, memo } from 'react';
 // import { MessageTypes } from '../../../../app/ui-utils/client';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import { useFormatDate } from '../../../hooks/useFormatDate';
-import { MessageProvider } from '../providers/MessageProvider';
+import MessageProvider from '../providers/MessageProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import MessageListErrorBoundary from './MessageListErrorBoundary';
 import ThreadMessage from './components/ThreadMessage/ThreadMessage';

@@ -1,7 +1,9 @@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { useMemo, ContextType } from 'react';
+import type { ContextType } from 'react';
+import { useMemo } from 'react';
 
-import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
+import type { AsyncState } from '../../../../lib/asyncState';
+import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
@@ -11,7 +13,7 @@ import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
 import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
-import { App } from '../types';
+import type { App } from '../types';
 
 type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
 
@@ -33,7 +35,7 @@ export const useFilteredApps = ({
 	purchaseType?: string;
 	sortingMethod?: string;
 	status?: string;
-}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult> => {
+}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] }> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
 			return undefined;
@@ -89,7 +91,7 @@ export const useFilteredApps = ({
 		const end = current + itemsPerPage;
 		const slice = filtered.slice(offset, end);
 
-		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText };
+		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText, allApps: filtered };
 	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {

@@ -40,10 +40,12 @@ export class ListenersModule {
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),
 					emoticons: true,
-					katex: {
-						dollarSyntax: settings.get('Katex_Dollar_Syntax'),
-						parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
-					},
+					...(settings.get('Katex_Enabled') && {
+						katex: {
+							dollarSyntax: settings.get('Katex_Dollar_Syntax'),
+							parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
+						},
+					}),
 				});
 			}
 
@@ -126,6 +128,12 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('message.update', ({ message }) => {
+			if (message.rid) {
+				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+			}
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {

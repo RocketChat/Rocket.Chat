@@ -1,7 +1,8 @@
 import { Box, Button, Icon, Scrollable, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import Clipboard from 'clipboard';
-import React, { useEffect, useState, useRef, FC } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import { cloudConsoleUrl } from './constants';

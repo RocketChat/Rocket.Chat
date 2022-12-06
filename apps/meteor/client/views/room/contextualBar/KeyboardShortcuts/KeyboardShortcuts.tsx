@@ -1,5 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import KeyboardShortcutSection from './KeyboardShortcutSection';

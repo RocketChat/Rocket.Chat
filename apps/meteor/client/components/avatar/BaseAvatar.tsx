@@ -1,5 +1,7 @@
-import { Avatar, AvatarProps, Skeleton } from '@rocket.chat/fuselage';
-import React, { FC, useState } from 'react';
+import type { AvatarProps } from '@rocket.chat/fuselage';
+import { Avatar, Skeleton } from '@rocket.chat/fuselage';
+import type { FC } from 'react';
+import React, { useState } from 'react';
 
 export type BaseAvatarProps = Omit<AvatarProps, 'is'>;
 
@@ -7,10 +9,10 @@ const BaseAvatar: FC<BaseAvatarProps> = ({ size, ...props }) => {
 	const [error, setError] = useState<unknown>(false);
 
 	if (error) {
-		return <Skeleton variant='rect' {...props} />;
+		return <Skeleton aria-hidden variant='rect' {...props} />;
 	}
 
-	return <Avatar onError={setError} size={size} {...props} />;
+	return <Avatar aria-hidden onError={setError} size={size} {...props} />;
 };
 
 export default BaseAvatar;

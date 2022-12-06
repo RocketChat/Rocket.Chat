@@ -2,8 +2,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -16,7 +16,6 @@ import ReportMessageModal from '../../../../client/views/room/modals/ReportMessa
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import type { ChatMessages } from '../../../ui/client';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -28,14 +27,6 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 Meteor.startup(async function () {
-	const { chatMessages } = await import('../../../ui');
-
-	const getChatMessagesFrom = (msg: IMessage): ChatMessages => {
-		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
-
-		return chatMessages[`${rid}-${tmid}`] || chatMessages[rid];
-	};
-
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',
@@ -61,7 +52,7 @@ Meteor.startup(async function () {
 			}
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (user._id !== message.u._id && !hasPermission('create-d')) {
+			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
 				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
@@ -78,21 +69,11 @@ Meteor.startup(async function () {
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const { input } = getChatMessagesFrom(message);
-			if (!input) {
-				return;
-			}
+			const { message = messageArgs(this).msg, chat } = props;
 
-			const $input = $(input);
-
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message);
-
-			$input.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
+			chat?.composer?.quoteMessage(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {
@@ -116,10 +97,14 @@ Meteor.startup(async function () {
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
-			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			try {
+				const { message = messageArgs(this).msg } = props;
+				const permalink = await MessageAction.getPermaLink(message._id);
+				navigator.clipboard.writeText(permalink);
+				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		},
 		condition({ subscription }) {
 			return !!subscription;
@@ -150,18 +135,17 @@ Meteor.startup(async function () {
 		id: 'edit-message',
 		icon: 'edit',
 		label: 'Edit',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
-			if (!element) {
-				throw new Error('Message not found');
-			}
-			getChatMessagesFrom(message).edit(element);
+			const { message = messageArgs(this).msg, chat } = props;
+			chat?.messageEditing.editMessage(message);
 		},
-		condition({ message, subscription, settings }) {
+		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
 				return false;
+			}
+			if (isRoomFederated(room)) {
+				return message.u._id === Meteor.userId();
 			}
 			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.Message_AllowEditing;
@@ -191,15 +175,18 @@ Meteor.startup(async function () {
 		id: 'delete-message',
 		icon: 'trash',
 		label: 'Delete',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message).confirmDeleteMsg(message);
+			const { message = messageArgs(this).msg, chat } = props;
+			chat?.flows.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room }) {
 			if (!subscription) {
 				return false;
+			}
+			if (isRoomFederated(room)) {
+				return message.u._id === Meteor.userId();
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
@@ -300,6 +287,10 @@ Meteor.startup(async function () {
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
+				return false;
+			}
+
+			if (!user) {
 				return false;
 			}
 

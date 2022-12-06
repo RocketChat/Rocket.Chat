@@ -57,6 +57,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	let isReacted;
 
 	if (userAlreadyReacted) {
+		const oldMessage = JSON.parse(JSON.stringify(message));
 		removeUserReaction(message, reaction, user.username);
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
@@ -71,7 +72,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 			}
 		}
 		callbacks.run('unsetReaction', message._id, reaction);
-		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
+		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact, oldMessage });
 
 		isReacted = false;
 	} else {

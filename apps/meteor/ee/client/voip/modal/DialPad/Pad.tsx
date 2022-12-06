@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import PadButton from './PadButton';
 
@@ -27,7 +28,7 @@ const Pad = ({
 	onClickPadButton: (digit: PadDigit[0]) => void;
 	onLongPressPadButton: (digit: PadDigit[1]) => void;
 }): ReactElement => (
-	<Box display='flex' flexWrap='wrap' mi='-8px' mbs='28px'>
+	<Box display='flex' flexWrap='wrap' justifyContent='center' mi='-8px' mbs='24px'>
 		{digits.map((digit, idx) => (
 			<PadButton key={idx} onClickPadButton={onClickPadButton} onLongPressPadButton={onLongPressPadButton}>
 				{digit}

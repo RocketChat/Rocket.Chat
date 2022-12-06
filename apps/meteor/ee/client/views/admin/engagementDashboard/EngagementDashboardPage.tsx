@@ -1,6 +1,7 @@
 import { Box, Select, Tabs } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import Page from '../../../../../client/components/Page';
 import ChannelsTab from './channels/ChannelsTab';
@@ -32,7 +33,7 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 	);
 
 	return (
-		<Page backgroundColor='neutral-100' data-qa='EngagementDashboardPage'>
+		<Page background='tint'>
 			<Page.Header title={t('Engagement_Dashboard')}>
 				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
 			</Page.Header>

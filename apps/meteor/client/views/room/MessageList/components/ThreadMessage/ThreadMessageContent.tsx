@@ -1,14 +1,17 @@
 /* eslint-disable complexity */
-import { IMessage, ISubscription, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageBody, MessageBlock } from '@rocket.chat/fuselage';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { MessageBlock } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import Attachments from '../../../../../components/message/Attachments';
 import MessageActions from '../../../../../components/message/MessageActions';
 import BroadcastMetric from '../../../../../components/message/Metrics/Broadcast';
 import { useUserData } from '../../../../../hooks/useUserData';
-import { UserPresence } from '../../../../../lib/presence';
+import type { UserPresence } from '../../../../../lib/presence';
 import MessageBlockUiKit from '../../../../blocks/MessageBlock';
 import MessageLocation from '../../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../contexts/MessageContext';
@@ -44,18 +47,21 @@ const ThreadMessageContent: FC<{ message: IMessage; sequential: boolean; subscri
 
 	return (
 		<>
-			{!message.blocks && (message.md || message.msg) && (
-				<MessageBody data-qa-type='message-body'>
-					{!isEncryptedMessage && <MessageContentBody message={message} />}
-					{isEncryptedMessage && message.e2e === 'done' && <MessageContentBody message={message} />}
+			{!message.blocks?.length && !!message.md?.length && (
+				<>
+					{(!isEncryptedMessage || message.e2e === 'done') && (
+						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
+					)}
 					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
-				</MessageBody>
+				</>
 			)}
+
 			{message.blocks && (
 				<MessageBlock fixedWidth>
 					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				</MessageBlock>
 			)}
+
 			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}

@@ -1,6 +1,7 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, RefObject, useMemo, useCallback } from 'react';
+import type { ReactElement, RefObject } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import {
@@ -123,7 +124,7 @@ const AccountTokensTable = (): ReactElement => {
 			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 				<States>
 					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 					<StatesSubtitle>{error?.message}</StatesSubtitle>
 					<StatesActions>

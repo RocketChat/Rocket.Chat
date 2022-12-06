@@ -1,5 +1,6 @@
 import { Icon, Button } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React from 'react';
 
 const InfoPanelAction: FC<ComponentProps<typeof Button> & { icon: ComponentProps<typeof Icon>['name']; label: string }> = ({
 	label,

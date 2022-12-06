@@ -2,7 +2,8 @@
 import type { ISubscription, IMessage } from '@rocket.chat/core-typings';
 import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useMessageActions } from '../../../contexts/MessageContext';
@@ -21,7 +22,7 @@ const ThreadMessage: FC<{ message: IMessage; sequential: boolean; subscription?:
 	...props
 }) => {
 	const isMessageHighlight = useIsMessageHighlight(message._id);
-	const [isMessageIgnored, toggleMessageIgnored] = useToggle(message.ignored);
+	const [isMessageIgnored, toggleMessageIgnored] = useToggle((message as { ignored?: boolean }).ignored);
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();

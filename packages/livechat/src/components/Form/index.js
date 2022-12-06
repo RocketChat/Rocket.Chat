@@ -27,7 +27,6 @@ export const Validations = {
 	custom: ({ value, pattern }) => (new RegExp(pattern, 'i').test(String(value)) ? null : i18next.t('invalid_value')),
 };
 
-
 export { FormField } from './FormField';
 export { TextInput } from './TextInput';
 export { PasswordInput } from './PasswordInput';

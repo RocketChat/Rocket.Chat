@@ -34,7 +34,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options?: any }): Promise<any[]>;
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
@@ -48,11 +48,19 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
 
-	removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void>;
-
 	countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number>;
 
 	countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number>;
 
 	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+
+	setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void>;
+
+	unsetFederationReactionEventId(federationEventId: string, _id: string, reaction: string): Promise<void>;
+
+	findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null>;
+
+	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
+
+	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
 }

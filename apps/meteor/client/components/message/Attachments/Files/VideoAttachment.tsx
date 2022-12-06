@@ -1,8 +1,11 @@
-import { VideoAttachmentProps } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import type { VideoAttachmentProps } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
+import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import AttachmentContent from '../Attachment/AttachmentContent';
@@ -12,6 +15,13 @@ import AttachmentRow from '../Attachment/AttachmentRow';
 import AttachmentSize from '../Attachment/AttachmentSize';
 import AttachmentTitle from '../Attachment/AttachmentTitle';
 import { useCollapse } from '../hooks/useCollapse';
+
+const videoAttachmentCss = css`
+	border: 2px solid ${Palette.stroke['stroke-extra-light']} !important;
+	border-radius: 2px;
+	display: flex;
+	flex-direction: column;
+`;
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	title,
@@ -35,9 +45,9 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({
 				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
 			</AttachmentRow>
 			{!collapsed && (
-				<AttachmentContent width='full'>
+				<AttachmentContent width='full' className={videoAttachmentCss}>
 					<Box is='video' width='full' controls preload='metadata'>
-						<source src={getURL(url)} type={type} />
+						<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />
 					</Box>
 					{description && (
 						<AttachmentDetails is='figcaption'>
