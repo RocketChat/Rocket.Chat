@@ -1,7 +1,8 @@
-import { IUser, AvatarObject } from '@rocket.chat/core-typings';
+import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, TextInput, Margins, Avatar, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { useFileInput } from '../../../hooks/useFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';

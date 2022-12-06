@@ -1,10 +1,10 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { KonchatNotification } from '../../../../app/ui/client';
 import { t } from '../../../../app/utils/client';
 import { dispatchToastMessage } from '../../toast';
 import { call } from '../../utils/call';
-import { ChatAPI } from '../ChatAPI';
+import type { ChatAPI } from '../ChatAPI';
 import { processMessageEditing } from './processMessageEditing';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';

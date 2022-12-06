@@ -1,6 +1,7 @@
-import { MessageAttachmentAction } from '@rocket.chat/core-typings';
+import type { MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import ActionAttachmentButton from './ActionAttachmentButton';
 

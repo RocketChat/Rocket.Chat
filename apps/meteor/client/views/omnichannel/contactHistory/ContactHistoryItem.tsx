@@ -7,9 +7,10 @@ import {
 	MessageGenericPreviewTitle,
 	MessageSystemBody,
 } from '@rocket.chat/fuselage';
-import { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { Dispatch, memo, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { memo } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
