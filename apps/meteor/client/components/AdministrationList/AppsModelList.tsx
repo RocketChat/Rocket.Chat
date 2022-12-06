@@ -28,7 +28,7 @@ const AppsModelList = ({ appBoxItems, showManageApps, closeList }: AppsModelList
 							icon='store'
 							text={t('Marketplace')}
 							action={(): void => {
-								marketplaceRoute.push({ context: 'all', page });
+								marketplaceRoute.push({ context: 'explore', page });
 								closeList();
 							}}
 						/>

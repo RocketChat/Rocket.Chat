@@ -34,7 +34,7 @@ const AppsPageContent = (): ReactElement => {
 	const router = useRoute(currentRouteName);
 
 	const context = useRouteParameter('context');
-	const isMarketplace = context === 'all';
+	const isMarketplace = context === 'explore';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -94,7 +94,7 @@ const AppsPageContent = (): ReactElement => {
 		selectedCategories.length > 0;
 
 	const handleReturn = (): void => {
-		router.push({ context: 'all', page: 'list' });
+		router.push({ context: 'explore', page: 'list' });
 	};
 
 	return (

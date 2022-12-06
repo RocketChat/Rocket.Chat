@@ -26,7 +26,7 @@ const AppsRoute = (): ReactElement => {
 		let mounted = true;
 
 		if (!context) {
-			marketplaceRoute.replace({ context: 'all', page: 'list' });
+			marketplaceRoute.replace({ context: 'explore', page: 'list' });
 		}
 
 		const initialize = async (): Promise<void> => {

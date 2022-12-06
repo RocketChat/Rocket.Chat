@@ -1,5 +1,6 @@
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { Suspense, ReactElement, ReactNode, useEffect } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
@@ -10,7 +11,7 @@ const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement
 
 	useEffect(() => {
 		if (!currentContext) {
-			marketplaceRoute.replace({ context: 'all', page: 'list' });
+			marketplaceRoute.replace({ context: 'explore', page: 'list' });
 		}
 	}, [currentContext, marketplaceRoute]);
 
