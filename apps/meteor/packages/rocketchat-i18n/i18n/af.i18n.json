@@ -2798,6 +2798,7 @@
   "registration.page.login.forgot": "Het jy jou wagwoord vergeet",
   "registration.page.resetPassword.sent": "As hierdie e-pos geregistreer is, stuur ons instruksies oor hoe om u wagwoord terug te stel. As jy nie binnekort 'n e-pos ontvang nie, kom asseblief terug en probeer weer.",
   "registration.component.login": "Teken aan",
+  "registration.component.login.userNotFound": "Gebruiker nie gevind nie",
   "registration.component.resetPassword": "Herstel wagwoord",
   "registration.component.form.emailOrUsername": "E-pos of gebruikersnaam",
   "registration.component.form.email": "e-pos",
