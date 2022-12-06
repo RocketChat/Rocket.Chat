@@ -50,7 +50,9 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 					>
 						<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined}>{title}</MessageGenericPreviewTitle>
 						{size && (
-							<MessageGenericPreviewDescription>{size && <AttachmentSize size={size} wrapper={false} />}</MessageGenericPreviewDescription>
+							<MessageGenericPreviewDescription>
+								<AttachmentSize size={size} wrapper={false} />
+							</MessageGenericPreviewDescription>
 						)}
 					</MessageGenericPreviewContent>
 				</MessageGenericPreview>
