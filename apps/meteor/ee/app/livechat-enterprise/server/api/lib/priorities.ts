@@ -66,7 +66,7 @@ export async function updatePriority(
 	} catch (error: any) {
 		// check if its a duplicate key error
 		if (error?.code === 11000) {
-			throw new Error('Error! Priority already exists');
+			throw new Error('Error! Priority already exists with this name');
 		}
 
 		throw error;
