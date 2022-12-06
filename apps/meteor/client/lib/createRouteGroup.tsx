@@ -1,7 +1,9 @@
-import { FlowRouter, Group, RouteOptions } from 'meteor/kadira:flow-router';
+import type { Group, RouteOptions } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import React, { ElementType, ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
+import React from 'react';
 
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';

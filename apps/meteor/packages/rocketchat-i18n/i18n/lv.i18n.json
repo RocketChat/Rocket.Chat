@@ -1,5 +1,4 @@
 {
-  "403": "Aizliegts",
   "500": "Iekšējā servera kļūda",
   "__username__was_set__role__by__user_by_": null,
   "@username": "@ lietotājvārds",
@@ -2790,5 +2789,15 @@
   "Your_password_is_wrong": "Jūsu parole ir nepareiza!",
   "Your_push_was_sent_to_s_devices": "Jūsu push tika nosūtīts uz %s ierīcēm",
   "Your_server_link": "Jūsu servera saite",
-  "Your_workspace_is_ready": "Jūsu darbastacija ir gatava lietošanai 🎉"
+  "Your_workspace_is_ready": "Jūsu darbastacija ir gatava lietošanai 🎉",
+  "registration.page.registration.waitActivationWarning": "Pirms jūs varat pieteikties, administratoram manuāli jāaktivizē jūsu kontu .",
+  "registration.page.login.forgot": "Aizmirsi savu paroli",
+  "registration.page.resetPassword.sent": "Ja šis e-pasts ir reģistrēts, mēs nosūtīsim norādījumus par to, kā atiestatīt savu paroli. Ja drīzumā nesaņemsiet e-pasta ziņojumu, lūdzam, atgriezieties un mēģiniet vēlreiz.",
+  "registration.component.login": "Pieteikties",
+  "registration.component.resetPassword": "Atiestatīt paroli",
+  "registration.component.form.emailOrUsername": "E-pasts vai lietotājvārds",
+  "registration.component.form.email": "E-pasts",
+  "registration.component.form.password": "Parole",
+  "registration.component.form.divider": "vai",
+  "registration.component.form.submit": "Iesniegt"
 }

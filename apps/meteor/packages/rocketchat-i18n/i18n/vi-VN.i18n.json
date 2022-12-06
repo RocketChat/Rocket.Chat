@@ -1,5 +1,4 @@
 {
-  "403": "Bị cấm",
   "500": "Lỗi máy chủ",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ phòng trống sẽ được gỡ bỏ tự động.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ phòng trống sẽ được gỡ bỏ tự động: <br/> __rooms__.",
@@ -2682,7 +2681,7 @@
   "User": "Người dùng",
   "User__username__is_now_a_leader_of__room_name_": "Người dùng __username__ bây giờ là người lãnh đạo của __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Người dùng __username__ bây giờ là người kiểm duyệt __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Người dùng __username__ bây giờ là chủ sở hữu của __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Người dùng __username__ bây giờ là chủ sở hữu của __room_name__",
   "User__username__removed_from__room_name__leaders": "Người dùng __username__ đã xóa khỏi __room_name__ lãnh đạo",
   "User__username__removed_from__room_name__moderators": "Người dùng __username__ đã bị xóa khỏi __room_name__ người kiểm duyệt",
   "User__username__removed_from__room_name__owners": "Người dùng __username__ đã xóa khỏi __room_name__ chủ sở hữu",
@@ -2891,5 +2890,14 @@
   "Your_password_is_wrong": "Mật khẩu của bạn sai!",
   "Your_push_was_sent_to_s_devices": "Đã được gửi tới % thiết bị",
   "Your_server_link": "Đường dẫn máy chủ của bạn",
-  "Your_workspace_is_ready": "Workspace của bạn đã sẵn sàng"
+  "Your_workspace_is_ready": "Workspace của bạn đã sẵn sàng",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Người dùng ứng dụng không được phép đăng nhập trực tiếp.",
+  "registration.page.registration.waitActivationWarning": "Trước khi bạn có thể đăng nhập, tài khoản của bạn phải được quản trị viên kích hoạt theo cách thủ công.",
+  "registration.page.resetPassword.sent": "Nếu email này đã được đăng ký, chúng tôi sẽ gửi hướng dẫn về cách đặt lại mật khẩu của bạn. Nếu bạn không nhận được email sớm, vui lòng quay lại và thử lại.",
+  "registration.component.login": "Đăng nhập",
+  "registration.component.resetPassword": "Đặt lại mật khẩu",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Mật khẩu",
+  "registration.component.form.divider": "hoặc là",
+  "registration.component.form.submit": "Gửi đi"
 }

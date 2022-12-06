@@ -2,7 +2,8 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';

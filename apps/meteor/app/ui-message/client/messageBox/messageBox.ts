@@ -8,14 +8,16 @@ import moment from 'moment';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
+import type { ContextType } from 'react';
+import { Emitter } from '@rocket.chat/emitter';
+import $ from 'jquery';
 
 import { setupAutogrow } from './messageBoxAutogrow';
 import { formattingButtons, applyFormatting } from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji/client';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import type { ChatMessages } from '../../../ui/client';
-import { fileUpload, KonchatNotification } from '../../../ui/client';
+import { UserAction, USER_ACTIVITIES, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
 import { t, getUserPreference } from '../../../utils/client';
 import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
@@ -23,24 +25,150 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
 import { call } from '../../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBox.html';
 
-type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
+const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();
+
+	let _quotedMessages: IMessage[] = [];
+
+	const persist = withDebouncing({ wait: 1000 })(() => {
+		if (input.value) {
+			Meteor._localStorage.setItem(storageID, input.value);
+			return;
+		}
+
+		Meteor._localStorage.removeItem(storageID);
+	});
+
+	const notifyQuotedMessagesUpdate = (): void => {
+		emitter.emit('quotedMessagesUpdate');
+	};
+
+	input.value = Meteor._localStorage.getItem(storageID) ?? '';
+	input.addEventListener('input', persist);
+
+	const release = (): void => {
+		input.removeEventListener('input', persist);
+	};
+
+	const setText = (
+		text: string,
+		{
+			selection,
+		}: {
+			selection?:
+				| { readonly start?: number; readonly end?: number }
+				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
+		} = {},
+	): void => {
+		input.value = text;
+
+		if (typeof selection === 'function') {
+			selection = selection({ start: input.selectionStart, end: input.selectionEnd });
+		}
+
+		if (selection) {
+			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
+		}
+
+		persist();
+		$(input).trigger('change').trigger('input');
+	};
+
+	const clear = (): void => {
+		setText('');
+	};
+
+	const focus = (): void => {
+		input.focus();
+	};
+
+	const replyWith = async (text: string): Promise<void> => {
+		if (input) {
+			input.value = text;
+			input.focus();
+		}
+	};
+
+	const quoteMessage = async (message: IMessage): Promise<void> => {
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+		notifyQuotedMessagesUpdate();
+		input.focus();
+	};
+
+	const dismissQuotedMessage = async (mid: IMessage['_id']): Promise<void> => {
+		_quotedMessages = _quotedMessages.filter((message) => message._id !== mid);
+		notifyQuotedMessagesUpdate();
+	};
+
+	const dismissAllQuotedMessages = async (): Promise<void> => {
+		_quotedMessages = [];
+		notifyQuotedMessagesUpdate();
+	};
+
+	const quotedMessages = {
+		get: () => _quotedMessages,
+		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
+	};
+
+	const setEditingMode = (editing: boolean): void => {
+		if (editing) {
+			input.parentElement?.classList.add('editing');
+		} else {
+			input.parentElement?.classList.remove('editing');
+		}
+	};
+
+	return {
+		release,
+		get text(): string {
+			return input.value;
+		},
+		get selection(): { start: number; end: number } {
+			return {
+				start: input.selectionStart,
+				end: input.selectionEnd,
+			};
+		},
+		setText,
+		clear,
+		focus,
+		replyWith,
+		quoteMessage,
+		dismissQuotedMessage,
+		dismissAllQuotedMessages,
+		quotedMessages,
+		setEditingMode,
+	};
+};
+
+export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
-	tmid: IMessage['_id'];
-	onSend: (
+	tmid?: IMessage['_id'];
+	onSend?: (
 		event: Event,
 		params: {
 			value: string;
 			tshow?: boolean;
 		},
 	) => Promise<void>;
-	tshow: IMessage['tshow'];
-	subscription: ISubscription & IRoom;
-	chatMessagesInstance: ChatMessages;
+	onResize?: () => void;
+	onEscape?: () => void;
+	onNavigateToPreviousMessage?: () => void;
+	onNavigateToNextMessage?: () => void;
+	onUploadFiles?: (files: readonly File[]) => void;
+	tshow?: IMessage['tshow'];
+	subscription?: ISubscription;
+	showFormattingTips: boolean;
+	isEmbedded?: boolean;
+	chatContext: ContextType<typeof ChatContext>;
 }> & {
 	state: ReactiveDict<{
 		mustJoinWithCode?: boolean;
@@ -67,10 +195,16 @@ type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	sendIconDisabled: ReactiveVar<boolean>;
 };
 
+let lastFocusedInput: HTMLTextAreaElement | undefined = undefined;
+
+export const refocusComposer = () => {
+	(lastFocusedInput ?? document.querySelector<HTMLTextAreaElement>('.js-input-message'))?.focus();
+};
+
 Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	this.state = new ReactiveDict();
 	this.popupConfig = new ReactiveVar(null);
-	this.replyMessageData = new ReactiveVar(null);
+	this.replyMessageData = new ReactiveVar(this.data.chatContext?.composer?.quotedMessages.get() ?? []);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
 
@@ -121,17 +255,13 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 		const { value } = input;
 		this.set('');
 
+		UserAction.stop(this.data.rid, USER_ACTIVITIES.USER_TYPING, { tmid: this.data.tmid });
+
 		onSend?.call(this.data, event, { value, tshow }).then(() => {
 			autogrow?.update();
 			input.focus();
 		});
 	};
-
-	const { chatMessagesInstance } = this.data;
-
-	chatMessagesInstance.quotedMessages.subscribe(() => {
-		this.replyMessageData.set(chatMessagesInstance.quotedMessages.get());
-	});
 });
 
 Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
@@ -171,7 +301,9 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const { rid, tmid, onInputChanged, onResize } = Template.currentData();
+		const { rid, tmid, onResize, chatContext } = Template.currentData() as MessageBoxTemplateInstance['data'];
+
+		let unsubscribeToQuotedMessages: (() => void) | undefined;
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message') as HTMLTextAreaElement;
@@ -181,7 +313,23 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			}
 
 			this.input = input;
-			onInputChanged?.(input);
+
+			if (chatContext) {
+				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+				chatContext.setComposerAPI(createComposerAPI(input, storageID));
+			}
+
+			setTimeout(() => {
+				if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
+					input.focus();
+				}
+			}, 200);
+
+			unsubscribeToQuotedMessages?.();
+
+			unsubscribeToQuotedMessages = chatContext?.composer?.quotedMessages.subscribe(() => {
+				this.replyMessageData.set(chatContext?.composer?.quotedMessages.get() ?? []);
+			});
 
 			if (input && rid) {
 				this.popupConfig.set({
@@ -203,12 +351,18 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			}
 
 			const shadow = this.find('.js-input-message-shadow');
-			this.autogrow = setupAutogrow(input, shadow, onResize);
+			this.autogrow = onResize ? setupAutogrow(input, shadow, onResize) : null;
 		});
 	});
 });
 
 Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
+	UserAction.cancel(this.data.rid);
+
+	if (lastFocusedInput === this.input) {
+		lastFocusedInput = undefined;
+	}
+
 	if (!this.autogrow) {
 		return;
 	}
@@ -219,7 +373,7 @@ Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
 		const instance = Template.instance() as MessageBoxTemplateInstance;
-		const { rid } = Template.currentData();
+		const { rid } = Template.currentData() as MessageBoxTemplateInstance['data'];
 		if (!rid) {
 			return false;
 		}
@@ -227,7 +381,7 @@ Template.messageBox.helpers({
 		return isAnonymous || instance.state.get('mustJoinWithCode');
 	},
 	isWritable() {
-		const { rid, subscription } = Template.currentData();
+		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
 		if (!rid) {
 			return true;
 		}
@@ -257,8 +411,8 @@ Template.messageBox.helpers({
 		return (Template.instance() as MessageBoxTemplateInstance).replyMessageData.get();
 	},
 	onDismissReply() {
-		const { chatMessagesInstance } = (Template.instance() as MessageBoxTemplateInstance).data;
-		return (mid: IMessage['_id']) => chatMessagesInstance.quotedMessages.remove(mid);
+		const { chatContext } = (Template.instance() as MessageBoxTemplateInstance).data;
+		return (mid: IMessage['_id']) => chatContext?.composer?.dismissQuotedMessage(mid);
 	},
 	isEmojiEnabled() {
 		return getUserPreference(Meteor.userId(), 'useEmojis');
@@ -396,10 +550,15 @@ Template.messageBox.events({
 			input.selectionEnd = caretPos + emojiValue.length;
 		});
 	},
-	'focus .js-input-message'() {
+	'focus .js-input-message'(event: JQuery.FocusEvent) {
 		KonchatNotification.removeRoomNotification(this.rid);
+		lastFocusedInput = event.currentTarget;
 	},
-	'keydown .js-input-message'(event: JQuery.KeyDownEvent, instance: MessageBoxTemplateInstance) {
+	'keydown .js-input-message'(
+		this: MessageBoxTemplateInstance['data'],
+		event: JQuery.KeyDownEvent<HTMLTextAreaElement>,
+		instance: MessageBoxTemplateInstance,
+	) {
 		const { originalEvent } = event;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
@@ -413,21 +572,86 @@ Template.messageBox.events({
 			return;
 		}
 
-		const { rid, tmid, onKeyDown } = this;
-		onKeyDown?.call(this, event, { rid, tmid });
+		const { chatContext } = this;
+		const { currentTarget: input } = event;
+
+		switch (event.key) {
+			case 'Escape': {
+				const currentEditing = chatContext?.currentEditing;
+
+				if (currentEditing) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					currentEditing.reset().then((reset) => {
+						if (!reset) {
+							currentEditing?.cancel();
+						}
+					});
+
+					return;
+				}
+
+				if (!input.value.trim()) this.onEscape?.();
+				return;
+			}
+
+			case 'ArrowUp': {
+				if (event.shiftKey) {
+					return;
+				}
+
+				if (input.selectionEnd === 0) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					this.onNavigateToPreviousMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(0, 0);
+					}
+				}
+
+				return;
+			}
+
+			case 'ArrowDown': {
+				if (event.shiftKey) {
+					return;
+				}
+
+				if (input.selectionEnd === input.value.length) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					this.onNavigateToNextMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(input.value.length, input.value.length);
+					}
+				}
+			}
+		}
 	},
-	'keyup .js-input-message'(event: JQuery.KeyUpEvent) {
-		const { rid, tmid, onKeyUp } = this;
-		onKeyUp?.call(this, event, { rid, tmid });
+	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
+		const { rid, tmid } = this;
+		const { currentTarget: input, which: keyCode } = event;
+
+		if (!Object.values<number>(keyCodes).includes(keyCode)) {
+			if (input?.value.trim()) {
+				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+			} else {
+				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+			}
+		}
 	},
-	'paste .js-input-message'(event: JQuery.TriggeredEvent, instance: MessageBoxTemplateInstance) {
+	'paste .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
 		const originalEvent = event.originalEvent as ClipboardEvent | undefined;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
 		}
 
-		const { rid, tmid } = this;
-		const { input, autogrow } = instance;
+		const { autogrow } = instance;
 
 		setTimeout(() => autogrow?.update(), 50);
 
@@ -454,26 +678,24 @@ Template.messageBox.events({
 
 				const extension = imageExtension ? `.${imageExtension}` : '';
 
-				return {
-					file: fileItem,
-					name: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
-				};
+				Object.defineProperty(fileItem, 'name', {
+					writable: true,
+					value: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
+				});
+				return fileItem;
 			})
-			.filter(
-				(
-					file,
-				): file is {
-					file: File;
-					name: string;
-				} => Boolean(file),
-			);
+			.filter((file): file is File => !!file);
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files, input, { rid, tmid });
+			instance.data.onUploadFiles?.(files);
 		}
 	},
-	'input .js-input-message'(event: JQuery.TriggeredEvent, instance: MessageBoxTemplateInstance) {
+	'input .js-input-message'(
+		this: MessageBoxTemplateInstance['data'],
+		_event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
+		instance: MessageBoxTemplateInstance,
+	) {
 		const { input } = instance;
 		if (!input) {
 			return;
@@ -484,11 +706,12 @@ Template.messageBox.events({
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
-
-		const { rid, tmid, onValueChanged } = this;
-		onValueChanged?.call(this, event, { rid, tmid });
 	},
-	'propertychange .js-input-message'(event: JQuery.TriggeredEvent, instance: MessageBoxTemplateInstance) {
+	'propertychange .js-input-message'(
+		this: MessageBoxTemplateInstance['data'],
+		event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
+		instance: MessageBoxTemplateInstance,
+	) {
 		const originalEvent = event.originalEvent as { propertyName: string } | undefined;
 		if (!originalEvent) {
 			throw new Error('Event is not an original event');
@@ -508,9 +731,6 @@ Template.messageBox.events({
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
-
-		const { rid, tmid, onValueChanged } = this;
-		onValueChanged?.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
 		instance.send(event as unknown as Event);
@@ -545,6 +765,7 @@ Template.messageBox.events({
 				tmid: this.tmid,
 				prid: this.subscription.prid,
 				messageBox: instance.firstNode,
+				chat: instance.data.chatContext,
 			},
 			activeElement: event.currentTarget,
 		};
@@ -561,12 +782,14 @@ Template.messageBox.events({
 		actions
 			.filter(({ action }) => !!action)
 			.forEach(({ action }) => {
+				console.log(instance.data);
 				action.call(null, {
 					rid: this.rid,
 					tmid: this.tmid,
 					messageBox: instance.firstNode as HTMLElement,
 					prid: this.subscription.prid,
 					event: event as unknown as Event,
+					chat: instance.data.chatContext,
 				});
 			});
 	},

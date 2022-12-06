@@ -913,6 +913,42 @@ describe('[Users]', function () {
 		});
 	});
 
+	describe('[/users.getAvatarSuggestion]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
+		it('should get avatar suggestion of the logged user via userId', (done) => {
+			request
+				.get(api('users.getAvatarSuggestion'))
+				.set(userCredentials)
+				.query({
+					userId: userCredentials['X-User-Id'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('suggestions').and.to.be.an('object');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.update]', () => {
 		before(async () =>
 			Promise.all([
@@ -1612,6 +1648,7 @@ describe('[Users]', function () {
 		});
 	});
 
+	// TODO check for all response fields
 	describe('[/users.setPreferences]', () => {
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
@@ -1635,7 +1672,7 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the user try to update info of an inexistent user', (done) => {
+		it('should return an error when the user try to update info of an nonexistent user', (done) => {
 			const userPreferences = {
 				userId: 'invalid-id',
 				data: {
@@ -1774,8 +1811,103 @@ describe('[Users]', function () {
 		});
 	});
 
+	describe('[/users.sendConfirmationEmail]', () => {
+		it('should send email to user (return success), when is a valid email', (done) => {
+			request
+				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
+				.send({
+					email: adminEmail,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should not send email to user(return error), when is a invalid email', (done) => {
+			request
+				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
+				.send({
+					email: 'invalidEmail',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.getUsernameSuggestion]', () => {
 		const testUsername = `test${+new Date()}`;
+		let targetUser;
+		let userCredentials;
+		before('register a new user...', (done) => {
+			request
+				.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${testUsername}.@teste.com`,
+					username: `${testUsername}test`,
+					name: testUsername,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(done);
+		});
+		before('Login...', (done) => {
+			request
+				.post(api('login'))
+				.send({
+					user: targetUser.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		it('should return an username suggestion', (done) => {
+			request
+				.get(api('users.getUsernameSuggestion'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.exist;
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.checkUsernameAvailability]', () => {
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		const testUsername = `test-username-123456-${+new Date()}`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
@@ -1783,7 +1915,7 @@ describe('[Users]', function () {
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${testUsername}.@teste.com`,
+					email: `${testUsername}.@test-username.com`,
 					username: `${testUsername}test`,
 					name: testUsername,
 					pass: password,
@@ -1812,15 +1944,47 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should return an username suggestion', (done) => {
+		it('should return true if the username is the same user username set', (done) => {
 			request
-				.get(api('users.getUsernameSuggestion'))
+				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
+				.query({
+					username: targetUser.username,
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.be.equal(testUsername);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
+		});
+
+		it('should return true if the username is available', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.set(userCredentials)
+				.query({
+					username: `${targetUser.username}-${+new Date()}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the username is invalid', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.set(userCredentials)
+				.query()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
 		});
@@ -3072,9 +3236,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -3431,9 +3595,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {

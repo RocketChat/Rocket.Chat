@@ -1,5 +1,4 @@
 {
-  "403": "verbode",
   "500": "Interne bedienerfout",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is nie meer __role__ deur __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ is ingestel __role__ deur __user_by__",
@@ -2581,7 +2580,7 @@
   "User": "gebruiker",
   "User__username__is_now_a_leader_of__room_name_": "Gebruiker __username__ is nou 'n leier van __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Gebruiker __username__ is nou 'n moderator van __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Gebruiker __username__ is nou 'n eienaar van __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Gebruiker __username__ is nou 'n eienaar van __room_name__",
   "User__username__removed_from__room_name__leaders": "Gebruiker __username__ verwyder van __room_name__ leiers",
   "User__username__removed_from__room_name__moderators": "Gebruiker __username__ verwyder van __room_name__ moderators",
   "User__username__removed_from__room_name__owners": "Gebruiker __username__ verwyder van __room_name__ eienaars",
@@ -2794,5 +2793,15 @@
   "Your_password_is_wrong": "Jou wagwoord is verkeerd!",
   "Your_push_was_sent_to_s_devices": "Jou druk is gestuur na%s toestelle",
   "Your_server_link": "Jou bediener skakel",
-  "Your_workspace_is_ready": "Jou werkruimte is gereed om 🎉 te gebruik"
+  "Your_workspace_is_ready": "Jou werkruimte is gereed om 🎉 te gebruik",
+  "registration.page.registration.waitActivationWarning": "Voordat u kan inteken, moet u rekening handmatig deur 'n administrateur geaktiveer word.",
+  "registration.page.login.forgot": "Het jy jou wagwoord vergeet",
+  "registration.page.resetPassword.sent": "As hierdie e-pos geregistreer is, stuur ons instruksies oor hoe om u wagwoord terug te stel. As jy nie binnekort 'n e-pos ontvang nie, kom asseblief terug en probeer weer.",
+  "registration.component.login": "Teken aan",
+  "registration.component.resetPassword": "Herstel wagwoord",
+  "registration.component.form.emailOrUsername": "E-pos of gebruikersnaam",
+  "registration.component.form.email": "e-pos",
+  "registration.component.form.password": "wagwoord",
+  "registration.component.form.divider": "of",
+  "registration.component.form.submit": "Indien"
 }

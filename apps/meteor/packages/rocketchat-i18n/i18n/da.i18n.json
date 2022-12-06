@@ -1,5 +1,4 @@
 {
-  "403": "Forbudt",
   "500": "Intern serverfejl",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ tomme rum fjernes automatisk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ tomme rum vil blive fjernet automatisk: <br/> __rooms__.",
@@ -3754,7 +3753,7 @@
   "User Search (Group Validation)": "Brugersøgning (Gruppevalidering)",
   "User__username__is_now_a_leader_of__room_name_": "Bruger __username__ er nu leder af __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Bruger __username__ er nu en moderator af __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Bruger __username__ er nu ejer af __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Bruger __username__ er nu ejer af __room_name__",
   "User__username__muted_in_room__roomName__": "Bruger __username__ har lyden slået fra i rum __roomName__",
   "User__username__removed_from__room_name__leaders": "Bruger __username__ fjernet fra __room_name__ ledere",
   "User__username__removed_from__room_name__moderators": "Bruger __username__ fjernet fra __room_name__ moderatorer",
@@ -4042,5 +4041,16 @@
   "Your_question": "Dit spørgsmål",
   "Your_server_link": "Din server link",
   "Your_temporary_password_is_password": "Din midlertidige adgangskode er <strong>[password]</strong>.",
-  "Your_workspace_is_ready": "Dit arbejdsområde er klar til brug 🎉"
+  "Your_workspace_is_ready": "Dit arbejdsområde er klar til brug 🎉",
+  "registration.page.login.errors.loginBlockedForIp": "Login er blevet midlertidigt blokeret til denne IP",
+  "registration.page.login.errors.loginBlockedForUser": "Login er blevet midlertidigt blokeret for denne bruger",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "App-brugere må ikke logge direkte på.",
+  "registration.page.registration.waitActivationWarning": "Før du kan logge ind, skal din konto manuelt aktiveres af en administrator.",
+  "registration.page.resetPassword.sent": "Hvis denne e-mail er registreret, sender vi instruktioner om hvordan du nulstiller din adgangskode. Hvis du ikke modtager en e-mail inden for kort tid, bedes du venligst vende tilbage og prøve igen.",
+  "registration.component.login": "Login",
+  "registration.component.resetPassword": "Nulstille kodeord",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Adgangskode",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Indsend"
 }

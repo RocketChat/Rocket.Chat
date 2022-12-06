@@ -1,5 +1,6 @@
 import { Tile } from '@rocket.chat/fuselage';
-import React, { forwardRef, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React, { forwardRef } from 'react';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 

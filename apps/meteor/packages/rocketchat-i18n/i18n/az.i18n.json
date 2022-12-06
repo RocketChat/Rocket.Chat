@@ -1,5 +1,4 @@
 {
-  "403": "Qadağan",
   "500": "Daxili Server Xətası",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ artıq __user_by__ tərəfindən __role__ deyil",
   "__username__was_set__role__by__user_by_": "__username__, __user_by__ tərəfindən __role__ təyin edildi",
@@ -2581,7 +2580,7 @@
   "User": "İstifadəçi",
   "User__username__is_now_a_leader_of__room_name_": "İstifadəçi __username__ artıq __room_name__ lideri",
   "User__username__is_now_a_moderator_of__room_name_": "İstifadəçi __username__ artıq __room_name__ moderatorudur",
-  "User__username__is_now_a_owner_of__room_name_": "İstifadəçi __username__ artıq __room_name__ sahibidir",
+  "User__username__is_now_an_owner_of__room_name_": "İstifadəçi __username__ artıq __room_name__ sahibidir",
   "User__username__removed_from__room_name__leaders": "İstifadəçi __username__ __room_name__ liderlərindən silindi",
   "User__username__removed_from__room_name__moderators": "İstifadəçi __username__ __room_name__ moderatorlarından silindi",
   "User__username__removed_from__room_name__owners": "İstifadəçi __username__ __room_name__ sahiblərindən silindi",
@@ -2794,5 +2793,15 @@
   "Your_password_is_wrong": "Şifrəniz səhvdir!",
   "Your_push_was_sent_to_s_devices": "Sizin itəniz%s cihazlarına göndərildi",
   "Your_server_link": "Sizin server bağlantınız",
-  "Your_workspace_is_ready": "İş yeriniz 🎉 istifadə etməyə hazırdır"
+  "Your_workspace_is_ready": "İş yeriniz 🎉 istifadə etməyə hazırdır",
+  "registration.page.registration.waitActivationWarning": "Giriş yapabilmeniz üçün hesabınız bir administrator tərəfindən əl ilə aktivləşdirilməlidir.",
+  "registration.page.login.forgot": "Şifrəni unutmusan",
+  "registration.page.resetPassword.sent": "Bu e-poçt qeydə alındıqda, parolunuzu necə sıfırlayacağına dair təlimatlar göndərəcəyik. Qısa müddətdə bir e-poçt almazsan, geri qayıdın və yenidən cəhd edin.",
+  "registration.component.login": "Daxil ol",
+  "registration.component.resetPassword": "Parolu sıfırlamak",
+  "registration.component.form.emailOrUsername": "E-poçt və ya istifadəçi adı",
+  "registration.component.form.email": "E-poçt",
+  "registration.component.form.password": "Şifrə",
+  "registration.component.form.divider": "və ya",
+  "registration.component.form.submit": "təqdim"
 }

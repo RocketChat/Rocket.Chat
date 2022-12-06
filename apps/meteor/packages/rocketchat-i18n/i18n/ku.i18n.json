@@ -1,5 +1,4 @@
 {
-  "403": "Qedexekirî",
   "500": "Xeletiya Pêşkêşkara Herêmî",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ e êdî __role__, ji aliyê __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ __role__ destê __user_by__ hat avakirin",
@@ -2574,7 +2573,7 @@
   "User": "Bikaranîvan",
   "User__username__is_now_a_leader_of__room_name_": "Bikarhêner __username__ niha serokê __room_name__ e",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ User is now a moderator ji __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ User is now a xwediyê __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ User is now a xwediyê __room_name__",
   "User__username__removed_from__room_name__leaders": "Bikarhêner __username__ ji rêberên __room_name__ jêbirin",
   "User__username__removed_from__room_name__moderators": "__username__ User ji moderator __room_name__ rakirin",
   "User__username__removed_from__room_name__owners": "__username__ User ji xwediyên __room_name__ rakirin",
@@ -2786,5 +2785,13 @@
   "Your_password_is_wrong": "Te şîfreya xwe ji xelet e!",
   "Your_push_was_sent_to_s_devices": "push xwe ji bo cîhazên %s hate şandin",
   "Your_server_link": "Girêdana serverê",
-  "Your_workspace_is_ready": "Karên te yên amadekar e amade ye"
+  "Your_workspace_is_ready": "Karên te yên amadekar e amade ye",
+  "registration.page.login.errors.wrongCredentials": "Bikarhêner nehat dîtin an şîfreya xwe rast nenivîsandiye",
+  "registration.page.registration.waitActivationWarning": "Berî ku hun nikarim têkevim, hesabê xwe divê bi destan an administrator aktîfkirin.",
+  "registration.page.resetPassword.sent": "Heke ev e-nameya qeydkirî ye, em ê li ser şîfreya we çawa şîfreya xwe bistînin. Heke hûn bi nameyek zûtirîn bistînin, kerema xwe dîsa vegerin û dîsa biceribînin.",
+  "registration.component.login": "چوونەژوور",
+  "registration.component.resetPassword": "تێپەڕەوشە دابنێرەوە",
+  "registration.component.form.password": "Şîfre",
+  "registration.component.form.divider": "an",
+  "registration.component.form.submit": "ناردن"
 }

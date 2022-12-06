@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, ComponentProps } from 'react';
+import type { FC, ComponentProps } from 'react';
+import React from 'react';
 
 import ImageBox from './ImageBox';
 

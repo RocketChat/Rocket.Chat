@@ -1,8 +1,11 @@
-import { Button, Icon, Modal } from '@rocket.chat/fuselage';
+import type { Icon } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, ComponentProps, ReactElement, ReactNode } from 'react';
+import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
+import React from 'react';
 
-import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
+import type { RequiredModalProps } from './withDoNotAskAgain';
+import { withDoNotAskAgain } from './withDoNotAskAgain';
 
 type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
@@ -73,7 +76,9 @@ const GenericModal: FC<GenericModalProps> = ({
 		<Modal {...props}>
 			<Modal.Header>
 				{renderIcon(icon, variant)}
-				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
+				<Modal.HeaderText>
+					<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
+				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>

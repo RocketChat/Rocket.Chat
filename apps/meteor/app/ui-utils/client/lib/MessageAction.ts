@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ContextType } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -11,6 +11,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import { APIClient } from '../../../utils/client';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
@@ -32,7 +33,16 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 type MessageActionGroup = 'message' | 'menu';
-export type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'pinned' | 'direct' | 'starred' | 'mentions' | 'federated';
+export type MessageActionContext =
+	| 'message'
+	| 'threads'
+	| 'message-mobile'
+	| 'pinned'
+	| 'direct'
+	| 'starred'
+	| 'mentions'
+	| 'federated'
+	| 'videoconf';
 
 type MessageActionConditionProps = {
 	message: IMessage;
@@ -55,7 +65,12 @@ export type MessageActionConfig = {
 	context?: MessageActionContext[];
 	action: (
 		e: Pick<Event, 'preventDefault' | 'stopPropagation'>,
-		{ message, tabbar, room }: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom },
+		{
+			message,
+			tabbar,
+			room,
+			chat,
+		}: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom; chat: ContextType<typeof ChatContext> },
 	) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 };

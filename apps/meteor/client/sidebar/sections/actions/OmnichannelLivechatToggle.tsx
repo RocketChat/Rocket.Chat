@@ -1,7 +1,8 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useOmnichannelAgentAvailable } from '../../../hooks/omnichannel/useOmnichannelAgentAvailable';
 
@@ -21,6 +22,7 @@ export const OmnichannelLivechatToggle = (): ReactElement => {
 
 	return (
 		<Sidebar.TopBar.Action
+			id={'omnichannel-status-toggle'}
 			data-tooltip={agentAvailable ? t('Turn_off_answer_chats') : t('Turn_on_answer_chats')}
 			color={agentAvailable ? 'success' : undefined}
 			icon={agentAvailable ? 'message' : 'message-disabled'}
