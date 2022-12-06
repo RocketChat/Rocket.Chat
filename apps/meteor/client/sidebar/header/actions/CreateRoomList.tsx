@@ -1,6 +1,7 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, MouseEvent } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
+import React from 'react';
 
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import ListItem from '../../../components/Sidebar/ListItem';

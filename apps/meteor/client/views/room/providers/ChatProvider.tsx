@@ -1,4 +1,5 @@
-import React, { ReactElement, ReactNode, useEffect, useMemo } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { ChatMessages } from '../../../../app/ui/client/lib/ChatMessages';
 import { ChatContext } from '../contexts/ChatContext';

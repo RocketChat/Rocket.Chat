@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import UserCard from '../../../components/UserCard';
 

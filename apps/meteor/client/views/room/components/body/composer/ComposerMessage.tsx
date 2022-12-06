@@ -1,16 +1,17 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import React, { ContextType, memo, ReactElement, useCallback, useEffect, useRef } from 'react';
+import type { ContextType, ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 
 import type { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
-import { ChatContext } from '../../../contexts/ChatContext';
+import type { ChatContext } from '../../../contexts/ChatContext';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];

@@ -1,7 +1,8 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
-import { Upload } from '../../../../lib/chats/Upload';
+import type { Upload } from '../../../../lib/chats/Upload';
 import ErroredUploadProgressIndicator from './ErroredUploadProgressIndicator';
 
 type UploadProgressIndicatorProps = {

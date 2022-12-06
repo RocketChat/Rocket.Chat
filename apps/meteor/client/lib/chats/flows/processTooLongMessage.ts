@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/client';
 import { messageProperties } from '../../../../app/ui-utils/client';
@@ -6,7 +6,7 @@ import { t } from '../../../../app/utils/client';
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../imperativeModal';
 import { dispatchToastMessage } from '../../toast';
-import { ChatAPI } from '../ChatAPI';
+import type { ChatAPI } from '../ChatAPI';
 
 export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
 	const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);

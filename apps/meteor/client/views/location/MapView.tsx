@@ -1,5 +1,6 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import MapViewFallback from './MapViewFallback';
 import MapViewImage from './MapViewImage';

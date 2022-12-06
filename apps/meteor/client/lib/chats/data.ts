@@ -10,7 +10,7 @@ import { getRandomId } from '../../../lib/random';
 import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { call } from '../utils/call';
 import { prependReplies } from '../utils/prependReplies';
-import { DataAPI } from './ChatAPI';
+import type { DataAPI } from './ChatAPI';
 
 const messagesCollection = Messages as Mongo.Collection<IMessage>;
 const roomsCollection = Rooms as Mongo.Collection<IRoom>;
