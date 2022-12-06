@@ -354,26 +354,22 @@ export class RoomsRaw extends BaseRaw<any> implements IRoomsModel {
 	}
 
 	setJoinCodeById(rid: IRoom['_id'], joinCode: string | null) {
-		let update;
-		const query = { _id: rid };
+		const query: Filter<IRoom> = { _id: rid };
 
-		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
-			update = {
-				$set: {
-					joinCodeRequired: true,
-					joinCode,
-				},
-			};
-		} else {
-			update = {
-				$set: {
-					joinCodeRequired: false,
-				},
-				$unset: {
-					joinCode: 1,
-				},
-			};
-		}
+		const update: UpdateFilter<IRoom> =
+			joinCode?.trim() !== ''
+				? {
+						$set: {
+							joinCodeRequired: true,
+							joinCode,
+						},
+				  }
+				: {
+						$unset: {
+							joinCodeRequired: '',
+							joinCode: '',
+						},
+				  };
 
 		return this.updateOne(query, update);
 	}

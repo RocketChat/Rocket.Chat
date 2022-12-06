@@ -30,11 +30,14 @@ Meteor.methods({
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
+
 		if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(user._id, 'join-without-join-code')) {
 			throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', {
 				method: 'joinRoom',
 			});
 		}
+
+		console.log(room);
 
 		return addUserToRoom(rid, user);
 	},
