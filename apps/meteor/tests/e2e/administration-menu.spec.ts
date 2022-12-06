@@ -17,7 +17,7 @@ test.describe.serial('administration-menu', () => {
 		test.skip(IS_EE, 'Community Only');
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Go fully featured');
 
-		await expect(page).toHaveURL('admin/upgrade/go-fully-featured');
+		await expect(page).toHaveURL(/admin\/upgrade\/go-fully-featured(-registered)?$/);
 	});
 
 	test('expect open info page', async ({ page }) => {
