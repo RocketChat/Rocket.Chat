@@ -1,5 +1,4 @@
 {
-  "403": "Draudžiama",
   "500": "Vidinė serverio klaida",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ tušti kambariai bus pašalinti automatiškai.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ tušti kambariai bus pašalinti automatiškai:<br/> __rooms__.",
@@ -2636,7 +2635,7 @@
   "User": "Vartotojas",
   "User__username__is_now_a_leader_of__room_name_": "Naudotojas __username__ dabar __room_name__ lyderis",
   "User__username__is_now_a_moderator_of__room_name_": "Vartotojas __username__ dabar yra __room_name__ moderatorius",
-  "User__username__is_now_a_owner_of__room_name_": "Naudotojas __username__ dabar __room_name__ savininkas",
+  "User__username__is_now_an_owner_of__room_name_": "Naudotojas __username__ dabar __room_name__ savininkas",
   "User__username__removed_from__room_name__leaders": "Vartotojo __username__ pašalinta iš __room_name__ lyderių",
   "User__username__removed_from__room_name__moderators": "Vartotojas __username__ pašalintas iš __room_name__ moderatorių",
   "User__username__removed_from__room_name__owners": "Vartotojas __username__ pašalintas iš __room_name__ savininkų",

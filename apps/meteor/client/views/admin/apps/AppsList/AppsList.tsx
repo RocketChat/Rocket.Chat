@@ -1,6 +1,7 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import AppRow from './AppRow';
 

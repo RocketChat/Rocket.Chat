@@ -1,9 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useRoutePath, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import { getUpgradeTabLabel, isFullyFeature, UpgradeTabVariant } from '../../../../lib/upgradeTab';
+import type { UpgradeTabVariant } from '../../../../lib/upgradeTab';
+import { getUpgradeTabLabel, isFullyFeature } from '../../../../lib/upgradeTab';
 import Emoji from '../../../components/Emoji';
 import Sidebar from '../../../components/Sidebar';
 

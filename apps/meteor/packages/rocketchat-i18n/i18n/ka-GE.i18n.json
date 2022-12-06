@@ -1,5 +1,4 @@
 {
-  "403": "აკრძალულია",
   "500": "შიდა სერვერული შეცდომა",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ ცარიელი ოთახი ავტომატურად მოიხსნება.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ ცარიელი ოთახები ავტომატურად წაიშლება: <br/> __rooms__.",
@@ -3461,7 +3460,7 @@
   "User Search (Group Validation)": "მომხმარებლის ძებნა (ჯგუფის ვალიდაცია)",
   "User__username__is_now_a_leader_of__room_name_": "მომხმარებელი __username__ ახლა ლიდერია __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "მომხმარებელი __username__  __room_name__-ის ახლა მოდერატორია",
-  "User__username__is_now_a_owner_of__room_name_": "მომხმარებელი __username__   __room_name__-ის მფლობელი",
+  "User__username__is_now_an_owner_of__room_name_": "მომხმარებელი __username__   __room_name__-ის მფლობელი",
   "User__username__removed_from__room_name__leaders": "მომხმარებელი __username__ ამოღებულია__room_name__ლიდერებიდან",
   "User__username__removed_from__room_name__moderators": "მომხმარებელი __username__  ამოღებულია __room_name__ მოდერატორებიდან",
   "User__username__removed_from__room_name__owners": "მომხმარებელი __username__ ამოღებულია __room_name__  მფლობელებიდან",

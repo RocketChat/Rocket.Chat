@@ -1,5 +1,4 @@
 {
-  "403": "Zakázané",
   "500": "Interná chyba servera",
   "__username__is_no_longer__role__defined_by__user_by_": "používateľovi __username__ bola zrušená funkcia __role__ používateľom __user_by__",
   "__username__was_set__role__by__user_by_": "používateľovi __username__ bola nastavená funkcia __role__ používateľom __user_by__",
@@ -2590,7 +2589,7 @@
   "User": "užívateľ",
   "User__username__is_now_a_leader_of__room_name_": "Používateľ __username__ je teraz vodcom __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Používateľ __username__ je teraz moderátorom __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Používateľ __username__ je teraz vlastníkom __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Používateľ __username__ je teraz vlastníkom __room_name__",
   "User__username__removed_from__room_name__leaders": "Používateľ __username__ bol odstránený z vodičov __room_name__",
   "User__username__removed_from__room_name__moderators": "Používateľ __username__ bol odstránený z moderátorov __room_name__",
   "User__username__removed_from__room_name__owners": "Používateľ __username__ bol odstránený z vlastníkov __room_name__",

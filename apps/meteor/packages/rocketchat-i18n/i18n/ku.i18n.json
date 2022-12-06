@@ -1,5 +1,4 @@
 {
-  "403": "Qedexekirî",
   "500": "Xeletiya Pêşkêşkara Herêmî",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ e êdî __role__, ji aliyê __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ __role__ destê __user_by__ hat avakirin",
@@ -2574,7 +2573,7 @@
   "User": "Bikaranîvan",
   "User__username__is_now_a_leader_of__room_name_": "Bikarhêner __username__ niha serokê __room_name__ e",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ User is now a moderator ji __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ User is now a xwediyê __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ User is now a xwediyê __room_name__",
   "User__username__removed_from__room_name__leaders": "Bikarhêner __username__ ji rêberên __room_name__ jêbirin",
   "User__username__removed_from__room_name__moderators": "__username__ User ji moderator __room_name__ rakirin",
   "User__username__removed_from__room_name__owners": "__username__ User ji xwediyên __room_name__ rakirin",

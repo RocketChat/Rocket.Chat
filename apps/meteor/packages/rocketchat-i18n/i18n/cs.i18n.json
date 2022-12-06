@@ -1,5 +1,4 @@
 {
-  "403": "Zakázaný",
   "500": "Chyba serveru",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ prázdných místností bude automaticky odstraněno",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ prázdných místností bude automaticky odstraněno:<br/>__rooms__.",
@@ -3732,7 +3731,7 @@
   "User Search (Group Validation)": "Hledání uživatelů (Ověření skupiny)",
   "User__username__is_now_a_leader_of__room_name_": "Uživatel __username__ je nyní vedoucím místnosti __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Uživatel __username__ je nyní moderátorem __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Uživatel __username__ je nyní vlastníkem __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Uživatel __username__ je nyní vlastníkem __room_name__",
   "User__username__muted_in_room__roomName__": "Uživatel __username__ ztlumen v místnosti __roomName__",
   "User__username__removed_from__room_name__leaders": "Uživatel __username__ byl odebrán z vedoucích místnosti __room_name__",
   "User__username__removed_from__room_name__moderators": "Uživatel __username__ odebrán z moderátorů __room_name__",

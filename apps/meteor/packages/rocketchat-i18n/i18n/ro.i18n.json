@@ -1,5 +1,4 @@
 {
-  "403": "Interzis",
   "500": "eroare interna a serverului",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ nu mai este __role__, prin __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ a fost stabilită __role__ de __user_by__",
@@ -2580,7 +2579,7 @@
   "User": "Utilizator",
   "User__username__is_now_a_leader_of__room_name_": "Utilizatorul __username__ este acum un lider al __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Utilizator __username__  este acum un moderator al __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Utilizatorul __username__ este acum proprietar al  __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Utilizatorul __username__ este acum proprietar al  __room_name__",
   "User__username__removed_from__room_name__leaders": "Utilizatorul __username__ a fost eliminat de la liderii __room_name__",
   "User__username__removed_from__room_name__moderators": "Utilizatorul __username__ a fost eliminat din moderatorii  __room_name__",
   "User__username__removed_from__room_name__owners": "Utilizatorul __username__ scos din proprietarii __room_name__",

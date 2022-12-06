@@ -1,7 +1,8 @@
 import { Chip, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
-import { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
+import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
 const TagList: FC<{
 	categories: (CategoryDropdownItem & { checked: true })[];

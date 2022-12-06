@@ -1,5 +1,4 @@
 {
-  "403": "Verboten",
   "500": "Interner Serverfehler",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ist nicht länger __role__. Geändert durch __user_by__.",
   "__username__was_set__role__by__user_by_": "__username__ ist jetzt __role__, geändert von __user_by__",
@@ -2583,7 +2582,7 @@
   "User": "Benutzer",
   "User__username__is_now_a_leader_of__room_name_": "Benutzer __username__ ist jetzt ein Anführer von __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Der Benuzer __username__ ist jetzt ein Moderator des Raums __room_name__.",
-  "User__username__is_now_a_owner_of__room_name_": "Benutzer __username__ ist jetzt ein Besitzer von __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Benutzer __username__ ist jetzt ein Besitzer von __room_name__",
   "User__username__removed_from__room_name__leaders": "Benutzer __username__ wurde aus __room_name__ Führungslinien entfernt",
   "User__username__removed_from__room_name__moderators": "Der Benutzer __username__ wurde von einem Moderator aus __room_name__ entfernt.",
   "User__username__removed_from__room_name__owners": "Benutzer __username__ wurde als Besitzer von __room_name__ entfernt.",

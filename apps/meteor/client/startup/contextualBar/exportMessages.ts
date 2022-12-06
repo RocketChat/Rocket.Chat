@@ -1,5 +1,6 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
+import type { LazyExoticComponent, FC } from 'react';
+import { useMemo, lazy } from 'react';
 
 import { addAction } from '../../views/room/lib/Toolbox';
 

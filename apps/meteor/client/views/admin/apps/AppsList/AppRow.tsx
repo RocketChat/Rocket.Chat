@@ -1,10 +1,11 @@
 import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { Badge, Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { memo, KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import React, { memo } from 'react';
+import semver from 'semver';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
@@ -13,11 +14,9 @@ import BundleChips from '../BundleChips';
 
 type AppRowProps = App & { isMarketplace: boolean };
 
+// TODO: org props
 const AppRow = (props: AppRowProps): ReactElement => {
-	const { name, id, description, iconFileData, marketplaceVersion, iconFileContent, installed, isSubscribed, bundledIn } = props;
-
-	const breakpoints = useBreakpoints();
-	const isDescriptionVisible = breakpoints.includes('xl');
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -58,6 +57,8 @@ const AppRow = (props: AppRowProps): ReactElement => {
 		}
 	`;
 
+	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
+
 	return (
 		<Box
 			key={id}
@@ -87,17 +88,15 @@ const AppRow = (props: AppRowProps): ReactElement => {
 							<BundleChips bundledIn={bundledIn} />
 						</Box>
 					)}
-					{isDescriptionVisible && (
-						<Box is='span' withTruncatedText width='x369'>
-							{description}
-						</Box>
-					)}
+					{shortDescription && <Box is='span'>{shortDescription}</Box>}
 				</Box>
 			</Box>
+
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation} width='20%'>
-				<AppStatus app={props} isSubscribed={isSubscribed} isAppDetailsPage={false} installed={installed} mis='x4' />
+				{canUpdate && <Badge small variant='primary' />}
+				<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
 				<Box minWidth='x32'>
-					<AppMenu app={props} mis='x4' />
+					<AppMenu app={props} isAppDetailsPage={false} mis='x4' />
 				</Box>
 			</Box>
 		</Box>

@@ -1,5 +1,4 @@
 {
-  "403": "Forbudt",
   "500": "Intern serverfejl",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ tomme rum fjernes automatisk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ tomme rum vil blive fjernet automatisk: <br/> __rooms__.",
@@ -3754,7 +3753,7 @@
   "User Search (Group Validation)": "Brugersøgning (Gruppevalidering)",
   "User__username__is_now_a_leader_of__room_name_": "Bruger __username__ er nu leder af __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Bruger __username__ er nu en moderator af __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Bruger __username__ er nu ejer af __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Bruger __username__ er nu ejer af __room_name__",
   "User__username__muted_in_room__roomName__": "Bruger __username__ har lyden slået fra i rum __roomName__",
   "User__username__removed_from__room_name__leaders": "Bruger __username__ fjernet fra __room_name__ ledere",
   "User__username__removed_from__room_name__moderators": "Bruger __username__ fjernet fra __room_name__ moderatorer",

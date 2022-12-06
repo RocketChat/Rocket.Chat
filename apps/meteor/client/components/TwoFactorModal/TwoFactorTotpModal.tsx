@@ -1,10 +1,12 @@
 import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 
 import GenericModal from '../GenericModal';
-import { Method, OnConfirm } from './TwoFactorModal';
+import type { OnConfirm } from './TwoFactorModal';
+import { Method } from './TwoFactorModal';
 
 type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;

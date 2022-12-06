@@ -1,5 +1,4 @@
 {
-  "403": "បានហាមឃាត់",
   "500": "កំហុសខាងក្នុងម៉ាស៊ីនម៉េ",
   "__count__empty_rooms_will_be_removed_automatically": null,
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> __rooms__ ។",
@@ -2928,7 +2927,7 @@
   "User Search (Group Validation)": "ស្វែងរកអ្នកប្រើ (សុពលភាពក្រុម)",
   "User__username__is_now_a_leader_of__room_name_": "__username__ អ្នកប្រើឥឡូវនេះជាមេដឹកនាំ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ ឥឡូវនេះគឺជាអ្នកសម្របសម្រួលរបស់អ្នកប្រើការ __room_name__ មួយ",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ ឥឡូវនេះគឺជាម្ចាស់របស់អ្នកប្រើការ __room_name__ មួយ",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ ឥឡូវនេះគឺជាម្ចាស់របស់អ្នកប្រើការ __room_name__ មួយ",
   "User__username__removed_from__room_name__leaders": "__username__ អ្នកប្រើត្រូវបានដកចេញពីមេដឹកនាំ __room_name__",
   "User__username__removed_from__room_name__moderators": "__username__ អ្នកប្រើយកចេញពីល្មម __room_name__",
   "User__username__removed_from__room_name__owners": "__username__ អ្នកប្រើយកចេញពីម្ចាស់ __room_name__",

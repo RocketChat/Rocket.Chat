@@ -1,5 +1,4 @@
 {
-  "403": "ຫ້າມ",
   "500": "ເກີດຂໍ້ຜິດພາດຂອງເຄື່ອງແມ່ຂ່າຍພາຍໃນ",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ: <br/> __rooms__.",
@@ -2616,7 +2615,7 @@
   "User": "ຜູ້ໃຊ້",
   "User__username__is_now_a_leader_of__room_name_": "__username__ ຜູ້ນໍາໃຊ້ແມ່ນຜູ້ນໍາ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ ຜູ້ໃຊ້ໃນປັດຈຸບັນເປັນຜູ້ເບິ່ງແລຂອງ __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ ຜູ້ໃຊ້ໃນປັດຈຸບັນເປັນເຈົ້າຂອງ __room_name__ ເປັນ",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ ຜູ້ໃຊ້ໃນປັດຈຸບັນເປັນເຈົ້າຂອງ __room_name__ ເປັນ",
   "User__username__removed_from__room_name__leaders": "__username__ ຜູ້ໃຊ້ຖືກລຶບອອກຈາກຜູ້ນໍາ __room_name__",
   "User__username__removed_from__room_name__moderators": "__username__ ຜູ້ໃຊ້ໂຍກຍ້າຍອອກຈາກປະດິດ __room_name__",
   "User__username__removed_from__room_name__owners": "__username__ ຜູ້ໃຊ້ໂຍກຍ້າຍອອກຈາກເຈົ້າຂອງ __room_name__",

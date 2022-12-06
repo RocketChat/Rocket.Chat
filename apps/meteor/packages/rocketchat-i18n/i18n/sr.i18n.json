@@ -1,5 +1,4 @@
 {
-  "403": "Забрањен",
   "500": "Интерна грешка сервера",
   "@username": "@корисничко име",
   "@username_message": "@ корисничко име <message>",
@@ -2390,7 +2389,7 @@
   "Use_User_Preferences_or_Global_Settings": "Користите Усер Преференцес или Глобал Сеттингс",
   "User": "Корисник",
   "User__username__is_now_a_moderator_of__room_name_": "Корисник __username__ је сада модератор за __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Корисник __username__ је сада власник __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Корисник __username__ је сада власник __room_name__",
   "User__username__removed_from__room_name__moderators": "Корисник __username__ уклоњен из модератори __room_name__",
   "User_added": "Корисник/ца додат(а)",
   "User_added_by": "Корисник/ца __user_added__ је додат(а) од стране __user_by__.",

@@ -1,7 +1,9 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation, TranslationKey, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -58,6 +60,7 @@ const CreateChannel = ({
 }: CreateChannelProps): ReactElement => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
+	const canSetReadOnly = usePermission('set-readonly');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting('Federation_Matrix_enabled');
@@ -175,7 +178,11 @@ const CreateChannel = ({
 										: t('All_users_in_the_channel_can_write_new_messages')}
 								</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.readOnly} disabled={values.broadcast || values.federated} onChange={handlers.handleReadOnly} />
+							<ToggleSwitch
+								checked={values.readOnly}
+								disabled={!canSetReadOnly || values.broadcast || values.federated}
+								onChange={handlers.handleReadOnly}
+							/>
 						</Box>
 					</Field>
 					<Field>
