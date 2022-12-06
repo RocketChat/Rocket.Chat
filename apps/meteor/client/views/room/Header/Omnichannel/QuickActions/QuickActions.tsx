@@ -16,7 +16,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const { visibleActions, actionDefault } = useQuickActions(room);
 
 	return (
-		<Header.ToolBox aria-label={t('Omnichannel_quick_actions')}>
+		<Header.ToolBox aria-label={t('Omnichannel_quick_actions')} mie={0}>
 			{visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
 				const props = {
 					id,
@@ -32,6 +32,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 
 				return <Header.ToolBox.Action {...props} />;
 			})}
+			{visibleActions.length > 0 && <Header.ToolBox.Divider />}
 		</Header.ToolBox>
 	);
 };
