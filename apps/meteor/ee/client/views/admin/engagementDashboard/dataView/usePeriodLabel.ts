@@ -1,7 +1,8 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { getPeriod, Period } from './periods';
+import type { Period } from './periods';
+import { getPeriod } from './periods';
 
 export const usePeriodLabel = (period: Period['key']): string => {
 	const t = useTranslation();

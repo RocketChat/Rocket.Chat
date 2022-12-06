@@ -1,6 +1,6 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { Upload } from './Upload';
+import type { Upload } from './Upload';
 
 export type ComposerAPI = {
 	release(): void;

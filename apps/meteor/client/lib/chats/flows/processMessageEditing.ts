@@ -1,8 +1,8 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { dispatchToastMessage } from '../../toast';
-import { ChatAPI } from '../ChatAPI';
+import type { ChatAPI } from '../ChatAPI';
 
 export const processMessageEditing = async (
 	chat: ChatAPI,

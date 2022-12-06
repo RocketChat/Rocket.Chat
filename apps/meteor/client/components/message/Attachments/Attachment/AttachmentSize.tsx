@@ -1,5 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import type { Box } from '@rocket.chat/fuselage';
+import type { ComponentProps, FC } from 'react';
+import React from 'react';
 
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
 import Title from './AttachmentTitle';

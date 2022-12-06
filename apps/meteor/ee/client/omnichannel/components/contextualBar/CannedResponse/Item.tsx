@@ -2,7 +2,8 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEvent, useState } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React, { memo, useState } from 'react';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
