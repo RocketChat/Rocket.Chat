@@ -9,17 +9,13 @@ import {
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import React, { FC } from 'react';
 
-import MessageContentBody from '../../../../views/room/MessageList/components/MessageContentBody';
-import MarkdownText from '../../../MarkdownText';
-import AttachmentDownload from '../Attachment/AttachmentDownload';
-import AttachmentRow from '../Attachment/AttachmentRow';
-import AttachmentSize from '../Attachment/AttachmentSize';
-import AttachmentTitle from '../Attachment/AttachmentTitle';
-import { useCollapse } from '../hooks/useCollapse';
+import MarkdownText from '../../../../../../components/MarkdownText';
+import AttachmentSize from '../../../../../../components/message/Attachments/Attachment/AttachmentSize';
+import MessageCollapsible from '../../MessageCollapsible';
+import MessageContentBody from '../../MessageContentBody';
 
 export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	title,
-	collapsed: collapsedDefault = false,
 	description,
 	descriptionMd,
 	title_link: link,
@@ -27,29 +23,37 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	size,
 	format,
 }) => {
-	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
 
-	const fileFormat = (): string => format ?? title?.split('.').pop()?.toLocaleUpperCase() ?? 'file';
+	const getFileExtension = (fileName?: string): string => {
+		if (!fileName) {
+			return 'file';
+		}
+
+		const arr = fileName.split('.');
+
+		if (arr.length < 2 || (arr[0] === '' && arr.length === 2)) {
+			return 'file';
+		}
+
+		return arr.pop()?.toLocaleUpperCase() || 'file';
+	};
 
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<AttachmentRow>
-				<AttachmentTitle>{title}</AttachmentTitle>
-				{collapse}
-				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
-			</AttachmentRow>
-			{!collapsed && (
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={link}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
-					<MessageGenericPreviewContent thumb={<MessageGenericPreviewIcon name='attachment-file' type={fileFormat()} />}>
+					<MessageGenericPreviewContent
+						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
+					>
 						<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined}>{title}</MessageGenericPreviewTitle>
 						{size && (
 							<MessageGenericPreviewDescription>{size && <AttachmentSize size={size} wrapper={false} />}</MessageGenericPreviewDescription>
 						)}
 					</MessageGenericPreviewContent>
 				</MessageGenericPreview>
-			)}
+			</MessageCollapsible>
 		</>
 	);
 };

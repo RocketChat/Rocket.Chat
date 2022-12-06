@@ -16,7 +16,6 @@ export const FileAttachment: FC<FileAttachmentProps> = (attachment) => {
 	if (isFileVideoAttachment(attachment)) {
 		return <VideoAttachment {...attachment} />;
 	}
-	// if (isFilePDFAttachment(attachment)) { return <PDFAttachment {...attachment} />; }
 
 	return <GenericFileAttachment {...attachment} />;
 };

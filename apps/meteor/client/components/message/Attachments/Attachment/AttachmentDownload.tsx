@@ -11,7 +11,7 @@ const AttachmentDownload: FC<Omit<ComponentProps<typeof Action>, 'icon'> & { tit
 	const t = useTranslation();
 	return (
 		<Action
-			icon='download'
+			icon='cloud-arrow-down'
 			href={`${href}?download`}
 			title={t('Download')}
 			is='a'

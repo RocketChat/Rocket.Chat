@@ -1,8 +1,8 @@
-import { MessageGenericPreview, Box } from '@rocket.chat/fuselage';
+import { MessageGenericPreview } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { ReactElement, ReactNode } from 'react';
 
-import { useCollapse } from '../../../../../components/message/Attachments/hooks/useCollapse';
+import MessageCollapsible from '../MessageCollapsible';
 import OEmbedPreviewContent from './OEmbedPreviewContent';
 import type { PreviewMetadata } from './PreviewList';
 
@@ -10,18 +10,14 @@ type OEmbedCollapsibleProps = { children?: ReactNode } & PreviewMetadata;
 
 const OEmbedCollapsible = ({ children, ...props }: OEmbedCollapsibleProps): ReactElement => {
 	const t = useTranslation();
-	const [collapsed, collapse] = useCollapse(false);
 
 	return (
-		<>
-			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center'>
-				{t('Link_Preview')} {collapse}
-			</Box>
+		<MessageCollapsible title={t('Link_Preview')}>
 			<MessageGenericPreview>
-				{!collapsed && children}
+				{children}
 				<OEmbedPreviewContent {...props} />
 			</MessageGenericPreview>
-		</>
+		</MessageCollapsible>
 	);
 };
 

@@ -1,8 +1,8 @@
 import { isFileAttachment, FileProp, MessageAttachmentBase, isQuoteAttachment } from '@rocket.chat/core-typings';
 import React, { memo, ReactElement } from 'react';
 
+import { FileAttachment } from '../../../views/room/MessageList/components/Attachments/Files/FileAttachment';
 import DefaultAttachment from './DefaultAttachment';
-import { FileAttachment } from './Files';
 import { QuoteAttachment } from './QuoteAttachment';
 
 type AttachmentsItemProps = {
