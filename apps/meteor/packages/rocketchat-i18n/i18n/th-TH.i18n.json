@@ -1,5 +1,4 @@
 {
-  "403": "ไม่อนุญาต",
   "500": "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ไม่ไช่ __role__ by __user_by__",
   "@username": "@ชื่อผู้ใช้",

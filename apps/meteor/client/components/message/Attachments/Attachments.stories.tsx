@@ -1,5 +1,5 @@
-import { FileAttachmentProps, FileProp, MessageAttachmentDefault } from '@rocket.chat/core-typings';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { FileAttachmentProps, FileProp, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Attachments from '.';

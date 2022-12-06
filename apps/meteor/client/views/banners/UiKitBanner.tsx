@@ -1,8 +1,9 @@
-import { UIKitActionEvent, UiKitBannerProps } from '@rocket.chat/core-typings';
+import type { UIKitActionEvent, UiKitBannerProps } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { kitContext, bannerParser, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
-import { LayoutBlock } from '@rocket.chat/ui-kit';
-import React, { FC, useMemo, ComponentProps, ReactElement, ContextType } from 'react';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import type { FC, ComponentProps, ReactElement, ContextType } from 'react';
+import React, { useMemo } from 'react';
 
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
 import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';

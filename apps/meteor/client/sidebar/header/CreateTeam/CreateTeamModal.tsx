@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, ReactElement, useEffect } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';

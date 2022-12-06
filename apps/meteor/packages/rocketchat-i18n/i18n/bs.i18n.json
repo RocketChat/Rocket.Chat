@@ -1,5 +1,4 @@
 {
-  "403": "Zabranjen",
   "500": "Interna pogreška poslužitelja",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ je uklonio __username__ iz __role__ grupe",
   "__username__was_set__role__by__user_by_": "__user_by__ je postavio __username__ u __role__ grupu ",

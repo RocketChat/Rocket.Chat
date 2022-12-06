@@ -1,5 +1,6 @@
-import { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import React, { ReactElement } from 'react';
+import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';

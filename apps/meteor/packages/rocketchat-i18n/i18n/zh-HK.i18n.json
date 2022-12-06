@@ -1,5 +1,4 @@
 {
-  "403": "被禁止",
   "500": "內部伺服器錯誤",
   "__username__is_no_longer__role__defined_by__user_by_": " __user_by__  已把 __username__ 從 __role__ 中移除",
   "__username__was_set__role__by__user_by_": " __user_by__  已把 __username__ 加進 __role__ 中",
