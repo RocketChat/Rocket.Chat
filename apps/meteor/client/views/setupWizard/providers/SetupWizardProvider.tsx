@@ -11,7 +11,8 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
+import type { ReactElement, ContextType } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';

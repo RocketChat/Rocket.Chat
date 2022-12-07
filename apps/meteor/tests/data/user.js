@@ -30,5 +30,6 @@ export const preferences = {
 		displayAvatars: true,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
+		idleTimeLimit: 3600,
 	},
 };

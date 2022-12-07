@@ -1,10 +1,12 @@
-import { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Card } from '@rocket.chat/ui-client';
-import { useRoute, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 
@@ -15,13 +17,13 @@ const clampStyle = css`
 	-webkit-box-orient: vertical;
 `;
 
-type SettingsGroupCard = {
+type SettingsGroupCardProps = {
 	id: ISetting['_id'];
 	title: TranslationKey;
 	description?: TranslationKey;
 };
 
-const SettingsGroupCard = ({ id, title, description }: SettingsGroupCard): ReactElement => {
+const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRoute('admin-settings');
 

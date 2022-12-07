@@ -1,8 +1,9 @@
-import { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
