@@ -9,12 +9,12 @@ import { defaultSidebarPalette } from '@rocket.chat/ui-theming/src/sidebarPalett
 import { darkPalette } from './paletteDark';
 import { convertToCss } from './convertToCss';
 
-export const PaletteStyleTag = (): ReactElement | null => {
+export const SidebarPaletteStyleTag = (): ReactElement | null => {
 	const [theme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
 
 	return createPortal(
 		<style id='sidebar-palette' data-style={theme}>
-			{convertToCss(darkPalette, '.sidebar--main.sidebar')}
+			{convertToCss({ ...darkPalette, ...sidebarPaletteDark }, '.sidebar--main.sidebar')}
 			{sidebarConvertToCss(theme !== 'dark' ? defaultSidebarPalette : sidebarPaletteDark, '.sidebar--main.sidebar')}
 		</style>,
 		document.head,
