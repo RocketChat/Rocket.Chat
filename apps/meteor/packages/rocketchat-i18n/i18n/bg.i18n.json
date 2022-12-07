@@ -2792,6 +2792,7 @@
   "registration.page.registration.waitActivationWarning": "Преди да можете да влезете, вашият акаунт трябва да бъде активиран ръчно от администратор.",
   "registration.page.resetPassword.sent": "Ако този имейл е регистриран, ще изпратим инструкции как да зададете нова парола. Ако скоро не получите имейл, моля, върнете се и опитайте отново.",
   "registration.component.login": "Влез",
+  "registration.component.login.userNotFound": "Потребителят не е намерен",
   "registration.component.resetPassword": "Нулиране на паролата",
   "registration.component.form.email": "Електрона поща",
   "registration.component.form.password": "Парола",
