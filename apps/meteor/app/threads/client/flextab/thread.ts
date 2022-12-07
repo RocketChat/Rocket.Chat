@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
@@ -18,16 +17,16 @@ import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
-import './thread.html';
 import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
 import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import type MessageHighlightContext from '../../../../client/views/room/MessageList/contexts/MessageHighlightContext';
+import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import './thread.html';
 
 export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
 	subscription: ISubscription;
-	jump: unknown;
 	following: boolean;
 	rid: IRoom['_id'];
 	tabBar: {
@@ -68,15 +67,9 @@ const sort = { ts: 1 };
 Template.thread.events({
 	...dropzoneEvents,
 	...getCommonRoomEvents(),
-	'click .js-close'(e: JQuery.ClickEvent) {
-		e.preventDefault();
-		e.stopPropagation();
-		const { close } = this;
-		return close?.();
-	},
-	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }: JQuery.ScrollEvent, i: ThreadTemplateInstance) => {
+	'scroll .js-scroll-thread': withThrottling({ wait: 150 })(({ currentTarget: e }: JQuery.ScrollEvent, i: ThreadTemplateInstance) => {
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
-	}, 150),
+	}),
 	'click .toggle-hidden'(e: JQuery.ClickEvent) {
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#thread-${id}`)?.classList.toggle('message--ignored');
@@ -107,7 +100,7 @@ Template.thread.helpers({
 		const { state } = Template.instance() as ThreadTemplateInstance;
 		return ['thread-main', state.get('tmid') === state.get('editingMID') ? 'editing' : ''].filter(Boolean).join(' ');
 	},
-	_messageContext(this: { mainMessage: IMessage }) {
+	_messageContext(this: ThreadTemplateInstance['data']) {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
@@ -214,7 +207,7 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 			sendToChannel = !this.data.mainMessage.tcount;
 	}
 
-	const { mainMessage } = Template.currentData();
+	const { mainMessage } = Template.currentData() as ThreadTemplateInstance['data'];
 
 	this.state = new ReactiveDict(undefined, {
 		sendToChannel,
@@ -261,12 +254,12 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	this.atBottom = true;
 	this.wrapper = this.find('.js-scroll-thread');
 
-	this.sendToBottom = _.throttle(() => {
+	this.sendToBottom = withThrottling({ wait: 300 })(() => {
 		this.atBottom = true;
 		if (this.wrapper) {
 			this.wrapper.scrollTop = this.wrapper.scrollHeight;
 		}
-	}, 300);
+	});
 
 	this.sendToBottomIfNecessary = () => {
 		this.atBottom && this.sendToBottom();
@@ -318,12 +311,12 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 
 		callbacks.add(
 			'streamNewMessage',
-			_.debounce((msg: IEditedMessage) => {
+			withDebouncing({ wait: 1000 })((msg: IEditedMessage) => {
 				if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 					return;
 				}
 				Meteor.call('readThreads', tmid);
-			}, 1000),
+			}),
 			callbacks.priority.MEDIUM,
 			`thread-${rid}`,
 		);
@@ -358,7 +351,7 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	this.autorun(() => {
 		FlowRouter.watchPathChange();
 		const jump = FlowRouter.getQueryParam('jump');
-		const { mainMessage } = Template.currentData();
+		const { mainMessage } = Template.currentData() as ThreadTemplateInstance['data'];
 		this.state.set({
 			tmid: mainMessage._id,
 			rid: mainMessage.rid,
