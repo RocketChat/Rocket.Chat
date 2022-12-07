@@ -1,4 +1,4 @@
-import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useMethod, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
@@ -7,13 +7,20 @@ import PageSkeleton from '../../components/PageSkeleton';
 
 const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {
 	const currentContext = useRouteParameter('context');
-	const marketplaceRoute = useRoute('marketplace-all');
+	const marketplaceRoute = useRoute('marketplace-explore');
+	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 
 	useEffect(() => {
-		if (!currentContext) {
-			marketplaceRoute.replace({ context: 'explore', page: 'list' });
-		}
-	}, [currentContext, marketplaceRoute]);
+		const initialize = async () => {
+			// The currentContext === 'all' verification is for users who bookmarked
+			// the old marketplace
+			if ((!currentContext && (await isAppsEngineEnabled())) || currentContext === 'all') {
+				marketplaceRoute.replace({ context: 'explore', page: 'list' });
+			}
+		};
+
+		initialize();
+	}, [currentContext, isAppsEngineEnabled, marketplaceRoute]);
 
 	useEffect(() => {
 		SideNav.setFlex('marketplaceFlex');
