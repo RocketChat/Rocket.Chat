@@ -34,6 +34,7 @@ const AppRow = (props: AppRowProps): ReactElement => {
 				page: 'info',
 				version: marketplaceVersion,
 				id,
+				tab: 'details',
 			});
 	};
 
