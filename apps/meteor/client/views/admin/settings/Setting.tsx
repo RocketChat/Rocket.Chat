@@ -1,7 +1,9 @@
-import { ISettingColor, isSettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import { isSettingColor } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure, useTranslation, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useMemo, useState, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../EditableSettingsContext';

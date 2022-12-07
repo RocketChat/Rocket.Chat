@@ -3,6 +3,9 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 
+/**
+ * @extends BaseRaw<ILivechatRoom>
+ */
 export class LivechatRoomsRaw extends BaseRaw {
 	constructor(db, trash) {
 		super(db, 'room', trash);

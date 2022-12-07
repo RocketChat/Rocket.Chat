@@ -6,34 +6,44 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IEditedMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
+import type { ContextType } from 'react';
 
-import { ChatMessages } from '../../../ui/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models/client';
-import type { FileUploadProp } from '../../../ui/client/lib/fileUpload';
-import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/lib/dropzone';
+import { dropzoneEvents, dropzoneHelpers } from './dropzone';
 import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
-import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import './thread.html';
+import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
+import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import type MessageHighlightContext from '../../../../client/views/room/MessageList/contexts/MessageHighlightContext';
 
-type ThreadTemplateInstance = Blaze.TemplateInstance<{
+export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage: IMessage;
 	subscription: ISubscription;
+	jump: unknown;
+	following: boolean;
+	rid: IRoom['_id'];
+	tabBar: {
+		openRoomInfo: (username: string) => void;
+	};
+	chatContext: ContextType<typeof ChatContext>;
+	messageContext: ContextType<typeof MessageContext>;
+	messageHighlightContext: () => ContextType<typeof MessageHighlightContext>;
 }> & {
 	firstNode: HTMLElement;
+	wrapper?: HTMLElement;
 	Threads: Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
 	threadsObserve?: Meteor.LiveQueryHandle;
-	chatMessages: ChatMessages;
 	callbackRemove?: () => void;
 	state: ReactiveDict<{
 		rid: string;
@@ -41,13 +51,15 @@ type ThreadTemplateInstance = Blaze.TemplateInstance<{
 		loading?: boolean;
 		sendToChannel: boolean;
 		jump?: string | null;
+		editingMID?: IMessage['_id'];
 	}>;
 	closeThread: () => void;
 	loadMore: () => Promise<void>;
 	atBottom?: boolean;
 	sendToBottom: () => void;
 	sendToBottomIfNecessary: () => void;
-	onFile: (files: FileUploadProp) => void;
+	onFileDrop: (files: File[]) => void;
+	onTextDrop: (text: string) => void;
 	lastJump?: string;
 };
 
@@ -87,7 +99,15 @@ Template.thread.helpers({
 
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
-	messageContext(this: { mainMessage: IMessage }) {
+	customClass(msg: IMessage) {
+		const { state } = Template.instance() as ThreadTemplateInstance;
+		return msg._id === state.get('editingMID') ? 'editing' : '';
+	},
+	customClassMain() {
+		const { state } = Template.instance() as ThreadTemplateInstance;
+		return ['thread-main', state.get('tmid') === state.get('editingMID') ? 'editing' : ''].filter(Boolean).join(' ');
+	},
+	_messageContext(this: { mainMessage: IMessage }) {
 		const result = messageContext.call(this, { rid: this.mainMessage.rid });
 		return {
 			...result,
@@ -98,26 +118,34 @@ Template.thread.helpers({
 			},
 		};
 	},
-	messageBoxData() {
+	messageBoxData(): MessageBoxTemplateInstance['data'] {
 		const instance = Template.instance() as ThreadTemplateInstance;
 		const {
 			mainMessage: { rid, _id: tmid },
 			subscription,
+			chatContext,
 		} = Template.currentData() as ThreadTemplateInstance['data'];
+
+		if (!chatContext) {
+			throw new Error('chatContext is not defined');
+		}
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
 		return {
-			chatMessagesInstance: instance.chatMessages,
+			chatContext,
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
 			rid,
 			tmid,
-			onSend: (
+			onSend: async (
 				_event: Event,
-				params: {
+				{
+					value: text,
+					tshow,
+				}: {
 					value: string;
 					tshow?: boolean;
 				},
@@ -126,24 +154,19 @@ Template.thread.helpers({
 				if (alsoSendPreferenceState === 'default') {
 					instance.state.set('sendToChannel', false);
 				}
-				return instance.chatMessages?.send(params);
+
+				await chatContext.flows.sendMessage({
+					text,
+					tshow,
+				});
 			},
-			onKeyUp: (
-				event: KeyboardEvent,
-				params: {
-					rid: string;
-					tmid?: string | undefined;
-				},
-			) => instance.chatMessages?.keyup(event, params),
-			onKeyDown: (event: KeyboardEvent) => {
-				const result = instance.chatMessages?.keydown(event);
-
-				const { which: keyCode } = event;
-				const input = event.target as HTMLTextAreaElement | null;
-
-				if (keyCode === keyCodes.ESCAPE && !result && !input?.value.trim()) {
-					instance.closeThread();
-				}
+			onEscape: () => {
+				instance.closeThread();
+			},
+			onNavigateToPreviousMessage: () => chatContext.messageEditing.toPreviousMessage(),
+			onNavigateToNextMessage: () => chatContext.messageEditing.toNextMessage(),
+			onUploadFiles: (files: readonly File[]) => {
+				return chatContext.flows.uploadFiles(files);
 			},
 		};
 	},
@@ -158,6 +181,16 @@ Template.thread.helpers({
 			checked,
 			onChange: () => instance.state.set('sendToChannel', !checked),
 		};
+	},
+	// TODO: remove this
+	chatContext() {
+		const { chatContext } = (Template.instance() as ThreadTemplateInstance).data;
+		return () => chatContext;
+	},
+	// TODO: remove this
+	messageContext() {
+		const { messageContext } = (Template.instance() as ThreadTemplateInstance).data;
+		return () => messageContext;
 	},
 });
 
@@ -200,13 +233,12 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 		const messages = await callWithErrorHandling('getThreadMessages', { tmid });
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
+		upsertMessageBulk({ msgs: messages }, Messages);
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
 		});
 	};
-
-	this.chatMessages = new ChatMessages({ rid: mainMessage.rid, tmid: mainMessage._id }, this.Threads);
 
 	this.closeThread = () => {
 		const {
@@ -227,16 +259,13 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	}
 
 	this.atBottom = true;
-
-	const wrapper = this.find('.js-scroll-thread');
-	const input = this.find('.js-input-message') as HTMLTextAreaElement;
-
-	this.chatMessages.initializeWrapper(wrapper);
-	this.chatMessages.initializeInput(input);
+	this.wrapper = this.find('.js-scroll-thread');
 
 	this.sendToBottom = _.throttle(() => {
 		this.atBottom = true;
-		wrapper.scrollTop = wrapper.scrollHeight;
+		if (this.wrapper) {
+			this.wrapper.scrollTop = this.wrapper.scrollHeight;
+		}
 	}, 300);
 
 	this.sendToBottomIfNecessary = () => {
@@ -252,23 +281,29 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	const observer = new ResizeObserver(this.sendToBottomIfNecessary);
 	observer.observe(list);
 
-	this.onFile = (filesToUpload) => {
-		const { input } = this.chatMessages;
+	this.onTextDrop = (droppedText: string) => {
+		const composer = this.data.chatContext?.composer;
 
-		if (!input) {
-			throw new Error('Could not find input element');
+		if (!composer) {
+			return;
 		}
 
+		const { text, selection } = composer;
+
+		const initText = text.slice(0, selection.start ?? undefined);
+		const finalText = text.slice(selection.end ?? undefined, text.length);
+
+		composer.setText(initText + droppedText + finalText);
+	};
+
+	this.onFileDrop = (files) => {
 		const rid = this.state.get('rid');
 
 		if (!rid) {
 			throw new Error('No rid found');
 		}
 
-		fileUpload(filesToUpload, input, {
-			rid,
-			tmid: this.state.get('tmid'),
-		});
+		this.data.chatContext?.flows.uploadFiles(files);
 	};
 
 	this.autorun(() => {
@@ -321,27 +356,6 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	});
 
 	this.autorun(() => {
-		const rid = this.state.get('rid');
-		const tmid = this.state.get('tmid');
-		const input = this.find('.js-input-message') as HTMLTextAreaElement | null;
-		if (!input) {
-			throw new Error('Could not find input element');
-		}
-
-		this.chatMessages.initializeInput(input);
-
-		setTimeout(() => {
-			if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
-				input.focus();
-			}
-		}, 200);
-
-		if (rid && tmid) {
-			ChatMessages.set({ rid, tmid }, this.chatMessages);
-		}
-	});
-
-	this.autorun(() => {
 		FlowRouter.watchPathChange();
 		const jump = FlowRouter.getQueryParam('jump');
 		const { mainMessage } = Template.currentData();
@@ -379,23 +393,24 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		const { Threads, state } = Template.instance() as ThreadTemplateInstance;
 		const tmid = state.get('tmid');
 		const threads = Threads.findOne({ $or: [{ tmid }, { _id: tmid }] });
+		const isLoading = state.get('loading');
 
-		if (!threads) {
+		if (!isLoading && !threads) {
 			this.closeThread();
 		}
+	});
+
+	this.autorun(() => {
+		const { messageHighlightContext } = Template.currentData() as ThreadTemplateInstance['data'];
+
+		this.state.set('editingMID', messageHighlightContext()?.highlightMessageId);
 	});
 });
 
 Template.thread.onDestroyed(function (this: ThreadTemplateInstance) {
-	const { Threads, threadsObserve, callbackRemove, state } = this;
+	const { Threads, threadsObserve, callbackRemove } = this;
 	Threads.remove({});
 	threadsObserve?.stop();
 
 	callbackRemove?.();
-
-	const tmid = state.get('tmid');
-	const rid = state.get('rid');
-	if (rid && tmid) {
-		ChatMessages.delete({ rid, tmid });
-	}
 });

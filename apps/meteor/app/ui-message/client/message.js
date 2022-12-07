@@ -13,7 +13,7 @@ import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTi
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Rooms } from '../../models/client';
 import { Markdown } from '../../markdown/client';
-import { t } from '../../utils';
+import { t } from '../../utils/client';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
@@ -21,9 +21,9 @@ import { settings } from '../../settings/client';
 import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
 import { hasTranslationLanguageInAttachments } from '../../../client/views/room/MessageList/lib/autoTranslate';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import './messageThread';
 import './message.html';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';

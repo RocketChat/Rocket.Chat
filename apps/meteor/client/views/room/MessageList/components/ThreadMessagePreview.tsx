@@ -1,4 +1,4 @@
-import { IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage as ThreadMessageTemplate,
@@ -14,7 +14,8 @@ import {
 } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
@@ -49,7 +50,7 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 			data-qa-selected={isSelected}
 		>
 			{!sequential && (
-				<ThreadMessageRow>
+				<ThreadMessageRow onClick={!isSelecting && parentMessage.isSuccess ? openThread(message.tmid, parentMessage.data?._id) : undefined}>
 					<ThreadMessageLeftContainer>
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
@@ -57,7 +58,11 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 						<ThreadMessageOrigin system={!!messageType}>
 							{parentMessage.isSuccess && !messageType && (
 								<>
-									<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
+									{(parentMessage.data as { ignored?: boolean })?.ignored ? (
+										t('Message_Ignored')
+									) : (
+										<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
+									)}
 									{translated && (
 										<>
 											{' '}
@@ -73,9 +78,7 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow
-				onClick={!(message as { ignored?: boolean }).ignored && !isSelecting ? openThread(message.tmid, message._id) : undefined}
-			>
+			<ThreadMessageRow onClick={!isSelecting ? openThread(message.tmid, message._id) : undefined}>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}

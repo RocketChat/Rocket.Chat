@@ -1,5 +1,4 @@
 {
-  "403": "Zabranjen",
   "500": "Interna pogreška poslužitelja",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ je uklonio __username__ iz __role__ grupe",
   "__username__was_set__role__by__user_by_": "__user_by__ je postavio __username__ u __role__ grupu ",
@@ -2790,6 +2789,7 @@
   "registration.page.registration.waitActivationWarning": "Prije nego što se prijavite, vaš račun mora ručno aktivirati administrator.",
   "registration.page.resetPassword.sent": "Ako je ova e-poruka registrirana, poslat ćemo vam upute o tome kako poništiti zaporku. Ako uskoro ne primite e-poruku, vratite se i pokušajte ponovo.",
   "registration.component.login": "Prijava",
+  "registration.component.login.userNotFound": "Korisnik nije pronađen",
   "registration.component.resetPassword": "Resetiraj lozinku",
   "registration.component.form.password": "Lozinka",
   "registration.component.form.divider": "ili",

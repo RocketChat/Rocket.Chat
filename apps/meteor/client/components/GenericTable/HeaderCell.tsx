@@ -1,5 +1,6 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC, useCallback } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React, { useCallback } from 'react';
 
 import SortIcon from './SortIcon';
 
