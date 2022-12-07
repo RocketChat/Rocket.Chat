@@ -5,6 +5,7 @@ import type { IRoomsModel } from '@rocket.chat/model-typings';
 import type { IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw<any> implements IRoomsModel {
 	constructor(db: Db, trash: Collection<RocketChatRecordDeleted<IRoom>> | undefined) {
@@ -60,7 +61,7 @@ export class RoomsRaw extends BaseRaw<any> implements IRoomsModel {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate).toArray();
+		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 		return statistic;
 	}
 
