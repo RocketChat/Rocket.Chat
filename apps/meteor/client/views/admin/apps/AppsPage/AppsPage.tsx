@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Icon, Skeleton, Tabs } from '@rocket.chat/fuselage';
-import { useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState, ReactElement } from 'react';
+import { useRoute, useSetting, useMethod, useTranslation, useCurrentRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Page from '../../../../components/Page';
 import AppsPageContent from './AppsPageContent';
@@ -13,10 +14,16 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
-	const marketplaceRoute = useRoute('admin-marketplace');
-	const appsRoute = useRoute('admin-apps');
 	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+
+	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
+	const router = useRoute(currentRouteName);
+
+	const context = useRouteParameter('context');
 
 	const [isLoggedInCloud, setIsLoggedInCloud] = useState();
 
@@ -32,8 +39,12 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	};
 
 	const handleUploadButtonClick = (): void => {
-		appsRoute.push({ context: 'install' });
+		context && router.push({ context, page: 'install' });
 	};
+
+	const handleMarketplaceTabClick = (): void => router.push({ context: 'all', page: 'list' });
+
+	const handleInstalledTabClick = (): void => router.push({ context: 'installed', page: 'list' });
 
 	return (
 		<Page background='tint'>
@@ -58,21 +69,15 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item onClick={(): void => marketplaceRoute.push({ context: '' })} selected={isMarketplace}>
+				<Tabs.Item onClick={handleMarketplaceTabClick} selected={context === 'all'}>
 					{t('Marketplace')}
 				</Tabs.Item>
-				<Tabs.Item
-					onClick={(): void => marketplaceRoute.push({ context: 'installed' })}
-					selected={!isMarketplace}
-					mbe='neg-x4'
-					borderWidth='0'
-					borderBlockWidth='x4'
-				>
+				<Tabs.Item onClick={handleInstalledTabClick} selected={context === 'installed'}>
 					{t('Installed')}
 				</Tabs.Item>
 			</Tabs>
 			<Page.Content overflowY='auto'>
-				<AppsPageContent isMarketplace={isMarketplace} />
+				<AppsPageContent />
 			</Page.Content>
 		</Page>
 	);

@@ -1,4 +1,4 @@
-import { IEditedMessage } from '@rocket.chat/core-typings';
+import type { IEditedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';

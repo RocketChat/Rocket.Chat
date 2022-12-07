@@ -1,13 +1,14 @@
 import { Pagination, Divider } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useAppsReload, useAppsResult } from '../AppsContext';
 import AppsList from '../AppsList';
-import { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import { useFilteredApps } from '../hooks/useFilteredApps';
 import { useRadioToggle } from '../hooks/useRadioToggle';
@@ -19,14 +20,21 @@ import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
 import NoInstalledAppsFoundEmptyState from './NoInstalledAppsFoundEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 
-const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactElement => {
+const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
 	const reload = useAppsReload();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
+	const router = useRoute(currentRouteName);
+
+	const context = useRouteParameter('context');
+	const isMarketplace = context === 'all';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -85,6 +93,10 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
 
+	const handleReturn = (): void => {
+		router.push({ context: 'all', page: 'list' });
+	};
+
 	return (
 		<>
 			<AppsFilters
@@ -106,7 +118,7 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.items} />}
+						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 						{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
 						{Boolean(appsResult.value.count) && (
 							<>
@@ -130,10 +142,10 @@ const AppsPageContent = ({ isMarketplace }: { isMarketplace: boolean }): ReactEl
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}
 					text={text}
-					onButtonClick={(): void => marketplaceRoute.push({ context: '' })}
+					onButtonClick={handleReturn}
 				/>
 			)}
-			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={(): void => marketplaceRoute.push({ context: '' })} />}
+			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={handleReturn} />}
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);

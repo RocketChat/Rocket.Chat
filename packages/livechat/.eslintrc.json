@@ -1,12 +1,10 @@
 {
 	"extends": ["@rocket.chat/eslint-config", "prettier"],
 	"plugins": ["react", "react-hooks", "prettier"],
-	"parser": "@babel/eslint-parser",
 	"env": {
 		"jest": true
 	},
 	"rules": {
-		"prettier/prettier": "error",
 		"import/order": ["error", {
 			"newlines-between": "always",
 			"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],

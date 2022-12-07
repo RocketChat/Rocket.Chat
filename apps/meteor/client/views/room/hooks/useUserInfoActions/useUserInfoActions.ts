@@ -1,7 +1,7 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
-import { Action } from '../../../hooks/useActionSpread';
+import type { Action } from '../../../hooks/useActionSpread';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useCallAction } from './actions/useCallAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';

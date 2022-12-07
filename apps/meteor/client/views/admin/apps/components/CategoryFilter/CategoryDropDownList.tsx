@@ -1,7 +1,8 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
-import React, { FC, Fragment } from 'react';
+import type { FC } from 'react';
+import React, { Fragment } from 'react';
 
-import { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
+import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
 const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDropDownList({ groups, onSelected }) {
 	return (

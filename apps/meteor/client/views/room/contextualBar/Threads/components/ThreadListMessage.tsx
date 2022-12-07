@@ -1,7 +1,8 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, memo, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';

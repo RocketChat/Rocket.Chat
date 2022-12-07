@@ -1,8 +1,9 @@
-import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../components/GenericModal';
@@ -218,12 +219,14 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			{room.t !== 'd' && (
 				<>
-					<Field>
-						<Field.Label>{t('Owner')}</Field.Label>
-						<Field.Row>
-							<Box fontScale='p2'>{room.u?.username}</Box>
-						</Field.Row>
-					</Field>
+					{room.u && (
+						<Field>
+							<Field.Label>{t('Owner')}</Field.Label>
+							<Field.Row>
+								<Box fontScale='p2'>{room.u?.username}</Box>
+							</Field.Row>
+						</Field>
+					)}
 					{canViewDescription && (
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>

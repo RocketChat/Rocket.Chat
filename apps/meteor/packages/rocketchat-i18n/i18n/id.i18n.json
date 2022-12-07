@@ -1,5 +1,4 @@
 {
-  "403": "Terlarang",
   "500": "Kesalahan server dari dalam",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ tidak lagi __role__ oleh __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ditetapkan __role__ oleh __user_by__",
@@ -2589,7 +2588,7 @@
   "User": "Pemakai",
   "User__username__is_now_a_leader_of__room_name_": "Pengguna __username__ sekarang menjadi pemimpin __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Pengguna __username__ sekarang menjadi moderator dari __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Pengguna __username__ sekarang menjadi pemilik __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Pengguna __username__ sekarang menjadi pemilik __room_name__",
   "User__username__removed_from__room_name__leaders": "Pengguna __username__ dihapus dari __room_name__ pemimpin",
   "User__username__removed_from__room_name__moderators": "Pengguna __username__ dihapus dari moderator __room_name__",
   "User__username__removed_from__room_name__owners": "Pengguna __username__ dihapus dari pemilik __room_name__",
@@ -2802,5 +2801,17 @@
   "Your_password_is_wrong": "password Anda salah!",
   "Your_push_was_sent_to_s_devices": "push dikirim ke%s perangkat",
   "Your_server_link": "Tautan server Anda",
-  "Your_workspace_is_ready": "Ruang kerja Anda siap digunakan 🎉"
+  "Your_workspace_is_ready": "Ruang kerja Anda siap digunakan 🎉",
+  "registration.page.login.errors.wrongCredentials": "User tidak ditemukan atau password sala",
+  "registration.page.registration.waitActivationWarning": "Akun anda harus terlebih dahulu diaktifkan secara manual oleh seorang administrator untuk dapat melakukan login.",
+  "registration.page.login.forgot": "Lupa kata sandi anda",
+  "registration.page.resetPassword.sent": "Jika email ini terdaftar, kami akan mengirimkan instruksi tentang cara mereset kata sandi Anda. Jika Anda tidak segera menerima email, kembalilah dan coba lagi.",
+  "registration.component.login": "Login",
+  "registration.component.login.userNotFound": "Pengguna tidak ditemukan",
+  "registration.component.resetPassword": "Ubah kata sandi",
+  "registration.component.form.emailOrUsername": "Email atau username",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Kata sandi",
+  "registration.component.form.divider": "atau",
+  "registration.component.form.submit": "Submit"
 }
