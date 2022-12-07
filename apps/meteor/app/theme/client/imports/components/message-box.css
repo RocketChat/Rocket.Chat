@@ -319,10 +319,8 @@
 		&__textarea {
 			flex: 1 0 100%;
 
-			margin-bottom: 10px;
-			order: 1;
-
 			margin-block-end: 8px;
+			order: 1;
 		}
 
 		&__action {
