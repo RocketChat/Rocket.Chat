@@ -1,10 +1,12 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
+import type { ReactElement, FormEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
-import { validate, createSoundData, soundDataType } from './lib';
+import type { soundDataType } from './lib';
+import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
 	goToNew: (where: string) => () => void;

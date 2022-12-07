@@ -1,5 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 const AppDetailsPageLoading: FC = () => (
 	<Box display='flex' flexDirection='row' mbe='x20' w='full'>

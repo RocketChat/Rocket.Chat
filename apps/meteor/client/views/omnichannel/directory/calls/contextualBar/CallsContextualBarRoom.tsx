@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useVoipRoom } from '../../../../room/contexts/RoomContext';
 import { VoipInfo } from './VoipInfo';

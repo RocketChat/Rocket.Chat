@@ -1,10 +1,12 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import PriorityEditForm, { ILivechatClientPriority, PriorityEditFormProps } from './PriorityEditForm';
+import type { ILivechatClientPriority, PriorityEditFormProps } from './PriorityEditForm';
+import PriorityEditForm from './PriorityEditForm';
 
 type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 	priorityId: string;

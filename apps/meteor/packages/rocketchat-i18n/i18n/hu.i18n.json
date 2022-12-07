@@ -1,5 +1,4 @@
 {
-  "403": "Tiltott",
   "500": "Belső szerver hiba",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ üres szobát automatikusan eltávolítunk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ üres szobát automatikusan eltávolítunk:<br/>__rooms__.",
