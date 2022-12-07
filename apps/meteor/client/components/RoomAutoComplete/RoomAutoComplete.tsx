@@ -1,5 +1,6 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
-import React, { memo, useMemo, useState, ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import RoomAvatar from '../avatar/RoomAvatar';

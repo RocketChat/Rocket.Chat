@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC, ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
+import React from 'react';
 
 import Field from './Field';
 import ShortField from './ShortField';

@@ -1,7 +1,8 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
