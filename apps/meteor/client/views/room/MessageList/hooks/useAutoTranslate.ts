@@ -1,4 +1,4 @@
-import { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autoTranslate';
