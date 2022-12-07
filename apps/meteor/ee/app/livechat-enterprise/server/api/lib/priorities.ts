@@ -54,9 +54,11 @@ export async function updatePriority(
 	};
 
 	try {
-		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
-		if (priority && priority._id !== _id) {
-			throw new Error('Error! Priority already exists with this name');
+		if (data.name) {
+			const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
+			if (priority && priority._id !== _id) {
+				throw new Error('Error! Priority already exists with this name');
+			}
 		}
 
 		const created = await LivechatPriority.findOneAndUpdate(query, update, {
