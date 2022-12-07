@@ -4,24 +4,19 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import moment from 'moment';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 import type { ContextType } from 'react';
+import $ from 'jquery';
 
 import { setupAutogrow } from './messageBoxAutogrow';
-import { formattingButtons, applyFormatting } from './messageBoxFormatting';
-import { EmojiPicker } from '../../../emoji/client';
+import { formattingButtons } from './messageBoxFormatting';
 import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import { UserAction, USER_ACTIVITIES, KonchatNotification } from '../../../ui/client';
-import { messageBox, popover } from '../../../ui-utils/client';
-import { t, getUserPreference } from '../../../utils/client';
-import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
-import { keyCodes } from '../../../../client/lib/utils/keyCodes';
-import { isRTL } from '../../../../client/lib/utils/isRTL';
-import { call } from '../../../../client/lib/utils/call';
+import { UserAction, USER_ACTIVITIES } from '../../../ui/client';
+import { messageBox } from '../../../ui-utils/client';
+import { getUserPreference } from '../../../utils/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import './messageBoxActions';
@@ -31,10 +26,15 @@ import { createComposerAPI } from './createComposerAPI';
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
+	onSend?: (
+		event: Event,
+		params: {
+			value: string;
+			tshow?: boolean;
+		},
+	) => Promise<void>;
 	onResize?: () => void;
 	onEscape?: () => void;
-	onEnter?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
@@ -78,7 +78,7 @@ export const refocusComposer = () => {
 Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	this.state = new ReactiveDict();
 	this.popupConfig = new ReactiveVar(null);
-	this.replyMessageData = new ReactiveVar(null);
+	this.replyMessageData = new ReactiveVar(this.data.chatContext?.composer?.quotedMessages.get() ?? []);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
 
@@ -131,7 +131,7 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 
 		UserAction.stop(this.data.rid, USER_ACTIVITIES.USER_TYPING, { tmid: this.data.tmid });
 
-		onSend?.call(this.data, { value, tshow }).then(() => {
+		onSend?.call(this.data, event, { value, tshow }).then(() => {
 			autogrow?.update();
 			input.focus();
 		});
@@ -333,197 +333,308 @@ Template.messageBox.helpers({
 	},
 });
 
-const handleFormattingShortcut = (event: KeyboardEvent, instance: MessageBoxTemplateInstance) => {
-	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+// const handleFormattingShortcut = (event: KeyboardEvent, instance: MessageBoxTemplateInstance) => {
+// 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+// 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
-	if (!isCmdOrCtrlPressed) {
-		return false;
-	}
+// 	if (!isCmdOrCtrlPressed) {
+// 		return false;
+// 	}
 
-	const key = event.key.toLowerCase();
+// 	const key = event.key.toLowerCase();
 
-	const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ command }) => command === key) || {};
+// 	const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ command }) => command === key) || {};
 
-	if (!pattern) {
-		return false;
-	}
+// 	if (!pattern) {
+// 		return false;
+// 	}
 
-	const { input } = instance;
-	applyFormatting(pattern, input);
-	return true;
-};
+// 	const { input } = instance;
+// 	applyFormatting(pattern, input);
+// 	return true;
+// };
 
-Template.messageBox.events({
-	async 'click .js-join'(event: JQuery.ClickEvent) {
-		event.stopPropagation();
-		event.preventDefault();
+// Template.messageBox.events({
+// 	async 'click .js-join'(event: JQuery.ClickEvent) {
+// 		event.stopPropagation();
+// 		event.preventDefault();
 
-		const joinCodeInput = (Template.instance() as MessageBoxTemplateInstance).find('[name=joinCode]') as HTMLInputElement | undefined;
-		const joinCode = joinCodeInput?.value;
+// 		const joinCodeInput = (Template.instance() as MessageBoxTemplateInstance).find('[name=joinCode]') as HTMLInputElement | undefined;
+// 		const joinCode = joinCodeInput?.value;
 
-		await call('joinRoom', this.rid, joinCode);
-	},
+// 		await call('joinRoom', this.rid, joinCode);
+// 	},
 
-	'focus .js-input-message'(event: JQuery.FocusEvent) {
-		KonchatNotification.removeRoomNotification(this.rid);
-		lastFocusedInput = event.currentTarget;
-	},
-	// 'keydown .js-input-message'(
-	// 	this: MessageBoxTemplateInstance['data'],
-	// 	event: JQuery.KeyDownEvent<HTMLTextAreaElement>,
-	// 	// instance: MessageBoxTemplateInstance,
-	// ) {
-	// 	const { originalEvent } = event;
-	// 	if (!originalEvent) {
-	// 		throw new Error('Event is not an original event');
-	// 	}
+// 			const caretPos = input.selectionStart;
+// 			const textAreaTxt = input.value;
 
-	// 	// const isEventHandled = handleFormattingShortcut(originalEvent, instance) || handleSubmit(originalEvent, instance);
+// 			input.focus();
+// 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
+// 				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
+// 				input.focus();
+// 			}
 
-	// 	// if (isEventHandled) {
-	// 	// 	event.preventDefault();
-	// 	// 	event.stopPropagation();
-	// 	// 	return;
-	// 	// }
+// 			input.selectionStart = caretPos + emojiValue.length;
+// 			input.selectionEnd = caretPos + emojiValue.length;
+// 		});
+// 	},
+// 	'focus .js-input-message'(event: JQuery.FocusEvent) {
+// 		KonchatNotification.removeRoomNotification(this.rid);
+// 		lastFocusedInput = event.currentTarget;
+// 	},
+// 	'keydown .js-input-message'(
+// 		this: MessageBoxTemplateInstance['data'],
+// 		event: JQuery.KeyDownEvent<HTMLTextAreaElement>,
+// 		instance: MessageBoxTemplateInstance,
+// 	) {
+// 		const { originalEvent } = event;
+// 		if (!originalEvent) {
+// 			throw new Error('Event is not an original event');
+// 		}
 
-	// 	const { chatContext } = this;
-	// 	const { currentTarget: input } = event;
+// 		const isEventHandled = handleFormattingShortcut(originalEvent, instance) || handleSubmit(originalEvent, instance);
 
-	// 	}
-	// },
-	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
-		const { rid, tmid } = this;
-		const { currentTarget: input, which: keyCode } = event;
+// 		if (!Object.values<number>(keyCodes).includes(keyCode)) {
+// 			if (input?.value.trim()) {
+// 				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+// 			} else {
+// 				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+// 			}
+// 		}
 
-		if (!Object.values<number>(keyCodes).includes(keyCode)) {
-			if (input?.value.trim()) {
-				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
-			} else {
-				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
-			}
-		}
-	},
-	'paste .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
-		const originalEvent = event.originalEvent as ClipboardEvent | undefined;
-		if (!originalEvent) {
-			throw new Error('Event is not an original event');
-		}
+// 		const { chatContext } = this;
+// 		const { currentTarget: input } = event;
 
-		const { autogrow } = instance;
+// 		switch (event.key) {
+// 			case 'Escape': {
+// 				const currentEditing = chatContext?.currentEditing;
 
-		setTimeout(() => autogrow?.update(), 50);
+// 				if (currentEditing) {
+// 					event.preventDefault();
+// 					event.stopPropagation();
 
-		if (!originalEvent.clipboardData) {
-			return;
-		}
+// 					currentEditing.reset().then((reset) => {
+// 						if (!reset) {
+// 							currentEditing?.cancel();
+// 						}
+// 					});
 
-		const items = Array.from(originalEvent.clipboardData.items);
+// 					return;
+// 				}
 
-		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
-			return;
-		}
+// 				if (!input.value.trim()) this.onEscape?.();
+// 				return;
+// 			}
 
-		const files = items
-			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
-			.map((item) => {
-				const fileItem = item.getAsFile();
+// 			case 'ArrowUp': {
+// 				if (event.shiftKey) {
+// 					return;
+// 				}
 
-				if (!fileItem) {
-					return;
-				}
+// 				if (input.selectionEnd === 0) {
+// 					event.preventDefault();
+// 					event.stopPropagation();
 
-				const imageExtension = fileItem ? getImageExtensionFromMime(fileItem.type) : undefined;
+// 					this.onNavigateToPreviousMessage?.();
 
-				const extension = imageExtension ? `.${imageExtension}` : '';
+// 					if (event.altKey) {
+// 						input.setSelectionRange(0, 0);
+// 					}
+// 				}
 
-				Object.defineProperty(fileItem, 'name', {
-					writable: true,
-					value: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
-				});
-				return fileItem;
-			})
-			.filter((file): file is File => !!file);
+// 				return;
+// 			}
 
-		if (files.length) {
-			event.preventDefault();
-			instance.data.onUploadFiles?.(files);
-		}
-	},
-	'input .js-input-message'(
-		this: MessageBoxTemplateInstance['data'],
-		_event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
-		instance: MessageBoxTemplateInstance,
-	) {
-		const { input } = instance;
-		if (!input) {
-			return;
-		}
+// 			case 'ArrowDown': {
+// 				if (event.shiftKey) {
+// 					return;
+// 				}
 
-		instance.isSendIconVisible.set(!!input.value);
+// 				if (input.selectionEnd === input.value.length) {
+// 					event.preventDefault();
+// 					event.stopPropagation();
 
-		if (input.value.length > 0) {
-			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
-		}
-	},
-	'propertychange .js-input-message'(
-		this: MessageBoxTemplateInstance['data'],
-		event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
-		instance: MessageBoxTemplateInstance,
-	) {
-		const originalEvent = event.originalEvent as { propertyName: string } | undefined;
-		if (!originalEvent) {
-			throw new Error('Event is not an original event');
-		}
+// 					this.onNavigateToNextMessage?.();
 
-		if (originalEvent.propertyName !== 'value') {
-			return;
-		}
+// 					if (event.altKey) {
+// 						input.setSelectionRange(input.value.length, input.value.length);
+// 					}
+// 				}
+// 			}
+// 		}
+// 	},
+// 	'keyup .js-input-message'(this: MessageBoxTemplateInstance['data'], event: JQuery.KeyUpEvent<HTMLTextAreaElement>) {
+// 		const { rid, tmid } = this;
+// 		const { currentTarget: input, which: keyCode } = event;
 
-		const { input } = instance;
-		if (!input) {
-			return;
-		}
+// 		if (!Object.values<number>(keyCodes).includes(keyCode)) {
+// 			if (input?.value.trim()) {
+// 				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+// 			} else {
+// 				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
+// 			}
+// 		}
+// 	},
+// 	'paste .js-input-message'(event: JQuery.TriggeredEvent<HTMLTextAreaElement>, instance: MessageBoxTemplateInstance) {
+// 		const originalEvent = event.originalEvent as ClipboardEvent | undefined;
+// 		if (!originalEvent) {
+// 			throw new Error('Event is not an original event');
+// 		}
 
-		instance.sendIconDisabled.set(!!input.value);
+// 		const { autogrow } = instance;
 
-		if (input.value.length > 0) {
-			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
-		}
-	},
-	'click .js-action-menu'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {},
-	'click .js-message-actions .js-message-action'(
-		this: { rid: IRoom['_id']; tmid?: IMessage['_id']; subscription: IRoom },
-		event: JQuery.ClickEvent,
-		instance: MessageBoxTemplateInstance,
-	) {
-		const { id } = event.currentTarget.dataset;
-		const actions = messageBox.actions.getById(id);
-		actions
-			.filter(({ action }) => !!action)
-			.forEach(({ action }) => {
-				console.log(instance.data);
-				action.call(null, {
-					rid: this.rid,
-					tmid: this.tmid,
-					messageBox: instance.firstNode as HTMLElement,
-					prid: this.subscription.prid,
-					event: event as unknown as Event,
-					chat: instance.data.chatContext,
-				});
-			});
-	},
-	'click .js-format'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
-		event.preventDefault();
-		event.stopPropagation();
+// 		setTimeout(() => autogrow?.update(), 50);
 
-		const { id } = event.currentTarget.dataset;
-		const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ label }) => label === id) ?? {};
+// 		if (!originalEvent.clipboardData) {
+// 			return;
+// 		}
 
-		if (!pattern) {
-			return;
-		}
+// 		const items = Array.from(originalEvent.clipboardData.items);
 
-		applyFormatting(pattern, instance.input);
-	},
-});
+// 		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+// 			return;
+// 		}
+
+// 		const files = items
+// 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
+// 			.map((item) => {
+// 				const fileItem = item.getAsFile();
+
+// 				if (!fileItem) {
+// 					return;
+// 				}
+
+// 				const imageExtension = fileItem ? getImageExtensionFromMime(fileItem.type) : undefined;
+
+// 				const extension = imageExtension ? `.${imageExtension}` : '';
+
+// 				Object.defineProperty(fileItem, 'name', {
+// 					writable: true,
+// 					value: `Clipboard - ${moment().format(settings.get('Message_TimeAndDateFormat'))}${extension}`,
+// 				});
+// 				return fileItem;
+// 			})
+// 			.filter((file): file is File => !!file);
+
+// 		if (files.length) {
+// 			event.preventDefault();
+// 			instance.data.onUploadFiles?.(files);
+// 		}
+// 	},
+// 	'input .js-input-message'(
+// 		this: MessageBoxTemplateInstance['data'],
+// 		_event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
+// 		instance: MessageBoxTemplateInstance,
+// 	) {
+// 		const { input } = instance;
+// 		if (!input) {
+// 			return;
+// 		}
+
+// 		instance.isSendIconVisible.set(!!input.value);
+
+// 		if (input.value.length > 0) {
+// 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
+// 		}
+// 	},
+// 	'propertychange .js-input-message'(
+// 		this: MessageBoxTemplateInstance['data'],
+// 		event: JQuery.TriggeredEvent<HTMLTextAreaElement>,
+// 		instance: MessageBoxTemplateInstance,
+// 	) {
+// 		const originalEvent = event.originalEvent as { propertyName: string } | undefined;
+// 		if (!originalEvent) {
+// 			throw new Error('Event is not an original event');
+// 		}
+
+// 		if (originalEvent.propertyName !== 'value') {
+// 			return;
+// 		}
+
+// 		const { input } = instance;
+// 		if (!input) {
+// 			return;
+// 		}
+
+// 		instance.sendIconDisabled.set(!!input.value);
+
+// 		if (input.value.length > 0) {
+// 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
+// 		}
+// 	},
+// 	async 'click .js-send'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
+// 		instance.send(event as unknown as Event);
+// 	},
+// 	'click .js-action-menu'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
+// 		const groups = messageBox.actions.get();
+// 		const config = {
+// 			popoverClass: 'message-box',
+// 			columns: [
+// 				{
+// 					groups: Object.keys(groups).map((group) => {
+// 						const items = groups[group].map((item) => {
+// 							return {
+// 								icon: item.icon,
+// 								name: t(item.label),
+// 								type: 'messagebox-action',
+// 								id: item.id,
+// 							};
+// 						});
+// 						return {
+// 							title: t(group),
+// 							items,
+// 						};
+// 					}),
+// 				},
+// 			],
+// 			offsetVertical: 10,
+// 			direction: 'top-inverted',
+// 			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
+// 			data: {
+// 				rid: this.rid,
+// 				tmid: this.tmid,
+// 				prid: this.subscription.prid,
+// 				messageBox: instance.firstNode,
+// 				chat: instance.data.chatContext,
+// 			},
+// 			activeElement: event.currentTarget,
+// 		};
+
+// 		popover.open(config);
+// 	},
+// 	'click .js-action-menu'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {},
+// 	'click .js-message-actions .js-message-action'(
+// 		this: { rid: IRoom['_id']; tmid?: IMessage['_id']; subscription: IRoom },
+// 		event: JQuery.ClickEvent,
+// 		instance: MessageBoxTemplateInstance,
+// 	) {
+// 		const { id } = event.currentTarget.dataset;
+// 		const actions = messageBox.actions.getById(id);
+// 		actions
+// 			.filter(({ action }) => !!action)
+// 			.forEach(({ action }) => {
+// 				console.log(instance.data);
+// 				action.call(null, {
+// 					rid: this.rid,
+// 					tmid: this.tmid,
+// 					messageBox: instance.firstNode as HTMLElement,
+// 					prid: this.subscription.prid,
+// 					event: event as unknown as Event,
+// 					chat: instance.data.chatContext,
+// 				});
+// 			});
+// 	},
+// 	'click .js-format'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
+// 		event.preventDefault();
+// 		event.stopPropagation();
+
+// 		const { id } = event.currentTarget.dataset;
+// 		const { pattern } = formattingButtons.filter(({ condition }) => !condition || condition()).find(({ label }) => label === id) ?? {};
+
+// 		if (!pattern) {
+// 			return;
+// 		}
+
+// 		applyFormatting(pattern, instance.input);
+// 	},
+// });

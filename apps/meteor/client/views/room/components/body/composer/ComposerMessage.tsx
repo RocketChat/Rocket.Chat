@@ -1,16 +1,12 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useLayout, useSetting, useToastMessageDispatch, useUserPreference } from '@rocket.chat/ui-contexts';
-import { Blaze } from 'meteor/blaze';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Template } from 'meteor/templating';
-import React, { ContextType, memo, ReactElement, useCallback, useEffect, useMemo, useRef } from 'react';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { ContextType, ReactElement } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
-import type { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
-import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
-import { ChatContext } from '../../../contexts/ChatContext';
+import type { ChatContext } from '../../../contexts/ChatContext';
 import MessageBox from './LegacyComposer/MessageBox';
 
 export type ComposerMessageProps = {
@@ -35,7 +31,7 @@ const ComposerMessage = ({
 // onNavigateToPreviousMessage,
 // onUploadFiles,
 ComposerMessageProps): ReactElement => {
-	const isLayoutEmbedded = useEmbeddedLayout();
+	// const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
 
 	// const messageBoxViewDataRef = useRef(

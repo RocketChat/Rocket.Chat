@@ -1,7 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import type React from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Users } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';

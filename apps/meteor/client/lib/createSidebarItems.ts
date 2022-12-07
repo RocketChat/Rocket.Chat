@@ -1,4 +1,4 @@
-import { IconProps } from '@rocket.chat/fuselage';
+import type { IconProps } from '@rocket.chat/fuselage';
 
 export type SidebarItem = {
 	i18nLabel: string;

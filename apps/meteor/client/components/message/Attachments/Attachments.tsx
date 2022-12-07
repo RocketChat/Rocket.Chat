@@ -1,5 +1,6 @@
-import { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
-import React, { ContextType, ReactElement, useContext } from 'react';
+import type { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
+import type { ContextType, ReactElement } from 'react';
+import React, { useContext } from 'react';
 
 import { ChatContext } from '../../../views/room/contexts/ChatContext';
 import { MessageContext } from '../../../views/room/contexts/MessageContext';

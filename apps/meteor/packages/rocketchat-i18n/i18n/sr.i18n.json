@@ -1,5 +1,4 @@
 {
-  "403": "Забрањен",
   "500": "Интерна грешка сервера",
   "@username": "@корисничко име",
   "@username_message": "@ корисничко име <message>",
@@ -2594,6 +2593,7 @@
   "registration.page.registration.waitActivationWarning": "Пре него што се пријавите, ваш налог мора да буде ручно активиран од стране администратора.",
   "registration.page.resetPassword.sent": "Ако је ова е-пошта регистрована, пошаљитећемо упутства о томе како да ресетујете своју лозинку. Ако ускоро не примите е-пошту, вратите се и покушајте поново.",
   "registration.component.login": "Пријава",
+  "registration.component.login.userNotFound": "Корисник није пронађен",
   "registration.component.resetPassword": "Поново постави лозинку",
   "registration.component.form.email": "Е-пошта",
   "registration.component.form.password": "Лозинка",

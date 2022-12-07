@@ -97,7 +97,7 @@
 		align-items: center;
 
 		&.editing {
-			background-color: var(--message-box-editing-color);
+			background-color: var(--rcx-color-status-background-warning-2, var(--message-box-editing-color));
 		}
 	}
 

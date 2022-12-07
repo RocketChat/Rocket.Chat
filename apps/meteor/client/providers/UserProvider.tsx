@@ -1,7 +1,9 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { UserContext, LoginService, useSetting } from '@rocket.chat/ui-contexts';
+import type { LoginService } from '@rocket.chat/ui-contexts';
+import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { FC, useEffect, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
@@ -17,16 +19,20 @@ const getUser = (): IUser | null => Meteor.user() as IUser | null;
 const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
 const config: Record<string, Partial<LoginService>> = {
-	'facebook': { buttonColor: '#325c99' },
-	'twitter': { buttonColor: '#02acec' },
-	'google': { buttonColor: '#dd4b39' },
-	'github': { buttonColor: '#4c4c4c', title: 'GitHub' },
-	'github_enterprise': { buttonColor: '#4c4c4c', title: 'GitHub Enterprise' },
-	'gitlab': { buttonColor: '#373d47', title: 'GitLab' },
-	'trello': { buttonColor: '#026aa7' },
-	'meteor-developer': { buttonColor: '#de4f4f', title: 'Meteor' },
-	'wordpress': { buttonColor: '#1e8cbe', title: 'WordPress' },
-	'linkedin': { buttonColor: '#1b86bc' },
+	'apple': { title: 'Apple', icon: 'apple' },
+	'facebook': { title: 'Facebook', icon: 'facebook' },
+	'twitter': { title: 'Twitter', icon: 'twitter' },
+	'google': { title: 'Google', icon: 'google' },
+	'github': { title: 'Github', icon: 'github' },
+	'github_enterprise': { title: 'Github Enterprise', icon: 'github' },
+	'gitlab': { title: 'Gitlab', icon: 'gitlab' },
+	'dolphin': { title: 'Dolphin', icon: 'dophin' },
+	'drupal': { title: 'Drupal', icon: 'drupal' },
+	'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
+	'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
+	'meteor-developer': { title: 'Meteor', icon: 'meteor' },
+	'wordpress': { title: 'WordPress', icon: 'wordpress' },
+	'linkedin': { title: 'Linkedin', icon: 'linkedin' },
 };
 
 const logout = (): Promise<void> =>
