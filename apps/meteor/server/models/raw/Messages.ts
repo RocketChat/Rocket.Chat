@@ -18,7 +18,6 @@ import { BaseRaw } from './BaseRaw';
 import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
-// @ts-ignore Circular reference on field 'attachments'
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
@@ -222,11 +221,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		return this.findPaginated(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+				...(searchTerm && { msg: new RegExp(escapeRegExp(searchTerm), 'ig') }),
 			},
 			options,
 		);
@@ -245,20 +245,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
-	}
-
-	async removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void> {
-		await this.updateOne(
-			{ _id },
-			{
-				$pull: {
-					blocks: {
-						appId: 'videoconf-core',
-						type: 'actions',
-					} as Required<IMessage>['blocks'][number],
-				},
-			},
-		);
 	}
 
 	async countRoomsWithStarredMessages(options: AggregateOptions): Promise<number> {
@@ -361,7 +347,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{
 				$set: {
 					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
-				},
+				} as any,
 			},
 		);
 	}

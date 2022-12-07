@@ -1,0 +1,37 @@
+{
+	"name": "@rocket.chat/web-ui-registration",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/layout": "next",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@tanstack/react-query": "^4.16.1",
+		"@testing-library/react": "^13.3.0",
+		"@types/jest": "^27.4.1",
+		"eslint": "^8.29.0",
+		"jest": "^27.5.1",
+		"react-hook-form": "^7.34.2",
+		"ts-jest": "^27.1.4",
+		"typescript": "~4.5.5"
+	},
+	"peerDependencies": {
+		"@rocket.chat/layout": "*",
+		"@rocket.chat/ui-contexts": "*",
+		"@tanstack/react-query": "*",
+		"react": "*",
+		"react-hook-form": "*",
+		"react-i18next": "*"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"jest": "jest",
+		"build": "tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	]
+}

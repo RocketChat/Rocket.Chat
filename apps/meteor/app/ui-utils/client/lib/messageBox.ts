@@ -1,10 +1,19 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ContextType } from 'react';
+
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 
 type MessageBoxAction = {
 	label: string;
 	id: string;
 	icon?: string;
-	action: (params: { rid: IRoom['_id']; tmid?: IMessage['_id']; event: Event; messageBox: HTMLElement }) => void;
+	action: (params: {
+		rid: IRoom['_id'];
+		tmid?: IMessage['_id'];
+		event: Event;
+		messageBox: HTMLElement;
+		chat: ContextType<typeof ChatContext>;
+	}) => void;
 	condition?: () => boolean;
 };
 

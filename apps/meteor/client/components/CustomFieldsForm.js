@@ -112,13 +112,7 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		return null;
 	});
 
-export default function CustomFieldsForm({
-	jsonCustomFields = {},
-	customFieldsData,
-	setCustomFieldsData,
-	onLoadFields = () => {},
-	...props
-}) {
+export default function CustomFieldsForm({ jsonCustomFields, customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
 	const accountsCustomFieldsJson = useSetting('Accounts_CustomFields');
 
 	const [customFields] = useState(() => {

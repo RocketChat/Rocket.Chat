@@ -1,7 +1,8 @@
-import { AppScreenshot } from '@rocket.chat/core-typings';
+import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;

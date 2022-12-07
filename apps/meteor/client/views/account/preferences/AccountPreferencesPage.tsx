@@ -1,6 +1,7 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, ReactElement, MutableRefObject } from 'react';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject, ReactElement } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -44,6 +45,7 @@ type CurrentData = {
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
+	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
 };
 
@@ -52,7 +54,7 @@ export type FormSectionProps = {
 	commitRef: MutableRefObject<Record<string, () => void>>;
 };
 
-type FormatedData = Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'>;
+type FormatedData = { data: Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'> };
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -92,7 +94,7 @@ const AccountPreferencesPage = (): ReactElement => {
 		[hasAnyChange],
 	);
 
-	const saveFn = useMethod('saveUserPreferences');
+	const saveFn = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const handleSave = useCallback(async () => {
 		try {
@@ -114,7 +116,7 @@ const AccountPreferencesPage = (): ReactElement => {
 				Object.assign(data, { dontAskAgainList: list });
 			}
 
-			await saveFn(data as FormatedData);
+			await saveFn({ data } as FormatedData);
 			saveData.current = {};
 			setHasAnyChange(false);
 			Object.values(commitRef.current).forEach((fn) => (fn as () => void)());

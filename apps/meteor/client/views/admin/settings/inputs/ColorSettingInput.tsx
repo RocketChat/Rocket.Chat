@@ -1,6 +1,8 @@
 import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.chat/fuselage';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 

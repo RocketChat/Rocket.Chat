@@ -13,6 +13,7 @@ import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRes
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 
+const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
 	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
@@ -64,6 +65,22 @@ export class AppsRestApi {
 		};
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+
+		this.api.addRoute(
+			'incompatibleModal',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const { action, appId, appVersion } = this.queryParams;
+
+					return API.v1.success({
+						url: `${baseUrl}/apps/${appId}/incompatible/${appVersion}/${action}?workspaceId=${workspaceId}&rocketChatVersion=${rocketChatVersion}`,
+					});
+				},
+			},
+		);
 
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
@@ -130,7 +147,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}

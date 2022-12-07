@@ -24,7 +24,7 @@ createTemplateForComponent('BroadCastMetric', () => import('./components/message
 
 createTemplateForComponent(
 	'Checkbox',
-	async (): Promise<{ default: typeof import('@rocket.chat/fuselage').CheckBox }> => {
+	async (): Promise<{ default: typeof CheckBox }> => {
 		const { CheckBox } = await import('@rocket.chat/fuselage');
 		return { default: CheckBox };
 	},
@@ -55,10 +55,6 @@ createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/inde
 createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
-
-createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
-
-createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
 
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
