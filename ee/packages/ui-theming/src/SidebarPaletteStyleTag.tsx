@@ -2,20 +2,21 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import { convertToCss } from '@rocket.chat/ui-theming/src/sidebarConvertToCss';
-import { filterOnlyChangedColors } from '@rocket.chat/ui-theming/src/filterOnlyChangedColors';
+import { sidebarConvertToCss } from '@rocket.chat/ui-theming/src/sidebarConvertToCss';
 import { sidebarPaletteDark } from '@rocket.chat/ui-theming/src/sidebarPaletteDark';
 import { defaultSidebarPalette } from '@rocket.chat/ui-theming/src/sidebarPalette';
+
+import { darkPalette } from './paletteDark';
+import { convertToCss } from './convertToCss';
 
 export const PaletteStyleTag = (): ReactElement | null => {
 	const [theme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
 
-	if (theme !== 'dark') {
-		return createPortal(<style>{convertToCss(filterOnlyChangedColors({}, defaultSidebarPalette), '.sidebar')}</style>, document.head);
-	}
-
 	return createPortal(
-		<style>{convertToCss(filterOnlyChangedColors(defaultSidebarPalette, sidebarPaletteDark), '.sidebar')}</style>,
+		<style id='sidebar-palette' data-style={theme}>
+			{convertToCss(darkPalette, '.sidebar--main.sidebar')}
+			{sidebarConvertToCss(theme !== 'dark' ? defaultSidebarPalette : sidebarPaletteDark, '.sidebar--main.sidebar')}
+		</style>,
 		document.head,
 	);
 };

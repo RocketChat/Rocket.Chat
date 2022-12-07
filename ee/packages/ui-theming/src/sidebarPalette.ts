@@ -5,7 +5,7 @@ export const palette = [
 		list: [
 			{ name: 'surface-default', token: '', color: '#2f343d' },
 			{ name: 'surface-hover', token: '', color: '#1f2329' },
-			{ name: 'surface-selected', token: '', color: '#f7f8fa' },
+			{ name: 'surface-selected', token: '', color: 'rgba(108,114,122, 0.3)' },
 		],
 	},
 	{
