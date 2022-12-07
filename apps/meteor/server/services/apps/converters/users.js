@@ -1,6 +1,5 @@
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
-
-import { Users } from '../../../../app/models/server';
+import { Users } from '@rocket.chat/models';
 
 export class AppUsersConverter {
 	constructor(orch) {

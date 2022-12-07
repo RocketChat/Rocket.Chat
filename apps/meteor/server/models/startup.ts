@@ -1,4 +1,7 @@
 import './Analytics';
+import './Apps';
+import './AppsLogs';
+import './AppsPersistence';
 import './Avatars';
 import './Banners';
 import './BannersDismiss';

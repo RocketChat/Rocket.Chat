@@ -1,9 +1,9 @@
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPersistenceModel } from '@rocket.chat/models';
 
 import { Logger } from '../../lib/logger/Logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from '../../../app/apps/server/communication';
@@ -39,9 +39,9 @@ export class AppServerOrchestrator {
 
 		this._marketplaceUrl = marketplaceUrl;
 
-		this._model = new AppsModel();
-		this._logModel = new AppsLogsModel();
-		this._persistModel = new AppsPersistenceModel();
+		this._model = AppsModel;
+		this._logModel = AppsLogsModel;
+		this._persistModel = AppsPersistenceModel;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath, this.db);

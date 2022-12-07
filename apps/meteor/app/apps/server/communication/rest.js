@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
-import { Users } from '../../../models/server';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
@@ -149,7 +148,7 @@ export class AppsRestApi {
 
 						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-						const seats = Users.getActiveLocalUserCount();
+						const seats = await Users.getActiveLocalUserCount();
 
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/${

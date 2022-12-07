@@ -1202,6 +1202,27 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.find({ t: 'l', open: true });
 	}
 
+	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+			departmentId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.find(query, options);
+	}
+
 	setAutoTransferOngoingById(roomId) {
 		const query = {
 			_id: roomId,

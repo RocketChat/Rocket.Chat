@@ -11,11 +11,10 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 
 import { getRoom } from '../../../../app/livechat/server/api/lib/livechat';
 import { Livechat } from '../../../../app/livechat/server/lib/Livechat';
-import { Users, LivechatDepartment, LivechatRooms } from '../../../../app/models/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {
@@ -85,7 +84,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let agentRoom;
 		if (agent?.id) {
-			const user = Users.getAgentInfo(agent.id);
+			const user = await Users.getAgentInfo(agent.id);
 			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
 		}
 
@@ -135,9 +134,9 @@ export class AppLivechatBridge extends LivechatBridge {
 		let result;
 
 		if (departmentId) {
-			result = LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).fetch();
+			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).toArray();
 		} else {
-			result = LivechatRooms.findOpenByVisitorToken(visitor.token, {}).fetch();
+			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
 		}
 
 		return result.map((room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room));
@@ -177,7 +176,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const { targetAgent, targetDepartment: departmentId, currentRoom } = transferData;
 
-		const appUser = Users.findOneByAppId(appId, {});
+		const appUser = await Users.findOneByAppId(appId, {});
 		if (!appUser) {
 			throw new Error('Invalid app user, cannot transfer');
 		}
@@ -193,8 +192,8 @@ export class AppLivechatBridge extends LivechatBridge {
 		let transferredTo;
 
 		if (targetAgent?.id) {
-			transferredTo = Users.findOneAgentById(targetAgent.id, {
-				fields: { _id: 1, username: 1, name: 1 },
+			transferredTo = await Users.findOneAgentById(targetAgent.id, {
+				projection: { _id: 1, username: 1, name: 1 },
 			});
 			if (!transferredTo) {
 				throw new Error('Invalid target agent, cannot transfer');
@@ -258,7 +257,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat departments.`);
 
-		return this.orch.getConverters()?.get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value, {}));
+		const department = await LivechatDepartment.findOneByIdOrName(value, {});
+
+		return this.orch.getConverters()?.get('departments').convertDepartment(department);
 	}
 
 	protected async findDepartmentsEnabledWithAgents(appId: string): Promise<Array<IDepartment>> {
@@ -267,7 +268,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const converter = this.orch.getConverters()?.get('departments');
 		const boundConverter = converter.convertDepartment.bind(converter);
 
-		return LivechatDepartment.findEnabledWithAgents().map(boundConverter);
+		return (await LivechatDepartment.findEnabledWithAgents().toArray()).map(boundConverter);
 	}
 
 	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {

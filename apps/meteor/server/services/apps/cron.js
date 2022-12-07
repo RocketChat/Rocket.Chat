@@ -2,11 +2,10 @@ import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { Users } from '../../../app/models/server';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
 async function notifyAdminsAboutInvalidApps(apps) {
@@ -73,7 +72,7 @@ export const appsUpdateMarketplaceInfo = async () => {
 	const baseUrl = await Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
-	const currentSeats = Users.getActiveLocalUserCount();
+	const currentSeats = await Users.getActiveLocalUserCount();
 
 	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps?seats=${currentSeats}`;
 	const options = {
