@@ -8,10 +8,21 @@ import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
-import './messageBox.html';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
-	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();
+	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
+		$(input).trigger(evt);
+
+		const event = new Event(evt, { bubbles: true });
+		// TODO: Remove this hack for react to trigger onChange
+		const tracker = (input as any)._valueTracker;
+		if (tracker) {
+			tracker.setValue(new Date().toString());
+		}
+		input.dispatchEvent(event);
+	};
+
+	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void }>();
 
 	let _quotedMessages: IMessage[] = [];
 
@@ -66,17 +77,12 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 			input.value = text;
 		}
 
-		focus();
-
 		persist();
-		$(input).trigger('change').trigger('input');
-		const event = new Event('input', { bubbles: true });
-		// TODO: Remove this hack for react to trigger onChange
-		const tracker = (input as any)._valueTracker;
-		if (tracker) {
-			tracker.setValue('');
-		}
-		input.dispatchEvent(event);
+
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+
+		focus();
 	};
 
 	const insertText = (text: string): void => {
@@ -124,12 +130,38 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
 	};
 
+	const [editing, setEditing] = (() => {
+		let editing = false;
+
+		return [
+			{
+				get: () => editing,
+				subscribe: (callback: () => void) => emitter.on('editing', callback),
+			},
+			(value: boolean) => {
+				editing = value;
+				emitter.emit('editing');
+			},
+		];
+	})();
+
+	const [recording, setRecordingMode] = (() => {
+		let recording = false;
+
+		return [
+			{
+				get: () => recording,
+				subscribe: (callback: () => void) => emitter.on('recording', callback),
+			},
+			(value: boolean) => {
+				recording = value;
+				emitter.emit('recording');
+			},
+		];
+	})();
+
 	const setEditingMode = (editing: boolean): void => {
-		if (editing) {
-			input.parentElement?.classList.add('editing');
-		} else {
-			input.parentElement?.classList.remove('editing');
-		}
+		setEditing(editing);
 	};
 
 	return {
@@ -143,6 +175,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 				end: input.selectionEnd,
 			};
 		},
+
+		editing,
+		setEditingMode,
+		recording,
+		setRecordingMode,
 		insertText,
 		setText,
 		clear,
@@ -152,6 +189,5 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		dismissQuotedMessage,
 		dismissAllQuotedMessages,
 		quotedMessages,
-		setEditingMode,
 	};
 };

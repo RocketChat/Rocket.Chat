@@ -14,6 +14,7 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
+	insertText(text: string): void;
 	clear(): void;
 	focus(): void;
 	replyWith(text: string): Promise<void>;
@@ -24,7 +25,18 @@ export type ComposerAPI = {
 		get(): IMessage[];
 		subscribe(callback: () => void): () => void;
 	};
+
 	setEditingMode(editing: boolean): void;
+	readonly editing: {
+		get(): boolean;
+		subscribe(callback: () => void): () => void;
+	};
+
+	setRecordingMode(recording: boolean): void;
+	readonly recording: {
+		get(): boolean;
+		subscribe(callback: () => void): () => void;
+	};
 };
 
 export type DataAPI = {

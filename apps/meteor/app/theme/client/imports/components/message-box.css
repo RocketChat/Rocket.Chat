@@ -305,6 +305,7 @@
 			border-width: 0;
 			border-top-width: 1px;
 			flex-wrap: wrap;
+			justify-content: space-between;
 		}
 
 		& [data-desktop] {
@@ -320,6 +321,8 @@
 
 			margin-bottom: 10px;
 			order: 1;
+
+			margin-block-end: 8px;
 		}
 
 		&__action {
@@ -356,6 +359,10 @@
 
 			font-size: 20px;
 			order: 5;
+		}
+
+		[role='toolbar'] {
+			order: 6;
 		}
 	}
 

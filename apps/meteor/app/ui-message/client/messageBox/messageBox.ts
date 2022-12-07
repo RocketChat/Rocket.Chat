@@ -1,38 +1,33 @@
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { ReactiveDict } from 'meteor/reactive-dict';
-import { Session } from 'meteor/session';
-import { Template } from 'meteor/templating';
-import { Tracker } from 'meteor/tracker';
+// import { Meteor } from 'meteor/meteor';
+// import { ReactiveVar } from 'meteor/reactive-var';
+// import { ReactiveDict } from 'meteor/reactive-dict';
+// import { Session } from 'meteor/session';
+// import { Template } from 'meteor/templating';
+// import { Tracker } from 'meteor/tracker';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+// import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 import type { ContextType } from 'react';
-import $ from 'jquery';
+// import $ from 'jquery';
 
-import { setupAutogrow } from './messageBoxAutogrow';
-import { formattingButtons } from './messageBoxFormatting';
-import { Users, ChatRoom } from '../../../models/client';
-import { settings } from '../../../settings/client';
-import { UserAction, USER_ACTIVITIES } from '../../../ui/client';
-import { messageBox } from '../../../ui-utils/client';
-import { getUserPreference } from '../../../utils/client';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+// import { setupAutogrow } from './messageBoxAutogrow';
+// import { formattingButtons } from './messageBoxFormatting';
+// import { Users, ChatRoom } from '../../../models/client';
+// import { settings } from '../../../settings/client';
+// import { UserAction, USER_ACTIVITIES } from '../../../ui/client';
+// import { messageBox } from '../../../ui-utils/client';
+// import { getUserPreference } from '../../../utils/client';
+// import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
-import { createComposerAPI } from './createComposerAPI';
+// import './messageBox.html';
+// import { createComposerAPI } from './createComposerAPI';
 
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	onSend?: (
-		event: Event,
-		params: {
-			value: string;
-			tshow?: boolean;
-		},
-	) => Promise<void>;
+	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
 	onResize?: () => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
@@ -75,263 +70,263 @@ export const refocusComposer = () => {
 	(lastFocusedInput ?? document.querySelector<HTMLTextAreaElement>('.js-input-message'))?.focus();
 };
 
-Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
-	this.state = new ReactiveDict();
-	this.popupConfig = new ReactiveVar(null);
-	this.replyMessageData = new ReactiveVar(this.data.chatContext?.composer?.quotedMessages.get() ?? []);
-	this.isMicrophoneDenied = new ReactiveVar(true);
-	this.isSendIconVisible = new ReactiveVar(false);
+// Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
+// 	this.state = new ReactiveDict();
+// 	this.popupConfig = new ReactiveVar(null);
+// 	this.replyMessageData = new ReactiveVar(this.data.chatContext?.composer?.quotedMessages.get() ?? []);
+// 	this.isMicrophoneDenied = new ReactiveVar(true);
+// 	this.isSendIconVisible = new ReactiveVar(false);
 
-	this.set = (value) => {
-		const { input } = this;
-		if (!input) {
-			return;
-		}
+// 	this.set = (value) => {
+// 		const { input } = this;
+// 		if (!input) {
+// 			return;
+// 		}
 
-		input.value = value;
-		$(input).trigger('change').trigger('input');
-	};
+// 		input.value = value;
+// 		$(input).trigger('change').trigger('input');
+// 	};
 
-	this.insertNewLine = () => {
-		const { input, autogrow } = this;
-		if (!input) {
-			return;
-		}
+// 	this.insertNewLine = () => {
+// 		const { input, autogrow } = this;
+// 		if (!input) {
+// 			return;
+// 		}
 
-		if (input.selectionStart || input.selectionStart === 0) {
-			const newPosition = input.selectionStart + 1;
-			const before = input.value.substring(0, input.selectionStart);
-			const after = input.value.substring(input.selectionEnd, input.value.length);
-			input.value = `${before}\n${after}`;
-			input.selectionStart = newPosition;
-			input.selectionEnd = newPosition;
-		} else {
-			input.value += '\n';
-		}
-		$(input).trigger('change').trigger('input');
+// 		if (input.selectionStart || input.selectionStart === 0) {
+// 			const newPosition = input.selectionStart + 1;
+// 			const before = input.value.substring(0, input.selectionStart);
+// 			const after = input.value.substring(input.selectionEnd, input.value.length);
+// 			input.value = `${before}\n${after}`;
+// 			input.selectionStart = newPosition;
+// 			input.selectionEnd = newPosition;
+// 		} else {
+// 			input.value += '\n';
+// 		}
+// 		$(input).trigger('change').trigger('input');
 
-		input.blur();
-		input.focus();
-		autogrow?.update();
-	};
+// 		input.blur();
+// 		input.focus();
+// 		autogrow?.update();
+// 	};
 
-	this.send = (event) => {
-		const { input } = this;
+// 	this.send = (event) => {
+// 		const { input } = this;
 
-		if (!input) {
-			return;
-		}
+// 		if (!input) {
+// 			return;
+// 		}
 
-		const {
-			autogrow,
-			data: { onSend, tshow },
-		} = this;
-		const { value } = input;
-		this.set('');
+// 		const {
+// 			autogrow,
+// 			data: { onSend, tshow },
+// 		} = this;
+// 		const { value } = input;
+// 		this.set('');
 
-		UserAction.stop(this.data.rid, USER_ACTIVITIES.USER_TYPING, { tmid: this.data.tmid });
+// 		UserAction.stop(this.data.rid, USER_ACTIVITIES.USER_TYPING, { tmid: this.data.tmid });
 
-		onSend?.call(this.data, event, { value, tshow }).then(() => {
-			autogrow?.update();
-			input.focus();
-		});
-	};
-});
+// 		onSend?.call(this.data, event, { value, tshow }).then(() => {
+// 			autogrow?.update();
+// 			input.focus();
+// 		});
+// 	};
+// });
 
-Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
-	let inputSetup = false;
+// Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
+// 	let inputSetup = false;
 
-	this.autorun(() => {
-		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
-		const room = Session.get(`roomData${rid}`);
+// 	this.autorun(() => {
+// 		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
+// 		const room = Session.get(`roomData${rid}`);
 
-		if (!inputSetup) {
-			const $input = $(this.find('.js-input-message'));
-			this.source = $input[0] as HTMLTextAreaElement | undefined;
-			if (this.source) {
-				inputSetup = true;
-			}
-		}
+// 		if (!inputSetup) {
+// 			const $input = $(this.find('.js-input-message'));
+// 			this.source = $input[0] as HTMLTextAreaElement | undefined;
+// 			if (this.source) {
+// 				inputSetup = true;
+// 			}
+// 		}
 
-		if (!room) {
-			return this.state.set({
-				room: false,
-				isBlockedOrBlocker: false,
-				mustJoinWithCode: false,
-			});
-		}
+// 		if (!room) {
+// 			return this.state.set({
+// 				room: false,
+// 				isBlockedOrBlocker: false,
+// 				mustJoinWithCode: false,
+// 			});
+// 		}
 
-		const isBlocked = room && room.t === 'd' && subscription && subscription.blocked;
-		const isBlocker = room && room.t === 'd' && subscription && subscription.blocker;
-		const isBlockedOrBlocker = isBlocked || isBlocker;
+// 		const isBlocked = room && room.t === 'd' && subscription && subscription.blocked;
+// 		const isBlocker = room && room.t === 'd' && subscription && subscription.blocker;
+// 		const isBlockedOrBlocker = isBlocked || isBlocker;
 
-		const mustJoinWithCode = !subscription && room.joinCodeRequired;
+// 		const mustJoinWithCode = !subscription && room.joinCodeRequired;
 
-		return this.state.set({
-			room: false,
-			isBlockedOrBlocker,
-			mustJoinWithCode,
-		});
-	});
+// 		return this.state.set({
+// 			room: false,
+// 			isBlockedOrBlocker,
+// 			mustJoinWithCode,
+// 		});
+// 	});
 
-	this.autorun(() => {
-		const { rid, tmid, onResize, chatContext } = Template.currentData() as MessageBoxTemplateInstance['data'];
+// 	this.autorun(() => {
+// 		const { rid, tmid, onResize, chatContext } = Template.currentData() as MessageBoxTemplateInstance['data'];
 
-		let unsubscribeToQuotedMessages: (() => void) | undefined;
+// 		let unsubscribeToQuotedMessages: (() => void) | undefined;
 
-		Tracker.afterFlush(() => {
-			const input = this.find('.js-input-message') as HTMLTextAreaElement;
+// 		Tracker.afterFlush(() => {
+// 			const input = this.find('.js-input-message') as HTMLTextAreaElement;
 
-			if (this.input === input) {
-				return;
-			}
+// 			if (this.input === input) {
+// 				return;
+// 			}
 
-			this.input = input;
+// 			this.input = input;
 
-			if (chatContext) {
-				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
-				chatContext.setComposerAPI(createComposerAPI(input, storageID));
-			}
+// 			if (chatContext) {
+// 				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+// 				chatContext.setComposerAPI(createComposerAPI(input, storageID));
+// 			}
 
-			setTimeout(() => {
-				if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
-					input.focus();
-				}
-			}, 200);
+// 			setTimeout(() => {
+// 				if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
+// 					input.focus();
+// 				}
+// 			}, 200);
 
-			unsubscribeToQuotedMessages?.();
+// 			unsubscribeToQuotedMessages?.();
 
-			unsubscribeToQuotedMessages = chatContext?.composer?.quotedMessages.subscribe(() => {
-				this.replyMessageData.set(chatContext?.composer?.quotedMessages.get() ?? []);
-			});
+// 			unsubscribeToQuotedMessages = chatContext?.composer?.quotedMessages.subscribe(() => {
+// 				this.replyMessageData.set(chatContext?.composer?.quotedMessages.get() ?? []);
+// 			});
 
-			if (input && rid) {
-				this.popupConfig.set({
-					rid,
-					tmid,
-					getInput: () => input,
-				});
-			} else {
-				this.popupConfig.set(null);
-			}
+// 			if (input && rid) {
+// 				this.popupConfig.set({
+// 					rid,
+// 					tmid,
+// 					getInput: () => input,
+// 				});
+// 			} else {
+// 				this.popupConfig.set(null);
+// 			}
 
-			if (this.autogrow) {
-				this.autogrow.destroy();
-				this.autogrow = null;
-			}
+// 			if (this.autogrow) {
+// 				this.autogrow.destroy();
+// 				this.autogrow = null;
+// 			}
 
-			if (!input) {
-				return;
-			}
+// 			if (!input) {
+// 				return;
+// 			}
 
-			const shadow = this.find('.js-input-message-shadow');
-			this.autogrow = onResize ? setupAutogrow(input, shadow, onResize) : null;
-		});
-	});
-});
+// 			const shadow = this.find('.js-input-message-shadow');
+// 			this.autogrow = onResize ? setupAutogrow(input, shadow, onResize) : null;
+// 		});
+// 	});
+// });
 
-Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
-	UserAction.cancel(this.data.rid);
+// Template.messageBox.onDestroyed(function (this: MessageBoxTemplateInstance) {
+// 	UserAction.cancel(this.data.rid);
 
-	if (lastFocusedInput === this.input) {
-		lastFocusedInput = undefined;
-	}
+// 	if (lastFocusedInput === this.input) {
+// 		lastFocusedInput = undefined;
+// 	}
 
-	if (!this.autogrow) {
-		return;
-	}
+// 	if (!this.autogrow) {
+// 		return;
+// 	}
 
-	this.autogrow.destroy();
-});
+// 	this.autogrow.destroy();
+// });
 
-Template.messageBox.helpers({
-	isAnonymousOrMustJoinWithCode() {
-		const instance = Template.instance() as MessageBoxTemplateInstance;
-		const { rid } = Template.currentData() as MessageBoxTemplateInstance['data'];
-		if (!rid) {
-			return false;
-		}
-		const isAnonymous = !Meteor.userId();
-		return isAnonymous || instance.state.get('mustJoinWithCode');
-	},
-	isWritable() {
-		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
-		if (!rid) {
-			return true;
-		}
+// Template.messageBox.helpers({
+// 	isAnonymousOrMustJoinWithCode() {
+// 		const instance = Template.instance() as MessageBoxTemplateInstance;
+// 		const { rid } = Template.currentData() as MessageBoxTemplateInstance['data'];
+// 		if (!rid) {
+// 			return false;
+// 		}
+// 		const isAnonymous = !Meteor.userId();
+// 		return isAnonymous || instance.state.get('mustJoinWithCode');
+// 	},
+// 	isWritable() {
+// 		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
+// 		if (!rid) {
+// 			return true;
+// 		}
 
-		const isBlockedOrBlocker = (Template.instance() as MessageBoxTemplateInstance).state.get('isBlockedOrBlocker');
+// 		const isBlockedOrBlocker = (Template.instance() as MessageBoxTemplateInstance).state.get('isBlockedOrBlocker');
 
-		if (isBlockedOrBlocker) {
-			return false;
-		}
+// 		if (isBlockedOrBlocker) {
+// 			return false;
+// 		}
 
-		if (subscription?.onHold) {
-			return false;
-		}
+// 		if (subscription?.onHold) {
+// 			return false;
+// 		}
 
-		const isReadOnly = roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-		const isArchived = roomCoordinator.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
+// 		const isReadOnly = roomCoordinator.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+// 		const isArchived = roomCoordinator.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
 
-		return !isReadOnly && !isArchived;
-	},
-	popupConfig() {
-		return (Template.instance() as MessageBoxTemplateInstance).popupConfig.get();
-	},
-	input() {
-		return (Template.instance() as MessageBoxTemplateInstance).input;
-	},
-	replyMessageData() {
-		return (Template.instance() as MessageBoxTemplateInstance).replyMessageData.get();
-	},
-	onDismissReply() {
-		const { chatContext } = (Template.instance() as MessageBoxTemplateInstance).data;
-		return (mid: IMessage['_id']) => chatContext?.composer?.dismissQuotedMessage(mid);
-	},
-	isEmojiEnabled() {
-		return getUserPreference(Meteor.userId(), 'useEmojis');
-	},
-	maxMessageLength() {
-		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
-	},
-	isSendIconVisible() {
-		return (Template.instance() as MessageBoxTemplateInstance).isSendIconVisible.get();
-	},
-	canSend() {
-		const { rid } = Template.currentData();
-		if (!rid) {
-			return true;
-		}
+// 		return !isReadOnly && !isArchived;
+// 	},
+// 	popupConfig() {
+// 		return (Template.instance() as MessageBoxTemplateInstance).popupConfig.get();
+// 	},
+// 	input() {
+// 		return (Template.instance() as MessageBoxTemplateInstance).input;
+// 	},
+// 	replyMessageData() {
+// 		return (Template.instance() as MessageBoxTemplateInstance).replyMessageData.get();
+// 	},
+// 	onDismissReply() {
+// 		const { chatContext } = (Template.instance() as MessageBoxTemplateInstance).data;
+// 		return (mid: IMessage['_id']) => chatContext?.composer?.dismissQuotedMessage(mid);
+// 	},
+// 	isEmojiEnabled() {
+// 		return getUserPreference(Meteor.userId(), 'useEmojis');
+// 	},
+// 	maxMessageLength() {
+// 		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
+// 	},
+// 	isSendIconVisible() {
+// 		return (Template.instance() as MessageBoxTemplateInstance).isSendIconVisible.get();
+// 	},
+// 	canSend() {
+// 		const { rid } = Template.currentData();
+// 		if (!rid) {
+// 			return true;
+// 		}
 
-		return roomCoordinator.verifyCanSendMessage(rid);
-	},
-	actions() {
-		const actionGroups = messageBox.actions.get();
+// 		return roomCoordinator.verifyCanSendMessage(rid);
+// 	},
+// 	actions() {
+// 		const actionGroups = messageBox.actions.get();
 
-		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
-	},
-	formattingButtons() {
-		return formattingButtons.filter(({ condition }) => !condition || condition());
-	},
-	isBlockedOrBlocker() {
-		return (Template.instance() as MessageBoxTemplateInstance).state.get('isBlockedOrBlocker');
-	},
-	onHold() {
-		const { rid, subscription } = Template.currentData();
-		return rid && !!subscription?.onHold;
-	},
-	isSubscribed() {
-		const { subscription } = Template.currentData();
-		return !!subscription;
-	},
-	isFederatedRoom() {
-		const { rid } = Template.currentData();
+// 		return Object.values(actionGroups).reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
+// 	},
+// 	formattingButtons() {
+// 		return formattingButtons.filter(({ condition }) => !condition || condition());
+// 	},
+// 	isBlockedOrBlocker() {
+// 		return (Template.instance() as MessageBoxTemplateInstance).state.get('isBlockedOrBlocker');
+// 	},
+// 	onHold() {
+// 		const { rid, subscription } = Template.currentData();
+// 		return rid && !!subscription?.onHold;
+// 	},
+// 	isSubscribed() {
+// 		const { subscription } = Template.currentData();
+// 		return !!subscription;
+// 	},
+// 	isFederatedRoom() {
+// 		const { rid } = Template.currentData();
 
-		const room = ChatRoom.findOne(rid);
+// 		const room = ChatRoom.findOne(rid);
 
-		return room && isRoomFederated(room);
-	},
-});
+// 		return room && isRoomFederated(room);
+// 	},
+// });
 
 // const handleFormattingShortcut = (event: KeyboardEvent, instance: MessageBoxTemplateInstance) => {
 // 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;

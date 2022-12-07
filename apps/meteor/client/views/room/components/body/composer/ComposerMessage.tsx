@@ -20,60 +20,8 @@ export type ComposerMessageProps = {
 	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({
-	rid,
-	chatMessagesInstance,
-	...props
-}: // subscription,
-// onResize,
-// onEscape,
-// onNavigateToNextMessage,
-// onNavigateToPreviousMessage,
-// onUploadFiles,
-ComposerMessageProps): ReactElement => {
-	// const isLayoutEmbedded = useEmbeddedLayout();
+const ComposerMessage = ({ rid, chatMessagesInstance, ...props }: ComposerMessageProps): ReactElement => {
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
-
-	// const messageBoxViewDataRef = useRef(
-	// 	new ReactiveVar<MessageBoxTemplateInstance['data']>({
-	// 		rid,
-	// 		subscription,
-	// 		isEmbedded: isLayoutEmbedded,
-	// 		showFormattingTips: showFormattingTips && !isLayoutEmbedded,
-	// 		onResize,
-	// 		onEscape,
-	// 		onNavigateToNextMessage,
-	// 		onNavigateToPreviousMessage,
-	// 		onUploadFiles,
-	// 		chatContext: chatMessagesInstance,
-	// 	}),
-	// );
-
-	// useEffect(() => {
-	// 	messageBoxViewDataRef.current.set({
-	// 		rid,
-	// 		subscription,
-	// 		isEmbedded: isLayoutEmbedded,
-	// 		showFormattingTips: showFormattingTips && !isLayoutEmbedded,
-	// 		onResize,
-	// 		onEscape,
-	// 		onNavigateToNextMessage,
-	// 		onNavigateToPreviousMessage,
-	// 		onUploadFiles,
-	// 		chatContext: chatMessagesInstance,
-	// 	});
-	// }, [
-	// 	isLayoutEmbedded,
-	// 	onResize,
-	// 	rid,
-	// 	showFormattingTips,
-	// 	subscription,
-	// 	chatMessagesInstance,
-	// 	onEscape,
-	// 	onNavigateToNextMessage,
-	// 	onNavigateToPreviousMessage,
-	// 	onUploadFiles,
-	// ]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -105,7 +53,7 @@ ComposerMessageProps): ReactElement => {
 		);
 	}
 
-	return <MessageBox rid={rid} {...composerProp} {...props} showFormattingTips={showFormattingTips} />;
+	return <MessageBox rid={rid} {...composerProp} {...props} showFormattingTips={showFormattingTips} chatContext={chatMessagesInstance} />;
 };
 
 export default memo(ComposerMessage);

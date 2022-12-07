@@ -14,7 +14,7 @@ const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	tmid: IMessage['_id'];
+	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 };
 
@@ -38,6 +38,8 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
 		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+
+		chat?.composer?.setRecordingMode(false);
 
 		setState('idle');
 
@@ -115,7 +117,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
-
+		chat?.composer?.setRecordingMode(true);
 		setState('recording');
 
 		try {
@@ -135,6 +137,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		} catch (error) {
 			console.log(error);
 			setIsMicrophoneDenied(true);
+			chat?.composer?.setRecordingMode(false);
 			setState('idle');
 		}
 	});

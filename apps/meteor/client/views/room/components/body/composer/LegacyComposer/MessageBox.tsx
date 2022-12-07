@@ -1,33 +1,32 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction, MessageComposerToolbarActions } from '@rocket.chat/ui-composer';
-import { useTranslation, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo, MouseEventHandler, ReactElement, useEffect, useRef, useReducer, FormEvent, useCallback } from 'react';
+import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, MutableRefObject } from 'react';
+import React, { memo, useRef, useReducer, useCallback } from 'react';
+import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
-import { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
+import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
 import { applyFormatting, formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
+import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
+import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import UserActionIndicator from '../UserActionIndicator';
-import { useComposeChainEvents } from '../hooks/useComposeChainEvents';
-import { useMessageComposerArrowNavigation } from '../hooks/useMessageComposerArrowNavigation';
-import { useMessageComposerHandleSubmit } from '../hooks/useMessageComposerHandleSubmit';
 import MessageBoxReplies from './MessageBoxReplies';
-import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
-import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
-
 
 type MessageBoxProps = {} & MessageBoxTemplateInstance['data'];
 
-// eslint-disable-next-line react/display-name, arrow-body-style
-
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
-	return Boolean(event.target.value.trim());
+	const target = event.target as HTMLInputElement;
+
+	return Boolean(target.value.trim());
 };
 
 export const MessageBox = ({
@@ -40,8 +39,13 @@ export const MessageBox = ({
 	onEscape,
 	showFormattingTips,
 	subscription,
+	tshow,
 }: MessageBoxProps): ReactElement => {
 	const [typing, setTyping] = useReducer(reducer, false);
+
+	const { isMobile } = useLayout();
+	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
+	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
 
 	const t = useTranslation();
 
@@ -53,6 +57,21 @@ export const MessageBox = ({
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const shadowRef = useRef(null);
+
+	const callbackRef = useCallback(
+		(node: HTMLTextAreaElement) => {
+			const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+			if (node === null) {
+				return;
+			}
+			if (!chat || chat.composer) {
+				return;
+			}
+			chat.setComposerAPI(createComposerAPI(node, storageID));
+			(textareaRef as MutableRefObject<HTMLTextAreaElement>).current = node;
+		},
+		[chat, rid, tmid],
+	);
 
 	const maxLength = useSetting('Message_MaxAllowedSize');
 
@@ -77,14 +96,6 @@ export const MessageBox = ({
 		});
 	});
 
-	useEffect(() => {
-		if (!chat || chat.composer) {
-			return;
-		}
-		const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
-		chat.setComposerAPI(createComposerAPI(textareaRef.current!, storageID));
-	}, [chat, rid, tmid]);
-
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat?.composer?.text;
 		if (!text) {
@@ -93,43 +104,124 @@ export const MessageBox = ({
 		}
 		onSend?.({
 			value: text,
+			tshow,
 		}).then(() => {
 			chat?.composer?.clear();
 		});
 	});
 
-	const handler = useComposeChainEvents(
-		useStableArray([
-			useMessageComposerHandleSubmit(handleSendMessage),
-			useMessageComposerArrowNavigation({
-				onArrowDown: onNavigateToNextMessage,
-				onArrowUp: onNavigateToPreviousMessage,
-				onEscape,
-			}),
-		]),
-	);
+	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+		const { which: keyCode } = event;
+
+		const input = event.target as HTMLTextAreaElement;
+
+		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+
+		if (isSubmitKey) {
+			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
+			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
+
+			if (!isSending) {
+				return false;
+			}
+			event.preventDefault();
+
+			const text = chat?.composer?.text;
+			if (!text) {
+				console.warn('No text to send');
+				return;
+			}
+			handleSendMessage();
+			return false;
+		}
+
+		if (event.shiftKey || event.ctrlKey || event.metaKey) {
+			return;
+		}
+
+		switch (event.key) {
+			case 'Escape': {
+				const currentEditing = chat?.currentEditing;
+
+				if (currentEditing) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					currentEditing.reset().then((reset) => {
+						if (!reset) {
+							currentEditing?.cancel();
+						}
+					});
+
+					return;
+				}
+
+				if (!input.value.trim()) onEscape?.();
+				return;
+			}
+
+			case 'ArrowUp': {
+				if (input.selectionEnd === 0) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					onNavigateToNextMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(0, 0);
+					}
+				}
+
+				return;
+			}
+
+			case 'ArrowDown': {
+				if (input.selectionEnd === input.value.length) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					onNavigateToPreviousMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(input.value.length, input.value.length);
+					}
+				}
+			}
+		}
+	});
+
+	const isEditing = useSubscription({
+		getCurrentValue: chat.composer?.editing.get ?? (() => false),
+		subscribe: chat.composer?.editing.subscribe ?? (() => () => undefined),
+	});
+
+	const isRecording = useSubscription({
+		getCurrentValue: chat.composer?.recording.get ?? (() => false),
+		subscribe: chat.composer?.recording.subscribe ?? (() => () => undefined),
+	});
 
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid),[] )
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), []));
 
 	// TODO: Chat context should contain isEditing state
 	return (
-		<div className={['rc-message-box rc-new', isEmbedded && 'rc-message-box--embedded'].filter(Boolean).join(' ')}>
+		<div className={['rc-message-box rc-new', isEmbedded && 'rc-message-box--embedded', isEditing && 'editing'].filter(Boolean).join(' ')}>
 			<UserActionIndicator rid={rid} tmid={tmid} />
 			<BlazeTemplate name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 			<div ref={shadowRef} style={shadowStyle} />
-			<div className='rc-message-box__container'>
+			<div className={['rc-message-box__container', isEditing && 'editing'].filter(Boolean).join(' ')}>
 				<MessageComposerToolbarActions>
-					<MessageComposerAction icon='emoji' disabled={!useEmojis} onClick={handleOpenEmojiPicker} />
+					<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} />
 				</MessageComposerToolbarActions>
 				<Box
 					is='textarea'
 					mi='x8'
-					ref={textareaRef}
+					ref={callbackRef}
 					aria-label={t('Message')}
 					name='msg'
+					disabled={isRecording}
 					onChange={setTyping}
 					style={textAreaStyle}
 					maxLength={Number.isInteger(maxLength) ? parseInt(maxLength as string) : undefined}
@@ -139,11 +231,12 @@ export const MessageBox = ({
 					onKeyDown={handler}
 				/>
 				<MessageComposerToolbarActions>
-
-					{!canSend ?
-					<Button small primary>
-						{t('join')}
-					</Button>: !typing ? (
+					{!canSend && (
+						<Button small primary>
+							{t('Join')}
+						</Button>
+					)}
+					{canSend && !typing && (
 						<>
 							<AudioMessageRecorder rid={rid} tmid={tmid} />
 
@@ -183,12 +276,12 @@ export const MessageBox = ({
 
 									popover.open(config);
 								}}
+								disabled={isRecording}
 								icon='plus'
 							/>
 						</>
-					) : (
-						<MessageComposerAction onClick={handleSendMessage} icon='send' />
 					)}
+					{canSend && typing && <MessageComposerAction onClick={handleSendMessage} icon='send' />}
 				</MessageComposerToolbarActions>
 			</div>
 
@@ -215,7 +308,7 @@ export const MessageBox = ({
 									</svg>
 								</button>
 							) : (
-								<span className='rc-message-box__toolbar-formatting-item' title={label}>
+								<span className='rc-message-box__toolbar-formatting-item' title={label} key={label}>
 									<a href={link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
 										{label || text}
 									</a>
