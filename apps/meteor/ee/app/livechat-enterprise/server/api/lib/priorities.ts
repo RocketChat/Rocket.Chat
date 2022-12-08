@@ -57,7 +57,7 @@ export async function updatePriority(
 		if (data.name) {
 			const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
 			if (priority && priority._id !== _id) {
-				throw new Error('error-duplicated-priority-name');
+				throw new Error('error-duplicate-priority-name');
 			}
 		}
 
@@ -73,7 +73,7 @@ export async function updatePriority(
 	} catch (error: any) {
 		// check if its a duplicate key error
 		if (error?.code === 11000) {
-			throw new Error('error-duplicated-priority-name');
+			throw new Error('error-duplicate-priority-name');
 		}
 
 		throw error;

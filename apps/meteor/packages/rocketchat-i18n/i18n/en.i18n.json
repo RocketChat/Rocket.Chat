@@ -1872,6 +1872,7 @@
   "error-department-not-found": "Department not found",
   "error-direct-message-file-upload-not-allowed": "File sharing not allowed in direct messages",
   "error-duplicate-channel-name": "A channel with name '__channel_name__' exists",
+  "error-duplicate-priority-name": "A priority with the same name already exists",
   "error-edit-permissions-not-allowed": "Editing permissions is not allowed",
   "error-email-domain-blacklisted": "The email domain is blacklisted",
   "error-email-send-failed": "Error trying to send email: __message__",

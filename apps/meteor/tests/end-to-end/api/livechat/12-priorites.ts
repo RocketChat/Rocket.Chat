@@ -386,7 +386,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 			expect(response.body).to.have.property('success', false);
-			expect(response.body).to.have.property('error', 'error-duplicated-priority-name');
+			expect(response.body).to.have.property('error', 'error-duplicate-priority-name');
 		});
 		it('should throw a duplicate error incase there is already a priority with same name (case insensitive)', async () => {
 			const {
@@ -410,7 +410,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 			expect(response.body).to.have.property('success', false);
-			expect(response.body).to.have.property('error', 'error-duplicated-priority-name');
+			expect(response.body).to.have.property('error', 'error-duplicate-priority-name');
 		});
 	});
 
