@@ -2,7 +2,8 @@ import type { ReadReceipt } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';

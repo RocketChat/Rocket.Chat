@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useSession, useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';

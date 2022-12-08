@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Modal, Box } from '@rocket.chat/fuselage';
 import { useLayoutContextualBarExpanded, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { useCallback, useMemo, forwardRef } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 

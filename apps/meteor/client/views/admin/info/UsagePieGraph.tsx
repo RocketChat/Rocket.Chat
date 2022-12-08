@@ -1,7 +1,9 @@
-import { Pie, DatumId } from '@nivo/pie';
+import type { DatumId } from '@nivo/pie';
+import { Pie } from '@nivo/pie';
 import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { useMemo, useCallback, ReactElement, CSSProperties, ReactNode } from 'react';
+import type { ReactElement, CSSProperties, ReactNode } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import { useLocalePercentage } from '../../../hooks/useLocalePercentage';
 

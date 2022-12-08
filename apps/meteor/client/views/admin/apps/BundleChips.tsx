@@ -1,8 +1,9 @@
 import { Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { App } from './types';
+import type { App } from './types';
 
 type BundleChipsProps = {
 	bundledIn: {

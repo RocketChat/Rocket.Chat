@@ -16,6 +16,7 @@ export class LivechatPriority extends Base {
 				},
 			},
 		);
+
 		this.tryEnsureIndex({ sortItem: 1 });
 	}
 

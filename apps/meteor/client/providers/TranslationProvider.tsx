@@ -1,9 +1,11 @@
-import { TranslationContext, TranslationKey, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { TranslationContext, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
-import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
@@ -66,10 +68,10 @@ const createTranslateFunction = (
 	Tracker.nonreactive(() => {
 		const translate = (key: TranslationKey, ...replaces: unknown[]): string => {
 			if (typeof replaces[0] === 'object') {
-				const [options, lang_tag = language] = replaces;
+				const [options, lng = language] = replaces;
 				return TAPi18next.t(key, {
 					ns: 'project',
-					lng: String(lang_tag),
+					lng: String(lng),
 					...options,
 				});
 			}

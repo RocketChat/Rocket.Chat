@@ -1,4 +1,5 @@
-import { IRegistrationInfo, WorkflowTypes } from '@rocket.chat/core-typings';
+import type { IRegistrationInfo } from '@rocket.chat/core-typings';
+import { WorkflowTypes } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { KJUR } from 'jsrsasign';

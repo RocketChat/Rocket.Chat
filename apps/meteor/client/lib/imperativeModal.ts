@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
 type ReactModalDescriptor<TProps> = {
 	component: ComponentType<TProps>;

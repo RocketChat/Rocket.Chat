@@ -1,5 +1,6 @@
 import { Icon, Palette } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
 	level: 1 | 2 | 3 | 4 | 5;

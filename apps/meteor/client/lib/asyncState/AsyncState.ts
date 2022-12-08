@@ -1,4 +1,4 @@
-import { AsyncStatePhase } from './AsyncStatePhase';
+import type { AsyncStatePhase } from './AsyncStatePhase';
 
 export type AsyncState<T> =
 	| { phase: AsyncStatePhase.LOADING; value: undefined; error: undefined }

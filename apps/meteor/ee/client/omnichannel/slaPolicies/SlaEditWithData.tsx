@@ -1,7 +1,8 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import SlaEdit from './SlaEdit';

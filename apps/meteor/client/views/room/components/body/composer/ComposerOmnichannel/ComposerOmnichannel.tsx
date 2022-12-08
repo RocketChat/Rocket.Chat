@@ -1,10 +1,12 @@
-import { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
 import { useStream, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useOmnichannelRoom, useUserIsSubscribed } from '../../../../contexts/RoomContext';
-import ComposerMessage, { ComposerMessageProps } from '../ComposerMessage';
+import type { ComposerMessageProps } from '../ComposerMessage';
+import ComposerMessage from '../ComposerMessage';
 import { ComposerOmnichannelInquiry } from './ComposerOmnichannelInquiry';
 import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
