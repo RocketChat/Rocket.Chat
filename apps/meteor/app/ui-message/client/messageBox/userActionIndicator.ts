@@ -11,8 +11,8 @@ const maxUsernames = parseInt(getConfig('max-usernames-typing') || '2');
 
 Template.userActionIndicator.helpers({
 	data() {
-		const roomAction = UserAction.get(this.tmid || this.rid) || {};
-		if (!Object.keys(roomAction).length) {
+		const roomAction = UserAction.get(this.tmid || this.rid);
+		if (!roomAction || !Object.keys(roomAction).length) {
 			return [];
 		}
 
