@@ -47,7 +47,7 @@ export const UserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string 
 						<span className='rc-message-box__activity-user'>
 							{users.length < maxUsernames ? users.join(', ') : `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`}
 						</span>{' '}
-						{users.length > 1 ? t('are') : t('is')} {t(action)}
+						{users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}
 					</Fragment>
 				))}
 			</div>

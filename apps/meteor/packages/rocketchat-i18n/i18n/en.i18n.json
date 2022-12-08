@@ -591,6 +591,8 @@
   "archive-room": "Archive Room",
   "archive-room_description": "Permission to archive a channel",
   "are_typing": "are typing",
+  "are_playing": "are playing",
+  "is_playing": "is playing",
   "are_uploading": "are uploading",
   "are_recording": "are recording",
   "is_uploading": "is uploading",
