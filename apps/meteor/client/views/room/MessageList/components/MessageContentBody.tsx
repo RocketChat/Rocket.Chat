@@ -49,7 +49,10 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 				return undefined;
 			}
 
-			return mentions?.find(({ username }) => username === mention);
+			const filterUser = ({ username, type }: UserMention) => (!type || type === 'user') && username === mention;
+			const filterTeam = ({ name, type }: UserMention) => type === 'team' && name === mention;
+
+			return mentions?.find((mention) => filterUser(mention) || filterTeam(mention));
 		},
 		[mentions],
 	);
