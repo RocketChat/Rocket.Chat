@@ -139,10 +139,10 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		try {
 			if (isPrivate) {
 				roomData = await createPrivateChannel(params);
-				!teamId && goToRoomById(roomData.group._id as string);
+				!teamId && goToRoomById(roomData.group._id);
 			} else {
 				roomData = await createChannel(params);
-				!teamId && goToRoomById(roomData.channel._id as string);
+				!teamId && goToRoomById(roomData.channel._id);
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
