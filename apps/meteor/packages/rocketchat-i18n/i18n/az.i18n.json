@@ -2798,6 +2798,7 @@
   "registration.page.login.forgot": "Şifrəni unutmusan",
   "registration.page.resetPassword.sent": "Bu e-poçt qeydə alındıqda, parolunuzu necə sıfırlayacağına dair təlimatlar göndərəcəyik. Qısa müddətdə bir e-poçt almazsan, geri qayıdın və yenidən cəhd edin.",
   "registration.component.login": "Daxil ol",
+  "registration.component.login.userNotFound": "İstifadəçi tapılmadı",
   "registration.component.resetPassword": "Parolu sıfırlamak",
   "registration.component.form.emailOrUsername": "E-poçt və ya istifadəçi adı",
   "registration.component.form.email": "E-poçt",

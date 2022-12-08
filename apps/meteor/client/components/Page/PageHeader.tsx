@@ -19,11 +19,15 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 	const { isMobile } = useLayout();
 
 	return (
-		<Box borderBlockEndWidth='x2' borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'} {...props}>
+		<Box
+			borderBlockEndWidth='x2'
+			minHeight='x64'
+			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
+			{...props}
+		>
 			<Box
-				marginBlock='x16'
+				marginBlock='x8'
 				marginInline='x24'
-				minHeight='x40'
 				display='flex'
 				flexDirection='row'
 				flexWrap='nowrap'
