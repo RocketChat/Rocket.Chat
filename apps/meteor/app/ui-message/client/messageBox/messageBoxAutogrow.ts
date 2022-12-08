@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 const replaceWhitespaces = (whitespaces: string) => `${'&nbsp;'.repeat(whitespaces.length - 1)} `;
 
-export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLElement, callback: () => void) => {
+export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLElement, callback: (() => void) | undefined) => {
 	const width = textarea.clientWidth;
 	const height = textarea.clientHeight;
 	const { font, lineHeight, maxHeight: maxHeightPx } = window.getComputedStyle(textarea);
