@@ -21,6 +21,8 @@ export type PriorityEditFormProps = {
 	onSave: (values: PriorityFormData) => Promise<void>;
 };
 
+type PrioritySaveException = { success: false; error: TranslationKey | undefined };
+
 const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -33,6 +35,8 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		getValues,
 		setValue,
 		formState: { errors, isValid, isDirty },
+		setError,
+		handleSubmit,
 	} = useForm<PriorityFormData>({
 		mode: 'onChange',
 		defaultValues: data ? { name: dirty ? name : t(i18n) } : {},
@@ -48,6 +52,12 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		try {
 			setSaving(true);
 			await onSave(values);
+		} catch (e) {
+			const { error } = e as PrioritySaveException;
+
+			if (error) {
+				setError('name', { message: t(error) });
+			}
 		} finally {
 			setSaving(false);
 		}
@@ -61,7 +71,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 	};
 
 	return (
-		<Box is='form' display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
+		<Box is='form' onSubmit={handleSubmit(handleSave)} display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 			<Field>
 				<Controller
 					name='name'
@@ -70,13 +80,14 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
 							_id={_id}
+							disabled={isSaving}
+							error={errors.name?.message}
 							label={`${t('Name')}*`}
 							placeholder={t('Name')}
 							value={value}
 							hasResetButton={value !== t(i18n)}
-							onResetButtonClick={resetName}
 							onChangeValue={onChange}
-							disabled={isSaving}
+							onResetButtonClick={resetName}
 						/>
 					)}
 				/>
