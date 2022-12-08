@@ -7,9 +7,8 @@ export class LivechatPriority extends Base {
 	constructor() {
 		super('livechat_priority');
 
-		this.tryEnsureIndex({ name: 1 }, { unique: true });
+		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ sortItem: 1 });
-		this.tryEnsureIndex({ dirty: 1 });
 	}
 
 	// FIND
@@ -32,28 +31,6 @@ export class LivechatPriority extends Base {
 		};
 
 		return this.findOne(query, options);
-	}
-
-	createOrUpdatePriority(_id, { name, level }) {
-		const record = {
-			name,
-			level,
-		};
-
-		if (_id) {
-			this.update({ _id }, { $set: record });
-		} else {
-			_id = this.insert(record);
-		}
-
-		return Object.assign(record, { _id });
-	}
-
-	// REMOVE
-	removeById(_id) {
-		const query = { _id };
-
-		return this.remove(query);
 	}
 }
 

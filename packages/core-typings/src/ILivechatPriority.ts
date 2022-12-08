@@ -1,8 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILivechatPriority extends IRocketChatRecord {
-	name: string;
-	defaultValue: string;
+	name?: string;
 	i18n: string;
 	sortItem: number;
 

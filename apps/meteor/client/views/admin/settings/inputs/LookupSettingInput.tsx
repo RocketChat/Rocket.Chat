@@ -1,8 +1,9 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import type { PathFor } from '@rocket.chat/rest-typings';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { AsyncState } from '../../../../hooks/useAsyncState';
+import type { AsyncState } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
 

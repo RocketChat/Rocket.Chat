@@ -1,6 +1,7 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import { useQueryClient, useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
+import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 export const useRemoveCurrentChatMutation = (
 	options?: Omit<UseMutationOptions<void, Error, IRoom['_id']>, 'mutationFn'>,

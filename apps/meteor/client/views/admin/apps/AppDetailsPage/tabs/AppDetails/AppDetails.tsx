@@ -1,10 +1,12 @@
 import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
-import { AppInfo } from '../../../definitions/AppInfo';
+import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {

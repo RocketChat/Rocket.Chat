@@ -1,9 +1,10 @@
-import { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericTable from '../../../../client/components/GenericTable';

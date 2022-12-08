@@ -5,7 +5,6 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox } from '../../../ui-utils/client';
-import { fileUpload } from '../../../ui/client';
 import { settings } from '../../../settings/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ShareLocationModal from '../../../../client/views/room/ShareLocation/ShareLocationModal';
@@ -22,14 +21,16 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		(!settings.get('FileUpload_MediaTypeBlackList') || !settings.get('FileUpload_MediaTypeBlackList').match(/video\/webm|video\/\*/i)) &&
 		(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)) &&
 		window.MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus'),
-	action: ({ rid, tmid, messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid })),
+	action: ({ rid, tmid, messageBox, chat }) => {
+		VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid, chat });
+	},
 });
 
 messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => settings.get('FileUpload_Enabled'),
-	action({ rid, tmid, event, messageBox }) {
+	action({ event, chat }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
 		$input.css('display', 'none');
@@ -47,13 +48,10 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name),
 				});
-				return {
-					file,
-					name: file.name,
-				};
+				return file;
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0) as HTMLTextAreaElement, { rid, tmid });
+			chat?.flows.uploadFiles(filesToUpload);
 			$input.remove();
 		});
 

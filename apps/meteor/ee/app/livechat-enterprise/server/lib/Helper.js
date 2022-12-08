@@ -233,7 +233,12 @@ export const updateInquiryQueueSla = async (roomId, sla) => {
 };
 
 export const removeSLAFromRooms = async (slaId) => {
-	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach(async (room) => updateInquiryQueueSla(room._id));
+	const promises = [];
+	LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
+		promises.push(updateInquiryQueueSla(room._id));
+	});
+	await Promise.all(promises.length ? promises : []);
+
 	await LivechatRoomsRaw.unsetSlaById(slaId);
 };
 

@@ -1,8 +1,9 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
-import { PriorityFormData } from './PriorityEditForm';
+import type { PriorityFormData } from './PriorityEditForm';
 import PriorityEditFormWithData from './PriorityEditFormWithData';
 
 type PriorityVerticalBarProps = {

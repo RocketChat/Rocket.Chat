@@ -184,7 +184,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/priorities', () => {
 		let priority: ILivechatPriority;
-
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request
@@ -230,7 +229,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/priorities/:priorityId', () => {
 		let priority: ILivechatPriority;
-
+		const name = faker.random.word();
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
@@ -267,7 +266,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.put(api(`livechat/priorities/${priority._id}`))
 				.set(credentials)
 				.send({
-					name: faker.random.word(),
+					name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -281,6 +280,113 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', true);
+		});
+		it('should return an array of priorities matching text param', async () => {
+			const response = await request
+				.get(api('livechat/priorities'))
+				.set(credentials)
+				.query({
+					text: name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.priorities).to.be.an('array');
+			expect(response.body.priorities).to.have.length.greaterThan(0);
+			const pos = response.body.priorities.findIndex((p: ILivechatPriority) => p._id === priority._id);
+			expect(pos).to.be.greaterThan(-1);
+			expect(response.body.priorities[pos]).to.have.property('_id');
+			expect(response.body.priorities[pos]).to.have.property('i18n', priority.i18n);
+		});
+		it('should edit a priority with a PUT', async () => {
+			const newName = faker.random.word();
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: newName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			const newPriorityResponse = await request
+				.get(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(newPriorityResponse.body).to.have.property('success', true);
+			expect(newPriorityResponse.body).to.have.property('dirty', true);
+			expect(newPriorityResponse.body).to.have.property('name', newName);
+		});
+		it('should fail to edit a priority with a PUT if using too many parameters', async () => {
+			const newName = faker.random.word();
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: newName,
+					reset: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('invalid-params');
+		});
+		it('should fail to edit a priority with a PUT if using an object as name', async () => {
+			const newName = faker.random.word();
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: { name: newName },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+			expect(response.body?.error).to.contain('invalid-params');
+		});
+		it('should not fail to edit a priority with a PUT if using a boolean as name (it becomes a string)', async () => {
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					name: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+		});
+		it('should fail to update a non-existing priority', async () => {
+			const response = await request
+				.put(api('livechat/priorities/123'))
+				.set(credentials)
+				.send({
+					name: faker.random.word(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			expect(response.body).to.have.property('success', false);
+		});
+		it('should reset a single priority with a reset:true PUT parameter', async () => {
+			const response = await request
+				.put(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.send({
+					reset: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			const newPriorityResponse = await request
+				.get(api(`livechat/priorities/${priority._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(newPriorityResponse.body).to.have.property('success', true);
+			expect(newPriorityResponse.body).to.have.property('dirty', false);
+			expect(newPriorityResponse.body).to.not.have.property('name');
 		});
 	});
 
@@ -346,7 +452,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.have.property('dirty', false);
-			expect(response.body.name).not.eq(priority.name);
+			expect(response.body).to.not.have.property('name');
 		});
 		it('should change all priorities to their default', async () => {
 			const response = await request
@@ -357,6 +463,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.priorities).to.be.an('array');
 			response.body.priorities.forEach((priority: ILivechatPriority) => {
+				expect(priority).to.not.have.property('name');
 				expect(priority).to.have.property('dirty', false);
 			});
 		});

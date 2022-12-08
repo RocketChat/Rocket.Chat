@@ -1,6 +1,7 @@
-import { ICallerInfo, IMediaStreamRenderer, Operation, UserState, VoIPUserConfiguration } from '@rocket.chat/core-typings';
+import type { ICallerInfo, IMediaStreamRenderer, VoIPUserConfiguration } from '@rocket.chat/core-typings';
+import { Operation, UserState } from '@rocket.chat/core-typings';
 import { Inviter, UserAgent } from 'sip.js';
-import { IncomingResponse } from 'sip.js/lib/core';
+import type { IncomingResponse } from 'sip.js/lib/core';
 
 import { VoIPUser } from '../../../../client/lib/voip/VoIPUser';
 

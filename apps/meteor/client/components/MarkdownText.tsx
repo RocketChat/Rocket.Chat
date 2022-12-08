@@ -2,7 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
-import React, { ComponentProps, FC, useMemo } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
