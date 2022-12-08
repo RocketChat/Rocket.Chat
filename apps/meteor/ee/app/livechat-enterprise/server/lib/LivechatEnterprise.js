@@ -133,18 +133,9 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	// make async
-	saveSLA(_id, slaData) {
-		check(_id, Match.Maybe(String));
-
-		check(slaData, {
-			name: String,
-			description: Match.Optional(String),
-			dueTimeInMinutes: String,
-		});
-
-		const oldSLA = _id && Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
-		const sla = Promise.await(OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id));
+	async saveSLA(_id, slaData) {
+		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const sla = await OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id);
 		if (!oldSLA) {
 			return sla;
 		}
@@ -153,27 +144,24 @@ export const LivechatEnterprise = {
 		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			Promise.await(updateSLAInquiries(sla));
+			await updateSLAInquiries(sla);
 		}
 
 		return sla;
 	},
 
-	removeSLA(_id) {
-		check(_id, String);
-
-		const sla = Promise.await(OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } }));
-
+	async removeSLA(_id) {
+		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
 		if (!sla) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid sla', {
-				method: 'livechat:removeSLA',
-			});
+			throw new Error(`SLA with id ${_id} not found`);
 		}
-		const removed = Promise.await(OmnichannelServiceLevelAgreements.removeById(_id));
-		if (removed) {
-			removeSLAFromRooms(_id);
+
+		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
+		if (!removedResult || removedResult.deletedCount !== 1) {
+			throw new Error(`Error removing SLA with id ${_id}`);
 		}
-		return removed;
+
+		await removeSLAFromRooms(_id);
 	},
 
 	updateRoomSLA(roomId, user, sla) {

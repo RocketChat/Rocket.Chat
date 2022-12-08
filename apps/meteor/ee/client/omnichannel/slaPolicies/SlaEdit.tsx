@@ -1,7 +1,7 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useController, useForm } from 'react-hook-form';
@@ -17,7 +17,8 @@ type SlaEditProps = {
 
 function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
 	const slasRoute = useRoute('omnichannel-sla-policies');
-	const saveSLA = useMethod('livechat:saveSLA');
+	const saveSLA = useEndpoint('POST', '/v1/livechat/sla');
+	const updateSLA = useEndpoint('PUT', `/v1/livechat/sla/${slaId}`);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -54,16 +55,17 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	const handleSave = useMutableCallback(async () => {
 		const { name, description, dueTimeInMinutes } = getValues();
 
-		if (!isValid) {
+		if (!isValid || !name || dueTimeInMinutes === undefined) {
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
 		}
 
 		try {
-			await saveSLA(slaId, {
-				name,
-				description,
-				dueTimeInMinutes: String(dueTimeInMinutes),
-			});
+			const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
+			if (slaId) {
+				await updateSLA(payload);
+			} else {
+				await saveSLA(payload);
+			}
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
