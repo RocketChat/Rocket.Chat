@@ -142,7 +142,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				!teamId && goToRoomById(roomData.group._id as string);
 			} else {
 				roomData = await createChannel(params);
-				!teamId && goToRoomById((roomData as any).channel._id);
+				!teamId && goToRoomById(roomData.channel._id as string);
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });

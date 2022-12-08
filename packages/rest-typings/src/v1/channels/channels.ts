@@ -49,7 +49,7 @@ export type ChannelsEndpoints = {
 				teamId?: string;
 			};
 		}) => {
-			group: Partial<IRoom>;
+			channel: Partial<IRoom>;
 		};
 	};
 	'/v1/channels.convertToTeam': {
