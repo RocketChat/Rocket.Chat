@@ -1129,32 +1129,32 @@ describe('[Rooms]', function () {
 			name: testGroupName,
 		};
 		before((done) => {
-			updatePermission('can-audit', ['admin']).then(
-				createRoom({ type: 'p', name: testGroupName }).end((err, res) => {
-					testGroup = res.body.group;
-					request
-						.post(api('rooms.createDiscussion'))
-						.set(credentials)
-						.send({
-							prid: testGroup._id,
-							t_name: `${testGroupName}-discussion`,
-						})
-						.end(done);
-				}),
-			);
+			createRoom({ type: 'p', name: testGroupName }).end((err, res) => {
+				testGroup = res.body.group;
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testGroup._id,
+						t_name: `${testGroupName}-discussion`,
+					})
+					.end(done);
+			});
 		});
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			request
-				.get(api('rooms.autocomplete.adminRooms'))
-				.set(credentials)
-				.query({})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
-				})
-				.end(done);
+			updatePermission('can-audit', ['admin']).then(
+				request
+					.get(api('rooms.autocomplete.adminRooms'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal("The 'selector' param is required");
+					})
+					.end(done),
+			);
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			request

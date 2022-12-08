@@ -1,4 +1,5 @@
 import { ISetting } from '@rocket.chat/core-typings';
+import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
 
 export const updatePermission = (permission:string, roles:string[]):Promise<void|Error> =>
@@ -33,6 +34,17 @@ export const updateSetting = (setting:string, value:ISetting['value']):Promise<v
 			.expect(200)
 			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
 	});
+
+export const updateEESetting = (setting:string, value:ISetting['value']):Promise<void|Error> =>
+	IS_EE ? new Promise((resolve,reject) => {
+		request
+			.post(`/api/v1/settings/${setting}`)
+			.set(credentials)
+			.send({ value })
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
+	}) : Promise.resolve();
 
 export const removePermissions = async (perms: string[]) => {
 	await updateManyPermissions(Object.fromEntries(perms.map((name) => [name, []])));

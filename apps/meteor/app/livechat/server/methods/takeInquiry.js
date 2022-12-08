@@ -27,7 +27,7 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneOnlineAgentById(Meteor.userId(), {
-			project: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
+			projection: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
 		});
 
 		if (!user) {

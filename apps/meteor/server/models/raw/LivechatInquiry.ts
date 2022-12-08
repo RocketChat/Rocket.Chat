@@ -3,14 +3,9 @@ import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResu
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-// import mem from 'mem';
 
 import { BaseRaw } from './BaseRaw';
 
-const cachedSortSetting = async () => Settings.findOneById('Omnichannel_sorting_mechanism');
-// mem(
-// 	, { maxAge: 60000 } //60s
-// );
 // @ts-ignore Circular reference on field 'attachments'
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -160,7 +155,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async getSortingQuery(): Promise<{
 		[key: string]: SortDirection;
 	}> {
-		const sortMechanism = await cachedSortSetting();
+		// TODO: Cache this setting using mem cache. Right now this isn't possible because mem cache is not working with models which are used by services
+		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
 		const $sort: {
 			[key: string]: SortDirection;
 		} = {};
@@ -172,8 +168,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				$sort.estimatedServiceTimeAt = 1;
 				break;
 			case 'Timestamp':
-				$sort.ts = -1;
-				break;
 			default:
 				$sort.ts = -1;
 				break;

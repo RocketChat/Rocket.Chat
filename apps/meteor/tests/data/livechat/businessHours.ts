@@ -1,11 +1,10 @@
-import { IS_EE } from "../../e2e/config/constants";
 import { api, credentials, methodCall, request } from "../api-data";
-import { updateSetting } from "../permissions.helper"
+import { updateEESetting, updateSetting } from "../permissions.helper"
 
 export const makeDefaultBusinessHourActiveAndClosed = async () => {
 	// enable settings
 	await updateSetting('Livechat_enable_business_hours', true);
-	IS_EE && await updateSetting('Livechat_business_hour_type', 'Single');
+	await updateEESetting('Livechat_business_hour_type', 'Single');
 
 	// create business hours
 	const { body: { businessHour } } = await request
@@ -41,7 +40,7 @@ export const makeDefaultBusinessHourActiveAndClosed = async () => {
 export const disableDefaultBusinessHour = async () => {
 	// disable settings
 	await updateSetting('Livechat_enable_business_hours', false);
-	IS_EE && await updateSetting('Livechat_business_hour_type', 'Single');
+	await updateEESetting('Livechat_business_hour_type', 'Single');
 
 	// create business hours
 	const { body: { businessHour } } = await request
