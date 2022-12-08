@@ -1997,6 +1997,7 @@
   "error-validating-department-chat-closing-tags": "At least one closing tag is required when the department requires tag(s) on closing conversations.",
   "error-no-permission-team-channel": "You don't have permission to add this channel to the team",
   "error-no-owner-channel": "Only owners can add this channel to the team",
+  "error-unable-to-update-priority": "Unable to update priority",
   "error-you-are-last-owner": "You are the last owner. Please set new owner before leaving the room.",
   "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
   "Errors_and_Warnings": "Errors and Warnings",
