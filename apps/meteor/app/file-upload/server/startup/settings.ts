@@ -204,7 +204,7 @@ settingsRegistry.addGroup('FileUpload', function () {
 			secret: true,
 		});
 
-		this.add('FileUpload_GoogleStorage_ProjectID', '', {
+		this.add('FileUpload_GoogleStorage_ProjectId', '', {
 			type: 'string',
 			multiline: false,
 			private: true,
