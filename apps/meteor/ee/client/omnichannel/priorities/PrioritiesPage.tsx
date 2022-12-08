@@ -66,15 +66,11 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	};
 
 	const onSavePriority = async ({ reset, ...payload }: PriorityFormData): Promise<void> => {
-		try {
-			await savePriority(reset ? { reset } : payload);
+		await savePriority(reset ? { reset } : payload);
 
-			dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
-			refetch();
-			prioritiesRoute.push({});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+		dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
+		refetch();
+		prioritiesRoute.push({});
 	};
 
 	return (
