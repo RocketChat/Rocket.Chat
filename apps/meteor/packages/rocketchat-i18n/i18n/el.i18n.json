@@ -2806,6 +2806,7 @@
   "registration.page.login.forgot": "Ξέχασα τον κωδικό μου",
   "registration.page.resetPassword.sent": "Αν αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου είναι καταχωρημένο, θα στείλουμε οδηγίες σχετικά με τον τρόπο επαναφοράς του κωδικού πρόσβασής σας. Εάν δεν λάβετε σύντομα ένα μήνυμα ηλεκτρονικού ταχυδρομείου, επιστρέψτε και δοκιμάστε ξανά.",
   "registration.component.login": "Είσοδος",
+  "registration.component.login.userNotFound": "Ο χρήστης δεν βρέθηκε",
   "registration.component.resetPassword": "Επαναφορά κωδικού",
   "registration.component.form.emailOrUsername": "Email ή όνομα χρήστη",
   "registration.component.form.email": "Email",
