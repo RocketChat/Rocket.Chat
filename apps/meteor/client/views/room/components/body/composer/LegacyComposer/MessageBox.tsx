@@ -204,7 +204,6 @@ export const MessageBox = ({
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), []));
 
-	// TODO: Chat context should contain isEditing state
 	return (
 		<div className={['rc-message-box rc-new', isEmbedded && 'rc-message-box--embedded', isEditing && 'editing'].filter(Boolean).join(' ')}>
 			<UserActionIndicator rid={rid} tmid={tmid} />
@@ -212,8 +211,8 @@ export const MessageBox = ({
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 			<div ref={shadowRef} style={shadowStyle} />
 			<div className={['rc-message-box__container', isEditing && 'editing'].filter(Boolean).join(' ')}>
-				<MessageComposerToolbarActions>
-					<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} />
+				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_secondary_actions')}>
+					<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
 				</MessageComposerToolbarActions>
 				<Box
 					is='textarea'
@@ -230,7 +229,7 @@ export const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 				/>
-				<MessageComposerToolbarActions>
+				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 					{!canSend && (
 						<Button small primary>
 							{t('Join')}
@@ -286,7 +285,7 @@ export const MessageBox = ({
 			</div>
 
 			{showFormattingTips && (
-				<div className='rc-message-box__toolbar-formatting'>
+				<div className='rc-message-box__toolbar-formatting' role='toolbar' aria-label={t('Message_Formatting_Toolbox')}>
 					{formattingButtons
 						.filter(({ condition }) => !condition || condition())
 						.map(({ icon, link, text, label, pattern }) =>
