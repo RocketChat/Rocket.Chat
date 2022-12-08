@@ -3719,6 +3719,7 @@
   "registration.page.login.forgot": "დაგავიწყდათ პაროლი?",
   "registration.page.resetPassword.sent": "თუ ეს ელ.ფოსტა დარეგისტრირებულია, ჩვენ გამოგიგზავნით ინსტრუქციას, თუ როგორ შეგიძლიათ თქვენი პაროლის გადატვირთვა. თუ მალევე არ მიიღებთ მეილს გთხოვთ სცადოთ ხელახლა.",
   "registration.component.login": "შესვლა",
+  "registration.component.login.userNotFound": "მომხმარებელი არ მოიძებნა",
   "registration.component.resetPassword": "პაროლის განახლება",
   "registration.component.form.emailOrUsername": "ელ.ფოსტის ან მომხმარებლის სახელი",
   "registration.component.form.email": "ელ.ფოსტა",

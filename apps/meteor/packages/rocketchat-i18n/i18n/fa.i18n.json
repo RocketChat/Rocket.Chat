@@ -3141,6 +3141,7 @@
   "registration.page.login.forgot": "فراموشی رمز عبور",
   "registration.page.resetPassword.sent": "اگر این ایمیل ثبت شده باشد، دستورالعمل هایی در مورد نحوه بازنشانی گذرواژه شما ارسال خواهیم کرد. اگر مدت کوتاهی ایمیل دریافت نکنید، لطفا بیایید و دوباره امتحان کنید.",
   "registration.component.login": "ورود",
+  "registration.component.login.userNotFound": "کاربر یافت نشد",
   "registration.component.resetPassword": "تنظیم مجدد رمز عبور",
   "registration.component.form.emailOrUsername": "ایمیل یا نام کاربری",
   "registration.component.form.email": "ایمیل",
