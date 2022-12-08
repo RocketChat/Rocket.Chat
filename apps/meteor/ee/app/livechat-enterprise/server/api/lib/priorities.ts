@@ -55,30 +55,21 @@ export async function updatePriority(
 		}),
 	};
 
-	try {
-		if (data.name) {
-			const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
-			if (priority && priority._id !== _id) {
-				throw new Error('error-duplicate-priority-name');
-			}
-		}
-
-		const createdResult = await LivechatPriority.findOneAndUpdate(query, update, {
-			returnDocument: 'after',
-		});
-
-		if (!createdResult.ok || !createdResult.value) {
-			logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
-			throw Error('error-unable-to-update-priority');
-		}
-
-		return createdResult.value;
-	} catch (error: any) {
-		// check if its a duplicate key error
-		if (error?.code === 11000) {
+	if (data.name) {
+		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
+		if (priority && priority._id !== _id) {
 			throw new Error('error-duplicate-priority-name');
 		}
-
-		throw error;
 	}
+
+	const createdResult = await LivechatPriority.findOneAndUpdate(query, update, {
+		returnDocument: 'after',
+	});
+
+	if (!createdResult.ok || !createdResult.value) {
+		logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
+		throw Error('error-unable-to-update-priority');
+	}
+
+	return createdResult.value;
 }
