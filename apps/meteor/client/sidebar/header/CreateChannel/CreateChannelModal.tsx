@@ -170,6 +170,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
 							<TextInput
+								autoFocus
 								data-qa-type='channel-name-input'
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
