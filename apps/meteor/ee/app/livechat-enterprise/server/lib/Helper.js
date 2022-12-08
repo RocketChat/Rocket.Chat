@@ -226,7 +226,7 @@ export const updateInquiryQueueSla = async (roomId, sla) => {
 		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
 	}
 
-	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
+	await LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
 		estimatedWaitingTimeQueue,
 		estimatedServiceTimeAt,
 	});

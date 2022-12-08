@@ -1,5 +1,15 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, SortDirection } from 'mongodb';
+import type {
+	Collection,
+	Db,
+	Document,
+	FindOptions,
+	DistinctOptions,
+	UpdateResult,
+	UpdateFilter,
+	SortDirection,
+	ModifyResult,
+} from 'mongodb';
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
@@ -172,5 +182,12 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				break;
 		}
 		return $sort;
+	}
+
+	setEstimatedServiceTimeAt(
+		_rid: string,
+		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: string },
+	): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
 	}
 }
