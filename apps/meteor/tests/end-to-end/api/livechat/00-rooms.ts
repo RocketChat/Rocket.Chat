@@ -25,7 +25,7 @@ import {
 	sendMessage,
 	closeRoom,
 } from '../../../data/livechat/rooms';
-import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -1446,7 +1446,7 @@ describe('LIVECHAT - rooms', function () {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
 		this.afterAll(async () => {
-			await updateEESetting('manage-livechat-priorities', ['admin', 'livechat-manager']);
+			await updateEEPermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 		});
 		it('should return the list of priorities', async () => {
