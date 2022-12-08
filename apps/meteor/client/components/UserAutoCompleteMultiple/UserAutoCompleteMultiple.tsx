@@ -1,6 +1,7 @@
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip, OptionDescription } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';

@@ -1,11 +1,12 @@
 import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import BurgerMenu from '../../../../components/BurgerMenu';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import { ToolboxContext, useToolboxContext } from '../../contexts/ToolboxContext';
-import { ToolboxActionConfig } from '../../lib/Toolbox';
+import type { ToolboxActionConfig } from '../../lib/Toolbox';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
 import QuickActions from './QuickActions';

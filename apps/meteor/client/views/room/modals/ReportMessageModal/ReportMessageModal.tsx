@@ -1,8 +1,9 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';

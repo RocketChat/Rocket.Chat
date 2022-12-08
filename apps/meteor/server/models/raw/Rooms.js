@@ -2,6 +2,7 @@ import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw {
 	constructor(db, trash) {
@@ -57,7 +58,7 @@ export class RoomsRaw extends BaseRaw {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate).toArray();
+		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 		return statistic;
 	}
 

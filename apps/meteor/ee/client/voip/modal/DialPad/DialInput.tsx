@@ -1,6 +1,7 @@
 import { IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, FocusEvent, forwardRef } from 'react';
+import type { ChangeEvent, FocusEvent } from 'react';
+import React, { forwardRef } from 'react';
 
 type DialInputProps = {
 	inputName: string;

@@ -1,6 +1,9 @@
-import { MessageAttachmentAction } from '@rocket.chat/core-typings';
+import type { MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
+
+import ActionAttachmentButton from './ActionAttachmentButton';
 
 export const ActionAttachment: FC<MessageAttachmentAction> = ({ actions }) => (
 	<ButtonGroup mb='x4' {...({ small: true } as any)}>
@@ -19,9 +22,9 @@ export const ActionAttachment: FC<MessageAttachmentAction> = ({ actions }) => (
 					);
 				}
 				return (
-					<Button className={`js-actionButton-${processingType}`} key={index} small value={msg} id={msgId}>
+					<ActionAttachmentButton key={index} processingType={processingType} msg={msg} mid={msgId}>
 						{content}
-					</Button>
+					</ActionAttachmentButton>
 				);
 			})}
 	</ButtonGroup>

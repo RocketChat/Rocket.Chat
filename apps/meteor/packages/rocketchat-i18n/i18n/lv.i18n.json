@@ -1,5 +1,4 @@
 {
-  "403": "Aizliegts",
   "500": "Iekšējā servera kļūda",
   "__username__was_set__role__by__user_by_": null,
   "@username": "@ lietotājvārds",
@@ -2795,6 +2794,7 @@
   "registration.page.login.forgot": "Aizmirsi savu paroli",
   "registration.page.resetPassword.sent": "Ja šis e-pasts ir reģistrēts, mēs nosūtīsim norādījumus par to, kā atiestatīt savu paroli. Ja drīzumā nesaņemsiet e-pasta ziņojumu, lūdzam, atgriezieties un mēģiniet vēlreiz.",
   "registration.component.login": "Pieteikties",
+  "registration.component.login.userNotFound": "Lietotājs nav atrasts",
   "registration.component.resetPassword": "Atiestatīt paroli",
   "registration.component.form.emailOrUsername": "E-pasts vai lietotājvārds",
   "registration.component.form.email": "E-pasts",

@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { UserPresence, Presence } from '../lib/presence';
+import type { UserPresence } from '../lib/presence';
+import { Presence } from '../lib/presence';
 
 /**
  * Hook to fetch and subscribe users data
