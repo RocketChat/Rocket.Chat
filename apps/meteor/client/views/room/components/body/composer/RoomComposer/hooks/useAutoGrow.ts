@@ -1,5 +1,6 @@
 import { useBorderBoxSize } from '@rocket.chat/fuselage-hooks';
-import { CSSProperties, useEffect, RefObject, useState } from 'react';
+import type { CSSProperties, RefObject } from 'react';
+import { useEffect, useState } from 'react';
 
 const shadowStyleBase: CSSProperties = {
 	position: 'fixed',

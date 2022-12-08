@@ -1,4 +1,5 @@
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import Attachments from '../../../../../../components/message/Attachments';

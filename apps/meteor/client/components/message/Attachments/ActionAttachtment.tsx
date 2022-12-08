@@ -5,8 +5,6 @@ import React from 'react';
 
 import ActionAttachmentButton from './ActionAttachmentButton';
 
-import ActionAttachmentButton from './ActionAttachmentButton';
-
 export const ActionAttachment: FC<MessageAttachmentAction> = ({ actions }) => (
 	<ButtonGroup mb='x4' {...({ small: true } as any)}>
 		{actions

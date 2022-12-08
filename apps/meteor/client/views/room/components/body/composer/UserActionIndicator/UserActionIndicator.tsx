@@ -1,5 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement, Fragment } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, Fragment } from 'react';
 
 import { UserAction } from '../../../../../../../app/ui/client/lib/UserAction';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
