@@ -209,13 +209,12 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	this.isSendIconVisible = new ReactiveVar(false);
 
 	this.set = (value) => {
-		const { input } = this;
-		if (!input) {
+		if (!this.input) {
 			return;
 		}
 
-		input.value = value;
-		$(input).trigger('change').trigger('input');
+		this.input.value = value;
+		$(this.input).trigger('change').trigger('input');
 	};
 
 	this.insertNewLine = () => {
@@ -315,8 +314,10 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			this.input = input;
 
 			if (chatContext) {
-				const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
-				chatContext.setComposerAPI(createComposerAPI(input, storageID));
+				const storageID = `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
+				const composer = createComposerAPI(input, storageID);
+				chatContext.setComposerAPI(composer);
+				this.set = composer.setText;
 			}
 
 			setTimeout(() => {
