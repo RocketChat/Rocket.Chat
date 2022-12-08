@@ -351,7 +351,7 @@ Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
 			}
 
 			const shadow = this.find('.js-input-message-shadow');
-			this.autogrow = onResize ? setupAutogrow(input, shadow, onResize) : null;
+			this.autogrow = setupAutogrow(input, shadow, onResize);
 		});
 	});
 });
