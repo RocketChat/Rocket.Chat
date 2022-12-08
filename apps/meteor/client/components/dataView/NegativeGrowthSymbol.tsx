@@ -1,4 +1,5 @@
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 const style = { width: '1.5em', height: '1.5em', verticalAlign: '-0.5em' };
 

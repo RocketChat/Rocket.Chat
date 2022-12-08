@@ -2,6 +2,7 @@ import type { ILivechatMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/co
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/livechat/units.list': {
 			GET: (params: { text: string }) => PaginatedResult & {

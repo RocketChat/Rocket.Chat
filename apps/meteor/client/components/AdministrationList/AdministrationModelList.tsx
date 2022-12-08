@@ -1,11 +1,12 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { userHasAllPermission } from '../../../app/authorization/client';
 import { SideNav } from '../../../app/ui-utils/client';
-import { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
 import Emoji from '../Emoji';

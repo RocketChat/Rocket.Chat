@@ -1,5 +1,4 @@
 {
-  "403": "Забранен",
   "500": "Вътрешна грешка на сървъра",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ вече не е __role__ от __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ бе зададено __role__ от __user_by__",
@@ -2793,6 +2792,7 @@
   "registration.page.registration.waitActivationWarning": "Преди да можете да влезете, вашият акаунт трябва да бъде активиран ръчно от администратор.",
   "registration.page.resetPassword.sent": "Ако този имейл е регистриран, ще изпратим инструкции как да зададете нова парола. Ако скоро не получите имейл, моля, върнете се и опитайте отново.",
   "registration.component.login": "Влез",
+  "registration.component.login.userNotFound": "Потребителят не е намерен",
   "registration.component.resetPassword": "Нулиране на паролата",
   "registration.component.form.email": "Електрона поща",
   "registration.component.form.password": "Парола",

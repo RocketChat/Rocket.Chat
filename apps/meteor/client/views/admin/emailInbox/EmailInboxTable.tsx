@@ -1,6 +1,7 @@
 import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import {
 	GenericTable,

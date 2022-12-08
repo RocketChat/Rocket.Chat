@@ -1,7 +1,8 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Avatar, Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { getUserAvatarURL } from '../../../../app/utils/client';
 import { parseOutboundPhoneNumber } from '../../../../ee/client/lib/voip/parseOutboundPhoneNumber';

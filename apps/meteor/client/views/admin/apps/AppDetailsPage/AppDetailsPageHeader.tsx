@@ -2,7 +2,8 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
