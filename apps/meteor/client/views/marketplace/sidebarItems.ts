@@ -11,11 +11,11 @@ export const {
 		icon: 'cube',
 		i18nLabel: 'Explore',
 	},
-	// {
-	// 	href: 'marketplace-enterprise',
-	// 	icon: 'lightning',
-	// 	i18nLabel: 'Enterprise',
-	// },
+	{
+		href: 'marketplace/enterprise/list',
+		icon: 'lightning',
+		i18nLabel: 'Enterprise',
+	},
 	{
 		href: 'marketplace/installed/list',
 		icon: 'circle-arrow-down',

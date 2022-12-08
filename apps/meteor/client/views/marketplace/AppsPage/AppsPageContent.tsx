@@ -35,6 +35,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const context = useRouteParameter('context');
 	const isMarketplace = context === 'all';
+	const isEnterprise = context === 'enterprise';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -69,7 +70,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
-		appsData: isMarketplace ? marketplaceApps : installedApps,
+		appsData: isMarketplace || isEnterprise ? marketplaceApps : installedApps,
 		text,
 		current,
 		itemsPerPage,
@@ -77,6 +78,7 @@ const AppsPageContent = (): ReactElement => {
 		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
 		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
 		status: useMemo(() => statusFilterStructure.items.find(({ checked }) => checked)?.id, [statusFilterStructure]),
+		context,
 	});
 
 	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
@@ -117,7 +119,7 @@ const AppsPageContent = (): ReactElement => {
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
-					<Box display='flex' flexDirection='column' height='100%' overflow='hidden'>
+					<Box display='flex' flexDirection='column' overflow='hidden'>
 						<Box overflowY='scroll'>
 							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
