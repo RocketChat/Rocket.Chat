@@ -44,7 +44,7 @@ callbacks.add(
 			changes.priorityWeight = priority.priorityWeight;
 		}
 		cbLogger.debug('Callback success. Queue timing properties added');
-		return Object.assign({ ...props }, { ...changes });
+		return { ...props, ...changes };
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-before-new-inquiry',
