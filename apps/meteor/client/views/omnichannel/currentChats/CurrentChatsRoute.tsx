@@ -3,7 +3,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ComponentProps, memo, ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import {
 	GenericTableBody,

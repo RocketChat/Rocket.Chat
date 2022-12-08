@@ -1,5 +1,7 @@
-import { isFileAudioAttachment, FileAttachmentProps, isFileImageAttachment, isFileVideoAttachment } from '@rocket.chat/core-typings';
-import React, { FC } from 'react';
+import type { FileAttachmentProps } from '@rocket.chat/core-typings';
+import { isFileAudioAttachment, isFileImageAttachment, isFileVideoAttachment } from '@rocket.chat/core-typings';
+import type { FC } from 'react';
+import React from 'react';
 
 import { AudioAttachment } from './AudioAttachment';
 import { GenericFileAttachment } from './GenericFileAttachment';

@@ -2,7 +2,8 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import { Box, Button, ButtonGroup, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { Dispatch, FC, FormEventHandler, memo, MouseEvent, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, FC, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
