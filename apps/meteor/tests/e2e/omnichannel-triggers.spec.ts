@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { OmnichannelLiveChat } from './page-objects';
 import { OmnichannelTriggers } from './page-objects/omnichannel-triggers';
 import { OmnichannelSidenav } from './page-objects/fragments/omnichannel-sidenav';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: 'user1-session.json' });
 
 test.describe.serial('omnichannel-triggers', () => {
 	let poOmnichannelTriggers: OmnichannelTriggers;
@@ -16,17 +15,24 @@ test.describe.serial('omnichannel-triggers', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
-	test.beforeAll(() => {
+	test.beforeAll(async ({ api }) => {
 		triggersName = faker.datatype.uuid();
 		triggerMessage = 'Welcome to Rocket.chat';
+		await api.post('/livechat/users/agent', { username: 'user1' });
+		await api.post('/livechat/users/manager', { username: 'user1' });
 	});
 
-	test.beforeEach(async ({ page }: { page: Page }) => {
+	test.beforeEach(async ({ page }) => {
 		poOmnichannelTriggers = new OmnichannelTriggers(page);
 		poOmnichannelSidenav = new OmnichannelSidenav(page);
 		await page.goto('/omnichannel');
 		await poOmnichannelSidenav.linkTriggers.click();
-		await expect(page.url()).toContain('/omnichannel/triggers');
+		expect(page.url()).toContain('/omnichannel/triggers');
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.delete('/livechat/users/agent/user1');
+		await api.delete('/livechat/users/manager/user1');
 	});
 
 	test('expect create new trigger', async () => {
