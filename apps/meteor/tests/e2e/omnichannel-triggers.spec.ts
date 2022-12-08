@@ -30,17 +30,7 @@ test.describe.serial('omnichannel-triggers', () => {
 	});
 
 	test('expect create new trigger', async () => {
-		await poOmnichannelTriggers.btnNew.click();
-		await poOmnichannelTriggers.Name.fill(triggersName);
-		await poOmnichannelTriggers.Description.fill('Creating a fresh trigger');
-		await poOmnichannelTriggers.visitorPageURL.click();
-		await poOmnichannelTriggers.visitorTimeOnSite.click();
-		await poOmnichannelTriggers.addTime.click();
-		await poOmnichannelTriggers.addTime.fill('5s');
-		await poOmnichannelTriggers.impersonateAgent.click();
-		await poOmnichannelTriggers.textArea.fill(triggerMessage);
-		await poOmnichannelTriggers.saveBtn.click();
-
+		await poOmnichannelTriggers.createTrigger(triggersName, triggerMessage);
 		await expect(poOmnichannelTriggers.toastMessage).toBeVisible();
 	});
 
@@ -57,20 +47,9 @@ test.describe.serial('omnichannel-triggers', () => {
 			name: faker.name.firstName(),
 			email: faker.internet.email(),
 		};
-		await poOmnichannelTriggers.firstRowInTable.click();
-		await poOmnichannelTriggers.Name.fill(triggersName);
-		await poOmnichannelTriggers.Description.fill('Updating the existing trigger');
-		await poOmnichannelTriggers.visitorTimeOnSite.click();
-		await poOmnichannelTriggers.chatOpenedByVisitor.click();
-		await poOmnichannelTriggers.impersonateAgent.click();
-		await poOmnichannelTriggers.customAgent.click();
-		await poOmnichannelTriggers.agentName.fill('Rocket.cat');
-		await poOmnichannelTriggers.textArea.fill(triggerMessage);
-		await poOmnichannelTriggers.saveBtn.click();
-
+		await poOmnichannelTriggers.updateTrigger();
 		await expect(poOmnichannelTriggers.toastMessage).toBeVisible();
-
-		// start a new chat to verify trigger is fired on
+		// start a new chat to verify trigger is fired on livechat
 		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.btnOpenLiveChat('R').click();

@@ -58,5 +58,4 @@ export class OmnichannelLiveChat {
 		}
 		await this.btnSendMessage(buttonLabel).click();
 	}
-
 }

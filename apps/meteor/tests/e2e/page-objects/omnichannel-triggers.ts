@@ -95,4 +95,28 @@ export class OmnichannelTriggers {
 	get removeToastMessage(): Locator {
 		return this.page.locator('text=Trigger removed');
 	}
+
+	public async createTrigger(triggersName: string, triggerMessage: string) {
+		await this.btnNew.click();
+		await this.Name.fill(triggersName);
+		await this.Description.fill('Creating a fresh trigger');
+		await this.visitorPageURL.click();
+		await this.visitorTimeOnSite.click();
+		await this.addTime.click();
+		await this.addTime.fill('5s');
+		await this.impersonateAgent.click();
+		await this.textArea.fill(triggerMessage);
+		await this.saveBtn.click();
+	}
+
+	public async updateTrigger() {
+		await this.firstRowInTable.click();
+		await this.Description.fill('Updating the existing trigger');
+		await this.visitorTimeOnSite.click();
+		await this.chatOpenedByVisitor.click();
+		await this.impersonateAgent.click();
+		await this.customAgent.click();
+		await this.agentName.fill('Rocket.cat');
+		await this.saveBtn.click();
+	}
 }
