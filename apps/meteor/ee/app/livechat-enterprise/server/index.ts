@@ -8,8 +8,6 @@ import './methods/removeTag';
 import './methods/saveTag';
 import './methods/removeUnit';
 import './methods/saveUnit';
-import './methods/saveSLA';
-import './methods/removeSLA';
 import './methods/removeBusinessHour';
 import './methods/resumeOnHold';
 import LivechatUnit from '../../models/server/models/LivechatUnit';

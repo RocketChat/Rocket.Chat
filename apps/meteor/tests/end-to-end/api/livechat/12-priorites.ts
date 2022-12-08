@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { saveSLA, deleteSLA } from '../../../data/livechat/priorities';
+import { saveSLA, deleteSLA, generateRandomSLA } from '../../../data/livechat/priorities';
 import { createAgent, createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -30,7 +30,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('livechat/sla', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		// GET
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla endpoint', async () => {
 			await removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
@@ -53,10 +54,43 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(current).to.have.property('dueTimeInMinutes', sla.dueTimeInMinutes);
 			await deleteSLA(sla._id);
 		});
+		// POST
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [POST] livechat/sla endpoint', async () => {
+			await updatePermission('manage-livechat-sla', []);
+			const response = await request
+				.post(api('livechat/sla'))
+				.set(credentials)
+				.send(generateRandomSLA())
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+			expect(response.body).to.have.property('success', false);
+		});
+		it('should create a new sla', async () => {
+			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+
+			const sla = generateRandomSLA();
+
+			const response = await request
+				.post(api('livechat/sla'))
+				.set(credentials)
+				.send(sla)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.sla).to.be.an('object');
+			expect(response.body.sla).to.have.property('_id');
+			expect(response.body.sla).to.have.property('name', sla.name);
+			expect(response.body.sla).to.have.property('description', sla.description);
+			expect(response.body.sla).to.have.property('dueTimeInMinutes', sla.dueTimeInMinutes);
+
+			await deleteSLA(response.body.sla._id);
+		});
 	});
 
 	describe('livechat/sla/:slaId', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		// GET
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla/:slaId endpoint', async () => {
 			await removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
@@ -77,6 +111,60 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body._id).to.be.equal(sla._id);
 			const deleteResponse = deleteSLA(sla._id);
 			expect(deleteResponse).to.not.be.rejected;
+		});
+		// PUT
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
+			await updatePermission('manage-livechat-sla', []);
+
+			const response = await request
+				.put(api('livechat/sla/123'))
+				.set(credentials)
+				.send(generateRandomSLA())
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(response.body).to.have.property('success', false);
+		});
+		it('should update an sla', async () => {
+			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+
+			const sla = await saveSLA();
+			const newSlaData = generateRandomSLA();
+
+			const response = await request
+				.put(api(`livechat/sla/${sla._id}`))
+				.set(credentials)
+				.send(newSlaData)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.sla).to.be.an('object');
+			expect(response.body.sla).to.have.property('_id');
+			expect(response.body.sla).to.have.property('name', newSlaData.name);
+			expect(response.body.sla).to.have.property('description', newSlaData.description);
+			expect(response.body.sla).to.have.property('dueTimeInMinutes', newSlaData.dueTimeInMinutes);
+
+			await deleteSLA(response.body.sla._id);
+		});
+		// DELETE
+		it('should return an "unauthorized error" when the user does not have the necessary permission for [DELETE] livechat/sla/:slaId endpoint', async () => {
+			await updatePermission('manage-livechat-sla', []);
+			const response = await request
+				.delete(api('livechat/sla/123'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+			expect(response.body).to.have.property('success', false);
+		});
+		it('should delete an sla', async () => {
+			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
+			const sla = await saveSLA();
+			const response = await request
+				.delete(api(`livechat/sla/${sla._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
 		});
 	});
 
