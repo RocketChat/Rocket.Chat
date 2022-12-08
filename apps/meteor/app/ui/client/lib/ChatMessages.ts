@@ -55,7 +55,7 @@ export class ChatMessages implements ChatAPI {
 			const nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
 
 			if (nextMessage) {
-				this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });
+				await this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });
 				return;
 			}
 
@@ -66,7 +66,7 @@ export class ChatMessages implements ChatAPI {
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0].description || message.msg;
 			const cursorPosition = cursorAtStart ? 0 : text.length;
 
-			this.currentEditing?.stop();
+			await this.currentEditing?.stop();
 
 			if (!this.composer || !(await this.data.canUpdateMessage(message))) {
 				return;
@@ -152,16 +152,16 @@ export class ChatMessages implements ChatAPI {
 				}
 
 				await this.data.discardDraft(this.currentEditingMID);
-				this.currentEditing?.stop();
+				await this.currentEditing?.stop();
 			},
 		};
 	}
 
-	private release() {
+	private async release() {
 		this.composer?.release();
 		if (this.currentEditing) {
 			if (!this.params.tmid) {
-				this.currentEditing.cancel();
+				await this.currentEditing.cancel();
 			}
 			this.composer?.clear();
 		}
