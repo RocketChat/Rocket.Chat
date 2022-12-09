@@ -48,9 +48,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					<Box is='span'> | </Box>
 
-					<Box mi='x16'>
-						{t('Version_version', { version: versioni18nKey(app) })}
-					</Box>
+					<Box mi='x16'>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 
 					{versionIncompatible && (
 						<Box is='span' marginInlineEnd='x16' marginBlockStart='x4'>
