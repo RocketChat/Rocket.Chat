@@ -3,10 +3,10 @@ import { Roles } from '@rocket.chat/models';
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server/index';
-import { insertRole } from '../../../server/lib/roles/insertRole';
-import { updateRole } from '../../../server/lib/roles/updateRole';
 import { isEnterprise } from '../../app/license/server';
 import { isRoleCreateProps, isRoleUpdateProps } from '../../definition/rest/v1/roles';
+import { insertRole } from '../lib/roles/insertRole';
+import { updateRole } from '../lib/roles/updateRole';
 
 API.v1.addRoute(
 	'roles.create',

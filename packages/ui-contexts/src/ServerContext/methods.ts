@@ -50,7 +50,6 @@ export interface ServerMethods {
 	'authorization:deleteRole': (...args: any[]) => any;
 	'authorization:removeRoleFromPermission': (...args: any[]) => any;
 	'authorization:removeUserFromRole': (...args: any[]) => any;
-	'authorization:saveRole': (...args: any[]) => any;
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;

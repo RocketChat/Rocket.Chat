@@ -1,9 +1,9 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
-import { MeteorError } from '../../sdk/errors';
-import { isValidRoleScope } from '../../../lib/roles/isValidRoleScope';
-import { api } from '../../sdk/api';
+import { isValidRoleScope } from '../../../../lib/roles/isValidRoleScope';
+import { api } from '../../../../server/sdk/api';
+import { MeteorError } from '../../../../server/sdk/errors';
 
 type UpdateRoleOptions = {
 	broadcastUpdate?: boolean;
