@@ -60,7 +60,7 @@ export const palette = [
 	{
 		description: 'Font',
 		list: [
-			{ name: 'button-font-on-default', token: '', color: '#9EA2A8' },
+			{ name: 'button-font-on-secondary', token: 'N400', color: '#9EA2A8' },
 			{ name: 'button-font-on-disabled', token: '', color: '#6c727a' },
 		],
 	},
