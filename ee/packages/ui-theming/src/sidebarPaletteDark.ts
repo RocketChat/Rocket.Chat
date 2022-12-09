@@ -1,9 +1,11 @@
+import { darkPalette } from './paletteDark';
+
 export const palette = [
 	{
 		category: 'Surface',
 		description: 'Use as a container on top of the background',
 		list: [
-			{ name: 'surface-default', token: '', color: '#0D0F11' },
+			{ name: 'surface-tint', token: '', color: '#0D0F11' },
 			{ name: 'surface-hover', token: '', color: '#23282E' },
 			{ name: 'surface-selected', token: 'N900', color: '#1F2329' },
 		],
@@ -12,8 +14,8 @@ export const palette = [
 		category: 'Font',
 		description: 'These should be applied according to surfaces',
 		list: [
-			{ name: 'font-primary', token: 'N200', color: '#F2F3F5' },
-			{ name: 'font-secondary', token: 'N600', color: '#9EA2A8' },
+			{ name: 'font-annotation', token: 'N200', color: '#F2F3F5' },
+			{ name: 'font-secondary-info', token: 'N600', color: '#9EA2A8' },
 		],
 	},
 	{
@@ -40,8 +42,8 @@ export const palette = [
 		category: 'Stroke',
 		description: "Use as component's outline, stroke, dividers",
 		list: [
-			{ name: 'stroke-default', token: '', color: '#1D2025' },
-			{ name: 'stroke-focus', token: '', color: '#324677' },
+			{ name: 'stroke-light', token: '', color: '#1D2025' },
+			{ name: 'stroke-medium', token: '', color: '#324677' },
 		],
 	},
 	{
@@ -59,8 +61,8 @@ export const palette = [
 	{
 		description: 'Font',
 		list: [
-			{ name: 'button-font-on-default', token: '', color: '#9EA2A8' },
-			{ name: 'button-font-on-disabled', token: '', color: '#2F343D' },
+			{ name: 'button-font-on-secondary', token: 'N400', color: '#6c727a' },
+			{ name: 'button-font-on-disabled', token: '', color: '#9EA2A8' },
 		],
 	},
 ];
@@ -77,6 +79,6 @@ export const sidebarPaletteDark = {
 				{} as Record<string, string>,
 			),
 		}),
-		{} as Record<string, string>,
+		{ ...darkPalette } as Record<string, string>,
 	),
 };
