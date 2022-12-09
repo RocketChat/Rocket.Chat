@@ -3843,6 +3843,7 @@
   "registration.page.login.forgot": "Elfelejtetted a jelszavad?",
   "registration.page.resetPassword.sent": "Ha regisztrálta ezt az e-mailt, utasításokat küldünk a jelszó visszaállításáról. Ha hamarosan nem kap e-mailt, kérjük, térjen vissza és próbálkozzon újra.",
   "registration.component.login": "Bejelentkezés",
+  "registration.component.login.userNotFound": "Felhasználó nem található",
   "registration.component.resetPassword": "Jelszó visszaállítása",
   "registration.component.form.emailOrUsername": "E-mail vagy felhasználónév",
   "registration.component.form.email": "Email",

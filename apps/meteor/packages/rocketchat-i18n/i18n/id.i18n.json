@@ -2807,6 +2807,7 @@
   "registration.page.login.forgot": "Lupa kata sandi anda",
   "registration.page.resetPassword.sent": "Jika email ini terdaftar, kami akan mengirimkan instruksi tentang cara mereset kata sandi Anda. Jika Anda tidak segera menerima email, kembalilah dan coba lagi.",
   "registration.component.login": "Login",
+  "registration.component.login.userNotFound": "Pengguna tidak ditemukan",
   "registration.component.resetPassword": "Ubah kata sandi",
   "registration.component.form.emailOrUsername": "Email atau username",
   "registration.component.form.email": "E-mail",

@@ -1,6 +1,7 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { Base } from './_Base';
 
 export class LivechatInquiry extends Base {
@@ -183,6 +184,68 @@ export class LivechatInquiry extends Base {
 			'status': 'queued',
 		};
 		return this.findOne(query);
+	}
+
+	async getCurrentSortedQueueAsync({
+		_id,
+		department,
+	}: {
+		_id: string;
+		department: string;
+	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }> {
+		const collectionObj = this.model.rawCollection();
+		const aggregate = [
+			{
+				$match: {
+					status: 'queued',
+					...(department && { department }),
+				},
+			},
+			{
+				$sort: {
+					ts: 1,
+				},
+			},
+			{
+				$group: {
+					_id: 1,
+					inquiry: {
+						$push: {
+							_id: '$_id',
+							rid: '$rid',
+							name: '$name',
+							ts: '$ts',
+							status: '$status',
+							department: '$department',
+						},
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$inquiry',
+					includeArrayIndex: 'position',
+				},
+			},
+			{
+				$project: {
+					_id: '$inquiry._id',
+					rid: '$inquiry.rid',
+					name: '$inquiry.name',
+					ts: '$inquiry.ts',
+					status: '$inquiry.status',
+					department: '$inquiry.department',
+					position: 1,
+				},
+			},
+		] as any[];
+
+		// To get the current room position in the queue, we need to apply the next $match after the $project
+		if (_id) {
+			aggregate.push({ $match: { _id } });
+		}
+
+		return collectionObj.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	removeDefaultAgentById(inquiryId: string): UpdateResult {
