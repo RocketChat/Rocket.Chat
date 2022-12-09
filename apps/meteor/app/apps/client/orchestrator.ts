@@ -216,6 +216,21 @@ class AppClientOrchestrator {
 		if ('url' in result) {
 			return result;
 		}
+
+		throw new Error('Failed to build external url');
+	}
+
+	public async buildIncompatibleExternalUrl(appId: string, appVersion: string, action: string): Promise<IAppExternalURL> {
+		const result = await APIClient.get('/apps/incompatibleModal', {
+			appId,
+			appVersion,
+			action,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+
 		throw new Error('Failed to build external url');
 	}
 

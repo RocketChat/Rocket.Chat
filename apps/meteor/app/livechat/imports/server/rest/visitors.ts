@@ -92,7 +92,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, visitorId } = this.urlParams;
-			const { searchText, closedChatsOnly, servedChatsOnly } = this.queryParams;
+			const { searchText, closedChatsOnly, servedChatsOnly, source } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const history = await searchChats({
@@ -102,6 +102,7 @@ API.v1.addRoute(
 				searchText,
 				closedChatsOnly,
 				servedChatsOnly,
+				source,
 				pagination: {
 					offset,
 					count,
@@ -163,6 +164,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
+			const { searchTerm } = this.requestParams();
 
 			const room = LivechatRooms.findOneById(this.urlParams.rid);
 
@@ -174,7 +176,7 @@ API.v1.addRoute(
 				throw new Error('not-allowed');
 			}
 
-			const { cursor, totalCount } = Messages.findLivechatClosedMessages(this.urlParams.rid, {
+			const { cursor, totalCount } = Messages.findLivechatClosedMessages(this.urlParams.rid, searchTerm, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,

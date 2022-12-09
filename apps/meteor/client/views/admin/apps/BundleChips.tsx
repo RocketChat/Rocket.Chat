@@ -1,8 +1,9 @@
-import { Box, PositionAnimated, AnimatedVisibility, Tooltip, Tag } from '@rocket.chat/fuselage';
+import { Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { RefObject, useRef, useState, ReactElement, Fragment } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { App } from './types';
+import type { App } from './types';
 
 type BundleChipsProps = {
 	bundledIn: {
@@ -14,9 +15,6 @@ type BundleChipsProps = {
 
 const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 	const t = useTranslation();
-
-	const bundleRef = useRef<Element>();
-	const [isHovered, setIsHovered] = useState(false);
 
 	return (
 		<>

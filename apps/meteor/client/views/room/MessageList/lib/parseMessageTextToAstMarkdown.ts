@@ -1,17 +1,11 @@
-import {
-	IMessage,
-	isE2EEMessage,
-	isOTRMessage,
-	isQuoteAttachment,
-	isTranslatedMessage,
-	MessageAttachment,
-	MessageQuoteAttachment,
-} from '@rocket.chat/core-typings';
-import { Options, parse, Root } from '@rocket.chat/message-parser';
+import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isOTRMessage, isQuoteAttachment, isTranslatedMessage } from '@rocket.chat/core-typings';
+import type { Options, Root } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 
 import { isParsedMessage } from './isParsedMessage';
 
-type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
+type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 

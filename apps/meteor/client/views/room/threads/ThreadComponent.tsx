@@ -2,14 +2,19 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo, useContext } from 'react';
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import MessageHighlightContext from '../MessageList/contexts/MessageHighlightContext';
+import { ChatContext } from '../contexts/ChatContext';
+import { MessageContext } from '../contexts/MessageContext';
 import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
@@ -98,6 +103,15 @@ const ThreadComponent: FC<{
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
+	const chatContext = useContext(ChatContext);
+	const messageContext = useContext(MessageContext);
+
+	const messageHighlightContext = useContext(MessageHighlightContext);
+	const { current: messageHighlightContextReactiveVar } = useRef(new ReactiveVar(messageHighlightContext));
+	useEffect(() => {
+		messageHighlightContextReactiveVar.set(messageHighlightContext);
+	}, [messageHighlightContext, messageHighlightContextReactiveVar]);
+
 	const [viewData, setViewData] = useState(() => ({
 		mainMessage: threadMessage,
 		jump,
@@ -105,6 +119,9 @@ const ThreadComponent: FC<{
 		subscription,
 		rid: room._id,
 		tabBar: { openRoomInfo },
+		chatContext,
+		messageContext,
+		messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 	}));
 
 	useEffect(() => {
@@ -120,9 +137,22 @@ const ThreadComponent: FC<{
 				subscription,
 				rid: room._id,
 				tabBar: { openRoomInfo },
+				chatContext,
+				messageContext,
+				messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 			};
 		});
-	}, [following, jump, openRoomInfo, room._id, subscription, threadMessage]);
+	}, [
+		chatContext,
+		following,
+		jump,
+		messageContext,
+		messageHighlightContextReactiveVar,
+		openRoomInfo,
+		room._id,
+		subscription,
+		threadMessage,
+	]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

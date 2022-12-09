@@ -1,18 +1,31 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
+import { appIncompatibleStatusProps } from '../helpers';
 import AppStatus from './tabs/AppStatus';
+
+const versioni18nKey = (app: App): string => {
+	const { version, marketplaceVersion, marketplace } = app;
+	if (typeof marketplace === 'boolean') {
+		return marketplaceVersion;
+	}
+
+	return version;
+};
 
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
 	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, shortDescription } = app;
+
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
+	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
@@ -24,14 +37,16 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
+
 				{shortDescription && (
 					<Box fontScale='p1' color='default' mbe='x16'>
 						{shortDescription}
 					</Box>
 				)}
+
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
-					<AppStatus app={app} installed={installed} isAppDetailsPage={true} isSubscribed={isSubscribed} />
-					{(installed || isSubscribed) && <AppMenu app={app} mis='x8' />}
+					<AppStatus app={app} installed={installed} isAppDetailsPage />
+					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage mis='x8' />}
 				</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
 					<Box fontScale='c1' mie='x16'>
@@ -43,18 +58,37 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<Box fontScale='c1' mi='x16'>
 						{t('Version_version', { version })}
 					</Box>
+
 					{lastUpdated && (
 						<>
 							<Box fontScale='c1' color='stroke-light'>
 								|
 							</Box>
 							<Box fontScale='c1' mis='x16'>
-								{t('Marketplace_app_last_updated', {
+              {t('Marketplace_app_last_updated', {
 									lastUpdated,
 								})}
 							</Box>
 						</>
 					)}
+          
+					<Box is='span'> | </Box>
+
+					<Box mi='x16' marginInlineEnd='x4'>
+						{t('Version_version', { version: versioni18nKey(app) })}
+					</Box>
+
+					{versionIncompatible && (
+						<Box is='span' marginInlineEnd='x16' marginBlockStart='x4'>
+							<Tag
+								title={incompatibleStatus?.tooltipText}
+								variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
+							>
+								{incompatibleStatus?.label}
+							</Tag>
+						</Box>
+					)}
+
 				</Box>
 			</Box>
 		</Box>

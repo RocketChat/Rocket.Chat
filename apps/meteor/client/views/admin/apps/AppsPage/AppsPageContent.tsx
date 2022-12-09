@@ -1,13 +1,14 @@
 import { Pagination, Divider } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useAppsReload, useAppsResult } from '../AppsContext';
 import AppsList from '../AppsList';
-import { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import { useFilteredApps } from '../hooks/useFilteredApps';
 import { useRadioToggle } from '../hooks/useRadioToggle';
@@ -117,7 +118,7 @@ const AppsPageContent = (): ReactElement => {
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.items} />}
+						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 						{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
 						{Boolean(appsResult.value.count) && (
 							<>
