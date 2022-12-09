@@ -218,7 +218,7 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const { cursor, totalCount } = Uploads.findPaginated<IImFilesObject>(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
