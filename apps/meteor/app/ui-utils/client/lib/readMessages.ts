@@ -160,7 +160,7 @@ export class ReadMessage extends Emitter {
 		if (firstUnreadRecord) {
 			room.unreadFirstId = firstUnreadRecord._id;
 			document.querySelector('.message.first-unread')?.classList.remove('first-unread');
-			document.querySelector(`.message#${firstUnreadRecord._id}`)?.classList.add('first-unread');
+			document.querySelector(`.message[data-id="${firstUnreadRecord._id}"]`)?.classList.add('first-unread');
 		}
 	}
 }
