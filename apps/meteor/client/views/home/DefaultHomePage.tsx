@@ -28,7 +28,7 @@ const DefaultHomePage = (): ReactElement => {
 		<Page color='default' is='main' data-qa='page-home' data-qa-type='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h2' fontScale='h1' data-qa-id='homepage-welcome-text'>
+				<Box is='h2' fontScale='h1' mb='x20' data-qa-id='homepage-welcome-text'>
 					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
 				<Box is='h3' fontScale='h3' mb='x16'>
@@ -59,7 +59,7 @@ const DefaultHomePage = (): ReactElement => {
 					</HomepageGridItem>
 				</Grid>
 				{displayCustomBody && (
-					<Box mb='x16'>
+					<Box mbs='x32' mbe='x16'>
 						<CustomHomePageContent />
 					</Box>
 				)}
