@@ -2783,6 +2783,7 @@
   "registration.page.registration.waitActivationWarning": "ก่อนที่คุณจะสามารถเข้าสู่ระบบบัญชีของคุณต้องเปิดใช้งานด้วยตนเองโดยผู้ดูแลระบบ",
   "registration.page.resetPassword.sent": "หากอีเมลนี้ได้รับการลงทะเบียนเราจะส่งคำแนะนำเกี่ยวกับวิธีรีเซ็ตรหัสผ่านของคุณ หากคุณไม่ได้รับอีเมลในไม่ช้าโปรดกลับมาลองอีกครั้ง",
   "registration.component.login": "เข้าสู่ระบบ",
+  "registration.component.login.userNotFound": "ไม่พบชื่อผู้ใช้",
   "registration.component.resetPassword": "รีเซ็ตรหัสผ่าน",
   "registration.component.form.email": "อีเมล์",
   "registration.component.form.password": "รหัสผ่าน",
