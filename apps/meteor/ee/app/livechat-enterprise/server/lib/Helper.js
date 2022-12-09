@@ -16,6 +16,7 @@ import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/H
 import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { api } from '../../../../../server/sdk/api';
+import { getInquirySortMechanism } from '../../../../../app/livechat/server/lib/inquiries';
 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -99,7 +100,7 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	}
 
 	helperLogger.debug(`Updating statuses for queue ${department || 'Public'}`);
-	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
+	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department, queueSortBy: getInquirySortMechanism() });
 
 	if (!queue.length) {
 		return;
@@ -285,7 +286,7 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	const { _id: rid, departmentId: department } = room;
-	const inquiry = LivechatInquiry.findOneByRoomId(rid, { projection: { _id: 1, status: 1 } });
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid, { projection: { _id: 1, status: 1 } });
 	if (!inquiry) {
 		return null;
 	}
@@ -295,7 +296,7 @@ export const getLivechatQueueInfo = async (room) => {
 		return null;
 	}
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department, queueSortBy: getInquirySortMechanism() });
 
 	if (!inq) {
 		return null;

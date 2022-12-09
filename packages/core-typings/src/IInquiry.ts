@@ -1,3 +1,5 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings/src';
+
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
@@ -41,4 +43,6 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 		agentId: IUser['_id'];
 		username?: IUser['username'];
 	};
+	priorityWeight?: IOmnichannelRoom['priorityWeight'];
+	priorityId?: IOmnichannelRoom['priorityId'];
 }

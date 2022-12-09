@@ -8,6 +8,7 @@ import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';
+import { getInquirySortMechanism } from '../../../../../app/livechat/server/lib/inquiries';
 
 const beforeRouteChat = async (inquiry, agent) => {
 	// check here if department has fallback before queueing
@@ -19,7 +20,7 @@ const beforeRouteChat = async (inquiry, agent) => {
 				`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
 			);
 			// update visitor
-			Livechat.setDepartmentForGuest({
+			await Livechat.setDepartmentForGuest({
 				token: inquiry?.v?.token,
 				department: department.fallbackForwardDepartment,
 			});
@@ -58,7 +59,7 @@ const beforeRouteChat = async (inquiry, agent) => {
 	saveQueueInquiry(inquiry);
 
 	if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
-		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
+		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department, queueSortBy: getInquirySortMechanism() });
 		if (inq) {
 			dispatchInquiryPosition(inq);
 			cbLogger.debug(`Callback success. Inquiry ${_id} position has been notified`);

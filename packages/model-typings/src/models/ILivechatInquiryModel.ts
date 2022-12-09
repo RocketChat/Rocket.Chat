@@ -1,7 +1,13 @@
-import type { FindOptions, DistinctOptions, Document, UpdateResult, SortDirection } from 'mongodb';
-import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type { FindOptions, DistinctOptions, Document, UpdateResult } from 'mongodb';
+import type {
+	IMessage,
+	ILivechatInquiryRecord,
+	LivechatInquiryStatus,
+	OmnichannelSortingMechanismSettingType,
+} from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
+// apps/meteor/ee/app/livechat-enterprise/server/definitions/settings
 
 export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord> {
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
@@ -15,7 +21,9 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
-	getSortingQuery(): Promise<{
-		[key: string]: SortDirection;
-	}>;
+	getCurrentSortedQueueAsync(props: {
+		inquiryId?: string;
+		department: string;
+		queueSortBy: OmnichannelSortingMechanismSettingType;
+	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }>;
 }

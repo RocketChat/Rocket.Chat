@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 
 import { settingsRegistry } from '../../../../app/settings/server';
 
@@ -156,9 +157,9 @@ export const createSettings = async (): Promise<void> => {
 			this.add('Omnichannel_sorting_mechanism', 'Timestamp', {
 				type: 'select',
 				values: [
-					{ key: 'Timestamp', i18nLabel: 'Timestamp' },
-					{ key: 'Priority', i18nLabel: 'Priority' },
-					{ key: 'SLAs', i18nLabel: 'Service_level_agreements' },
+					{ key: OmnichannelSortingMechanismSettingType.Timestamp, i18nLabel: 'Timestamp' },
+					{ key: OmnichannelSortingMechanismSettingType.Priority, i18nLabel: 'Priority' },
+					{ key: OmnichannelSortingMechanismSettingType.SLAs, i18nLabel: 'Service_level_agreements' },
 				],
 				group: 'Omnichannel',
 				section: 'Queue_management',

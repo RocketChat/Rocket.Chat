@@ -4,6 +4,8 @@ import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { Filter } from 'mongodb';
 
+import { getInquirySortMechanism, getInquirySortQuery } from '../../lib/inquiries';
+
 const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
 	return (await LivechatDepartment.find({ _id: { $in: agentDepartments }, enabled: true }).toArray()).map(({ _id }) => _id);
@@ -40,25 +42,24 @@ export async function findInquiries({
 	pagination: { offset: number; count: number; sort: Record<string, number> };
 }): Promise<PaginatedResult<{ inquiries: Array<ILivechatInquiryRecord> }>> {
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
-	const defaultSort = await LivechatInquiry.getSortingQuery();
+	const defaultSort = getInquirySortQuery(getInquirySortMechanism());
 	const options = {
 		limit: count,
 		skip: offset,
 		sort: { ...sort, ...(defaultSort as object) },
 	};
+
 	const filter: Filter<ILivechatInquiryRecord> = {
+		...(status && status in LivechatInquiryStatus && { status }),
 		$or: [
 			{
 				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
 			},
-			{ ...((!!department && { department }) || {}) },
+			{ ...(department && { department }) },
 			// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
 			{ department: { $exists: false } },
 		],
 	};
-	if (status && status in LivechatInquiryStatus) {
-		filter.status = status;
-	}
 
 	const { cursor, totalCount } = LivechatInquiry.findPaginated(filter, options);
 

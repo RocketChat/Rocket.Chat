@@ -19,7 +19,7 @@ callbacks.add(
 		const priorityP = LivechatPriority.findOneByIdOrName(searchTerm, {
 			projection: { _id: 1, priorityWeight: 1 },
 		});
-		const [sla, priority] = Promise.await([slaP, priorityP]);
+		const [sla, priority] = Promise.await(Promise.all([slaP, priorityP]));
 		if (!sla && !priority) {
 			throw new Meteor.Error('error-invalid-priority', 'Invalid sla or priority', {
 				function: 'livechat.beforeInquiry',

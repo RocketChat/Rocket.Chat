@@ -1,20 +1,16 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, ModifyResult } from 'mongodb';
 import type {
-	Collection,
-	Db,
-	Document,
-	FindOptions,
-	DistinctOptions,
-	UpdateResult,
-	UpdateFilter,
-	SortDirection,
-	ModifyResult,
-} from 'mongodb';
-import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	OmnichannelSortingMechanismSettingType,
+} from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { getInquirySortQuery } from '../../../app/livechat/server/lib/inquiries';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -103,20 +99,22 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async getCurrentSortedQueueAsync({
-		_id,
+		inquiryId,
 		department,
+		queueSortBy,
 	}: {
-		_id: string;
+		inquiryId?: string;
 		department: string;
+		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }> {
-		const filter = [
+		const filter: UpdateFilter<ILivechatInquiryRecord>[] = [
 			{
 				$match: {
 					status: 'queued',
 					...(department && { department }),
 				},
 			},
-			{ $sort: await this.getSortingQuery() },
+			{ $sort: getInquirySortQuery(queueSortBy) },
 			{
 				$group: {
 					_id: 1,
@@ -149,39 +147,20 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					position: 1,
 				},
 			},
-		] as UpdateFilter<ILivechatInquiryRecord>[];
+		];
 
 		// To get the current room position in the queue, we need to apply the next $match after the $project
-		if (_id) {
-			filter.push({ $match: { _id } });
+		if (inquiryId) {
+			filter.push({ $match: { _id: inquiryId } });
 		}
 
-		return this.col.aggregate(filter).toArray() as unknown as Promise<
+		return this.col
+			.aggregate(filter, {
+				readPreference: readSecondaryPreferred(),
+			})
+			.toArray() as unknown as Promise<
 			Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }
 		>;
-	}
-
-	async getSortingQuery(): Promise<{
-		[key: string]: SortDirection;
-	}> {
-		// TODO: Cache this setting using mem cache. Right now this isn't possible because mem cache is not working with models which are used by services
-		const sortMechanism = await Settings.findOneById('Omnichannel_sorting_mechanism');
-		const $sort: {
-			[key: string]: SortDirection;
-		} = {};
-		switch (sortMechanism?.value) {
-			case 'Priority':
-				$sort.priorityWeight = -1;
-				break;
-			case 'SLAs':
-				$sort.estimatedServiceTimeAt = 1;
-				break;
-			case 'Timestamp':
-			default:
-				$sort.ts = -1;
-				break;
-		}
-		return $sort;
 	}
 
 	setEstimatedServiceTimeAt(
