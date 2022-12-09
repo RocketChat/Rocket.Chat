@@ -3219,6 +3219,7 @@
   "registration.page.login.forgot": "Esqueceu a sua senha ?",
   "registration.page.resetPassword.sent": "Se este e-mail estiver cadastrado, vamos enviar instruções de como pode redefinir a sua senha. Se não receber um e-mail em breve, volte e tente novamente.",
   "registration.component.login": "Entrar",
+  "registration.component.login.userNotFound": "Utilizador não encontrado",
   "registration.component.resetPassword": "Redefinir senha",
   "registration.component.form.emailOrUsername": "Email ou nome de utilizador",
   "registration.component.form.email": "Email",
