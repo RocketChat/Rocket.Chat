@@ -16,7 +16,7 @@ const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => (
 						{title}
 					</Box>
 				)}
-				{onClose && <IconButton small icon='cross' onClick={onClose} style={{ color: 'inherit' }} />}
+				{onClose && <IconButton small icon='cross' onClick={onClose} />}
 			</Box>
 		)}
 		{children}
