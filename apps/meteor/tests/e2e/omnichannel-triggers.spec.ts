@@ -59,7 +59,7 @@ test.describe.serial('omnichannel-triggers', () => {
 		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.btnOpenLiveChat('R').click();
-		await poLiveChat.sendMessage(newVisitor, false);
+		await poLiveChat.startNewChat(newVisitor, true);
 		await expect(poLiveChat.firstAutoMessage).toHaveText(triggerMessage);
 	});
 

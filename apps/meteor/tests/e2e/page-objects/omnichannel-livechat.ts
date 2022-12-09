@@ -58,4 +58,15 @@ export class OmnichannelLiveChat {
 		}
 		await this.btnSendMessage(buttonLabel).click();
 	}
+
+	public async startNewChat(liveChatUser: { name: string; email: string }, isChatNow = true): Promise<void> {
+		isChatNow ? 'Chat now' : 'Start chat';
+		if (isChatNow) {
+			// await this.btnSendMessage(buttonLabel).click();
+			await this.page.locator('//button[text()="Chat now"]').click();
+		}
+		await this.inputName.type(liveChatUser.name);
+		await this.inputEmail.type(liveChatUser.email);
+		await this.page.locator('[type="submit"] >> text="Start chat"').click();
+	}
 }
