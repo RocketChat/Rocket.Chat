@@ -8,7 +8,7 @@ import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';
-import { getInquirySortMechanism } from '../../../../../app/livechat/server/lib/inquiries';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 
 const beforeRouteChat = async (inquiry, agent) => {
 	// check here if department has fallback before queueing
@@ -59,7 +59,11 @@ const beforeRouteChat = async (inquiry, agent) => {
 	saveQueueInquiry(inquiry);
 
 	if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
-		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department, queueSortBy: getInquirySortMechanism() });
+		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+			_id,
+			department,
+			queueSortBy: getInquirySortMechanismSetting(),
+		});
 		if (inq) {
 			dispatchInquiryPosition(inq);
 			cbLogger.debug(`Callback success. Inquiry ${_id} position has been notified`);
