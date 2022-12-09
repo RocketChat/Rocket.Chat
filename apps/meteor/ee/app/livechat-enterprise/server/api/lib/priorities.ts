@@ -4,6 +4,8 @@ import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { FindOptions, UpdateFilter } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
+import { logger } from '../../lib/logger';
+
 type FindPriorityParams = {
 	text?: string;
 	pagination: {
@@ -53,13 +55,21 @@ export async function updatePriority(
 		}),
 	};
 
-	const created = await LivechatPriority.findOneAndUpdate(query, update, {
+	if (data.name) {
+		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
+		if (priority && priority._id !== _id) {
+			throw new Error('error-duplicate-priority-name');
+		}
+	}
+
+	const createdResult = await LivechatPriority.findOneAndUpdate(query, update, {
 		returnDocument: 'after',
 	});
 
-	if (!created.ok || !created.value) {
-		throw Error('Error updating priority');
+	if (!createdResult.ok || !createdResult.value) {
+		logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
+		throw Error('error-unable-to-update-priority');
 	}
 
-	return created.value;
+	return createdResult.value;
 }
