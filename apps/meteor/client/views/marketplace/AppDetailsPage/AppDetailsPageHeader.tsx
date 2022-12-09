@@ -48,7 +48,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					</Box>
 					<Box is='span'> | </Box>
 
-					<Box mi='x16' marginInlineEnd='x16'>
+					<Box mi='x16'>
 						{t('Version_version', { version: versioni18nKey(app) })}
 					</Box>
 
