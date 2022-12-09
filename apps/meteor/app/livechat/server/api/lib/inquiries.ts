@@ -46,7 +46,7 @@ export async function findInquiries({
 	const options = {
 		limit: count,
 		skip: offset,
-		sort: { ...sort, ...(defaultSort as object) },
+		sort: { ...sort, ...defaultSort },
 	};
 
 	const filter: Filter<ILivechatInquiryRecord> = {
