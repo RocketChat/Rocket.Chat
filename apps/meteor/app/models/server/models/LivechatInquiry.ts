@@ -15,6 +15,8 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		this.tryEnsureIndex({ estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 		this.tryEnsureIndex({ priorityId: 1, priorityWeight: 1 }, { sparse: true });
+		this.tryEnsureIndex({ priorityWeight: -1, estimatedServiceTimeAt: 1, ts: -1 }, { sparse: true }); // used for sorting inquiries when OmnichannelSortingMechanismSettingType.Priority is selected
+		this.tryEnsureIndex({ estimatedServiceTimeAt: 1, priorityWeight: -1, ts: -1 }, { sparse: true }); // used for sorting inquiries when OmnichannelSortingMechanismSettingType.SLAs is selected
 		this.tryEnsureIndex({ 'v.token': 1, 'status': 1 }); // visitor token and status
 		this.tryEnsureIndex({ locked: 1, lockedAt: 1 }, { sparse: true }); // locked and lockedAt
 	}
