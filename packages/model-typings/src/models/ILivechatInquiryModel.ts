@@ -25,5 +25,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		inquiryId?: string;
 		department: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
-	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }>;
+	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
 }

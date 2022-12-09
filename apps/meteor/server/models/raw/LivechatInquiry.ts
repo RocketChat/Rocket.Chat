@@ -106,7 +106,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		inquiryId?: string;
 		department: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
-	}): Promise<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }> {
+	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
 		const filter: UpdateFilter<ILivechatInquiryRecord>[] = [
 			{
 				$match: {
@@ -155,12 +155,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		}
 
 		return this.col
-			.aggregate(filter, {
+			.aggregate<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }>(filter, {
 				readPreference: readSecondaryPreferred(),
 			})
-			.toArray() as unknown as Promise<
-			Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }
-		>;
+			.toArray();
 	}
 
 	setEstimatedServiceTimeAt(
