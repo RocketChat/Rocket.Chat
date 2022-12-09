@@ -2189,6 +2189,8 @@
   "FileUpload_GoogleStorage_AccessId_Description": "The Access Id is generally in an email format, for example: \"example-test@example.iam.gserviceaccount.com\"",
   "FileUpload_GoogleStorage_Bucket": "Google Storage Bucket Name",
   "FileUpload_GoogleStorage_Bucket_Description": "The name of the bucket which the files should be uploaded to.",
+  "FileUpload_GoogleStorage_ProjectId": "Project ID",
+  "FileUpload_GoogleStorage_ProjectId_Description": "The project ID from the Google Developer's Console",
   "FileUpload_GoogleStorage_Proxy_Avatars": "Proxy Avatars",
   "FileUpload_GoogleStorage_Proxy_Avatars_Description": "Proxy avatar file transmissions through your server instead of direct access to the asset's URL",
   "FileUpload_GoogleStorage_Proxy_Uploads": "Proxy Uploads",
