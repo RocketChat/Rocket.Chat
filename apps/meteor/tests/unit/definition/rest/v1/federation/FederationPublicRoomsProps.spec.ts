@@ -16,7 +16,7 @@ describe('FederationPublicRoomProps (definition/rest/v1)', () => {
 				isFederationSearchPublicRoomsProps({
 					serverName: 'server',
 					roomName: 'roomName',
-					count: 1,
+					count: '1',
 					pageToken: 'token',
 				}),
 			);
@@ -27,7 +27,7 @@ describe('FederationPublicRoomProps (definition/rest/v1)', () => {
 				isFederationSearchPublicRoomsProps({
 					serverName: 'server',
 					roomName: 'roomName',
-					count: 1,
+					count: '1',
 					pageToken: 'token',
 					extra: 'extra',
 				}),
