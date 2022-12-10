@@ -21,7 +21,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
-		"@types/node": "^14.18.21",
+		"@types/node": "^18.11.12",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",
