@@ -27,7 +27,7 @@
 		"@rocket.chat/apps-engine": "^1.32.0",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "0.31.22",
-		"@rocket.chat/ui-kit": "0.31.22",
+		"@rocket.chat/ui-kit": "next",
 		"ajv": "^8.11.0"
 	}
 }

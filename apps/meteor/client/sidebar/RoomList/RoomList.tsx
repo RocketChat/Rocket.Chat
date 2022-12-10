@@ -10,7 +10,6 @@ import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import RoomListRow from './RoomListRow';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
@@ -43,7 +42,6 @@ const RoomList = (): ReactElement => {
 
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
-	useSidebarPaletteColor();
 
 	return (
 		<Box h='full' w='full' ref={ref}>
