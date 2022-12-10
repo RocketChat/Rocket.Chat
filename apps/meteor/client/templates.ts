@@ -80,4 +80,6 @@ createTemplateForComponent('AudioMessageRecorder', () => import('./views/compose
 	renderContainerView: () => HTML.DIV({ class: 'rc-message-box__audio-message-container' }),
 });
 
-createTemplateForComponent('messageBox', () => import('./views/room/components/body/composer/LegacyComposer/MessageBoxBlazeWrapper'));
+createTemplateForComponent('messageBox', () => import('./views/room/components/body/composer/LegacyComposer/MessageBoxBlazeWrapper'), {
+	attachment: 'at-parent',
+});

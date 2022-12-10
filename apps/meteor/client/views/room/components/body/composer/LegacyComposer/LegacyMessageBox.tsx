@@ -1,14 +1,6 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	MessageComposerAction,
-	MessageComposerToolbarActions,
-	MessageComposer,
-	MessageComposerInput,
-	MessageComposerToolbar,
-	MessageComposerActionsDivider,
-	MessageComposerToolbarSubmit,
-} from '@rocket.chat/ui-composer';
+import { MessageComposerAction, MessageComposerToolbarActions } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, MutableRefObject } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -213,109 +205,9 @@ export const MessageBox = ({
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), []));
 
 	return (
-		<>
-			<MessageComposer variant={isEditing ? 'editing' : undefined}>
-				{chat?.composer?.quotedMessages && <MessageBoxReplies />}
-				<BlazeTemplate name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
-				<MessageComposerInput
-					ref={callbackRef}
-					aria-label={t('Message')}
-					name='msg'
-					disabled={isRecording}
-					onChange={setTyping}
-					style={textAreaStyle}
-					maxLength={Number.isInteger(maxLength) ? parseInt(maxLength as string) : undefined}
-					placeholder={t('Message')}
-					className='rc-message-box__textarea js-input-message'
-					onKeyDown={handler}
-					is='textarea'
-				/>
-				<div ref={shadowRef} style={shadowStyle} />
-				<MessageComposerToolbar>
-					<MessageComposerToolbarActions>
-						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
-						<MessageComposerActionsDivider />
-						{formattingButtons
-							.filter(({ condition }) => !condition || condition())
-							.map(({ icon, link, text, label, pattern }) =>
-								icon ? (
-									<MessageComposerAction
-										icon={icon}
-										key={label}
-										data-id={label}
-										title={label}
-										onClick={(): void => {
-											textareaRef.current && pattern && applyFormatting(pattern, textareaRef.current);
-										}}
-									/>
-								) : (
-									<span className='rc-message-box__toolbar-formatting-item' title={label} key={label}>
-										<a href={link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
-											{label || text}
-										</a>
-									</span>
-								),
-							)}
-						<MessageComposerActionsDivider />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
-						<MessageComposerAction icon='clip' />
-						<MessageComposerAction
-							onClick={(event): void => {
-								const groups = messageBox.actions.get();
-								const config = {
-									popoverClass: 'message-box',
-									columns: [
-										{
-											groups: Object.entries(groups).map(([name, group]) => {
-												const items = group.map((item) => ({
-													icon: item.icon,
-													name: t(item.label),
-													type: 'messagebox-action',
-													id: item.id,
-													action: item.action,
-												}));
-												return {
-													title: t.has(name) && t(name),
-													items,
-												};
-											}),
-										},
-									],
-									offsetVertical: 10,
-									direction: 'top-inverted',
-									currentTarget: event.currentTarget,
-									data: {
-										rid,
-										tmid,
-										prid: subscription?.prid,
-										messageBox: textareaRef.current,
-										chat,
-									},
-									activeElement: event.currentTarget,
-								};
-
-								popover.open(config);
-							}}
-							disabled={isRecording}
-							icon='plus'
-						/>
-					</MessageComposerToolbarActions>
-					<MessageComposerToolbarSubmit>
-						{!canSend && (
-							<Button small primary>
-								{t('Join')}
-							</Button>
-						)}
-						<MessageComposerAction icon='send' disabled={!canSend || !typing} onClick={handleSendMessage} secondary info />
-					</MessageComposerToolbarSubmit>
-				</MessageComposerToolbar>
-			</MessageComposer>
-			<UserActionIndicator rid={rid} tmid={tmid} />
-		</>
-	);
-
-	return (
 		<div className={['rc-message-box rc-new', isEmbedded && 'rc-message-box--embedded', isEditing && 'editing'].filter(Boolean).join(' ')}>
+			<UserActionIndicator rid={rid} tmid={tmid} />
+			<BlazeTemplate name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 			<div ref={shadowRef} style={shadowStyle} />
 			<div className={['rc-message-box__container', isEditing && 'editing'].filter(Boolean).join(' ')}>
@@ -346,6 +238,46 @@ export const MessageBox = ({
 					{canSend && !typing && (
 						<>
 							<AudioMessageRecorder rid={rid} tmid={tmid} />
+
+							<MessageComposerAction
+								onClick={(event): void => {
+									const groups = messageBox.actions.get();
+									const config = {
+										popoverClass: 'message-box',
+										columns: [
+											{
+												groups: Object.entries(groups).map(([name, group]) => {
+													const items = group.map((item) => ({
+														icon: item.icon,
+														name: t(item.label),
+														type: 'messagebox-action',
+														id: item.id,
+													}));
+													return {
+														title: t.has(name) && t(name),
+														items,
+													};
+												}),
+											},
+										],
+										offsetVertical: 10,
+										direction: 'top-inverted',
+										currentTarget: event.currentTarget,
+										data: {
+											rid,
+											tmid,
+											prid: subscription?.prid,
+											messageBox: textareaRef.current,
+											chat,
+										},
+										activeElement: event.currentTarget,
+									};
+
+									popover.open(config);
+								}}
+								disabled={isRecording}
+								icon='plus'
+							/>
 						</>
 					)}
 					{canSend && typing && <MessageComposerAction onClick={handleSendMessage} icon='send' />}

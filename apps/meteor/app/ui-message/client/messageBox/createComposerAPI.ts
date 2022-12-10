@@ -39,7 +39,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		emitter.emit('quotedMessagesUpdate');
 	};
 
-	input.value = Meteor._localStorage.getItem(storageID) ?? '';
 	input.addEventListener('input', persist);
 
 	const release = (): void => {
@@ -163,6 +162,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	const setEditingMode = (editing: boolean): void => {
 		setEditing(editing);
 	};
+
+	setText(Meteor._localStorage.getItem(storageID) ?? '');
 
 	return {
 		release,
