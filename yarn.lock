@@ -6793,14 +6793,14 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/layout@npm:next":
-  version: 0.32.0-dev.115
-  resolution: "@rocket.chat/layout@npm:0.32.0-dev.115"
+  version: 0.32.0-dev.102
+  resolution: "@rocket.chat/layout@npm:0.32.0-dev.102"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: 17.0.2
     react-dom: 17.0.2
     react-i18next: ~11.15.4
-  checksum: 4c2726e300c0049021f67bbe555e8b73089a85c2a945af5883fe09ccaeab7d2cc10441e9383f57ace066697eb25e38624fb69712e7569ac41692a4560188d24c
+  checksum: ded739fadfac1fae89060d5b4b13cd4057683f7737b39be8146f63f554bbd81d7b6406c5b40b8439c592a45d8c08bbc1cdd37d1cde0652f468a20a85ede3b20b
   languageName: node
   linkType: hard
 
