@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $1 == "--help" || $1 == "-h" ]]; then
-    echo "Usage: fuselage.sh -a link|undo -p fuselage;fuselage-icons"
+    echo "Usage: fuselage.sh -a link|undo|next|latest -p fuselage;fuselage-icons"
     exit 1
 fi
 
@@ -28,10 +28,17 @@ echo "action: $action"
 action="${action:-link}"
 packages="${packages:-fuselage}"
 
-if [[ $action != "link" && $action != "undo" ]]; then
+if [[ $action != "link" && $action != "undo" && $action != 'next' && $action != 'latest' ]]; then
     echo "Invalid action"
     exit 1
 fi
+
+
+if [[ $action == "next" || $action == "latest" ]]; then
+    eval "yarn up @rocket.chat/emitter@$action @rocket.chat/fuselage-polyfills@$action @rocket.chat/fuselage-toastbar@$action @rocket.chat/fuselage-tokens@$action @rocket.chat/fuselage-ui-kit@$action @rocket.chat/css-in-js@$action @rocket.chat/styled@$action @rocket.chat/fuselage@$action @rocket.chat/fuselage-hooks@$action @rocket.chat/icons@$action @rocket.chat/logo@$action @rocket.chat/memo@$action @rocket.chat/message-parser@$action @rocket.chat/onboarding-ui@$action @rocket.chat/string-helpers@$action @rocket.chat/ui-kit@$action @rocket.chat/layout@$action"
+    exit 1
+fi
+
 
 if [[ $action != "undo" ]]; then
     echo "linking local project"
