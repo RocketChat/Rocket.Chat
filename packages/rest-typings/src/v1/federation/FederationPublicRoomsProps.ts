@@ -21,7 +21,7 @@ const federationSearchPublicRoomsPropsSchema = {
 			nullable: true,
 		},
 		count: {
-			type: 'number',
+			type: 'string',
 			nullable: true,
 		},
 		pageToken: {

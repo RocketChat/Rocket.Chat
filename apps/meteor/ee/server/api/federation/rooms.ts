@@ -42,9 +42,11 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const result = await federationRoomApplicationServiceEE.getSearchedServerNamesByInternalUserId(this.userId);
+			const servers = await federationRoomApplicationServiceEE.getSearchedServerNamesByInternalUserId(this.userId);
 
-			return API.v1.success(result);
+			return API.v1.success({
+				servers,
+			});
 		},
 	},
 );
