@@ -51,6 +51,9 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		getFederatedUserByInternalUsername: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserByUsername: sinon.stub(),
+		getSearchedServerNamesByUserId: sinon.stub(),
+		addServerNameToSearchedServerNamesListByUserId: sinon.stub(),
+		removeServerNameFromSearchedServerNamesListByUserId: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -92,6 +95,9 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		userAdapter.getFederatedUserByInternalUsername.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getInternalUserByUsername.reset();
+		userAdapter.getSearchedServerNamesByUserId.reset();
+		userAdapter.addServerNameToSearchedServerNamesListByUserId.reset();
+		userAdapter.removeServerNameFromSearchedServerNamesListByUserId.reset();
 		settingsAdapter.isFederationEnabled.reset();
 		bridge.searchPublicRooms.reset();
 		bridge.createUser.reset();
@@ -325,6 +331,113 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 
 			expect(notificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId.calledWith(room.getInternalId())).to.be.true;
 			expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+		});
+	});
+
+	describe('#getSearchedServerNamesByInternalUserId()', () => {
+		it('should throw an error if the federation is disabled', async () => {
+			settingsAdapter.isFederationEnabled.returns(false);
+			await expect(service.getSearchedServerNamesByInternalUserId({} as any)).to.be.rejectedWith('Federation is disabled');
+		});
+
+		it('should return the Matrix default public rooms + the ones already saved by the user', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			userAdapter.getSearchedServerNamesByUserId.resolves(['server1.com', 'server2.com']);
+			const result = await service.getSearchedServerNamesByInternalUserId({} as any);
+
+			expect(result).to.be.eql([
+				{
+					name: 'localDomain',
+					default: true,
+					local: true,
+				},
+				{
+					name: 'matrix.org',
+					default: true,
+					local: false,
+				},
+				{
+					name: 'gitter.im',
+					default: true,
+					local: false,
+				},
+				{
+					name: 'libera.chat',
+					default: true,
+					local: false,
+				},
+				{
+					name: 'server1.com',
+					default: false,
+					local: false,
+				},
+				{
+					name: 'server2.com',
+					default: false,
+					local: false,
+				},
+			]);
+		});
+	});
+
+	describe('#addSearchedServerNameByInternalUserId()', () => {
+		it('should throw an error if the federation is disabled', async () => {
+			settingsAdapter.isFederationEnabled.returns(false);
+			await expect(service.addSearchedServerNameByInternalUserId('internalUserId', 'serverName')).to.be.rejectedWith(
+				'Federation is disabled',
+			);
+		});
+
+		it('should throw an error when trying to add a default server', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			await expect(service.addSearchedServerNameByInternalUserId('internalUserId', 'matrix.org')).to.be.rejectedWith(
+				'This is already a default server',
+			);
+		});
+
+		it('should call the bridge to check if the server is valid', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			bridge.searchPublicRooms.resolves();
+			await service.addSearchedServerNameByInternalUserId('internalUserId', 'serverName');
+			expect(bridge.searchPublicRooms.calledWith({ serverName: 'serverName' })).to.be.true;
+		});
+
+		it('should call the function to add the server name', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			bridge.searchPublicRooms.resolves();
+			await service.addSearchedServerNameByInternalUserId('internalUserId', 'serverName');
+			expect(userAdapter.addServerNameToSearchedServerNamesListByUserId.calledWith('internalUserId', 'serverName')).to.be.true;
+		});
+	});
+
+	describe('#removeSearchedServerNameByInternalUserId()', () => {
+		it('should throw an error if the federation is disabled', async () => {
+			settingsAdapter.isFederationEnabled.returns(false);
+			await expect(service.removeSearchedServerNameByInternalUserId('internalUserId', 'serverName')).to.be.rejectedWith(
+				'Federation is disabled',
+			);
+		});
+
+		it('should throw an error when trying to remove a default server', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			await expect(service.removeSearchedServerNameByInternalUserId('internalUserId', 'matrix.org')).to.be.rejectedWith(
+				"Can't remove a default server",
+			);
+		});
+
+		it('should throw an error when the server does not exists', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			userAdapter.getSearchedServerNamesByUserId.resolves([]);
+			await expect(service.removeSearchedServerNameByInternalUserId('internalUserId', 'serverName')).to.be.rejectedWith(
+				'The given server is not in the list',
+			);
+		});
+
+		it('should call the function to remove the server name', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			userAdapter.getSearchedServerNamesByUserId.resolves(['serverName']);
+			await service.removeSearchedServerNameByInternalUserId('internalUserId', 'serverName');
+			expect(userAdapter.removeServerNameFromSearchedServerNamesListByUserId.calledWith('internalUserId', 'serverName')).to.be.true;
 		});
 	});
 });

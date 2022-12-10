@@ -1182,4 +1182,45 @@ export class UsersRaw extends BaseRaw {
 			},
 		);
 	}
+
+	async findSearchedServerNamesByUserId(userId) {
+		const user = await this.findOne(
+			{
+				_id: userId,
+			},
+			{
+				projection: {
+					'federation.searchedServerNames': 1,
+				},
+			},
+		);
+
+		return user.federation?.searchedServerNames || [];
+	}
+
+	addServerNameToSearchedServerNamesList(userId, serverName) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$addToSet: {
+					'federation.searchedServerNames': serverName,
+				},
+			},
+		);
+	}
+
+	removeServerNameFromSearchedServerNamesList(userId, serverName) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'federation.searchedServerNames': serverName,
+				},
+			},
+		);
+	}
 }

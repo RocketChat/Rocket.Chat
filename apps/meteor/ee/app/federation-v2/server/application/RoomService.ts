@@ -12,7 +12,27 @@ import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adap
 import type { FederationJoinPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import { FederationServiceEE } from './sender/AbstractFederationService';
 
+const DEFAULT_SERVERS = [
+	{
+		name: 'matrix.org',
+		default: true,
+		local: false,
+	},
+	{
+		name: 'gitter.im',
+		default: true,
+		local: false,
+	},
+	{
+		name: 'libera.chat',
+		default: true,
+		local: false,
+	},
+];
+
 export class FederationRoomApplicationServiceEE extends FederationServiceEE {
+	private readonly availableServers: { name: string; default: boolean; local: boolean }[];
+
 	constructor(
 		protected readonly internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected readonly internalFileAdapter: RocketChatFileAdapter,
@@ -22,6 +42,14 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		protected readonly bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
+		this.availableServers = [
+			{
+				name: this.internalHomeServerDomain,
+				default: true,
+				local: true,
+			},
+			...DEFAULT_SERVERS,
+		];
 	}
 
 	public async searchPublicRooms(roomSearchInputDto: FederationSearchPublicRoomsInputDto): Promise<
@@ -42,6 +70,51 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		});
 
 		return RoomMapper.toSearchPublicRoomsDto(rooms);
+	}
+
+	public async getSearchedServerNamesByInternalUserId(
+		internalUserId: string,
+	): Promise<{ name: string; default: boolean; local: boolean }[]> {
+		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+			throw new Error('Federation is disabled');
+		}
+
+		const searchedServersByUser = await this.internalUserAdapter.getSearchedServerNamesByUserId(internalUserId);
+
+		return [...this.availableServers, ...searchedServersByUser.map((server) => ({ name: server, default: false, local: false }))];
+	}
+
+	public async addSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
+		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+			throw new Error('Federation is disabled');
+		}
+
+		if (this.availableServers.some((server) => server.name === serverName)) {
+			throw new Error('This is already a default server');
+		}
+
+		await this.bridge.searchPublicRooms({
+			serverName,
+		});
+
+		await this.internalUserAdapter.addServerNameToSearchedServerNamesListByUserId(internalUserId, serverName);
+	}
+
+	public async removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
+		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+			throw new Error('Federation is disabled');
+		}
+
+		if (this.availableServers.some((server) => server.name === serverName)) {
+			throw new Error("Can't remove a default server");
+		}
+
+		const searchedServersByUser = await this.internalUserAdapter.getSearchedServerNamesByUserId(internalUserId);
+		if (!searchedServersByUser.includes(serverName)) {
+			throw new Error('The given server is not in the list');
+		}
+
+		await this.internalUserAdapter.removeServerNameFromSearchedServerNamesListByUserId(internalUserId, serverName);
 	}
 
 	public async joinPublicRoom(joinPublicRoomInputDto: FederationJoinPublicRoomInputDto): Promise<void> {
