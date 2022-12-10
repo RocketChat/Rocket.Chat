@@ -45,3 +45,6 @@ yarn-error.log*
 .idea/
 .exrc
 .envrc
+
+yarn.lock
+.gitpod.yml
