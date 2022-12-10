@@ -21,7 +21,7 @@ export type FederationEndpoints = {
 		POST: (params: FederationJoinPublicRoomProps) => void;
 	};
 	'/v1/federation/listServersByUser': {
-		GET: () => { name: string; default: boolean; local: boolean }[];
+		GET: () => { servers: { name: string; default: boolean; local: boolean }[] };
 	};
 	'/v1/federation/addServerByUser': {
 		POST: (params: FederationAddServerProps) => void;
