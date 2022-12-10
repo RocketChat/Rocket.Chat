@@ -3646,6 +3646,7 @@
   "others": "others",
   "Others": "Others",
   "OTR": "OTR",
+  "OTR_unavailable_for_federation": "OTR is unavailable for federated rooms",
   "OTR_Description": "Off-the-record chats are secure, private and disappear once ended.",
   "OTR_Chat_Declined_Title": "OTR Chat invite Declined",
   "OTR_Chat_Declined_Description": "%s declined OTR chat invite. For privacy protection local cache was deleted, including all related system messages.",
