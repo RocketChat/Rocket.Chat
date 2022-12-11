@@ -13,7 +13,7 @@ test.describe.serial('omnichannel-triggers', () => {
 	let triggersName: string;
 	let triggerMessage: string;
 	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	// let newVisitor: { email: string; name: string };
 
 	test.beforeAll(async ({ api }) => {
 		triggersName = faker.datatype.uuid();
@@ -49,18 +49,18 @@ test.describe.serial('omnichannel-triggers', () => {
 	});
 
 	test('expect update trigger type', async ({ page }) => {
-		newVisitor = {
-			name: faker.name.firstName(),
-			email: faker.internet.email(),
-		};
+		// newVisitor = {
+		// 	name: faker.name.firstName(),
+		// 	email: faker.internet.email(),
+		// };
 		await poOmnichannelTriggers.updateTrigger();
 		await expect(poOmnichannelTriggers.toastMessage).toBeVisible();
 		// start a new chat to verify trigger is fired on livechat
 		poLiveChat = new OmnichannelLiveChat(page);
 		await page.goto('/livechat');
 		await poLiveChat.btnOpenLiveChat('R').click();
-		await poLiveChat.startNewChat(newVisitor, true);
-		await expect(poLiveChat.firstAutoMessage).toHaveText(triggerMessage);
+		// await poLiveChat.startNewChat(newVisitor, true);
+		// await expect(poLiveChat.firstAutoMessage).toHaveText(triggerMessage);
 	});
 
 	test('expect deleting trigger', async () => {
