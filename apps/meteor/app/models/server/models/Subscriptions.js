@@ -1172,6 +1172,7 @@ export class Subscriptions extends Base {
 			unread: 0,
 			userMentions: 0,
 			groupMentions: 0,
+			muteGroupMentions: false,
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
