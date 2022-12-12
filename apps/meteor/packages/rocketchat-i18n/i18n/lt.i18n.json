@@ -2853,6 +2853,7 @@
   "registration.page.login.forgot": "Pamiršai slaptažodį",
   "registration.page.resetPassword.sent": "Jei šis el. Laiškas yra užregistruotas, atsiųsime instrukcijas, kaip iš naujo nustatyti slaptažodį. Jei netrukus negausite el. Laiško, grįžkite ir bandykite dar kartą.",
   "registration.component.login": "Prisijungti",
+  "registration.component.login.userNotFound": "Vartotojas nerastas",
   "registration.component.resetPassword": "Atstatyti slaptažodį",
   "registration.component.form.emailOrUsername": "El. pastas arba vartotojo vardas",
   "registration.component.form.email": "Paštas",
