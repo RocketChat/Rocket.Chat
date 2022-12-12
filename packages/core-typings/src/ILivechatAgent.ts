@@ -12,5 +12,6 @@ export interface ILivechatAgent extends IUser {
 	};
 	livechatCount: number;
 	lastRoutingTime: Date;
+	lastAssignTime: Date;
 	livechatStatusSystemModified?: boolean;
 }

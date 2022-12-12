@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
+import type { Filter, FindOptions } from 'mongodb';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Mongo } from 'meteor/mongo';
 
@@ -53,7 +53,7 @@ export async function findUsersToAutocomplete({
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
 		conditions,
-		options,
+		options as FindOptions<IUser>,
 	).toArray();
 
 	return {

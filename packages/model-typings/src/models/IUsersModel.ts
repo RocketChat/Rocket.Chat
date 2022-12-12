@@ -1,180 +1,314 @@
-import type { Document, UpdateResult, FindCursor, FindOptions } from 'mongodb';
-import type { IUser, IRole, IRoom, ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, ModifyResult } from 'mongodb';
+import type {
+	IUser,
+	IRole,
+	IRoom,
+	ILivechatAgent,
+	ILivechatDepartment,
+	ILoginToken,
+	ILivechatBusinessHour,
+	UserStatus,
+} from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IUsersModel extends IBaseModel<IUser> {
-	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
-	findUsersInRoles<T = IUser>(roles: IRole['_id'][], scope?: null, options?: any): FindCursor<T>;
-	findPaginatedUsersInRoles<T = IUser>(roles: IRole['_id'][], options?: any): FindPaginated<FindCursor<T>>;
-	findOneByUsername<T = IUser>(username: string, options?: any): Promise<T>;
-	findOneAgentById<T = ILivechatAgent>(_id: string, options: any): Promise<T>;
-	findUsersInRolesWithQuery<T = IUser>(roles: IRole['_id'] | IRole['_id'][], query: any, options: any): FindCursor<T>;
-	findPaginatedUsersInRolesWithQuery<T = IUser>(
-		roles: IRole['_id'] | IRole['_id'][],
-		query: any,
-		options: any,
-	): FindPaginated<FindCursor<T>>;
-	findOneByUsernameAndRoomIgnoringCase<T = IUser>(username: string, rid: IRoom['_id'], options: any): FindCursor<T>;
-	findOneByIdAndLoginHashedToken<T = IUser>(_id: string, token: any, options?: any): FindCursor<T>;
-	findByActiveUsersExcept<T = IUser>(
-		searchTerm: any,
-		exceptions: any,
-		options: any,
-		searchFields: any,
-		extraQuery?: any,
-		params?: { startsWith?: boolean; endsWith?: boolean },
+	addRolesByUserId(uid: IUser['_id'], roles: Array<IRole['_id']>): Promise<UpdateResult>;
+	findUsersInRoles<T = IUser>(
+		roles: Array<IRole['_id']>,
+		scope?: IRole['scope'],
+		options?: FindOptions<T extends IUser ? IUser : T>,
 	): FindCursor<T>;
-	findPaginatedByActiveUsersExcept<T = IUser>(
-		searchTerm: any,
-		exceptions: any,
-		options: any,
+
+	findPaginatedUsersInRoles<T = IUser>(
+		roles: Array<IRole['_id']>,
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): FindPaginated<FindCursor<T>>;
+
+	findOneByUsername<T = IUser>(
+		username: NonNullable<IUser['username']>,
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | null>;
+
+	findOneAgentById<T = IUser>(
+		_id: ILivechatAgent['_id'],
+		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): Promise<T | null>;
+
+	findUsersInRolesWithQuery<T = IUser>(
+		roles: Array<IRole['_id']>,
+		query: Filter<IUser>,
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): FindCursor<T>;
+
+	findPaginatedUsersInRolesWithQuery<T = IUser>(
+		roles: Array<IRole['_id']>,
+		query: Filter<IUser>,
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): FindPaginated<FindCursor<T>>;
+
+	findOneByUsernameAndRoomIgnoringCase<T = IUser>(
+		username: IUser['_id'] | RegExp,
+		rid: IRoom['_id'],
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | null>;
+
+	findOneByIdAndLoginHashedToken<T = IUser>(
+		_id: IUser['_id'],
+		token: string,
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | null>;
+
+	findByActiveUsersExcept<T = IUser>(
+		searchTerm: string,
+		exceptions: string | string[],
+		options: FindOptions<T extends IUser ? IUser : T>,
 		searchFields: any,
-		extraQuery?: any,
-		params?: { startsWith?: boolean; endsWith?: boolean },
+		extraQuery: any,
+		{ startsWith, endsWith }: { startsWith: boolean; endsWith: boolean },
+	): FindCursor<T>;
+
+	findPaginatedByActiveUsersExcept<T = IUser>(
+		searchTerm?: string,
+		exceptions?: string | string[],
+		options?: FindOptions<T extends IUser ? IUser : T>,
+		searchFields?: Array<keyof IUser>,
+		extraQuery?: Filter<IUser>[],
+		{ startsWith, endsWith }?: { startsWith: boolean; endsWith: boolean },
 	): FindPaginated<FindCursor<T>>;
 
 	findPaginatedByActiveLocalUsersExcept<T = IUser>(
-		searchTerm: any,
-		exceptions: any,
-		options: any,
+		searchTerm: string,
+		exceptions: string | string[],
+		options: FindOptions<T extends IUser ? IUser : T>,
 		forcedSearchFields: any,
 		localDomain: any,
 	): FindPaginated<FindCursor<T>>;
 
 	findPaginatedByActiveExternalUsersExcept<T = IUser>(
-		searchTerm: any,
-		exceptions: any,
-		options: any,
+		searchTerm: string,
+		exceptions: string | string[],
+		options: FindOptions<T extends IUser ? IUser : T>,
 		forcedSearchFields: any,
 		localDomain: any,
 	): FindPaginated<FindCursor<T>>;
 
-	findActive<T = IUser>(options?: any): FindCursor<T>;
+	findActive<T = IUser>(query: Filter<IUser>, options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	findActiveByIds<T = IUser>(userIds: any, options?: any): FindCursor<T>;
+	findActiveByIds<T = IUser>(userIds: Array<IUser['_id']>, options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	findByIds<T = IUser>(userIds: any, options?: any): FindCursor<T>;
+	findActiveByIdsOrUsernames<T = IUser>(userIds: Array<IUser['_id']>, options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	findOneByUsernameIgnoringCase<T = IUser>(username: any, options: any): Promise<T>;
+	findByIds(userIds: Array<IUser['_id']>): FindCursor<IUser>;
+	findByIds(userIds: Array<IUser['_id']>, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findByIds<T = IUser>(userIds: Array<IUser['_id']>, options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	findOneByLDAPId<T = IUser>(id: any, attribute?: any): Promise<T>;
+	findOneByUsernameIgnoringCase<T = IUser>(
+		username: NonNullable<IUser['username']> | RegExp,
+		options?: FindOptions<T extends IUser ? IUser : T>,
+	): Promise<T | null>;
 
-	findOneByAppId<T = IUser>(appId: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findOneByLDAPId(id: IUser['_id'], attribute: any): Promise<IUser | null>;
 
-	findLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
+	findOneByAppId<T = IUser>(appId: string, options?: FindOptions<T extends IUser ? IUser : T>): Promise<T | null>;
 
-	findConnectedLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
+	findLDAPUsers<T = IUser>(option?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<boolean>;
+	findConnectedLDAPUsers<T = IUser>(options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	getDistinctFederationDomains(): any;
+	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<{ roles: IUser['roles'] } | null>;
+
+	getDistinctFederationDomains(): Promise<Array<string>>;
 
 	getNextLeastBusyAgent(
-		department: any,
-		ignoreAgentId: any,
-	): Promise<{ agentId: string; username: string; lastRoutingTime: Date; departments: any[]; count: number }>;
+		department: ILivechatDepartment['_id'],
+		ignoreAgentId: ILivechatAgent['_id'],
+	): Promise<{
+		agentId: ILivechatAgent['_id'];
+		username: ILivechatAgent['username'];
+		lastRoutingTime: ILivechatAgent['lastRoutingTime'];
+		departments: ILivechatDepartment['_id'][];
+		count: number;
+	}>;
+
 	getLastAvailableAgentRouted(
-		department: any,
-		ignoreAgentId: any,
-	): Promise<{ agentId: string; username: string; lastRoutingTime: Date; departments: any[] }>;
+		department: ILivechatDepartment['_id'],
+		ignoreAgentId: ILivechatAgent['_id'],
+	): Promise<{
+		agentId: ILivechatAgent['_id'];
+		username: NonNullable<ILivechatAgent['username']>;
+		lastRoutingTime: ILivechatAgent['lastRoutingTime'];
+		departments: ILivechatDepartment['_id'][];
+	}>;
 
-	setLastRoutingTime(userId: any): Promise<number>;
+	setLastRoutingTime(userId: ILivechatAgent['_id']): Promise<ModifyResult<IUser>['value']>;
 
-	setLivechatStatusIf(userId: any, status: any, conditions?: any, extraFields?: any): Promise<UpdateResult>;
-	getAgentAndAmountOngoingChats(
-		userId: any,
-	): Promise<{ agentId: string; username: string; lastAssignTime: Date; lastRoutingTime: Date; queueInfo: { chats: number } }>;
-
-	findAllResumeTokensByUserId(userId: any): any;
-
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T = IUser>(
-		termRegex: any,
-		exceptions: any,
+	setLivechatStatusIf(
+		userId: ILivechatAgent['_id'],
+		status: ILivechatAgent['statusLivechat'],
 		conditions: any,
-		options: any,
+		extraFields: any,
+	): Promise<UpdateResult>;
+
+	getAgentAndAmountOngoingChats(userId: ILivechatAgent['_id']): Promise<{
+		agentId: ILivechatAgent['_id'];
+		username: ILivechatAgent['username'];
+		lastAssignTime: ILivechatAgent['lastAssignTime'];
+		lastRoutingTime: ILivechatAgent['lastRoutingTime'];
+		queueInfo: { chats: number };
+	}>;
+
+	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<Array<{ tokens: ILoginToken[] }>>;
+
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+		termRegex: RegExp,
+		exceptions: NonNullable<IUser['username'][]>,
+		conditions: Filter<IUser>,
+	): FindCursor<IUser>;
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+		termRegex: RegExp,
+		exceptions: NonNullable<IUser['username'][]>,
+		conditions: Filter<IUser>,
+		options?: FindOptions<IUser>,
+	): FindCursor<IUser>;
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T = IUser>(
+		termRegex: RegExp,
+		exceptions: NonNullable<IUser['username'][]>,
+		conditions: Filter<IUser>,
+		options?: FindOptions<T extends IUser ? IUser : T>,
 	): FindCursor<T>;
 
-	countAllAgentsStatus({ departmentId }: { departmentId?: any }): any;
+	countAllAgentsStatus({ departmentId }: { departmentId: ILivechatDepartment['_id'] }): Promise<
+		Array<{
+			offline: number;
+			away: number;
+			busy: number;
+			available: number;
+		}>
+	>;
 
-	getTotalOfRegisteredUsersByDate({ start, end, options }: { start: any; end: any; options?: any }): Promise<Document[]>;
-	// TODO change back to below when convert model to TS
-	// Promise<
-	// 	{
-	// 		date: string;
-	// 		users: number;
-	// 		type: 'users';
-	// 	}[]
-	// >;
+	getTotalOfRegisteredUsersByDate({
+		start,
+		end,
+		options,
+	}: {
+		start: Date | number;
+		end: Date | number;
+		options?: {
+			sort: NonNullable<FindOptions<IUser>['sort']>;
+			count: NonNullable<FindOptions<IUser>['limit']>;
+		};
+	}): Promise<Array<{ _id: IUser['_id']; date: string; users: number; type: 'users' }>>;
 
-	getUserLanguages(): any;
+	getUserLanguages(): Promise<Array<{ _id: IUser['language']; total: number }>>;
 
-	updateStatusText(_id: any, statusText: any): any;
+	updateStatusText(_id: IUser['_id'], statusText: string): Promise<UpdateResult>;
 
-	updateStatusByAppId(appId: any, status: any): any;
+	updateStatusByAppId(appId: string, status: IUser['status']): Promise<Document | UpdateResult>;
 
-	openAgentsBusinessHoursByBusinessHourId(businessHourIds: any): any;
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult>;
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: any, agentId: any): any;
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(
+		businessHourIds: ILivechatBusinessHour['_id'][],
+		agentId: ILivechatAgent['_id'],
+	): Promise<Document | UpdateResult>;
 
-	addBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
+	addBusinessHourByAgentIds(
+		agentIds: ILivechatAgent['_id'][],
+		businessHourId: ILivechatBusinessHour['_id'],
+	): Promise<Document | UpdateResult>;
 
-	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
+	removeBusinessHourByAgentIds(
+		agentIds: ILivechatAgent['_id'][],
+		businessHourId: ILivechatBusinessHour['_id'],
+	): Promise<Document | UpdateResult>;
 
-	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
+	openBusinessHourToAgentsWithoutDepartment(
+		agentIdsWithDepartment: ILivechatAgent['_id'][],
+		businessHourId: ILivechatBusinessHour['_id'],
+	): Promise<Document | UpdateResult>;
 
-	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
+	closeBusinessHourToAgentsWithoutDepartment(
+		agentIdsWithDepartment: ILivechatAgent['_id'][],
+		businessHourId: ILivechatBusinessHour['_id'],
+	): Promise<Document | UpdateResult>;
 
-	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: any): any;
+	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: ILivechatBusinessHour['_id'][]): Promise<Document | UpdateResult>;
 
-	updateLivechatStatusBasedOnBusinessHours(userIds?: any): any;
+	updateLivechatStatusBasedOnBusinessHours(userIds?: IUser['_id'][]): Promise<Document | UpdateResult>;
 
-	setLivechatStatusActiveBasedOnBusinessHours(userId: any): any;
+	setLivechatStatusActiveBasedOnBusinessHours(userId: IUser['_id']): Promise<UpdateResult>;
 
-	isAgentWithinBusinessHours(agentId: any): Promise<any>;
+	isAgentWithinBusinessHours(agentId: ILivechatAgent['_id']): Promise<boolean>;
 
-	removeBusinessHoursFromAllUsers(): any;
+	removeBusinessHoursFromAllUsers(): Promise<Document | UpdateResult>;
 
-	resetTOTPById(userId: any): any;
+	resetTOTPById(userId: IUser['_id']): Promise<UpdateResult>;
 
-	unsetLoginTokens(userId: any): any;
-	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateResult>;
+	unsetOneLoginToken(_id: IUser['_id'], token: ILoginToken['hashedToken']): Promise<UpdateResult>;
 
-	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
+	unsetLoginTokens(userId: IUser['_id']): Promise<UpdateResult>;
 
-	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
+	removeNonPATLoginTokensExcept(userId: IUser['_id'], authToken: ILoginToken['hashedToken']): Promise<UpdateResult>;
+
+	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
-	addBannerById(_id: any, banner: any): any;
+	// FIXME is IBanner the right one?
+	// banner._id ???
+	// or am i missign something
+	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult>;
 
-	findOneByAgentUsername(username: any, options: any): any;
+	// Voip functions
+	findOneByAgentUsername<T = ILivechatAgent>(
+		username: ILivechatAgent['username'],
+		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): Promise<T | null>;
 
-	findOneByExtension(extension: any, options?: any): any;
+	findOneByExtension(extension: ILivechatAgent['extension']): Promise<ILivechatAgent | null>;
+	findOneByExtension(extension: ILivechatAgent['extension'], options?: FindOptions<ILivechatAgent>): Promise<ILivechatAgent | null>;
+	findOneByExtension<T = ILivechatAgent>(
+		extension: ILivechatAgent['extension'],
+		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): Promise<T | null>;
 
-	findByExtensions(extensions: any, options?: any): FindCursor<IUser>;
+	findByExtensions(extensions: NonNullable<ILivechatAgent['extension']>[]): FindCursor<ILivechatAgent>;
+	findByExtensions(
+		extensions: NonNullable<ILivechatAgent['extension']>[],
+		options?: FindOptions<ILivechatAgent>,
+	): FindCursor<ILivechatAgent>;
+	findByExtensions<T = ILivechatAgent>(
+		extensions: NonNullable<ILivechatAgent['extension']>[],
+		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): FindCursor<T>;
 
-	getVoipExtensionByUserId(userId: any, options: any): any;
+	getVoipExtensionByUserId<T = ILivechatAgent>(
+		userId: ILivechatAgent['_id'],
+		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): Promise<T | null>;
 
-	setExtension(userId: any, extension: any): any;
+	setExtension(userId: ILivechatAgent['_id'], extension: ILivechatAgent['extension']): Promise<UpdateResult>;
 
-	unsetExtension(userId: any): any;
+	unsetExtension(userId: ILivechatAgent['_id']): Promise<UpdateResult>;
 
-	getAvailableAgentsIncludingExt(includeExt: any, text: any, options: any): FindPaginated<FindCursor<ILivechatAgent>>;
+	getAvailableAgentsIncludingExt<T = ILivechatAgent>(
+		includeExt?: ILivechatAgent['extension'],
+		text?: string,
+		options?: FindOptions<T extends ILivechatAgent ? ILivechatAgent : T>,
+	): FindPaginated<FindCursor<T>>;
 
-	findActiveUsersTOTPEnable(options: any): any;
+	findActiveUsersTOTPEnable<T = IUser>(options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	findActiveUsersEmail2faEnable(options: any): any;
+	findActiveUsersEmail2faEnable<T = IUser>(options?: FindOptions<T extends IUser ? IUser : T>): FindCursor<T>;
 
-	findActiveByIdsOrUsernames(userIds: string[], options?: any): FindCursor<IUser>;
+	setAsFederated(uid: IUser['_id']): Promise<UpdateResult>;
 
-	setAsFederated(userId: string): any;
+	removeRoomByRoomId(rid: IRoom['_id']): Promise<UpdateResult | Document>;
 
-	removeRoomByRoomId(rid: any): any;
-
-	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
+	findOneByResetToken<T = IUser>(token: ILoginToken['hashedToken'], options?: FindOptions<T extends IUser ? IUser : T>): Promise<T | null>;
 
 	updateStatusById(
 		userId: string,
@@ -186,5 +320,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		}: { statusDefault?: string; status: UserStatus; statusConnection: UserStatus; statusText?: string },
 	): Promise<UpdateResult>;
 
-	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
+	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
 }

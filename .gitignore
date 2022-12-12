@@ -43,5 +43,5 @@ yarn-error.log*
 
 .nvmrc
 .idea/
-.exrc
 .envrc
+.exrc

@@ -105,7 +105,7 @@ API.v1.addRoute(
 
 				search.push(
 					...(await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
-						{ $regex: filter, $options: 'i' },
+						new RegExp(filter, 'i'),
 						[],
 						{},
 						{ projection: { _id: 1 }, limit: 5 },

@@ -192,7 +192,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 	private async getAllocatedExtesionAllocationData(projection: Partial<{ [P in keyof IUser]: number }>): Promise<IUser[]> {
 		const roles: string[] = ['livechat-agent', 'livechat-manager', 'admin'];
-		const options = {
+		const options: FindOptions<IUser> = {
 			sort: {
 				username: 1,
 			},
@@ -479,7 +479,11 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		offset?: number,
 		sort?: Record<string, unknown>,
 	): Promise<{ agents: ILivechatAgent[]; total: number }> {
-		const { cursor, totalCount } = Users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
+		const { cursor, totalCount } = Users.getAvailableAgentsIncludingExt(includeExtension, text, {
+			count,
+			skip: offset,
+			sort,
+		} as FindOptions<ILivechatAgent>);
 
 		const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 

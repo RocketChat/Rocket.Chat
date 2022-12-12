@@ -1,20 +1,23 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users } from '@rocket.chat/models';
-import type { ILivechatAgent, IRole } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IPaginationOptions } from '@rocket.chat/core-typings';
+import type { SortDirection } from 'mongodb';
 
 /**
  * @param {IRole['_id']} role the role id
  * @param {string} text
  * @param {any} pagination
  */
-async function findUsers({
-	role,
+type PaginationWithSort = IPaginationOptions & { sort: { [K: string]: SortDirection } };
+
+async function findUsers<ILivechatAgent>({
 	text,
+	role,
 	pagination: { offset, count, sort },
 }: {
-	role: IRole['_id'];
-	text?: string;
-	pagination: { offset: number; count: number; sort: any };
+	text: string | undefined;
+	role: string;
+	pagination: PaginationWithSort;
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
 	const query = {};
 	if (text) {
@@ -24,7 +27,7 @@ async function findUsers({
 		});
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<ILivechatAgent>(role, query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<ILivechatAgent>([role], query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -47,14 +50,15 @@ async function findUsers({
 		total,
 	};
 }
+
 export async function findAgents({
 	text,
 	pagination: { offset, count, sort },
 }: {
-	text?: string;
-	pagination: { offset: number; count: number; sort: any };
-}): Promise<ReturnType<typeof findUsers>> {
-	return findUsers({
+	text: string | undefined;
+	pagination: PaginationWithSort;
+}): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
+	return findUsers<ILivechatAgent>({
 		role: 'livechat-agent',
 		text,
 		pagination: {
@@ -69,10 +73,10 @@ export async function findManagers({
 	text,
 	pagination: { offset, count, sort },
 }: {
-	text?: string;
-	pagination: { offset: number; count: number; sort: any };
-}): Promise<ReturnType<typeof findUsers>> {
-	return findUsers({
+	text: string | undefined;
+	pagination: IPaginationOptions & { sort: { [k: string]: SortDirection } };
+}): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
+	return findUsers<ILivechatAgent>({
 		role: 'livechat-manager',
 		text,
 		pagination: {

@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { faker } from '@faker-js/faker';
 
 type UserFixture = IUser & {
@@ -15,7 +16,7 @@ export function createUserFixture(username: string): UserFixture {
 		roles: ['user'],
 		name: username,
 		lastLogin: new Date(),
-		statusConnection: 'offline',
+		statusConnection: UserStatus.OFFLINE,
 		utcOffset: -3,
 		username,
 		services: {
