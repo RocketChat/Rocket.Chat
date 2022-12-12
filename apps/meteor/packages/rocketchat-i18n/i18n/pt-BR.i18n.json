@@ -4014,6 +4014,7 @@
   "Size": "Tamanho",
   "Skip": "Pular",
   "SLA_Policies": "Políticas de SLA",
+  "Sla_removed": "SLA removida",
   "Slack_Users": "Usuários do Slack CSV",
   "SlackBridge_APIToken": "Tokens de API",
   "SlackBridge_APIToken_Description": "Você pode configurar vários servidores slack adicionando um token de API por linha.",

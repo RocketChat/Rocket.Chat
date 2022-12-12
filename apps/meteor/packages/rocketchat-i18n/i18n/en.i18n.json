@@ -4420,6 +4420,7 @@
   "Size": "Size",
   "Skip": "Skip",
   "SLA_Policies": "SLA Policies",
+  "SLA_removed": "SLA removed",
   "Slack_Users": "Slack's Users CSV",
   "SlackBridge_APIToken": "API Tokens",
   "SlackBridge_APIToken_Description": "You can configure multiple slack servers by adding one API Token per line.",
