@@ -3102,7 +3102,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities.reset': {
-		POST: (params: { reset: boolean }) => void;
+		POST: () => void;
 		GET: () => { reset: boolean };
 	};
 

@@ -43,7 +43,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				setResetting(true);
 				setModal(null);
 
-				await resetPriorities({ reset: isResetting });
+				await resetPriorities();
 				await refetch();
 
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
@@ -65,9 +65,9 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		prioritiesRoute.push({});
 	};
 
-	const onSavePriority = async ({ name }: PriorityFormData): Promise<void> => {
+	const onSavePriority = async ({ reset, ...payload }: PriorityFormData): Promise<void> => {
 		try {
-			await savePriority({ name });
+			await savePriority(reset ? { reset } : payload);
 
 			dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
 			refetch();
