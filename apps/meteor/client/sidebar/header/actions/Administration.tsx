@@ -30,7 +30,6 @@ const ADMIN_PERMISSIONS = [
 ];
 const AUDIT_PERMISSIONS = ['can-audit'];
 const AUDIT_LOG_PERMISSIONS = ['can-audit-log'];
-const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
 
 const AUDIT_LICENSE_MODULE = 'auditing';
 
@@ -46,13 +45,11 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const hasAuditLicense = useHasLicenseModule(AUDIT_LICENSE_MODULE) === true;
 	const hasAuditPermission = useAtLeastOnePermission(AUDIT_PERMISSIONS) && hasAuditLicense;
 	const hasAuditLogPermission = useAtLeastOnePermission(AUDIT_LOG_PERMISSIONS) && hasAuditLicense;
-	const hasManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
 	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
-	const showMenu = hasAuditPermission || hasAuditLogPermission || hasManageApps || hasAdminPermission || !!accountBoxItems.length;
 
 	return (
 		<>
-			{showMenu && <Sidebar.TopBar.Action icon='menu' onClick={(): void => toggle()} {...props} ref={reference} />}
+			<Sidebar.TopBar.Action icon='menu' onClick={(): void => toggle()} {...props} ref={reference} />
 			{isVisible &&
 				createPortal(
 					<Dropdown reference={reference} ref={target}>
@@ -63,7 +60,6 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 							hasAuditLicense={hasAuditLicense}
 							hasAuditPermission={hasAuditPermission}
 							hasAuditLogPermission={hasAuditLogPermission}
-							hasManageApps={hasManageApps}
 						/>
 					</Dropdown>,
 					document.body,
