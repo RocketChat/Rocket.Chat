@@ -14,7 +14,7 @@ const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement
 		const initialize = async () => {
 			// The currentContext === 'all' verification is for users who bookmarked
 			// the old marketplace
-			if ((!currentContext && (await isAppsEngineEnabled())) || currentContext === 'all') {
+			if ((await isAppsEngineEnabled()) && (!currentContext || currentContext === 'all')) {
 				marketplaceRoute.replace({ context: 'explore', page: 'list' });
 			}
 		};
