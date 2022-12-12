@@ -615,8 +615,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		});
 	});
 
-	// eslint-disable-next-line no-restricted-properties
-	describe.only('Inquiry queue sorting mechanism', () => {
+	describe('Inquiry queue sorting mechanism', () => {
 		it('[Priority] test livechat/inquiries.queuedForUser route with priority based sorting', async () => {
 			// update Omnichannel_sorting_mechanism setting to priority
 			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Priority);
