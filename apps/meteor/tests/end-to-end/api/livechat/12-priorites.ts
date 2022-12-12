@@ -1,14 +1,17 @@
 /* eslint-env mocha */
 
 import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { saveSLA, deleteSLA, generateRandomSLA } from '../../../data/livechat/priorities';
-import { createAgent, createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
-import { addPermissions, removePermissions, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
+import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', function () {
 	this.retries(0);
@@ -609,6 +612,75 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
 			expect(response.body?.error).to.contain('error-unauthorized');
+		});
+	});
+
+	// eslint-disable-next-line no-restricted-properties
+	describe.only('Inquiry queue sorting mechanism', () => {
+		it('[Priority] test livechat/inquiries.queuedForUser route with priority based sorting', async () => {
+			// update Omnichannel_sorting_mechanism setting to priority
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Priority);
+
+			// create 6 rooms, one for each priority level (1-5) and one with no priority
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			const {
+				body: { priorities },
+			} = (await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200)) as {
+				body: { priorities: ILivechatPriority[] };
+			};
+			const omniRooms = await bulkCreateLivechatRooms(6, department._id, (index) => {
+				const priority = priorities.find((priority) => priority.sortItem === index + 1);
+				return (
+					priority && {
+						priority: priority._id,
+					}
+				);
+			});
+			const sortedOmniRooms = omniRooms.sort((a, b) => {
+				const { priorityId: priorityIdA } = a;
+				const { priorityId: priorityIdB } = b;
+
+				if (!priorityIdA || !priorityIdB) {
+					// if one of the rooms has no priority, it should be the last one
+					return priorityIdA ? -1 : 1;
+				}
+
+				const priorityA = priorities.find((priority) => priority._id === priorityIdA);
+				const priorityB = priorities.find((priority) => priority._id === priorityIdB);
+
+				if (!priorityA || !priorityB) {
+					throw new Error(`Could not find priority for room ${a._id} or ${b._id} with priorityId ${priorityIdA} or ${priorityIdB}`);
+				}
+
+				return priorityA.sortItem - priorityB.sortItem;
+			});
+
+			// fetch all inquiries using livechat/inquiries.queuedForUser route (note it is paginated)
+			const allInquiries = await fetchAllInquiries(agent.credentials, department._id);
+			expect(allInquiries.length).to.be.greaterThanOrEqual(6);
+
+			// verify if all the inquiry.rids are the same as the sortedOmniRoomsIds
+			const inquiryRids = allInquiries.map((inquiry) => inquiry.rid);
+			const sortedOmniRoomsIds = sortedOmniRooms.map((room) => room._id);
+			// expect sortedOmniRoomsIds to be a subset of inquiryRids
+			expect(sortedOmniRoomsIds.every((roomId) => inquiryRids.includes(roomId))).to.be.true;
+
+			const inquiryRidAndPriority = allInquiries.map((inquiry) => {
+				const { rid, priorityId } = inquiry;
+				let priority = 0;
+
+				if (priorityId) {
+					const priorityObj = priorities.find((priority) => priority._id === priorityId);
+					if (priorityObj) {
+						priority = priorityObj.sortItem;
+					}
+				}
+
+				return { rid, priority };
+			});
+			// expect the inquiryRidAndPriority to be sorted by priority in descending order
+			const sortedInquiryRidAndPriority = inquiryRidAndPriority.sort((a, b) => b.priority - a.priority);
+			expect(sortedInquiryRidAndPriority).to.deep.equal(inquiryRidAndPriority);
 		});
 	});
 });

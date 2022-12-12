@@ -1,16 +1,31 @@
 import faker from '@faker-js/faker';
-import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	IInquiry,
+	ILivechatAgent,
+	ILivechatDepartment,
+	ILivechatVisitor,
+	IMessage,
+	IOmnichannelRoom,
+} from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
 import { DummyResponse } from './utils';
 
-export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRoom> =>
-	new Promise((resolve) => {
-		request
-			.get(api(`livechat/room?token=${visitorToken}`))
-			.set(credentials)
-			.end((_err: Error, res: DummyResponse<IOmnichannelRoom>) => resolve(res.body.room));
-	});
+export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
+	const urlParams = new URLSearchParams();
+	urlParams.append('token', visitorToken);
+	if (extraRoomParams) {
+		for (const [key, value] of Object.entries(extraRoomParams)) {
+			urlParams.append(key, value);
+		}
+	}
+
+	const response = await request
+		.get(api(`livechat/room?${urlParams.toString()}`))
+		.set(credentials).expect(200);
+
+	return response.body.room;
+};
 
 export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
@@ -84,7 +99,16 @@ export const createDepartment = (agents?: { agentId: string }[]): Promise<ILivec
 		request
 			.post(api('livechat/department'))
 			.set(credentials)
-			.send({ department: { name: `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' }, agents })
+			.send({
+				department: {
+					name: `Department ${Date.now()}`,
+					enabled: true,
+					showOnOfflineForm: true,
+					showOnRegistration: true,
+					email: 'a@b.com',
+				},
+				agents,
+			})
 			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {
 					return reject(err);
@@ -92,7 +116,7 @@ export const createDepartment = (agents?: { agentId: string }[]): Promise<ILivec
 				resolve(res.body.department);
 			});
 	});
-}
+};
 
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
@@ -126,64 +150,49 @@ export const createManager = (): Promise<ILivechatAgent> =>
 			});
 	});
 
-export const makeAgentAvailable = (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<unknown> =>
-	new Promise((resolve, reject) => {
-		request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
-			message: '',
-			status: 'online',
-		}).end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
-			if (err) {
-				return reject(err);
-			}
-			request
-			.post(methodCall('livechat/changeLivechatStatus'))
-			.set(overrideCredentials || credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'livechat/changeLivechatStatus',
-					params: ['available'],
-					id: 'id',
-					msg: 'method',
-				}),
-			})
-			.end((err: Error, res: DummyResponse<unknown, 'unwrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body);
-			});
-		});
-	});
+export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
+	await request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
+		message: '',
+		status: 'online',
+	}).expect(200);
+
+	await request.post(api('livechat/agent.status')).set(overrideCredentials || credentials).send({
+		status: 'available',
+	}).expect(200);
+};
 
 export const makeAgentUnavailable = (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<unknown> =>
 	new Promise((resolve, reject) => {
-		request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
-			message: '',
-			status: 'offline',
-		}).end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
-			if (err) {
-				return reject(err);
-			}
-			request
-			.post(methodCall('livechat/changeLivechatStatus'))
+		request
+			.post(api('users.setStatus'))
 			.set(overrideCredentials || credentials)
 			.send({
-				message: JSON.stringify({
-					method: 'livechat/changeLivechatStatus',
-					params: ['not-available'],
-					id: 'id',
-					msg: 'method',
-				}),
+				message: '',
+				status: 'offline',
 			})
-			.end((err: Error, res: DummyResponse<unknown, 'unwrapped'>) => {
+			.end((err: Error, _res: DummyResponse<unknown, 'unwrapped'>) => {
 				if (err) {
 					return reject(err);
 				}
-				resolve(res.body);
+				request
+					.post(methodCall('livechat/changeLivechatStatus'))
+					.set(overrideCredentials || credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'livechat/changeLivechatStatus',
+							params: ['not-available'],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.end((err: Error, res: DummyResponse<unknown, 'unwrapped'>) => {
+						if (err) {
+							return reject(err);
+						}
+						resolve(res.body);
+					});
 			});
-		});
 	});
-
 
 export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve /* , reject*/) => {
@@ -197,7 +206,7 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 				resolve(res.body.channel);
 			});
 	});
-}
+};
 
 export const sendMessage = (roomId: string, message: string, visitorToken: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
@@ -216,7 +225,7 @@ export const sendMessage = (roomId: string, message: string, visitorToken: strin
 				resolve(res.body.message);
 			});
 	});
-}
+};
 
 // Sends a message using sendMessage method from agent
 export const sendAgentMessage = (roomId: string): Promise<IMessage> => {
@@ -239,7 +248,7 @@ export const sendAgentMessage = (roomId: string): Promise<IMessage> => {
 				resolve(res.body.result);
 			});
 	});
-}
+};
 
 export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMessage[]> => {
 	return new Promise((resolve, reject) => {
@@ -256,7 +265,7 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 				resolve(res.body.messages);
 			});
 	});
-}
+};
 
 // Closes room using methodCall
 export const closeRoom = (roomId: string): Promise<boolean> => {
@@ -267,7 +276,7 @@ export const closeRoom = (roomId: string): Promise<boolean> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:closeRoom',
-					params: [roomId, faker.lorem.sentence(), { clientAction: true}],
+					params: [roomId, faker.lorem.sentence(), { clientAction: true }],
 					id: 'id',
 					msg: 'method',
 				}),
@@ -279,4 +288,23 @@ export const closeRoom = (roomId: string): Promise<boolean> => {
 				resolve(res.body.result);
 			});
 	});
-}
+};
+
+export const bulkCreateLivechatRooms = async (
+	amount: number,
+	department?: string,
+	resolveRoomExtraParams?: (index: number) => Record<string, string> | undefined,
+): Promise<IOmnichannelRoom[]> => {
+	const rooms: IOmnichannelRoom[] = [];
+
+	for (let i = 0; i < amount; i++) {
+		const visitor = await createVisitor(department);
+		const extraRoomParams = resolveRoomExtraParams ? resolveRoomExtraParams(i) : {};
+
+		const room = await createLivechatRoom(visitor.token, extraRoomParams);
+
+		rooms.push(room);
+	}
+
+	return rooms;
+};

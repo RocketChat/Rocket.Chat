@@ -1,33 +1,47 @@
 import { Meteor } from 'meteor/meteor';
 import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 type Props = {
 	sla?: string;
+	priority?: string;
 	[other: string]: any;
 };
 
 const beforeNewInquiry = async (extraData: Props) => {
-	const { sla: searchTerm, ...props } = extraData;
-	if (!searchTerm) {
-		cbLogger.debug('Skipping callback. No search param provided');
+	const { sla: slaSearchTerm, priority: prioritySearchTerm, ...props } = extraData;
+	if (!slaSearchTerm && !prioritySearchTerm) {
+		cbLogger.debug('Skipping callback. No sla or priority provided');
 		return extraData;
 	}
 
-	const slaP = OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm, {
-		projection: { dueTimeInMinutes: 1 },
-	});
-	const priorityP = LivechatPriority.findOneByIdOrName(searchTerm, {
-		projection: { _id: 1, priorityWeight: 1 },
-	});
-	const [sla, priority] = await Promise.all([slaP, priorityP]);
-	if (!sla && !priority) {
-		throw new Meteor.Error('error-invalid-priority', 'Invalid sla or priority', {
-			function: 'livechat.beforeInquiry',
+	let sla: IOmnichannelServiceLevelAgreements | null = null;
+	let priority: ILivechatPriority | null = null;
+
+	if (slaSearchTerm) {
+		sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(slaSearchTerm, {
+			projection: { dueTimeInMinutes: 1 },
 		});
+		if (!sla) {
+			throw new Meteor.Error('error-invalid-sla', 'Invalid sla', {
+				function: 'livechat.beforeInquiry',
+			});
+		}
 	}
+	if (prioritySearchTerm) {
+		priority = await LivechatPriority.findOneByIdOrName(prioritySearchTerm, {
+			projection: { _id: 1, sortItem: 1 },
+		});
+		if (!priority) {
+			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
+				function: 'livechat.beforeInquiry',
+			});
+		}
+	}
+
 	const now = new Date();
 	const ts = new Date(now.getTime());
 	const changes: {
@@ -47,7 +61,7 @@ const beforeNewInquiry = async (extraData: Props) => {
 		changes.priorityId = priority._id;
 		changes.priorityWeight = priority.sortItem;
 	}
-	cbLogger.debug('Callback success. Queue timing properties added');
+	cbLogger.debug('Callback success. Queue timing properties added to inquiry', changes);
 	return { ...props, ...changes };
 };
 
