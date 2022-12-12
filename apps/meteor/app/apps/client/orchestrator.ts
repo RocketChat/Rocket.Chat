@@ -89,7 +89,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getApps(): Promise<App[]> {
-		const result = await APIClient.get<'/apps'>('/apps');
+		const result = await APIClient.get<'/apps/installed'>('/apps/installed');
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -99,7 +99,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
-		const result = await APIClient.get('/apps', { marketplace: 'true' });
+		const result = await APIClient.get('/apps/marketplace');
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -206,8 +206,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
-		const result = await APIClient.get('/apps', {
-			buildExternalUrl: 'true',
+		const result = await APIClient.get('/apps/buildExternalUrl', {
 			appId,
 			purchaseType,
 			details: `${details}`,
@@ -235,7 +234,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
-		const result = await APIClient.get('/apps', { categories: 'true' });
+		const result = await APIClient.get('/apps/categories');
 
 		if (Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
