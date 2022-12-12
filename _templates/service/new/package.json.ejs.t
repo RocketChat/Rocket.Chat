@@ -49,6 +49,6 @@ to: ee/apps/<%= name %>/package.json
 	],
 	"volta": {
 		"node": "14.19.3"
-	},
+	}
 }
 
