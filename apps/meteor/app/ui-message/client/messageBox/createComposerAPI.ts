@@ -163,7 +163,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		setEditing(editing);
 	};
 
-	setValue(Meteor._localStorage.getItem(storageID) ?? '');
+	setText(Meteor._localStorage.getItem(storageID) ?? '');
 
 	return {
 		release,
