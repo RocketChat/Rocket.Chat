@@ -25,8 +25,8 @@ import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderF
 import './thread.html';
 
 export type ThreadTemplateInstance = Blaze.TemplateInstance<{
-	mainMessage: IMessage;
-	subscription: ISubscription;
+	mainMessage?: IMessage;
+	subscription?: ISubscription;
 	following: boolean;
 	rid: IRoom['_id'];
 	tabBar: {
@@ -101,7 +101,7 @@ Template.thread.helpers({
 		return ['thread-main', state.get('tmid') === state.get('editingMID') ? 'editing' : ''].filter(Boolean).join(' ');
 	},
 	_messageContext(this: ThreadTemplateInstance['data']) {
-		const result = messageContext.call(this, { rid: this.mainMessage.rid });
+		const result = messageContext.call(this, { rid: this.mainMessage?.rid });
 		return {
 			...result,
 			settings: {
@@ -113,11 +113,7 @@ Template.thread.helpers({
 	},
 	messageBoxData(): MessageBoxTemplateInstance['data'] {
 		const instance = Template.instance() as ThreadTemplateInstance;
-		const {
-			mainMessage: { rid, _id: tmid },
-			subscription,
-			chatContext,
-		} = Template.currentData() as ThreadTemplateInstance['data'];
+		const { mainMessage: { rid, _id: tmid } = {}, subscription, chatContext } = Template.currentData() as ThreadTemplateInstance['data'];
 
 		if (!chatContext) {
 			throw new Error('chatContext is not defined');
@@ -131,7 +127,7 @@ Template.thread.helpers({
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
-			rid,
+			rid: rid ?? '',
 			tmid,
 			onSend: async (
 				_event: Event,
@@ -204,15 +200,15 @@ Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
 			sendToChannel = false;
 			break;
 		default:
-			sendToChannel = !this.data.mainMessage.tcount;
+			sendToChannel = !this.data.mainMessage?.tcount ?? true;
 	}
 
 	const { mainMessage } = Template.currentData() as ThreadTemplateInstance['data'];
 
 	this.state = new ReactiveDict(undefined, {
 		sendToChannel,
-		tmid: mainMessage._id,
-		rid: mainMessage.rid,
+		tmid: mainMessage?._id,
+		rid: mainMessage?.rid,
 	});
 
 	this.loadMore = async () => {
@@ -353,8 +349,8 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 		const jump = FlowRouter.getQueryParam('jump');
 		const { mainMessage } = Template.currentData() as ThreadTemplateInstance['data'];
 		this.state.set({
-			tmid: mainMessage._id,
-			rid: mainMessage.rid,
+			tmid: mainMessage?._id,
+			rid: mainMessage?.rid,
 			jump,
 		});
 	});

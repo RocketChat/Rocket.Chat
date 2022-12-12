@@ -1,23 +1,17 @@
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
-
 const ThreadSkeleton = (): ReactElement => {
 	return (
-		<VerticalBar.Skeleton
-			className='rcx-thread-view'
-			position='absolute'
-			display='flex'
-			flexDirection='column'
-			width='full'
-			maxWidth={855}
-			overflow='hidden'
-			zIndex={100}
-			insetBlock={0}
-			insetInlineEnd={0}
-			borderStartStartRadius={4}
-		/>
+		<Box p='x24'>
+			<Skeleton width='32px' height='32px' variant='rect' /> <Skeleton />
+			{Array(5)
+				.fill(5)
+				.map((_, index) => (
+					<Skeleton key={index} />
+				))}
+		</Box>
 	);
 };
 
