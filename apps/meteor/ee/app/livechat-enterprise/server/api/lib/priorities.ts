@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatPriority } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { FindOptions, UpdateFilter } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -73,3 +73,33 @@ export async function updatePriority(
 
 	return createdResult.value;
 }
+
+export const updateRoomPriority = async (rid: string, priorityId: string): Promise<void> => {
+	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
+	if (!room) {
+		throw new Error('error-room-does-not-exist');
+	}
+
+	const priority: Pick<ILivechatPriority, '_id' | 'sortItem'> | null = await LivechatPriority.findOneById(priorityId, {
+		projection: { _id: 1, sortItem: 1 },
+	});
+	if (!priority) {
+		throw new Error('error-invalid-priority');
+	}
+
+	await Promise.all([LivechatRooms.setPriorityByRoomId(rid, priority), LivechatInquiry.setPriorityForRoom(rid, priority)]);
+};
+
+export const removePriorityFromRoom = async (rid: string): Promise<void> => {
+	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, priorityId: 1, priorityWeight: 1 } });
+	if (!room) {
+		throw new Error('error-room-does-not-exist');
+	}
+
+	if (!room.priorityId || !room.priorityWeight) {
+		logger.debug(`Room ${rid} does not have a priority set. Skipping.`);
+		return;
+	}
+
+	await Promise.all([LivechatRooms.unsetPriorityByRoomId(rid), LivechatInquiry.unsetPriorityForRoom(rid)]);
+};

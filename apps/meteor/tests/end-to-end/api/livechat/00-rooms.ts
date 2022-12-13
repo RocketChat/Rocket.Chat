@@ -1467,7 +1467,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should prioritize the room', async () => {
 			const response = await request
-				.post(api(`livechat/rooms/${room._id}/priority`))
+				.post(api(`livechat/room/${room._id}/priority`))
 				.set(credentials)
 				.send({
 					priorityId: chosenPriority._id,
@@ -1475,8 +1475,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 			expect(response.body).to.have.property('success', true);
-			expect(response.body).to.have.property('roomId', room._id);
-			expect(response.body).to.have.property('priorityId', chosenPriority._id);
 		});
 		it('should return the room with the new priority', async () => {
 			const updatedRoom = await getLivechatRoomInfo(room._id);
@@ -1485,7 +1483,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should unprioritize the room', async () => {
 			const response = await request
-				.delete(api(`livechat/rooms/${room._id}/priority`))
+				.delete(api(`livechat/room/${room._id}/priority`))
 				.set(credentials)
 				.send()
 				.expect('Content-Type', 'application/json')
@@ -1504,7 +1502,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should fail to prioritize the room from a lack of permissions', async () => {
 			await request
-				.post(api(`livechat/rooms/${room._id}/priority`))
+				.post(api(`livechat/room/${room._id}/priority`))
 				.set(credentials)
 				.send({
 					priorityId: chosenPriority._id,
@@ -1513,7 +1511,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should fail to unprioritize the room from a lack of permissions', async () => {
 			await request
-				.delete(api(`livechat/rooms/${room._id}/priority`))
+				.delete(api(`livechat/room/${room._id}/priority`))
 				.set(credentials)
 				.send()
 				.expect(403);

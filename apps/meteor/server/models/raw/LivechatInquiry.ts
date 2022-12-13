@@ -5,6 +5,7 @@ import type {
 	IMessage,
 	RocketChatRecordDeleted,
 	OmnichannelSortingMechanismSettingType,
+	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
@@ -158,7 +159,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			.toArray();
 	}
 
-	setSla(
+	setSlaForRoom(
 		_rid: string,
 		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
 	): Promise<ModifyResult<ILivechatInquiryRecord>> {
@@ -166,6 +167,14 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	bulkUnsetSla(_roomIds: string[]): Promise<Document | UpdateResult> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	setPriorityForRoom(_rid: string, _priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	unsetPriorityForRoom(_rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 }

@@ -23,7 +23,7 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 	const estimatedWaitingTimeQueue = dueTimeInMinutes;
 	const estimatedServiceTimeAt = new Date(chatStartedAt.setMinutes(chatStartedAt.getMinutes() + dueTimeInMinutes));
 
-	await LivechatInquiry.setSla(inquiry.rid, {
+	await LivechatInquiry.setSlaForRoom(inquiry.rid, {
 		estimatedWaitingTimeQueue,
 		estimatedServiceTimeAt,
 	});

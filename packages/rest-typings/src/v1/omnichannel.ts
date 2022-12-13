@@ -3210,8 +3210,8 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
 	};
 	'/v1/livechat/room/:rid/priority': {
-		POST: (params: POSTLivechatRoomPriorityParams) => { roomId: string; priorityId: string };
-		DELETE: () => { success: boolean };
+		POST: (params: POSTLivechatRoomPriorityParams) => void;
+		DELETE: () => void;
 	};
 	'/v1/livechat/queue': {
 		GET: (params: GETLivechatQueueParams) => PaginatedResult<{

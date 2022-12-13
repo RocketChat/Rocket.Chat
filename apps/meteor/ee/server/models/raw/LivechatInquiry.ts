@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { ModifyResult, UpdateResult, Document } from 'mongodb';
 
@@ -6,17 +6,19 @@ import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquir
 
 declare module '@rocket.chat/model-typings' {
 	export interface ILivechatInquiryModel {
-		setSla(
+		setSlaForRoom(
 			rid: string,
 			sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
 		): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;
+		setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>>;
+		unsetPriorityForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
 	}
 }
 
 // Note: Expect a circular dependency error here 😓
 export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivechatInquiryModel {
-	setSla(
+	setSlaForRoom(
 		rid: string,
 		sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
 	): Promise<ModifyResult<ILivechatInquiryRecord>> {
@@ -42,6 +44,30 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 				$unset: {
 					estimatedServiceTimeAt: 1,
 					estimatedWaitingTimeQueue: 1,
+				},
+			},
+		);
+	}
+
+	setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		return this.findOneAndUpdate(
+			{ rid },
+			{
+				$set: {
+					priorityId: priority._id,
+					priorityWeight: priority.sortItem,
+				},
+			},
+		);
+	}
+
+	unsetPriorityForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		return this.findOneAndUpdate(
+			{ rid },
+			{
+				$unset: {
+					priorityId: 1,
+					priorityWeight: 1,
 				},
 			},
 		);
