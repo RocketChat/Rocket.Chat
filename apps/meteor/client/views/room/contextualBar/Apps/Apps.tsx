@@ -30,7 +30,11 @@ const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Elem
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup align='end'>
-				{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
+				{view.close && (
+					<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+						{modalParser.text(view.close.text)}
+					</Button>
+				)}
 				{view.submit && (
 					<Button primary onClick={onSubmit}>
 						{modalParser.text(view.submit.text)}
