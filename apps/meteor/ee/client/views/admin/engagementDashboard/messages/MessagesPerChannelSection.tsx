@@ -2,7 +2,8 @@ import { ResponsivePie } from '@nivo/pie';
 import { Box, Flex, Icon, Margins, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import DownloadDataButton from '../dataView/DownloadDataButton';

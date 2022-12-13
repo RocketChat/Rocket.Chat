@@ -1,6 +1,6 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ServerMethods } from '@rocket.chat/ui-contexts';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';

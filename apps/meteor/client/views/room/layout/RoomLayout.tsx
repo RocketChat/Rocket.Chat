@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar/VerticalBar';
 

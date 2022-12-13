@@ -1,6 +1,6 @@
-import { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
-import { Mongo } from 'meteor/mongo';
+import type { Mongo } from 'meteor/mongo';
 import { useEffect } from 'react';
 
 import { RoomRoles, ChatMessage } from '../../../../../app/models/client';

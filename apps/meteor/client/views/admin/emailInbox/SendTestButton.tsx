@@ -1,7 +1,8 @@
-import { IEmailInboxPayload } from '@rocket.chat/core-typings';
+import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import { Box, Button, TableCell, Icon } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }): ReactElement => {
 	const t = useTranslation();

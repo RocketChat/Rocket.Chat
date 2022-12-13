@@ -1,20 +1,16 @@
-import {
-	IRoom,
-	IMessage,
-	isTranslatedMessage,
-	isMessageReactionsNormalized,
-	MessageAttachment,
-	isThreadMainMessage,
-} from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isTranslatedMessage, isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import { useRoom } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
-import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
+import type { MessageListContextValue } from '../contexts/MessageListContext';
+import { MessageListContext } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
 
 const fields = {};

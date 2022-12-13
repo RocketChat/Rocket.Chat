@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useCurrentRoute, useRoutePath, useSetting, useCurrentModal } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useCallback } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useCallback } from 'react';
 
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import BlazeTemplate from '../BlazeTemplate';

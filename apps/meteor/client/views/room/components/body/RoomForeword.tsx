@@ -1,7 +1,9 @@
-import { IRoom, isVoipRoom, isDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box, Tag, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
@@ -46,10 +48,8 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>
 				{usernames.map((username, index) => (
 					<Box mi='x4' is='a' href={roomCoordinator.getRouteLink('d', { name: username }) || undefined} key={index}>
-						<Tag className='mention-link' data-username={username} large>
-							<>
-								<Icon name='user' size='x18' /> {username}
-							</>
+						<Tag icon={<Icon name='user' size='x20' />} className='mention-link' data-username={username} large>
+							{username}
 						</Tag>
 					</Box>
 				))}

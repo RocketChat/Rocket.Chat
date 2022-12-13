@@ -1,4 +1,5 @@
-import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, IOmnichannelRoom, IVoipRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type RoomContextValue = {
