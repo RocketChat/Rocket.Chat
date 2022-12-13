@@ -166,6 +166,7 @@ export const createSettings = async (): Promise<void> => {
 				i18nLabel: 'Sorting_mechanism',
 				enableQuery: [omnichannelEnabledQuery],
 				enterprise: true,
+				public: true,
 				modules: ['livechat-enterprise'],
 				invalidValue: '',
 			});

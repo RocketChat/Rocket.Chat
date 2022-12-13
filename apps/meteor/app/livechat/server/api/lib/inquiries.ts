@@ -4,7 +4,7 @@ import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { Filter } from 'mongodb';
 
-import { getInquirySortQuery } from '../../lib/inquiries';
+import { getInquirySortQuery } from '../../../lib/inquiries';
 import { getInquirySortMechanismSetting } from '../../lib/settings';
 
 const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {

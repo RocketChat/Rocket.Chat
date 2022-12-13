@@ -10,7 +10,7 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { getInquirySortQuery } from '../../../app/livechat/server/lib/inquiries';
+import { getInquirySortQuery } from '../../../app/livechat/lib/inquiries';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
