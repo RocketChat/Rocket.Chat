@@ -466,7 +466,7 @@ describe('LIVECHAT - rooms', function () {
 
 		it('should not be successful when no target (userId or departmentId) was specified', async () => {
 			await updatePermission('transfer-livechat-guest', ['admin']);
-			await updatePermission('view-l-room', ['admin']);
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 
 			await request
 				.post(api('livechat/room.forward'))
@@ -1149,6 +1149,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.history.length).to.equal(0);
 		});
 		it('should return the transfer history for a room', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 			const initialAgentAssignedToChat: IUser = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
