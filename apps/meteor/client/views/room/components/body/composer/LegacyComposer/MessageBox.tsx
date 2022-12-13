@@ -1,5 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -149,15 +149,13 @@ export const MessageBox = ({
 
 		switch (event.key) {
 			case 'Escape': {
-				const currentEditing = chat?.currentEditing;
-
-				if (currentEditing) {
+				if (chat?.currentEditing) {
 					event.preventDefault();
 					event.stopPropagation();
 
-					currentEditing.reset().then((reset) => {
+					chat?.currentEditing.reset().then((reset) => {
 						if (!reset) {
-							currentEditing?.cancel();
+							chat?.currentEditing?.cancel();
 						}
 					});
 
@@ -212,6 +210,10 @@ export const MessageBox = ({
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), []));
 
+	const sizes = useContentBoxSize(textareaRef);
+
+	console.log(sizes);
+
 	return (
 		<>
 			<MessageComposer variant={isEditing ? 'editing' : undefined}>
@@ -240,6 +242,7 @@ export const MessageBox = ({
 							.map(({ icon, link, text, label, pattern }) =>
 								icon ? (
 									<MessageComposerAction
+										disabled={isRecording}
 										icon={icon}
 										key={label}
 										data-id={label}
@@ -258,8 +261,9 @@ export const MessageBox = ({
 							)}
 						<MessageComposerActionsDivider />
 						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
-						<MessageComposerAction icon='clip' />
+						{/* <MessageComposerAction icon='clip' /> */}
 						<MessageComposerAction
+							disabled={isRecording}
 							onClick={(event): void => {
 								const groups = messageBox.actions.get();
 								const config = {
@@ -312,79 +316,6 @@ export const MessageBox = ({
 			</MessageComposer>
 			<UserActionIndicator rid={rid} tmid={tmid} />
 		</>
-	);
-
-	return (
-		<div className={['rc-message-box rc-new', isEmbedded && 'rc-message-box--embedded', isEditing && 'editing'].filter(Boolean).join(' ')}>
-			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
-			<div ref={shadowRef} style={shadowStyle} />
-			<div className={['rc-message-box__container', isEditing && 'editing'].filter(Boolean).join(' ')}>
-				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_secondary_actions')}>
-					<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
-				</MessageComposerToolbarActions>
-				<Box
-					is='textarea'
-					mi='x8'
-					ref={callbackRef}
-					aria-label={t('Message')}
-					name='msg'
-					disabled={isRecording}
-					onChange={setTyping}
-					style={textAreaStyle}
-					maxLength={Number.isInteger(maxLength) ? parseInt(maxLength as string) : undefined}
-					placeholder={t('Message')}
-					rows={1}
-					className='rc-message-box__textarea js-input-message'
-					onKeyDown={handler}
-				/>
-				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-					{!canSend && (
-						<Button small primary>
-							{t('Join')}
-						</Button>
-					)}
-					{canSend && !typing && (
-						<>
-							<AudioMessageRecorder rid={rid} tmid={tmid} />
-						</>
-					)}
-					{canSend && typing && <MessageComposerAction onClick={handleSendMessage} icon='send' />}
-				</MessageComposerToolbarActions>
-			</div>
-
-			{showFormattingTips && (
-				<div className='rc-message-box__toolbar-formatting' role='toolbar' aria-label={t('Message_Formatting_Toolbox')}>
-					{formattingButtons
-						.filter(({ condition }) => !condition || condition())
-						.map(({ icon, link, text, label, pattern }) =>
-							icon ? (
-								<button
-									key={label}
-									className='rc-message-box__toolbar-formatting-item js-format'
-									data-id={label}
-									title={label}
-									onClick={(): void => {
-										textareaRef.current && pattern && applyFormatting(pattern, textareaRef.current);
-									}}
-								>
-									<svg
-										className={`rc-icon rc-message-box__toolbar-formatting-icon rc-message-box__toolbar-formatting-icon--${icon}`}
-										aria-hidden='true'
-									>
-										<use xlinkHref={`#icon-${icon}`} />
-									</svg>
-								</button>
-							) : (
-								<span className='rc-message-box__toolbar-formatting-item' title={label} key={label}>
-									<a href={link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
-										{label || text}
-									</a>
-								</span>
-							),
-						)}
-				</div>
-			)}
-		</div>
 	);
 };
 
