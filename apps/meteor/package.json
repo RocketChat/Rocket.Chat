@@ -225,7 +225,7 @@
 		"@rocket.chat/layout": "next",
 		"@rocket.chat/logo": "next",
 		"@rocket.chat/memo": "next",
-		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/message-parser": "0.31.22",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mp3-encoder": "0.24.0",

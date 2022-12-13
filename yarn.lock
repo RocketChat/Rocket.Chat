@@ -6414,7 +6414,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/ui-kit": next
     eslint: ^8.29.0
     mongodb: ^4.12.1
@@ -6734,7 +6734,7 @@ __metadata:
     "@rocket.chat/css-in-js": next
     "@rocket.chat/fuselage": next
     "@rocket.chat/fuselage-tokens": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/styled": next
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -6908,10 +6908,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.183
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.183"
-  checksum: e72be2a40a6fa61ff5a60fd769529eef35fa2d4ac0f3b89636eb0c47b3c43dcb63a15dad3662f70a20c3c7de8b0a4d2e2652c5acf1f3f80e4778dfd3f34c789e
+"@rocket.chat/message-parser@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/message-parser@npm:0.31.22"
+  checksum: f5fa9ee5c239d03ad512af30c049b9d09a6b35776d2888e98a795b401b6a8f817473c94d8bd06afdb8b8f087c083646684ceb0516c11fa5e2aa8c3c9b29256ab
   languageName: node
   linkType: hard
 
@@ -6961,7 +6961,7 @@ __metadata:
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": next
     "@rocket.chat/memo": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
@@ -7388,7 +7388,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/ui-kit": next
     "@types/jest": ^27.4.1
     ajv: ^8.11.0
@@ -31819,7 +31819,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/icons": next
-    "@rocket.chat/message-parser": next
+    "@rocket.chat/message-parser": 0.31.22
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
