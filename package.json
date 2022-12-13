@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "5.4.0-develop",
+	"version": "5.5.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -13,7 +13,8 @@
 		"dev": "turbo run dev --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
-		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
+		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
+		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
 		"@types/chart.js": "^2.9.37",

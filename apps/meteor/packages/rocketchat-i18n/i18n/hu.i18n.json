@@ -1,5 +1,4 @@
 {
-  "403": "Tiltott",
   "500": "Belső szerver hiba",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ üres szobát automatikusan eltávolítunk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ üres szobát automatikusan eltávolítunk:<br/>__rooms__.",
@@ -3846,6 +3845,7 @@
   "registration.page.login.forgot": "Elfelejtetted a jelszavad?",
   "registration.page.resetPassword.sent": "Ha regisztrálta ezt az e-mailt, utasításokat küldünk a jelszó visszaállításáról. Ha hamarosan nem kap e-mailt, kérjük, térjen vissza és próbálkozzon újra.",
   "registration.component.login": "Bejelentkezés",
+  "registration.component.login.userNotFound": "Felhasználó nem található",
   "registration.component.resetPassword": "Jelszó visszaállítása",
   "registration.component.form.emailOrUsername": "E-mail vagy felhasználónév",
   "registration.component.form.email": "Email",

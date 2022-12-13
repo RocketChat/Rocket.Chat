@@ -1,4 +1,3 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import { LoginForm } from './LoginForm';
@@ -13,9 +12,8 @@ export const RegistrationPageRouter = ({
 	defaultRoute?: 'login' | 'register' | 'reset-password' | 'secret-register';
 }): ReactElement | null => {
 	const [route, setLoginRoute] = useLoginRouter(defaultRoute);
-	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
-	if (route === 'login' && showFormLogin) {
+	if (route === 'login') {
 		return (
 			<HorizontalTemplate>
 				<LoginForm setLoginRoute={setLoginRoute} />

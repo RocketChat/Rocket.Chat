@@ -1,4 +1,4 @@
-import { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage } from '../../app/models/client';
