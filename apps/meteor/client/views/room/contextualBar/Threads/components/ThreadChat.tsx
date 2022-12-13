@@ -1,7 +1,9 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
-import { useQueryStringParameter } from '@rocket.chat/ui-contexts';
+import { CheckBox } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
 
 import type { ThreadTemplateInstance } from '../../../../../../app/threads/client/flextab/thread';
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -18,70 +20,96 @@ type ThreadChatProps = {
 };
 
 const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
+	const t = useTranslation();
 	const ref = useRef<HTMLElement>(null);
 
 	const chatContext = useContext(ChatContext);
 	const messageContext = useContext(MessageContext);
 
 	const messageHighlightContext = useContext(MessageHighlightContext);
-	const { current: messageHighlightContextReactiveVar } = useRef(new ReactiveVar(messageHighlightContext));
-	useEffect(() => {
-		messageHighlightContextReactiveVar.set(messageHighlightContext);
-	}, [messageHighlightContext, messageHighlightContextReactiveVar]);
-
-	const jump = useQueryStringParameter('jump');
 
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const openRoomInfo = useTabBarOpenUserInfo();
 
-	const [viewData, setViewData] = useState<ThreadTemplateInstance['data']>(() => ({
-		mainMessage,
-		jump,
-		subscription,
-		rid: room._id,
-		tabBar: { openRoomInfo },
-		chatContext,
-		messageContext,
-		messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
-	}));
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+
+	const sendToChannelPreference = useUserPreference('alsoSendThreadToChannel');
+
+	const [sendToChannel, setSendToChannel] = useState(() => {
+		switch (sendToChannelPreference) {
+			case 'always':
+				return true;
+			case 'never':
+				return false;
+			default:
+				return !mainMessage.tcount;
+		}
+	});
+
+	const handleSend = useCallback((): void => {
+		if (sendToChannelPreference === 'default') {
+			setSendToChannel(false);
+		}
+	}, [sendToChannelPreference]);
+
+	const reactiveViewDataRef = useRef(
+		new ReactiveVar<ThreadTemplateInstance['data']>({
+			mainMessage,
+			subscription,
+			rid: room._id,
+			tabBar: { openRoomInfo },
+			chatContext,
+			messageContext,
+			messageHighlightContext,
+			sendToChannel,
+			onSend: handleSend,
+		}),
+	);
 
 	useEffect(() => {
-		setViewData((viewData) => {
-			if (!mainMessage || viewData.mainMessage?._id === mainMessage._id) {
-				return viewData;
-			}
-
-			return {
-				mainMessage,
-				jump,
-				subscription,
-				rid: room._id,
-				tabBar: { openRoomInfo },
-				chatContext,
-				messageContext,
-				messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
-			};
+		reactiveViewDataRef.current.set({
+			mainMessage,
+			subscription,
+			rid: room._id,
+			tabBar: { openRoomInfo },
+			chatContext,
+			messageContext,
+			messageHighlightContext,
+			sendToChannel,
+			onSend: handleSend,
 		});
-	}, [chatContext, jump, messageContext, messageHighlightContextReactiveVar, subscription, mainMessage, room._id, openRoomInfo]);
+	}, [chatContext, handleSend, mainMessage, messageContext, messageHighlightContext, openRoomInfo, room._id, sendToChannel, subscription]);
+
+	const viewDataFn = useCallback(() => reactiveViewDataRef.current.get(), []);
 
 	useEffect(() => {
-		if (!ref.current || !viewData.mainMessage) {
+		if (!ref.current) {
 			return;
 		}
-		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
+		const view = Blaze.renderWithData(Template.thread, viewDataFn, ref.current);
 
 		return (): void => {
 			Blaze.remove(view);
 		};
-	}, [viewData]);
+	}, [viewDataFn]);
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const sendToChannelID = useUniqueId();
 
 	return (
 		<>
 			<VerticalBar.Content ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps} />
 			<DropTargetOverlay {...fileUploadOverlayProps} />
+			<section className='contextual-bar__content flex-tab threads' style={{ flexShrink: 0, flexBasis: 36 }}>
+				<footer className='thread-footer'>
+					<div style={{ display: 'flex' }}>
+						<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
+					</div>
+					<label htmlFor={sendToChannelID} className='thread-footer__text'>
+						{t('Also_send_to_channel')}
+					</label>
+				</footer>
+			</section>
 		</>
 	);
 };

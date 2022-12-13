@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage, IEditedMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IEditedMessage, ISubscription, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import type { ContextType } from 'react';
 
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -24,7 +24,7 @@ import { withDebouncing, withThrottling } from '../../../../lib/utils/highOrderF
 import './thread.html';
 
 export type ThreadTemplateInstance = Blaze.TemplateInstance<{
-	mainMessage?: IMessage;
+	mainMessage: IThreadMainMessage;
 	subscription?: ISubscription;
 	rid: IRoom['_id'];
 	tabBar: {
@@ -32,7 +32,9 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	};
 	chatContext: ContextType<typeof ChatContext>;
 	messageContext: ContextType<typeof MessageContext>;
-	messageHighlightContext: () => ContextType<typeof MessageHighlightContext>;
+	messageHighlightContext: ContextType<typeof MessageHighlightContext>;
+	sendToChannel: boolean;
+	onSend?: () => void;
 }> & {
 	firstNode: HTMLElement;
 	wrapper?: HTMLElement;
@@ -46,7 +48,6 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 		rid: string;
 		tmid?: string;
 		loading?: boolean;
-		sendToChannel: boolean;
 		jump?: string | null;
 		editingMID?: IMessage['_id'];
 	}>;
@@ -107,19 +108,23 @@ Template.thread.helpers({
 	},
 	messageBoxData(): MessageBoxTemplateInstance['data'] {
 		const instance = Template.instance() as ThreadTemplateInstance;
-		const { mainMessage: { rid, _id: tmid } = {}, subscription, chatContext } = Template.currentData() as ThreadTemplateInstance['data'];
+		const {
+			mainMessage: { rid, _id: tmid } = {},
+			subscription,
+			chatContext,
+			sendToChannel,
+		} = Template.currentData() as ThreadTemplateInstance['data'];
 
 		if (!chatContext) {
 			throw new Error('chatContext is not defined');
 		}
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
-		const alsoSendPreferenceState = getUserPreference(Meteor.userId(), 'alsoSendThreadToChannel');
 
 		return {
 			chatContext,
 			showFormattingTips,
-			tshow: instance.state.get('sendToChannel'),
+			tshow: sendToChannel,
 			subscription,
 			rid: rid ?? '',
 			tmid,
@@ -134,9 +139,8 @@ Template.thread.helpers({
 				},
 			) => {
 				instance.sendToBottom();
-				if (alsoSendPreferenceState === 'default') {
-					instance.state.set('sendToChannel', false);
-				}
+
+				instance.data.onSend?.();
 
 				await chatContext.flows.sendMessage({
 					text,
@@ -156,15 +160,6 @@ Template.thread.helpers({
 	hideUsername() {
 		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
-	checkboxData() {
-		const instance = Template.instance() as ThreadTemplateInstance;
-		const checked = instance.state.get('sendToChannel');
-		return {
-			id: 'sendAlso',
-			checked,
-			onChange: () => instance.state.set('sendToChannel', !checked),
-		};
-	},
 	// TODO: remove this
 	chatContext() {
 		const { chatContext } = (Template.instance() as ThreadTemplateInstance).data;
@@ -178,7 +173,7 @@ Template.thread.helpers({
 });
 
 Template.thread.onCreated(async function (this: ThreadTemplateInstance) {
-	this.Threads = new Mongo.Collection(null) as Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
+	this.Threads = new Mongo.Collection<Omit<IMessage, '_id'>, IMessage>(null) as Mongo.Collection<Omit<IMessage, '_id'>, IMessage> & {
 		direct: Mongo.Collection<Omit<IMessage, '_id'>, IMessage>;
 		queries: unknown[];
 	};
@@ -361,7 +356,7 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 	this.autorun(() => {
 		const { messageHighlightContext } = Template.currentData() as ThreadTemplateInstance['data'];
 
-		this.state.set('editingMID', messageHighlightContext()?.highlightMessageId);
+		this.state.set('editingMID', messageHighlightContext.highlightMessageId);
 	});
 });
 
