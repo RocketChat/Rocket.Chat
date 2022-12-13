@@ -1,5 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 type MetricsFollowingProps = { name: 'bell' | 'bell-off' };
 

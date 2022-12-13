@@ -1,4 +1,4 @@
-import { IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage as ThreadMessageTemplate,
@@ -12,7 +12,8 @@ import {
 	CheckBox,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';

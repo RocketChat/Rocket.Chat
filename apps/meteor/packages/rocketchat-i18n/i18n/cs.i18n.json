@@ -1,5 +1,4 @@
 {
-  "403": "Zakázaný",
   "500": "Chyba serveru",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ prázdných místností bude automaticky odstraněno",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ prázdných místností bude automaticky odstraněno:<br/>__rooms__.",
@@ -4026,6 +4025,7 @@
   "registration.page.registration.waitActivationWarning": "Předtím, než se můžete přihlásit, Váš účet musí být ručně aktivován správcem.",
   "registration.page.resetPassword.sent": "Pokud je e-mail v naší databázi, odešleme na něj instrukce pro reset hesla. Pokud vám e-mail nepřijde během chvilky, prosím vraťte se a zkuste to znova.",
   "registration.component.login": "Přihlásit se",
+  "registration.component.login.userNotFound": "Uživatel nenalezen",
   "registration.component.resetPassword": "Obnovit heslo",
   "registration.component.form.email": "E-mail",
   "registration.component.form.password": "Heslo",

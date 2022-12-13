@@ -1,7 +1,8 @@
 import { Box, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useEffect, ReactElement, Dispatch, SetStateAction } from 'react';
+import type { ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
