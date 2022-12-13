@@ -51,12 +51,14 @@ export async function updatePriority(
 			$set: { dirty: false },
 			$unset: { name: 1 },
 		}) || {
-			$set: { name: data.name, dirty: true },
+			// Trim value before inserting
+			$set: { name: data.name?.trim(), dirty: true },
 		}),
 	};
 
 	if (data.name) {
-		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name)}$`, 'i') });
+		// If we want to enforce translated duplicates we need to change this
+		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name.trim())}$`, 'i') });
 		if (priority && priority._id !== _id) {
 			throw new Error('error-duplicate-priority-name');
 		}

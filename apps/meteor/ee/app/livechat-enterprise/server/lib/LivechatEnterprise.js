@@ -137,6 +137,11 @@ export const LivechatEnterprise = {
 
 	async saveSLA(_id, slaData) {
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
+		if (exists) {
+			throw new Error('error-duplicated-sla');
+		}
+
 		const sla = await OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id);
 		if (!oldSLA) {
 			return sla;

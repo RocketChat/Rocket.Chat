@@ -8,4 +8,5 @@ export interface IOmnichannelServiceLevelAgreementsModel extends IBaseModel<IOmn
 		{ name, description, dueTimeInMinutes }: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
 		_id?: string,
 	): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'>>;
+	findDuplicate(_id: string, name: string, dueTimeInMinutes: number): Promise<IOmnichannelServiceLevelAgreements | null>;
 }
