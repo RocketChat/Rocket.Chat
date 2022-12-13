@@ -24,34 +24,24 @@ describe('components/AdministrationList/AppsModelList', () => {
 		expect(screen.getByText('Installed')).to.exist;
 	});
 
-	it('should not render marketplace and installed when does not have permission', async () => {
-		const AppsModelList = proxyquire.load(COMPONENT_PATH, {
-			...defaultConfig,
-			'@rocket.chat/ui-contexts': {
-				useAtLeastOnePermission: (): boolean => false,
-			},
-		}).default;
-		render(<AppsModelList showManageApps={false} closeList={() => null} appBoxItems={[]} />);
-
-		expect(screen.getByText('Apps')).to.exist;
-		expect(screen.queryByText('Marketplace')).to.not.exist;
-		expect(screen.queryByText('Installed')).to.not.exist;
-	});
-
 	context('when clicked', () => {
-		it('should go to admin marketplace', async () => {
+		it('should go to marketplace', async () => {
 			const pushRoute = spy();
 			const closeList = spy();
-			const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+			const AppsModelList = proxyquire.load(COMPONENT_PATH, {
+				'@rocket.chat/ui-contexts': {
+					useAtLeastOnePermission: () => false,
+				},
+				...defaultConfig,
+			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[]} />
+					<AppsModelList closeList={closeList} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Marketplace');
-
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace-all'));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace-all', { context: 'all', page: 'list' }));
 			await waitFor(() => expect(closeList).to.have.been.called());
 		});
 
