@@ -1,17 +1,14 @@
-import { IRoom, IMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { Mongo } from 'meteor/mongo';
+import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useMessageListContext } from '../contexts/MessageListContext';
-import {
-	MessageWithMdEnforced,
-	parseMessageTextToAstMarkdown,
-	removePossibleNullMessageValues,
-} from '../lib/parseMessageTextToAstMarkdown';
+import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../lib/parseMessageTextToAstMarkdown';
 
 const options = {
 	sort: {

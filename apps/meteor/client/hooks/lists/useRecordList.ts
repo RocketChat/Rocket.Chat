@@ -1,8 +1,8 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { useEffect, useState } from 'react';
 
-import { AsyncStatePhase } from '../../lib/asyncState';
-import { RecordList } from '../../lib/lists/RecordList';
+import type { AsyncStatePhase } from '../../lib/asyncState';
+import type { RecordList } from '../../lib/lists/RecordList';
 
 type RecordListValue<T> = {
 	phase: AsyncStatePhase;

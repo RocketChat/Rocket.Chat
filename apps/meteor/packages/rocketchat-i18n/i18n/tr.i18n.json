@@ -1,5 +1,4 @@
 {
-  "403": "Yasak",
   "500": "İç Sunucu Hatası",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ adlı kullanıcı __user_by__ tarafından __role__ rolünden çıkarıldı.",
   "__username__was_set__role__by__user_by_": "__username__ adlı kullanıcı __user_by__ tarafından __role__ rolüne atandı.",
@@ -3309,6 +3308,7 @@
   "registration.page.registration.waitActivationWarning": "Oturum açmadan önce, hesabınızın yönetici tarafından etkinleştirilmesi gerekiyor.",
   "registration.page.resetPassword.sent": "Bu e-posta kayıtlıysa, şifrenizi nasıl sıfırlayacağınıza ilişkin talimatlar göndeririz. Kısa süre içinde bir e-posta almıyorsanız, lütfen geri dönün ve tekrar deneyin.",
   "registration.component.login": "Oturum aç",
+  "registration.component.login.userNotFound": "Kullanıcı bulunamadı",
   "registration.component.resetPassword": "Şifreyi sıfırla",
   "registration.component.form.email": "E-posta",
   "registration.component.form.password": "Şifre",

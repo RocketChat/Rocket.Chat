@@ -1,7 +1,9 @@
 import { OptionDivider } from '@rocket.chat/fuselage';
-import React, { FC, Fragment } from 'react';
+import type { FC } from 'react';
+import React, { Fragment } from 'react';
 
-import { AccountBoxItem, IAppAccountBoxItem, isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import type { AccountBoxItem, IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import { isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import AdministrationModelList from './AdministrationModelList';
 import AppsModelList from './AppsModelList';
 import AuditModelList from './AuditModelList';

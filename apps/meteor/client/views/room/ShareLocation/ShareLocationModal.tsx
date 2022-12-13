@@ -1,7 +1,8 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import MapView from '../../location/MapView';

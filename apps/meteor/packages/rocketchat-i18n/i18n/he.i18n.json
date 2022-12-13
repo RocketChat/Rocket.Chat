@@ -1,5 +1,4 @@
 {
-  "403": "אסור",
   "500": "שגיאת שרת פנימית",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ קבוצות ריקות יוסרו אוטומטית",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ הוא כבר לא __role__, על ידי __user_by__",
@@ -1549,6 +1548,7 @@
   "registration.page.login.errors.wrongCredentials": "המשתמש לא נמצא או הסיסמה לא נכונה",
   "registration.page.registration.waitActivationWarning": "לפני שתוכל להתחבר, החשבון שלך חייב לעבור אישור על ידי האדמין.",
   "registration.component.login": "התחברות",
+  "registration.component.login.userNotFound": "המשתמש לא נמצא",
   "registration.component.resetPassword": "איפוס ססמה",
   "registration.component.form.email": "דוא״ל",
   "registration.component.form.submit": "שליחה"

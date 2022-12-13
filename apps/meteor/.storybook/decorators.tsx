@@ -1,5 +1,6 @@
-import { DecoratorFunction } from '@storybook/addons';
-import React, { ReactElement } from 'react';
+import type { DecoratorFunction } from '@storybook/addons';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import ModalContextMock from '../client/stories/contexts/ModalContextMock';
 import QueryClientProviderMock from '../client/stories/contexts/QueryClientProviderMock';
