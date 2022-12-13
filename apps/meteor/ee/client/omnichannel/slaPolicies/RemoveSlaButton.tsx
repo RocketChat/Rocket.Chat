@@ -28,7 +28,7 @@ function RemoveSlaButton({ _id, reload }: Props): ReactElement {
 		const onDeleteAgent = async (): Promise<void> => {
 			try {
 				await handleRemoveClick();
-				dispatchToastMessage({ type: 'success', message: t('Priority_removed') });
+				dispatchToastMessage({ type: 'success', message: t('SLA_removed') });
 				slaRoute.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
