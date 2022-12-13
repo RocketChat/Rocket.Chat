@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
+import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createVisitor } from '../../data/livechat/rooms';
@@ -43,6 +44,7 @@ describe('[Channels]', function () {
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', 0);
 				channel._id = res.body.channel._id;
+				channel.name = res.body.channel.name;
 			})
 			.end(done);
 	});
@@ -367,7 +369,7 @@ describe('[Channels]', function () {
 				.get(api('channels.files'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: channel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -383,7 +385,7 @@ describe('[Channels]', function () {
 				.get(api('channels.files'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: channel._id,
 					count: 5,
 					offset: 0,
 				})
@@ -401,7 +403,7 @@ describe('[Channels]', function () {
 				.get(api('channels.files'))
 				.set(credentials)
 				.query({
-					roomName: 'general',
+					roomName: channel.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -417,7 +419,7 @@ describe('[Channels]', function () {
 				.get(api('channels.files'))
 				.set(credentials)
 				.query({
-					roomName: 'general',
+					roomName: channel.name,
 					count: 5,
 					offset: 0,
 				})
@@ -428,6 +430,37 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('files').and.to.be.an('array');
 				})
 				.end(done);
+		});
+
+		it('should not return thumbnails', async function () {
+			await request
+				.post(api(`rooms.upload/${channel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
+
+					const { files } = res.body;
+
+					files.forEach((file) => {
+						expect(file).to.not.have.property('originalFileId');
+					});
+				});
 		});
 	});
 

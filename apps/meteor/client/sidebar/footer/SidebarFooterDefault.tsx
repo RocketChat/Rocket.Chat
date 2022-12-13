@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Divider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
+import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -20,7 +20,7 @@ const SidebarFooterDefault = (): ReactElement => {
 
 	return (
 		<Footer>
-			<Divider mbs={-2} mbe={0} borderColor='neutral-900-40' />
+			<SidebarDivider />
 			<Box
 				is='footer'
 				pb='x12'
