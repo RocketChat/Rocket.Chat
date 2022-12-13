@@ -6,17 +6,18 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import type { ThreadTemplateInstance } from '../../../../../../app/threads/client/flextab/thread';
 import VerticalBar from '../../../../../components/VerticalBar';
 import MessageHighlightContext from '../../../MessageList/contexts/MessageHighlightContext';
+import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
+import { useFileUploadDropTarget } from '../../../components/body/useFileUploadDropTarget';
 import { ChatContext } from '../../../contexts/ChatContext';
 import { MessageContext } from '../../../contexts/MessageContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarOpenUserInfo } from '../../../contexts/ToolboxContext';
 
-type ThreadViewProps = {
+type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
-	following: boolean;
 };
 
-const ThreadView = ({ mainMessage, following }: ThreadViewProps): ReactElement => {
+const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 	const ref = useRef<HTMLElement>(null);
 
 	const chatContext = useContext(ChatContext);
@@ -37,7 +38,6 @@ const ThreadView = ({ mainMessage, following }: ThreadViewProps): ReactElement =
 	const [viewData, setViewData] = useState<ThreadTemplateInstance['data']>(() => ({
 		mainMessage,
 		jump,
-		following,
 		subscription,
 		rid: room._id,
 		tabBar: { openRoomInfo },
@@ -55,7 +55,6 @@ const ThreadView = ({ mainMessage, following }: ThreadViewProps): ReactElement =
 			return {
 				mainMessage,
 				jump,
-				following,
 				subscription,
 				rid: room._id,
 				tabBar: { openRoomInfo },
@@ -64,7 +63,7 @@ const ThreadView = ({ mainMessage, following }: ThreadViewProps): ReactElement =
 				messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 			};
 		});
-	}, [chatContext, following, jump, messageContext, messageHighlightContextReactiveVar, subscription, mainMessage, room._id, openRoomInfo]);
+	}, [chatContext, jump, messageContext, messageHighlightContextReactiveVar, subscription, mainMessage, room._id, openRoomInfo]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {
@@ -77,7 +76,14 @@ const ThreadView = ({ mainMessage, following }: ThreadViewProps): ReactElement =
 		};
 	}, [viewData]);
 
-	return <VerticalBar.Content ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} />;
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+
+	return (
+		<>
+			<VerticalBar.Content ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps} />
+			<DropTargetOverlay {...fileUploadOverlayProps} />
+		</>
+	);
 };
 
-export default ThreadView;
+export default ThreadChat;

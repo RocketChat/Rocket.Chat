@@ -11,9 +11,9 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import ChatProvider from '../../providers/ChatProvider';
 import MessageProvider from '../../providers/MessageProvider';
+import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
-import ThreadView from './components/ThreadView';
 import { useGoToThreadList } from './hooks/useGoToThreadList';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
@@ -115,7 +115,7 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 						(mainMessageQueryResult.isSuccess && (
 							<ChatProvider tmid={tmid}>
 								<MessageProvider rid={room._id} broadcast={subscription?.broadcast ?? false}>
-									<ThreadView mainMessage={mainMessageQueryResult.data} following={following} />
+									<ThreadChat mainMessage={mainMessageQueryResult.data} />
 								</MessageProvider>
 							</ChatProvider>
 						)) ||

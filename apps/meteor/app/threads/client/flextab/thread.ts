@@ -12,7 +12,6 @@ import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErro
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models/client';
-import { dropzoneEvents, dropzoneHelpers } from './dropzone';
 import { getUserPreference } from '../../../utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
@@ -27,7 +26,6 @@ import './thread.html';
 export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	mainMessage?: IMessage;
 	subscription?: ISubscription;
-	following: boolean;
 	rid: IRoom['_id'];
 	tabBar: {
 		openRoomInfo: (username: string) => void;
@@ -57,15 +55,12 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	atBottom?: boolean;
 	sendToBottom: () => void;
 	sendToBottomIfNecessary: () => void;
-	onFileDrop: (files: File[]) => void;
-	onTextDrop: (text: string) => void;
 	lastJump?: string;
 };
 
 const sort = { ts: 1 };
 
 Template.thread.events({
-	...dropzoneEvents,
 	...getCommonRoomEvents(),
 	'scroll .js-scroll-thread': withThrottling({ wait: 150 })(({ currentTarget: e }: JQuery.ScrollEvent, i: ThreadTemplateInstance) => {
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
@@ -77,7 +72,6 @@ Template.thread.events({
 });
 
 Template.thread.helpers({
-	...dropzoneHelpers,
 	mainMessage() {
 		const { Threads, state } = Template.instance() as ThreadTemplateInstance;
 		const tmid = state.get('tmid');
@@ -269,31 +263,6 @@ Template.thread.onRendered(function (this: ThreadTemplateInstance) {
 
 	const observer = new ResizeObserver(this.sendToBottomIfNecessary);
 	observer.observe(list);
-
-	this.onTextDrop = (droppedText: string) => {
-		const composer = this.data.chatContext?.composer;
-
-		if (!composer) {
-			return;
-		}
-
-		const { text, selection } = composer;
-
-		const initText = text.slice(0, selection.start ?? undefined);
-		const finalText = text.slice(selection.end ?? undefined, text.length);
-
-		composer.setText(initText + droppedText + finalText);
-	};
-
-	this.onFileDrop = (files) => {
-		const rid = this.state.get('rid');
-
-		if (!rid) {
-			throw new Error('No rid found');
-		}
-
-		this.data.chatContext?.flows.uploadFiles(files);
-	};
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');
