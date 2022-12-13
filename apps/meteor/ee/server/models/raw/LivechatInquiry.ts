@@ -1,25 +1,26 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { ModifyResult } from 'mongodb';
+import type { ModifyResult, UpdateResult, Document } from 'mongodb';
 
 import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquiry';
 
 declare module '@rocket.chat/model-typings' {
 	export interface ILivechatInquiryModel {
-		setEstimatedServiceTimeAt(
+		setSla(
 			rid: string,
-			data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: string },
+			sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
 		): Promise<ModifyResult<ILivechatInquiryRecord>>;
+		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;
 	}
 }
 
 // Note: Expect a circular dependency error here 😓
 export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivechatInquiryModel {
-	setEstimatedServiceTimeAt(
+	setSla(
 		rid: string,
-		data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: string },
+		sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
 	): Promise<ModifyResult<ILivechatInquiryRecord>> {
-		const { estimatedWaitingTimeQueue, estimatedServiceTimeAt } = data;
+		const { estimatedWaitingTimeQueue, estimatedServiceTimeAt } = sla;
 
 		return this.findOneAndUpdate(
 			{ rid },
@@ -27,6 +28,20 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 				$set: {
 					estimatedServiceTimeAt,
 					estimatedWaitingTimeQueue,
+				},
+			},
+		);
+	}
+
+	bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult> {
+		return this.updateMany(
+			{
+				rid: { $in: roomIds },
+			},
+			{
+				$unset: {
+					estimatedServiceTimeAt: 1,
+					estimatedWaitingTimeQueue: 1,
 				},
 			},
 		);

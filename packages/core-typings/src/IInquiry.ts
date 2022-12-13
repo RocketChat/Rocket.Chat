@@ -32,8 +32,8 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	status: LivechatInquiryStatus;
 	v: IVisitor;
 	t: 'l';
-	estimatedWaitingTimeQueue: number;
-	estimatedServiceTimeAt: string;
+	estimatedWaitingTimeQueue?: number;
+	estimatedServiceTimeAt?: Date;
 	department: string;
 	estimatedInactivityCloseTimeAt: Date;
 	locked?: boolean;

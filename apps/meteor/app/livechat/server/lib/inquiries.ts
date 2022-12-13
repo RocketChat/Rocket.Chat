@@ -7,11 +7,11 @@ export const getInquirySortQuery = (
 ): Partial<{ [k in keyof ILivechatInquiryRecord]: SortDirection }> => {
 	switch (sortByMechanism) {
 		case OmnichannelSortingMechanismSettingType.Priority:
-			return { priorityWeight: -1, estimatedServiceTimeAt: 1, ts: -1 };
+			return { priorityWeight: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 }; // TODO: update indexes
 		case OmnichannelSortingMechanismSettingType.SLAs:
-			return { estimatedServiceTimeAt: 1, priorityWeight: -1, ts: -1 };
+			return { estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, priorityWeight: 1, ts: 1 };
 		case OmnichannelSortingMechanismSettingType.Timestamp:
 		default:
-			return { ts: -1 };
+			return { ts: 1 };
 	}
 };

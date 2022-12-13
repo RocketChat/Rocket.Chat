@@ -17,6 +17,7 @@ import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { api } from '../../../../../server/sdk/api';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { updateInquiryQueueSla } from './InquiryHelper';
 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -215,45 +216,15 @@ export const updateRoomSLAHistory = (rid, user, sla) => {
 	Messages.createSLAHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
-export const updateInquiryQueueSla = async (roomId, sla) => {
-	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
-	if (!inquiry) {
-		return;
-	}
-
-	let { ts: estimatedServiceTimeAt } = inquiry;
-	let estimatedWaitingTimeQueue = 0;
-
-	if (sla) {
-		const { dueTimeInMinutes } = sla;
-		estimatedWaitingTimeQueue = dueTimeInMinutes;
-		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
-	}
-
-	await LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
-		estimatedWaitingTimeQueue,
-		estimatedServiceTimeAt,
-	});
-};
-
-export const removeSLAFromRooms = async (slaId) => {
-	const promises = [];
-	LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
-		promises.push(updateInquiryQueueSla(room._id));
-	});
-	await Promise.all(promises.length ? promises : []);
-
-	await LivechatRoomsRaw.unsetSlaById(slaId);
-};
-
 export const updateSLAInquiries = async (sla) => {
 	if (!sla) {
 		return;
 	}
 
 	const { _id: slaId } = sla;
-	const promises = LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
-		updateInquiryQueueSla(room._id, sla);
+	const promises = [];
+	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
+		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises.length ? promises : []);
 };

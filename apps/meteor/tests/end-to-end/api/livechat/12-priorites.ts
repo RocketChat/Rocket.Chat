@@ -1,12 +1,17 @@
 /* eslint-env mocha */
 
-import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type {
+	ILivechatInquiryRecord,
+	ILivechatPriority,
+	IOmnichannelRoom,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { saveSLA, deleteSLA, generateRandomSLA } from '../../../data/livechat/priorities';
+import { saveSLA, deleteSLA, generateRandomSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
 import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -616,70 +621,189 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 	});
 
 	describe('Inquiry queue sorting mechanism', () => {
-		it('[Priority] test livechat/inquiries.queuedForUser route with priority based sorting', async () => {
-			// update Omnichannel_sorting_mechanism setting to priority
-			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Priority);
+		let omniRooms: IOmnichannelRoom[];
+		let departmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+		let priorities: ILivechatPriority[];
+		let slas: Awaited<ReturnType<typeof bulkCreateSLA>>;
 
-			// create 6 rooms, one for each priority level (1-5) and one with no priority
-			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+		const hasSlaProps = (inquiry: ILivechatInquiryRecord) => inquiry.estimatedWaitingTimeQueue && inquiry.estimatedServiceTimeAt;
+		const hasPriorityProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { priorityId: ILivechatPriority } =>
+			inquiry.priorityId !== undefined;
+
+		const getPriorityOrderById = (id: string) => {
+			const priority = priorities.find((priority) => priority._id === id);
+			return priority?.sortItem || 0;
+		};
+
+		const sortBySLAProps = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord): number => {
+			if (hasSlaProps(inquiry1) || hasSlaProps(inquiry2)) {
+				if (hasSlaProps(inquiry1) && hasSlaProps(inquiry2)) {
+					// if both inquiries have sla props, then sort by estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1
+					const estimatedWaitingTimeQueue1 = new Date(inquiry1.estimatedWaitingTimeQueue).getTime();
+					const estimatedWaitingTimeQueue2 = new Date(inquiry2.estimatedWaitingTimeQueue).getTime();
+
+					if (estimatedWaitingTimeQueue1 !== estimatedWaitingTimeQueue2) {
+						return estimatedWaitingTimeQueue1 - estimatedWaitingTimeQueue2;
+					}
+
+					return new Date(inquiry1.estimatedServiceTimeAt).getTime() - new Date(inquiry2.estimatedServiceTimeAt).getTime();
+				}
+
+				if (hasSlaProps(inquiry1)) {
+					return -1;
+				}
+
+				if (hasSlaProps(inquiry2)) {
+					return 1;
+				}
+			}
+
+			return 0;
+		};
+
+		const sortByPriorityProps = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord): number => {
+			if (hasPriorityProps(inquiry1) || hasPriorityProps(inquiry2)) {
+				if (hasPriorityProps(inquiry1) && hasPriorityProps(inquiry2)) {
+					// if both inquiries have priority props, then sort by priorityId: 1
+					return getPriorityOrderById(inquiry1.priorityId) - getPriorityOrderById(inquiry2.priorityId);
+				}
+
+				if (hasPriorityProps(inquiry1)) {
+					return -1;
+				}
+
+				if (hasPriorityProps(inquiry2)) {
+					return 1;
+				}
+			}
+
+			return 0;
+		};
+
+		// this should sort using logic - { priorityWeight: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 }
+		const sortByPriority = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
+			const priorityPropsSort = sortByPriorityProps(inquiry1, inquiry2);
+			if (priorityPropsSort !== 0) {
+				return priorityPropsSort;
+			}
+
+			// check if sla props are present in both inquiries
+			const slaPropsSort = sortBySLAProps(inquiry1, inquiry2);
+			if (slaPropsSort !== 0) {
+				return slaPropsSort;
+			}
+
+			return new Date(inquiry1.ts).getTime() - new Date(inquiry2.ts).getTime();
+		};
+
+		// this should sort using logic - { estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, priorityWeight: 1, ts: 1 }
+		const sortBySLA = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
+			const slaPropsSort = sortBySLAProps(inquiry1, inquiry2);
+			if (slaPropsSort !== 0) {
+				return slaPropsSort;
+			}
+
+			const priorityPropsSort = sortByPriorityProps(inquiry1, inquiry2);
+			if (priorityPropsSort !== 0) {
+				return priorityPropsSort;
+			}
+
+			return new Date(inquiry1.ts).getTime() - new Date(inquiry2.ts).getTime();
+		};
+
+		// this should sort using logic - { ts: 1 }
+		const sortByTimestamp = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
+			return new Date(inquiry1.ts).getTime() - new Date(inquiry2.ts).getTime();
+		};
+
+		it('it should create all the data required for further testing', async () => {
+			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
+
 			const {
-				body: { priorities },
+				body: { priorities: prioritiesResponse },
 			} = (await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200)) as {
 				body: { priorities: ILivechatPriority[] };
 			};
-			const omniRooms = await bulkCreateLivechatRooms(6, department._id, (index) => {
-				const priority = priorities.find((priority) => priority.sortItem === index + 1);
-				return (
-					priority && {
-						priority: priority._id,
-					}
-				);
-			});
-			const sortedOmniRooms = omniRooms.sort((a, b) => {
-				const { priorityId: priorityIdA } = a;
-				const { priorityId: priorityIdB } = b;
+			priorities = prioritiesResponse;
 
-				if (!priorityIdA || !priorityIdB) {
-					// if one of the rooms has no priority, it should be the last one
-					return priorityIdA ? -1 : 1;
+			await deleteAllSLA();
+			slas = await bulkCreateSLA(5);
+
+			type RoomParamsReturnType = { priority: string } | { sla: string } | { priority: string; sla: string } | undefined;
+
+			// create 20 rooms, 5 with only priority, 5 with only SLA, 5 with both, 5 without priority or SLA
+			omniRooms = await bulkCreateLivechatRooms(20, departmentWithAgent.department._id, (index): RoomParamsReturnType => {
+				if (index < 5) {
+					return {
+						priority: priorities[index]._id,
+					};
 				}
 
-				const priorityA = priorities.find((priority) => priority._id === priorityIdA);
-				const priorityB = priorities.find((priority) => priority._id === priorityIdB);
-
-				if (!priorityA || !priorityB) {
-					throw new Error(`Could not find priority for room ${a._id} or ${b._id} with priorityId ${priorityIdA} or ${priorityIdB}`);
+				if (index < 10) {
+					return {
+						sla: slas[index - 5]._id,
+					};
 				}
 
-				return priorityA.sortItem - priorityB.sortItem;
-			});
+				if (index < 15) {
+					// random number between 0 and 4
+					const randomPriorityIndex = Math.floor(Math.random() * 5);
+					const randomSlaIndex = Math.floor(Math.random() * 5);
 
-			// fetch all inquiries using livechat/inquiries.queuedForUser route (note it is paginated)
-			const allInquiries = await fetchAllInquiries(agent.credentials, department._id);
-			expect(allInquiries.length).to.be.greaterThanOrEqual(6);
-
-			// verify if all the inquiry.rids are the same as the sortedOmniRoomsIds
-			const inquiryRids = allInquiries.map((inquiry) => inquiry.rid);
-			const sortedOmniRoomsIds = sortedOmniRooms.map((room) => room._id);
-			// expect sortedOmniRoomsIds to be a subset of inquiryRids
-			expect(sortedOmniRoomsIds.every((roomId) => inquiryRids.includes(roomId))).to.be.true;
-
-			const inquiryRidAndPriority = allInquiries.map((inquiry) => {
-				const { rid, priorityId } = inquiry;
-				let priority = 0;
-
-				if (priorityId) {
-					const priorityObj = priorities.find((priority) => priority._id === priorityId);
-					if (priorityObj) {
-						priority = priorityObj.sortItem;
-					}
+					return {
+						priority: priorities[randomPriorityIndex]._id,
+						sla: slas[randomSlaIndex]._id,
+					};
 				}
-
-				return { rid, priority };
 			});
-			// expect the inquiryRidAndPriority to be sorted by priority in descending order
-			const sortedInquiryRidAndPriority = inquiryRidAndPriority.sort((a, b) => b.priority - a.priority);
-			expect(sortedInquiryRidAndPriority).to.deep.equal(inquiryRidAndPriority);
+		});
+
+		it('it should sort the queue based on priority', async () => {
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Priority);
+
+			const allInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(allInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+
+			const sortedInquiries = allInquiries.sort(sortByPriority);
+
+			expect(allInquiries).to.deep.equal(sortedInquiries);
+
+			// For debugging purposes
+			// const allInquiriesWithPrioritySlasAndTs = allInquiries.map((inquiry) => {
+			// 	return {
+			// 		...(inquiry.priorityId && { priority: getPriorityOrderById(inquiry.priorityId) }),
+			// 		...(hasSlaProps(inquiry) && {
+			// 			sla: {
+			// 				estimatedWaitingTimeQueue: inquiry.estimatedWaitingTimeQueue,
+			// 				estimatedServiceTimeAt: inquiry.estimatedServiceTimeAt,
+			// 			},
+			// 		}),
+			// 		ts: inquiry.ts,
+			// 	};
+			// });
+			// console.log('Priorities', JSON.stringify(allInquiriesWithPrioritySlasAndTs));
+		});
+
+		it('it should sort the queue based on slas', async () => {
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.SLAs);
+
+			const allInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(allInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+
+			const sortedInquiries = allInquiries.sort(sortBySLA);
+
+			expect(allInquiries).to.deep.equal(sortedInquiries);
+		});
+
+		it('it should sort the queue based on timestamp', async () => {
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Timestamp);
+
+			const allInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(allInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+
+			const sortedInquiries = allInquiries.sort(sortByTimestamp);
+
+			expect(allInquiries).to.deep.equal(sortedInquiries);
 		});
 	});
 });

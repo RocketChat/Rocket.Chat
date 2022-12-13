@@ -7,7 +7,8 @@ import LivechatTag from '../../../models/server/models/LivechatTag';
 import { Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
-import { processWaitingQueue, removeSLAFromRooms, updateInquiryQueueSla, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
+import { processWaitingQueue, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
+import { updateInquiryQueueSla, removeSLAFromRooms } from './InquiryHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
@@ -164,9 +165,8 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	updateRoomSLA(roomId, user, sla) {
-		updateInquiryQueueSla(roomId, sla);
-		updateRoomSLAHistory(roomId, user, sla);
+	async updateRoomSLA(roomId, user, sla) {
+		await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSLAHistory(roomId, user, sla)]);
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {

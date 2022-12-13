@@ -161,10 +161,14 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			.toArray();
 	}
 
-	setEstimatedServiceTimeAt(
+	setSla(
 		_rid: string,
-		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: string },
+		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
 	): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	bulkUnsetSla(_roomIds: string[]): Promise<Document | UpdateResult> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 }
