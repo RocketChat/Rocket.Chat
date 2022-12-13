@@ -46,14 +46,18 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='default'>
 							{t('Description')}
 						</Box>
-						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
+						<Box
+							dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }}
+							withRichContent
+							color='default'
+						/>
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='default'>
 							{t('Categories')}
 						</Box>
 						<ButtonGroup medium flexWrap='wrap'>
@@ -66,7 +70,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='default'>
 							{t('Contact')}
 						</Box>
 						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap'>
