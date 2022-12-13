@@ -3036,28 +3036,8 @@ describe('[Users]', function () {
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
 		let testUserCredentials;
-		const testRoleName = `role.test.${Date.now()}`;
-		const isEnterprise = Boolean(process.env.IS_EE);
-		let testRoleId = null;
+		const testRoleId = 'guest';
 
-		before('Create a new role with Users scope', (done) => {
-			isEnterprise &&
-				request
-					.post(api('roles.create'))
-					.set(credentials)
-					.send({
-						name: testRoleName,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('role');
-						expect(res.body.role).to.have.property('name', testRoleName);
-						testRoleId = res.body.role._id;
-					})
-					.end(done);
-		});
 		before('Create test user', (done) => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
@@ -3071,10 +3051,6 @@ describe('[Users]', function () {
 				});
 		});
 		before('Assign a role to test user', (done) => {
-			if (!isEnterprise) {
-				return done();
-			}
-
 			request
 				.post(api('roles.addUserToRole'))
 				.set(credentials)
@@ -3141,9 +3117,6 @@ describe('[Users]', function () {
 			});
 		});
 		it('should deactivate the test user when given its role and daysIdle = 0', (done) => {
-			if (!isEnterprise) {
-				return done();
-			}
 			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
 				request
 					.post(api('users.deactivateIdle'))
@@ -3162,10 +3135,6 @@ describe('[Users]', function () {
 			});
 		});
 		it('should not deactivate the test user again when given its role and daysIdle = 0', (done) => {
-			if (!isEnterprise) {
-				return done();
-			}
-
 			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
 				request
 					.post(api('users.deactivateIdle'))
