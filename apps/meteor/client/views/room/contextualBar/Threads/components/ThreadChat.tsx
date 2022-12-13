@@ -9,11 +9,12 @@ import type { ThreadTemplateInstance } from '../../../../../../app/threads/clien
 import VerticalBar from '../../../../../components/VerticalBar';
 import MessageHighlightContext from '../../../MessageList/contexts/MessageHighlightContext';
 import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
+import ComposerContainer from '../../../components/body/composer/ComposerContainer';
 import { useFileUploadDropTarget } from '../../../components/body/useFileUploadDropTarget';
-import { ChatContext } from '../../../contexts/ChatContext';
+import { useChat } from '../../../contexts/ChatContext';
 import { MessageContext } from '../../../contexts/MessageContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
-import { useTabBarOpenUserInfo } from '../../../contexts/ToolboxContext';
+import { useTabBarClose, useTabBarOpenUserInfo } from '../../../contexts/ToolboxContext';
 
 type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
@@ -23,8 +24,13 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 	const t = useTranslation();
 	const ref = useRef<HTMLElement>(null);
 
-	const chatContext = useContext(ChatContext);
 	const messageContext = useContext(MessageContext);
+
+	const chat = useChat();
+
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
 
 	const messageHighlightContext = useContext(MessageHighlightContext);
 
@@ -59,7 +65,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 			subscription,
 			rid: room._id,
 			tabBar: { openRoomInfo },
-			chatContext,
+			chatContext: chat,
 			messageContext,
 			messageHighlightContext,
 			sendToChannel,
@@ -73,13 +79,13 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 			subscription,
 			rid: room._id,
 			tabBar: { openRoomInfo },
-			chatContext,
+			chatContext: chat,
 			messageContext,
 			messageHighlightContext,
 			sendToChannel,
 			onSend: handleSend,
 		});
-	}, [chatContext, handleSend, mainMessage, messageContext, messageHighlightContext, openRoomInfo, room._id, sendToChannel, subscription]);
+	}, [chat, handleSend, mainMessage, messageContext, messageHighlightContext, openRoomInfo, room._id, sendToChannel, subscription]);
 
 	const viewDataFn = useCallback(() => reactiveViewDataRef.current.get(), []);
 
@@ -96,20 +102,53 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 
 	const sendToChannelID = useUniqueId();
 
+	const closeTabBar = useTabBarClose();
+	const handleComposerEscape = useCallback((): void => {
+		closeTabBar();
+	}, [closeTabBar]);
+
+	const handleNavigateToPreviousMessage = useCallback((): void => {
+		chat.messageEditing.toPreviousMessage();
+	}, [chat.messageEditing]);
+
+	const handleNavigateToNextMessage = useCallback((): void => {
+		chat.messageEditing.toNextMessage();
+	}, [chat.messageEditing]);
+
+	const handleUploadFiles = useCallback(
+		(files: readonly File[]): void => {
+			chat.flows.uploadFiles(files);
+		},
+		[chat],
+	);
+
 	return (
 		<>
-			<VerticalBar.Content ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps} />
 			<DropTargetOverlay {...fileUploadOverlayProps} />
-			<section className='contextual-bar__content flex-tab threads' style={{ flexShrink: 0, flexBasis: 36 }}>
-				<footer className='thread-footer'>
-					<div style={{ display: 'flex' }}>
-						<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
-					</div>
-					<label htmlFor={sendToChannelID} className='thread-footer__text'>
-						{t('Also_send_to_channel')}
-					</label>
-				</footer>
-			</section>
+			<VerticalBar.Content ref={ref} flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps} />
+			<VerticalBar.Content paddingInline={0} style={{ flex: '0 0 136px' }} {...fileUploadTriggerProps}>
+				<ComposerContainer
+					rid={room._id}
+					subscription={subscription}
+					chatMessagesInstance={chat}
+					onSend={handleSend}
+					onEscape={handleComposerEscape}
+					// onResize={handleComposerResize}
+					onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
+					onNavigateToNextMessage={handleNavigateToNextMessage}
+					onUploadFiles={handleUploadFiles}
+				/>
+				<section className='contextual-bar__content flex-tab threads'>
+					<footer className='thread-footer'>
+						<div style={{ display: 'flex' }}>
+							<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
+						</div>
+						<label htmlFor={sendToChannelID} className='thread-footer__text'>
+							{t('Also_send_to_channel')}
+						</label>
+					</footer>
+				</section>
+			</VerticalBar.Content>
 		</>
 	);
 };

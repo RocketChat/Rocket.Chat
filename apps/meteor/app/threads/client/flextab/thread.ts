@@ -13,10 +13,8 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
-import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
-import type { MessageBoxTemplateInstance } from '../../../ui-message/client/messageBox/messageBox';
 import type { MessageContext } from '../../../../client/views/room/contexts/MessageContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import type MessageHighlightContext from '../../../../client/views/room/MessageList/contexts/MessageHighlightContext';
@@ -103,57 +101,6 @@ Template.thread.helpers({
 				...result.settings,
 				showReplyButton: false,
 				showreply: false,
-			},
-		};
-	},
-	messageBoxData(): MessageBoxTemplateInstance['data'] {
-		const instance = Template.instance() as ThreadTemplateInstance;
-		const {
-			mainMessage: { rid, _id: tmid } = {},
-			subscription,
-			chatContext,
-			sendToChannel,
-		} = Template.currentData() as ThreadTemplateInstance['data'];
-
-		if (!chatContext) {
-			throw new Error('chatContext is not defined');
-		}
-
-		const showFormattingTips = settings.get('Message_ShowFormattingTips');
-
-		return {
-			chatContext,
-			showFormattingTips,
-			tshow: sendToChannel,
-			subscription,
-			rid: rid ?? '',
-			tmid,
-			onSend: async (
-				_event: Event,
-				{
-					value: text,
-					tshow,
-				}: {
-					value: string;
-					tshow?: boolean;
-				},
-			) => {
-				instance.sendToBottom();
-
-				instance.data.onSend?.();
-
-				await chatContext.flows.sendMessage({
-					text,
-					tshow,
-				});
-			},
-			onEscape: () => {
-				instance.closeThread();
-			},
-			onNavigateToPreviousMessage: () => chatContext.messageEditing.toPreviousMessage(),
-			onNavigateToNextMessage: () => chatContext.messageEditing.toNextMessage(),
-			onUploadFiles: (files: readonly File[]) => {
-				return chatContext.flows.uploadFiles(files);
 			},
 		};
 	},
