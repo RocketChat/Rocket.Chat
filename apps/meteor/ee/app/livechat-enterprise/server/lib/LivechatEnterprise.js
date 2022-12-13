@@ -15,6 +15,7 @@ import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { LivechatUnitMonitors } from '../../../models/server';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -250,7 +251,7 @@ const queueWorker = {
 	async checkQueue(queue) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;

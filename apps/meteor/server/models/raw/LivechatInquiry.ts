@@ -48,7 +48,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 
-	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null> {
+	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		const result = await this.col.findOneAndUpdate(
 			{
@@ -77,10 +77,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 			},
 			{
-				sort: {
-					estimatedWaitingTimeQueue: 1,
-					estimatedServiceTimeAt: 1,
-				},
+				sort: getInquirySortQuery(queueSortBy),
 			},
 		);
 

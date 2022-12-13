@@ -1,4 +1,5 @@
-import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
+import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig } from '@rocket.chat/core-typings';
+import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -94,7 +95,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
 				},
 				{
-					sort: getInquirySortQuery(omnichannelSortingMechanism),
+					sort: getInquirySortQuery(omnichannelSortingMechanism || OmnichannelSortingMechanismSettingType.Timestamp),
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
