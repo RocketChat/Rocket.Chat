@@ -1,14 +1,17 @@
 import { MessageToolboxItem, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, Fragment, useRef, ComponentProps } from 'react';
+import type { FC, ComponentProps, UIEvent } from 'react';
+import React, { useState, Fragment, useRef } from 'react';
 
-import { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { ToolboxDropdown } from './ToolboxDropdown';
 
-type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order'>;
+type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
+	action: (event: UIEvent) => void;
+};
 
 export const MessageActionMenu: FC<{
-	options: MessageActionConfig[];
+	options: MessageActionConfigOption[];
 }> = ({ options, ...rest }) => {
 	const ref = useRef(null);
 
@@ -38,6 +41,7 @@ export const MessageActionMenu: FC<{
 			onClick={(): void => setVisible(!visible)}
 			data-qa-id='menu'
 			data-qa-type='message-action-menu'
+			title={t('More')}
 		>
 			{visible && (
 				<ToolboxDropdown reference={ref} container={messagesContainer} {...rest}>
@@ -50,7 +54,7 @@ export const MessageActionMenu: FC<{
 									id={option.id}
 									icon={option.icon as ComponentProps<typeof Option>['icon']}
 									label={t(option.label)}
-									onClick={option.action as any}
+									onClick={option.action}
 									data-qa-type='message-action'
 									data-qa-id={option.id}
 								/>

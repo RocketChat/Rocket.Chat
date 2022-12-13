@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageSystem as MessageSystemTemplate,
 	MessageSystemBody,
@@ -9,9 +9,12 @@ import {
 	MessageSystemBlock,
 	CheckBox,
 	MessageUsername,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
@@ -19,7 +22,7 @@ import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { UserPresence } from '../../../../lib/presence';
+import type { UserPresence } from '../../../../lib/presence';
 import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../contexts/MessageListContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
@@ -49,6 +52,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 			isSelected={isSelected}
 			data-qa-selected={isSelected}
 			data-qa='system-message'
+			data-system-message-type={message.t}
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
@@ -56,18 +60,26 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageSystemName onClick={user.username !== undefined ? openUserCard(user.username) : undefined} style={{ cursor: 'pointer' }}>
-						{getUserDisplayName(user.name, user.username, showRealName)}
-					</MessageSystemName>
-					{showUsername && (
-						<MessageUsername
-							data-username={user.username}
+					<MessageNameContainer>
+						<MessageSystemName
 							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 							style={{ cursor: 'pointer' }}
 						>
-							@{user.username}
-						</MessageUsername>
-					)}
+							{getUserDisplayName(user.name, user.username, showRealName)}
+						</MessageSystemName>
+						{showUsername && (
+							<>
+								{' '}
+								<MessageUsername
+									data-username={user.username}
+									onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+									style={{ cursor: 'pointer' }}
+								>
+									@{user.username}
+								</MessageUsername>
+							</>
+						)}
+					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody
 							data-qa-type='system-message-body'

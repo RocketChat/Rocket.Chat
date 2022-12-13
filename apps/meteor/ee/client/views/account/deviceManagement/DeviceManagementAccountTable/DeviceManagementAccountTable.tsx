@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';

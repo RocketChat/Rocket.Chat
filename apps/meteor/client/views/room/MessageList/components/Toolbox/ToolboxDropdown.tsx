@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useRef, ReactElement } from 'react';
+import type { ReactNode, ReactElement } from 'react';
+import React, { useRef } from 'react';
 
 import { ToolboxDropdownDesktop } from './ToolboxDropdownDesktop';
 import { ToolboxDropdownMobile } from './ToolboxDropdownMobile';

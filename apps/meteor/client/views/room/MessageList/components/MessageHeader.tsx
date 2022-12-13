@@ -1,17 +1,19 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageHeader as MessageHeaderTemplate,
 	MessageName,
 	MessageTimestamp,
 	MessageUsername,
 	MessageStatusPrivateIndicator,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { UserPresence } from '../../../../lib/presence';
+import type { UserPresence } from '../../../../lib/presence';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from '../contexts/MessageListContext';
 import { useMessageRoles } from '../hooks/useMessageRoles';
@@ -36,25 +38,30 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 
 	return (
 		<MessageHeaderTemplate>
-			<MessageName
-				{...(!showUsername && { 'data-qa-type': 'username' })}
-				title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
-				data-username={user.username}
-				onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
-				style={{ cursor: 'pointer' }}
-			>
-				{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
-			</MessageName>
-			{showUsername && (
-				<MessageUsername
+			<MessageNameContainer>
+				<MessageName
+					{...(!showUsername && { 'data-qa-type': 'username' })}
+					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
 					data-username={user.username}
-					data-qa-type='username'
 					onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 					style={{ cursor: 'pointer' }}
 				>
-					@{user.username}
-				</MessageUsername>
-			)}
+					{message.alias || getUserDisplayName(user.name, user.username, showRealName)}
+				</MessageName>
+				{showUsername && (
+					<>
+						{' '}
+						<MessageUsername
+							data-username={user.username}
+							data-qa-type='username'
+							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
+							style={{ cursor: 'pointer' }}
+						>
+							@{user.username}
+						</MessageUsername>
+					</>
+				)}
+			</MessageNameContainer>
 
 			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>

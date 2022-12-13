@@ -170,7 +170,7 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			return JSON.parse(json);
 		} catch (err) {
-			logger.error(`Unexpected error : ${err instanceof Error ? err.message : String(err)}`);
+			logger.error({ msg: 'Unexpected error', err });
 		}
 	}
 
@@ -196,7 +196,8 @@ export class LDAPEEManager extends LDAPManager {
 			{},
 			{
 				projection: {
-					_updatedAt: 0,
+					_id: 1,
+					name: 1,
 				},
 			},
 		).toArray()) as Array<IRole>;
@@ -223,11 +224,18 @@ export class LDAPEEManager extends LDAPManager {
 			const userFields = ensureArray<string>(fieldMap[ldapField]);
 
 			for await (const userField of userFields) {
-				const [roleId] = userField.split(/\.(.+)/);
-				allowedRoles.push(roleId);
+				const [roleIdOrName] = userField.split(/\.(.+)/);
+
+				const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
+
+				if (role) {
+					allowedRoles.push(role._id);
+				}
 
 				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-					roleList.push(roleId);
+					if (role) {
+						roleList.push(role._id);
+					}
 					continue;
 				}
 			}

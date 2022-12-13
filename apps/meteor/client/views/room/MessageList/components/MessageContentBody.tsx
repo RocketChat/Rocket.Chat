@@ -1,16 +1,18 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, MessageBody, Palette } from '@rocket.chat/fuselage';
-import { MarkupInteractionContext, Markup, UserMention, ChannelMention } from '@rocket.chat/gazzodown';
+import { MessageBody, Box, Palette } from '@rocket.chat/fuselage';
+import type { UserMention, ChannelMention } from '@rocket.chat/gazzodown';
+import { MarkupInteractionContext, Markup } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React, { ReactElement, UIEvent, useCallback, useMemo } from 'react';
+import type { ReactElement, UIEvent } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../../../app/emoji/client';
 import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListHighlights } from '../contexts/MessageListContext';
-import { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
+import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
@@ -126,7 +128,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
 	return (
-		<MessageBody>
+		<MessageBody data-qa-type='message-body'>
 			<Box className={messageBodyAdditionalStyles}>
 				<MarkupInteractionContext.Provider
 					value={{

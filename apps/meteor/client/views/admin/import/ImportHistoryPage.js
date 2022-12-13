@@ -115,7 +115,7 @@ function ImportHistoryPage() {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<Table fixed>
+				<Table fixed data-qa-id='ImportTable'>
 					<Table.Head>
 						<Table.Row>
 							<Table.Cell is='th' rowSpan={2} width='x140'>
