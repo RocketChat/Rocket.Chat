@@ -23,27 +23,9 @@ onLicense('saml-enterprise', () => {
 				value = value.split(',');
 			}
 
-			const savedRoles = await Roles.find(
-				{},
-				{
-					projection: {
-						_id: 1,
-						name: 1,
-					},
-				},
-			).toArray();
+			const savedRoles = await Roles.findInIdsOrNames(ensureArray<string>(value));
 
-			const roles = ensureArray<string>(value)
-				.map((role) => {
-					const savedRole = savedRoles.find((r) => r._id === role) ?? savedRoles.find((r) => r.name === role);
-
-					if (!savedRole) return '';
-
-					return savedRole.name;
-				})
-				.filter(Boolean);
-
-			userObject.roles = roles;
+			userObject.roles = savedRoles.map((role) => role.name);
 		}
 	});
 
