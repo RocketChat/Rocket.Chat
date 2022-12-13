@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users as UsersRaw } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -405,6 +405,63 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
+			'buildExternalAppRequest',
+			{ authRequired: true },
+			{
+				async get() {
+					if (!this.queryParams.appId) {
+						return API.v1.failure({ error: 'Invalid request. Please ensure an appId is attached to the request.' });
+					}
+
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+
+					const requester = {
+						id: this.user._id,
+						username: this.user.username,
+						name: this.user.name,
+						nickname: this.user.nickname,
+						emails: this.user.emails.map((e) => e.address),
+					};
+
+					let admins = [];
+					try {
+						const adminsRaw = await UsersRaw.findUsersInRoles('admin', undefined, {
+							projection: {
+								username: 1,
+								name: 1,
+								emails: 1,
+								nickname: 1,
+							},
+						}).toArray();
+
+						admins = adminsRaw.map((a) => {
+							return {
+								id: a._id,
+								username: a.username,
+								name: a.name,
+								nickname: a.nickname,
+								emails: a.emails.map((e) => e.address),
+							};
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the admins to request an app be installed:', e);
+					}
+
+					const queryParams = new URLSearchParams();
+					queryParams.set('workspaceId', workspaceId);
+					queryParams.set('frameworkVersion', appsEngineVersionForMarketplace);
+					queryParams.set('requester', Buffer.from(JSON.stringify(requester)).toString('base64'));
+					queryParams.set('admins', Buffer.from(JSON.stringify(admins)).toString('base64'));
+
+					return API.v1.success({
+						url: `${baseUrl}/apps/${this.queryParams.appId}/requestAccess?${queryParams.toString()}`,
+					});
+				},
+			},
+		);
+
+		this.api.addRoute(
 			'externalComponents',
 			{ authRequired: false },
 			{
@@ -707,7 +764,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			':id/versions',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true },
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();

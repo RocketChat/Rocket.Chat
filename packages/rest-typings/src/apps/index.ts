@@ -143,6 +143,12 @@ export type AppsEndpoints = {
 		GET: () => { apps: App[] };
 	};
 
+	'/apps/buildExternalAppRequest': {
+		GET: (params: { appId?: string }) => {
+			url: string;
+		};
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {

@@ -28,12 +28,12 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
-type Actions = 'update' | 'install' | 'purchase';
+type Actions = 'update' | 'install' | 'purchase' | 'request';
 
 type appButtonResponseProps = {
 	action: Actions;
 	icon?: 'reload' | 'warning';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request';
 };
 
 type appStatusSpanResponseProps = {
@@ -162,7 +162,15 @@ export const appButtonProps = ({
 	pricingPlans,
 	isEnterpriseOnly,
 	versionIncompatible,
-}: App): appButtonResponseProps | undefined => {
+	isAdminUser,
+}: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
+	if (!isAdminUser) {
+		return {
+			action: 'request',
+			label: 'Request',
+		};
+	}
+
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		if (versionIncompatible) {
