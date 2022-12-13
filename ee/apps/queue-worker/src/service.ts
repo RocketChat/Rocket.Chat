@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3038;
 	// need to import service after models are registeredpackagfe
 	const { QueueWorker } = await import('./QueueWorker');
 
-	api.registerService(new QueueWorker());
+	api.registerService(new QueueWorker(db));
 
 	await api.start();
 
