@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -106,7 +107,8 @@ export async function updateUsersSubscriptions(message, room) {
 		}
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
-		if (!toAll && !toHere && unreadCount === 'all_messages') {
+		// and this should always run if it's a omnichannel room
+		if (!toAll && !toHere && (unreadCount === 'all_messages' || isOmnichannelRoom(room))) {
 			await SubscriptionsRaw.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
 		}
 	}
