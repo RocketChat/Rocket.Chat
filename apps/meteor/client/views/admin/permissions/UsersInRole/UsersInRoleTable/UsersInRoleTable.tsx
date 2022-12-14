@@ -1,15 +1,16 @@
-import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import type { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 
-type UsersInRoleTable = {
+type UsersInRoleTableProps = {
 	users: IUserInRole[];
 	reload: () => void;
 	roleName: IRole['name'];
@@ -20,7 +21,16 @@ type UsersInRoleTable = {
 	paginationData: ReturnType<typeof usePagination>;
 };
 
-const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total, rid, paginationData }: UsersInRoleTable): ReactElement => {
+const UsersInRoleTable = ({
+	users,
+	reload,
+	roleName,
+	roleId,
+	description,
+	total,
+	rid,
+	paginationData,
+}: UsersInRoleTableProps): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();

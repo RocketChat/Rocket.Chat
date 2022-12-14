@@ -1,5 +1,6 @@
 import { MessageBlock } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
 import { isValidLink } from '../../lib/isValidLink';
@@ -35,7 +36,7 @@ export type PreviewMetadata = Partial<{
 	html?: string; // for embedded OembedType
 }>;
 
-export type UrlPreview = {
+export type UrlPreviewMetadata = {
 	type: 'image' | 'video' | 'audio';
 	originalType: string;
 	url: string;
@@ -47,7 +48,7 @@ type PreviewTypes = 'headers' | 'oembed';
 
 type PreviewData = {
 	type: PreviewTypes;
-	data: PreviewMetadata | UrlPreview;
+	data: PreviewMetadata | UrlPreviewMetadata;
 };
 
 export const buildImageURL = (url: string, imageUrl: string): string => {
@@ -95,7 +96,7 @@ const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
 const hasContentType = (headers: OembedUrlLegacy['headers']): headers is { contentType: string } =>
 	headers ? 'contentType' in headers : false;
 
-const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreview['type'] | undefined => {
+const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreviewMetadata['type'] | undefined => {
 	if (!hasContentType(headers)) {
 		return;
 	}

@@ -1,6 +1,7 @@
 import { Tile } from '@rocket.chat/fuselage';
 import { usePosition } from '@rocket.chat/fuselage-hooks';
-import React, { forwardRef, ReactNode, RefObject } from 'react';
+import type { ReactNode, RefObject } from 'react';
+import React, { forwardRef } from 'react';
 
 export const ToolboxDropdownDesktop = forwardRef<
 	HTMLElement,

@@ -1,5 +1,4 @@
 {
-  "403": "បានហាមឃាត់",
   "500": "កំហុសខាងក្នុងម៉ាស៊ីនម៉េ",
   "__count__empty_rooms_will_be_removed_automatically": null,
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> __rooms__ ។",
@@ -3156,6 +3155,7 @@
   "registration.page.registration.waitActivationWarning": "មុន​ពេល​ចូល​ប្រើប្រាស់​គណនី​អ្នក​ត្រូវ​តែ​ទទួល​បាន​ការ​អនុញ្ញាតិ​ពី​អ្នក​គ្រប់​គ្រង​ជាមុន​សិន​",
   "registration.page.resetPassword.sent": "បើអ៊ីមែលនេះត្រូវបានចុះឈ្មោះយើងនឹងផ្ញើការណែនាំអំពីរបៀបកំណត់ពាក្យសម្ងាត់របស់អ្នក។ បើអ្នកមិនទទួលបានអ៊ីមែលក្នុងរយៈពេលខ្លីសូមត្រឡប់មកវិញហើយព្យាយាមម្តងទៀត។",
   "registration.component.login": "ឡុក​ចូល",
+  "registration.component.login.userNotFound": "រកមិនឃើញអ្នកប្រើ",
   "registration.component.resetPassword": "កំណត់​ពាក្យ​សម្ងាត់​ឡើងវិញ",
   "registration.component.form.email": "អ៊ីម៉ែល",
   "registration.component.form.password": "ពាក្យសម្ងាត់",

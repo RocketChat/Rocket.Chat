@@ -1,8 +1,9 @@
-import { IEmailInbox } from '@rocket.chat/core-typings';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import EmailInboxForm from './EmailInboxForm';

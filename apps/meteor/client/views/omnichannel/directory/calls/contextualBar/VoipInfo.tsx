@@ -2,7 +2,8 @@ import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import InfoPanel from '../../../../../components/InfoPanel';

@@ -1,5 +1,6 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
-import React, { FC, memo, ReactNode, ComponentProps } from 'react';
+import type { FC, ReactNode, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof Box> }> = ({ children, ...props }) => (
 	<Box

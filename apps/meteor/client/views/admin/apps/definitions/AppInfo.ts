@@ -1,8 +1,8 @@
-import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { AppScreenshot } from '@rocket.chat/core-typings';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { AppScreenshot } from '@rocket.chat/core-typings';
 
-import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
-import { App } from '../types';
+import type { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
+import type { App } from '../types';
 
 export type AppInfo = App & {
 	settings?: ISettings;

@@ -1,8 +1,10 @@
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import { UserContext, SettingsContext, LoginService } from '@rocket.chat/ui-contexts';
-import { Meta, Story } from '@storybook/react';
+import type { LoginService } from '@rocket.chat/ui-contexts';
+import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
+import type { Meta, Story } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
-import React, { ContextType } from 'react';
+import type { ContextType } from 'react';
+import React from 'react';
 
 import RoomList from './RoomList/index';
 import Header from './header';

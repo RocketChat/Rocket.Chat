@@ -1,7 +1,8 @@
 import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { HTMLAttributes, useRef, VFC } from 'react';
+import type { HTMLAttributes, VFC } from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { AccountBox } from '../../../../app/ui-utils/client';

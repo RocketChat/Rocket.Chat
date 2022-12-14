@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 const CustomHomePageContent = (): ReactElement | null => {
 	const body = String(useSetting('Layout_Home_Body'));

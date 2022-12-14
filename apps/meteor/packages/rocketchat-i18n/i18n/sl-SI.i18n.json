@@ -1,5 +1,4 @@
 {
-  "403": "Prepovedano",
   "500": "Notranja napaka strežnika",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ni več __role__ by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ je bil nastavljen kot __role__ by __user_by__",
@@ -2786,6 +2785,7 @@
   "registration.page.registration.waitActivationWarning": "Preden se lahko prijavite, mora skrbnik ročno aktivirati vaš račun.",
   "registration.page.resetPassword.sent": "Če je ta e-poštni naslov registriran, vam bomo poslali navodila za ponastavitev gesla. Če elektronske pošte ne boste prejeli v kratkem, prosimo, poskusite znova. ",
   "registration.component.login": "Prijava",
+  "registration.component.login.userNotFound": "Uporabnik ni bil najden",
   "registration.component.resetPassword": "Ponastavitev gesla",
   "registration.component.form.email": "E-poštni naslov",
   "registration.component.form.password": "Geslo",
