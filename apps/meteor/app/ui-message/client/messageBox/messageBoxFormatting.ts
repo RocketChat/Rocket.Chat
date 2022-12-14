@@ -1,15 +1,21 @@
 import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings/client';
 
-type FormattingButton = {
-	label: string;
-	icon?: string;
-	pattern?: string;
-	text?: () => string | undefined;
-	link?: string;
-	command?: string;
-	condition?: () => boolean;
-};
+export type FormattingButton =
+	| {
+			label: string;
+			icon: string;
+			pattern: string;
+			// text?: () => string | undefined;
+			command?: string;
+			condition: () => boolean;
+	  }
+	| {
+			label: string;
+			text: () => string | undefined;
+			link: string;
+			condition: () => boolean;
+	  };
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
@@ -75,6 +81,9 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	},
 ] as const;
 
+/**
+ * @deprecated
+ */
 export function applyFormatting(pattern: string, input: HTMLTextAreaElement) {
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);

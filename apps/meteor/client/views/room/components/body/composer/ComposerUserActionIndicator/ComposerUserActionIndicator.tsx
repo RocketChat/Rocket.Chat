@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, Fragment } from 'react';
@@ -7,7 +8,7 @@ import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
 
 const maxUsernames = 5;
 
-export const UserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
+export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
 	const t = useTranslation();
 	const actions = useReactiveValue(
 		useCallback(() => {
@@ -35,22 +36,17 @@ export const UserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string 
 			}[];
 		}, [rid, tmid]),
 	);
-	if (!actions.length) {
-		return <></>;
-	}
 	return (
-		<div className='rc-message-box__activity-wrapper'>
-			<div className='rc-message-box__activity' aria-live='polite'>
-				{actions.map(({ action, users }, index) => (
-					<Fragment key={action}>
-						{index > 0 && ', '}
-						<span className='rc-message-box__activity-user'>
-							{users.length < maxUsernames ? users.join(', ') : `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`}
-						</span>{' '}
-						{users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}
-					</Fragment>
-				))}
-			</div>
-		</div>
+		<Box h='24px' className='rc-message-box__activity-wrapper' fontScale='p2' color='annotation' aria-live='polite'>
+			{actions.map(({ action, users }, index) => (
+				<Fragment key={action}>
+					{index > 0 && ', '}
+					{users.length < maxUsernames
+						? users.join(', ')
+						: `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`}{' '}
+					{users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}
+				</Fragment>
+			))}
+		</Box>
 	);
 };

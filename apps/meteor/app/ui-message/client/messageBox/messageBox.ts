@@ -29,6 +29,7 @@ export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	tmid?: IMessage['_id'];
 	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
 	onResize?: () => void;
+	onTyping?: () => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;

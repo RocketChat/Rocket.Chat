@@ -34,6 +34,7 @@
 	&__row {
 		display: flex;
 		margin-block: 4px;
+		flex-direction: column;
 	}
 }
 

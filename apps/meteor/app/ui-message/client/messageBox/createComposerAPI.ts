@@ -8,6 +8,8 @@ import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
+import type { FormattingButton } from './messageBoxFormatting';
+import { formattingButtons } from './messageBoxFormatting';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
@@ -22,7 +24,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		input.dispatchEvent(event);
 	};
 
-	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void }>();
+	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void; formatting: void }>();
 
 	let _quotedMessages: IMessage[] = [];
 
@@ -40,10 +42,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	input.addEventListener('input', persist);
-
-	const release = (): void => {
-		input.removeEventListener('input', persist);
-	};
 
 	const setText = (
 		text: string,
@@ -165,8 +163,77 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	setText(Meteor._localStorage.getItem(storageID) ?? '');
 
+	const [formatters, stopFormatterTracker] = (() => {
+		let actions: FormattingButton[] = [];
+
+		const c = Tracker.autorun(() => {
+			actions = formattingButtons.filter(({ condition }) => !condition || condition());
+			emitter.emit('formatting');
+		});
+
+		return [
+			{
+				get: () => actions,
+				subscribe: (callback: () => void) => emitter.on('formatting', callback),
+			},
+			c,
+		];
+	})();
+
+	const release = (): void => {
+		input.removeEventListener('input', persist);
+		stopFormatterTracker.stop();
+	};
+
+	const wrapSelection = (pattern: string): void => {
+		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
+		const initText = input.value.slice(0, selectionStart);
+		const selectedText = input.value.slice(selectionStart, selectionEnd);
+		const finalText = input.value.slice(selectionEnd, input.value.length);
+
+		focus();
+
+		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
+		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+
+		if (startPatternFound) {
+			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
+			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+
+			if (endPatternFound) {
+				insertText(selectedText);
+				input.selectionStart = selectionStart - startPattern.length;
+				input.selectionEnd = selectionEnd + endPattern.length;
+
+				if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
+					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
+				}
+
+				input.selectionStart = selectionStart - startPattern.length;
+				input.selectionEnd = input.selectionStart + selectedText.length;
+				triggerEvent(input, 'input');
+				triggerEvent(input, 'change');
+
+				focus();
+				return;
+			}
+		}
+
+		if (!document.execCommand || !document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))) {
+			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		}
+
+		input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
+		input.selectionEnd = input.selectionStart + selectedText.length;
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+
+		focus();
+	};
+
 	return {
 		release,
+		wrapSelection,
 		get text(): string {
 			return input.value;
 		},
@@ -190,5 +257,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		dismissQuotedMessage,
 		dismissAllQuotedMessages,
 		quotedMessages,
+		formatters,
 	};
 };

@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
@@ -7,7 +7,7 @@ import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
 import type { ChatContext } from '../../../contexts/ChatContext';
-import MessageBox from './LegacyComposer/MessageBox';
+import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
@@ -21,23 +21,27 @@ export type ComposerMessageProps = {
 };
 
 const ComposerMessage = ({ rid, chatMessagesInstance, ...props }: ComposerMessageProps): ReactElement => {
-	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const composerProp = useMemo(
+	const composerProps = useMemo(
 		() => ({
 			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
 				try {
+					await chatMessagesInstance?.flows.action.stop('typing');
 					await chatMessagesInstance?.flows.sendMessage({
 						text,
 						tshow,
 					});
-
-					await chatMessagesInstance?.composer?.setText('');
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
+			},
+			onTyping: async (): Promise<void> => {
+				if (chatMessagesInstance?.composer?.text?.trim() === '') {
+					await chatMessagesInstance?.flows.action.stop('typing');
+					return;
+				}
+				await chatMessagesInstance?.flows.action.start('typing');
 			},
 		}),
 		[chatMessagesInstance, dispatchToastMessage],
@@ -53,7 +57,7 @@ const ComposerMessage = ({ rid, chatMessagesInstance, ...props }: ComposerMessag
 		);
 	}
 
-	return <MessageBox rid={rid} {...composerProp} {...props} showFormattingTips={showFormattingTips} chatContext={chatMessagesInstance} />;
+	return <MessageBox rid={rid} {...composerProps} showFormattingTips={true} {...props} chatContext={chatMessagesInstance} />;
 };
 
 export default memo(ComposerMessage);

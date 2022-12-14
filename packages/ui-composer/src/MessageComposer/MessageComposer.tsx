@@ -12,7 +12,7 @@ const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(
 	({ variant, ...props }, ref): ReactElement => (
 		<Box
 			rcx-input-box__wrapper
-			bg={variant === 'editing' ? 'status-warning-2' : undefined}
+			bg={variant === 'editing' ? 'status-background-warning-2' : undefined}
 			ref={ref}
 			role='group'
 			display='flex'

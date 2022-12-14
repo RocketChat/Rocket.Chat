@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -10,23 +10,26 @@ import {
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, MutableRefObject } from 'react';
+import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, MutableRefObject, Ref } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
-import { applyFormatting, formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
+import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
+import UserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import UserActionIndicator from '../UserActionIndicator';
+import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 
 type MessageBoxProps = {} & MessageBoxTemplateInstance['data'];
@@ -37,15 +40,38 @@ const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	return Boolean(target.value.trim());
 };
 
+const handleFormattingShortcut = (
+	event: KeyboardEvent<HTMLTextAreaElement>,
+	formattingButtons: FormattingButton[],
+	composer: ComposerAPI,
+) => {
+	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+
+	if (!isCmdOrCtrlPressed) {
+		return false;
+	}
+
+	const key = event.key.toLowerCase();
+
+	const formatter = formattingButtons.find((formatter) => 'command' in formatter && formatter.command === key);
+
+	if (!formatter || !('pattern' in formatter)) {
+		return false;
+	}
+
+	composer.wrapSelection(formatter.pattern);
+	return true;
+};
+
 export const MessageBox = ({
 	rid,
 	tmid,
-	isEmbedded,
 	onSend,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
 	onEscape,
-	showFormattingTips,
+	onTyping,
 	subscription,
 	tshow,
 }: MessageBoxProps): ReactElement => {
@@ -110,11 +136,11 @@ export const MessageBox = ({
 			console.warn('No text to send');
 			return;
 		}
+		chat?.composer?.clear();
+
 		onSend?.({
 			value: text,
 			tshow,
-		}).then(() => {
-			chat?.composer?.clear();
 		});
 	});
 
@@ -141,6 +167,10 @@ export const MessageBox = ({
 			}
 			handleSendMessage();
 			return false;
+		}
+
+		if (chat?.composer && handleFormattingShortcut(event, [...formattingButtons], chat?.composer)) {
+			return;
 		}
 
 		if (event.shiftKey || event.ctrlKey || event.metaKey) {
@@ -194,6 +224,8 @@ export const MessageBox = ({
 				}
 			}
 		}
+
+		onTyping?.();
 	});
 
 	const isEditing = useSubscription({
@@ -206,21 +238,24 @@ export const MessageBox = ({
 		subscribe: chat.composer?.recording.subscribe ?? (() => () => undefined),
 	});
 
+	const formatters = useSubscription({
+		getCurrentValue: chat.composer?.formatters.get ?? (() => []),
+		subscribe: chat.composer?.formatters.subscribe ?? (() => () => undefined),
+	});
+
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), []));
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
 
 	const sizes = useContentBoxSize(textareaRef);
 
-	console.log(sizes);
-
 	return (
 		<>
+			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
+			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
 			<MessageComposer variant={isEditing ? 'editing' : undefined}>
-				{chat?.composer?.quotedMessages && <MessageBoxReplies />}
-				<BlazeTemplate name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
 				<MessageComposerInput
-					ref={callbackRef}
+					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
 					disabled={isRecording}
@@ -237,31 +272,16 @@ export const MessageBox = ({
 					<MessageComposerToolbarActions>
 						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
 						<MessageComposerActionsDivider />
-						{formattingButtons
-							.filter(({ condition }) => !condition || condition())
-							.map(({ icon, link, text, label, pattern }) =>
-								icon ? (
-									<MessageComposerAction
-										disabled={isRecording}
-										icon={icon}
-										key={label}
-										data-id={label}
-										title={label}
-										onClick={(): void => {
-											textareaRef.current && pattern && applyFormatting(pattern, textareaRef.current);
-										}}
-									/>
-								) : (
-									<span className='rc-message-box__toolbar-formatting-item' title={label} key={label}>
-										<a href={link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
-											{label || text}
-										</a>
-									</span>
-								),
-							)}
+						{chat.composer && formatters.length > 0 && (
+							<MessageBoxFormattingToolbar
+								composer={chat.composer}
+								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+								items={formatters}
+								disabled={isRecording}
+							/>
+						)}
 						<MessageComposerActionsDivider />
 						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
-						{/* <MessageComposerAction icon='clip' /> */}
 						<MessageComposerAction
 							disabled={isRecording}
 							onClick={(event): void => {
@@ -300,7 +320,6 @@ export const MessageBox = ({
 
 								popover.open(config);
 							}}
-							disabled={isRecording}
 							icon='plus'
 						/>
 					</MessageComposerToolbarActions>
@@ -310,10 +329,18 @@ export const MessageBox = ({
 								{t('Join')}
 							</Button>
 						)}
-						<MessageComposerAction icon='send' disabled={!canSend || !typing} onClick={handleSendMessage} secondary info />
+						<MessageComposerAction
+							aria-label={t('Send')}
+							icon='send'
+							disabled={!canSend || !typing}
+							onClick={handleSendMessage}
+							secondary={typing}
+							info={typing}
+						/>
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
+
 			<UserActionIndicator rid={rid} tmid={tmid} />
 		</>
 	);
