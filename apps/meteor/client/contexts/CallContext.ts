@@ -1,11 +1,10 @@
-import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
-import { Device } from '@rocket.chat/ui-contexts';
+import type { IVoipRoom, ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
+import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
-import { VoIPUser } from '../lib/voip/VoIPUser';
+import type { VoIPUser } from '../lib/voip/VoIPUser';
 
 export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError | CallContextEnabled;
 

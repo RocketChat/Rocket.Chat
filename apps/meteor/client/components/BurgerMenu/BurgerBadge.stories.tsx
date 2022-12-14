@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { ReactElement } from 'react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import BurgerBadge from './BurgerBadge';
 

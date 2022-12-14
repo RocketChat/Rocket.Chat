@@ -1,4 +1,4 @@
-import { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import {
@@ -11,23 +11,13 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
-import React, {
-	forwardRef,
-	useState,
-	useMemo,
-	useEffect,
-	useRef,
-	ReactElement,
-	MutableRefObject,
-	SetStateAction,
-	Dispatch,
-	FormEventHandler,
-	Ref,
-	MouseEventHandler,
-} from 'react';
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
+import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';

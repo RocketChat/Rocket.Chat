@@ -1,6 +1,8 @@
-import { SettingsContext, SettingsContextValue, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
-import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 import { queryClient } from '../lib/queryClient';

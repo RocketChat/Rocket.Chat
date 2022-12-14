@@ -1,5 +1,7 @@
-import { Scrollbars, ScrollValues } from 'rc-scrollbars';
-import React, { MutableRefObject, CSSProperties, useMemo, memo, forwardRef, ReactNode, ReactElement } from 'react';
+import type { ScrollValues } from 'rc-scrollbars';
+import { Scrollbars } from 'rc-scrollbars';
+import type { MutableRefObject, CSSProperties, ReactNode, ReactElement } from 'react';
+import React, { useMemo, memo, forwardRef } from 'react';
 
 const styleDefault = {
 	width: '100%',

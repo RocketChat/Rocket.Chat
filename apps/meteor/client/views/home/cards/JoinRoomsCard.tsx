@@ -1,7 +1,8 @@
 import { Button } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 const JoinRoomsCard = (): ReactElement => {
 	const t = useTranslation();

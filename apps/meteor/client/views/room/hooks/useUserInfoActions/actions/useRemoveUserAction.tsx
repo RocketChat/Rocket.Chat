@@ -1,4 +1,5 @@
-import { IRoom, isRoomFederated, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -9,7 +10,7 @@ import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 

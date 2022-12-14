@@ -8,15 +8,6 @@
 	display: block;
 }
 
-.message.thread-message {
-	padding-top: 16px;
-	padding-bottom: 8px;
-}
-
-.thread-message + .thread-message {
-	border-top: 1px solid var(--color-gray-light);
-}
-
 .thread-empty {
 	padding: calc(2 * var(--default-padding));
 }
