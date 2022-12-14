@@ -1508,6 +1508,7 @@
   "Delete_message": "Delete message",
   "Delete_my_account": "Delete my account",
   "Delete_Role_Warning": "Deleting a role will delete it forever. This cannot be undone.",
+  "Delete_Role_Warning_Community_Edition": "Deleting this role in community edition will make it unavailable in your current plan. This cannot be undone.",
   "Delete_Room_Warning": "Deleting a room will delete all messages posted within the room. This cannot be undone.",
   "Delete_User_Warning": "Deleting a user will delete all messages from that user as well. This cannot be undone.",
   "Delete_User_Warning_Delete": "Deleting a user will delete all messages from that user as well. This cannot be undone.",

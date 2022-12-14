@@ -8,9 +8,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
+import { useIsEnterprise } from '../EditableSettingsContext';
 import RoleForm from './RoleForm';
 
 const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
+	const isEnterprise = useIsEnterprise();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -74,6 +76,8 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 			}
 		};
 
+		const deleteRoleMessage = isEnterprise ? t('Delete_Role_Warning') : t('Delete_Role_Warning_Community_Edition');
+
 		setModal(
 			<GenericModal
 				variant='danger'
@@ -82,7 +86,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 				onCancel={(): void => setModal()}
 				confirmText={t('Delete')}
 			>
-				{t('Delete_Role_Warning')}
+				{deleteRoleMessage}
 			</GenericModal>,
 		);
 	});
