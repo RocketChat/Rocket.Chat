@@ -76,7 +76,13 @@ export const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer
 						}}
 					/>
 				) : (
-					<span {...props} className='rc-message-box__toolbar-formatting-item' title={formatter.label} key={formatter.label}>
+					<span
+						{...props}
+						{...(props.disabled && { style: { pointerEvents: 'none' } })}
+						className='rc-message-box__toolbar-formatting-item'
+						title={formatter.label}
+						key={formatter.label}
+					>
 						<a href={formatter.link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
 							{formatter.text()}
 						</a>

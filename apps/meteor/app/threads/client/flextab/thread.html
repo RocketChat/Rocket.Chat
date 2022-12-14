@@ -15,8 +15,6 @@
 			</ul>
 		</div>
 		<footer class="thread-footer">
-			<div class="thread-footer__row">{{> messageBox messageBoxData}}</div>
-
 			<div class="thread-footer__row">
 				{{#with checkboxData }}
 				<div style="display: flex; flex-direction: row">
@@ -25,6 +23,7 @@
 				</div>
 				{{/with}}
 			</div>
+			<div class="thread-footer__row">{{> messageBox messageBoxData}}</div>
 		</footer>
 	</section>
 </template>

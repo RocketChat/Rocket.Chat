@@ -32,7 +32,7 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 
-type MessageBoxProps = {} & MessageBoxTemplateInstance['data'];
+type MessageBoxProps = MessageBoxTemplateInstance['data'];
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -124,10 +124,7 @@ export const MessageBox = ({
 			return;
 		}
 
-		EmojiPicker.open(e.currentTarget, (emoji: string) => {
-			const emojiValue = `:${emoji}: `;
-			chat?.composer?.insertText(emojiValue);
-		});
+		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(`:${emoji}: `));
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
@@ -340,7 +337,6 @@ export const MessageBox = ({
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
-
 			<UserActionIndicator rid={rid} tmid={tmid} />
 		</>
 	);

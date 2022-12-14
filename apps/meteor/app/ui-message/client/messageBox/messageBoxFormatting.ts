@@ -1,17 +1,21 @@
+import type { Icon } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
+
 import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings/client';
 
 export type FormattingButton =
 	| {
-			label: string;
-			icon: string;
+			label: TranslationKey;
+			icon: ComponentProps<typeof Icon>['name'];
 			pattern: string;
 			// text?: () => string | undefined;
 			command?: string;
 			condition: () => boolean;
 	  }
 	| {
-			label: string;
+			label: TranslationKey;
 			text: () => string | undefined;
 			link: string;
 			condition: () => boolean;
@@ -64,7 +68,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
-		label: 'KaTeX',
+		label: 'KaTeX' as TranslationKey,
 		text: () => {
 			if (!settings.get('Katex_Enabled')) {
 				return;
