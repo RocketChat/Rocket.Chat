@@ -1,5 +1,6 @@
 import { Field, ToggleSwitch } from '@rocket.chat/fuselage';
-import React, { ReactElement, SyntheticEvent } from 'react';
+import type { ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 

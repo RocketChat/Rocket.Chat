@@ -1,5 +1,6 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import React, { ReactElement, useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { isTruthy } from '../../lib/isTruthy';
 import { useIsEnterprise } from '../hooks/useIsEnterprise';

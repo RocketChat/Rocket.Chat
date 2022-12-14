@@ -1,7 +1,8 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUserSubscription, useLanguage } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useEffect, useState, memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useEffect, useState, memo } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useEndpointData } from '../../../../hooks/useEndpointData';

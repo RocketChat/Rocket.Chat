@@ -1,6 +1,8 @@
-import { Box, Field, TextInput, Select, ToggleSwitch, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 
 type RoleFormProps = {

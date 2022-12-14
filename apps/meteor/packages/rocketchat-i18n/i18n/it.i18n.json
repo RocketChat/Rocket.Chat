@@ -1,5 +1,4 @@
 {
-  "403": "Proibito",
   "500": "Errore interno del server",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ stanze vuote verranno automaticamente rimosse.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ stanze vuote saranno rimosse automaticamente:<br/> __rooms__.",
@@ -2902,6 +2901,7 @@
   "registration.page.login.forgot": "Password dimenticata",
   "registration.page.resetPassword.sent": "Se questa email è registrata, invieremo istruzioni su come reimpostare la propria password. Se non la ricevi in breve tempo, si prega di ritornare e riprovare.",
   "registration.component.login": "Login",
+  "registration.component.login.userNotFound": "Utente non trovato",
   "registration.component.resetPassword": "Reimposta password",
   "registration.component.form.emailOrUsername": "Email o nome utente",
   "registration.component.form.email": "Email",

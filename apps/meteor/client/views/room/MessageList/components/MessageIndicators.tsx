@@ -1,7 +1,9 @@
-import { IMessage, isEditedMessage, ITranslatedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
+import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
 import { MessageStatusIndicator, MessageStatusIndicatorItem, MessageStatusIndicatorText } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import {
 	useMessageDateFormatter,

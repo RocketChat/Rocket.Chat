@@ -1,7 +1,9 @@
-import { isRoomFederated, IRoom, IUser, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserRoom, useAtLeastOnePermission, useUser, usePermission } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, useState, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';

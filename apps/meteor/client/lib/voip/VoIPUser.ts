@@ -6,37 +6,27 @@
  * This class thus abstracts user from Browser specific media details as well as
  * SIP specific protocol details.
  */
-import {
+import type {
 	CallStates,
 	ConnectionState,
 	ICallerInfo,
 	IQueueMembershipSubscription,
-	Operation,
 	SignalingSocketEvents,
 	SocketEventKeys,
-	UserState,
 	IMediaStreamRenderer,
 	VoIPUserConfiguration,
 	VoIpCallerInfo,
 	IState,
 	VoipEvents,
-	WorkflowTypes,
 } from '@rocket.chat/core-typings';
+import { Operation, UserState, WorkflowTypes } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import {
-	UserAgent,
-	UserAgentOptions,
-	Invitation,
-	InvitationAcceptOptions,
-	Session,
-	SessionState,
-	Registerer,
-	SessionInviteOptions,
-	RequestPendingError,
-	Inviter,
-} from 'sip.js';
-import { OutgoingByeRequest, OutgoingRequestDelegate, URI } from 'sip.js/lib/core';
-import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
+import type { UserAgentOptions, InvitationAcceptOptions, Session, SessionInviteOptions } from 'sip.js';
+import { UserAgent, Invitation, SessionState, Registerer, RequestPendingError, Inviter } from 'sip.js';
+import type { OutgoingByeRequest, OutgoingRequestDelegate } from 'sip.js/lib/core';
+import { URI } from 'sip.js/lib/core';
+import type { SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
+import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
 import { toggleMediaStreamTracks } from './Helper';
 import LocalStream from './LocalStream';

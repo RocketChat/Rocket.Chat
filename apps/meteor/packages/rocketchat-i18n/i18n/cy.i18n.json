@@ -1,5 +1,4 @@
 {
-  "403": "Gwaherddir",
   "500": "Gwall Gweinyddwr Mewnol",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ bellach yn __role__ gan __user_by__",
   "__username__was_set__role__by__user_by_": "Gosodwyd __username__ __role__ gan __user_by__",
@@ -2792,6 +2791,7 @@
   "registration.page.registration.waitActivationWarning": "Cyn i chi allu mewngofnodi, rhaid i'ch gweinydd gael ei weithredu gan weinyddwr.",
   "registration.page.resetPassword.sent": "Os yw'r e-bost hwn wedi'i gofrestru, byddwn yn anfon cyfarwyddiadau ar sut i ailosod eich cyfrinair. Os na chewch e-bost yn fuan, dewch yn ôl a cheisiwch eto.",
   "registration.component.login": "Mewngofnodi",
+  "registration.component.login.userNotFound": "Defnyddiwr heb ei ddarganfod",
   "registration.component.resetPassword": "Ailosod cyfrinair",
   "registration.component.form.email": "E-bost",
   "registration.component.form.password": "Cyfrinair",
