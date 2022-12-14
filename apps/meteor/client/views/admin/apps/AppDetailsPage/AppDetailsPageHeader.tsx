@@ -22,7 +22,19 @@ const versioni18nKey = (app: App): string => {
 
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const t = useTranslation();
-	const { iconFileData, name, author, version, iconFileContent, installed, isSubscribed, modifiedAt, bundledIn, shortDescription } = app;
+	const {
+		iconFileData,
+		name,
+		author,
+		version,
+		iconFileContent,
+		installed,
+		modifiedAt,
+		bundledIn,
+		versionIncompatible,
+		isSubscribed,
+		shortDescription,
+	} = app;
 
 	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
@@ -65,13 +77,13 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 								|
 							</Box>
 							<Box fontScale='c1' mis='x16'>
-              {t('Marketplace_app_last_updated', {
+								{t('Marketplace_app_last_updated', {
 									lastUpdated,
 								})}
 							</Box>
 						</>
 					)}
-          
+
 					<Box is='span'> | </Box>
 
 					<Box mi='x16' marginInlineEnd='x4'>
@@ -88,7 +100,6 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 							</Tag>
 						</Box>
 					)}
-
 				</Box>
 			</Box>
 		</Box>
