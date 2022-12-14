@@ -1,7 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Badge, Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Badge, Box, Palette } from '@rocket.chat/fuselage';
 import { useCurrentRoute, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -48,12 +47,13 @@ const AppRow = (props: AppRowProps): ReactElement => {
 		e.stopPropagation();
 	};
 
-	const hover = css`
+	const style = css`
+		background-color: ${Palette.surface['surface-light']};
 		&:hover,
 		&:focus {
 			cursor: pointer;
 			outline: 0;
-			background-color: ${colors.n200} !important;
+			background-color: ${Palette.surface['surface-hover']};
 		}
 	`;
 
@@ -70,12 +70,11 @@ const AppRow = (props: AppRowProps): ReactElement => {
 			flexDirection='row'
 			justifyContent='space-between'
 			alignItems='center'
-			bg='surface'
 			mbe='x8'
 			pb='x8'
 			pis='x16'
 			pie='x4'
-			className={hover}
+			className={style}
 		>
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
