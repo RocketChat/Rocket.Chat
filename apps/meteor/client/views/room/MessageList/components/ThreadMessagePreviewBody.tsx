@@ -8,6 +8,6 @@ type ThreadMessagePreviewBodyProps = {
 };
 
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement =>
-	message.md ? <PreviewMarkup tokens={message.md} /> : <></>;
+	message.md ? <PreviewMarkup tokens={message.md} /> : <>{message.msg}</>;
 
 export default ThreadMessagePreviewBody;

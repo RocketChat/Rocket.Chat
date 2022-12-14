@@ -89,6 +89,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 										data-sequential={isSequential}
 										sequential={shouldShowAsSequential}
 										message={message as IThreadMessage}
+										_subscription={subscription}
 									/>
 								)}
 

@@ -56,10 +56,7 @@ export const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(
 		quote.attachments = quote.attachments.map((attachment) => parseMessageQuoteAttachment(attachment, parseOptions, autoTranslateOptions));
 	}
 
-	const text =
-		(isTranslatedAttachment(quote) && translated && autoTranslateLanguage && quote?.translations?.[autoTranslateLanguage]) ||
-		quote.text ||
-		'';
+	const text = (isTranslatedAttachment(quote) && autoTranslateLanguage && quote?.translations?.[autoTranslateLanguage]) || quote.text || '';
 
 	return {
 		...quote,

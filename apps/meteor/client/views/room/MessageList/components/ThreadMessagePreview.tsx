@@ -1,4 +1,4 @@
-import type { IThreadMessage } from '@rocket.chat/core-typings';
+import type { ISubscription, IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage as ThreadMessageTemplate,
@@ -24,14 +24,20 @@ import { useShowTranslated } from '../contexts/MessageListContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
 import { useMessageBody } from '../hooks/useMessageBody';
 import { useParentMessage } from '../hooks/useParentMessage';
+import { isParsedMessage } from '../lib/isParsedMessage';
 import ThreadMessagePreviewBody from './ThreadMessagePreviewBody';
 
-const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }> = ({ message, sequential, ...props }) => {
+const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean; _subscription: ISubscription | undefined }> = ({
+	message,
+	sequential,
+	_subscription,
+	...props
+}) => {
 	const {
 		actions: { openThread },
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
-	const body = useMessageBody(parentMessage.data);
+	const messageBody = useMessageBody(parentMessage, _subscription);
 	const translated = useShowTranslated(message);
 	const t = useTranslation();
 
@@ -41,6 +47,8 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
+
+	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
 	return (
 		<ThreadMessageTemplate
@@ -61,7 +69,7 @@ const ThreadMessagePreview: FC<{ message: IThreadMessage; sequential: boolean }>
 									{(parentMessage.data as { ignored?: boolean })?.ignored ? (
 										t('Message_Ignored')
 									) : (
-										<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
+										<ThreadMessagePreviewBody message={{ ...parentMessage.data, ...previewMessage }} />
 									)}
 									{translated && (
 										<>

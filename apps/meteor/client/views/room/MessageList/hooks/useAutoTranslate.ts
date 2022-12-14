@@ -1,4 +1,4 @@
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../lib/autoTranslate';
@@ -7,7 +7,7 @@ import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 export type AutoTranslateOptions = {
 	autoTranslateEnabled: boolean;
 	autoTranslateLanguage?: string;
-	showAutoTranslate: (message: IMessage) => boolean;
+	showAutoTranslate: (message: IMessage & Partial<ITranslatedMessage>) => boolean;
 };
 
 export const useAutoTranslate = (subscription?: ISubscription): AutoTranslateOptions => {
