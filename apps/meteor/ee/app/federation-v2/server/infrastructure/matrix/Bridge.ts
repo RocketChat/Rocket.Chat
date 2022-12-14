@@ -35,6 +35,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 			options: {
 				name: roomName,
 				topic: roomTopic,
+				room_alias_name: roomName,
 				visibility,
 				preset: matrixRoomType,
 				creation_content: {

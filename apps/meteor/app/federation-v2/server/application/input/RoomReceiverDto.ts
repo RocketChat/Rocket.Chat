@@ -31,6 +31,7 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 	leave?: boolean;
 	roomType?: RoomType;
 	externalRoomName?: string;
+	externalDisplayRoomName?: string;
 	userProfile?: {
 		avatarUrl?: string;
 		displayName?: string;
@@ -61,6 +62,12 @@ export interface IFederationRoomTopicChangeInputDto extends IFederationReceiverB
 export interface IFederationRoomRedactEventInputDto extends IFederationReceiverBaseRoomInputDto {
 	redactsEvent: string;
 	externalSenderId: string;
+}
+
+export interface IFederationRoomCanonicalAliasChangeInputDto extends IFederationReceiverBaseRoomInputDto {
+	rawAlias: string;
+	normalizedAlias: string;
+	aliasOnly: string;
 }
 
 export interface IFederationSendInternalMessageBaseInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -136,6 +143,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		leave,
 		roomType,
 		externalRoomName,
+		externalDisplayRoomName,
 		externalEventId,
 		userProfile,
 	}: IFederationChangeMembershipInputDto) {
@@ -172,6 +180,8 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 	leave?: boolean;
 
 	externalRoomName?: string;
+
+	externalDisplayRoomName?: string;
 
 	userProfile?: { avatarUrl?: string; displayName?: string };
 }
@@ -349,4 +359,26 @@ export class FederationRoomRedactEventDto extends FederationBaseRoomInputDto {
 	redactsEvent: string;
 
 	externalSenderId: string;
+}
+
+export class FederationRoomCanonicalAliasChangeDto extends FederationBaseRoomInputDto {
+	constructor({
+		externalRoomId,
+		normalizedRoomId,
+		externalEventId,
+		rawAlias,
+		normalizedAlias,
+		aliasOnly,
+	}: IFederationRoomCanonicalAliasChangeInputDto) {
+		super({ externalRoomId, normalizedRoomId, externalEventId });
+		this.rawAlias = rawAlias;
+		this.normalizedAlias = normalizedAlias;
+		this.aliasOnly = aliasOnly;
+	}
+
+	rawAlias: string;
+
+	normalizedAlias: string;
+
+	aliasOnly: string;
 }

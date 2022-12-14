@@ -42,7 +42,7 @@ export class RocketChatRoomAdapter {
 		if (!usernameOrId) {
 			throw new Error('Cannot create a room without a creator');
 		}
-		const { rid, _id } = createRoom(federatedRoom.getRoomType(), federatedRoom.getName(), usernameOrId);
+		const { rid, _id } = createRoom(federatedRoom.getRoomType(), federatedRoom.getDisplayName(), usernameOrId);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
@@ -71,7 +71,7 @@ export class RocketChatRoomAdapter {
 		const extraData = undefined;
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
-			federatedRoom.getName(),
+			federatedRoom.getDisplayName(),
 			usernameOrId,
 			federatedRoom.getMembersUsernames(),
 			readonly,
@@ -121,8 +121,17 @@ export class RocketChatRoomAdapter {
 		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.getRoomType(), federatedRoom.getRoomType());
 	}
 
-	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomName(federatedRoom.getInternalId(), federatedRoom.getName(), federatedUser.getInternalReference());
+	public async updateDisplayRoomName(federatedRoom: FederatedRoom): Promise<void> {
+		await Rooms.setFnameById(federatedRoom.getInternalId(), federatedRoom.getDisplayName());
+		await Subscriptions.updateNameAndFnameByRoomId(
+			federatedRoom.getInternalId(),
+			federatedRoom.getName() || '',
+			federatedRoom.getDisplayName() || '',
+		);
+	}
+
+	public async updateRoomName(federatedRoom: FederatedRoom): Promise<void> {
+		await Rooms.setRoomNameById(federatedRoom.getInternalId(), federatedRoom.getName());
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {

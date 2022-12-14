@@ -533,8 +533,20 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
-	setRoomNameById(roomId, name, fname) {
-		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
+	setRoomNameById(roomId, name) {
+		return this.updateOne({ _id: roomId }, { $set: { name } });
+	}
+
+	setFnameById(_id, fname) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	setRoomTopicById(roomId, topic) {

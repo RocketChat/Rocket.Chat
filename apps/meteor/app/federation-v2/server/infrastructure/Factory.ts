@@ -6,6 +6,7 @@ import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
 import type { MatrixBaseEventHandler } from './matrix/handlers/BaseEvent';
 import {
+	MatrixRoomCanonicalAliasChangedHandler,
 	MatrixRoomCreatedHandler,
 	MatrixRoomEventRedactedHandler,
 	MatrixRoomJoinRulesChangedHandler,
@@ -204,6 +205,7 @@ export class FederationFactory {
 			new MatrixRoomNameChangedHandler(roomServiceReceiver),
 			new MatrixRoomTopicChangedHandler(roomServiceReceiver),
 			new MatrixRoomEventRedactedHandler(roomServiceReceiver),
+			new MatrixRoomCanonicalAliasChangedHandler(roomServiceReceiver),
 			new MatrixMessageReactedHandler(messageServiceReceiver),
 			new MatrixUserTypingStatusChangedHandler(userServiceReceiver),
 		];

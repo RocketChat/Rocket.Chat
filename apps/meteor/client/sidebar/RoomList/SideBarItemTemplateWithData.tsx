@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { IMessage, IRoom, isRoomFederated, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
@@ -84,8 +84,9 @@ function SideBarItemTemplateWithData({
 }: RoomListRowProps): ReactElement {
 	const { sidebar } = useLayout();
 
-	const href = roomCoordinator.getRouteLink(room.t, room) || '';
+	const href = roomCoordinator.getRouteLink(room.t, room);
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
+	console.log({ href })
 
 	const {
 		lastMessage,

@@ -98,7 +98,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 		const externalRoomName = await this.bridge.getRoomName(federatedRoom.getExternalId(), federatedUser.getExternalId());
 
-		if (!federatedRoom.shouldUpdateRoomName(externalRoomName || '')) {
+		if (!federatedRoom.shouldUpdateDisplayRoomName(externalRoomName || '')) {
 			return;
 		}
 

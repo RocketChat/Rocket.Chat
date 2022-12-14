@@ -111,7 +111,7 @@ export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
 	}
 
 	public async handle(externalEvent: MatrixEventRoomNameChanged): Promise<void> {
-		await this.roomService.onChangeRoomName(MatrixRoomReceiverConverter.toRoomChangeNameDto(externalEvent));
+		await this.roomService.onChangeDisplayRoomName(MatrixRoomReceiverConverter.toRoomChangeNameDto(externalEvent));
 	}
 }
 
@@ -136,5 +136,17 @@ export class MatrixRoomEventRedactedHandler extends MatrixBaseEventHandler {
 
 	public async handle(externalEvent: MatrixEventRoomRedacted): Promise<void> {
 		await this.roomService.onRedactEvent(MatrixRoomReceiverConverter.toRoomRedactEventDto(externalEvent));
+	}
+}
+
+export class MatrixRoomCanonicalAliasChangedHandler extends MatrixBaseEventHandler {
+	public eventType: string = MatrixEventType.ROOM_CANONICAL_ALIAS_CHANGED;
+
+	constructor(private roomService: FederationRoomServiceListener) {
+		super();
+	}
+
+	public async handle(externalEvent: MatrixEventRoomRedacted): Promise<void> {
+		await this.roomService.onChangeRoomCanonicalAlias(MatrixRoomReceiverConverter.toRoomChangeCanonicalAliasDto(externalEvent));
 	}
 }

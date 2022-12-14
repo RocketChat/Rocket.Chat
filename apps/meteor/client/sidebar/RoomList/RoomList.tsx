@@ -20,6 +20,7 @@ const RoomList = (): ReactElement => {
 	const t = useTranslation();
 	const isAnonymous = !useUserId();
 	const roomsList = useRoomList();
+	console.log({ roomsList})
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver({ debounceDelay: 100 });
