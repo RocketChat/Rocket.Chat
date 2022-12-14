@@ -1,5 +1,4 @@
-import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig } from '@rocket.chat/core-typings';
-import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
+import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
