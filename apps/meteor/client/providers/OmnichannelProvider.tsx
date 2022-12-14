@@ -95,7 +95,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
 				},
 				{
-					sort: getInquirySortQuery(omnichannelSortingMechanism || OmnichannelSortingMechanismSettingType.Timestamp),
+					sort: getInquirySortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();

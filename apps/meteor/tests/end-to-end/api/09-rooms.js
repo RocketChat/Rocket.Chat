@@ -1142,7 +1142,7 @@ describe('[Rooms]', function () {
 			});
 		});
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('can-audit', ['admin']).then(
+			updatePermission('can-audit', ['admin']).then(() => {
 				request
 					.get(api('rooms.autocomplete.adminRooms'))
 					.set(credentials)
@@ -1153,8 +1153,8 @@ describe('[Rooms]', function () {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.error).to.be.equal("The 'selector' param is required");
 					})
-					.end(done),
-			);
+					.end(done);
+			});
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			request

@@ -205,7 +205,7 @@ export const updateQueueInactivityTimeout = () => {
 	});
 };
 
-export const updateRoomSLAHistory = (rid, user, sla) => {
+export const updateRoomSLAHistory = async (rid, user, sla) => {
 	const history = {
 		slaData: {
 			definedBy: user,
