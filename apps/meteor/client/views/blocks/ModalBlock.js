@@ -144,7 +144,11 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 				</Modal.Content>
 				<Modal.Footer>
 					<Modal.FooterControllers>
-						{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
+						{view.close && (
+							<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+								{modalParser.text(view.close.text)}
+							</Button>
+						)}
 						{view.submit && (
 							<Button primary onClick={onSubmit}>
 								{modalParser.text(view.submit.text)}
