@@ -21,17 +21,29 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		// eslint-disable-next-line new-cap
 		this.logger = new loggerClass('QueueWorker');
 		this.queue = new MessageQueue();
-		this.queue.databasePromise = () => {
-			return Promise.resolve(this.db);
-		};
-
-		this.registerWorkers();
-
-		this.onEvent('shutdown', () => this.queue.stopPolling());
 	}
 
 	isServiceNotFoundMessage(message: string): boolean {
 		return message.includes('is not found');
+	}
+
+	async created(): Promise<void> {
+		this.logger.info('Starting queue worker');
+		this.queue.databasePromise = () => {
+			return Promise.resolve(this.db);
+		};
+
+		try {
+			await this.registerWorkers();
+		} catch (e) {
+			this.logger.fatal(e, 'Fatal error occurred when registering workers');
+			process.exit(1);
+		}
+	}
+
+	async stopped(): Promise<void> {
+		this.logger.info('Stopping queue worker');
+		this.queue.stopPolling();
 	}
 
 	// Registers the actual workers, the actions lib will try to fetch elements to work on
