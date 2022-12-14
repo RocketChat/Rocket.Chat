@@ -19,12 +19,12 @@ import {
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
 import { Messages } from '@rocket.chat/models';
+import { Team } from '@rocket.chat/core-sdk';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { Team } from '../../../../server/sdk';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({

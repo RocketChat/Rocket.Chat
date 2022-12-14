@@ -12,9 +12,9 @@ import type {
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
+import type { IVoipService } from '@rocket.chat/core-sdk';
+import { ServiceClassInternal } from '@rocket.chat/core-sdk';
 
-import type { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';

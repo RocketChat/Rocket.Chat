@@ -1,5 +1,5 @@
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IUiKitCoreApp, IUiKitCoreAppService } from '../../sdk/types/IUiKitCoreApp';
+import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import type { IUiKitCoreApp, IUiKitCoreAppService } from '@rocket.chat/core-sdk';
 
 const registeredApps = new Map();
 

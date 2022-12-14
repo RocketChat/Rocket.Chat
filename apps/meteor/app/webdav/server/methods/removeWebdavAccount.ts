@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { WebdavAccounts } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-sdk';
 
-import { api } from '../../../../server/sdk/api';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

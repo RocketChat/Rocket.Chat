@@ -1,5 +1,6 @@
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IFederationService } from '../../sdk/types/IFederationService';
+import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import type { IFederationService } from '@rocket.chat/core-sdk';
+
 import { federationUserServiceSender } from '../../../app/federation-v2/server';
 import { settings } from '../../../app/settings/server';
 

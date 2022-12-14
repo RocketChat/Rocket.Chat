@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { BannerPlatform, IBanner, IBannerDismiss, Optional, IUser } from '@rocket.chat/core-typings';
 import { Banners, BannersDismiss, Users } from '@rocket.chat/models';
+import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import type { IBannerService } from '@rocket.chat/core-sdk';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IBannerService } from '../../sdk/types/IBannerService';
 import { api } from '../../sdk/api';
 
 export class BannerService extends ServiceClassInternal implements IBannerService {
