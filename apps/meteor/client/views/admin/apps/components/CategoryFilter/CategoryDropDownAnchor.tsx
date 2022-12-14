@@ -1,58 +1,50 @@
-import type { Select } from '@rocket.chat/fuselage';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import React, { forwardRef } from 'react';
 
-const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentProps<typeof Select>> & { selectedCategoriesCount: number }>(
-	function CategoryDropDownAnchor(props, ref) {
-		const t = useTranslation();
+const CategoryDropDownAnchor = forwardRef<
+	HTMLInputElement,
+	{ selectedCategoriesCount: number; onClick: React.MouseEventHandler<HTMLElement> }
+>(function CategoryDropDownAnchor({ onClick, selectedCategoriesCount }, ref) {
+	const t = useTranslation();
 
-		return (
-			<Button
-				ref={ref}
-				onClick={props.onClick}
-				display='flex'
-				alignItems='center'
-				flexDirection='row'
-				flexGrow='1'
-				flexShrink='1'
-				borderColor={props.selectedCategoriesCount ? 'none' : 'light'}
-				borderWidth={props.selectedCategoriesCount ? 'none' : 'x2'}
-				bg={props.selectedCategoriesCount ? 'primary' : 'alternative'}
-			>
-				{props.selectedCategoriesCount > 0 && (
-					<Box
-						mie='x6'
-						borderRadius='x32'
-						bg='alternative'
-						fontWeight={700}
-						fontSize='micro'
-						color='primary'
-						pi='x6'
-						display='flex'
-						alignItems='center'
-						justifyContent='center'
-					>
-						{props.selectedCategoriesCount}
-					</Box>
-				)}
+	return (
+		<Button
+			ref={ref}
+			onClick={onClick}
+			display='flex'
+			alignItems='center'
+			flexDirection='row'
+			flexGrow='1'
+			flexShrink='1'
+			borderColor={selectedCategoriesCount ? 'none' : 'light'}
+			borderWidth={selectedCategoriesCount ? 'none' : 'x2'}
+			bg={selectedCategoriesCount ? 'stroke-highlight' : 'surface-light'}
+		>
+			{selectedCategoriesCount > 0 && (
 				<Box
-					is='span'
+					mie='x6'
+					borderRadius='x32'
+					bg='light'
+					fontWeight={700}
+					fontSize='micro'
+					color='on-info'
+					pi='x6'
 					display='flex'
-					flexGrow={1}
-					fontWeight={400}
-					fontSize='p2b'
-					color={props.selectedCategoriesCount ? 'alternative' : 'hint'}
+					alignItems='center'
+					justifyContent='center'
 				>
-					{props.selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
+					{selectedCategoriesCount}
 				</Box>
-				<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
-					<Icon name='chevron-down' fontSize='x20' color={props.selectedCategoriesCount ? 'alternative' : 'hint'} />
-				</Box>
-			</Button>
-		);
-	},
-);
+			)}
+			<Box is='span' display='flex' flexGrow={1} fontWeight={400} fontSize='p2b' color={selectedCategoriesCount ? 'white' : 'hint'}>
+				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
+			</Box>
+			<Box mi='x4' display='flex' alignItems='center' justifyContent='center'>
+				<Icon name='chevron-down' fontSize='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
+			</Box>
+		</Button>
+	);
+});
 
 export default CategoryDropDownAnchor;
