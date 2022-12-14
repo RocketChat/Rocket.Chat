@@ -19,6 +19,9 @@ import type { ILDAPService } from './types/ILDAPService';
 import type { IVideoConfService } from './types/IVideoConfService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
+import type { IQueueWorkerService } from './types/IQueueWorkerService';
+import type { IPDFWorkerService } from './types/IPDFWorkerService';
+import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
 import { FibersContextStore } from './lib/ContextStore';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -40,6 +43,9 @@ export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
+export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
+export const PdfWorker = proxifyWithWait<IPDFWorkerService>('pdf-worker');
+export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

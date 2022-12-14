@@ -1,6 +1,3 @@
----
-to: ee/apps/<%= name %>/src/service.ts
----
 import type { Document } from 'mongodb';
 import polka from 'polka';
 
@@ -9,7 +6,7 @@ import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-const PORT = process.env.PORT || <%= h.random() %>;
+const PORT = process.env.PORT || 3037;
 
 (async () => {
 	const db = await getConnection();
@@ -21,9 +18,9 @@ const PORT = process.env.PORT || <%= h.random() %>;
 	api.setBroker(broker);
 
 	// need to import service after models are registered
-	const { <%= h.changeCase.pascalCase(name) %> } = await import('./<%= h.changeCase.pascalCase(name) %>');
+	const { PdfWorker } = await import('./PdfWorker');
 
-	api.registerService(new <%= h.changeCase.pascalCase(name) %>());
+	api.registerService(new PdfWorker());
 
 	await api.start();
 
