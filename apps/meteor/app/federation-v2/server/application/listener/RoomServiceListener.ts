@@ -113,11 +113,7 @@ export class FederationRoomServiceListener extends FederationService {
 			federatedUser && (await this.updateUserDisplayNameInternally(federatedUser, userProfile?.displayName));
 		}
 
-		if (isUserJoiningByHimself) {
-			return;
-		}
-
-		if (wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
+		if (wasGeneratedOnTheProxyServer && (isUserJoiningByHimself || !affectedFederatedRoom)) {
 			return;
 		}
 
