@@ -19,7 +19,7 @@ const CategoryDropDownAnchor = forwardRef<
 			flexShrink='1'
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
 			borderWidth={selectedCategoriesCount ? 'none' : 'x2'}
-			bg={selectedCategoriesCount ? 'stroke-highlight' : 'surface-light'}
+			{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
 		>
 			{selectedCategoriesCount > 0 && (
 				<Box
