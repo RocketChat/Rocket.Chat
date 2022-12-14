@@ -55,11 +55,7 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 	}
 
 	if (isReadOnly) {
-		return (
-			<footer className='rc-message-box footer'>
-				<ComposerReadOnly {...props}/>
-			</footer>
-		);
+		return <ComposerReadOnly />;
 	}
 
 	if (isBlockedOrBlocker) {

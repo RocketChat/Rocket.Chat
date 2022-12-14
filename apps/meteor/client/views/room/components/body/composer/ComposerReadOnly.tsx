@@ -1,38 +1,42 @@
-import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { FormEventHandler, ReactElement, useCallback } from 'react';
-import React from 'react';
-import { useRoom } from '../../../contexts/RoomContext';
-import { ComposerMessageProps } from './ComposerMessage';
-import { useUserIsSubscribed } from '../../../contexts/RoomContext';
+import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 
-export const ComposerReadOnly = (props: ComposerMessageProps): ReactElement => {
+import { call } from '../../../../../lib/utils/call';
+import { useRoom, useUserIsSubscribed } from '../../../contexts/RoomContext';
+
+export const ComposerReadOnly = (): ReactElement => {
 	const t = useTranslation();
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
-	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
+	const calloutRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-	const join = useCallback<FormEventHandler<HTMLElement>>(
+	useEffect(() => {
+		calloutRef.current.style.flex = !isSubscribed ? '4' : 'none';
+	}, [isSubscribed]);
+
+	const join = useCallback(
 		async (_e) => {
 			try {
-				if (props.chatMessagesInstance){
-					await props.chatMessagesInstance.data.joinRoom();
-				}
-				else {
-					console.log("chat messages undefined");
-				}
-				
+				await call('joinRoom', room._id);
 			} catch (error: any) {
 				console.log(error);
 			}
 		},
-		[joinEndpoint, room._id],
+		[room._id],
 	);
 
 	return (
-			<MessageFooterCallout is='form' aria-label={t('Join')} onSubmit={join}>
-				<MessageFooterCalloutContent>{t('room_is_read_only')}</MessageFooterCalloutContent>
-				<MessageFooterCalloutAction type='submit' disabled={isSubscribed} >{t('Join')}</MessageFooterCalloutAction>
+		<footer className='rc-message-box footer'>
+			<MessageFooterCallout>
+				<MessageFooterCalloutContent ref={calloutRef}>{t('room_is_read_only')}</MessageFooterCalloutContent>
+				{!isSubscribed && (
+					<button className='rc-button rc-button--primary rc-button--medium' onClick={join}>
+						{t('Join')}
+					</button>
+				)}
 			</MessageFooterCallout>
+		</footer>
 	);
 };
