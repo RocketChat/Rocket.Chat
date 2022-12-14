@@ -3,7 +3,7 @@ import type { ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import type { IQueueWorkerService } from '../../../../apps/meteor/server/sdk/types/IQueueWorkerService';
+import type { IQueueWorkerService, HealthAggResult } from '../../../../apps/meteor/server/sdk/types/IQueueWorkerService';
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 export class QueueWorker extends ServiceClass implements IQueueWorkerService {
@@ -83,5 +83,22 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	async queueWork<T extends Record<string, unknown>>(to: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${to}`);
 		await this.queue.enqueue<typeof data>('work', { to, ...data });
+	}
+
+	async queueInfo(): Promise<HealthAggResult[]> {
+		this.logger.info('Health check');
+		return this.db
+			.collection(this.queue.collectionName)
+			.aggregate<HealthAggResult>([
+				{
+					$addFields: {
+						status: { $cond: [{ $ifNull: ['$rejectionReason', false] }, 'Rejected', 'In progress'] },
+					},
+				},
+				{ $group: { _id: { type: '$type', status: '$status' }, elements: { $push: '$$ROOT' }, total: { $sum: 1 } } },
+				// Project from each group the type, status and total of elements
+				{ $project: { _id: 0, type: '$_id.type', status: '$_id.status', total: 1 } },
+			])
+			.toArray();
 	}
 }

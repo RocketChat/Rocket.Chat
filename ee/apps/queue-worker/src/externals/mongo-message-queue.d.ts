@@ -19,6 +19,8 @@ declare module 'mongo-message-queue' {
 	export type Actions = 'work';
 
 	export default class MessageQueue {
+		collectionName: string;
+
 		databasePromise: () => Promise<Db>;
 
 		registerWorker<T>(type: Actions, worker: (queueItem: Work<T>) => Promise<ValidResult>): void;
