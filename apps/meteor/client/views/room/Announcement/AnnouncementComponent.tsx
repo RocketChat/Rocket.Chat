@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { FC, MouseEvent } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React from 'react';
 
 type AnnouncementComponentParams = {
 	onClickOpen: (e: MouseEvent<HTMLAnchorElement>) => void;

@@ -2,7 +2,8 @@ import { Button, ButtonGroup, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useRouteParameter, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, ReactElement, useState, useEffect, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import { integrationHistoryStreamer } from '../../../../../app/integrations/client/streamer';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';

@@ -1,5 +1,4 @@
 {
-  "403": "Interzis",
   "500": "eroare interna a serverului",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ nu mai este __role__, prin __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ a fost stabilită __role__ de __user_by__",
@@ -2795,6 +2794,7 @@
   "registration.page.registration.waitActivationWarning": "Ca să vă puteți autentifica, contul dumneavoastră trebuie să fie activat manual de către un administrator.",
   "registration.page.resetPassword.sent": "Dacă acest e-mail este înregistrat, vă vom trimite instrucțiuni despre resetarea parolei. Dacă în scurt timp nu primiți un e-mail, reveniți și încercați din nou.",
   "registration.component.login": "Autentificare",
+  "registration.component.login.userNotFound": "Utilizatorul nu a fost găsit",
   "registration.component.resetPassword": "Resetează parola",
   "registration.component.form.email": "E-mail",
   "registration.component.form.password": "Parolă",

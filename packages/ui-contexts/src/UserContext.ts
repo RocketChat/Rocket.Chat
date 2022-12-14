@@ -34,8 +34,7 @@ export type LoginService = {
 	service: string;
 
 	buttonLabelText?: string;
-	buttonLabelColor?: string;
-	buttonColor?: string;
+	icon?: string;
 };
 
 export type UserContextValue = {

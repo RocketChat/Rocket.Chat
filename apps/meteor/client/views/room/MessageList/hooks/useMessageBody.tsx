@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 
 export const useMessageBody = ({ attachments, msg }: Partial<Pick<IMessage, 'msg' | 'attachments'>> = {}): string =>

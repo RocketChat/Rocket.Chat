@@ -1,4 +1,5 @@
-import { ComponentType, ReactElement, PropsWithoutRef, createElement, lazy, Suspense, FC } from 'react';
+import type { ComponentType, ReactElement, PropsWithoutRef, FC } from 'react';
+import { createElement, lazy, Suspense } from 'react';
 
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 

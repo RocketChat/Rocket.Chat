@@ -1,7 +1,8 @@
 import { Button, Field, Icon } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
-import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
+import type { ChangeEventHandler, DragEvent, ReactElement } from 'react';
+import React from 'react';
 
 import './AssetSettingInput.styles.css';
 

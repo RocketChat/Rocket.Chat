@@ -1,7 +1,9 @@
-import { IUserStatus } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, TextInput, Field, Select, Icon, SelectOption } from '@rocket.chat/fuselage';
+import type { IUserStatus } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
