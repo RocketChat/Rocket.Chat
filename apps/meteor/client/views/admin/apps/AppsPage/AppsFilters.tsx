@@ -45,32 +45,17 @@ const AppsFilters = ({
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
 
-	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
-	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
-	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
+	const isWrapped = useMediaQuery('(max-width: 1060px)');
+	const marginInline = isWrapped ? '' : 'x8';
+	const magrinBlock = isWrapped ? 'x8' : '';
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
-				<RadioDropDown
-					group={freePaidFilterStructure}
-					onSelected={freePaidFilterOnSelected}
-					mie={hasFilterStackMargin}
-					mb={hasNotFilterStackMargin}
-				/>
-				<RadioDropDown
-					group={statusFilterStructure}
-					onSelected={statusFilterOnSelected}
-					mie={hasFilterStackMargin}
-					mbe={hasNotFilterStackMargin}
-				/>
+			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} isWrapped={isWrapped}>
+				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mie={marginInline} mb={magrinBlock} />
+				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} mie={marginInline} mbe={magrinBlock} />
 				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
-				<RadioDropDown
-					group={sortFilterStructure}
-					onSelected={sortFilterOnSelected}
-					mis={hasFilterStackMargin}
-					mbs={hasNotFilterStackMargin}
-				/>
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mis={marginInline} mbs={magrinBlock} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</>
