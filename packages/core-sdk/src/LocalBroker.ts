@@ -2,11 +2,13 @@ import { EventEmitter } from 'events';
 
 import { InstanceStatus } from '@rocket.chat/models';
 
-import type { IBroker, IBrokerNode } from '../types/IBroker';
-import type { ServiceClass, IServiceClass } from '../types/ServiceClass';
-import { asyncLocalStorage } from '..';
+import type { IBroker, IBrokerNode } from './types/IBroker';
+import type { ServiceClass, IServiceClass } from './types/ServiceClass';
+import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './Events';
-import { StreamerCentral } from '../../modules/streamer/streamer.module';
+
+// TODO StreamerCentral should be provided via DI
+// import { StreamerCentral } from '../../modules/streamer/streamer.module';
 
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, (...params: any) => any>();
@@ -83,7 +85,8 @@ export class LocalBroker implements IBroker {
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		this.broadcastLocal(event, ...args);
 
-		StreamerCentral.emit('broadcast', 'local', 'broadcast', [{ eventName: event, args }]);
+		// TODO inject this dep
+		// StreamerCentral.emit('broadcast', 'local', 'broadcast', [{ eventName: event, args }]);
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {

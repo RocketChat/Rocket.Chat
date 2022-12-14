@@ -1,8 +1,8 @@
-import { isRunningMs } from '../lib/isRunningMs';
-import { Api } from './lib/Api';
-import { LocalBroker } from './lib/LocalBroker';
+import { api, LocalBroker } from '@rocket.chat/core-sdk';
 
-export const api = new Api();
+import { isRunningMs } from '../lib/isRunningMs';
+
+export { api }; // TODO remove this export
 
 if (!isRunningMs()) {
 	api.setBroker(new LocalBroker());
