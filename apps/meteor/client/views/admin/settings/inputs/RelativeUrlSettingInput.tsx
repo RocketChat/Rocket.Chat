@@ -1,6 +1,7 @@
 import { Box, Field, Flex, UrlInput } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 

@@ -1,7 +1,9 @@
-import { isUserFederated, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';

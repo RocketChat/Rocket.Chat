@@ -1,5 +1,4 @@
 {
-  "403": "Zakázané",
   "500": "Interná chyba servera",
   "__username__is_no_longer__role__defined_by__user_by_": "používateľovi __username__ bola zrušená funkcia __role__ používateľom __user_by__",
   "__username__was_set__role__by__user_by_": "používateľovi __username__ bola nastavená funkcia __role__ používateľom __user_by__",
@@ -2806,6 +2805,7 @@
   "registration.page.registration.waitActivationWarning": "Skôr ako sa môžete prihlásiť, váš účet musí byť ručne aktivovaný správcom.",
   "registration.page.resetPassword.sent": "Ak je tento e-mail zaregistrovaný, pošleme pokyny na obnovenie hesla. Ak v krátkom čase nedostanete e-mail, vráťte sa a skúste to znova.",
   "registration.component.login": "Prihlásiť sa",
+  "registration.component.login.userNotFound": "Užívateľ Nenájdený",
   "registration.component.resetPassword": "Obnoviť heslo",
   "registration.component.form.email": "e-mail",
   "registration.component.form.password": "Heslo",

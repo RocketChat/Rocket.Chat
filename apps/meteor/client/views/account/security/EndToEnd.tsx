@@ -2,7 +2,8 @@ import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { ComponentProps, ReactElement, useCallback, useEffect } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { callbacks } from '../../../../lib/callbacks';

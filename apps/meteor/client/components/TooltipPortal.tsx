@@ -1,4 +1,5 @@
-import { FC, memo, useEffect, useState } from 'react';
+import type { FC } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { createAnchor } from '../lib/utils/createAnchor';

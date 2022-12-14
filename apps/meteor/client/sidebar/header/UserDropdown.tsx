@@ -1,5 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
+import type { IUser, ValueOf } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Margins,
@@ -13,7 +13,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { AccountBox } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';

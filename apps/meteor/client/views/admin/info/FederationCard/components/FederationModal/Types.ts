@@ -1,4 +1,4 @@
-import { SectionStatus } from '../Section';
+import type { SectionStatus } from '../Section';
 
 export enum DNSRecordType {
 	SRV = 'srv',
