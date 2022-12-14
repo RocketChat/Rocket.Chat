@@ -1,7 +1,8 @@
-import { ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { Field, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, Dispatch, SetStateAction, useEffect } from 'react';
+import type { ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import VerticalBar from '../../../components/VerticalBar';

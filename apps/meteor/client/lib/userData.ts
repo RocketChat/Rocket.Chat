@@ -1,5 +1,4 @@
-import type { ILivechatAgent, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, IUserDataEvent, Serialized } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 

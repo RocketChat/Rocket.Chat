@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';

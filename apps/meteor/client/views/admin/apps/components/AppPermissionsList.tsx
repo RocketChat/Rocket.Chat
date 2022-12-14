@@ -1,7 +1,9 @@
-import { AppPermission } from '@rocket.chat/core-typings';
+import type { AppPermission } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { Fragment, ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { Fragment } from 'react';
 
 const defaultPermissions = [
 	'user.read',
