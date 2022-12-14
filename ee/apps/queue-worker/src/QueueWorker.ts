@@ -1,23 +1,10 @@
 import type { Db } from 'mongodb';
-import type { ValidResult } from 'mongo-message-queue';
+import type { ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IQueueWorkerService } from '../../../../apps/meteor/server/sdk/types/IQueueWorkerService';
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
-
-type Work<T> = {
-	_id: string;
-	dateCreated: Date;
-	type: string;
-	message: T;
-	priority: number;
-	receivedTime: Date;
-	releasedReason?: string;
-	retryCount?: number;
-	nextReceivableTime?: Date;
-	rejectionReason?: string;
-};
 
 export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	protected name = 'queue-worker';
