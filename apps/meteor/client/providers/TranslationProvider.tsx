@@ -19,14 +19,21 @@ type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> exten
 
 const namespacesDefault = ['onboarding', 'registration'] as TranslationNamespace[];
 
+const parseToJSON = (customTranslations: string) => {
+	try {
+		return JSON.parse(customTranslations);
+	} catch (e) {
+		return false;
+	}
+};
+
 const useI18next = (lng: string): typeof i18next => {
 	const basePath = useAbsoluteUrl()('/i18n');
 
 	const customTranslations = useSetting('Custom_Translations');
 
 	const parse = useMutableCallback((data: string, lngs?: string | string[], namespaces: string | string[] = []): { [key: string]: any } => {
-		const parsedCustomTranslations: Record<string, Record<string, string>> | false =
-			typeof customTranslations === 'string' && JSON.parse(customTranslations);
+		const parsedCustomTranslations = typeof customTranslations === 'string' && parseToJSON(customTranslations);
 
 		const source = JSON.parse(data);
 		const result: { [key: string]: any } = {};
