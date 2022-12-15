@@ -20,7 +20,6 @@ Meteor.methods({
 		}
 
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { username: 1, federated: 1 } });
-		console.log({ user });
 		if (!user || isUserFederated(user)) {
 			throw new Meteor.Error('error-not-allowed', 'Federated Users cant be admins', { method: 'setAdminStatus' });
 		}
