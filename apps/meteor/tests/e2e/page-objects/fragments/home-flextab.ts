@@ -46,7 +46,7 @@ export class HomeFlextab {
 
 	get flexTabViewThreadMessage(): Locator {
 		return this.page.locator(
-			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
+			'div.thread-list ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
 		);
 	}
 

@@ -8,7 +8,7 @@ import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useRoomSubscription } from '../../contexts/RoomContext';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useMessageContext = (room: IRoom) => {
+export const useRoomMessageContext = (room: IRoom) => {
 	const uid = useUserId();
 	const user = useUser() ?? undefined;
 	const rid = room._id;
