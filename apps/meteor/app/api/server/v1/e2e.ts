@@ -195,3 +195,20 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'e2e.acceptSuggestedGroupKey',
+	{
+		authRequired: true,
+		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+	},
+	{
+		post() {
+			const { rid } = this.bodyParams;
+
+			Meteor.call('e2e.acceptSuggestedGroupKey', rid);
+
+			return API.v1.success();
+		},
+	},
+);
