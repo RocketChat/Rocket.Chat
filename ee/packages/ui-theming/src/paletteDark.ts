@@ -100,7 +100,7 @@ export const palette = [
 			{ name: 'button-background-primary-press', token: '', color: '#245399' },
 			{ name: 'button-background-primary-focus', token: '', color: '#3976D1' },
 			{ name: 'button-background-primary-keyfocus', token: 'P500', color: '#156FF5' },
-			{ name: 'button-background-primary-disabled', token: 'P200', color: '#D1EBFE' },
+			{ name: 'button-background-primary-disabled', token: '', color: '#1D3963' },
 		],
 	},
 	{
