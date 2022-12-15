@@ -8,7 +8,7 @@ import { registerUser } from '../../utils/register-user';
 import { formatIntoFullMatrixUsername } from '../../utils/format';
 import { createGroupAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
 
-test.describe.only('Federation - CE version', () => {
+test.describe.parallel('Federation - CE version', () => {
 	let poFederationChannelServer2: FederationChannel;
 	let userFromServer2UsernameOnly: string;
 	let userFromServer1UsernameOnly: string;
