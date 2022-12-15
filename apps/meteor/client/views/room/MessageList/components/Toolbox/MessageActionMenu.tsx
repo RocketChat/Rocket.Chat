@@ -35,7 +35,10 @@ export const MessageActionMenu: FC<{
 		<MessageToolboxItem
 			ref={ref}
 			icon='kebab'
-			onClick={(): void => setVisible(!visible)}
+			onClick={(e): void => {
+				e.stopPropagation();
+				setVisible(!visible);
+			}}
 			data-qa-id='menu'
 			data-qa-type='message-action-menu'
 			title={t('More')}
