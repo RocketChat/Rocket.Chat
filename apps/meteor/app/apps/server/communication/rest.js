@@ -194,7 +194,7 @@ export class AppsRestApi {
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
 			'',
-			{ authRequired: true },
+			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
