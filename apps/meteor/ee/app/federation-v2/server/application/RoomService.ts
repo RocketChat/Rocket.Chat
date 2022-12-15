@@ -193,11 +193,11 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 
 		const federatedUser = existingFederatedUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId));
 		if (!federatedUser) {
-			throw new Error(`User with internalUserId ${internalUserId} not found`);
+			throw new Error(`User with internalId ${internalUserId} not found`);
 		}
 		await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedUser.getExternalId());
 		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-			internalRoomId || federatedRoom.getInternalId(),
+			internalRoomId,
 			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
 		);
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedUser);

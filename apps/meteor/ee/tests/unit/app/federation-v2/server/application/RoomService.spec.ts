@@ -43,6 +43,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		getFederatedRoomByExternalId: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
+		getFederatedRoomByInternalId: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -89,6 +90,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		roomAdapter.getFederatedRoomByExternalId.reset();
 		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.addUserToRoom.reset();
+		roomAdapter.getFederatedRoomByInternalId.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -193,7 +195,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		});
 	});
 
-	describe('#joinPublicRoom()', () => {
+	describe('#joinExternalPublicRoom()', () => {
 		const user = FederatedUserEE.createInstance('externalInviterId', {
 			name: 'normalizedInviterId',
 			username: 'normalizedInviterId',
@@ -203,7 +205,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 
 		it('should throw an error if the federation is disabled', async () => {
 			settingsAdapter.isFederationEnabled.returns(false);
-			await expect(service.joinPublicRoom({} as any)).to.be.rejectedWith('Federation is disabled');
+			await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('Federation is disabled');
 		});
 
 		it('should NOT create an external user if it already exists', async () => {
@@ -211,7 +213,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
 
-			await service.joinPublicRoom({} as any);
+			await service.joinExternalPublicRoom({} as any);
 
 			expect(spy.called).to.be.false;
 		});
@@ -223,7 +225,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
 
-			await service.joinPublicRoom({ internalUserId: 'internalUserId' } as any);
+			await service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any);
 
 			expect(spy.calledWith('internalUserId')).to.be.true;
 		});
@@ -233,7 +235,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
 
-			await expect(service.joinPublicRoom({ internalUserId: 'internalUserId' } as any)).to.be.rejectedWith(
+			await expect(service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any)).to.be.rejectedWith(
 				'User with internalId internalUserId not found',
 			);
 		});
@@ -242,7 +244,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			settingsAdapter.isFederationEnabled.returns(true);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 
-			await service.joinPublicRoom({
+			await service.joinExternalPublicRoom({
 				externalRoomId: 'externalRoomId',
 				internalUserId: 'internalUserId',
 				externalRoomHomeServerName: 'externalRoomHomeServerName',
@@ -260,7 +262,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
 			const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
 
-			await service.joinPublicRoom({ internalUserId: 'internalUserId' } as any);
+			await service.joinExternalPublicRoom({ internalUserId: 'internalUserId' } as any);
 
 			expect(spy.calledWith('id', 'username', false)).to.be.true;
 		});
@@ -273,6 +275,12 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
 			const spy = sinon.spy(service, 'createFederatedUserInternallyOnly');
+
+			await service.joinExternalPublicRoom({
+				internalUserId: 'internalUserId',
+				normalizedRoomId: 'normalizedRoomId',
+				externalRoomId: 'externalRoomId',
+			} as any);
 
 			expect(spy.called).to.be.false;
 		});
@@ -287,7 +295,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			roomAdapter.getFederatedRoomByExternalId.onFirstCall().resolves(undefined);
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 
-			await service.joinPublicRoom({
+			await service.joinExternalPublicRoom({
 				internalUserId: 'internalUserId',
 				normalizedRoomId: 'normalizedRoomId',
 				externalRoomId: 'externalRoomId',
@@ -307,7 +315,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 
-			await service.joinPublicRoom({
+			await service.joinExternalPublicRoom({
 				internalUserId: 'internalUserId',
 				normalizedRoomId: 'normalizedRoomId',
 			} as any);
@@ -324,12 +332,98 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 			bridge.getRoomData.resolves({ creator: { id: 'id', username: 'username' }, name: 'roomName' });
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 
-			await service.joinPublicRoom({
+			await service.joinExternalPublicRoom({
 				internalUserId: 'internalUserId',
 				normalizedRoomId: 'normalizedRoomId',
 			} as any);
 
 			expect(notificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId.calledWith(room.getInternalId())).to.be.true;
+			expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+		});
+	});
+
+	describe('#joinInternalPublicRoom()', () => {
+		const user = FederatedUserEE.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should throw an error if the federation is disabled', async () => {
+			settingsAdapter.isFederationEnabled.returns(false);
+			await expect(service.joinInternalPublicRoom({ internalRoomId: 'internalRoomId' } as any)).to.be.rejectedWith(
+				'Federation is disabled',
+			);
+		});
+
+		it('should throw an error if the room does not exists', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves();
+			await expect(service.joinInternalPublicRoom({ internalRoomId: 'internalRoomId' } as any)).to.be.rejectedWith(
+				'Could not find the room to invite. RoomId: internalRoomId',
+			);
+		});
+
+		it('should NOT create an external user if it already exists', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
+
+			await service.joinInternalPublicRoom({ internalRoomId: 'internalRoomId' } as any);
+
+			expect(spy.called).to.be.false;
+		});
+
+		it('should create an external user if it does not exists', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(undefined);
+			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			const spy = sinon.spy(service, 'createFederatedUserIncludingHomeserverUsingLocalInformation');
+
+			await service.joinInternalPublicRoom({ internalRoomId: 'internalRoomId', internalUserId: 'internalUserId' } as any);
+
+			expect(spy.calledWith('internalUserId')).to.be.true;
+		});
+
+		it('should throw an error if the federated user was not found even after creation', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			userAdapter.getInternalUserById.resolves({ _id: 'id', username: 'username' });
+
+			await expect(
+				service.joinInternalPublicRoom({ internalRoomId: 'internalRoomId', internalUserId: 'internalUserId' } as any),
+			).to.be.rejectedWith('User with internalId internalUserId not found');
+		});
+
+		it('should join the user to the remote room', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+
+			await service.joinInternalPublicRoom({
+				internalRoomId: 'internalRoomId',
+				internalUserId: 'internalUserId',
+			} as any);
+
+			expect(bridge.joinRoom.calledWith('externalRoomId', user.getExternalId())).to.be.true;
+		});
+
+		it('should subscribe to typing events and finally adds the user to the room', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+
+			await service.joinInternalPublicRoom({
+				internalRoomId: 'internalRoomId',
+				internalUserId: 'internalUserId',
+			} as any);
+
+			expect(notificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId.calledWith('internalRoomId')).to.be.true;
 			expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
 		});
 	});

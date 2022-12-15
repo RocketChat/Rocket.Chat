@@ -207,7 +207,7 @@ describe('FederationEE - Infrastructure - Matrix - FederationRoomSenderConverter
 		});
 	});
 
-	describe('#toJoinPublicRoomDto()', () => {
+	describe('#toJoinExternalPublicRoomDto()', () => {
 		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
 			const result = FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto('internalUserId', '!externalRoomId:server.com');
 			expect(result.externalRoomId).to.be.equal('!externalRoomId:server.com');

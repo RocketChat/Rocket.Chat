@@ -566,7 +566,49 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.addUserToRoom.called).to.be.false;
 		});
 
-		it('should add the user from room if its NOT a LEAVE event', async () => {
+		it('should do nothing if the user is auto-joining and the event is original from the LOCAL', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				externalInviterId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.removeUserFromRoom.called).to.be.false;
+			expect(roomAdapter.removeDirectMessageRoom.called).to.be.false;
+			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
+			expect(bridge.joinRoom.called).to.be.false;
+			expect(roomAdapter.addUserToRoom.called).to.be.false;
+		});
+
+		it('should add the user into the room not providing an inviter (auto joining) if the user is auto-joining and its NOT a LEAVE event', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.REMOTE,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				externalInviterId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.removeUserFromRoom.called).to.be.false;
+			expect(roomAdapter.removeDirectMessageRoom.called).to.be.false;
+			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
+			expect(bridge.joinRoom.called).to.be.false;
+			expect(roomAdapter.addUserToRoom.calledWith(room, user)).to.be.true;
+		});
+
+		it('should add the user into the room if its NOT a LEAVE event', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 			await service.onChangeRoomMembership({
