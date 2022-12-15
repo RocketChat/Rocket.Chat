@@ -46,7 +46,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				...(roomTopic ? { topic: roomTopic } : {}),
 			},
 		});
-		await intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
+		intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
 
 		return matrixRoom.room_id;
 	}
