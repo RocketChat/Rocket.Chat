@@ -31,6 +31,10 @@
 	flex-direction: column;
 	align-items: stretch;
 
+	&__wrapper {
+		margin-block: -4px;
+	}
+
 	&__row {
 		display: flex;
 		flex-direction: column;
