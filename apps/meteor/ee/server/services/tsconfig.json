@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
-		"target": "es2018",
+		"module": "esNext",
+		"target": "es2020",
 		"lib": ["esnext", "dom"],
 
 		"allowJs": true,

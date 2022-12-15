@@ -1,8 +1,6 @@
 {
 	"extends": "../../../tsconfig.base.json",
 	"compilerOptions": {
-		"target": "es2018",
-		"lib": ["esnext", "dom"],
 		"allowJs": true,
 		"checkJs": false,
 		"incremental": true,

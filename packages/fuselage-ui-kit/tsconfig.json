@@ -2,8 +2,8 @@
   "compilerOptions": {
     "rootDir": "./src",
     "module": "ESNext",
-    "target": "es5",
-    "lib": ["dom", "es6"],
+    "target": "es2015",
+    "lib": ["dom", "esnext"],
     "sourceMap": true,
     "allowJs": false,
     "jsx": "react",
