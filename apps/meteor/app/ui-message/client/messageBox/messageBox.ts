@@ -32,6 +32,7 @@ import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBox.html';
+import { hasLicense } from '/ee/app/license/client';
 
 const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();
@@ -193,6 +194,7 @@ export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	insertNewLine: () => void;
 	send: (event: Event) => void;
 	sendIconDisabled: ReactiveVar<boolean>;
+	hasFederationEnterpriseLicense: ReactiveVar<boolean>;
 };
 
 let lastFocusedInput: HTMLTextAreaElement | undefined = undefined;
@@ -207,6 +209,12 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 	this.replyMessageData = new ReactiveVar(this.data.chatContext?.composer?.quotedMessages.get() ?? []);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.isSendIconVisible = new ReactiveVar(false);
+	this.hasFederationEnterpriseLicense = new ReactiveVar(false);
+
+	this.autorun(async () => {
+		const enabled = await hasLicense('federation');
+		this.hasFederationEnterpriseLicense.set(enabled);
+	});
 
 	this.set = (value) => {
 		if (!this.input) {
@@ -457,6 +465,18 @@ Template.messageBox.helpers({
 		const room = ChatRoom.findOne(rid);
 
 		return room && isRoomFederated(room);
+	},
+	canJoin() {
+		const { rid } = Template.currentData();
+		const room = ChatRoom.findOne(rid);
+
+		if (!isRoomFederated(room)) {
+			return true;
+		}
+
+		return (
+			(Template.instance() as MessageBoxTemplateInstance).hasFederationEnterpriseLicense.get() && settings.get('Federation_Matrix_enabled')
+		);
 	},
 });
 
