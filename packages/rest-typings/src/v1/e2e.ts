@@ -100,7 +100,7 @@ export type E2eEndpoints = {
 		POST: (params: E2eUpdateGroupKeyProps) => void;
 	};
 	'/v1/e2e.acceptSuggestedGroupKey': {
-		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
+		POST: (params: E2eGetUsersOfRoomWithoutKeyProps) => void;
 	};
 	'/v1/e2e.setRoomKeyID': {
 		POST: (params: E2eSetRoomKeyIdProps) => void;
