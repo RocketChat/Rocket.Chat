@@ -1,6 +1,8 @@
-import { Box, Button, Icon, Select } from '@rocket.chat/fuselage';
+import type { Select } from '@rocket.chat/fuselage';
+import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef } from 'react';
 
 const CategoryDropDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentProps<typeof Select>> & { selectedCategoriesCount: number }>(
 	function CategoryDropDownAnchor(props, ref) {

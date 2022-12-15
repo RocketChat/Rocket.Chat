@@ -1,11 +1,12 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import type { UrlPreview } from './PreviewList';
+import type { UrlPreviewMetadata } from './PreviewList';
 import UrlAudioPreview from './UrlAudioPreview';
 import UrlImagePreview from './UrlImagePreview';
 import UrlVideoPreview from './UrlVideoPreview';
 
-const UrlPreviewResolver = ({ url, type, originalType }: UrlPreview): ReactElement | null => {
+const UrlPreviewResolver = ({ url, type, originalType }: UrlPreviewMetadata): ReactElement | null => {
 	switch (type) {
 		case 'audio':
 			return <UrlAudioPreview url={url} />;

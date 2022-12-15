@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import RawText from '../../../components/RawText';

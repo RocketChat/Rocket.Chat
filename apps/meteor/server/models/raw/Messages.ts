@@ -16,8 +16,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
-// @ts-ignore Circular reference on field 'attachments'
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
@@ -152,7 +152,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params = [...firstParams, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
+			return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -160,7 +160,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true });
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
@@ -218,7 +218,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
@@ -347,7 +347,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{
 				$set: {
 					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
-				},
+				} as any,
 			},
 		);
 	}
@@ -381,33 +381,36 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
 		return (
 			await this.col
-				.aggregate([
-					{
-						$match: {
-							t: { $ne: 'rm' },
+				.aggregate(
+					[
+						{
+							$match: {
+								t: { $ne: 'rm' },
+							},
 						},
-					},
-					{
-						$project: {
-							document: '$$ROOT',
-							reactions: { $objectToArray: '$reactions' },
+						{
+							$project: {
+								document: '$$ROOT',
+								reactions: { $objectToArray: '$reactions' },
+							},
 						},
-					},
-					{
-						$unwind: {
-							path: '$reactions',
+						{
+							$unwind: {
+								path: '$reactions',
+							},
 						},
-					},
-					{
-						$match: {
-							$and: [
-								{ 'reactions.v.usernames': { $in: [username] } },
-								{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
-							],
+						{
+							$match: {
+								$and: [
+									{ 'reactions.v.usernames': { $in: [username] } },
+									{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
+								],
+							},
 						},
-					},
-					{ $replaceRoot: { newRoot: '$document' } },
-				])
+						{ $replaceRoot: { newRoot: '$document' } },
+					],
+					{ readPreference: readSecondaryPreferred() },
+				)
 				.toArray()
 		)[0] as IMessage;
 	}

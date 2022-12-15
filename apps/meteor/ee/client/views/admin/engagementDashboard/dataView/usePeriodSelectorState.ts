@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Period } from './periods';
+import type { Period } from './periods';
 
 export const usePeriodSelectorState = <TPeriod extends Period['key']>(
 	...periods: TPeriod[]

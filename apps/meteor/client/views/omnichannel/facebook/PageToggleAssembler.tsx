@@ -1,5 +1,6 @@
 import { FieldGroup } from '@rocket.chat/fuselage';
-import React, { FC, Dispatch, ComponentProps } from 'react';
+import type { FC, Dispatch, ComponentProps } from 'react';
+import React from 'react';
 
 import PageToggle from './PageToggle';
 

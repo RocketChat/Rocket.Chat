@@ -1,5 +1,6 @@
-import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import React, { useEffect, useMemo, ReactElement, MutableRefObject } from 'react';
+import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';

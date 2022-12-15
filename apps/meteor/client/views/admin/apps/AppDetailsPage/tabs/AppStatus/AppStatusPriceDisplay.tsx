@@ -1,7 +1,9 @@
 import type { AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { formatPriceAndPurchaseType } from '../../../helpers';
 
