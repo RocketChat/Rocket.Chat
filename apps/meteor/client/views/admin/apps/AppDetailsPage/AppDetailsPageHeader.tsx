@@ -27,7 +27,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
+		<Box display='flex' flexDirection='row' mbe='x20' w='full' color='default'>
 			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x8'>

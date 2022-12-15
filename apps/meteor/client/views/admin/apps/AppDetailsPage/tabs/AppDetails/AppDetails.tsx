@@ -24,7 +24,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
 
 	return (
-		<Box maxWidth='x640' w='full' marginInline='auto'>
+		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
@@ -46,14 +46,14 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Categories')}
 						</Box>
 						<ButtonGroup medium flexWrap='wrap'>
