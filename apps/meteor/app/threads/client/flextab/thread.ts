@@ -29,6 +29,7 @@ export type ThreadTemplateInstance = Blaze.TemplateInstance<{
 	subscription: ISubscription;
 	jump: unknown;
 	following: boolean;
+	readOnly: boolean;
 	rid: IRoom['_id'];
 	tabBar: {
 		openRoomInfo: (username: string) => void;
@@ -124,6 +125,7 @@ Template.thread.helpers({
 			mainMessage: { rid, _id: tmid },
 			subscription,
 			chatContext,
+			readOnly,
 		} = Template.currentData() as ThreadTemplateInstance['data'];
 
 		if (!chatContext) {
@@ -140,6 +142,7 @@ Template.thread.helpers({
 			subscription,
 			rid,
 			tmid,
+			readOnly,
 			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }) => {
 				instance.sendToBottom();
 				if (alsoSendPreferenceState === 'default') {

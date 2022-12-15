@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -73,6 +73,7 @@ export const MessageBox = ({
 	onEscape,
 	onTyping,
 	subscription,
+	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
 	const [typing, setTyping] = useReducer(reducer, false);
@@ -250,6 +251,11 @@ export const MessageBox = ({
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
+			{readOnly && (
+				<Box mbe='x4'>
+					<Tag>{t('This_room_is_read_only')}</Tag>
+				</Box>
+			)}
 			<MessageComposer variant={isEditing ? 'editing' : undefined}>
 				<MessageComposerInput
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
