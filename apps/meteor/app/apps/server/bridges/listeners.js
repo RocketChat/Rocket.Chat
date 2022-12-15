@@ -85,7 +85,7 @@ export class AppListenerBridge {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userReacted),
 						reaction,
-						isRemoved,
+						isReacted: isRemoved,
 					};
 				case AppInterface.IPostMessageFollowed:
 					const [userFollowed, isUnfollow] = payload;
