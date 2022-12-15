@@ -1,8 +1,9 @@
 import {
 	isFederationAddServerProps,
-	isFederationJoinPublicRoomProps,
 	isFederationRemoveServerProps,
 	isFederationSearchPublicRoomsProps,
+	isFederationJoinExternalPublicRoomProps,
+	isFederationJoinInternalPublicRoomProps,
 } from '@rocket.chat/rest-typings';
 
 import { federationRoomApplicationServiceEE } from '../../../app/federation-v2/server';
@@ -86,17 +87,36 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'federation/joinPublicRoom',
+	'federation/joinExternalPublicRoom',
 	{
 		authRequired: true,
-		validateParams: isFederationJoinPublicRoomProps,
+		validateParams: isFederationJoinExternalPublicRoomProps,
 	},
 	{
 		async post() {
 			const { externalRoomId } = this.bodyParams;
 
-			await federationRoomApplicationServiceEE.joinPublicRoom(
-				FederationRoomSenderConverterEE.toJoinPublicRoomDto(this.userId, externalRoomId),
+			await federationRoomApplicationServiceEE.joinExternalPublicRoom(
+				FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(this.userId, externalRoomId),
+			);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'federation/joinInternalPublicRoom',
+	{
+		authRequired: true,
+		validateParams: isFederationJoinInternalPublicRoomProps,
+	},
+	{
+		async post() {
+			const { internalRoomId } = this.bodyParams;
+
+			await federationRoomApplicationServiceEE.joinInternalPublicRoom(
+				FederationRoomSenderConverterEE.toJoinInternalPublicRoomDto(this.userId, internalRoomId),
 			);
 
 			return API.v1.success();

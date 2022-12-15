@@ -4,12 +4,12 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type FederationJoinPublicRoomProps = {
+export type FederationJoinExternalPublicRoomProps = {
 	externalRoomId: string;
 };
 ajv.addFormat('matrix-room-id', (externalRoomId) => Boolean(externalRoomId?.charAt(0) === '!' && externalRoomId?.includes(':')));
 
-const FederationJoinPublicRoomPropsSchema = {
+const FederationJoinExternalPublicRoomPropsSchema = {
 	type: 'object',
 	properties: {
 		externalRoomId: {
@@ -21,4 +21,6 @@ const FederationJoinPublicRoomPropsSchema = {
 	required: ['externalRoomId'],
 };
 
-export const isFederationJoinPublicRoomProps = ajv.compile<FederationJoinPublicRoomProps>(FederationJoinPublicRoomPropsSchema);
+export const isFederationJoinExternalPublicRoomProps = ajv.compile<FederationJoinExternalPublicRoomProps>(
+	FederationJoinExternalPublicRoomPropsSchema,
+);

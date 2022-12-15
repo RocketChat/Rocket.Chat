@@ -1,6 +1,7 @@
 import type { FederationAddServerProps, FederationPaginatedResult, FederationRemoveServerProps } from '.';
 import type { FederationSearchPublicRoomsProps } from './FederationPublicRoomsProps';
-import type { FederationJoinPublicRoomProps } from './FederationJoinPublicRoomProps';
+import type { FederationJoinExternalPublicRoomProps } from './FederationJoinExternalPublicRoomProps';
+import type { FederationJoinInternalPublicRoomProps } from './FederationJoinInternalPublicRoomProps';
 
 export interface IFederationPublicRooms {
 	id: string;
@@ -17,8 +18,11 @@ export type FederationEndpoints = {
 			rooms: IFederationPublicRooms[];
 		}>;
 	};
-	'/v1/federation/joinPublicRoom': {
-		POST: (params: FederationJoinPublicRoomProps) => void;
+	'/v1/federation/joinExternalPublicRoom': {
+		POST: (params: FederationJoinExternalPublicRoomProps) => void;
+	};
+	'/v1/federation/joinInternalPublicRoom': {
+		POST: (params: FederationJoinInternalPublicRoomProps) => void;
 	};
 	'/v1/federation/listServersByUser': {
 		GET: () => { servers: { name: string; default: boolean; local: boolean }[] };

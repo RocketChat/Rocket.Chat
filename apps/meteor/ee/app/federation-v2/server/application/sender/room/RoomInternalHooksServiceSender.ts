@@ -163,6 +163,10 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { internalInviterId, internalRoomId, normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
 		const isUserAutoJoining = Boolean(!internalInviterId);
+		// TODO this is not necessary as soon this PR is merged: https://github.com/RocketChat/Rocket.Chat/pull/27327
+		if (isUserAutoJoining) {
+			return;
+		}
 
 		const isInviteeFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
@@ -175,7 +179,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		}
 
 		const federatedInviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
-		if (!federatedInviterUser && !isUserAutoJoining) {
+		if (!federatedInviterUser) {
 			throw new Error(`User with internalId ${internalInviterId} not found`);
 		}
 
@@ -200,15 +204,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				);
 			}
-		}
-
-		if (!federatedInviterUser && isUserAutoJoining) {
-			await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
-			return;
-		}
-
-		if (!federatedInviterUser) {
-			throw new Error(`User with internalId ${internalInviterId} not found`);
 		}
 
 		await this.bridge.inviteToRoom(

@@ -219,6 +219,11 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 
+		if (isUserJoiningByHimself) {
+			await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
+			return;
+		}
+
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
 	}
 

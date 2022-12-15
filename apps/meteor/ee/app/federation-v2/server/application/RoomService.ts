@@ -9,7 +9,11 @@ import { FederatedRoomEE } from '../domain/FederatedRoom';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult } from '../domain/IFederationBridge';
 import type { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
-import type { FederationJoinPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
+import type {
+	FederationJoinExternalPublicRoomInputDto,
+	FederationJoinInternalPublicRoomInputDto,
+	FederationSearchPublicRoomsInputDto,
+} from './input/RoomInputDto';
 import { FederationServiceEE } from './sender/AbstractFederationService';
 
 const DEFAULT_SERVERS = [
@@ -117,12 +121,12 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		await this.internalUserAdapter.removeServerNameFromSearchedServerNamesListByUserId(internalUserId, serverName);
 	}
 
-	public async joinPublicRoom(joinPublicRoomInputDto: FederationJoinPublicRoomInputDto): Promise<void> {
+	public async joinExternalPublicRoom(joinExternalPublicRoomInputDto: FederationJoinExternalPublicRoomInputDto): Promise<void> {
 		if (!this.internalSettingsAdapter.isFederationEnabled()) {
 			throw new Error('Federation is disabled');
 		}
 
-		const { externalRoomId, internalUserId, normalizedRoomId, externalRoomHomeServerName } = joinPublicRoomInputDto;
+		const { externalRoomId, internalUserId, normalizedRoomId, externalRoomHomeServerName } = joinExternalPublicRoomInputDto;
 		const user = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
 		if (!user) {
 			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalUserId);
@@ -164,6 +168,34 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		if (!federatedRoom) {
 			return;
 		}
+		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
+			internalRoomId || federatedRoom.getInternalId(),
+			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
+		);
+		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedUser);
+	}
+
+	public async joinInternalPublicRoom(joinInternalPublicRoomInputDto: FederationJoinInternalPublicRoomInputDto): Promise<void> {
+		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+			throw new Error('Federation is disabled');
+		}
+
+		const { internalRoomId, internalUserId } = joinInternalPublicRoomInputDto;
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			throw new Error(`Could not find the room to invite. RoomId: ${internalRoomId}`);
+		}
+
+		const existingFederatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!existingFederatedUser) {
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalUserId);
+		}
+
+		const federatedUser = existingFederatedUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId));
+		if (!federatedUser) {
+			throw new Error(`User with internalUserId ${internalUserId} not found`);
+		}
+		await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedUser.getExternalId());
 		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
 			internalRoomId || federatedRoom.getInternalId(),
 			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),

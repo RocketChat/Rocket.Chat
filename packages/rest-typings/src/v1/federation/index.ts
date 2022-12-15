@@ -11,7 +11,8 @@ export type FederationPaginatedResult<T = Record<string, boolean | number | stri
 } & T;
 
 export * from './rooms';
-export * from './FederationJoinPublicRoomProps';
+export * from './FederationJoinExternalPublicRoomProps';
+export * from './FederationJoinInternalPublicRoomProps';
 export * from './FederationPublicRoomsProps';
 export * from './FederationAddServerProps';
 export * from './FederationRemoveServerProps';

@@ -19,7 +19,7 @@ import { Users, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES, KonchatNotification } from '../../../ui/client';
 import { messageBox, popover } from '../../../ui-utils/client';
-import { t, getUserPreference } from '../../../utils/client';
+import { t, getUserPreference, APIClient } from '../../../utils/client';
 import { getImageExtensionFromMime } from '../../../../lib/getImageExtensionFromMime';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
@@ -535,9 +535,14 @@ Template.messageBox.events({
 		event.stopPropagation();
 		event.preventDefault();
 
+		const { rid } = Template.currentData();
 		const joinCodeInput = (Template.instance() as MessageBoxTemplateInstance).find('[name=joinCode]') as HTMLInputElement | undefined;
 		const joinCode = joinCodeInput?.value;
+		const room = ChatRoom.findOne(rid);
 
+		if (isRoomFederated(room)) {
+			return APIClient.post('/v1/federation/joinInternalPublicRoom', { internalRoomId: rid });
+		}
 		await call('joinRoom', this.rid, joinCode);
 	},
 	'click .js-emoji-picker'(event: JQuery.ClickEvent, instance: MessageBoxTemplateInstance) {
@@ -803,7 +808,6 @@ Template.messageBox.events({
 		actions
 			.filter(({ action }) => !!action)
 			.forEach(({ action }) => {
-				console.log(instance.data);
 				action.call(null, {
 					rid: this.rid,
 					tmid: this.tmid,

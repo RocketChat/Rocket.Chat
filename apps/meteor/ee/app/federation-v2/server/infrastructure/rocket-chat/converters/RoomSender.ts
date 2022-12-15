@@ -20,7 +20,7 @@ import {
 	FederationSetupRoomDto,
 } from '../../../application/sender/input/RoomSenderDto';
 import type { IFederationInviteeDto } from '../../../application/sender/input/RoomSenderDto';
-import { FederationJoinPublicRoomInputDto } from '../../../application/input/RoomInputDto';
+import { FederationJoinExternalPublicRoomInputDto, FederationJoinInternalPublicRoomInputDto } from '../../../application/input/RoomInputDto';
 
 const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
 	return username?.includes(':') ? username : `${username}:${localHomeServer}`;
@@ -192,12 +192,19 @@ export class FederationRoomSenderConverterEE {
 		});
 	}
 
-	public static toJoinPublicRoomDto(internalUserId: string, externalRoomId: string): FederationJoinPublicRoomInputDto {
-		return new FederationJoinPublicRoomInputDto({
+	public static toJoinExternalPublicRoomDto(internalUserId: string, externalRoomId: string): FederationJoinExternalPublicRoomInputDto {
+		return new FederationJoinExternalPublicRoomInputDto({
 			externalRoomId,
 			internalUserId,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalRoomId),
 			externalRoomHomeServerName: extractServerNameFromExternalIdentifier(externalRoomId),
+		});
+	}
+
+	public static toJoinInternalPublicRoomDto(internalUserId: string, internalRoomId: string): FederationJoinInternalPublicRoomInputDto {
+		return new FederationJoinInternalPublicRoomInputDto({
+			internalRoomId,
+			internalUserId,
 		});
 	}
 }

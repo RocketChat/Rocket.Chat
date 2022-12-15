@@ -8,11 +8,16 @@ export interface IFederationRoomSearchPublicRoomsInputDto extends IFederationPag
 	roomName?: string;
 }
 
-export interface IFederationRoomJoinPublicRoomInputDto {
+export interface IFederationRoomJoinExternalPublicRoomInputDto {
 	externalRoomId: string;
 	internalUserId: string;
 	normalizedRoomId: string;
 	externalRoomHomeServerName: string;
+}
+
+export interface IFederationRoomJoinInternalPublicRoomInputDto {
+	internalRoomId: string;
+	internalUserId: string;
 }
 
 export class FederationPagination {
@@ -40,8 +45,13 @@ export class FederationSearchPublicRoomsInputDto extends FederationPagination {
 	roomName?: string;
 }
 
-export class FederationJoinPublicRoomInputDto {
-	constructor({ externalRoomId, internalUserId, normalizedRoomId, externalRoomHomeServerName }: IFederationRoomJoinPublicRoomInputDto) {
+export class FederationJoinExternalPublicRoomInputDto {
+	constructor({
+		externalRoomId,
+		internalUserId,
+		normalizedRoomId,
+		externalRoomHomeServerName,
+	}: IFederationRoomJoinExternalPublicRoomInputDto) {
 		this.validateExternalRoomId(externalRoomId);
 		this.externalRoomId = externalRoomId;
 		this.internalUserId = internalUserId;
@@ -62,4 +72,15 @@ export class FederationJoinPublicRoomInputDto {
 			throw new Error('Invalid external room id format');
 		}
 	}
+}
+
+export class FederationJoinInternalPublicRoomInputDto {
+	constructor({ internalRoomId, internalUserId }: IFederationRoomJoinInternalPublicRoomInputDto) {
+		this.internalRoomId = internalRoomId;
+		this.internalUserId = internalUserId;
+	}
+
+	internalRoomId: string;
+
+	internalUserId: string;
 }

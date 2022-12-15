@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import {
-	FederationJoinPublicRoomInputDto,
+	FederationJoinExternalPublicRoomInputDto,
 	isAValidExternalRoomIdFormat,
 } from '../../../../../../../app/federation-v2/server/application/input/RoomInputDto';
 
@@ -20,7 +20,7 @@ describe('FederationEE - Application - InputDto - RoomInputDto', () => {
 		it('should throw an error if the provided value is not in a valid matrix external format for room ids', () => {
 			expect(
 				() =>
-					new FederationJoinPublicRoomInputDto({
+					new FederationJoinExternalPublicRoomInputDto({
 						externalRoomId: 'invalidFormat',
 						externalRoomHomeServerName: 'server.com',
 						internalUserId: 'internalUserId',
@@ -31,7 +31,7 @@ describe('FederationEE - Application - InputDto - RoomInputDto', () => {
 
 		it('should NOT throw any error and should return the proper dto', () => {
 			expect(
-				new FederationJoinPublicRoomInputDto({
+				new FederationJoinExternalPublicRoomInputDto({
 					externalRoomId: '!roomId:server.com',
 					externalRoomHomeServerName: 'server.com',
 					internalUserId: 'internalUserId',
