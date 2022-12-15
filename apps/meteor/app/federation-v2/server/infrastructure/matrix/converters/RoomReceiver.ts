@@ -25,7 +25,7 @@ import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopi
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
 import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
-import { MatrixEventRoomCanonicalAliasChanged } from '../definitions/events/RoomCanonicalAliasChanged';
+import type { MatrixEventRoomCanonicalAliasChanged } from '../definitions/events/RoomCanonicalAliasChanged';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
@@ -88,7 +88,7 @@ const tryToExtractExternalRoomNameFromTheRoomState = (
 	)?.content?.alias;
 
 	return {
-		...(externalRoomName ? { externalRoomName } : {}),
+		...(externalRoomName ? { externalRoomName: removeExternalSpecificCharsFromExternalIdentifier(externalRoomName) } : {}),
 		...(externalDisplayRoomName ? { externalDisplayRoomName } : {}),
 	};
 };

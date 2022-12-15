@@ -435,7 +435,6 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
-					console.log({ event })
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

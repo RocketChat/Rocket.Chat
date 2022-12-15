@@ -158,6 +158,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		this.leave = leave;
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
+		this.externalDisplayRoomName = externalDisplayRoomName;
 		this.userProfile = userProfile;
 	}
 

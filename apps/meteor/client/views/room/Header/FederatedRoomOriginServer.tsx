@@ -1,7 +1,8 @@
 import { Header } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
-import { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
+
+import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
 type FederatedRoomProps = {
 	room: IRoomWithFederationOriginalName;

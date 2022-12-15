@@ -122,8 +122,6 @@ export abstract class RoomCoordinator {
 
 	getRouteLink(roomType: string, subData: RoomIdentification): string | false {
 		const config = this.getRoomTypeConfig(roomType);
-		console.log({ config })
-		console.log({ subData })
 		if (!config?.route) {
 			return false;
 		}

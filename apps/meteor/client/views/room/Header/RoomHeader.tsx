@@ -1,4 +1,5 @@
-import { IRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -6,6 +7,7 @@ import React from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
+import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
@@ -13,7 +15,6 @@ import ToolBox from './ToolBox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 
 export type RoomHeaderProps = {
 	room: IRoom;

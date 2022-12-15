@@ -25,8 +25,7 @@ import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
 import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-import { FederatedRoomEE } from '/ee/app/federation-v2/server/domain/FederatedRoom';
-require('util').inspect.defaultOptions.depth = null;
+
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
@@ -92,8 +91,6 @@ export class FederationRoomServiceListener extends FederationService {
 			normalizedInviteeId,
 			normalizedRoomId,
 			normalizedInviterId,
-			externalRoomName,
-			externalDisplayRoomName,
 			externalInviteeId,
 			externalInviterId,
 			inviteeUsernameOnly,
@@ -161,14 +158,7 @@ export class FederationRoomServiceListener extends FederationService {
 				);
 				return;
 			}
-			const newFederatedRoom = FederatedRoom.createInstance(
-				externalRoomId,
-				normalizedRoomId,
-				federatedInviterUser,
-				roomType,
-				// externalDisplayRoomName,
-				// externalRoomName,
-			);
+			const newFederatedRoom = FederatedRoom.createInstance(externalRoomId, normalizedRoomId, federatedInviterUser, roomType);
 
 			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
@@ -356,7 +346,6 @@ export class FederationRoomServiceListener extends FederationService {
 
 	public async onChangeDisplayRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
 		const { externalRoomId, normalizedRoomName } = roomChangeNameInput;
-		console.log({ roomChangeNameInput });
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
 			return;
@@ -414,7 +403,6 @@ export class FederationRoomServiceListener extends FederationService {
 
 	public async onChangeRoomCanonicalAlias(roomCanonicalAliasChangeInput: FederationRoomCanonicalAliasChangeDto): Promise<void> {
 		const { externalRoomId, normalizedAlias, rawAlias, aliasOnly } = roomCanonicalAliasChangeInput;
-		console.log({ roomCanonicalAliasChangeInput });
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -426,10 +414,9 @@ export class FederationRoomServiceListener extends FederationService {
 		}
 
 		federatedRoom.changeRoomName(normalizedAlias);
-		if (FederatedRoomEE.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(rawAlias), this.internalHomeServerDomain)) {
+		if (FederatedRoom.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(rawAlias), this.internalHomeServerDomain)) {
 			federatedRoom.changeRoomName(aliasOnly);
 		}
-		console.log({ federatedRoom });
 		await this.internalRoomAdapter.updateRoomName(federatedRoom);
 	}
 }
