@@ -33,8 +33,11 @@
 
 	&__row {
 		display: flex;
-		margin-block: 4px;
 		flex-direction: column;
+
+		&:not(:first-child) {
+			margin-block-end: 4px;
+		}
 	}
 }
 

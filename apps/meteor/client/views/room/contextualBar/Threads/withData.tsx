@@ -11,7 +11,7 @@ import type { ThreadListProps } from './ThreadList';
 import { useThreadsList } from './useThreadsList';
 
 const subscriptionFields = { tunread: true, tunreadUser: true, tunreadGroup: true };
-const roomFields = { t: true, name: true };
+const roomFields = { t: true, name: true, ro: true };
 
 export function withData(Component: FC<ThreadListProps>): FC<{ rid: string }> {
 	const WrappedComponent: FC<{ rid: string }> = ({ rid, ...props }) => {

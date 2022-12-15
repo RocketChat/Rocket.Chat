@@ -15,15 +15,17 @@
 			</ul>
 		</div>
 		<footer class="thread-footer">
-			<div class="thread-footer__row">
-				{{#with checkboxData }}
-				<div style="display: flex; flex-direction: row">
-					<div>{{> Checkbox . }}</div>
-					<label for="sendAlso" class="thread-footer__text">{{ _ "Also_send_to_channel" }}</label>
+			<div class="thread-footer__wrapper">
+				<div class="thread-footer__row">
+					{{#with checkboxData }}
+					<div style="display: flex; flex-direction: row">
+						<div>{{> Checkbox . }}</div>
+						<label for="sendAlso" class="thread-footer__text">{{ _ "Also_send_to_channel" }}</label>
+					</div>
+					{{/with}}
 				</div>
-				{{/with}}
+				<div class="thread-footer__row">{{> messageBox messageBoxData}}</div>
 			</div>
-			<div class="thread-footer__row">{{> messageBox messageBoxData}}</div>
 		</footer>
 	</section>
 </template>

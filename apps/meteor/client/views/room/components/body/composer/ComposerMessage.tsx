@@ -12,6 +12,7 @@ import MessageBox from './messageBox/MessageBox';
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
 	subscription?: ISubscription;
+	readOnly?: boolean;
 	chatMessagesInstance: ContextType<typeof ChatContext>;
 	onResize?: () => void;
 	onEscape?: () => void;
@@ -20,7 +21,7 @@ export type ComposerMessageProps = {
 	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({ rid, chatMessagesInstance, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, ...props }: ComposerMessageProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const composerProps = useMemo(
@@ -57,7 +58,16 @@ const ComposerMessage = ({ rid, chatMessagesInstance, ...props }: ComposerMessag
 		);
 	}
 
-	return <MessageBox rid={rid} {...composerProps} showFormattingTips={true} {...props} chatContext={chatMessagesInstance} />;
+	return (
+		<MessageBox
+			readOnly={readOnly ?? false}
+			rid={rid}
+			{...composerProps}
+			showFormattingTips={true}
+			{...props}
+			chatContext={chatMessagesInstance}
+		/>
+	);
 };
 
 export default memo(ComposerMessage);
