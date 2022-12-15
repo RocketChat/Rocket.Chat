@@ -37,13 +37,13 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 			createAsClient: true,
 			options: {
 				name: roomName,
-				topic: roomTopic,
 				visibility,
 				preset: matrixRoomType,
 				room_alias_name: roomName,
 				creation_content: {
 					was_internally_programatically_created: true,
 				},
+				...(roomTopic ? { topic: roomTopic } : {}),
 			},
 		});
 		await intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
