@@ -32,7 +32,7 @@ import './messageBoxActions';
 import './messageBoxReplyPreview.ts';
 import './userActionIndicator.ts';
 import './messageBox.html';
-import { hasLicense } from '/ee/app/license/client';
+import { hasLicense } from '../../../../ee/app/license/client';
 
 const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const emitter = new Emitter<{ quotedMessagesUpdate: void }>();

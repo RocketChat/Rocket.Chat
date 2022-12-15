@@ -20,7 +20,10 @@ import {
 	FederationSetupRoomDto,
 } from '../../../application/sender/input/RoomSenderDto';
 import type { IFederationInviteeDto } from '../../../application/sender/input/RoomSenderDto';
-import { FederationJoinExternalPublicRoomInputDto, FederationJoinInternalPublicRoomInputDto } from '../../../application/input/RoomInputDto';
+import {
+	FederationJoinExternalPublicRoomInputDto,
+	FederationJoinInternalPublicRoomInputDto,
+} from '../../../application/input/RoomInputDto';
 
 const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
 	return username?.includes(':') ? username : `${username}:${localHomeServer}`;
