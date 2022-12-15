@@ -18,7 +18,7 @@ const AppsRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
 
-	const isMarketplace = !context;
+	const isMarketplace = context === 'explore';
 
 	useEffect(() => {
 		let mounted = true;
@@ -50,8 +50,6 @@ const AppsRoute = (): ReactElement => {
 	if (isLoading) {
 		return <PageSkeleton />;
 	}
-
-	console.log('Page: ', page);
 
 	return (
 		<AppsProvider>
