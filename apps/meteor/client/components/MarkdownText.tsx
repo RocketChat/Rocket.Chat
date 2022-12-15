@@ -46,6 +46,9 @@ inlineRenderer.hr = horizontalRuleMarked;
 inlineWithoutBreaks.link = linkMarked;
 inlineWithoutBreaks.paragraph = paragraphMarked;
 inlineWithoutBreaks.br = brMarked;
+inlineWithoutBreaks.image = brMarked;
+inlineWithoutBreaks.code = paragraphMarked;
+inlineWithoutBreaks.codespan = paragraphMarked;
 inlineWithoutBreaks.listitem = listItemMarked;
 inlineWithoutBreaks.hr = horizontalRuleMarked;
 
