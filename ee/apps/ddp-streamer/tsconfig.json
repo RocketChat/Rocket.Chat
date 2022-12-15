@@ -1,6 +1,8 @@
 {
 	"extends": "../../../tsconfig.base.json",
 	"compilerOptions": {
+		"strictPropertyInitialization": false, // TODO: Remove this line
+		"allowJs": true, // TODO: Remove this line
 		"outDir": "./dist",
 		"declaration": false,
 		"declarationMap": false
