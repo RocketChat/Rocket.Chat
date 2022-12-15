@@ -156,6 +156,10 @@ export class FederatedRoom extends AbstractFederatedRoom {
 	public isDirectMessage(): boolean {
 		return false;
 	}
+
+	public isPrivate(): boolean {
+		return this.getRoomType() === RoomType.PRIVATE_GROUP;
+	}
 }
 
 export class DirectMessageFederatedRoom extends AbstractFederatedRoom {

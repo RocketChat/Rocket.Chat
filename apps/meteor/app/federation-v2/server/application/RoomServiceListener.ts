@@ -50,7 +50,6 @@ export class FederationRoomServiceListener extends FederationService {
 			wasInternallyProgramaticallyCreated = false,
 			internalRoomId = '',
 		} = roomCreateInput;
-
 		if (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId)) {
 			return;
 		}
@@ -345,10 +344,26 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onChangeDisplayRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
-		const { externalRoomId, normalizedRoomName } = roomChangeNameInput;
+		const { externalRoomId, normalizedRoomName, externalSenderId } = roomChangeNameInput;
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
 			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUser) {
+			return;
+		}
+
+		if (
+			!FederatedUser.isOriginalFromTheProxyServer(this.bridge.extractHomeserverOrigin(externalSenderId), this.internalHomeServerDomain) &&
+			federatedRoom.isPrivate()
+		) {
+			const normalizedRoomCanonicalAlias = `${normalizedRoomName}:${this.bridge.extractHomeserverOrigin(externalSenderId)}`;
+			if (federatedRoom.shouldUpdateRoomName(normalizedRoomCanonicalAlias)) {
+				federatedRoom.changeRoomName(normalizedRoomCanonicalAlias);
+				await this.internalRoomAdapter.updateRoomName(federatedRoom);
+			}
 		}
 
 		if (!federatedRoom.shouldUpdateDisplayRoomName(normalizedRoomName)) {
@@ -357,7 +372,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 		federatedRoom.changeDisplayRoomName(normalizedRoomName);
 
-		await this.internalRoomAdapter.updateDisplayRoomName(federatedRoom);
+		await this.internalRoomAdapter.updateDisplayRoomName(federatedRoom, federatedUser);
 	}
 
 	public async onChangeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {

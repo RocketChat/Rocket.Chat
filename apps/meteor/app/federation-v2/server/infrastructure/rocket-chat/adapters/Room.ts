@@ -7,6 +7,7 @@ import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../li
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
 import { getFederatedUserByInternalUsername } from './User';
+import { Messages } from '../../../../../models/server';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -120,12 +121,17 @@ export class RocketChatRoomAdapter {
 		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.getRoomType(), federatedRoom.getRoomType());
 	}
 
-	public async updateDisplayRoomName(federatedRoom: FederatedRoom): Promise<void> {
+	public async updateDisplayRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
 		await Rooms.setFnameById(federatedRoom.getInternalId(), federatedRoom.getDisplayName());
 		await Subscriptions.updateNameAndFnameByRoomId(
 			federatedRoom.getInternalId(),
 			federatedRoom.getName() || '',
 			federatedRoom.getDisplayName() || '',
+		);
+		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(
+			federatedRoom.getInternalId(),
+			federatedRoom.getDisplayName(),
+			federatedUser.getInternalReference(),
 		);
 	}
 
