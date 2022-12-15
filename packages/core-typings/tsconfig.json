@@ -1,6 +1,7 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
+		"lib": ["dom", "esnext"], // Due to some typings having FormData and HTMLMetaElement (maybe they should be removed)
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
