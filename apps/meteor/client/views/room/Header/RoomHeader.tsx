@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import { IRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -13,6 +13,7 @@ import ToolBox from './ToolBox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
+import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 
 export type RoomHeaderProps = {
 	room: IRoom;
@@ -33,6 +34,7 @@ export type RoomHeaderProps = {
 
 const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 	const t = useTranslation();
+
 	return (
 		<Header>
 			{slots?.start}
@@ -46,6 +48,7 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 					<Favorite room={room} />
 					{room.prid && <ParentRoomWithData room={room} />}
 					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
+					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
 					{slots?.insideContent}

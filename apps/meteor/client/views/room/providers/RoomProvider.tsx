@@ -45,6 +45,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			...subscriptionQuery.data,
 			...roomQuery.data,
 			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
+			federationOriginalName: roomQuery.data.name,
 		};
 	}, [roomQuery.data, subscriptionQuery.data]);
 
