@@ -311,7 +311,7 @@ export class FederationRoomServiceListener extends FederationService {
 		await this.internalRoomAdapter.updateRoomType(federatedRoom);
 	}
 
-	public async onChangeDisplayRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
+	public async onChangeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
 		const { externalRoomId, normalizedRoomName, externalSenderId } = roomChangeNameInput;
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {

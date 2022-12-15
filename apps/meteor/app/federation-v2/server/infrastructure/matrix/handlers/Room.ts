@@ -111,7 +111,7 @@ export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
 	}
 
 	public async handle(externalEvent: MatrixEventRoomNameChanged): Promise<void> {
-		await this.roomService.onChangeDisplayRoomName(MatrixRoomReceiverConverter.toRoomChangeNameDto(externalEvent));
+		await this.roomService.onChangeRoomName(MatrixRoomReceiverConverter.toRoomChangeNameDto(externalEvent));
 	}
 }
 

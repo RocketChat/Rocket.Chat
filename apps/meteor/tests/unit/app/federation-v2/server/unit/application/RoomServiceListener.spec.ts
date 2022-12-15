@@ -58,6 +58,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		updateRoomType: sinon.stub(),
 		updateRoomName: sinon.stub(),
 		updateRoomTopic: sinon.stub(),
+		updateDisplayRoomName: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -121,6 +122,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.isUserAlreadyJoined.reset();
 		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.addUserToRoom.reset();
+		roomAdapter.updateDisplayRoomName.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.updateFederationAvatar.reset();
@@ -144,12 +146,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 	});
 
 	describe('#onCreateRoom()', () => {
-		const creator = FederatedUser.createInstance('externalInviterId', {
-			name: 'normalizedInviterId',
-			username: 'normalizedInviterId',
-			existsOnlyOnProxyServer: false,
-		});
-
 		it('should NOT create users nor room if the room already exists', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
 			await service.onCreateRoom({} as any);
@@ -198,52 +194,6 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.updateFederatedRoomByInternalRoomId.calledWith('internalRoomId', 'externalRoomId')).to.be.true;
 			expect(roomAdapter.createFederatedRoom.called).to.be.false;
 			expect(userAdapter.createFederatedUser.called).to.be.false;
-		});
-
-		it('should NOT create the creator user if it already exists', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.resolves(creator);
-			await service.onCreateRoom({} as any);
-
-			expect(userAdapter.createFederatedUser.called).to.be.false;
-		});
-
-		it('should create the creator user if it does not exists yet', async () => {
-			const creator = FederatedUser.createInstance('externalInviterId', {
-				name: 'normalizedInviterId',
-				username: 'normalizedInviterId',
-				existsOnlyOnProxyServer: false,
-			});
-			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.onThirdCall().resolves(creator);
-			await service.onCreateRoom({ externalInviterId: 'externalInviterId', normalizedInviterId: 'normalizedInviterId' } as any);
-
-			expect(userAdapter.createFederatedUser.calledWith(creator)).to.be.true;
-		});
-
-		it('should throw an error if the creator was not found', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.resolves(undefined);
-			await expect(
-				service.onCreateRoom({ externalInviterId: 'externalInviterId', normalizedInviterId: 'normalizedInviterId' } as any),
-			).to.be.rejectedWith('Creator user not found');
-		});
-
-		it('should create the room if it does not exists yet', async () => {
-			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.resolves(undefined);
-			userAdapter.getFederatedUserByExternalId.onThirdCall().resolves(creator);
-			await service.onCreateRoom({
-				externalInviterId: 'externalInviterId',
-				normalizedInviterId: 'normalizedInviterId',
-				externalRoomId: 'externalRoomId',
-				normalizedRoomId: 'normalizedRoomId',
-				externalRoomName: 'externalRoomName',
-			} as any);
-
-			const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', creator, RoomType.CHANNEL, 'externalRoomName');
-			expect(roomAdapter.createFederatedRoom.calledWith(room)).to.be.true;
 		});
 	});
 
@@ -412,7 +362,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				externalRoomName: 'externalRoomName',
 			} as any);
 
-			const createdRoom = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', invitee, RoomType.CHANNEL, 'externalRoomName');
+			const createdRoom = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', invitee, RoomType.CHANNEL);
 
 			expect(roomAdapter.createFederatedRoom.calledWith(createdRoom)).to.be.true;
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
@@ -910,27 +860,62 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			} as any);
 
 			expect(roomAdapter.updateRoomName.called).to.be.false;
+			expect(roomAdapter.updateDisplayRoomName.called).to.be.false;
 		});
 
-		it('should NOT change the room name if it exists and is a direct message', async () => {
+		it('should NOT change the room name if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onChangeRoomName({
+				normalizedRoomName: 'normalizedRoomName',
+			} as any);
+
+			expect(roomAdapter.updateRoomName.called).to.be.false;
+			expect(roomAdapter.updateDisplayRoomName.called).to.be.false;
+		});
+
+		it('should NOT change the room name if the room is an internal room', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			await service.onChangeRoomName({
+				externalRoomId: '!externalRoomId:localDomain',
+				normalizedRoomName: 'normalizedRoomName',
+			} as any);
+
+			expect(roomAdapter.updateRoomName.called).to.be.false;
+		});
+		it('should change the room name if the room is NOT an internal room', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			await service.onChangeRoomName({
+				externalRoomId: '!externalRoomId:externalDomain',
+				normalizedRoomName: 'normalizedRoomName',
+			} as any);
+			room.changeRoomName('!externalRoomId:externalDomain');
+			expect(roomAdapter.updateRoomName.calledWith(room)).to.be.true;
+		});
+
+		it('should NOT change the room fname if it exists and is a direct message', async () => {
 			const dmRoom = DirectMessageFederatedRoom.createInstance('externalRoomId', user, [user, user]);
 			roomAdapter.getFederatedRoomByExternalId.resolves(dmRoom);
 			await service.onChangeRoomName({
 				normalizedRoomName: 'normalizedRoomName',
 			} as any);
 
-			expect(roomAdapter.updateRoomName.called).to.be.false;
+			expect(roomAdapter.updateDisplayRoomName.called).to.be.false;
 		});
 
-		it('should change the room name if it exists and is NOT a direct message', async () => {
+		it('should change the room fname if it exists and is NOT a direct message', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
 			await service.onChangeRoomName({
 				normalizedRoomName: 'normalizedRoomName2',
 			} as any);
-			room.changeRoomName('normalizedRoomName2');
+			room.changeDisplayRoomName('normalizedRoomName2');
 
-			expect(roomAdapter.updateRoomName.calledWith(room, user)).to.be.true;
+			expect(roomAdapter.updateDisplayRoomName.calledWith(room, user)).to.be.true;
 		});
 	});
 

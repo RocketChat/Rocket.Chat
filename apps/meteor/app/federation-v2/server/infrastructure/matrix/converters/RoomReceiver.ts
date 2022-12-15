@@ -24,7 +24,6 @@ import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopi
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
 import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
-import type { MatrixEventRoomCanonicalAliasChanged } from '../definitions/events/RoomCanonicalAliasChanged';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
@@ -73,22 +72,16 @@ const convertExternalJoinRuleToInternalRoomType = (matrixJoinRule: MatrixRoomJoi
 	return mapping[matrixJoinRule] || RoomType.CHANNEL;
 };
 
-const tryToExtractExternalRoomNameFromTheRoomState = (
-	roomState: AbstractMatrixEvent[] = [],
-): { externalRoomName?: string; externalDisplayRoomName?: string } => {
+const tryToExtractExternalRoomNameFromTheRoomState = (roomState: AbstractMatrixEvent[] = []): { externalRoomName?: string } => {
 	if (roomState.length === 0) {
 		return {};
 	}
-	const externalDisplayRoomName = (
+	const externalRoomName = (
 		roomState.find((stateEvent) => stateEvent.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged
 	)?.content?.name;
-	const externalRoomName = (
-		roomState.find((stateEvent) => stateEvent.type === MatrixEventType.ROOM_CANONICAL_ALIAS_CHANGED) as MatrixEventRoomCanonicalAliasChanged
-	)?.content?.alias;
 
 	return {
-		...(externalRoomName ? { externalRoomName: removeExternalSpecificCharsFromExternalIdentifier(externalRoomName) } : {}),
-		...(externalDisplayRoomName ? { externalDisplayRoomName } : {}),
+		...(externalRoomName ? { externalRoomName } : {}),
 	};
 };
 
