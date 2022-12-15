@@ -20,6 +20,8 @@ Meteor.methods({
 
 		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
 
+		await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
+
 		return {
 			success: true,
 		};
