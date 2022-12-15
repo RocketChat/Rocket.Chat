@@ -64,12 +64,6 @@ export interface IFederationRoomRedactEventInputDto extends IFederationReceiverB
 	externalSenderId: string;
 }
 
-export interface IFederationRoomCanonicalAliasChangeInputDto extends IFederationReceiverBaseRoomInputDto {
-	rawAlias: string;
-	normalizedAlias: string;
-	aliasOnly: string;
-}
-
 export interface IFederationSendInternalMessageBaseInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
@@ -360,26 +354,4 @@ export class FederationRoomRedactEventDto extends FederationBaseRoomInputDto {
 	redactsEvent: string;
 
 	externalSenderId: string;
-}
-
-export class FederationRoomCanonicalAliasChangeDto extends FederationBaseRoomInputDto {
-	constructor({
-		externalRoomId,
-		normalizedRoomId,
-		externalEventId,
-		rawAlias,
-		normalizedAlias,
-		aliasOnly,
-	}: IFederationRoomCanonicalAliasChangeInputDto) {
-		super({ externalRoomId, normalizedRoomId, externalEventId });
-		this.rawAlias = rawAlias;
-		this.normalizedAlias = normalizedAlias;
-		this.aliasOnly = aliasOnly;
-	}
-
-	rawAlias: string;
-
-	normalizedAlias: string;
-
-	aliasOnly: string;
 }

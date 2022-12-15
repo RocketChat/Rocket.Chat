@@ -137,6 +137,11 @@ export class RocketChatRoomAdapter {
 
 	public async updateRoomName(federatedRoom: FederatedRoom): Promise<void> {
 		await Rooms.setRoomNameById(federatedRoom.getInternalId(), federatedRoom.getName());
+		await Subscriptions.updateNameAndFnameByRoomId(
+			federatedRoom.getInternalId(),
+			federatedRoom.getName() || '',
+			federatedRoom.getDisplayName() || '',
+		);
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {

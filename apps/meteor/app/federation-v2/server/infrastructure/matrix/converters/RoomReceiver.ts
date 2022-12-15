@@ -1,7 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import {
-	FederationRoomCanonicalAliasChangeDto,
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomChangeNameDto,
@@ -253,17 +252,6 @@ export class MatrixRoomReceiverConverter {
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			redactsEvent: externalEvent.redacts as string,
-		});
-	}
-
-	public static toRoomChangeCanonicalAliasDto(externalEvent: MatrixEventRoomCanonicalAliasChanged): FederationRoomCanonicalAliasChangeDto {
-		return new FederationRoomCanonicalAliasChangeDto({
-			externalEventId: externalEvent.event_id,
-			externalRoomId: externalEvent.room_id,
-			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
-			rawAlias: externalEvent.content?.alias,
-			aliasOnly: formatExternalAliasIdToInternalFormat(externalEvent.content?.alias),
-			normalizedAlias: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.content?.alias),
 		});
 	}
 }

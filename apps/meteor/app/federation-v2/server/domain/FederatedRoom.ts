@@ -106,10 +106,6 @@ export abstract class AbstractFederatedRoom {
 		return this.internalReference?.topic !== aRoomTopic && !this.isDirectMessage();
 	}
 
-	public shouldUpdateRoomName(aRoomName: string): boolean {
-		return this.internalReference?.name !== aRoomName && !this.isDirectMessage();
-	}
-
 	public static shouldUpdateMessage(newMessageText: string, originalMessage: IMessage): boolean {
 		return originalMessage.msg !== newMessageText;
 	}
@@ -155,10 +151,6 @@ export class FederatedRoom extends AbstractFederatedRoom {
 
 	public isDirectMessage(): boolean {
 		return false;
-	}
-
-	public isPrivate(): boolean {
-		return this.getRoomType() === RoomType.PRIVATE_GROUP;
 	}
 }
 
