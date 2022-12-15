@@ -1,11 +1,12 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarSection } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentType, memo, useMemo, ReactElement } from 'react';
+import type { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentType, ReactElement } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import OmnichannelSection from '../sections/OmnichannelSection';
 import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 

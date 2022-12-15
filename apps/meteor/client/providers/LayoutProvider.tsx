@@ -1,6 +1,7 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { LayoutContext, useQueryStringParameter, useSetting } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { menu } from '../../app/ui-utils/client';
 

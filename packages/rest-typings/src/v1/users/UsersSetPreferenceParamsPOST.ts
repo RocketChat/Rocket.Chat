@@ -41,6 +41,7 @@ export type UsersSetPreferencesParamsPOST = {
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		receiveLoginDetectionEmail?: boolean;
 		useLegacyMessageTemplate?: boolean;
+		idleTimeLimit?: number;
 	};
 };
 
@@ -199,6 +200,10 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				receiveLoginDetectionEmail: {
 					type: 'boolean',
+					nullable: true,
+				},
+				idleTimeLimit: {
+					type: 'number',
 					nullable: true,
 				},
 			},
