@@ -3,10 +3,10 @@ import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, AllHTMLAttributes } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { AudioRecorder } from '../../../../app/ui/client';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
@@ -16,9 +16,9 @@ type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
-};
+} & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
-const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
@@ -37,7 +37,10 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		setTime('00:00');
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+
+		chat?.flows.action.stop('recording');
+
+		chat?.composer?.setRecordingMode(false);
 
 		chat?.composer?.setRecordingMode(false);
 
@@ -122,7 +125,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 
 		try {
 			await audioRecorder.start();
-			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+			chat?.flows.action.performContinuously('recording');
 			const startTime = new Date();
 			setRecordingInterval(
 				setInterval(() => {
@@ -170,6 +173,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 				className='rc-message-box__icon rc-message-box__audio-message-mic'
 				data-qa-id='audio-record'
 				onClick={handleRecordButtonClick}
+				{...props}
 			/>
 		);
 	}

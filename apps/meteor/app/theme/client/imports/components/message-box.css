@@ -2,7 +2,7 @@
 	position: relative;
 
 	width: 100%;
-	padding: 24px;
+	padding: 0 24px;
 
 	font-size: var(--message-box-text-size);
 

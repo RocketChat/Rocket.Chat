@@ -70,7 +70,11 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 		);
 	}
 
-	return <ComposerMessage {...props} />;
+	return (
+		<footer className='rc-message-box footer'>
+			<ComposerMessage readOnly={room.ro} {...props} />
+		</footer>
+	);
 };
 
 export default memo(ComposerContainer);

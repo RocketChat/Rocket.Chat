@@ -14,6 +14,7 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
+import { UserAction } from '..';
 
 export class ChatMessages implements ChatAPI {
 	private currentEditingMID?: string;
@@ -98,6 +99,18 @@ export class ChatMessages implements ChatAPI {
 			processMessageEditing: processMessageEditing.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
+
+			action: {
+				start: async (action: 'typing') => {
+					UserAction.start(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+				performContinuously: async (action: 'recording' | 'uploading' | 'playing') => {
+					UserAction.performContinuously(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+				stop: async (action: 'typing' | 'recording' | 'uploading' | 'playing') => {
+					UserAction.stop(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+			},
 		};
 	}
 

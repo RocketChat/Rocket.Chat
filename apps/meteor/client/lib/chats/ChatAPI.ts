@@ -1,6 +1,22 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
+import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Upload } from './Upload';
+
+export type UserActionAPI = {
+	readonly action: {
+		get(): {
+			action: 'typing' | 'recording' | 'uploading' | 'playing';
+			users: string[];
+		}[];
+		subscribe(callback: () => void): () => void;
+	};
+};
+
+type Subscribable<T> = {
+	get(): T;
+	subscribe(callback: () => void): () => void;
+};
 
 export type ComposerAPI = {
 	release(): void;
@@ -14,6 +30,7 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
+	wrapSelection(pattern: string): void;
 	insertText(text: string): void;
 	clear(): void;
 	focus(): void;
@@ -21,22 +38,15 @@ export type ComposerAPI = {
 	quoteMessage(message: IMessage): Promise<void>;
 	dismissQuotedMessage(mid: IMessage['_id']): Promise<void>;
 	dismissAllQuotedMessages(): Promise<void>;
-	readonly quotedMessages: {
-		get(): IMessage[];
-		subscribe(callback: () => void): () => void;
-	};
+	readonly quotedMessages: Subscribable<IMessage[]>;
 
 	setEditingMode(editing: boolean): void;
-	readonly editing: {
-		get(): boolean;
-		subscribe(callback: () => void): () => void;
-	};
+	readonly editing: Subscribable<boolean>;
 
 	setRecordingMode(recording: boolean): void;
-	readonly recording: {
-		get(): boolean;
-		subscribe(callback: () => void): () => void;
-	};
+	readonly recording: Subscribable<boolean>;
+
+	readonly formatters: Subscribable<FormattingButton[]>;
 };
 
 export type DataAPI = {
@@ -89,6 +99,7 @@ export type ChatAPI = {
 		toNextMessage(): Promise<void>;
 		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
 	};
+
 	readonly currentEditing:
 		| {
 				readonly mid: IMessage['_id'];
@@ -105,5 +116,11 @@ export type ChatAPI = {
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
+
+		readonly action: {
+			start(action: 'typing'): void;
+			stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
+			performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
+		};
 	};
 };

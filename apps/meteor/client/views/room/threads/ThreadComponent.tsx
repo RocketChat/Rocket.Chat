@@ -118,6 +118,7 @@ const ThreadComponent: FC<{
 		following,
 		subscription,
 		rid: room._id,
+		readOnly: Boolean(room.ro),
 		tabBar: { openRoomInfo },
 		chatContext,
 		messageContext,
@@ -134,6 +135,7 @@ const ThreadComponent: FC<{
 				mainMessage: threadMessage,
 				jump,
 				following,
+				readOnly: Boolean(room.ro),
 				subscription,
 				rid: room._id,
 				tabBar: { openRoomInfo },
@@ -150,6 +152,7 @@ const ThreadComponent: FC<{
 		messageHighlightContextReactiveVar,
 		openRoomInfo,
 		room._id,
+		room.ro,
 		subscription,
 		threadMessage,
 	]);

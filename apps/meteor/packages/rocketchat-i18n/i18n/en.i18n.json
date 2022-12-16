@@ -3880,6 +3880,7 @@
   "Reactions": "Reactions",
   "Read_by": "Read by",
   "Read_only": "Read Only",
+  "This_room_is_read_only": "This room is read only",
   "Read_only_changed_successfully": "Read only changed successfully",
   "Read_only_channel": "Read Only Channel",
   "Read_only_group": "Read Only Group",

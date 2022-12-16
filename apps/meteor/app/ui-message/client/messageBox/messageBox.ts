@@ -27,8 +27,10 @@ import './messageBoxReplyPreview.ts';
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
 	onResize?: () => void;
+	onTyping?: () => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;

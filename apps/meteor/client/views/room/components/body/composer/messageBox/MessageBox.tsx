@@ -1,0 +1,351 @@
+import { Button, Tag, Box } from '@rocket.chat/fuselage';
+import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	MessageComposerAction,
+	MessageComposerToolbarActions,
+	MessageComposer,
+	MessageComposerInput,
+	MessageComposerToolbar,
+	MessageComposerActionsDivider,
+	MessageComposerToolbarSubmit,
+} from '@rocket.chat/ui-composer';
+import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, MutableRefObject, Ref } from 'react';
+import React, { memo, useRef, useReducer, useCallback } from 'react';
+import { useSubscription } from 'use-subscription';
+
+import { EmojiPicker } from '../../../../../../../app/emoji/client';
+import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
+import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
+import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
+import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
+import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
+import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
+import { keyCodes } from '../../../../../../lib/utils/keyCodes';
+import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
+import { useChat } from '../../../../contexts/ChatContext';
+import BlazeTemplate from '../../../BlazeTemplate';
+import UserActionIndicator from '../ComposerUserActionIndicator';
+import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
+import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import MessageBoxReplies from './MessageBoxReplies';
+
+type MessageBoxProps = MessageBoxTemplateInstance['data'];
+
+const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
+	const target = event.target as HTMLInputElement;
+
+	return Boolean(target.value.trim());
+};
+
+const handleFormattingShortcut = (
+	event: KeyboardEvent<HTMLTextAreaElement>,
+	formattingButtons: FormattingButton[],
+	composer: ComposerAPI,
+) => {
+	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+
+	if (!isCmdOrCtrlPressed) {
+		return false;
+	}
+
+	const key = event.key.toLowerCase();
+
+	const formatter = formattingButtons.find((formatter) => 'command' in formatter && formatter.command === key);
+
+	if (!formatter || !('pattern' in formatter)) {
+		return false;
+	}
+
+	composer.wrapSelection(formatter.pattern);
+	return true;
+};
+
+export const MessageBox = ({
+	rid,
+	tmid,
+	onSend,
+	onNavigateToNextMessage,
+	onNavigateToPreviousMessage,
+	onEscape,
+	onTyping,
+	subscription,
+	readOnly,
+	tshow,
+}: MessageBoxProps): ReactElement => {
+	const [typing, setTyping] = useReducer(reducer, false);
+
+	const { isMobile } = useLayout();
+	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
+	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
+
+	const t = useTranslation();
+
+	const chat = useChat();
+
+	if (!chat) {
+		throw new Error('Chat context not found');
+	}
+
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const shadowRef = useRef(null);
+
+	const callbackRef = useCallback(
+		(node: HTMLTextAreaElement) => {
+			const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+			if (node === null) {
+				return;
+			}
+			if (!chat || chat.composer) {
+				return;
+			}
+			chat.setComposerAPI(createComposerAPI(node, storageID));
+			(textareaRef as MutableRefObject<HTMLTextAreaElement>).current = node;
+		},
+		[chat, rid, tmid],
+	);
+
+	const maxLength = useSetting('Message_MaxAllowedSize');
+
+	const useEmojis = useUserPreference<boolean>('useEmojis');
+
+	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
+		e.stopPropagation();
+		e.preventDefault();
+
+		if (!useEmojis) {
+			return;
+		}
+
+		if (EmojiPicker.isOpened()) {
+			EmojiPicker.close();
+			return;
+		}
+
+		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(`:${emoji}: `));
+	});
+
+	const handleSendMessage = useMutableCallback(() => {
+		const text = chat?.composer?.text;
+		if (!text) {
+			console.warn('No text to send');
+			return;
+		}
+		chat?.composer?.clear();
+
+		onSend?.({
+			value: text,
+			tshow,
+		});
+	});
+
+	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+		const { which: keyCode } = event;
+
+		const input = event.target as HTMLTextAreaElement;
+
+		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+
+		if (isSubmitKey) {
+			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
+			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
+
+			if (!isSending) {
+				return false;
+			}
+			event.preventDefault();
+
+			const text = chat?.composer?.text;
+			if (!text) {
+				console.warn('No text to send');
+				return;
+			}
+			handleSendMessage();
+			return false;
+		}
+
+		if (chat?.composer && handleFormattingShortcut(event, [...formattingButtons], chat?.composer)) {
+			return;
+		}
+
+		if (event.shiftKey || event.ctrlKey || event.metaKey) {
+			return;
+		}
+
+		switch (event.key) {
+			case 'Escape': {
+				if (chat?.currentEditing) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					chat?.currentEditing.reset().then((reset) => {
+						if (!reset) {
+							chat?.currentEditing?.cancel();
+						}
+					});
+
+					return;
+				}
+
+				if (!input.value.trim()) onEscape?.();
+				return;
+			}
+
+			case 'ArrowUp': {
+				if (input.selectionEnd === 0) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					onNavigateToNextMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(0, 0);
+					}
+				}
+
+				return;
+			}
+
+			case 'ArrowDown': {
+				if (input.selectionEnd === input.value.length) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					onNavigateToPreviousMessage?.();
+
+					if (event.altKey) {
+						input.setSelectionRange(input.value.length, input.value.length);
+					}
+				}
+			}
+		}
+
+		onTyping?.();
+	});
+
+	const isEditing = useSubscription({
+		getCurrentValue: chat.composer?.editing.get ?? (() => false),
+		subscribe: chat.composer?.editing.subscribe ?? (() => () => undefined),
+	});
+
+	const isRecording = useSubscription({
+		getCurrentValue: chat.composer?.recording.get ?? (() => false),
+		subscribe: chat.composer?.recording.subscribe ?? (() => () => undefined),
+	});
+
+	const formatters = useSubscription({
+		getCurrentValue: chat.composer?.formatters.get ?? (() => []),
+		subscribe: chat.composer?.formatters.subscribe ?? (() => () => undefined),
+	});
+
+	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
+
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
+
+	const sizes = useContentBoxSize(textareaRef);
+
+	return (
+		<>
+			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
+			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
+			{readOnly && (
+				<Box mbe='x4'>
+					<Tag>{t('This_room_is_read_only')}</Tag>
+				</Box>
+			)}
+			<MessageComposer variant={isEditing ? 'editing' : undefined}>
+				<MessageComposerInput
+					ref={callbackRef as unknown as Ref<HTMLInputElement>}
+					aria-label={t('Message')}
+					name='msg'
+					disabled={isRecording}
+					onChange={setTyping}
+					style={textAreaStyle}
+					maxLength={Number.isInteger(maxLength) ? parseInt(maxLength as string) : undefined}
+					placeholder={t('Message')}
+					className='rc-message-box__textarea js-input-message'
+					onKeyDown={handler}
+					is='textarea'
+				/>
+				<div ref={shadowRef} style={shadowStyle} />
+				<MessageComposerToolbar>
+					<MessageComposerToolbarActions>
+						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
+						<MessageComposerActionsDivider />
+						{chat.composer && formatters.length > 0 && (
+							<MessageBoxFormattingToolbar
+								composer={chat.composer}
+								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+								items={formatters}
+								disabled={isRecording}
+							/>
+						)}
+						<MessageComposerActionsDivider />
+						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
+						<MessageComposerAction
+							disabled={isRecording}
+							onClick={(event): void => {
+								const groups = messageBox.actions.get();
+								const config = {
+									popoverClass: 'message-box',
+									columns: [
+										{
+											groups: Object.entries(groups).map(([name, group]) => {
+												const items = group.map((item) => ({
+													icon: item.icon,
+													name: t(item.label),
+													type: 'messagebox-action',
+													id: item.id,
+													action: item.action,
+												}));
+												return {
+													title: t.has(name) && t(name),
+													items,
+												};
+											}),
+										},
+									],
+									offsetVertical: 10,
+									direction: 'top-inverted',
+									currentTarget: event.currentTarget,
+									data: {
+										rid,
+										tmid,
+										prid: subscription?.prid,
+										messageBox: textareaRef.current,
+										chat,
+									},
+									activeElement: event.currentTarget,
+								};
+
+								popover.open(config);
+							}}
+							icon='plus'
+						/>
+					</MessageComposerToolbarActions>
+					<MessageComposerToolbarSubmit>
+						{!canSend && (
+							<Button small primary>
+								{t('Join')}
+							</Button>
+						)}
+						<MessageComposerAction
+							aria-label={t('Send')}
+							icon='send'
+							disabled={!canSend || !typing}
+							onClick={handleSendMessage}
+							secondary={typing}
+							info={typing}
+						/>
+					</MessageComposerToolbarSubmit>
+				</MessageComposerToolbar>
+			</MessageComposer>
+			<UserActionIndicator rid={rid} tmid={tmid} />
+		</>
+	);
+};
+
+export default memo(MessageBox);
