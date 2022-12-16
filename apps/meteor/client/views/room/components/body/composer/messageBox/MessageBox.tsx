@@ -332,7 +332,7 @@ export const MessageBox = ({
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
-					<MessageComposerToolbarActions>
+					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
@@ -384,6 +384,7 @@ export const MessageBox = ({
 								popover.open(config);
 							}}
 							icon='plus'
+							data-qa-id='menu-more-actions'
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
