@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import Sidebar from '../../../sidebar';
 import BlazeTemplate from '../BlazeTemplate';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
@@ -24,7 +25,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			aria-hidden={Boolean(modal)}
 		>
-			{!removeSidenav ? <BlazeTemplate template='sideNav' /> : null}
+			{!removeSidenav ? <Sidebar /> : null}
 			<div className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}>
 				{children}
 			</div>

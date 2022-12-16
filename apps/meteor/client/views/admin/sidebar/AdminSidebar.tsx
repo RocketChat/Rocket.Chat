@@ -28,7 +28,7 @@ const AdminSidebar: FC = () => {
 
 	useEffect(() => {
 		if (currentRouteGroupName !== 'admin') {
-			SideNav.toggleFlex(-1);
+			// SideNav.toggleFlex(-1);
 		}
 	}, [currentRouteGroupName]);
 

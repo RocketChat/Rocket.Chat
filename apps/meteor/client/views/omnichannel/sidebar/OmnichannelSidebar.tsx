@@ -29,7 +29,7 @@ const OmnichannelSidebar: FC = () => {
 
 	useEffect(() => {
 		if (currentRouteGroupName !== 'omnichannel') {
-			SideNav.closeFlex();
+			// SideNav.closeFlex();
 		}
 	}, [currentRouteGroupName]);
 

@@ -38,14 +38,14 @@ Template.sideNav.helpers({
 		return !!Meteor.userId();
 	},
 
-	sidebarViewMode() {
-		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
-		return viewMode || 'condensed';
-	},
+	// sidebarViewMode() {
+	// 	const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
+	// 	return viewMode || 'condensed';
+	// },
 
-	sidebarHideAvatar() {
-		return !getUserPreference(Meteor.userId(), 'sidebarDisplayAvatar');
-	},
+	// sidebarHideAvatar() {
+	// 	return !getUserPreference(Meteor.userId(), 'sidebarDisplayAvatar');
+	// },
 });
 
 Template.sideNav.events({
