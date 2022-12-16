@@ -7,9 +7,6 @@ import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './Events';
 
-// TODO StreamerCentral should be provided via DI
-// import { StreamerCentral } from '../../modules/streamer/streamer.module';
-
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, (...params: any) => any>();
 
@@ -82,11 +79,14 @@ export class LocalBroker implements IBroker {
 		}
 	}
 
+	onBroadcast(callback: (eventName: string, args: unknown[]) => void): void {
+		this.events.on('broadcast', callback);
+	}
+
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		this.broadcastLocal(event, ...args);
 
-		// TODO inject this dep
-		// StreamerCentral.emit('broadcast', 'local', 'broadcast', [{ eventName: event, args }]);
+		this.events.emit('broadcast', event, args);
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
