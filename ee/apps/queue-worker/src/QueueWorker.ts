@@ -11,6 +11,9 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	protected retryCount = 5;
 
+	// Default delay is 5 seconds
+	protected retryDelay = 5000;
+
 	protected queue: MessageQueue;
 
 	private logger: Logger;
@@ -35,10 +38,22 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 		try {
 			await this.registerWorkers();
+			await this.createIndexes();
 		} catch (e) {
 			this.logger.fatal(e, 'Fatal error occurred when registering workers');
 			process.exit(1);
 		}
+	}
+
+	async createIndexes(): Promise<void> {
+		this.logger.info('Creating indexes for queue worker');
+
+		// Library doesnt create indexes by itself, for some reason
+		// This should create the indexes we need and improve queue perf on reading
+		await this.db.collection(this.queue.collectionName).createIndex({ type: 1 });
+		await this.db.collection(this.queue.collectionName).createIndex({ rejectedTime: 1 }, { sparse: true });
+		await this.db.collection(this.queue.collectionName).createIndex({ nextReceivableTime: 1 }, { sparse: true });
+		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
 	}
 
 	async stopped(): Promise<void> {
@@ -46,64 +61,36 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		this.queue.stopPolling();
 	}
 
+	private async workerCallback(queueItem: Work<{ to: string; data: any }>): Promise<ValidResult> {
+		this.logger.info(`Processing queue item ${queueItem._id} for work`);
+		this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
+		try {
+			await this.api.waitAndCall(queueItem.message.to, [queueItem.message]);
+			this.logger.info(`Queue item ${queueItem._id} completed`);
+			return 'Completed' as const;
+		} catch (err: unknown) {
+			const e = err as Error;
+			this.logger.error(`Queue item ${queueItem._id} errored: ${e.message}`);
+			queueItem.releasedReason = e.message;
+			// Let's only retry for X times when the error is "service not found"
+			// For any other error, we'll just reject the item
+			if ((queueItem.retryCount || 0) < this.retryCount && this.isServiceNotFoundMessage(e.message)) {
+				this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
+				queueItem.nextReceivableTime = new Date(Date.now() + this.retryDelay);
+				return 'Retry' as const;
+			}
+			this.logger.info(`Queue item ${queueItem._id} will be rejected`);
+			return 'Rejected' as const;
+		}
+	}
+
 	// Registers the actual workers, the actions lib will try to fetch elements to work on
 	private async registerWorkers(): Promise<void> {
 		this.logger.info('Registering workers of type "work"');
-		this.queue.registerWorker('work', (queueItem: Work<{ to: string; foo: string }>): Promise<ValidResult> => {
-			this.logger.info(`Processing queue item ${queueItem._id} for work`);
-			this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
-			return this.api
-				.waitAndCall(queueItem.message.to, [queueItem.message])
-				.then(() => {
-					this.logger.info(`Queue item ${queueItem._id} completed`);
-					return 'Completed' as const;
-				})
-				.catch((err) => {
-					this.logger.error(`Queue item ${queueItem._id} errored: ${err.message}`);
-					queueItem.releasedReason = err.message;
-					// Let's only retry for X times when the error is "service not found"
-					// For any other error, we'll just reject the item
-					if ((queueItem.retryCount || 0) < this.retryCount && this.isServiceNotFoundMessage(err.message)) {
-						// Let's retry in 5 seconds
-						this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
-						queueItem.nextReceivableTime = new Date(Date.now() + 10000);
-						return 'Retry' as const;
-					}
-
-					this.logger.info(`Queue item ${queueItem._id} will be rejected`);
-					queueItem.rejectionReason = err.message;
-					return 'Rejected' as const;
-				});
-		});
+		this.queue.registerWorker('work', this.workerCallback.bind(this));
 
 		this.logger.info('Registering workers of type "workComplete"');
-		this.queue.registerWorker('workComplete', (queueItem: Work<{ to: string; file: any }>): Promise<ValidResult> => {
-			this.logger.info(`Processing queue item ${queueItem._id} for workComplete`);
-			this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
-			return this.api
-				.waitAndCall(queueItem.message.to, [queueItem.message])
-				.then(() => {
-					this.logger.info(`Queue item ${queueItem._id} completed`);
-					return 'Completed' as const;
-				})
-				.catch((err) => {
-					this.logger.error(err);
-					this.logger.error(`Queue item ${queueItem._id} errored: ${err.message}`);
-					queueItem.releasedReason = err.message;
-					// Let's only retry for X times when the error is "service not found"
-					// For any other error, we'll just reject the item
-					if ((queueItem.retryCount ?? 0) < this.retryCount && this.isServiceNotFoundMessage(err.message)) {
-						// Let's retry in 5 seconds
-						this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
-						queueItem.nextReceivableTime = new Date(Date.now() + 10000);
-						return 'Retry' as const;
-					}
-
-					this.logger.info(`Queue item ${queueItem._id} will be rejected`);
-					queueItem.rejectionReason = err.message;
-					return 'Rejected' as const;
-				});
-		});
+		this.queue.registerWorker('workComplete', this.workerCallback.bind(this));
 	}
 
 	private matchServiceCall(service: string): boolean {
@@ -121,6 +108,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${to}`);
 		if (!this.matchServiceCall(to)) {
+			// We don't want to queue calls to invalid service names
 			throw new Error(`Invalid service name ${to}`);
 		}
 
@@ -128,7 +116,6 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	}
 
 	async queueInfo(): Promise<HealthAggResult[]> {
-		this.logger.info('Health check');
 		return this.db
 			.collection(this.queue.collectionName)
 			.aggregate<HealthAggResult>([

@@ -16,7 +16,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async requestTranscript(): Promise<void> {
-		// How to send a react template here?
+		// Temporary while we implement the actual logic :)
 		await QueueWorker.queueWork('work', 'pdf-worker.renderToStream', {
 			template: 'omnichannel-transcript',
 			details: { userId: 'rocket.cat', rid: 'general', from: this.name },
