@@ -57,10 +57,14 @@ test.describe.serial('omnichannel-triggers', () => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.btnOpenLiveChat('R').click();
-			await poLiveChat.startNewChat(newUser, false);
+			if (await page.locator('[type="button"] >> text="Chat now"').isVisible()) {
+				await page.locator('[type="button"] >> text="Chat now"').click();
+			}
+			await poLiveChat.sendMessage(newUser, false);
 			await expect(page.locator(`text=${triggerMessage} >> nth=0`)).toBeVisible();
 		});
 	});
+
 	test('expect deleting trigger', async () => {
 		await agent.poHomeOmnichannel.triggers.btnDeletefirstRowInTable.click();
 		await agent.poHomeOmnichannel.triggers.btnModalRemove.click();

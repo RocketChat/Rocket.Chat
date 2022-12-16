@@ -61,7 +61,7 @@ export class OmnichannelTriggers {
 	}
 
 	get saveBtn(): Locator {
-		return this.page.locator('text=Save');
+		return this.page.locator('button >> text="Save"');
 	}
 
 	get firstRowInTable() {
@@ -73,7 +73,7 @@ export class OmnichannelTriggers {
 	}
 
 	get toastMessage(): Locator {
-		return this.page.locator('text=Saved');
+		return this.page.locator('.rcx-toastbar.rcx-toastbar--success >> nth=0');
 	}
 
 	get inputSearch() {
