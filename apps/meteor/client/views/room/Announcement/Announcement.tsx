@@ -31,7 +31,7 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 			: setModal(
 					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
 						<Box>
-							<MarkdownText content={announcement} parseEmoji preserveHtml />
+							<MarkdownText content={announcement} parseEmoji />
 						</Box>
 					</GenericModal>,
 			  );
@@ -39,7 +39,7 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 
 	return announcement ? (
 		<AnnouncementComponent onClickOpen={(e: MouseEvent<HTMLAnchorElement>): void => handleClick(e)}>
-			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji preserveHtml />
+			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
 		</AnnouncementComponent>
 	) : null;
 };
