@@ -28,8 +28,10 @@ export class Spotlight {
 			fields: {
 				t: 1,
 				name: 1,
+				fname: 1,
 				joinCodeRequired: 1,
 				lastMessage: 1,
+				federated: true,
 			},
 			sort: {
 				name: 1,

@@ -364,11 +364,18 @@ export class Rooms extends Base {
 
 	findOneByNameAndType(name, type, options) {
 		const query = {
-			name,
 			t: type,
 			teamId: {
 				$exists: false,
 			},
+			$and: [
+				{
+					$or: [
+						{ federated: { $exists: false }, name },
+						{ federated: true, fname: name },
+					],
+				},
+			],
 		};
 
 		return this.findOne(query, options);
@@ -501,7 +508,6 @@ export class Rooms extends Base {
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
-			name,
 			default: {
 				$ne: true,
 			},
@@ -513,6 +519,14 @@ export class Rooms extends Base {
 				},
 				{
 					teamMain: true,
+				},
+			],
+			$and: [
+				{
+					$or: [
+						{ federated: { $exists: false }, name },
+						{ federated: true, fname: name },
+					],
 				},
 			],
 		};
@@ -550,7 +564,14 @@ export class Rooms extends Base {
 					t: 'c',
 				},
 			],
-			name,
+			$and: [
+				{
+					$or: [
+						{ federated: { $exists: false }, name },
+						{ federated: true, fname: name },
+					],
+				},
+			],
 		};
 
 		// do not use cache
