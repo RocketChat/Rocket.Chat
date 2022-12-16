@@ -1,5 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';

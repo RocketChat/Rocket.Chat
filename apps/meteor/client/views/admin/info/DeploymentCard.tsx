@@ -3,7 +3,8 @@ import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';

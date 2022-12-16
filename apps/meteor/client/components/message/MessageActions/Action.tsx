@@ -1,6 +1,9 @@
-import { IconProps, Icon, Button } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { IconProps } from '@rocket.chat/fuselage';
+import { Icon, Button } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React from 'react';
 
 type RunAction = (action: string) => () => void;
 

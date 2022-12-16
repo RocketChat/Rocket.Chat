@@ -1,11 +1,12 @@
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { App } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { App } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCurrentRoute, useRoute, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
-import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import Page from '../../../../components/Page';
 import { handleAPIError } from '../helpers';
@@ -72,10 +73,12 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		<Page flexDirection='column'>
 			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
 				<ButtonGroup>
-					<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
-						{!isSaving && t('Save_changes')}
-						{isSaving && <Throbber inheritColor />}
-					</Button>
+					{installed && (
+						<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
+							{!isSaving && t('Save_changes')}
+							{isSaving && <Throbber inheritColor />}
+						</Button>
+					)}
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow padding='x24'>

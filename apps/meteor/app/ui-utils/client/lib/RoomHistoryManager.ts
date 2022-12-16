@@ -58,7 +58,7 @@ export async function upsertMessage(
 		);
 	}
 
-	return direct.upsert({ _id }, { $set: messageToUpsert });
+	return direct.upsert({ _id }, messageToUpsert);
 }
 
 export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
@@ -169,7 +169,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, false);
 
 		this.unqueue();
 

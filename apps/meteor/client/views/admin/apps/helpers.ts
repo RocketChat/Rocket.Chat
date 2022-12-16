@@ -1,6 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { App, AppPricingPlan } from '@rocket.chat/core-typings';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
@@ -9,6 +9,18 @@ import { dispatchToastMessage } from '../../../lib/toast';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface ApiError {
+	xhr: {
+		responseJSON: {
+			error: string;
+			status: string;
+			messages: string[];
+			payload?: any;
+		};
+	};
+}
+
 const appErroredStatuses = [
 	AppStatus.COMPILER_ERROR_DISABLED,
 	AppStatus.ERROR_DISABLED,
@@ -16,16 +28,19 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
+type Actions = 'update' | 'install' | 'purchase';
+
 type appButtonResponseProps = {
-	action: 'update' | 'install' | 'purchase';
-	icon?: 'reload';
+	action: Actions;
+	icon?: 'reload' | 'warning';
 	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
 };
 
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
+	tooltipText?: string;
 };
 
 type PlanType = 'Subscription' | 'Paid' | 'Free';
@@ -50,7 +65,12 @@ export const apiCurlGetter =
 		}).split('\n');
 	};
 
-export function handleInstallError(apiError: { xhr: { responseJSON: { status: any; messages: any; error: any; payload?: any } } }): void {
+export function handleInstallError(apiError: ApiError | Error): void {
+	if (apiError instanceof Error) {
+		dispatchToastMessage({ type: 'error', message: apiError.message });
+		return;
+	}
+
 	if (!apiError.xhr || !apiError.xhr.responseJSON) {
 		return;
 	}
@@ -99,6 +119,15 @@ export const handleAPIError = (error: unknown): void => {
 	}
 };
 
+export const warnAppInstall = (appName: string, status: AppStatus): void => {
+	if (appErroredStatuses.includes(status)) {
+		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
+		return;
+	}
+
+	dispatchToastMessage({ type: 'success', message: `${appName} installed` });
+};
+
 export const warnEnableDisableApp = (appName: string, status: AppStatus, type: string): void => {
 	if (appErroredStatuses.includes(status)) {
 		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
@@ -132,9 +161,18 @@ export const appButtonProps = ({
 	subscriptionInfo,
 	pricingPlans,
 	isEnterpriseOnly,
+	versionIncompatible,
 }: App): appButtonResponseProps | undefined => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
+		if (versionIncompatible) {
+			return {
+				action: 'update',
+				icon: 'warning',
+				label: 'Update',
+			};
+		}
+
 		return {
 			action: 'update',
 			icon: 'reload',
@@ -148,6 +186,14 @@ export const appButtonProps = ({
 
 	const canDownload = isPurchased;
 	if (canDownload) {
+		if (versionIncompatible) {
+			return {
+				action: 'install',
+				icon: 'warning',
+				label: 'Install',
+			};
+		}
+
 		return {
 			action: 'install',
 			label: 'Install',
@@ -158,6 +204,14 @@ export const appButtonProps = ({
 	if (canSubscribe) {
 		const cannotTry = pricingPlans.every((currentPricingPlan) => currentPricingPlan.trialDays === 0);
 		const isTierBased = pricingPlans.every((currentPricingPlan) => currentPricingPlan.tiers && currentPricingPlan.tiers.length > 0);
+
+		if (versionIncompatible) {
+			return {
+				action: 'purchase',
+				label: 'Subscribe',
+				icon: 'warning',
+			};
+		}
 
 		if (cannotTry || isEnterpriseOnly) {
 			return {
@@ -181,9 +235,25 @@ export const appButtonProps = ({
 
 	const canBuy = price > 0;
 	if (canBuy) {
+		if (versionIncompatible) {
+			return {
+				action: 'purchase',
+				label: 'Buy',
+				icon: 'warning',
+			};
+		}
+
 		return {
 			action: 'purchase',
 			label: 'Buy',
+		};
+	}
+
+	if (versionIncompatible) {
+		return {
+			action: 'purchase',
+			label: 'Install',
+			icon: 'warning',
 		};
 	}
 
@@ -193,11 +263,16 @@ export const appButtonProps = ({
 	};
 };
 
+export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
+	icon: 'check',
+	label: 'Incompatible',
+	tooltipText: t('App_version_incompatible_tooltip'),
+});
+
 export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
 	if (!installed) {
 		return;
 	}
-
 	const isFailed = status && appErroredStatuses.includes(status);
 	if (isFailed) {
 		return {
@@ -230,6 +305,21 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	};
 };
 
+export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean): appStatusSpanResponseProps[] => {
+	const status = appStatusSpanProps(app);
+	const statuses = [];
+
+	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {
+		statuses.push(appIncompatibleStatusProps());
+	}
+
+	if (status) {
+		statuses.push(status);
+	}
+
+	return statuses;
+};
+
 export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
 
 export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
@@ -251,7 +341,11 @@ export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: Ap
 	});
 };
 
-export const formatPriceAndPurchaseType = (purchaseType: string, pricingPlans: AppPricingPlan[], price: number): FormattedPriceAndPlan => {
+export const formatPriceAndPurchaseType = (
+	purchaseType: PurchaseType,
+	pricingPlans: AppPricingPlan[],
+	price: number,
+): FormattedPriceAndPlan => {
 	if (purchaseType === 'subscription') {
 		const type = 'Subscription';
 		if (!pricingPlans || !Array.isArray(pricingPlans) || pricingPlans.length === 0) {

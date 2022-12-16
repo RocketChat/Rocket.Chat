@@ -1,5 +1,4 @@
 {
-  "403": "Forbudt",
   "500": "Intern serverfejl",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ tomme rum fjernes automatisk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ tomme rum vil blive fjernet automatisk: <br/> __rooms__.",
@@ -4049,6 +4048,7 @@
   "registration.page.registration.waitActivationWarning": "Før du kan logge ind, skal din konto manuelt aktiveres af en administrator.",
   "registration.page.resetPassword.sent": "Hvis denne e-mail er registreret, sender vi instruktioner om hvordan du nulstiller din adgangskode. Hvis du ikke modtager en e-mail inden for kort tid, bedes du venligst vende tilbage og prøve igen.",
   "registration.component.login": "Login",
+  "registration.component.login.userNotFound": "Bruger ikke fundet",
   "registration.component.resetPassword": "Nulstille kodeord",
   "registration.component.form.email": "E-mail",
   "registration.component.form.password": "Adgangskode",

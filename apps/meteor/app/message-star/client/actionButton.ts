@@ -110,10 +110,14 @@ Meteor.startup(function () {
 		// classes: 'clipboard',
 		context: ['starred', 'threads'],
 		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
-			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			try {
+				const { message = messageArgs(this).msg } = props;
+				const permalink = await MessageAction.getPermaLink(message._id);
+				navigator.clipboard.writeText(permalink);
+				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		},
 		condition({ message, subscription, user }) {
 			if (subscription == null) {

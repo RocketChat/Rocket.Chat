@@ -106,6 +106,7 @@ const getStyle = (
 		${selector} {
 			--rcx-color-neutral-100: ${toVar(colors.n900)};
 			--rcx-color-neutral-200: ${toVar(colors.n800)};
+			--rcx-color-neutral-250: ${toVar(colors.n800)};
 			--rcx-color-neutral-300: ${toVar(colors.n700)};
 			--rcx-color-neutral-400: ${toVar(colors.n600)};
 			--rcx-color-neutral-500: ${toVar(colors.n500)};
@@ -159,11 +160,11 @@ const getStyle = (
 			--rcx-color-foreground-hint: ${toVar(colors.n600)};
 
 			--rcx-sidebar-title-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
-			--rcx-sidebar-item-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
+
 			--rcx-sidebar-item-color-hover: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-item-color-selected: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
 			--rcx-sidebar-footer-highlight-color: var(--rcx-color-neutral-400, ${toVar(colors.n400)});
-
+			--rcx-sidebar-item-color-highlighted: ${toVar(colors.white)};
 		}
 
 		.rcx-badge--danger {
@@ -173,9 +174,7 @@ const getStyle = (
 			--rcx-badge-colors-primary-background-color: ${toVar(colors.b500)}
 		}
 
-		.rcx-sidebar {
-			background-color: ${toVar(colors.sidebarSurface)};
-		}
+
 		`
 )(isIE11 ? ':root' : modifier);
 
