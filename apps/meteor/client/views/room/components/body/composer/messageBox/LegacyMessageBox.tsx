@@ -240,6 +240,7 @@ export const MessageBox = ({
 							<AudioMessageRecorder rid={rid} tmid={tmid} />
 
 							<MessageComposerAction
+								data-qa-id='menu-more-actions'
 								onClick={(event): void => {
 									const groups = messageBox.actions.get();
 									const config = {

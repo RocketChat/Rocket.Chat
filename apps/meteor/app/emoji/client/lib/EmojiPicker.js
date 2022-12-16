@@ -122,10 +122,9 @@ export const EmojiPicker = {
 		this.source.focus();
 	},
 	pickEmoji(emoji) {
-		this.pickCallback(emoji);
-
 		this.close();
 		this.addRecent(emoji);
+		this.pickCallback(emoji);
 	},
 	addRecent(_emoji) {
 		const pos = this.recent.indexOf(_emoji);
