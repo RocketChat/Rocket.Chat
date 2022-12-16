@@ -17,8 +17,8 @@ import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
-import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import UserActionIndicator from '../ComposerUserActionIndicator';
+import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxReplies from './MessageBoxReplies';
 
 type MessageBoxProps = {} & MessageBoxTemplateInstance['data'];
