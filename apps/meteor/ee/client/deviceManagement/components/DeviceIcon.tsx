@@ -1,5 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	'browser': 'desktop',

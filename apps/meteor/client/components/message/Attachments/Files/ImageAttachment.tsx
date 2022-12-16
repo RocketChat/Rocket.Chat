@@ -1,6 +1,7 @@
-import { ImageAttachmentProps } from '@rocket.chat/core-typings';
+import type { ImageAttachmentProps } from '@rocket.chat/core-typings';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';

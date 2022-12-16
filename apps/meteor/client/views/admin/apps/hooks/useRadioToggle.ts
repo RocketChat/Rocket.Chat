@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { RadioDropDownItem, RadioDropDownOnSelected, RadioDropDownSetData } from '../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownItem, RadioDropDownOnSelected, RadioDropDownSetData } from '../definitions/RadioDropDownDefinitions';
 
 export const useRadioToggle = (setData: RadioDropDownSetData): RadioDropDownOnSelected => {
 	const onSelected = useCallback(

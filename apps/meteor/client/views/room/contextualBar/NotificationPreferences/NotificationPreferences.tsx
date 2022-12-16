@@ -1,9 +1,10 @@
 import { Button, ButtonGroup, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { NotificationFormValues } from './NotificationPreferencesWithData';
+import type { NotificationFormValues } from './NotificationPreferencesWithData';
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationToogle from './components/NotificationToogle';
 import { Preferences } from './components/Preferences';
