@@ -14,7 +14,7 @@ const FederatedRoomOriginServer = ({ room }: FederatedRoomProps): ReactElement |
 		return null;
 	}
 	return (
-		<Header.Tag>
+		<Header.Tag data-qa='federated-origin-server-name'>
 			<>
 				<Header.Tag.Icon icon={{ name: 'globe' }} />
 				{originServerName}
