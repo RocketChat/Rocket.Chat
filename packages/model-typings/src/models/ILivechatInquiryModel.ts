@@ -7,7 +7,6 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
-// apps/meteor/ee/app/livechat-enterprise/server/definitions/settings
 
 export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord> {
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;

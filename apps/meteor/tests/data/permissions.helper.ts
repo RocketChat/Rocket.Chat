@@ -14,15 +14,7 @@ export const updatePermission = (permission:string, roles:string[]):Promise<void
 	});
 
 export const updateEEPermission = (permission:string, roles:string[]):Promise<void|Error> =>
-	IS_EE ? new Promise((resolve,reject) => {
-		request
-			.post(api('permissions.update'))
-			.set(credentials)
-			.send({ permissions: [{ _id: permission, roles }] })
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.end((err?:Error) => setTimeout(() => !err && resolve() || reject(err), 100));
-	}) : Promise.resolve();
+	IS_EE ? updatePermission(permission, roles) : Promise.resolve();
 
 export const updateManyPermissions = (permissions: { [key: string]: string[] }):Promise<void|Error> =>
 	new Promise((resolve,reject) => {
