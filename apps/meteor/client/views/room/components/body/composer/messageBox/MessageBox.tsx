@@ -216,7 +216,7 @@ export const MessageBox = ({
 					event.preventDefault();
 					event.stopPropagation();
 
-					onNavigateToNextMessage?.();
+					onNavigateToPreviousMessage?.();
 
 					if (event.altKey) {
 						input.setSelectionRange(0, 0);
@@ -231,7 +231,7 @@ export const MessageBox = ({
 					event.preventDefault();
 					event.stopPropagation();
 
-					onNavigateToPreviousMessage?.();
+					onNavigateToNextMessage?.();
 
 					if (event.altKey) {
 						input.setSelectionRange(input.value.length, input.value.length);

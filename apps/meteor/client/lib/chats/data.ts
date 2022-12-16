@@ -86,56 +86,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return message;
 	};
 
-	const findPreviousOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			return undefined;
-		}
-
-		return messagesCollection.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $lt: message.ts } },
-			{ sort: { ts: -1 }, reactive: false },
-		);
-	};
-
-	const getPreviousOwnMessage = async (message: IMessage): Promise<IMessage> => {
-		const previousMessage = await findPreviousOwnMessage(message);
-
-		if (!previousMessage) {
-			throw new Error('Message not found');
-		}
-
-		return previousMessage;
-	};
-
-	const findNextOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			return undefined;
-		}
-
-		return messagesCollection.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $gt: message.ts } },
-			{ sort: { ts: 1 }, reactive: false },
-		);
-	};
-
-	const getNextOwnMessage = async (message: IMessage): Promise<IMessage> => {
-		const nextMessage = await findNextOwnMessage(message);
-
-		if (!nextMessage) {
-			throw new Error('Message not found');
-		}
-
-		return nextMessage;
-	};
-
-	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		messagesCollection.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
-	};
-
 	const canUpdateMessage = async (message: IMessage): Promise<boolean> => {
 		if (MessageTypes.isSystemMessage(message)) {
 			return false;
@@ -156,6 +106,76 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		return true;
+	};
+
+	const findPreviousOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			return undefined;
+		}
+
+		const msg = messagesCollection.findOne(
+			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $lt: message.ts } },
+			{ sort: { ts: -1 }, reactive: false },
+		);
+
+		if (!msg) {
+			return undefined;
+		}
+
+		if (await canUpdateMessage(msg)) {
+			return msg;
+		}
+
+		return findPreviousOwnMessage(msg);
+	};
+
+	const getPreviousOwnMessage = async (message: IMessage): Promise<IMessage> => {
+		const previousMessage = await findPreviousOwnMessage(message);
+
+		if (!previousMessage) {
+			throw new Error('Message not found');
+		}
+
+		return previousMessage;
+	};
+
+	const findNextOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			return undefined;
+		}
+
+		const msg = messagesCollection.findOne(
+			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $gt: message.ts } },
+			{ sort: { ts: 1 }, reactive: false },
+		);
+
+		if (!msg) {
+			return undefined;
+		}
+
+		if (await canUpdateMessage(msg)) {
+			return msg;
+		}
+
+		return findNextOwnMessage(msg);
+	};
+
+	const getNextOwnMessage = async (message: IMessage): Promise<IMessage> => {
+		const nextMessage = await findNextOwnMessage(message);
+
+		if (!nextMessage) {
+			throw new Error('Message not found');
+		}
+
+		return nextMessage;
+	};
+
+	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
+		messagesCollection.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
 	const updateMessage = async (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>): Promise<void> =>

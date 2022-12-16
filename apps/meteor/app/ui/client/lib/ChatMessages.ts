@@ -63,7 +63,6 @@ export class ChatMessages implements ChatAPI {
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0].description || message.msg;
-			const cursorPosition = cursorAtStart ? 0 : text.length;
 
 			await this.currentEditing?.stop();
 
@@ -75,7 +74,9 @@ export class ChatMessages implements ChatAPI {
 			setHighlightMessage(message._id);
 			this.composer.setEditingMode(true);
 
-			this.composer.setText(text, { selection: { start: cursorPosition, end: cursorPosition } });
+			this.composer.setText(text);
+			cursorAtStart && this.composer.setCursorToStart();
+			!cursorAtStart && this.composer.setCursorToEnd();
 			this.composer.focus();
 		},
 	};

@@ -231,6 +231,16 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	return {
+		setCursorToEnd: () => {
+			input.selectionEnd = input.value.length;
+			input.selectionStart = input.selectionEnd;
+			focus();
+		},
+		setCursorToStart: () => {
+			input.selectionStart = 0;
+			input.selectionEnd = input.selectionStart;
+			focus();
+		},
 		release,
 		wrapSelection,
 		get text(): string {

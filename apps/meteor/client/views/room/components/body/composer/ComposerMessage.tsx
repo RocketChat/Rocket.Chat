@@ -44,6 +44,11 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, ...props }: Comp
 				}
 				await chatMessagesInstance?.flows.action.start('typing');
 			},
+			onNavigateToPreviousMessage: () => chatMessagesInstance?.messageEditing.toPreviousMessage(),
+			onNavigateToNextMessage: () => chatMessagesInstance?.messageEditing.toNextMessage(),
+			onUploadFiles: (files: readonly File[]) => {
+				return chatMessagesInstance?.flows.uploadFiles(files);
+			},
 		}),
 		[chatMessagesInstance, dispatchToastMessage],
 	);

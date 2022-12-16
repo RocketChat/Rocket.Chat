@@ -34,6 +34,9 @@ export type ComposerAPI = {
 	insertText(text: string): void;
 	clear(): void;
 	focus(): void;
+
+	setCursorToEnd(): void;
+	setCursorToStart(): void;
 	replyWith(text: string): Promise<void>;
 	quoteMessage(message: IMessage): Promise<void>;
 	dismissQuotedMessage(mid: IMessage['_id']): Promise<void>;
