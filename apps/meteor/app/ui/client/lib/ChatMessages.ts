@@ -72,10 +72,10 @@ export class ChatMessages implements ChatAPI {
 
 			this.currentEditingMID = message._id;
 			setHighlightMessage(message._id);
-			this.composer?.setEditingMode(true);
+			this.composer.setEditingMode(true);
 
 			this.composer.setText(text, { selection: { start: cursorPosition, end: cursorPosition } });
-			this.composer?.focus();
+			this.composer.focus();
 		},
 	};
 

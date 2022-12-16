@@ -140,16 +140,7 @@ Template.thread.helpers({
 			subscription,
 			rid,
 			tmid,
-			onSend: async (
-				_event: Event,
-				{
-					value: text,
-					tshow,
-				}: {
-					value: string;
-					tshow?: boolean;
-				},
-			) => {
+			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }) => {
 				instance.sendToBottom();
 				if (alsoSendPreferenceState === 'default') {
 					instance.state.set('sendToChannel', false);

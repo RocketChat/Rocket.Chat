@@ -84,7 +84,7 @@
 	&__container {
 		display: flex;
 
-		padding: 0.75rem 0;
+		padding: 0.5rem 0.75rem;
 
 		cursor: text;
 
@@ -305,6 +305,7 @@
 			border-width: 0;
 			border-top-width: 1px;
 			flex-wrap: wrap;
+			justify-content: space-between;
 		}
 
 		& [data-desktop] {
@@ -318,7 +319,7 @@
 		&__textarea {
 			flex: 1 0 100%;
 
-			margin-bottom: 10px;
+			margin-block-end: 8px;
 			order: 1;
 		}
 
@@ -356,6 +357,10 @@
 
 			font-size: 20px;
 			order: 5;
+		}
+
+		[role='toolbar'] {
+			order: 6;
 		}
 	}
 

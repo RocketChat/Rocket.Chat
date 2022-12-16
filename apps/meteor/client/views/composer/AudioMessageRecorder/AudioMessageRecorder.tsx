@@ -1,6 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -13,7 +14,7 @@ const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	tmid: IMessage['_id'];
+	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 };
 
@@ -37,6 +38,8 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
 		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+
+		chat?.composer?.setRecordingMode(false);
 
 		setState('idle');
 
@@ -114,7 +117,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
-
+		chat?.composer?.setRecordingMode(true);
 		setState('recording');
 
 		try {
@@ -134,6 +137,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		} catch (error) {
 			console.log(error);
 			setIsMicrophoneDenied(true);
+			chat?.composer?.setRecordingMode(false);
 			setState('idle');
 		}
 	});
@@ -159,30 +163,40 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		return null;
 	}
 
+	if (state === 'idle') {
+		return (
+			<MessageComposerAction
+				icon='mic'
+				className='rc-message-box__icon rc-message-box__audio-message-mic'
+				data-qa-id='audio-record'
+				onClick={handleRecordButtonClick}
+			/>
+		);
+	}
+
 	return (
 		<div className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
-					<div className='rc-message-box__icon rc-message-box__audio-message-cancel' onClick={handleCancelButtonClick}>
-						<Icon name='circle-cross' size={24} />
-					</div>
-					<div className='rc-message-box__audio-message-timer'>
+					<MessageComposerAction
+						icon='circle-cross'
+						className='rc-message-box__icon rc-message-box__audio-message-cancel'
+						onClick={handleCancelButtonClick}
+					/>
+					<Box className='rc-message-box__audio-message-timer' color='default'>
 						<span className='rc-message-box__audio-message-timer-dot'></span>
 						<span className='rc-message-box__audio-message-timer-text'>{time}</span>
-					</div>
-					<div className='rc-message-box__icon rc-message-box__audio-message-done' onClick={handleDoneButtonClick}>
-						<Icon name='circle-check' size={24} />
-					</div>
+					</Box>
+					<MessageComposerAction
+						icon='circle-check'
+						className='rc-message-box__icon rc-message-box__audio-message-done'
+						onClick={handleDoneButtonClick}
+					/>
 				</>
-			)}
-			{state === 'idle' && (
-				<div className='rc-message-box__icon rc-message-box__audio-message-mic' data-qa-id='audio-record' onClick={handleRecordButtonClick}>
-					<Icon name='mic' size={24} />
-				</div>
 			)}
 			{state === 'loading' && (
 				<div className='rc-message-box__icon'>
-					<Throbber inheritColor size='x12' />
+					<Throbber inheritColor size='x12' />a
 				</div>
 			)}
 		</div>
