@@ -64,6 +64,11 @@ const handleFormattingShortcut = (
 	return true;
 };
 
+const emptySubscribe = () => () => undefined;
+const getEmptyFalse = () => false;
+const _a = [];
+const getEmptyArray = () => _a;
+
 export const MessageBox = ({
 	rid,
 	tmid,
@@ -227,18 +232,18 @@ export const MessageBox = ({
 	});
 
 	const isEditing = useSubscription({
-		getCurrentValue: chat.composer?.editing.get ?? (() => false),
-		subscribe: chat.composer?.editing.subscribe ?? (() => () => undefined),
+		getCurrentValue: chat.composer?.editing.get ?? getEmptyFalse,
+		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
 	});
 
 	const isRecording = useSubscription({
-		getCurrentValue: chat.composer?.recording.get ?? (() => false),
-		subscribe: chat.composer?.recording.subscribe ?? (() => () => undefined),
+		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
+		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
 
 	const formatters = useSubscription({
-		getCurrentValue: chat.composer?.formatters.get ?? (() => []),
-		subscribe: chat.composer?.formatters.subscribe ?? (() => () => undefined),
+		getCurrentValue: chat.composer?.formatters.get ?? getEmptyArray,
+		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
 	});
 
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
@@ -253,7 +258,7 @@ export const MessageBox = ({
 			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
 			{readOnly && (
 				<Box mbe='x4'>
-					<Tag>{t('This_room_is_read_only')}</Tag>
+					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}
 			<MessageComposer variant={isEditing ? 'editing' : undefined}>
