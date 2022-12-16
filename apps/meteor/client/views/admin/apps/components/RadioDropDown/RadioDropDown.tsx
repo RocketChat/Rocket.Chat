@@ -1,8 +1,9 @@
-import { Select } from '@rocket.chat/fuselage';
+import type { Select } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, ReactElement, useCallback, useRef } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { useCallback, useRef } from 'react';
 
-import { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
 import DropDownListWrapper from '../DropDownListWrapper';

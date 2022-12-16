@@ -1,7 +1,9 @@
-import { IRoom, isVoipRoom, isDirectMessageRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box, Tag, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';

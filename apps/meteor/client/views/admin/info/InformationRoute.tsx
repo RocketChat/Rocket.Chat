@@ -1,7 +1,8 @@
 import type { IInstanceStatus, IStats } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { usePermission, useServerInformation, useEndpoint, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';

@@ -23,7 +23,6 @@ declare module '@rocket.chat/model-typings' {
 	}
 }
 
-// Note: Expect a circular dependency error here 😓
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		return this.updateMany(

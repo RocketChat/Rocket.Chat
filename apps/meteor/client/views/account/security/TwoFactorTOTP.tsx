@@ -1,7 +1,8 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useEffect, ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import qrcode from 'yaqrcode';
 
 import TextCopy from '../../../components/TextCopy';

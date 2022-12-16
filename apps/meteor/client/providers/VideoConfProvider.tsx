@@ -1,10 +1,13 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ReactNode, useMemo, useEffect } from 'react';
-import { Unsubscribe } from 'use-subscription';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import type { Unsubscribe } from 'use-subscription';
 
-import { VideoConfContext, VideoConfPopupPayload } from '../contexts/VideoConfContext';
-import { VideoConfManager, DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
+import { VideoConfContext } from '../contexts/VideoConfContext';
+import type { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import { VideoConfManager } from '../lib/VideoConfManager';
 import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 

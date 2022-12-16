@@ -1,6 +1,8 @@
-import { IconProps, ButtonGroup } from '@rocket.chat/fuselage';
-import { TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { IconProps } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React from 'react';
 
 import Content from '../Metrics/Content';
 import Action from './Action';

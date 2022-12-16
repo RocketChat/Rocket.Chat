@@ -1,6 +1,7 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { PreviewMarkup } from '@rocket.chat/gazzodown';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
 

@@ -1,4 +1,4 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useLayout, usePermission, useSetting, useUser, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 

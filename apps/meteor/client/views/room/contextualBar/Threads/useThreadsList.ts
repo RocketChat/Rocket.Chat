@@ -4,7 +4,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { ThreadsList, ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
+import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
+import { ThreadsList } from '../../../../lib/lists/ThreadsList';
 import { getConfig } from '../../../../lib/utils/getConfig';
 
 export const useThreadsList = (

@@ -1,6 +1,8 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import type { Box } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 

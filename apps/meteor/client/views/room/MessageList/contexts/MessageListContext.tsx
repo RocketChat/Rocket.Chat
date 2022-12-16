@@ -1,4 +1,4 @@
-import { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {

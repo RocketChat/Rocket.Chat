@@ -1,4 +1,4 @@
-import { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ui-contexts';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 
 import { dispatchToastMessage } from '../toast';
 import { call } from './call';
