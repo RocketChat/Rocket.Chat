@@ -369,6 +369,39 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
 		});
 
+		it('should call the update name function if the name is inside the received input', async () => {
+			const invitee = FederatedUser.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: false,
+			});
+			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			const spy = sinon.spy(service, 'onChangeRoomName');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.REMOTE,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				normalizedInviteeId: 'normalizedInviteeId',
+				externalRoomName: 'externalRoomName',
+				externalEventId: 'externalEventId',
+				externalInviterId: 'externalInviterId',
+			} as any);
+
+			expect(
+				spy.calledWith({
+					externalRoomId: 'externalRoomId',
+					normalizedRoomName: 'externalRoomName',
+					externalEventId: 'externalEventId',
+					externalSenderId: 'externalInviterId',
+					normalizedRoomId: 'normalizedRoomId',
+				}),
+			).to.be.true;
+		});
+
 		it('should NOT create the room if it already exists yet AND the event origin is REMOTE', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);

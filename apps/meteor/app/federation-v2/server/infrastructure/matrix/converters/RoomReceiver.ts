@@ -81,7 +81,7 @@ const tryToExtractExternalRoomNameFromTheRoomState = (roomState: AbstractMatrixE
 	)?.content?.name;
 
 	return {
-		...(externalRoomName ? { externalRoomName } : {}),
+		...(externalRoomName ? { externalRoomName: removeExternalSpecificCharsFromExternalIdentifier(externalRoomName) } : {}),
 	};
 };
 

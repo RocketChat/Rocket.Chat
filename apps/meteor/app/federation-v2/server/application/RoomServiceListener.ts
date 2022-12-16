@@ -66,6 +66,8 @@ export class FederationRoomServiceListener extends FederationService {
 			roomType,
 			leave,
 			userProfile,
+			externalRoomName,
+			externalEventId,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
@@ -126,9 +128,17 @@ export class FederationRoomServiceListener extends FederationService {
 				return;
 			}
 			const newFederatedRoom = FederatedRoom.createInstance(externalRoomId, normalizedRoomId, federatedInviterUser, roomType);
-
 			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
+			if (externalRoomName) {
+				await this.onChangeRoomName({
+					externalRoomId,
+					normalizedRoomName: externalRoomName,
+					externalEventId,
+					externalSenderId: externalInviterId,
+					normalizedRoomId,
+				});
+			}
 			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
 				createdInternalRoomId,
 				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
