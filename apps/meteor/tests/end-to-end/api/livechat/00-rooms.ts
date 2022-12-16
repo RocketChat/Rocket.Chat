@@ -25,6 +25,7 @@ import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/depart
 import { sleep } from '../../../data/livechat/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
+import { getSubscriptionForRoom } from '../../../data/subscriptions';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -1444,6 +1445,32 @@ describe('LIVECHAT - rooms', function () {
 			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
 			expect(response.body).to.have.property('filters').and.to.be.an('array');
 			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;
+		});
+	});
+
+	describe('it should mark room as unread when a new message is sent', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+		let totalMessagesSent = 2;
+		let departmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+
+		before(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
+			visitor = await createVisitor(departmentWithAgent.department._id);
+			room = await createLivechatRoom(visitor.token);
+
+			await sendMessage(room._id, 'message 1', visitor.token);
+			await sendMessage(room._id, 'message 2', visitor.token);
+
+			// 1st message is for the room creation, so we need to add 1 to the total messages sent
+			totalMessagesSent = 3;
+		});
+
+		it("room's subscription should have correct unread count", async () => {
+			const { unread } = await getSubscriptionForRoom(room._id, departmentWithAgent.agent.credentials);
+			expect(unread).to.equal(totalMessagesSent);
 		});
 	});
 });
