@@ -25,7 +25,7 @@ import {
 	sendMessage,
 	closeRoom,
 } from '../../../data/livechat/rooms';
-import { updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -34,6 +34,7 @@ import type { SuccessResult } from '../../../../app/api/server/api';
 import { sleep } from '../../../data/livechat/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
+import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);
@@ -1442,8 +1443,66 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
+		(IS_EE ? it : it.skip)('should update room priority', async () => {
+			await addPermissions({
+				'save-others-livechat-room-info': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
+
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+			const priority = await getRandomPriority();
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						priorityId: priority._id,
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(updatedRoom).to.have.property('priorityId', priority._id);
+			expect(updatedRoom).to.have.property('priorityWeight', priority.sortItem);
+		});
+		(IS_EE ? it : it.skip)('should update room sla', async () => {
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+			const sla = await createSLA();
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						slaId: sla._id,
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(updatedRoom).to.have.property('slaId', sla._id);
+		});
 	});
-	(IS_EE ? describe : describe.skip)('priority integration', async () => {
+	(IS_EE ? describe : describe.skip)('livechat/room/:rid/priority', async () => {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
 		this.afterAll(async () => {
