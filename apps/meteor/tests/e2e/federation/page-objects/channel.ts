@@ -32,6 +32,10 @@ export class FederationChannel {
 		return this.page.locator('[data-qa="VerticalBarActionClose"]');
 	}
 
+	async getFederationServerName(): Promise<string> {
+		return (await this.page.locator('[data-qa="federated-origin-server-name"]').locator('span').innerText()).substring(1).trim();
+	}
+
 	async createPublicChannelAndInviteUsersUsingCreationModal(channelName: string, usernamesToInvite: string[]) {
 		await this.sidenav.openNewByLabel('Channel');
 		await this.sidenav.checkboxPrivateChannel.click();

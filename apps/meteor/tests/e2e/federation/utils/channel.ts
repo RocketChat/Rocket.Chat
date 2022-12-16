@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 
 import type { FederationChannel } from '../page-objects/channel';
 import { doLogin } from './auth';
+import type { API } from './test';
 
 export const createChannelAndInviteRemoteUserToCreateLocalUser = async ({
 	page,
@@ -73,4 +74,12 @@ export const createGroupAndInviteRemoteUserToCreateLocalUser = async ({
 	page.close();
 
 	return groupName;
+};
+
+export const createGroupUsingAPI = async (api: API, name: string) => {
+	await api.post('/groups.create', { name });
+};
+
+export const createChannelUsingAPI = async (api: API, name: string) => {
+	await api.post('/channels.create', { name });
 };

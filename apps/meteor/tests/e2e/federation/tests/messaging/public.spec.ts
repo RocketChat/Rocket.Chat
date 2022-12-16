@@ -172,8 +172,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await poFederationChannelServer2.sidenav.openChat(createdChannel);
 					await page.waitForTimeout(2000);
 
-					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
-
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
 					await page2.waitForTimeout(2000);
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
