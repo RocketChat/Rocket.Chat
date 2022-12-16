@@ -30,15 +30,11 @@
 
 	align-items: stretch;
 
-	&__wrapper {
-		margin-block: -4px;
-	}
-
 	&__row {
 		display: flex;
 		flex-direction: column;
 
-		&:not(:first-child) {
+		&:not(:last-child) {
 			margin-block-end: 4px;
 		}
 	}

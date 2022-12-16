@@ -10,7 +10,16 @@ import {
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, MutableRefObject, Ref } from 'react';
+import type {
+	MouseEventHandler,
+	ReactElement,
+	FormEvent,
+	KeyboardEventHandler,
+	KeyboardEvent,
+	MutableRefObject,
+	Ref,
+	ClipboardEventHandler,
+} from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -20,6 +29,8 @@ import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-mes
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
+import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
@@ -66,8 +77,8 @@ const handleFormattingShortcut = (
 
 const emptySubscribe = () => () => undefined;
 const getEmptyFalse = () => false;
-const _a = [];
-const getEmptyArray = () => _a;
+const a: any[] = [];
+const getEmptyArray = () => a;
 
 export const MessageBox = ({
 	rid,
@@ -75,6 +86,7 @@ export const MessageBox = ({
 	onSend,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
+	onUploadFiles,
 	onEscape,
 	onTyping,
 	subscription,
@@ -252,6 +264,48 @@ export const MessageBox = ({
 
 	const sizes = useContentBoxSize(textareaRef);
 
+	const format = useFormatDateAndTime();
+
+	const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+		const { clipboardData } = event;
+
+		if (!clipboardData) {
+			return;
+		}
+
+		const items = Array.from(clipboardData.items);
+
+		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+			return;
+		}
+
+		const files = items
+			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
+			.map((item) => {
+				const fileItem = item.getAsFile();
+
+				if (!fileItem) {
+					return;
+				}
+
+				const imageExtension = fileItem ? getImageExtensionFromMime(fileItem.type) : undefined;
+
+				const extension = imageExtension ? `.${imageExtension}` : '';
+
+				Object.defineProperty(fileItem, 'name', {
+					writable: true,
+					value: `Clipboard - ${format(new Date())}${extension}`,
+				});
+				return fileItem;
+			})
+			.filter((file): file is File => !!file);
+
+		if (files.length) {
+			event.preventDefault();
+			onUploadFiles?.(files);
+		}
+	});
+
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -273,6 +327,7 @@ export const MessageBox = ({
 					placeholder={t('Message')}
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
+					onPaste={handlePaste}
 					is='textarea'
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
