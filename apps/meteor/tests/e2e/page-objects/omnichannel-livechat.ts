@@ -33,6 +33,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`[type="submit"] >> text="${btnText}"`);
 	}
 
+	btnChatNow(btnText: string): Locator {
+		return this.page.locator(`[type="button"] >> text="${btnText}"`);
+	}
+
 	get btnOk(): Locator {
 		return this.page.locator('button >> text="OK"');
 	}
@@ -60,13 +64,12 @@ export class OmnichannelLiveChat {
 	}
 
 	public async startNewChat(liveChatUser: { name: string; email: string }, isChatNow = true): Promise<void> {
-		isChatNow ? 'Chat now' : 'Start chat';
+		const btnName = isChatNow ? 'Chat now' : 'Start chat';
 		if (isChatNow) {
-			// await this.btnSendMessage(buttonLabel).click();
-			await this.page.locator('//button[text()="Chat now"]').click();
+			await this.btnChatNow(btnName).click();
 		}
 		await this.inputName.type(liveChatUser.name);
 		await this.inputEmail.type(liveChatUser.email);
-		await this.page.locator('[type="submit"] >> text="Start chat"').click();
+		await this.btnSendMessage(btnName).click();
 	}
 }

@@ -68,8 +68,8 @@ export class OmnichannelTriggers {
 		return this.page.locator('table tr:first-child td:first-child');
 	}
 
-	firstRowInTriggerTable(triggersName: string) {
-		return this.page.locator(`[qa-user-id="${triggersName}"]`);
+	firstRowInTriggerTable(triggersName1: string) {
+		return this.page.locator(`text="${triggersName1}"`);
 	}
 
 	get toastMessage(): Locator {
@@ -85,7 +85,7 @@ export class OmnichannelTriggers {
 	}
 
 	get btnDeletefirstRowInTable() {
-		return this.page.locator('button[title="Remove"]');
+		return this.page.locator('table tr:first-child td:last-child button');
 	}
 
 	get btnModalRemove(): Locator {
@@ -109,8 +109,8 @@ export class OmnichannelTriggers {
 		await this.saveBtn.click();
 	}
 
-	public async updateTrigger() {
-		await this.firstRowInTable.click();
+	public async updateTrigger(newName: string) {
+		await this.Name.fill(newName);
 		await this.Description.fill('Updating the existing trigger');
 		await this.visitorTimeOnSite.click();
 		await this.chatOpenedByVisitor.click();
