@@ -82,7 +82,7 @@ export const parseMessageAttachments = <T extends MessageAttachment>(
 		}
 
 		const text =
-			(isTranslatedAttachment(attachment) && translated && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
+			(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
 			attachment.text ||
 			attachment.description ||
 			'';
@@ -130,6 +130,9 @@ const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): R
 	if (isParsedMessage(textOrRoot)) {
 		return textOrRoot;
 	}
+	const parsedMessage = parse(textOrRoot, parseOptions);
 
-	return parse(textOrRoot, parseOptions);
+	const parsedMessageCleaned = parsedMessage[0].type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);
+
+	return parsedMessageCleaned;
 };
