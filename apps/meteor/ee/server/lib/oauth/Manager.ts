@@ -50,7 +50,7 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
-			const savedRoles = Roles.findInIdsOrNames(rolesToSync);
+			const savedRoles = Roles.findInIdsOrNames(rolesToSync).toArray();
 			const allowedRoles = savedRoles.map((role) => role._id);
 
 			Promise.await(
