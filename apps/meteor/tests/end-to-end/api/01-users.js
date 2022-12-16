@@ -653,42 +653,38 @@ describe('[Users]', function () {
 		});
 
 		before((done) =>
-			setCustomFields({ customFieldText }, (error) => {
+			setCustomFields({ customFieldText }, async (error) => {
 				if (error) {
 					return done(error);
 				}
 
-				const username = `customField_${Math.floor(Math.random() * 1000)}${apiUsername}`;
+				const username = `customField_${Date.now()}${apiUsername}`;
 				const email = `customField_+${Date.now()}${apiEmail}`;
 				const customFields = { customFieldText: 'success' };
 
-				request
-					.post(api('users.create'))
-					.set(credentials)
-					.send({
-						email,
-						name: username,
-						username,
-						password,
-						active: true,
-						roles: ['user'],
-						joinDefaultChannels: true,
-						verified: true,
-						customFields,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.username', username);
-						expect(res.body).to.have.nested.property('user.emails[0].address', email);
-						expect(res.body).to.have.nested.property('user.active', true);
-						expect(res.body).to.have.nested.property('user.name', username);
-						expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
-						expect(res.body).to.not.have.nested.property('user.e2e');
-						user = res.body.user;
-					})
-					.end(done);
+				const userData = {
+					email,
+					name: username,
+					username,
+					password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified: true,
+					customFields,
+				};
+
+				user = await createUser(userData);
+
+				expect(user).to.not.be.null;
+				expect(user).to.have.nested.property('username', username);
+				expect(user).to.have.nested.property('emails[0].address', email);
+				expect(user).to.have.nested.property('active', true);
+				expect(user).to.have.nested.property('name', username);
+				expect(user).to.have.nested.property('customFields.customFieldText', 'success');
+				expect(user).to.not.have.nested.property('e2e');
+
+				return done();
 			}),
 		);
 
