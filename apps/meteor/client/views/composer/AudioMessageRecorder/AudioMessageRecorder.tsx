@@ -42,6 +42,8 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 
 		chat?.composer?.setRecordingMode(false);
 
+		chat?.composer?.setRecordingMode(false);
+
 		setState('idle');
 
 		return blob;
