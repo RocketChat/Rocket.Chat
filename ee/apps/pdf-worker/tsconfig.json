@@ -6,6 +6,7 @@
 		"allowJs": true,
 		"checkJs": false,
 		"incremental": true,
+		"jsx": "react",
 
 		/* Strict Type-Checking Options */
 		"noImplicitAny": true,

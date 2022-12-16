@@ -16,7 +16,7 @@ declare module 'mongo-message-queue' {
 
 	export type ValidResult = 'Completed' | 'Rejected' | 'Retry';
 
-	export type Actions = 'work';
+	export type Actions = 'work' | 'workComplete';
 
 	export default class MessageQueue {
 		collectionName: string;

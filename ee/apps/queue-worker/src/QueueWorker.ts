@@ -1,5 +1,5 @@
 import type { Db } from 'mongodb';
-import type { ValidResult, Work } from 'mongo-message-queue';
+import type { Actions, ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
@@ -50,10 +50,10 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	private async registerWorkers(): Promise<void> {
 		this.logger.info('Registering workers of type "work"');
 		this.queue.registerWorker('work', (queueItem: Work<{ to: string; foo: string }>): Promise<ValidResult> => {
-			this.logger.info(`Processing queue item ${queueItem._id}`);
+			this.logger.info(`Processing queue item ${queueItem._id} for work`);
 			this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
 			return this.api
-				.waitAndCall(queueItem.message.to, queueItem.message)
+				.waitAndCall(queueItem.message.to, [queueItem.message])
 				.then(() => {
 					this.logger.info(`Queue item ${queueItem._id} completed`);
 					return 'Completed' as const;
@@ -63,10 +63,39 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 					queueItem.releasedReason = err.message;
 					// Let's only retry for X times when the error is "service not found"
 					// For any other error, we'll just reject the item
+					if ((queueItem.retryCount || 0) < this.retryCount && this.isServiceNotFoundMessage(err.message)) {
+						// Let's retry in 5 seconds
+						this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
+						queueItem.nextReceivableTime = new Date(Date.now() + 10000);
+						return 'Retry' as const;
+					}
+
+					this.logger.info(`Queue item ${queueItem._id} will be rejected`);
+					queueItem.rejectionReason = err.message;
+					return 'Rejected' as const;
+				});
+		});
+
+		this.logger.info('Registering workers of type "workComplete"');
+		this.queue.registerWorker('workComplete', (queueItem: Work<{ to: string; file: any }>): Promise<ValidResult> => {
+			this.logger.info(`Processing queue item ${queueItem._id} for workComplete`);
+			this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
+			return this.api
+				.waitAndCall(queueItem.message.to, [queueItem.message])
+				.then(() => {
+					this.logger.info(`Queue item ${queueItem._id} completed`);
+					return 'Completed' as const;
+				})
+				.catch((err) => {
+					this.logger.error(err);
+					this.logger.error(`Queue item ${queueItem._id} errored: ${err.message}`);
+					queueItem.releasedReason = err.message;
+					// Let's only retry for X times when the error is "service not found"
+					// For any other error, we'll just reject the item
 					if ((queueItem.retryCount ?? 0) < this.retryCount && this.isServiceNotFoundMessage(err.message)) {
 						// Let's retry in 5 seconds
-						this.logger.info(`Queue item ${queueItem._id} will be retried in 5 seconds`);
-						queueItem.nextReceivableTime = new Date(Date.now() + 5000);
+						this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
+						queueItem.nextReceivableTime = new Date(Date.now() + 10000);
 						return 'Retry' as const;
 					}
 
@@ -77,12 +106,25 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		});
 	}
 
-	// Queues an action of type "work" to be processed by the workers
+	private matchServiceCall(service: string): boolean {
+		const [namespace, action] = service.split('.');
+		if (!namespace || !action) {
+			return false;
+		}
+		return true;
+	}
+
+	// Queues an action of type "X" to be processed by the workers
 	// Action receives a record of unknown data that will be passed to the actual service
 	// `to` is a service name that will be called, including namespace + action
-	async queueWork<T extends Record<string, unknown>>(to: string, data: T): Promise<void> {
+	// This is a "generic" job that allows you to call any service
+	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${to}`);
-		await this.queue.enqueue<typeof data>('work', { to, ...data });
+		if (!this.matchServiceCall(to)) {
+			throw new Error(`Invalid service name ${to}`);
+		}
+
+		await this.queue.enqueue<typeof data>(queue, { ...data, to });
 	}
 
 	async queueInfo(): Promise<HealthAggResult[]> {
