@@ -1,9 +1,9 @@
+import { Button } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
-import { call } from '../../../../../lib/utils/call';
 import { useRoom, useUserIsSubscribed } from '../../../contexts/RoomContext';
 
 export const ComposerReadOnly = (): ReactElement => {
@@ -11,6 +11,7 @@ export const ComposerReadOnly = (): ReactElement => {
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
 	const calloutRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
+	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
 
 	useEffect(() => {
 		calloutRef.current.style.flex = !isSubscribed ? '4' : 'none';
@@ -19,12 +20,12 @@ export const ComposerReadOnly = (): ReactElement => {
 	const join = useCallback(
 		async (_e) => {
 			try {
-				await call('joinRoom', room._id);
+				await joinEndpoint({ roomId: room._id });
 			} catch (error: any) {
 				console.log(error);
 			}
 		},
-		[room._id],
+		[joinEndpoint, room._id],
 	);
 
 	return (
@@ -32,9 +33,9 @@ export const ComposerReadOnly = (): ReactElement => {
 			<MessageFooterCallout>
 				<MessageFooterCalloutContent ref={calloutRef}>{t('room_is_read_only')}</MessageFooterCalloutContent>
 				{!isSubscribed && (
-					<button className='rc-button rc-button--primary rc-button--medium' onClick={join}>
+					<Button primary onClick={join}>
 						{t('Join')}
-					</button>
+					</Button>
 				)}
 			</MessageFooterCallout>
 		</footer>
