@@ -7,3 +7,4 @@ import './tags';
 import './units';
 import './business-hours';
 import './rooms';
+import './transcript';
