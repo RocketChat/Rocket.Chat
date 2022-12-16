@@ -81,7 +81,16 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{
+					$and: [
+						{
+							$or: [
+								{ federated: { $exists: false }, name },
+								{ federated: true, fname: name },
+							],
+						},
+					],
+				},
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -131,7 +140,16 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{
+					$and: [
+						{
+							$or: [
+								{ federated: { $exists: false }, name },
+								{ federated: true, fname: name },
+							],
+						},
+					],
+				},
 				{
 					t: 'd',
 					usernames: nameRegex,
