@@ -87,6 +87,9 @@ roomCoordinator.add(PublicRoomType, {
 		if (room.teamMain) {
 			return 'team';
 		}
+		if (isRoomFederated(room)) {
+			return 'globe';
+		}
 
 		return PublicRoomType.icon;
 	},

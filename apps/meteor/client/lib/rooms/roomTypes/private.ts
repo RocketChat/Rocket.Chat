@@ -89,6 +89,10 @@ roomCoordinator.add(PrivateRoomType, {
 			return 'team-lock';
 		}
 
+		if (isRoomFederated(room)) {
+			return 'globe';
+		}
+
 		return PrivateRoomType.icon;
 	},
 
