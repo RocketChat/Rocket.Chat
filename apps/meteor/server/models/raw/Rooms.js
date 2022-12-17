@@ -276,6 +276,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			federated: { $exists: false },
 		};
 
 		return this.find(query, options);
@@ -308,6 +309,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			federated: { $exists: false },
 		};
 
 		return this.findPaginated(query, options);
@@ -327,6 +329,7 @@ export class RoomsRaw extends BaseRaw {
 				$in: groupsToAccept,
 			},
 			name: nameRegex,
+			federated: { $exists: false },
 		};
 		return this.find(query, options);
 	}

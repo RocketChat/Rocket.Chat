@@ -220,7 +220,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 							<Box display='flex' style={style} mi='x8'>
 								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
 									{icon && <Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />}
-									<Box fontScale='p2m' style={style} color='default'>
+									<Box fontScale='p2m' style={style} color='default' qa-room-name={roomName}>
 										{roomName}
 									</Box>
 								</Box>
