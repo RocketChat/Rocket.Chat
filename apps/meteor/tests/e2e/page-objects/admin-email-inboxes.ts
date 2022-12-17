@@ -62,7 +62,7 @@ export class AdminEmailInboxes {
 	}
 
 	itemRow(name: string): Locator {
-		return this.page.locator(`table tbody tr td >> text="${name}"`);
+		return this.page.locator(`table tbody tr td >> "${name}"`);
 	}
 
 	findEmailInbox(email: string): Locator {
