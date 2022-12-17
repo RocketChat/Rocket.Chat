@@ -20,7 +20,8 @@ test.describe.serial('email-inboxes', () => {
 
 	test('expect create an email inbox', async () => {
 		await poAdminEmailInboxes.btnNewEmailInbox.click();
-		await poAdminEmailInboxes.inputName.type(faker.name.firstName());
+		const name = faker.name.firstName();
+		await poAdminEmailInboxes.inputName.type(name);
 		await poAdminEmailInboxes.inputEmail.type(email);
 
 		// SMTP
@@ -37,7 +38,7 @@ test.describe.serial('email-inboxes', () => {
 
 		await poAdminEmailInboxes.btnSave.click();
 
-		expect(poUtils.toastBarSuccess).toBeVisible();
+		expect(poAdminEmailInboxes.itemRow(name)).toBeVisible();
 	});
 
 	test('expect delete an email inbox', async () => {
