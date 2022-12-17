@@ -1414,6 +1414,5 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await pageForServer2.close();
 			});
 		});
-
 	});
 });

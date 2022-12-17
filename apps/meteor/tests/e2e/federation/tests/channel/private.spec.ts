@@ -1228,5 +1228,85 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await pageForServer2.close();
 			});
 		});
+
+		test.describe('Discussions', () => {
+			test('expect the federated channels not to be shown as parent channels in discussion creation', async ({ page, browser }) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const channelName = faker.datatype.uuid();
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
+				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
+
+				await poFederationChannelServer1.createDiscussionSearchingForChannel(channelName);
+				await expect(page.locator('div.rcx-option__content', { hasText: 'Empty' })).toBeVisible();
+				await poFederationChannelServer2.createDiscussionSearchingForChannel(channelName);
+				await expect(pageForServer2.locator('div.rcx-option__content', { hasText: 'Empty' })).toBeVisible();
+				await page.reload();
+				await pageForServer2.close();
+			});
+		});
+
+		test.describe('Teams', () => {
+			test('expect the federated channels not to be shown as parent channels in the input to add rooms to the team on Server A', async ({
+				page,
+			}) => {
+				const channelName = faker.datatype.uuid();
+				const teamName = faker.datatype.uuid();
+
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
+				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
+
+				await poFederationChannelServer1.createTeam(teamName);
+				await poFederationChannelServer1.tabs.btnTeam.click();
+				await poFederationChannelServer1.tabs.btnAddExistingChannelToTeam.click();
+				await poFederationChannelServer1.tabs.searchForChannelOnAddChannelToTeam(channelName);
+				await expect(page.locator('div.rcx-option__content', { hasText: 'Empty' })).toBeVisible();
+				await page.reload();
+			});
+
+			test('expect the federated channels not to be shown as parent channels in the input to add rooms to the team on Server B', async ({
+				page,
+				browser,
+			}) => {
+				const pageForServer2 = await browser.newPage();
+				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
+				const channelName = faker.datatype.uuid();
+				const teamName = faker.datatype.uuid();
+
+				await doLogin({
+					page: pageForServer2,
+					server: {
+						url: constants.RC_SERVER_2.url,
+						username: userFromServer2UsernameOnly,
+						password: constants.RC_SERVER_2.password,
+					},
+					storeState: false,
+				});
+
+				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
+				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
+				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
+
+				await poFederationChannelServer2.createTeam(teamName);
+				await poFederationChannelServer2.tabs.btnTeam.click();
+				await poFederationChannelServer2.tabs.btnAddExistingChannelToTeam.click();
+				await poFederationChannelServer2.tabs.searchForChannelOnAddChannelToTeam(channelName);
+				await expect(pageForServer2.locator('div.rcx-option__content', { hasText: 'Empty' })).toBeVisible();
+				await page.reload();
+				await pageForServer2.close();
+			});
+		});
 	});
 });

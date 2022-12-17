@@ -1154,45 +1154,5 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await expect(poFederationChannelServer2.tabs.btnPruneMessages).not.toBeVisible();
 			});
 		});
-
-		test.describe('Channel mention', () => {
-			test('expect the channel show as a valid mention on Server A', async ({ page }) => {
-				const channelName = faker.datatype.uuid();
-
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
-				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
-
-				await page.locator('[name="msg"]').type(`#${channelName}`);
-				await page.waitForTimeout(2000);
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`text=${channelName}`)).toBeVisible();
-			});
-
-			test('expect the channel show as a valid mention on Server B', async ({ page, browser }) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-				const channelName = faker.datatype.uuid();
-
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				const fullUsernameFromServer2 = formatIntoFullMatrixUsername(userFromServer2UsernameOnly, constants.RC_SERVER_2.matrixServerName);
-				await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
-
-				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await pageForServer2.locator('[name="msg"]').type(`#${channelName}`);
-				await pageForServer2.waitForTimeout(2000);
-				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`text=${channelName}`)).toBeVisible();
-			});
-		});
 	});
 });
