@@ -48,6 +48,21 @@ export class FederationChannel {
 		await this.sidenav.btnCreateChannel.click();
 	}
 
+	async createDiscussionSearchingForChannel(channelName: string) {
+		await this.sidenav.openNewByLabel('Discussion');
+		await this.page.locator('//label[text()="Parent channel or group"]/following-sibling::span//input').focus();
+		await this.page.waitForTimeout(2000);
+		await this.page.locator('//label[text()="Parent channel or group"]/following-sibling::span//input').type(channelName);
+		await this.page.waitForTimeout(2000);
+	}
+
+	async createTeam(teamName: string) {
+		await this.sidenav.openNewByLabel('Team');
+		await this.page.locator('//label[text()="Name"]/following-sibling::span//input').type(teamName);
+		await this.page.waitForTimeout(2000);
+		await this.sidenav.btnCreateChannel.click();
+	}
+
 	async createPrivateGroupAndInviteUsersUsingCreationModal(channelName: string, usernamesToInvite: string[]) {
 		await this.sidenav.openNewByLabel('Channel');
 		await this.sidenav.checkboxFederatedChannel.click();
