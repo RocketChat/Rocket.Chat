@@ -35,6 +35,12 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 						{name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
+
+					{app.isEnterpriseOnly && (
+						<Tag title={t('Enterprise')} variant='featured'>
+							{t('Enterprise')}
+						</Tag>
+					)}
 				</Box>
 				{app?.shortDescription && <Box mbe='x16'>{app.shortDescription}</Box>}
 
