@@ -20,7 +20,7 @@ export class Spotlight {
 		});
 	}
 
-	searchRooms({ userId, text }) {
+	searchRooms({ userId, text, includeFederatedRooms = false }) {
 		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
 
 		const roomOptions = {
@@ -43,7 +43,7 @@ export class Spotlight {
 				return [];
 			}
 
-			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch());
+			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).fetch());
 		}
 
 		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
@@ -57,12 +57,15 @@ export class Spotlight {
 		})
 			.fetch()
 			.map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions);
+		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
-		return this.fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions).fetch());
+		return this.fetchRooms(
+			userId,
+			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).fetch(),
+		);
 	}
 
 	mapOutsiders(u) {

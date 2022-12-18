@@ -382,14 +382,8 @@ Template.messagePopupConfig.helpers({
 				const records = collection
 					.find(
 						{
-							$and: [
-								{
-									$or: [
-										{ federated: { $exists: false }, name: exp },
-										{ federated: true, fname: exp },
-									],
-								},
-							],
+							name: exp,
+							federated: { $exists: false },
 							t: {
 								$in: ['c', 'p'],
 							},
