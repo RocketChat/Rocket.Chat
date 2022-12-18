@@ -1451,7 +1451,7 @@ describe('LIVECHAT - rooms', function () {
 	describe('it should mark room as unread when a new message is sent', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
-		let totalMessagesSent = 2;
+		let totalMessagesSent = 0;
 		let departmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
 
 		before(async () => {
