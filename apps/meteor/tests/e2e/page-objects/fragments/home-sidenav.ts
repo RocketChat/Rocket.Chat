@@ -56,7 +56,6 @@ export class HomeSidenav {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
-		// await this.page.locator(`[data-qa="sidebar-item-title"]`).first().click();
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
