@@ -113,9 +113,9 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/is-enabled': {
+	'/apps/isEnabled': {
 		GET: () => {
-			result: boolean;
+			enabled: boolean;
 		};
 	};
 

@@ -887,11 +887,11 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			'is-enabled',
+			'isEnabled',
 			{ authRequired: true },
 			{
 				get() {
-					return API.v1.success({ result: orchestrator.isEnabled() });
+					return API.v1.success({ enabled: orchestrator.isEnabled() });
 				},
 			},
 		);

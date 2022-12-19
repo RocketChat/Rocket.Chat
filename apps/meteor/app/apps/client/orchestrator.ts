@@ -254,10 +254,10 @@ export const Apps = new AppClientOrchestrator();
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
 		try {
-			const { result } = await APIClient.get('/apps/is-enabled');
+			const { enabled } = await APIClient.get('/apps/isEnabled');
 
 			Apps.getAppClientManager().initialize();
-			Apps.load(result);
+			Apps.load(enabled);
 		} catch (error) {
 			Apps.handleError(error as Error);
 		}

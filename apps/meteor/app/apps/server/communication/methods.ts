@@ -52,7 +52,7 @@ export class AppMethods {
 
 		Meteor.methods({
 			'apps/is-enabled'() {
-				methodDeprecationLogger.warn('apps/is-enabled will be deprecated in future versions of Rocket.Chat');
+				methodDeprecationLogger.warn('apps/is-enabled is deprecated and will be removed in future versions of Rocket.Chat');
 
 				return instance.isEnabled();
 			},

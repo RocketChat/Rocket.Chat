@@ -12,7 +12,7 @@ import AppsProvider from './AppsProvider';
 const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const canManageApps = usePermission('manage-apps');
-	const isAppsEngineEnabled = useEndpoint('GET', '/apps/is-enabled');
+	const isAppsEngineEnabled = useEndpoint('GET', '/apps/isEnabled');
 	const appsWhatIsItRoute = useRoute('admin-apps-disabled');
 	const marketplaceRoute = useRoute('admin-marketplace');
 
@@ -34,7 +34,8 @@ const AppsRoute = (): ReactElement => {
 				return;
 			}
 
-			if (!(await isAppsEngineEnabled())) {
+			const { enabled } = await isAppsEngineEnabled();
+			if (!enabled) {
 				appsWhatIsItRoute.push();
 				return;
 			}

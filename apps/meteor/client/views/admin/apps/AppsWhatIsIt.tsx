@@ -16,13 +16,14 @@ const AppsWhatIsIt: FC = () => {
 
 	const appsRouter = useRoute('admin-marketplace');
 	const enableAppsEngine = useMethod('apps/go-enable');
-	const isAppsEngineEnabled = useEndpoint('GET', '/apps/is-enabled');
+	const isAppsEngineEnabled = useEndpoint('GET', '/apps/isEnabled');
 
 	const handleClick = async (): Promise<void> => {
 		setLoading(true);
 		try {
 			await enableAppsEngine();
-			if (await isAppsEngineEnabled()) {
+			const { enabled } = await isAppsEngineEnabled();
+			if (enabled) {
 				await Apps.getAppClientManager().initialize();
 				await Apps.load(true);
 			}
