@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { MouseEvent, ReactElement, ReactNode, RefObject, useCallback, useEffect, useRef } from 'react';
+import type { MouseEvent, ReactElement, ReactNode, RefObject } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 	useEffect(() => {
@@ -93,7 +94,7 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps): ReactElemen
 			inset={0}
 			display='flex'
 			flexDirection='column'
-			backgroundColor='neutral-800-50'
+			backgroundColor='neutral-900-65'
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
 		/>

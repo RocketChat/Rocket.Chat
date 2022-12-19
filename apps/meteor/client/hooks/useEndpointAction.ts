@@ -1,4 +1,4 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -22,7 +22,7 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 
 			return data;
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 	}, [dispatchToastMessage, params, sendData, successMessage]);

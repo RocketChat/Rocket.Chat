@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { UAParser } from 'ua-parser-js';
-import { ISocketConnection, IUser } from '@rocket.chat/core-typings';
+import type { ISocketConnection, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import * as Mailer from '../../../../app/mailer';
@@ -9,7 +9,7 @@ import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 import { hasLicense } from '../../../app/license/server/license';
-import { t } from '../../../../app/utils/server';
+import { t, getUserPreference } from '../../../../app/utils/server';
 
 let mailTemplates: string;
 
@@ -84,13 +84,20 @@ export const listenSessionLogin = async (): Promise<void> => {
 			}
 
 			try {
-				Mailer.send({
-					to: `${name} <${email}>`,
-					from: Accounts.emailTemplates.from,
-					subject: settings.get('Device_Management_Email_Subject'),
-					html: mailTemplates,
-					data: mailData,
-				});
+				const userReceiveLoginEmailPreference = settings.get('Device_Management_Allow_Login_Email_preference')
+					? getUserPreference(userId, 'receiveLoginDetectionEmail', true)
+					: true;
+				const shouldSendLoginEmail = settings.get('Device_Management_Enable_Login_Emails') && userReceiveLoginEmailPreference;
+
+				if (shouldSendLoginEmail) {
+					Mailer.send({
+						to: `${name} <${email}>`,
+						from: Accounts.emailTemplates.from,
+						subject: settings.get('Device_Management_Email_Subject'),
+						html: mailTemplates,
+						data: mailData,
+					});
+				}
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					method: 'listenSessionLogin',

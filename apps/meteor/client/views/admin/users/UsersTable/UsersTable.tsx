@@ -1,7 +1,8 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, MutableRefObject, useState, useEffect } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import {
@@ -133,6 +134,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination
+						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
 						count={value?.total || 0}

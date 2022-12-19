@@ -1,13 +1,14 @@
-import { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
+import InfoPanel from '../../../../../../client/components/InfoPanel';
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import UserAvatar from '../../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../../../client/hooks/usePresence';
-import InfoPanel from '../../../../../../client/views/InfoPanel';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {

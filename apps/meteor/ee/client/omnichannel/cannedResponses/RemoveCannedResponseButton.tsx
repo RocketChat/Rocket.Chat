@@ -1,7 +1,8 @@
 import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
 
@@ -36,7 +37,7 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, 
 				totalDataReload();
 				dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};

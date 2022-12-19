@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, ReactElement, useRef } from 'react';
+import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -19,6 +20,9 @@ const UsersPage = (): ReactElement => {
 	const seatsCap = useSeatsCap();
 	const reload = useRef(() => null);
 	const usersRoute = useRoute('admin-users');
+
+	const canCreateUser = usePermission('create-user');
+	const canBulkCreateUser = usePermission('bulk-register-user');
 
 	useEffect(() => {
 		if (!context || !seatsCap) {
@@ -55,12 +59,16 @@ const UsersPage = (): ReactElement => {
 						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
 					) : (
 						<ButtonGroup>
-							<Button onClick={handleNewUser}>
-								<Icon size='x20' name='user-plus' /> {t('New')}
-							</Button>
-							<Button onClick={handleInviteUser}>
-								<Icon size='x20' name='mail' /> {t('Invite')}
-							</Button>
+							{canCreateUser && (
+								<Button onClick={handleNewUser}>
+									<Icon size='x20' name='user-plus' /> {t('New')}
+								</Button>
+							)}
+							{canBulkCreateUser && (
+								<Button onClick={handleInviteUser}>
+									<Icon size='x20' name='mail' /> {t('Invite')}
+								</Button>
+							)}
 						</ButtonGroup>
 					)}
 				</Page.Header>
@@ -71,10 +79,12 @@ const UsersPage = (): ReactElement => {
 			{context && (
 				<VerticalBar>
 					<VerticalBar.Header>
-						{context === 'info' && t('User_Info')}
-						{context === 'edit' && t('Edit_User')}
-						{context === 'new' && t('Add_User')}
-						{context === 'invite' && t('Invite_Users')}
+						<VerticalBar.Text>
+							{context === 'info' && t('User_Info')}
+							{context === 'edit' && t('Edit_User')}
+							{context === 'new' && t('Add_User')}
+							{context === 'invite' && t('Invite_Users')}
+						</VerticalBar.Text>
 						<VerticalBar.Close onClick={handleCloseVerticalBar} />
 					</VerticalBar.Header>
 					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}

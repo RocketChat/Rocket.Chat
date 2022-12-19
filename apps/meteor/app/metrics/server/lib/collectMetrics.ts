@@ -80,6 +80,10 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
 
+	// Livechat stats
+	metrics.totalLivechatVisitors.set(statistics.totalLivechatVisitors);
+	metrics.totalLivechatAgents.set(statistics.totalLivechatAgents);
+
 	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
 
@@ -167,7 +171,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 		resetTimer = Meteor.setInterval(() => {
 			client.register.getMetricsAsArray().then((metrics) => {
 				metrics.forEach((metric) => {
-					// @ts-expect-error
+					// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
 					metric.hashMap = {};
 				});
 			});

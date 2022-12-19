@@ -1,8 +1,8 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
-import { IServiceClass } from '../../sdk/types/ServiceClass';
-import { NotificationsModule } from '../notifications/notifications.module';
+import type { IServiceClass } from '../../sdk/types/ServiceClass';
+import type { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings } from '../../sdk/index';
 import { settings } from '../../../app/settings/server/cached';
 
@@ -40,17 +40,19 @@ export class ListenersModule {
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),
 					emoticons: true,
-					katex: {
-						dollarSyntax: settings.get('Katex_Dollar_Syntax'),
-						parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
-					},
+					...(settings.get('Katex_Enabled') && {
+						katex: {
+							dollarSyntax: settings.get('Katex_Dollar_Syntax'),
+							parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
+						},
+					}),
 				});
 			}
 
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
-				_id: String(Date.now()),
+				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
 			});
@@ -128,6 +130,12 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
+		service.onEvent('message.update', ({ message }) => {
+			if (message.rid) {
+				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+			}
+		});
+
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;
@@ -167,6 +175,17 @@ export class ListenersModule {
 					type,
 					...inquiry,
 				});
+			}
+
+			// Don't do notifications for updating inquiries when the only thing changing is the queue metadata
+			if (
+				clientAction === 'updated' &&
+				diff?.hasOwnProperty('lockedAt') &&
+				diff?.hasOwnProperty('locked') &&
+				diff?.hasOwnProperty('_updatedAt') &&
+				Object.keys(diff).length === 3
+			) {
+				return;
 			}
 
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
@@ -333,6 +352,9 @@ export class ListenersModule {
 
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
+		});
+		service.onEvent('omnichannel.room', (roomId, data): void => {
+			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});
 	}
 }

@@ -1,10 +1,12 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
+import type { ReactElement, FormEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
-import { validate, createSoundData, soundDataType } from './lib';
+import type { soundDataType } from './lib';
+import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
 	goToNew: (where: string) => () => void;
@@ -12,7 +14,7 @@ type AddCustomSoundProps = {
 	onChange: () => void;
 };
 
-const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -79,7 +81,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 

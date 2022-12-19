@@ -1,11 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import mem from 'mem';
-import { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	ISubscription,
+	ISupportedLanguage,
+	ITranslatedMessage,
+	IUser,
+	MessageAttachmentDefault,
+} from '@rocket.chat/core-typings';
 
 import { Subscriptions, Messages } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { call } from '../../../../client/lib/utils/call';
 
 let userLanguage = 'en';
 let username = '';
@@ -25,7 +32,7 @@ export const AutoTranslate = {
 	initialized: false,
 	providersMetadata: {} as { [providerNamer: string]: { name: string; displayName: string } },
 	messageIdsToWait: {} as { [messageId: string]: string },
-	supportedLanguages: [] as ISupportedLanguage[],
+	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
 	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 
@@ -36,7 +43,7 @@ export const AutoTranslate = {
 		}
 		const language = (subscription?.autoTranslateLanguage || userLanguage || window.defaultUserLanguage?.()) as string;
 		if (language.indexOf('-') !== -1) {
-			if (!this.supportedLanguages.some((supportedLanguage) => supportedLanguage.language === language)) {
+			if (!(this.supportedLanguages || []).some((supportedLanguage) => supportedLanguage.language === language)) {
 				return language.slice(0, 2);
 			}
 		}
@@ -93,10 +100,15 @@ export const AutoTranslate = {
 
 			c.stop();
 
-			[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-				callWithErrorHandling('autoTranslate.getProviderUiMetadata'),
-				callWithErrorHandling('autoTranslate.getSupportedLanguages', 'en'),
-			]);
+			try {
+				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
+					call('autoTranslate.getProviderUiMetadata'),
+					call('autoTranslate.getSupportedLanguages', 'en'),
+				]);
+			} catch (e: unknown) {
+				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
+				console.error((e as Error).message);
+			}
 		});
 
 		Subscriptions.find().observeChanges({

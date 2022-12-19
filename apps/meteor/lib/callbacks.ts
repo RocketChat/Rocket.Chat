@@ -1,4 +1,4 @@
-import Url from 'url';
+import type Url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
@@ -20,7 +20,8 @@ import type {
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
-import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import { compareByRanking } from './utils/comparisons';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -65,8 +66,14 @@ type EventLikeCallbackSignatures = {
 	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
 	'beforeCreateDirectRoom': (members: IUser[]) => void;
 	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
+	'afterSetReaction': (message: IMessage, { user, reaction }: { user: IUser; reaction: string; shouldReact: boolean }) => void;
+	'afterUnsetReaction': (
+		message: IMessage,
+		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
+	) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
+	'usernameSet': () => void;
 };
 
 /**
@@ -358,8 +365,7 @@ class Callbacks {
 				stack: new Error().stack,
 			}),
 		);
-		const rank = (callback: Callback): number => callback.priority ?? this.priority.MEDIUM;
-		callbacks.sort((a, b) => rank(a) - rank(b));
+		callbacks.sort(compareByRanking((callback: Callback): number => callback.priority ?? this.priority.MEDIUM));
 
 		this.setCallbacks(hook, callbacks);
 	}

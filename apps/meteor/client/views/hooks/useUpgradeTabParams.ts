@@ -1,29 +1,23 @@
-import { useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { format } from 'date-fns';
-import { useQuery } from 'react-query';
 
-import { UpgradeTabVariant, getUpgradeTabType } from '../../../lib/getUpgradeTabType';
+import type { UpgradeTabVariant } from '../../../lib/upgradeTab';
+import { getUpgradeTabType } from '../../../lib/upgradeTab';
+import { useLicense } from '../../hooks/useLicense';
+import { useRegistrationStatus } from '../../hooks/useRegistrationStatus';
 
 export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; trialEndDate: string | undefined; isLoading: boolean } => {
-	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
-	const getLicenses = useEndpoint('GET', '/v1/licenses.get');
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
-	const { data: registrationStatusData } = useQuery(['registrationStatus'], () => getRegistrationStatus());
-	const { data: getValidLicensesData, isSuccess } = useQuery(['licenses'], () => getLicenses(), {
-		enabled: !!registrationStatusData,
-	});
+	const { data: licensesData, isSuccess: isSuccessLicense } = useLicense();
+	const { data: registrationStatusData, isSuccess: isSuccessRegistrationStatus } = useRegistrationStatus();
 
-	const { registrationStatus } = registrationStatusData ?? {};
-	const { licenses } = getValidLicensesData ?? {};
-
-	const registered = registrationStatus?.workspaceRegistered ?? false;
-	const hasValidLicense = (licenses?.length ?? 0) > 0;
+	const registered = registrationStatusData?.registrationStatus?.workspaceRegistered ?? false;
+	const hasValidLicense = (licensesData?.licenses?.length ?? 0) > 0;
 	const hadExpiredTrials = cloudWorkspaceHadTrial ?? false;
 
-	const trialLicense = licenses?.find(({ meta }) => meta?.trial);
-	const isTrial = licenses?.every(({ meta }) => meta?.trial) ?? false;
-	const hasGoldLicense = licenses?.some(({ tag }) => tag?.name === 'Gold') ?? false;
+	const trialLicense = licensesData?.licenses?.find(({ meta }) => meta?.trial);
+	const isTrial = licensesData?.licenses?.every(({ meta }) => meta?.trial) ?? false;
 	const trialEndDate = trialLicense?.meta ? format(new Date(trialLicense.meta.trialEnd), 'yyyy-MM-dd') : undefined;
 
 	const upgradeTabType = getUpgradeTabType({
@@ -31,8 +25,7 @@ export const useUpgradeTabParams = (): { tabType: UpgradeTabVariant | false; tri
 		hasValidLicense,
 		hadExpiredTrials,
 		isTrial,
-		hasGoldLicense,
 	});
 
-	return { tabType: upgradeTabType, trialEndDate, isLoading: !isSuccess };
+	return { tabType: upgradeTabType, trialEndDate, isLoading: !isSuccessLicense && !isSuccessRegistrationStatus };
 };

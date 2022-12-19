@@ -310,3 +310,10 @@
 		}
 	}
 }
+
+.message-popup .rcx-message-attachment {
+	overflow-y: auto !important;
+
+	max-width: 100% !important;
+	max-height: 200px !important;
+}

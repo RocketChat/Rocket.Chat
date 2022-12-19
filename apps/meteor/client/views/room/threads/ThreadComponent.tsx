@@ -1,23 +1,28 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useUserId, useUserSubscription, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo, useContext } from 'react';
 
 import { ChatMessage } from '../../../../app/models/client';
 import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
-import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import MessageHighlightContext from '../MessageList/contexts/MessageHighlightContext';
+import { ChatContext } from '../contexts/ChatContext';
+import { MessageContext } from '../contexts/MessageContext';
+import { useTabBarOpenUserInfo } from '../contexts/ToolboxContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 
 const subscriptionFields = {};
 
-const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
+const useThreadMessage = (tmid: string): IMessage | undefined => {
+	const [message, setMessage] = useState<IMessage | undefined>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
 		async (params) => {
@@ -62,7 +67,7 @@ const ThreadComponent: FC<{
 	const channelRoute = useRoute(roomCoordinator.getRoomTypeConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
-	const openUserInfo = useTabBarOpenUserInfo();
+	const openRoomInfo = useTabBarOpenUserInfo();
 
 	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
@@ -72,8 +77,8 @@ const ThreadComponent: FC<{
 	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const followMessage = useMethod('followMessage');
-	const unfollowMessage = useMethod('unfollowMessage');
+	const followMessage = useEndpoint('POST', '/v1/chat.followMessage');
+	const unfollowMessage = useEndpoint('POST', '/v1/chat.unfollowMessage');
 
 	const setFollowing = useCallback<(following: boolean) => void>(
 		async (following) => {
@@ -84,10 +89,10 @@ const ThreadComponent: FC<{
 				}
 
 				await unfollowMessage({ mid });
-			} catch (error) {
+			} catch (error: unknown) {
 				dispatchToastMessage({
 					type: 'error',
-					message: error instanceof Error ? error : String(error),
+					message: error,
 				});
 			}
 		},
@@ -98,13 +103,25 @@ const ThreadComponent: FC<{
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
+	const chatContext = useContext(ChatContext);
+	const messageContext = useContext(MessageContext);
+
+	const messageHighlightContext = useContext(MessageHighlightContext);
+	const { current: messageHighlightContextReactiveVar } = useRef(new ReactiveVar(messageHighlightContext));
+	useEffect(() => {
+		messageHighlightContextReactiveVar.set(messageHighlightContext);
+	}, [messageHighlightContext, messageHighlightContextReactiveVar]);
+
 	const [viewData, setViewData] = useState(() => ({
 		mainMessage: threadMessage,
 		jump,
 		following,
 		subscription,
 		rid: room._id,
-		tabBar: { openUserInfo },
+		tabBar: { openRoomInfo },
+		chatContext,
+		messageContext,
+		messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 	}));
 
 	useEffect(() => {
@@ -119,10 +136,23 @@ const ThreadComponent: FC<{
 				following,
 				subscription,
 				rid: room._id,
-				tabBar: { openUserInfo },
+				tabBar: { openRoomInfo },
+				chatContext,
+				messageContext,
+				messageHighlightContext: () => messageHighlightContextReactiveVar.get(),
 			};
 		});
-	}, [following, jump, openUserInfo, room._id, subscription, threadMessage]);
+	}, [
+		chatContext,
+		following,
+		jump,
+		messageContext,
+		messageHighlightContextReactiveVar,
+		openRoomInfo,
+		room._id,
+		subscription,
+		threadMessage,
+	]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

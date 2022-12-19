@@ -6,7 +6,6 @@ import { Button } from '.';
 import { avatarResolver, centered } from '../../helpers.stories';
 import ChatIcon from '../../icons/chat.svg';
 
-
 const defaultSrc = avatarResolver('guilherme.gazzo');
 
 const defaultText = 'Powered by Rocket.Chat';

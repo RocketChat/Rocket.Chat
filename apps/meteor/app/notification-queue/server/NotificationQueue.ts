@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
 
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
@@ -45,8 +44,8 @@ class NotificationClass {
 		setTimeout(() => {
 			try {
 				this.worker();
-			} catch (e) {
-				SystemLogger.error('Error sending notification', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
 			}
 		}, this.cyclePause);

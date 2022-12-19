@@ -1,7 +1,8 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { TooltipComponent } from '@rocket.chat/ui-client';
 import { TooltipContext } from '@rocket.chat/ui-contexts';
-import React, { FC, useEffect, useState, useMemo, ReactNode, useRef, memo } from 'react';
+import type { FC, ReactNode } from 'react';
+import React, { useEffect, useState, useMemo, useRef, memo } from 'react';
 
 import TooltipPortal from '../components/TooltipPortal';
 
@@ -47,7 +48,10 @@ const TooltipProvider: FC = ({ children }) => {
 			setTooltip(null);
 		};
 
-		const handleClick = (): void => setTooltip(null);
+		const handleClick = (): void => {
+			setTooltip(null);
+			clearTimeout(timeout);
+		};
 
 		document.body.addEventListener('mouseover', handleMouseOver);
 		document.body.addEventListener('click', handleClick);

@@ -287,7 +287,7 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
@@ -455,13 +455,10 @@ API.v1.addRoute(
 				projection: fields,
 			});
 
-			const [channels, total] = await Promise.all([
-				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels,
+				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 				count: channels.length,
 				offset,
 				total,
@@ -492,13 +489,10 @@ API.v1.addRoute(
 				projection: fields,
 			});
 
-			const [channels, total] = await Promise.all([
-				cursor.map((room) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels,
+				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
 				count: channels.length,
 				total,

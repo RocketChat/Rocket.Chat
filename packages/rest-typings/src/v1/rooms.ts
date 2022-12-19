@@ -393,21 +393,25 @@ export type RoomsEndpoints = {
 			items: IRoom[];
 		};
 	};
+
 	'/v1/rooms.autocomplete.channelAndPrivate.withPagination': {
 		GET: (params: RoomsAutocompleteChannelAndPrivateWithPaginationProps) => PaginatedResult<{
 			items: IRoom[];
 		}>;
 	};
+
 	'/v1/rooms.autocomplete.availableForTeams': {
 		GET: (params: RoomsAutocompleteAvailableForTeamsProps) => {
 			items: IRoom[];
 		};
 	};
+
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom;
 		};
 	};
+
 	'/v1/rooms.cleanHistory': {
 		POST: (params: {
 			roomId: IRoom['_id'];
@@ -422,34 +426,41 @@ export type RoomsEndpoints = {
 			ignoreThreads?: boolean;
 		}) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
+
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
 			discussion: IRoom;
 		};
 	};
+
 	'/v1/rooms.export': {
 		POST: (params: RoomsExportProps) => {
 			missing?: [];
 			success: boolean;
 		};
 	};
+
 	'/v1/rooms.adminRooms': {
 		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
 	};
+
 	'/v1/rooms.adminRooms.getRoom': {
 		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType>;
 	};
+
 	'/v1/rooms.saveRoomSettings': {
 		POST: (params: RoomsSaveRoomSettingsProps) => {
 			success: boolean;
 			rid: string;
 		};
 	};
+
 	'/v1/rooms.changeArchivationState': {
 		POST: (params: RoomsChangeArchivationStateProps) => {
 			success: boolean;
 		};
 	};
+
 	'/v1/rooms.upload/:rid': {
 		POST: (params: {
 			file: File;
@@ -462,6 +473,7 @@ export type RoomsEndpoints = {
 			tmid?: string;
 		}) => { message: IMessage };
 	};
+
 	'/v1/rooms.saveNotification': {
 		POST: (params: {
 			roomId: string;
@@ -477,5 +489,29 @@ export type RoomsEndpoints = {
 		}) => {
 			success: boolean;
 		};
+	};
+
+	'/v1/rooms.favorite': {
+		POST: (
+			params:
+				| {
+						roomId: string;
+						favorite: boolean;
+				  }
+				| {
+						roomName: string;
+						favorite: boolean;
+				  },
+		) => void;
+	};
+
+	'/v1/rooms.nameExists': {
+		GET: (params: { roomName: string }) => {
+			exists: boolean;
+		};
+	};
+
+	'/v1/rooms.delete': {
+		POST: (params: { roomId: string }) => void;
 	};
 };

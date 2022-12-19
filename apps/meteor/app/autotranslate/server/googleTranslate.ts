@@ -5,7 +5,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import {
+import type {
 	IMessage,
 	IProviderMetadata,
 	ISupportedLanguage,
@@ -161,8 +161,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 					const txt = result.data.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
 		});
 		return translations;
@@ -206,8 +206,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 						.map((translation: IGoogleTranslation) => translation.translatedText)
 						.join('\n');
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
 		});
 		return translations;

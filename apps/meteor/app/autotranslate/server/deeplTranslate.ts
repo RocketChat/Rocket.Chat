@@ -5,7 +5,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import {
+import type {
 	IMessage,
 	IDeepLTranslation,
 	MessageAttachment,
@@ -231,8 +231,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 						.join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
 		});
 		return translations;
@@ -272,8 +272,8 @@ class DeeplAutoTranslate extends AutoTranslate {
 						translations[language] = result.data.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message attachment', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message attachment', err });
 			}
 		});
 		return translations;

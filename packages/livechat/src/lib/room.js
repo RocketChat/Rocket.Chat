@@ -35,7 +35,9 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 };
 
 const getVideoConfMessageData = (message) =>
-	message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+	message.blocks
+		?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message) => {
 	if (message.t === constants.webRTCCallStartedMessageType) {
@@ -211,7 +213,12 @@ Livechat.onMessage(async (message) => {
 	message = transformAgentInformationOnMessage(message);
 
 	await store.setState({
-		messages: upsert(store.state.messages, message, ({ _id }) => _id === message._id, ({ ts }) => ts),
+		messages: upsert(
+			store.state.messages,
+			message,
+			({ _id }) => _id === message._id,
+			({ ts }) => ts,
+		),
 	});
 
 	await processMessage(message);
@@ -247,11 +254,6 @@ export const loadMessages = async () => {
 
 	await initRoom();
 	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
-
-	if (messages && messages.length) {
-		const lastMessage = messages[messages.length - 1];
-		await store.setState({ lastReadMessageId: lastMessage && lastMessage._id });
-	}
 
 	if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
 		return;
@@ -297,7 +299,8 @@ export const loadMessages = async () => {
 };
 
 export const loadMoreMessages = async () => {
-	const { room: { _id: rid } = {}, messages = [], noMoreMessages = false } = store.state;
+	const { room, messages = [], noMoreMessages = false } = store.state;
+	const { _id: rid } = room || {};
 
 	if (!rid || noMoreMessages) {
 		return;

@@ -1,20 +1,26 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { InMemoryQueue } from '../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
-import { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
-import { FederationRoomServiceSenderEE } from '../application/RoomServiceSender';
-import { IFederationBridgeEE } from '../domain/IFederationBridge';
+import type { InMemoryQueue } from '../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
+import type { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import { FederationDMRoomInternalHooksServiceSender } from '../application/sender/room/DMRoomInternalHooksServiceSender';
+import { FederationRoomInternalHooksServiceSender } from '../application/sender/room/RoomInternalHooksServiceSender';
+import { FederationRoomServiceSenderEE } from '../application/sender/room/RoomServiceSender';
+import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
-import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from './rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSender';
 import { FederationHooksEE } from './rocket-chat/hooks';
+import type { RocketChatMessageAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatFileAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
+import { RocketChatNotificationAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Notification';
 
 export class FederationFactoryEE {
 	public static buildRoomServiceSender(
 		rocketRoomAdapter: RocketChatRoomAdapterEE,
 		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		rocketNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
@@ -22,8 +28,44 @@ export class FederationFactoryEE {
 		return new FederationRoomServiceSenderEE(
 			rocketRoomAdapter,
 			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketMessageAdapter,
 			rocketSettingsAdapter,
 			rocketNotificationAdapter,
+			bridge,
+		);
+	}
+
+	public static buildRoomInternalHooksServiceSender(
+		rocketRoomAdapter: RocketChatRoomAdapterEE,
+		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		rocketMessageAdapter: RocketChatMessageAdapter,
+		bridge: IFederationBridgeEE,
+	): FederationRoomInternalHooksServiceSender {
+		return new FederationRoomInternalHooksServiceSender(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketSettingsAdapter,
+			rocketMessageAdapter,
+			bridge,
+		);
+	}
+
+	public static buildDMRoomInternalHooksServiceSender(
+		rocketRoomAdapter: RocketChatRoomAdapterEE,
+		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		bridge: IFederationBridgeEE,
+	): FederationDMRoomInternalHooksServiceSender {
+		return new FederationDMRoomInternalHooksServiceSender(
+			rocketRoomAdapter,
+			rocketUserAdapter,
+			rocketFileAdapter,
+			rocketSettingsAdapter,
 			bridge,
 		);
 	}
@@ -52,13 +94,17 @@ export class FederationFactoryEE {
 		return new RocketChatUserAdapterEE();
 	}
 
-	public static setupListeners(roomServiceSender: FederationRoomServiceSenderEE, settingsAdapter: RocketChatSettingsAdapter): void {
+	public static setupListeners(
+		roomInternalHooksServiceSender: FederationRoomInternalHooksServiceSender,
+		dmRoomInternalHooksServiceSender: FederationDMRoomInternalHooksServiceSender,
+		settingsAdapter: RocketChatSettingsAdapter,
+	): void {
 		const homeServerDomain = settingsAdapter.getHomeServerDomain();
 		FederationHooksEE.onFederatedRoomCreated(async (room: IRoom, owner: IUser, originalMemberList: string[]) =>
-			roomServiceSender.onRoomCreated(
+			roomInternalHooksServiceSender.onRoomCreated(
 				FederationRoomSenderConverterEE.toOnRoomCreationDto(
 					owner._id,
-					owner.username as string,
+					owner.username || '',
 					room._id,
 					originalMemberList,
 					homeServerDomain,
@@ -66,28 +112,30 @@ export class FederationFactoryEE {
 			),
 		);
 		FederationHooksEE.onUsersAddedToARoom(async (room: IRoom, owner: IUser, members: IUser[] | string[]) =>
-			roomServiceSender.onUsersAddedToARoom(
-				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(owner._id, owner.username as string, room._id, members, homeServerDomain),
+			roomInternalHooksServiceSender.onUsersAddedToARoom(
+				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(owner._id, owner.username || '', room._id, members, homeServerDomain),
 			),
 		);
 		FederationHooksEE.beforeDirectMessageRoomCreate(async (members: IUser[] | string[]) =>
-			roomServiceSender.beforeDirectMessageRoomCreation(
+			dmRoomInternalHooksServiceSender.beforeDirectMessageRoomCreation(
 				FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(members, homeServerDomain),
 			),
 		);
 		FederationHooksEE.onDirectMessageRoomCreated(async (room: IRoom, ownerId: IUser['_id'], members: IUser[] | string[]) =>
-			roomServiceSender.onDirectMessageRoomCreation(
+			dmRoomInternalHooksServiceSender.onDirectMessageRoomCreation(
 				FederationRoomSenderConverterEE.toOnDirectMessageCreatedDto(ownerId, room._id, members, homeServerDomain),
 			),
 		);
 		FederationHooksEE.beforeAddUserToARoom(async (user: IUser | string, room: IRoom) =>
-			roomServiceSender.beforeAddUserToARoom(FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], room, homeServerDomain)),
+			roomInternalHooksServiceSender.beforeAddUserToARoom(
+				FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], room, homeServerDomain),
+			),
 		);
 		FederationHooksEE.afterRoomNameChanged(async (roomId: string, roomName: string) =>
-			roomServiceSender.afterRoomNameChanged(roomId, roomName),
+			roomInternalHooksServiceSender.afterRoomNameChanged(roomId, roomName),
 		);
 		FederationHooksEE.afterRoomTopicChanged(async (roomId: string, roomTopic: string) =>
-			roomServiceSender.afterRoomTopicChanged(roomId, roomTopic),
+			roomInternalHooksServiceSender.afterRoomTopicChanged(roomId, roomTopic),
 		);
 	}
 

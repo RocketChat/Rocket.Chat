@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
-import Mail from 'nodemailer/lib/mailer';
+import type Mail from 'nodemailer/lib/mailer';
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
 
@@ -38,18 +38,23 @@ export async function configureEmailInboxes(): Promise<void> {
 				user: emailInboxRecord.imap.username,
 				host: emailInboxRecord.imap.server,
 				port: emailInboxRecord.imap.port,
-				tls: emailInboxRecord.imap.secure,
-				tlsOptions: {
-					rejectUnauthorized: false,
-				},
-				// debug: (...args: any[]): void => logger.debug(args),
+				...(emailInboxRecord.imap.secure
+					? {
+							tls: emailInboxRecord.imap.secure,
+							tlsOptions: {
+								rejectUnauthorized: false,
+							},
+					  }
+					: {}),
 			},
 			{
 				deleteAfterRead: false,
-				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
-				rejectBeforeTS: emailInboxRecord._updatedAt,
+				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._createdAt]],
+				rejectBeforeTS: emailInboxRecord._createdAt,
 				markSeen: true,
+				maxRetries: emailInboxRecord.imap.maxRetries,
 			},
+			emailInboxRecord._id,
 		);
 
 		imap.on(

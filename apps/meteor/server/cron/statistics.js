@@ -16,7 +16,7 @@ async function generateStatistics(logger) {
 
 	try {
 		const headers = {};
-		const token = getWorkspaceAccessToken();
+		const token = await getWorkspaceAccessToken();
 
 		if (token) {
 			headers.Authorization = `Bearer ${token}`;

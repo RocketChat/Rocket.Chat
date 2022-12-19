@@ -1,9 +1,9 @@
-import { ComponentType, PropsWithoutRef, ReactPortal } from 'react';
+import type { ComponentType, PropsWithoutRef, ReactPortal } from 'react';
 import { createPortal } from 'react-dom';
 
 import { createLazyElement } from './createLazyElement';
 
-export const createLazyPortal = <Props extends {} = {}>(
+export const createLazyPortal = <Props>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	getProps: () => PropsWithoutRef<Props> | undefined,
 	container: Element,

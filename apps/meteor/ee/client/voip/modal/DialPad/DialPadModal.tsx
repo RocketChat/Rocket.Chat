@@ -1,9 +1,12 @@
-import { Box, Field, Modal, IconButton } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import { Field, Modal, IconButton } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { DialInput } from './DialInput';
 import Pad from './Pad';
 import { useDialPad } from './hooks/useDialPad';
+import { useEnterKey } from './hooks/useEnterKey';
 
 type DialPadModalProps = {
 	initialValue?: string;
@@ -11,7 +14,13 @@ type DialPadModalProps = {
 	handleClose: () => void;
 };
 
-const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalProps): ReactElement => {
+const callButtonStyle = css`
+	> i {
+		font-size: 32px !important;
+	}
+`;
+
+const DialPadModal = ({ initialValue, errorMessage: initialErrorMessage, handleClose }: DialPadModalProps): ReactElement => {
 	const {
 		inputName,
 		inputRef,
@@ -22,17 +31,17 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 		handlePadButtonClick,
 		handlePadButtonLongPressed,
 		handleCallButtonClick,
-		handleSubmit,
-		onSubmit,
-	} = useDialPad({ initialValue, errorMessage });
+	} = useDialPad({ initialValue, initialErrorMessage });
+
+	useEnterKey(handleCallButtonClick, isButtonDisabled);
 
 	return (
-		<Modal maxWidth='400px'>
+		<Modal width='432px'>
 			<Modal.Header>
 				<Modal.Title />
 				<Modal.Close onClick={handleClose} />
 			</Modal.Header>
-			<Modal.Content is='form' onSubmit={handleSubmit(onSubmit)} display='flex' justifyContent='center' flexDirection='column'>
+			<Modal.Content display='flex' justifyContent='center' flexDirection='column'>
 				<Field>
 					<DialInput
 						ref={inputRef}
@@ -42,27 +51,26 @@ const DialPadModal = ({ initialValue, errorMessage, handleClose }: DialPadModalP
 						isButtonDisabled={isButtonDisabled}
 						handleOnChange={handleOnChange}
 					/>
-					<Field.Error h='20px' textAlign='center'>
+					<Field.Error fontSize='12px' h='16px' textAlign='center'>
 						{inputError}
 					</Field.Error>
 				</Field>
 				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
 			</Modal.Content>
-			<Modal.Footer>
-				<Box display='flex' justifyContent='center'>
-					<IconButton
-						icon='phone'
-						disabled={isButtonDisabled}
-						borderRadius='full'
-						secondary
-						info
-						size='64px'
-						onClick={(): void => {
-							handleCallButtonClick();
-							handleClose();
-						}}
-					/>
-				</Box>
+			<Modal.Footer justifyContent='center'>
+				<IconButton
+					className={callButtonStyle}
+					icon='phone'
+					disabled={isButtonDisabled}
+					borderRadius='full'
+					secondary
+					info
+					size='64px'
+					onClick={(): void => {
+						handleCallButtonClick();
+						handleClose();
+					}}
+				/>
 			</Modal.Footer>
 		</Modal>
 	);

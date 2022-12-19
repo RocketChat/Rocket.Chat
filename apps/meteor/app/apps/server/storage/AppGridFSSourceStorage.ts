@@ -1,6 +1,8 @@
 import { MongoInternals } from 'meteor/mongo';
-import { GridFSBucket, GridFSBucketWriteStream, ObjectId } from 'mongodb';
-import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { GridFSBucketWriteStream } from 'mongodb';
+import { ObjectId, GridFSBucket } from 'mongodb';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
 
 import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 
@@ -12,7 +14,6 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	constructor() {
 		super();
 
-		const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 		this.bucket = new GridFSBucket(db, {
@@ -61,7 +62,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		return new Promise((resolve, reject) => {
 			this.bucket.delete(this.itemToObjectId(item), (error) => {
 				if (error) {
-					if (error.message.includes('FileNotFound: no file with id')) {
+					if (error.message.includes('File not found for id')) {
 						console.warn(
 							`This instance could not remove the ${item.info.name} app package. If you are running Rocket.Chat in a cluster with multiple instances, possibly other instance removed the package. If this is not the case, it is possible that the file in the database got renamed or removed manually.`,
 						);

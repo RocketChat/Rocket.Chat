@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useMemo, useEffect, ReactElement, SyntheticEvent } from 'react';
+import type { ReactElement, SyntheticEvent } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
@@ -52,7 +53,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				try {
 					soundId = await insertOrUpdateSound(soundData);
 				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 
 				soundData._id = soundId;
@@ -68,7 +69,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 							uploadCustomSound(reader.result, sound.type, soundData);
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: String(error) });
+							dispatchToastMessage({ type: 'error', message: error });
 						}
 					};
 				}
@@ -105,7 +106,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</GenericModal>
 				));
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				onChange();
 			}
 		};

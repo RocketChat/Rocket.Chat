@@ -1,7 +1,8 @@
 import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, forwardRef, ReactNode, ReactElement, Key, useMemo, Ref } from 'react';
+import type { ReactNode, ReactElement, Key, Ref } from 'react';
+import React, { useState, useEffect, forwardRef, useMemo } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import { GenericTable as GenericTableV2 } from './V2/GenericTable';
@@ -15,11 +16,11 @@ const defaultSetParamsValue = (): void => undefined;
 
 export type GenericTableParams = {
 	text?: string;
-	current?: number;
-	itemsPerPage?: 25 | 50 | 100;
+	current: number;
+	itemsPerPage: 25 | 50 | 100;
 };
 
-type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps extends { _id?: Key }> = {
+type GenericTableProps<FilterProps extends { onChange?: (params: GenericTableParams) => void }, ResultProps> = {
 	fixed?: boolean;
 	header?: ReactNode;
 	params?: GenericTableParams;
@@ -34,7 +35,7 @@ type GenericTableProps<FilterProps extends { onChange?: (params: GenericTablePar
 
 const GenericTable = forwardRef(function GenericTable<
 	FilterProps extends { onChange?: (params: GenericTableParams) => void },
-	ResultProps extends { _id?: Key },
+	ResultProps extends { _id?: Key } | object,
 >(
 	{
 		children,
@@ -43,7 +44,7 @@ const GenericTable = forwardRef(function GenericTable<
 		params: paramsDefault = defaultParamsValue,
 		setParams = defaultSetParamsValue,
 		renderFilter,
-		renderRow: RenderRow,
+		renderRow: RenderRowComponent,
 		results,
 		total,
 		pagination = true,
@@ -73,7 +74,7 @@ const GenericTable = forwardRef(function GenericTable<
 				? renderFilter({ ...props, onChange: setFilter } as any) // TODO: ugh
 				: null}
 			{results && !results.length ? (
-				<Tile fontScale='p2' elevation='0' color='info' textAlign='center'>
+				<Tile fontScale='p2' elevation='0' color='hint' textAlign='center'>
 					{t('No_data_found')}
 				</Tile>
 			) : (
@@ -83,7 +84,8 @@ const GenericTable = forwardRef(function GenericTable<
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={headerCells} />}
 							{!isLoading &&
-								((RenderRow && results?.map((props, index: number) => <RenderRow key={props._id || index} {...props} />)) ||
+								((RenderRowComponent &&
+									results?.map((props, index) => <RenderRowComponent key={'_id' in props ? props._id : index} {...props} />)) ||
 									(children && results?.map(children)))}
 						</GenericTableBody>
 					</GenericTableV2>

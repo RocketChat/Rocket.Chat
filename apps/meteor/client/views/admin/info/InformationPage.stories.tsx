@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import InformationPage from './InformationPage';
@@ -155,6 +155,7 @@ export default {
 				lockedAt: '',
 			},
 			instanceCount: 0,
+			msEnabled: false,
 			oplogEnabled: false,
 			mongoVersion: '',
 			mongoStorageEngine: '',
@@ -192,7 +193,7 @@ export default {
 			uniqueOSOfLastWeek: { data: [], day: 0, month: 0, year: 0 },
 			uniqueOSOfLastMonth: { data: [], day: 0, month: 0, year: 0 },
 			apps: {
-				engineVersion: 0,
+				engineVersion: 'x.y.z',
 				enabled: false,
 				totalInstalled: 0,
 				totalActive: 0,
@@ -286,8 +287,10 @@ export default {
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
 			totalWebRTCCalls: 0,
-			matrixBridgeEnabled: false,
 			uncaughtExceptionsCount: 0,
+			matrixFederation: {
+				enabled: false,
+			},
 		},
 		instances: [],
 	},

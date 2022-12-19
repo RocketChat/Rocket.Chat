@@ -12,12 +12,11 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Avatars, UserDataFiles, Uploads } from '@rocket.chat/models';
+import { Avatars, UserDataFiles, Uploads, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
-import Settings from '../../../models/server/models/Settings';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
@@ -32,11 +31,11 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.watch('FileUpload_MaxFileSize', function (value) {
+settings.watch('FileUpload_MaxFileSize', async function (value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 	}
 });
 
@@ -293,6 +292,10 @@ export const FileUpload = {
 		return result;
 	},
 
+	async extractMetadata(file) {
+		return sharp(FileUpload.getBufferSync(file)).metadata();
+	},
+
 	createImageThumbnail(file) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
@@ -324,6 +327,8 @@ export const FileUpload = {
 			name: `thumb-${file.name}`,
 			size: buffer.length,
 			type: file.type,
+			originalFileId: file._id,
+			typeGroup: 'thumb',
 			rid,
 			userId,
 		};

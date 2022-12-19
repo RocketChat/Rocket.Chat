@@ -1,9 +1,10 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
-import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import UserAvatarButton from './UserAvatarButton';
+import Administration from './actions/Administration';
 import CreateRoom from './actions/CreateRoom';
 import Directory from './actions/Directory';
 import Home from './actions/Home';
@@ -14,7 +15,6 @@ import Sort from './actions/Sort';
 const HeaderWithData = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
-	useSidebarPaletteColor();
 
 	return (
 		<>
@@ -28,6 +28,7 @@ const HeaderWithData = (): ReactElement => {
 							<Directory title={t('Directory')} />
 							<Sort title={t('Display')} />
 							<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
+							<Administration title={t('Administration')} />
 						</>
 					)}
 					{!user && <Login title={t('Login')} />}

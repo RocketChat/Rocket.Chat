@@ -3,12 +3,13 @@ import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { ITranslatedMessage, MessageAttachment, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
 
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
 
 const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
@@ -83,16 +84,7 @@ callbacks.add(
 				msg.attachments.splice(index, 1);
 			}
 
-			msg.attachments.push({
-				text: jumpToMessage.msg,
-				translations: jumpToMessage.translations,
-				author_name: jumpToMessage.alias || jumpToMessage.u.username,
-				author_icon: getUserAvatarURL(jumpToMessage.u.username),
-				message_link: item.url,
-				// @ts-expect-error
-				attachments: jumpToMessage.attachments || [],
-				ts: jumpToMessage.ts,
-			});
+			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
 			item.ignoreParse = true;
 		});
 

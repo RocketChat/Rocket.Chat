@@ -1,7 +1,8 @@
-import { ReadPreference, Db, ReadPreferenceLike } from 'mongodb';
+import type { Db, ReadPreferenceLike } from 'mongodb';
+import { ReadPreference } from 'mongodb';
 
-export function readSecondaryPreferred(db: Db, tags: any[] = []): ReadPreferenceLike {
-	const { readPreference } = db.options || {};
+export function readSecondaryPreferred(db?: Db, tags: any[] = []): ReadPreferenceLike {
+	const { readPreference } = db?.options || {};
 
 	if (tags.length) {
 		return new ReadPreference(ReadPreference.SECONDARY_PREFERRED, tags);

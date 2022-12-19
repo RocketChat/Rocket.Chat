@@ -1,8 +1,9 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
@@ -137,12 +138,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!canCreate} onClick={create}>
 						{t('Create')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

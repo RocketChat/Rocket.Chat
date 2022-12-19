@@ -1,24 +1,25 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import React, { useEffect, useMemo, useCallback, ReactElement } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
-import { OtrRoomState } from '../../../../../app/otr/client/OtrRoomState';
-import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
+import ORTInstance from '../../../../../app/otr/client/OTR';
+import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { usePresence } from '../../../../hooks/usePresence';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import OTR from './OTR';
 
 const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const closeTabBar = useTabBarClose();
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
-	const otrState = useReactiveValue(useCallback(() => (otr ? otr.state.get() : OtrRoomState.ERROR), [otr]));
-	const peerUserPresence = usePresence(otr.peerId);
+	const otrState = useReactiveValue(useCallback(() => (otr ? otr.getState() : OtrRoomState.ERROR), [otr]));
+	const peerUserPresence = usePresence(otr?.getPeerId());
 	const userStatus = peerUserPresence?.status;
 	const peerUsername = peerUserPresence?.username;
 	const isOnline = !['offline', 'loading'].includes(userStatus || '');
 
 	const handleStart = (): void => {
-		otr.handshake();
+		otr?.handshake();
 	};
 
 	const handleEnd = (): void => {
@@ -26,8 +27,8 @@ const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	};
 
 	const handleReset = (): void => {
-		otr.reset();
-		otr.handshake(true);
+		otr?.reset();
+		otr?.handshake(true);
 	};
 
 	useEffect(() => {
@@ -36,7 +37,7 @@ const OTRWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		}
 
 		const timeout = setTimeout(() => {
-			otr.state.set(OtrRoomState.TIMEOUT);
+			otr?.setState(OtrRoomState.TIMEOUT);
 		}, 10000);
 
 		return (): void => {

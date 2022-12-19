@@ -1,27 +1,23 @@
 declare module 'meteor/rocketchat:streamer' {
+	import type { Subscription } from 'meteor/meteor';
+
 	type Connection = any;
 
-	type Client = {
-		meteorClient: boolean;
-		ws: any;
-		userId?: string;
-		send: Function;
-	};
-
-	interface IPublication {
-		onStop: Function;
-		stop: Function;
+	interface IPublication extends Subscription {
 		connection: Connection;
 		_session: {
 			sendAdded(publicationName: string, id: string, fields: Record<string, any>): void;
 			userId?: string;
 			socket?: {
-				send: Function;
+				send: (payload: string) => void;
 			};
 		};
-		ready: Function;
-		userId: string | undefined;
-		client: Client;
+		client: {
+			meteorClient: boolean;
+			ws: any;
+			userId?: string;
+			send: (payload: string) => void;
+		};
 	}
 
 	type Rule = (this: IPublication, eventName: string, ...args: any) => Promise<boolean | object>;
@@ -63,6 +59,8 @@ declare module 'meteor/rocketchat:streamer' {
 		removeSubscription(subscription: DDPSubscription, eventName: string): void;
 
 		removeListener(event: string, fn: (...data: any[]) => void): void;
+
+		removeAllListeners(event: string): void;
 
 		__emit(...data: any[]): void;
 

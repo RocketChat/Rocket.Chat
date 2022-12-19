@@ -1,5 +1,6 @@
 import { Box, Accordion, Icon, FieldGroup } from '@rocket.chat/fuselage';
-import React, { ComponentProps, memo, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 type NotificationByDeviceProps = {
 	device: string;
@@ -17,6 +18,7 @@ export const NotificationByDevice = ({ device, icon, children }: NotificationByD
 				</Box>
 			</Box>
 		}
+		data-qa-id={`${device}-notifications`}
 	>
 		<FieldGroup>{children}</FieldGroup>
 	</Accordion.Item>

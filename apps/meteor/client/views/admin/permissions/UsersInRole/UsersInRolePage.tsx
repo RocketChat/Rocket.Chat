@@ -1,25 +1,34 @@
-import { IRole } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useRef } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import Page from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
-import UserAutoComplete from '../../../../components/UserAutoComplete';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
-	const [user, setUser] = useState<string>('');
-	const [rid, setRid] = useState<string>('');
-	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const {
+		control,
+		handleSubmit,
+		formState: { isDirty },
+		reset,
+		getValues,
+	} = useForm<{ rid?: IRoom['_id']; users: IUser['username'][] }>({ defaultValues: { users: [] } });
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
 	const addUser = useEndpoint('POST', '/v1/roles.addUserToRole');
+
+	const rid = getValues('rid');
 
 	const handleReturn = useMutableCallback(() => {
 		router.push({
@@ -28,34 +37,22 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async () => {
-		if (!user) {
-			return setUserError(t('User_cant_be_empty'));
-		}
-
+	const handleAdd = useMutableCallback(async ({ users, rid }: { users: IUser['username'][]; rid?: IRoom['_id'] }) => {
 		try {
-			await addUser({ roleId: _id, username: user, roomId: rid });
-			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser('');
-			reload.current?.();
+			await Promise.all(
+				users.map(async (user) => {
+					if (user) {
+						await addUser({ roleName: _id, username: user, roomId: rid });
+					}
+				}),
+			);
+			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			reload.current();
+			reset();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
-
-	const handleUserChange = useMutableCallback((user) => {
-		if (user !== '') {
-			setUserError(undefined);
-		}
-
-		return setUser(user);
-	});
-
-	const handleChange = (value: unknown): void => {
-		if (typeof value === 'string') {
-			setRid(value);
-		}
-	};
 
 	return (
 		<Page>
@@ -71,22 +68,45 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 							<Field mbe='x4'>
 								<Field.Label>{t('Choose_a_room')}</Field.Label>
 								<Field.Row>
-									<RoomAutoComplete value={rid} onChange={handleChange} placeholder={t('User')} />
+									<Controller
+										control={control}
+										name='rid'
+										render={({ field: { onChange, value } }): ReactElement => (
+											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
+										)}
+									/>
 								</Field.Row>
 							</Field>
 						)}
 						<Field>
-							<Field.Label>{t('Add_user')}</Field.Label>
+							<Field.Label>{t('Add_users')}</Field.Label>
 							<Field.Row>
-								<UserAutoComplete value={user} onChange={handleUserChange} placeholder={t('User')} />
+								<Controller
+									control={control}
+									name='users'
+									render={({ field: { onChange, value } }): ReactElement => (
+										<UserAutoCompleteMultiple
+											value={value}
+											placeholder={t('User')}
+											onChange={(member, action): void => {
+												if (!action && value) {
+													if (value.includes(member)) {
+														return;
+													}
+													return onChange([...value, member]);
+												}
 
+												onChange(value?.filter((current) => current !== member));
+											}}
+										/>
+									)}
+								/>
 								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleAdd}>
+									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
 							</Field.Row>
-							<Field.Error>{userError}</Field.Error>
 						</Field>
 					</Margins>
 				</Box>

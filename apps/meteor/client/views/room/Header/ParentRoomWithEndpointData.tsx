@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactElement, useMemo } from 'react';
+import { Header } from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import Header from '../../../components/Header';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import ParentRoom from './ParentRoom';
 
 type ParentRoomWithEndpointDataProps = {
@@ -11,20 +11,17 @@ type ParentRoomWithEndpointDataProps = {
 };
 
 const ParentRoomWithEndpointData = ({ rid }: ParentRoomWithEndpointDataProps): ReactElement | null => {
-	const { phase, value } = useEndpointData(
-		'/v1/rooms.info',
-		useMemo(() => ({ roomId: rid }), [rid]),
-	);
+	const { data, isLoading, isError } = useRoomInfoEndpoint(rid);
 
-	if (AsyncStatePhase.LOADING === phase) {
+	if (isLoading) {
 		return <Header.Tag.Skeleton />;
 	}
 
-	if (AsyncStatePhase.REJECTED === phase || !value?.room) {
+	if (isError || !data?.room) {
 		return null;
 	}
 
-	return <ParentRoom room={value.room} />;
+	return <ParentRoom room={data.room} />;
 };
 
 export default ParentRoomWithEndpointData;

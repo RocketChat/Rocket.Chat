@@ -1,3 +1,4 @@
+import type { IEditedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
@@ -25,7 +26,10 @@ Meteor.methods({
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
-		if (originalMessage.msg === message.msg) {
+
+		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+
+		if (msgText === message.msg) {
 			return;
 		}
 		if (originalMessage?.u?._id) {
@@ -69,7 +73,7 @@ Meteor.methods({
 			};
 
 			message = callbacks.run('beforeSaveMessage', message);
-			const messageObject = {
+			const messageObject: Partial<IEditedMessage> = {
 				editedAt: message.editedAt,
 				editedBy: message.editedBy,
 				msg: message.msg,
@@ -78,6 +82,7 @@ Meteor.methods({
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
 					delete messageObject.msg;
+					originalMessage.attachments[0].description = message.msg;
 				}
 			}
 			ChatMessage.update(

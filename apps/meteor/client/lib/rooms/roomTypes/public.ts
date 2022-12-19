@@ -1,8 +1,8 @@
-import { AtLeast, IRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import * as Federation from '../../../../app/federation-v2/client/Federation';
 import { ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -10,6 +10,7 @@ import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
+import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PublicRoomType = getPublicRoomType(roomCoordinator);

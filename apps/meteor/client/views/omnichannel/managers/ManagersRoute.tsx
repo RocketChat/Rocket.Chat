@@ -1,7 +1,8 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import {
 	GenericTable,
@@ -82,7 +83,7 @@ const ManagersRoute = (): ReactElement => {
 								{t('Remove')}
 							</GenericTableHeaderCell>
 						</GenericTableHeader>
-						<GenericTableBody>
+						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
 							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
 							{result.phase === AsyncStatePhase.RESOLVED &&
 								result.value.users.length > 0 &&

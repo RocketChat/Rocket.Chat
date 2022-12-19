@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
@@ -11,18 +10,23 @@ import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import { handleError } from '../lib/utils/handleError';
 import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
+const PageLoading = lazy(() => import('../views/root/PageLoading'));
+const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
-const CMSPage = lazy(() => import('../views/root/CMSPage'));
-const ResetPasswordPage = lazy(() => import('../views/login/ResetPassword/ResetPassword'));
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
+const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
+const ResetPasswordPage = lazy(() =>
+	import('@rocket.chat/web-ui-registration').then(({ ResetPasswordPage }) => ({ default: ResetPasswordPage })),
+);
+
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const MeetPage = lazy(() => import('../views/meet/MeetPage'));
+
 const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
@@ -34,7 +38,7 @@ FlowRouter.route('/', {
 	action() {
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='loading' />
+				<PageLoading />
 			</MainLayout>,
 		);
 
@@ -102,18 +106,14 @@ FlowRouter.route('/home', {
 			FlowRouter.setQueryParams({
 				saml_idp_credentialToken: null,
 			});
-			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
+			(Meteor as any).loginWithSamlToken(token, (error?: unknown) => {
 				if (error) {
-					if (error.reason) {
-						dispatchToastMessage({ type: 'error', message: error.reason });
-					} else {
-						handleError(error);
-					}
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 
 				appLayout.render(
 					<MainLayout>
-						<BlazeTemplate template='home' />
+						<HomePage />
 					</MainLayout>,
 				);
 			});
@@ -123,7 +123,7 @@ FlowRouter.route('/home', {
 
 		appLayout.render(
 			<MainLayout>
-				<BlazeTemplate template='home' />
+				<HomePage />
 			</MainLayout>,
 		);
 	},
@@ -180,18 +180,6 @@ FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
 		appLayout.render(<CMSPage page='Layout_Legal_Notice' />);
-	},
-});
-
-FlowRouter.route('/room-not-found/:type/:name', {
-	name: 'room-not-found',
-	action: ({ type, name } = {}) => {
-		Session.set('roomNotFound', { type, name });
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='roomNotFound' />
-			</MainLayout>,
-		);
 	},
 });
 

@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "5.1.0-develop",
+	"version": "5.5.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -13,7 +13,8 @@
 		"dev": "turbo run dev --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
-		"storybook": "yarn workspace @rocket.chat/meteor run storybook"
+		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
+		"fuselage": "./fuselage.sh"
 	},
 	"devDependencies": {
 		"@types/chart.js": "^2.9.37",
@@ -39,11 +40,11 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "3.2.0",
+		"yarn": "3.2.2",
 		"node": "14.19.3",
 		"npm": "Use yarn instead"
 	},
-	"packageManager": "yarn@3.2.0",
+	"packageManager": "yarn@3.2.2",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [

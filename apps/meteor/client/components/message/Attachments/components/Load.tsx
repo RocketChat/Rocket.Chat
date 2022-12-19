@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Icon, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, FC } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React from 'react';
 
 import ImageBox from './ImageBox';
 
@@ -12,16 +12,16 @@ const Load: FC<LoadProps> = ({ load, ...props }) => {
 	const t = useTranslation();
 	const clickable = css`
 		cursor: pointer;
-		background: var(--rxc-color-neutral-100, ${colors.n100}) !important;
+		background: ${Palette.surface['surface-tint']};
 
 		&:hover,
 		&:focus {
-			background: var(--rxc-color-neutral-300, ${colors.n300}) !important;
+			background: ${Palette.surface['surface-hover']};
 		}
 	`;
 	return (
 		<ImageBox className={clickable} {...props} onClick={load}>
-			<Icon name='image' color='neutral-700' size='x64' />
+			<Icon name='image' color='hint' size='x64' />
 			<Box fontScale='h2' color='default'>
 				{t('Click_to_load')}
 			</Box>

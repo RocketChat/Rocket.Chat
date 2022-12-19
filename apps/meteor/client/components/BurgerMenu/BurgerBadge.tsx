@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 const BurgerBadge = ({ children }: { children?: unknown }): ReactElement => (
 	<Box

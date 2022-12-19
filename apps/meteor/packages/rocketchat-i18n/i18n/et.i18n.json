@@ -1,5 +1,4 @@
 {
-  "403": "Keelatud",
   "500": "Sisemine serveri viga",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ei ole enam __role__ poolt __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ määrati __role__ poolt __user_by__",
@@ -72,6 +71,7 @@
   "Start_Chat": "Alusta vestlust",
   "Survey": "Uuring",
   "Thank_you_for_your_feedback": "Aitäh tagasiside eest",
+  "Try_now": "Proovi nüüd",
   "Type_your_email": "Sisesta oma e-mail",
   "Type_your_message": "Sisestage oma sõnum",
   "Type_your_name": "Sisestage oma nimi",

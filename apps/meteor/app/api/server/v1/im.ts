@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -23,9 +23,6 @@ import { createDirectMessage } from '../../../../server/methods/createDirectMess
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
 
-interface IImFilesObject extends IUpload {
-	userId: string;
-}
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -218,7 +215,7 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const { cursor, totalCount } = Uploads.findPaginated<IImFilesObject>(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
@@ -429,12 +426,12 @@ API.v1.addRoute(
 
 			// TODO: CACHE: Add Breaking notice since we removed the query param
 
-			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' })
+			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' }, { projection: { rid: 1 } })
 				.map((item) => item.rid)
 				.toArray();
 
 			const { cursor, totalCount } = Rooms.findPaginated(
-				{ type: 'd', _id: { $in: subscriptions } },
+				{ t: 'd', _id: { $in: subscriptions } },
 				{
 					sort,
 					skip: offset,
@@ -443,15 +440,12 @@ API.v1.addRoute(
 				},
 			);
 
-			const [ims, total] = await Promise.all([
-				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims,
+				ims: ims.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
-				count,
+				count: ims.length,
 				total,
 			});
 		},
@@ -480,13 +474,10 @@ API.v1.addRoute(
 				},
 			);
 
-			const [rooms, total] = await Promise.all([
-				cursor.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)).toArray(),
-				totalCount,
-			]);
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims: rooms,
+				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
 				offset,
 				count: rooms.length,
 				total,

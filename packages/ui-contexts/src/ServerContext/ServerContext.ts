@@ -30,7 +30,13 @@ export type ServerContextValue = {
 		| {
 				promise: Promise<UploadResult>;
 		  };
-	getStream: (streamName: string, options?: {}) => <T>(eventName: string, callback: (data: T) => void) => () => void;
+	getStream: (
+		streamName: string,
+		options?: {
+			retransmit?: boolean | undefined;
+			retransmitToSelf?: boolean | undefined;
+		},
+	) => <TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({

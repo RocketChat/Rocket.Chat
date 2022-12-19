@@ -1,9 +1,9 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useMethod, useToastMessageDispatch, useUserId, useUserSubscription, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
 export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
@@ -30,8 +30,8 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 				type: 'success',
 				message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked'),
 			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 

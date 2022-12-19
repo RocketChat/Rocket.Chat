@@ -1,9 +1,11 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, Method, OperationParams, OperationResult, Path, PathFor } from '@rocket.chat/rest-typings';
-import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import { ServerContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import { pathToRegexp } from 'path-to-regexp';
-import React, { ContextType, ReactElement, ReactNode, useContext, useMemo } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 const logAction = action('ServerContext');
 
@@ -12,14 +14,20 @@ const randomDelay = (): Promise<UploadResult> => new Promise((resolve) => setTim
 const uploadToEndpoint = (endpoint: PathFor<'POST'>, formData: any): Promise<UploadResult> =>
 	Promise.resolve(logAction('uploadToEndpoint', endpoint, formData)).then(randomDelay);
 
-const getStream = (streamName: string, options: {} = {}): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
+const getStream = (
+	streamName: string,
+	options: {
+		retransmit?: boolean | undefined;
+		retransmitToSelf?: boolean | undefined;
+	} = {},
+): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
 	logAction('getStream', streamName, options);
 
-	return (eventName, callback): (() => void) => {
+	return (eventName: string, callback: () => void): (() => void) => {
 		const subId = Math.random().toString(16).slice(2);
 		logAction('getStream.subscribe', streamName, eventName, subId);
 
-		randomDelay().then(() => callback(undefined as any));
+		randomDelay().then(() => callback());
 
 		return (): void => {
 			logAction('getStream.unsubscribe', streamName, eventName, subId);

@@ -1,7 +1,8 @@
-import { Modal, Box, Field, FieldGroup, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, TextInput, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, memo, useState, ChangeEvent, FormEventHandler, useEffect } from 'react';
+import type { ReactElement, ChangeEvent, FormEventHandler } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 import FilePreview from './FilePreview';
 
@@ -12,6 +13,7 @@ type FileUploadModalProps = {
 	fileName: string;
 	fileDescription?: string;
 	invalidContentType: boolean;
+	showDescription?: boolean;
 };
 
 const FileUploadModal = ({
@@ -21,6 +23,7 @@ const FileUploadModal = ({
 	fileDescription,
 	onSubmit,
 	invalidContentType,
+	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>(fileDescription || '');
@@ -86,23 +89,25 @@ const FileUploadModal = ({
 							</Field.Row>
 							{!name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
 						</Field>
-						<Field>
-							<Field.Label>{t('Upload_file_description')}</Field.Label>
-							<Field.Row>
-								<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
-							</Field.Row>
-						</Field>
+						{showDescription && (
+							<Field>
+								<Field.Label>{t('Upload_file_description')}</Field.Label>
+								<Field.Row>
+									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
+								</Field.Row>
+							</Field>
+						)}
 					</FieldGroup>
 				</Modal.Content>
 				<Modal.Footer>
-					<ButtonGroup align='end'>
+					<Modal.FooterControllers>
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
 						<Button primary type='submit' disabled={!name}>
 							{t('Send')}
 						</Button>
-					</ButtonGroup>
+					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Box>
 		</Modal>

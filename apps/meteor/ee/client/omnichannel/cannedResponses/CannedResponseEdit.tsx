@@ -1,9 +1,9 @@
-import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
+import type { FC } from 'react';
+import React, { memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
 import { useForm } from '../../../../client/hooks/useForm';
@@ -121,7 +121,7 @@ const CannedResponseEdit: FC<{
 			reload();
 			totalDataReload();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 

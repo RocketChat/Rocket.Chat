@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ServerResponse, IncomingMessage } from 'http';
+import type { ServerResponse, IncomingMessage } from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
@@ -7,15 +7,16 @@ import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
-import { NextHandleFunction } from 'connect';
-import { IRocketChatAssets, IRocketChatAsset } from '@rocket.chat/core-typings';
+import type { NextHandleFunction } from 'connect';
+import type { IRocketChatAssets, IRocketChatAsset, IRocketChatAssetCache } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
-import { Settings } from '../../models/server';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -195,9 +196,8 @@ class RocketChatAssetsClass {
 
 		const extension = getExtension(contentType);
 		if (assetInstance.constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
+			throw new Meteor.Error('error-invalid-file-type', `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
-				errorTitle: 'error-invalid-file-type',
 			});
 		}
 
@@ -257,7 +257,7 @@ class RocketChatAssetsClass {
 	}
 
 	public refreshClients(): boolean {
-		return (process.emit as Function)('message', {
+		return process.emit('message', {
 			refresh: 'client',
 		});
 	}
@@ -347,7 +347,7 @@ function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
 		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
-		Settings.updateValueById(key, currentValue);
+		Promise.await(Settings.updateValueById(key, currentValue));
 	}
 }
 
@@ -358,9 +358,9 @@ for (const key of Object.keys(assets)) {
 
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
-Meteor.startup(function () {
-	return Meteor.setTimeout(function () {
-		return (process.emit as Function)('message', {
+Meteor.startup(() => {
+	Meteor.setTimeout(() => {
+		process.emit('message', {
 			refresh: 'client',
 		});
 	}, 200);
@@ -368,14 +368,14 @@ Meteor.startup(function () {
 
 const { calculateClientHash } = WebAppHashing;
 
-WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, includeFilter: Function, runtimeConfigOverride: any): string {
+WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeConfigOverride): string {
 	for (const key of Object.keys(assets)) {
 		const value = getAssetByKey(key);
 		if (!value.cache && !value.defaultUrl) {
 			continue;
 		}
 
-		let cache = {};
+		let cache: IRocketChatAssetCache;
 		if (value.cache) {
 			cache = {
 				path: value.cache.path,
@@ -417,6 +417,8 @@ WebAppHashing.calculateClientHash = function (manifest: Record<string, any>, inc
 
 Meteor.methods({
 	refreshClients() {
+		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'refreshClients',
@@ -504,7 +506,7 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (reqModifiedHeader) {
-		if (reqModifiedHeader === (file.uploadDate && file.uploadDate.toUTCString())) {
+		if (reqModifiedHeader === file.uploadDate?.toUTCString()) {
 			res.setHeader('Last-Modified', reqModifiedHeader);
 			res.writeHead(304);
 			res.end();
@@ -523,9 +525,9 @@ const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerRespon
 		return;
 	}
 
-	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
-	res.setHeader('Content-Type', file.contentType);
-	res.setHeader('Content-Length', file.size);
+	res.setHeader('Last-Modified', file.uploadDate?.toUTCString() || new Date().toUTCString());
+	if (file.contentType) res.setHeader('Content-Type', file.contentType);
+	if (file.size) res.setHeader('Content-Length', file.size);
 	res.writeHead(200);
 	res.end(file.content);
 });

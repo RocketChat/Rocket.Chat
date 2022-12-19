@@ -1,0 +1,50 @@
+{
+	"name": "@rocket.chat/account-service",
+	"private": true,
+	"version": "0.1.0",
+	"description": "Rocket.Chat Account service",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "eslint src",
+		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
+	},
+	"keywords": [
+		"rocketchat"
+	],
+	"author": "Rocket.Chat",
+	"dependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/emitter": "next",
+		"@rocket.chat/model-typings": "workspace:^",
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/string-helpers": "next",
+		"@types/node": "^14.18.21",
+		"bcrypt": "^5.0.1",
+		"ejson": "^2.2.2",
+		"eventemitter3": "^4.0.7",
+		"fibers": "^5.0.3",
+		"mem": "^8.1.1",
+		"moleculer": "^0.14.21",
+		"mongodb": "^4.12.1",
+		"nats": "^2.4.0",
+		"pino": "^8.4.2",
+		"polka": "^0.5.2",
+		"uuid": "^9.0.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/bcrypt": "^5.0.0",
+		"@types/eslint": "^8.4.10",
+		"@types/polka": "^0.5.4",
+		"eslint": "^8.29.0",
+		"ts-node": "^10.9.1",
+		"typescript": "~4.5.5"
+	},
+	"main": "./dist/ee/apps/account-service/src/service.js",
+	"files": [
+		"/dist"
+	]
+}

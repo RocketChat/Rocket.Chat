@@ -1,8 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, TextInput, FieldGroup, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, FieldGroup, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../lib/constants';
@@ -15,13 +16,14 @@ type EditStatusModalProps = {
 
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
-	const setUserStatus = useMethod('setUserStatus');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const t = useTranslation();
 	const [statusText, setStatusText] = useState(userStatusText);
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
+
+	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
 	const handleStatusText = useMutableCallback((e: ChangeEvent<HTMLInputElement>): void => {
 		setStatusText(e.currentTarget.value);
@@ -37,19 +39,19 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	const handleSaveStatus = useCallback(async () => {
 		try {
-			await setUserStatus(statusType, statusText);
+			await setUserStatus({ message: statusText, status: statusType });
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 
 		onClose();
-	}, [dispatchToastMessage, statusType, statusText, setUserStatus, onClose, t]);
+	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
 	return (
 		<Modal>
 			<Modal.Header>
-				<Icon size={24} name='info' />
+				<Modal.Icon name='info' />
 				<Modal.Title>{t('Edit_Status')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
@@ -74,14 +76,14 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
+				<Modal.FooterControllers>
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary onClick={handleSaveStatus} disabled={!!statusTextError}>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

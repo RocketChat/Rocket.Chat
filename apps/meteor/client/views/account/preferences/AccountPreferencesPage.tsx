@@ -1,6 +1,7 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, useRef, ReactElement } from 'react';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject, ReactElement } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -44,10 +45,16 @@ type CurrentData = {
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
+	receiveLoginDetectionEmail: boolean;
 	dontAskAgainList: [action: string, label: string][];
 };
 
-type FormatedData = Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'>;
+export type FormSectionProps = {
+	onChange: any;
+	commitRef: MutableRefObject<Record<string, () => void>>;
+};
+
+type FormatedData = { data: Omit<Partial<CurrentData>, 'dontAskAgainList' | 'highlights'> };
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -61,13 +68,21 @@ const AccountPreferencesPage = (): ReactElement => {
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 
 	const onChange = useCallback(
-		({ initialValue, value, key }) => {
+		<K extends keyof CurrentData, I extends CurrentData[K], V extends CurrentData[K]>({
+			initialValue,
+			value,
+			key,
+		}: {
+			initialValue: I;
+			value: V;
+			key: K;
+		}) => {
 			const { current } = saveData;
 			if (current) {
 				if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
-					current[key as keyof CurrentData] = value;
+					current[key] = value;
 				} else {
-					delete current[key as keyof CurrentData];
+					delete current[key];
 				}
 			}
 
@@ -79,7 +94,7 @@ const AccountPreferencesPage = (): ReactElement => {
 		[hasAnyChange],
 	);
 
-	const saveFn = useMethod('saveUserPreferences');
+	const saveFn = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const handleSave = useCallback(async () => {
 		try {
@@ -101,14 +116,14 @@ const AccountPreferencesPage = (): ReactElement => {
 				Object.assign(data, { dontAskAgainList: list });
 			}
 
-			await saveFn(data as FormatedData);
+			await saveFn({ data } as FormatedData);
 			saveData.current = {};
 			setHasAnyChange(false);
 			Object.values(commitRef.current).forEach((fn) => (fn as () => void)());
 
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: String(e) });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, saveFn, t]);
 

@@ -1,13 +1,15 @@
-import { Agenda, Job } from '@rocket.chat/agenda';
+import type { Job } from '@rocket.chat/agenda';
+import { Agenda } from '@rocket.chat/agenda';
 import { ObjectID } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
-import { StartupType, IProcessor, IOnetimeSchedule, IRecurringSchedule } from '@rocket.chat/apps-engine/definition/scheduler';
+import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
+import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
-function _callProcessor(processor: Function): (job: Job) => void {
-	return (job): void => {
+function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
+	return (job) => {
 		const data = job?.attrs?.data || {};
 
 		// This field is for internal use, no need to leak to app processor
@@ -15,7 +17,13 @@ function _callProcessor(processor: Function): (job: Job) => void {
 
 		data.jobId = job.attrs._id.toString();
 
-		return processor(data);
+		return (processor as (jobContext: IJobContext) => Promise<void>)(data).then(() => {
+			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
+			// as Agenda does not remove it from the DB
+			if (job.attrs.type === 'normal') {
+				job.agenda.cancel({ _id: job.attrs._id });
+			}
+		});
 	};
 }
 
@@ -41,32 +49,12 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	}
 
 	/**
-	 * Entity that will be run in a job.
-	 * @typedef {Object} Processor
-	 * @property {string} id The processor's identifier
-	 * @property {function} processor The function that will be run on a given schedule
-	 * @property {IOnetimeStartup|IRecurrentStartup} [startupSetting] If provided, the processor will be configured with the setting as soon as it gets registered
-
-	 * Processor setting for running once after being registered
-	 * @typedef {Object} IOnetimeStartup
-	 * @property {string} type=onetime
-	 * @property {string} when When the processor will be executed
-	 * @property {Object} [data] An optional object that is passed to the processor
-	 *
-	 * Processor setting for running recurringly after being registered
-	 * @typedef {Object} IRecurrentStartup
-	 * @property {string} type=recurring
-	 * @property {string} interval When the processor will be re executed
-	 * @property {Object} [data] An optional object that is passed to the processor
-	 */
-
-	/**
 	 * Register processors that can be scheduled to run
 	 *
-	 * @param {Array.<Processor>} processors An array of processors
-	 * @param {string} appId
+	 * @param processors An array of processors
+	 * @param appId
 	 *
-	 * @returns {string[]} List of task ids run at startup, or void no startup run is set
+	 * @returns List of task ids run at startup, or void no startup run is set
 	 */
 	protected async registerProcessors(processors: Array<IProcessor> = [], appId: string): Promise<void | Array<string>> {
 		const runAfterRegister: Promise<string>[] = [];
@@ -112,14 +100,6 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 	/**
 	 * Schedules a registered processor to run _once_.
-	 *
-	 * @param {Object} job
-	 * @param {string} job.id The processor's id
-	 * @param {string} job.when When the processor will be executed
-	 * @param {Object} [job.data] An optional object that is passed to the processor
-	 * @param {string} appId
-	 *
-	 * @returns {string} taskid
 	 */
 	protected async scheduleOnce({ id, when, data }: IOnetimeSchedule, appId: string): Promise<void | string> {
 		this.orch.debugLog(`The App ${appId} is scheduling an onetime job (processor ${id})`);
@@ -133,7 +113,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	}
 
 	private async scheduleOnceAfterRegister(job: IOnetimeSchedule, appId: string): Promise<void | string> {
-		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' });
+		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' }, {}, 1);
 		if (!scheduledJobs.length) {
 			return this.scheduleOnce(job, appId);
 		}

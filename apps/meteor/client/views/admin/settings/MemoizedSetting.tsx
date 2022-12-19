@@ -1,6 +1,7 @@
-import { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Callout, Field, Margins } from '@rocket.chat/fuselage';
-import React, { ElementType, memo, ReactElement, ReactNode } from 'react';
+import type { ElementType, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';
@@ -49,7 +50,7 @@ type MemoizedSettingProps = {
 	callout?: ReactNode;
 	value?: SettingValue;
 	editor?: SettingEditor;
-	onChangeValue?: (value: unknown) => void;
+	onChangeValue?: (value: SettingValue) => void;
 	onChangeEditor?: (value: unknown) => void;
 	onResetButtonClick?: () => void;
 	className?: string;
@@ -57,6 +58,8 @@ type MemoizedSettingProps = {
 	label?: string;
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
+	disabled?: boolean;
+	enterpriseCallout?: ReactNode;
 	actionText?: string;
 };
 
@@ -68,6 +71,8 @@ const MemoizedSetting = ({
 	editor = undefined,
 	onChangeValue,
 	onChangeEditor,
+	disabled,
+	enterpriseCallout,
 	className = undefined,
 	invisible = undefined,
 	...inputProps
@@ -80,11 +85,23 @@ const MemoizedSetting = ({
 
 	return (
 		<Field className={className}>
-			<InputComponent value={value} editor={editor} onChangeValue={onChangeValue} onChangeEditor={onChangeEditor} {...inputProps} />
+			<InputComponent
+				value={value}
+				editor={editor}
+				onChangeValue={onChangeValue}
+				onChangeEditor={onChangeEditor}
+				{...inputProps}
+				disabled={disabled}
+			/>
 			{hint && <Field.Hint>{hint}</Field.Hint>}
 			{callout && (
 				<Margins block='x16'>
 					<Callout type='warning'>{callout}</Callout>
+				</Margins>
+			)}
+			{enterpriseCallout && (
+				<Margins block='x16'>
+					<Callout>{enterpriseCallout}</Callout>
 				</Margins>
 			)}
 		</Field>

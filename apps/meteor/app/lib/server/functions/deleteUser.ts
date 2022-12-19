@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { FileProp } from '@rocket.chat/core-typings';
+import type { FileProp } from '@rocket.chat/core-typings';
 import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -65,14 +65,16 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
 			LivechatDepartmentAgents.removeByAgentId(userId);
-			await LivechatVisitors.removeContactManagerByUsername(user.username);
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
 			// Remove user as Unit Monitor
 			LivechatUnitMonitors.removeByMonitorId(userId);
-			await LivechatVisitors.removeContactManagerByUsername(user.username);
 		}
+
+		// This is for compatibility. Since we allowed any user to be contact manager b4, we need to have the same logic
+		// for deletion.
+		await LivechatVisitors.removeContactManagerByUsername(user.username);
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {

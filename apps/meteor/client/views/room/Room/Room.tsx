@@ -1,75 +1,73 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { ErrorBoundary } from '@rocket.chat/ui-client';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { createElement, memo, Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import Announcement from '../Announcement';
+import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
 import Header from '../Header';
-import BlazeTemplate from '../components/BlazeTemplate';
-import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
+import MessageHighlightProvider from '../MessageList/providers/MessageHighlightProvider';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
+import RoomBody from '../components/body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
+import { useTab, useToolboxContext } from '../contexts/ToolboxContext';
 import AppsContextualBar from '../contextualBar/Apps';
 import { useAppsContextualBar } from '../hooks/useAppsContextualBar';
+import RoomLayout from '../layout/RoomLayout';
+import ChatProvider from '../providers/ChatProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
-import LazyComponent from './LazyComponent';
 
-export const Room: FC<{}> = () => {
-	const room = useRoom();
+const Room = (): ReactElement => {
 	const t = useTranslation();
+
+	const room = useRoom();
+
+	const toolbox = useToolboxContext();
+
 	const tab = useTab();
-	const open = useTabBarOpen();
-	const close = useTabBarClose();
-	const openUserInfo = useTabBarOpenUserInfo();
-	const isLayoutEmbedded = useEmbeddedLayout();
-	const hideFlexTab = useUserPreference('hideFlexTab');
-
-	const isOpen = useMutableCallback(() => !!tab?.template);
-
 	const appsContextualBarContext = useAppsContextualBar();
 
-	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [open, close, isOpen, openUserInfo]);
-
 	return (
-		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
-			<RoomTemplate.Header>
-				<Header room={room} />
-			</RoomTemplate.Header>
-			<RoomTemplate.Body>
-				{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-				<BlazeTemplate onClick={hideFlexTab ? close : undefined} name='roomOld' tabBar={tabBar} rid={room._id} _id={room._id} />
-			</RoomTemplate.Body>
-			{tab && (
-				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
-					<ErrorBoundary>
-						<SelectedMessagesProvider>
-							{typeof tab.template === 'string' && (
-								<VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} />
-							)}
-							{typeof tab.template !== 'string' && (
-								<LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} />
-							)}
-						</SelectedMessagesProvider>
-					</ErrorBoundary>
-				</RoomTemplate.Aside>
-			)}
-			{appsContextualBarContext && (
-				<RoomTemplate.Aside data-qa-tabbar-name={appsContextualBarContext.viewId}>
-					<SelectedMessagesProvider>
-						<ErrorBoundary>
-							<LazyComponent
-								template={AppsContextualBar}
-								viewId={appsContextualBarContext.viewId}
-								roomId={appsContextualBarContext.roomId}
-								payload={appsContextualBarContext.payload}
-								appInfo={appsContextualBarContext.appInfo}
-							/>
-						</ErrorBoundary>
-					</SelectedMessagesProvider>
-				</RoomTemplate.Aside>
-			)}
-		</RoomTemplate>
+		<ChatProvider>
+			<MessageHighlightProvider>
+				<RoomLayout
+					aria-label={t('Channel')}
+					data-qa-rc-room={room._id}
+					header={<Header room={room} />}
+					body={<RoomBody />}
+					aside={
+						(tab && (
+							<ErrorBoundary fallback={null}>
+								<SelectedMessagesProvider>
+									{typeof tab.template === 'string' && (
+										<VerticalBarOldActions {...tab} name={tab.template} tabBar={toolbox} rid={room._id} _id={room._id} />
+									)}
+									{typeof tab.template !== 'string' && typeof tab.template !== 'undefined' && (
+										<Suspense fallback={<VerticalBarSkeleton />}>
+											{createElement(tab.template, { tabBar: toolbox, _id: room._id, rid: room._id, teamId: room.teamId })}
+										</Suspense>
+									)}
+								</SelectedMessagesProvider>
+							</ErrorBoundary>
+						)) ||
+						(appsContextualBarContext && (
+							<ErrorBoundary fallback={null}>
+								<SelectedMessagesProvider>
+									<Suspense fallback={<VerticalBarSkeleton />}>
+										<AppsContextualBar
+											viewId={appsContextualBarContext.viewId}
+											roomId={appsContextualBarContext.roomId}
+											payload={appsContextualBarContext.payload}
+											appId={appsContextualBarContext.appId}
+										/>
+									</Suspense>
+								</SelectedMessagesProvider>
+							</ErrorBoundary>
+						))
+					}
+				/>
+			</MessageHighlightProvider>
+		</ChatProvider>
 	);
 };
+
+export default memo(Room);

@@ -1,7 +1,17 @@
-import { Modal, Field, Select, ButtonGroup, Button, SelectOption, Box } from '@rocket.chat/fuselage';
-import { useTranslation, useAvailableDevices, useToastMessageDispatch, useSetModal, useSelectedDevices } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Field, Select, Button, Box } from '@rocket.chat/fuselage';
+import {
+	useTranslation,
+	useAvailableDevices,
+	useToastMessageDispatch,
+	useSetModal,
+	useSelectedDevices,
+	useIsDeviceManagementEnabled,
+} from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/CallContext';
 import { isSetSinkIdAvailable } from '../../../../client/providers/DeviceProvider/lib/isSetSinkIdAvailable';
@@ -14,6 +24,7 @@ type FieldValues = {
 const DeviceSettingsModal = (): ReactElement => {
 	const setModal = useSetModal();
 	const onCancel = (): void => setModal();
+	const isDeviceManagementEnabled = useIsDeviceManagementEnabled();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const selectedAudioDevices = useSelectedDevices();
@@ -41,7 +52,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			setModal();
 			dispatchToastMessage({ type: 'success', message: t('Devices_Set') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -58,6 +69,11 @@ const DeviceSettingsModal = (): ReactElement => {
 						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
 						</Box>
+					</Box>
+				)}
+				{!isDeviceManagementEnabled && (
+					<Box color='danger-600' display='flex' flexDirection='column'>
+						{t('Device_Changes_Not_Available_Insecure_Context')}
 					</Box>
 				)}
 				<Field>
@@ -86,12 +102,12 @@ const DeviceSettingsModal = (): ReactElement => {
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup stretch w='full'>
+				<Modal.FooterControllers>
 					<Button onClick={(): void => setModal()}>{t('Cancel')}</Button>
 					<Button disabled={!setSinkIdAvailable} primary onClick={handleSubmit(onSubmit)}>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

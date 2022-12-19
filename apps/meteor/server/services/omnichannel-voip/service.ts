@@ -1,4 +1,4 @@
-import { FindOptions } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 import type {
 	IVoipExtensionBase,
@@ -7,25 +7,20 @@ import type {
 	IRoomCreationResponse,
 	IUser,
 	ILivechatAgent,
-} from '@rocket.chat/core-typings';
-import {
 	ILivechatVisitor,
-	isILivechatVisitor,
 	IVoipRoom,
 	IRoomClosingInfo,
-	OmnichannelSourceType,
-	isVoipRoom,
-	VoipClientEvents,
 } from '@rocket.chat/core-typings';
+import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 
-import { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
+import type { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { Voip } from '../../sdk';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
+import type { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
 import { api } from '../../sdk/api';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
@@ -120,9 +115,16 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		 */
 
 		// Use latest queue caller join event
+		const numericPhone = guest?.phone?.[0]?.phoneNumber.replace(/\D/g, '');
 		const callStartPbxEvent = await PbxEvents.findOne(
 			{
-				phone: guest?.phone?.[0]?.phoneNumber,
+				$or: [
+					{
+						phone: numericPhone, // Incoming calls will have phone number (connectedlinenum) without any symbol
+					},
+					{ phone: `*${numericPhone}` }, // Outgoing calls will have phone number (connectedlinenum) with * prefix
+					{ phone: `+${numericPhone}` }, // Just in case
+				],
 				event: {
 					$in: ['QueueCallerJoin', 'DialEnd', 'DialState'],
 				},
@@ -150,6 +152,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id,
 				token: guest.token,
 				status,
+				username: guest.username,
 				phone: guest?.phone?.[0]?.phoneNumber,
 			},
 			servedBy: {

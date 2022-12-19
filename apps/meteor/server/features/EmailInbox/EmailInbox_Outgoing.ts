@@ -1,4 +1,4 @@
-import Mail from 'nodemailer/lib/mailer';
+import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
@@ -7,10 +7,12 @@ import { Uploads } from '@rocket.chat/models';
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Users } from '../../../app/models/server';
-import { Inbox, inboxes } from './EmailInbox';
+import { Messages, Rooms, Users, LivechatRooms } from '../../../app/models/server';
+import type { Inbox } from './EmailInbox';
+import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { logger } from './logger';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
@@ -19,6 +21,7 @@ const user: IUser = Users.findOneById('rocket.cat');
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
+// TODO: change these messages with room notifications
 const sendErrorReplyMessage = (error: string, options: any): void => {
 	if (!options?.rid || !options?.msgId) {
 		return;
@@ -35,8 +38,23 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 	sendMessage(user, message, { _id: options.rid });
 };
 
-function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
-	inbox.smtp
+const sendSuccessReplyMessage = (options: any): void => {
+	if (!options?.rid || !options?.msgId) {
+		return;
+	}
+	const message = {
+		groupable: false,
+		msg: `@${options.sender} Attachment was sent successfully`,
+		_id: String(Date.now()),
+		rid: options.rid,
+		ts: new Date(),
+	};
+
+	sendMessage(user, message, { _id: options.rid });
+};
+
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
 				? {
@@ -47,22 +65,24 @@ function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
 			...mail,
 		})
 		.then((info) => {
-			console.log('Message sent: %s', info.messageId);
+			logger.info('Message sent: %s', info.messageId);
+			return info;
 		})
-		.catch((error) => {
-			console.log('Error sending Email reply: %s', error.message);
+		.catch((err) => {
+			logger.error({ msg: 'Error sending Email reply', err });
 
 			if (!options?.msgId) {
 				return;
 			}
 
-			sendErrorReplyMessage(error.message, options);
+			sendErrorReplyMessage(err.message, options);
 		});
 }
 
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: (command: any, params: string) => {
+		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
 		}
@@ -115,7 +135,7 @@ slashCommands.add({
 						sender: message.u.username,
 						rid: message.rid,
 					},
-				);
+				).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 		});
 
 		Messages.update(
@@ -139,6 +159,12 @@ slashCommands.add({
 				},
 			},
 		);
+
+		return sendSuccessReplyMessage({
+			msgId: message._id,
+			sender: message.u.username,
+			rid: room._id,
+		});
 	},
 	options: {
 		description: 'Send attachment as email',
@@ -148,26 +174,34 @@ slashCommands.add({
 });
 
 callbacks.add(
-	'beforeSaveMessage',
+	'afterSaveMessage',
 	function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
 			return message;
 		}
 
-		if (message.file) {
-			message.attachments = message.attachments || [];
-			message.attachments.push({
-				actions: [
-					{
-						type: 'button',
-						text: t('Send_via_Email_as_attachment'),
-						msg: `/sendEmailAttachment ${message._id}`,
-						msg_in_chat_window: true,
-						msg_processing_type: 'sendMessage',
-					},
-				],
-			});
-
+		if (message.files?.length && message.u.username !== 'rocket.cat') {
+			sendMessage(
+				user,
+				{
+					msg: '',
+					attachments: [
+						{
+							actions: [
+								{
+									type: 'button',
+									text: t('Send_via_Email_as_attachment'),
+									msg: `/sendEmailAttachment ${message._id}`,
+									msg_in_chat_window: true,
+									msg_processing_type: 'sendMessage',
+								},
+							],
+						},
+					],
+				},
+				room,
+				true,
+			);
 			return message;
 		}
 
@@ -215,7 +249,7 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		);
+		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		message.msg = match.groups.text;
 
@@ -268,7 +302,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	console.log(`Sending testing email to ${address}`);
+	logger.info(`Sending testing email to ${address}`);
 	sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
