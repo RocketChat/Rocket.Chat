@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import polka from 'polka';
 import WebSocket from 'ws';
-import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-sdk';
+import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
 import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents } from '../../../models/server';

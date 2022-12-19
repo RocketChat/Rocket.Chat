@@ -1,7 +1,7 @@
 import type { FindCursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';

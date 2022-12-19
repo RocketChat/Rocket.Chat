@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { LDAP } from '@rocket.chat/core-sdk';
+import { LDAP } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../lib/callbacks';
 import { settings } from '../../app/settings/server';

@@ -1,4 +1,4 @@
-import { api, LocalBroker } from '@rocket.chat/core-sdk';
+import { api, LocalBroker } from '@rocket.chat/core-services';
 
 import { StreamerCentral } from '../modules/streamer/streamer.module';
 

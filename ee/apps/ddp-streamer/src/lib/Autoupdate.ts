@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type { AutoUpdateRecord } from '@rocket.chat/core-sdk';
+import type { AutoUpdateRecord } from '@rocket.chat/core-services';
 
 class AutoupdateSingleton extends EventEmitter {
 	private versions = new Map<string, Omit<AutoUpdateRecord, '_id'>>();

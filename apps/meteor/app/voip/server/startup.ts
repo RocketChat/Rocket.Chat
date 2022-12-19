@@ -1,4 +1,4 @@
-import { Voip } from '@rocket.chat/core-sdk';
+import { Voip } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 

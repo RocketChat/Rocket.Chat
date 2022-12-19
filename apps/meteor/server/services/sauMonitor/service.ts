@@ -1,7 +1,7 @@
 // import type { Db } from 'mongodb';
 
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
-import type { ISAUMonitorService } from '@rocket.chat/core-sdk';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { ISAUMonitorService } from '@rocket.chat/core-services';
 
 import { sauEvents } from './events';
 

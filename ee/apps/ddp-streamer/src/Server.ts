@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import type WebSocket from 'ws';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
-import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-sdk';
+import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
 
 import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';

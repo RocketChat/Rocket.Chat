@@ -16,7 +16,7 @@
 	"author": "Rocket.Chat",
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.32.0",
-		"@rocket.chat/core-sdk": "workspace:^",
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/model-typings": "workspace:^",

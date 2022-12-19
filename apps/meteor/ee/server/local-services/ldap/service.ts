@@ -1,4 +1,4 @@
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 import type { ILDAPEEService } from '../../sdk/types/ILDAPEEService';
 import { LDAPEEManager } from '../../lib/ldap/Manager';

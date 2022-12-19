@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';

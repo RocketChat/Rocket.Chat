@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
-import { VideoConf } from '@rocket.chat/core-sdk';
+import { VideoConf } from '@rocket.chat/core-services';
 
 import { onLicense } from '../../app/license/server';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';

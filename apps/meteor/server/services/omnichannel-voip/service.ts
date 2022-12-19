@@ -14,8 +14,8 @@ import type {
 import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
-import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-sdk';
-import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-sdk';
+import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
 
 import { Logger } from '../../lib/logger/Logger';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';

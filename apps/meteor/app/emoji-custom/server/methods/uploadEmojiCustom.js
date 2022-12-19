@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import sharp from 'sharp';
-import { api, Media } from '@rocket.chat/core-sdk';
+import { api, Media } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
 import { RocketChatFile } from '../../../file';

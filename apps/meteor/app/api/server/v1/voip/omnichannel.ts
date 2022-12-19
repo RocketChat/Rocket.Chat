@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { LivechatVoip } from '@rocket.chat/core-sdk';
+import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
 import { logger } from './logger';

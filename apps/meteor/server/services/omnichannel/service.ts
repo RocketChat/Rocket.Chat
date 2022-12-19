@@ -1,5 +1,5 @@
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
-import type { IOmnichannelService } from '@rocket.chat/core-sdk';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IOmnichannelService } from '@rocket.chat/core-services';
 
 import { Livechat } from '../../../app/livechat/server';
 

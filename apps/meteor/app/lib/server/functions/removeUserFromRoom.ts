@@ -2,7 +2,7 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';

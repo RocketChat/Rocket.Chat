@@ -6,7 +6,7 @@ import {
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
 } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { memoizeDebounce } from './debounceByParams';
 import { Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';

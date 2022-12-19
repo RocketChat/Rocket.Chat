@@ -6,7 +6,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';

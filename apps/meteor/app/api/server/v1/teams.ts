@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Rooms, Users } from '../../../models/server';

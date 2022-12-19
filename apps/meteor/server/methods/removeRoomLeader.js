@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { api, Team } from '@rocket.chat/core-sdk';
+import { api, Team } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../app/authorization';
 import { Users, Subscriptions, Messages } from '../../app/models/server';

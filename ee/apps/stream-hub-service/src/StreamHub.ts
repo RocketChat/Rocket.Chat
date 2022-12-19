@@ -1,5 +1,5 @@
-import type { IServiceClass } from '@rocket.chat/core-sdk';
-import { ServiceClass } from '@rocket.chat/core-sdk';
+import type { IServiceClass } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
 
 import { initWatchers } from '../../../../apps/meteor/server/modules/watchers/watchers.module';
 import type { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';

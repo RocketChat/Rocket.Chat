@@ -1,7 +1,7 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
-import type { IServiceClass } from '@rocket.chat/core-sdk';
-import { EnterpriseSettings } from '@rocket.chat/core-sdk';
+import type { IServiceClass } from '@rocket.chat/core-services';
+import { EnterpriseSettings } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';

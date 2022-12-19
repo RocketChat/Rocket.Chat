@@ -208,7 +208,7 @@
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps-engine": "1.36.0",
 		"@rocket.chat/cas-validate": "workspace:^",
-		"@rocket.chat/core-sdk": "workspace:^",
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "next",
 		"@rocket.chat/emitter": "next",

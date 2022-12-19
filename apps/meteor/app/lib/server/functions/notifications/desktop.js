@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { metrics } from '../../../../metrics/server';

@@ -1,5 +1,5 @@
 import { Match, check } from 'meteor/check';
-import { LDAP } from '@rocket.chat/core-sdk';
+import { LDAP } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';

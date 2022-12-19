@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { ILoginResult } from '@rocket.chat/core-sdk';
+import type { ILoginResult } from '@rocket.chat/core-services';
 
 import { _generateStampedLoginToken, _hashStampedToken, _tokenExpiration, validatePassword } from './utils';
 import { saveSession } from './saveSession';

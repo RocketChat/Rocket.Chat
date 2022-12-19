@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
-import { NPS, Banner } from '@rocket.chat/core-sdk';
+import { NPS, Banner } from '@rocket.chat/core-services';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';

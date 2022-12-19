@@ -34,7 +34,7 @@ import {
 	PbxEvents,
 	Permissions,
 } from '@rocket.chat/models';
-import type { EventSignatures } from '@rocket.chat/core-sdk';
+import type { EventSignatures } from '@rocket.chat/core-services';
 
 import { subscriptionFields, roomFields } from './publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';

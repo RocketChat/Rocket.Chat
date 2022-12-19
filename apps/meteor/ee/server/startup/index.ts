@@ -3,7 +3,7 @@ import './engagementDashboard';
 import './seatsCap';
 import './services';
 import './upsell';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 

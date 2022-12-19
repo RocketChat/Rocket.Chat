@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 

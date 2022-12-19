@@ -1,6 +1,6 @@
-import type { IPresence, IBrokerNode } from '@rocket.chat/core-sdk';
+import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { ServiceClass } from '@rocket.chat/core-sdk';
+import { ServiceClass } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
 

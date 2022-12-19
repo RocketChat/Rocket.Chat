@@ -12,8 +12,8 @@ import type {
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
-import type { IVoipService } from '@rocket.chat/core-sdk';
-import { api, ServiceClassInternal } from '@rocket.chat/core-sdk';
+import type { IVoipService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';

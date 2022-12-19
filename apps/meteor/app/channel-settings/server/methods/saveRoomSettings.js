@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';

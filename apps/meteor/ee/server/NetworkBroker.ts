@@ -1,6 +1,6 @@
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
-import { asyncLocalStorage } from '@rocket.chat/core-sdk';
-import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-sdk';
+import { asyncLocalStorage } from '@rocket.chat/core-services';
+import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',

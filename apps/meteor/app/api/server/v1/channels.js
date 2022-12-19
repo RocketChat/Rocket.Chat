@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { Integrations, Uploads, Messages as MessagesRaw, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';

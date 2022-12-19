@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';

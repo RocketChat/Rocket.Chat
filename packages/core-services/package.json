@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/core-sdk",
+	"name": "@rocket.chat/core-services",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {

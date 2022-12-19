@@ -44,7 +44,7 @@ import {
 	isICallHangupEvent,
 } from '@rocket.chat/core-typings';
 import { Users, PbxEvents } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';

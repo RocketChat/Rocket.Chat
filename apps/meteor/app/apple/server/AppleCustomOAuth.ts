@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { MeteorError } from '@rocket.chat/core-sdk';
+import { MeteorError } from '@rocket.chat/core-services';
 
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { handleIdentityToken } from '../lib/handleIdentityToken';

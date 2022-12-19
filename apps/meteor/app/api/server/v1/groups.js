@@ -2,7 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';

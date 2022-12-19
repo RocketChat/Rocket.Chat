@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import twilio from 'twilio';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';

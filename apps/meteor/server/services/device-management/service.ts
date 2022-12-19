@@ -1,5 +1,5 @@
-import type { IDeviceManagementService } from '@rocket.chat/core-sdk';
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import type { IDeviceManagementService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { deviceManagementEvents } from './events';
 

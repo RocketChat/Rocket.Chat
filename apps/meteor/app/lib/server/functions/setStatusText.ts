@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';

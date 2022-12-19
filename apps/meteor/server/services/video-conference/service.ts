@@ -30,8 +30,8 @@ import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
-import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-sdk';
-import { api, ServiceClassInternal } from '@rocket.chat/core-sdk';
+import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';

@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';

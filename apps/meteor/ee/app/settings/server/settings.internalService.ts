@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
-import type { IEnterpriseSettings } from '@rocket.chat/core-sdk';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IEnterpriseSettings } from '@rocket.chat/core-services';
 
 import { changeSettingValue } from './settings';
 

@@ -1,4 +1,4 @@
-import { api, ServiceClassInternal } from '@rocket.chat/core-sdk';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';

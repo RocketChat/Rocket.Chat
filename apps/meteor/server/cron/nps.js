@@ -1,4 +1,4 @@
-import { NPS } from '@rocket.chat/core-sdk';
+import { NPS } from '@rocket.chat/core-services';
 
 import { settings } from '../../app/settings/server';
 

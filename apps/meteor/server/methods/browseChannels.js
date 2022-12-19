@@ -4,7 +4,7 @@ import s from 'underscore.string';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms, Users } from '@rocket.chat/models';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../app/authorization/server';
 import { Subscriptions } from '../../app/models/server';

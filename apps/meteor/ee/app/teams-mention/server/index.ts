@@ -1,5 +1,5 @@
 import type { ITeamMember, IMessage } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { onLicense } from '../../license/server';
 import { overwriteClassOnLicense } from '../../license/server/license';

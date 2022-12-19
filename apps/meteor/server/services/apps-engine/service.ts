@@ -1,5 +1,5 @@
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
-import type { IAppsEngineService } from '@rocket.chat/core-sdk';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IAppsEngineService } from '@rocket.chat/core-services';
 
 import { Apps, AppEvents } from '../../../app/apps/server/orchestrator';
 

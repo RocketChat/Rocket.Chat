@@ -1,5 +1,5 @@
 import type { IUser, IPermission, IRoom } from '@rocket.chat/core-typings';
-import { Authorization } from '@rocket.chat/core-sdk';
+import { Authorization } from '@rocket.chat/core-services';
 
 export const hasAllPermissionAsync = async (
 	userId: IUser['_id'],

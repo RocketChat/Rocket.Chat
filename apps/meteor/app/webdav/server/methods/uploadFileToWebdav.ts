@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { MeteorError } from '@rocket.chat/core-sdk';
+import { MeteorError } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';

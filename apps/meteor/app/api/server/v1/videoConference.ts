@@ -6,7 +6,7 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
-import { VideoConf } from '@rocket.chat/core-sdk';
+import { VideoConf } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';

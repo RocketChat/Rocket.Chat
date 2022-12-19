@@ -1,5 +1,5 @@
 import { MongoInternals } from 'meteor/mongo';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';

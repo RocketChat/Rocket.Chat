@@ -19,7 +19,7 @@ import {
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
 import { Messages } from '@rocket.chat/models';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';

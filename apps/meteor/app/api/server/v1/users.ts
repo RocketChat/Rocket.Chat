@@ -21,7 +21,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
-import { Team, api } from '@rocket.chat/core-sdk';
+import { Team, api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';

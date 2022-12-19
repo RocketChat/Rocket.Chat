@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';

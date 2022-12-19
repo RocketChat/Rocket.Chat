@@ -1,4 +1,4 @@
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 export const MentionQueriesEnterprise = {
 	getUsers(sup, usernames) {

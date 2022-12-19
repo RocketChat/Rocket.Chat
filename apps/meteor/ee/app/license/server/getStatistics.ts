@@ -1,7 +1,7 @@
 import { log } from 'console';
 
 import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
-import { Analytics } from '@rocket.chat/core-sdk';
+import { Analytics } from '@rocket.chat/core-services';
 
 import { getModules, getTags, hasLicense } from './license';
 

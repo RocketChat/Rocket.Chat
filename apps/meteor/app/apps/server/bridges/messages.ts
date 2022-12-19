@@ -4,7 +4,7 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';

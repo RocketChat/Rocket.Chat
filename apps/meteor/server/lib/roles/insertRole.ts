@@ -1,4 +1,4 @@
-import { api, MeteorError } from '@rocket.chat/core-sdk';
+import { api, MeteorError } from '@rocket.chat/core-services';
 import { Roles } from '@rocket.chat/models';
 import type { IRole } from '@rocket.chat/core-typings';
 

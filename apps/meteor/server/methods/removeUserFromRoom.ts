@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Team } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
 
 import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/server';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';

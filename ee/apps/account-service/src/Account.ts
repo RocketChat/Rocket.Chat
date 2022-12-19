@@ -1,6 +1,6 @@
 import { Settings } from '@rocket.chat/models';
-import { ServiceClass } from '@rocket.chat/core-sdk';
-import type { IAccount, ILoginResult } from '@rocket.chat/core-sdk';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { IAccount, ILoginResult } from '@rocket.chat/core-services';
 
 import { removeSession } from './lib/removeSession';
 import { loginViaResume } from './lib/loginViaResume';

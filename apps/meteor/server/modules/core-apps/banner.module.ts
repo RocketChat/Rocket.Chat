@@ -1,5 +1,5 @@
-import { Banner } from '@rocket.chat/core-sdk';
-import type { IUiKitCoreApp } from '@rocket.chat/core-sdk';
+import { Banner } from '@rocket.chat/core-services';
+import type { IUiKitCoreApp } from '@rocket.chat/core-services';
 
 export class BannerModule implements IUiKitCoreApp {
 	appId = 'banner-core';

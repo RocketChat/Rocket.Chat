@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-sdk';
-import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-sdk';
+import { Team } from '@rocket.chat/core-services';
+import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';

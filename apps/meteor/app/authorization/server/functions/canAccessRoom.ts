@@ -1,5 +1,5 @@
-import { Authorization } from '@rocket.chat/core-sdk';
-import type { IAuthorization } from '@rocket.chat/core-sdk';
+import { Authorization } from '@rocket.chat/core-services';
+import type { IAuthorization } from '@rocket.chat/core-services';
 
 export const canAccessRoomAsync = Authorization.canAccessRoom;
 export const canAccessRoomIdAsync = Authorization.canAccessRoomId;

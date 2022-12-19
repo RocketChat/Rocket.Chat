@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
-import { Media } from '@rocket.chat/core-sdk';
+import { Media } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';

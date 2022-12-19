@@ -3,7 +3,7 @@ import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Invites } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';

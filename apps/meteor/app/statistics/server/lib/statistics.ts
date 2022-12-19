@@ -23,7 +23,7 @@ import {
 	InstanceStatus,
 	Settings,
 } from '@rocket.chat/models';
-import { Analytics, Team, VideoConf } from '@rocket.chat/core-sdk';
+import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
 import { Users, Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';

@@ -1,6 +1,6 @@
 import { EJSON } from 'meteor/ejson';
 import { FederationServers } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';

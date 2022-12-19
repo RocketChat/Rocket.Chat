@@ -1,4 +1,4 @@
-import { ServiceClass } from '@rocket.chat/core-sdk';
+import { ServiceClass } from '@rocket.chat/core-services';
 
 import './lib/server';
 

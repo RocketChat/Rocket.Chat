@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-sdk';
+import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
