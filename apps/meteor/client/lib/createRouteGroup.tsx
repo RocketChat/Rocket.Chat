@@ -46,8 +46,12 @@ const registerLazyComponentRoute = (
 		});
 	};
 
-	const handleExit = (): void => {
+	const handleExit = (context: Context): void => {
 		computation?.stop();
+		if (context.route.name === context.oldRoute?.name) {
+			return;
+		}
+
 		oldRoute?.route?.name && FlowRouter.go(oldRoute.route.name, oldRoute.params, oldRoute.queryParams);
 	};
 
