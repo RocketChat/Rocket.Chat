@@ -78,5 +78,3 @@ export const readThread = ({ uid, rid, thread }) => {
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, thread._id, clearAlert);
 	callbacks.runAsync('afterReadThread', thread, { rid, uid });
 };
-
-export const readAllThreads = (rid, userId) => Subscriptions.removeAllUnreadThreadsByRoomIdAndUserId(rid, userId);

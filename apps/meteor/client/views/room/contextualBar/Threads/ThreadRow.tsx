@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import React, { memo, MouseEvent, ReactElement } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { useDecryptedMessage } from '../../../../hooks/useDecryptedMessage';
 import { clickableItem } from '../../../../lib/clickableItem';

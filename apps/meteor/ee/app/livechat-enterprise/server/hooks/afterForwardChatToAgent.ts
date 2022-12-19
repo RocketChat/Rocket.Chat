@@ -1,17 +1,16 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
 
 callbacks.add(
 	'livechat.afterForwardChatToAgent',
 	(options: { rid?: string } = {}) => {
 		const { rid } = options;
-
-		const room = LivechatRooms.findOneById(rid);
-		if (!room) {
+		if (!rid) {
 			return options;
 		}
 
-		(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(rid);
+		Promise.await(LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(rid));
 
 		return options;
 	},

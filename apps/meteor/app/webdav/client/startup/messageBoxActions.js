@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../settings';
-import { messageBox } from '../../../ui-utils';
+import { settings } from '../../../settings/client';
+import { messageBox } from '../../../ui-utils/client';
 import { WebdavAccounts } from '../../../models/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { getWebdavServerName } from '../../../../client/lib/getWebdavServerName';
@@ -36,10 +36,17 @@ Meteor.startup(function () {
 				id: `webdav-upload-${account._id.toLowerCase()}`,
 				icon: 'cloud-plus',
 				condition: () => settings.get('Webdav_Integration_Enabled'),
-				action({ rid }) {
+				action({ chat }) {
 					imperativeModal.open({
 						component: WebdavFilePickerModal,
-						props: { rid, onClose: imperativeModal.close, account },
+						props: {
+							onUpload: async (file, description) =>
+								chat.uploads.send(file, {
+									description,
+								}),
+							onClose: imperativeModal.close,
+							account,
+						},
 					});
 				},
 			});

@@ -1,13 +1,14 @@
-import { IRole } from '@rocket.chat/core-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { FC, useCallback, useEffect } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
 import { Roles } from '../../app/models/client/models/Roles';
 import { useReactiveValue } from '../hooks/useReactiveValue';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 class RoleStore extends Emitter<{
 	change: { [_id: string]: IRole };

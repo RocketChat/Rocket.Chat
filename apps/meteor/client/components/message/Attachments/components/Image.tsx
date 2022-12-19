@@ -1,6 +1,7 @@
-import { Dimensions } from '@rocket.chat/core-typings';
+import type { Dimensions } from '@rocket.chat/core-typings';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
-import React, { memo, FC, useState, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { memo, useState, useMemo } from 'react';
 
 import ImageBox from './ImageBox';
 import Load from './Load';

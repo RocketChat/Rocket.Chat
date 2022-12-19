@@ -1,10 +1,11 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../hooks/useForm';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
 
 export type NotificationFormValues = {

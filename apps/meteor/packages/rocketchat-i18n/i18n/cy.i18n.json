@@ -1,5 +1,4 @@
 {
-  "403": "Gwaherddir",
   "500": "Gwall Gweinyddwr Mewnol",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ bellach yn __role__ gan __user_by__",
   "__username__was_set__role__by__user_by_": "Gosodwyd __username__ __role__ gan __user_by__",
@@ -1138,7 +1137,6 @@
   "File_uploaded": "Ffeil wedi'i lwytho i fyny",
   "files": "ffeiliau",
   "Files_only": "Dim ond tynnu'r ffeiliau atodedig, cadw negeseuon",
-  "files_pruned": "ffeiliau wedi'u prunedu",
   "FileUpload": "Llwytho Ffeil",
   "FileUpload_Disabled": "Mae llwythiadau ffeil yn anabl.",
   "FileUpload_Enabled": "Llwythiadau Ffeil Hapus",
@@ -1430,6 +1428,7 @@
   "It_works": "Mae'n gweithio",
   "italics": "italig",
   "Job_Title": "Teitl swydd",
+  "Join": "Ymunwch",
   "Join_audio_call": "Ymunwch â galwad sain",
   "Join_Chat": "Ymunwch â Chat",
   "Join_default_channels": "Ymunwch â sianeli diofyn",
@@ -2576,7 +2575,7 @@
   "User": "Defnyddiwr",
   "User__username__is_now_a_leader_of__room_name_": "Defnyddiwr __username__ bellach yn arweinydd __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Defnyddiwr __username__ bellach yn safonwr __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Defnyddiwr __username__ bellach yn berchennog __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Defnyddiwr __username__ bellach yn berchennog __room_name__",
   "User__username__removed_from__room_name__leaders": "Defnyddiwr __username__ wedi'i dynnu oddi wrth __room_name__ leaders",
   "User__username__removed_from__room_name__moderators": "Defnyddiwr __username__ wedi'i dynnu oddi wrth __room_name__ cymedrolwyr",
   "User__username__removed_from__room_name__owners": "Defnyddiwr __username__ wedi'i dynnu oddi wrth __room_name__ perchnogion",
@@ -2788,5 +2787,14 @@
   "Your_password_is_wrong": "Mae'ch cyfrinair yn anghywir!",
   "Your_push_was_sent_to_s_devices": "Anfonwyd eich gwthio i ddyfeisiau %s",
   "Your_server_link": "Dolen eich gweinydd",
-  "Your_workspace_is_ready": "Mae'ch gweithle yn barod i ddefnyddio 🎉"
+  "Your_workspace_is_ready": "Mae'ch gweithle yn barod i ddefnyddio 🎉",
+  "registration.page.registration.waitActivationWarning": "Cyn i chi allu mewngofnodi, rhaid i'ch gweinydd gael ei weithredu gan weinyddwr.",
+  "registration.page.resetPassword.sent": "Os yw'r e-bost hwn wedi'i gofrestru, byddwn yn anfon cyfarwyddiadau ar sut i ailosod eich cyfrinair. Os na chewch e-bost yn fuan, dewch yn ôl a cheisiwch eto.",
+  "registration.component.login": "Mewngofnodi",
+  "registration.component.login.userNotFound": "Defnyddiwr heb ei ddarganfod",
+  "registration.component.resetPassword": "Ailosod cyfrinair",
+  "registration.component.form.email": "E-bost",
+  "registration.component.form.password": "Cyfrinair",
+  "registration.component.form.divider": "neu",
+  "registration.component.form.submit": "Cyflwyno"
 }

@@ -1,7 +1,8 @@
 import { Skeleton, Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Header } from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import Header from '../../components/Header';
 import VerticalBarSkeleton from '../../components/VerticalBar/VerticalBarSkeleton';
 import ComposerSkeleton from './Room/ComposerSkeleton';
 import RoomLayout from './layout/RoomLayout';

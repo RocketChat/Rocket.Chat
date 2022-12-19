@@ -1,7 +1,9 @@
 import { EventEmitter } from 'events';
 
+import { InstanceStatus } from '@rocket.chat/models';
+
 import type { IBroker, IBrokerNode } from '../types/IBroker';
-import type { ServiceClass } from '../types/ServiceClass';
+import type { ServiceClass, IServiceClass } from '../types/ServiceClass';
 import { asyncLocalStorage } from '..';
 import type { EventSignatures } from './Events';
 import { StreamerCentral } from '../../modules/streamer/streamer.module';
@@ -10,6 +12,8 @@ export class LocalBroker implements IBroker {
 	private methods = new Map<string, (...params: any) => any>();
 
 	private events = new EventEmitter();
+
+	private services = new Set<IServiceClass>();
 
 	async call(method: string, data: any): Promise<any> {
 		const result = await asyncLocalStorage.run(
@@ -49,8 +53,12 @@ export class LocalBroker implements IBroker {
 		}
 	}
 
-	createService(instance: ServiceClass): void {
+	createService(instance: IServiceClass): void {
 		const namespace = instance.getName();
+
+		this.services.add(instance);
+
+		instance.created();
 
 		instance.getEvents().forEach((eventName) => {
 			this.events.on(eventName, (...args) => {
@@ -91,6 +99,13 @@ export class LocalBroker implements IBroker {
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {
-		return [];
+		// TODO models should not be called form here. we should create an abstraction to an internal service to perform this query
+		const instances = await InstanceStatus.find({}, { projection: { _id: 1 } }).toArray();
+
+		return instances.map(({ _id }) => ({ id: _id, available: true }));
+	}
+
+	async start(): Promise<void> {
+		await Promise.all([...this.services].map((service) => service.started()));
 	}
 }

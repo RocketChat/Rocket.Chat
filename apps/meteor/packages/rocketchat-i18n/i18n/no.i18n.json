@@ -1,5 +1,4 @@
 {
-  "403": "Forbudt",
   "500": "Intern server feil",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ er ikke lenger __role__ av __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ble satt __role__ av __user_by__",
@@ -1212,7 +1211,6 @@
   "File_uploaded": "Fil opplastet",
   "files": "filer",
   "Files_only": "Bare fjern vedlagte filer, hold meldinger",
-  "files_pruned": "filer beskjæres",
   "FileUpload": "Filopplasting",
   "FileUpload_Disabled": "Filopplastinger er deaktivert.",
   "FileUpload_Enabled": "Filopplastinger aktivert",
@@ -1507,6 +1505,7 @@
   "It_works": "Det fungerer",
   "italics": "kursiv",
   "Job_Title": "Jobbtittel",
+  "Join": "Bli med",
   "Join_audio_call": "Bli med på lydanrop",
   "Join_Chat": "Bli med på Chat",
   "Join_default_channels": "Bli med i standardkanaler",
@@ -2682,7 +2681,7 @@
   "User": "Bruker",
   "User__username__is_now_a_leader_of__room_name_": "Bruker __username__ er nå leder av __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Bruker __username__ er nå en moderator av __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Bruker __username__ er nå eier av __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Bruker __username__ er nå eier av __room_name__",
   "User__username__removed_from__room_name__leaders": "Bruker __username__ fjernet fra __room_name__ ledere",
   "User__username__removed_from__room_name__moderators": "Bruker __username__ fjernet fra __room_name__ moderatorer",
   "User__username__removed_from__room_name__owners": "Bruker __username__ fjernet fra __room_name__ eiere",
@@ -2899,5 +2898,14 @@
   "Your_password_is_wrong": "Ditt passord er feil!",
   "Your_push_was_sent_to_s_devices": "Din push ble sendt til%s-enheter",
   "Your_server_link": "Din serverkobling",
-  "Your_workspace_is_ready": "Ditt arbeidsområde er klar til bruk 🎉"
+  "Your_workspace_is_ready": "Ditt arbeidsområde er klar til bruk 🎉",
+  "registration.page.registration.waitActivationWarning": "Før du kan logge inn, må kontoen din aktiveres manuelt av en administrator.",
+  "registration.page.resetPassword.sent": "Hvis denne e-posten er registrert, sender vi instruksjoner om hvordan du tilbakestiller passordet ditt. Hvis du ikke mottar en epost, vennligst kom tilbake og prøv igjen.",
+  "registration.component.login": "Logg inn",
+  "registration.component.login.userNotFound": "Bruker ikke funnet",
+  "registration.component.resetPassword": "Tilbakestilling av passord",
+  "registration.component.form.email": "E-post",
+  "registration.component.form.password": "Passord",
+  "registration.component.form.divider": "eller",
+  "registration.component.form.submit": "Sende inn"
 }

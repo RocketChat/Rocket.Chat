@@ -1,9 +1,10 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, Box, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import BurgerMenu from '../../components/BurgerMenu';
-import TemplateHeader from '../../components/Header';
 import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {

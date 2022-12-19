@@ -1,6 +1,7 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import {
 	GenericTable,
@@ -42,12 +43,10 @@ const useQuery = (
 
 const EmailInboxTable = (): ReactElement => {
 	const t = useTranslation();
-
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const query = useQuery({ itemsPerPage, current }, [sortBy, sortDirection]);
-
 	const router = useRoute('admin-email-inboxes');
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
+	const query = useQuery({ itemsPerPage, current }, [sortBy, sortDirection]);
 
 	const onClick = useCallback(
 		(_id) => (): void => {
@@ -61,65 +60,68 @@ const EmailInboxTable = (): ReactElement => {
 
 	const { phase, value: { emailInboxes = [], count = 0 } = {} } = useEndpointData('/v1/email-inbox.list', query);
 
+	const headers = useMemo(
+		() => [
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort}>
+				{t('Name')}
+			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort}>
+				{t('Email')}
+			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='active' direction={sortDirection} active={sortBy === 'active'} onClick={setSort}>
+				{t('Active')}
+			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='action'>{t('Action')}</GenericTableHeaderCell>,
+		],
+		[setSort, sortBy, sortDirection, t],
+	);
+
 	return (
 		<>
-			<GenericTable>
-				<GenericTableHeader>
-					<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
-						{t('Name')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
-						{t('Email')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='active' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
-						{t('Active')}
-					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='sendTest'
-						direction={sortDirection}
-						active={sortBy === 'name'}
-						onClick={setSort}
-						sort='name'
-						w='x200'
-					></GenericTableHeaderCell>
-				</GenericTableHeader>
-				<GenericTableBody>
-					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
-					{phase === AsyncStatePhase.RESOLVED &&
-						count > 0 &&
-						emailInboxes.map((emailInbox) => (
-							<GenericTableRow
-								key={emailInbox._id}
-								onKeyDown={onClick(emailInbox._id)}
-								onClick={onClick(emailInbox._id)}
-								tabIndex={0}
-								role='link'
-								action
-								width='full'
-							>
-								<GenericTableCell fontScale='p1' color='default'>
-									<Box withTruncatedText>{emailInbox.name}</Box>
-								</GenericTableCell>
-								<GenericTableCell fontScale='p1' color='default'>
-									<Box withTruncatedText>{emailInbox.email}</Box>
-								</GenericTableCell>
-								<GenericTableCell fontScale='p1' color='default'>
-									<Box withTruncatedText>{emailInbox.active ? t('Yes') : t('No')}</Box>
-								</GenericTableCell>
-								<SendTestButton id={emailInbox._id} />
-							</GenericTableRow>
-						))}
-				</GenericTableBody>
-			</GenericTable>
-			{phase === AsyncStatePhase.RESOLVED && (
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={count}
-					onSetItemsPerPage={onSetItemsPerPage}
-					onSetCurrent={onSetCurrent}
-					{...paginationProps}
-				/>
+			{phase === AsyncStatePhase.LOADING && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={4} />}</GenericTableBody>
+				</GenericTable>
+			)}
+			{emailInboxes && emailInboxes.length > 0 && phase === AsyncStatePhase.RESOLVED && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+							{emailInboxes.map((emailInbox) => (
+								<GenericTableRow
+									key={emailInbox._id}
+									onKeyDown={onClick(emailInbox._id)}
+									onClick={onClick(emailInbox._id)}
+									tabIndex={0}
+									role='link'
+									action
+									width='full'
+								>
+									<GenericTableCell withTruncatedText>{emailInbox.name}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{emailInbox.email}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{emailInbox.active ? t('Yes') : t('No')}</GenericTableCell>
+									<SendTestButton id={emailInbox._id} />
+								</GenericTableRow>
+							))}
+						</GenericTableBody>
+					</GenericTable>
+					<Pagination
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={count}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
+				</>
+			)}
+			{phase === AsyncStatePhase.RESOLVED && emailInboxes.length === 0 && (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
 			)}
 		</>
 	);

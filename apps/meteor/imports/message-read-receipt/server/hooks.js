@@ -1,6 +1,7 @@
+import { Subscriptions } from '@rocket.chat/models';
+
 import { ReadReceipt } from './lib/ReadReceipt';
 import { callbacks } from '../../../lib/callbacks';
-import { Subscriptions } from '../../../app/models/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -12,7 +13,7 @@ callbacks.add(
 
 		if (room && !room.closedAt) {
 			// set subscription as read right after message was sent
-			Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id);
+			Promise.await(Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id));
 		}
 
 		// mark message as read as well

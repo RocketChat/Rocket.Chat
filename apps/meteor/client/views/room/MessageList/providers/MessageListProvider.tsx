@@ -1,19 +1,16 @@
-import {
-	IRoom,
-	IMessage,
-	isTranslatedMessage,
-	isMessageReactionsNormalized,
-	MessageAttachment,
-	isThreadMainMessage,
-} from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint, useUserRoom } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC, memo } from 'react';
+import type { IRoom, IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isTranslatedMessage, isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
+import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
+import { useRoom } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
-import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
+import type { MessageListContextValue } from '../contexts/MessageListContext';
+import { MessageListContext } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
 
 const fields = {};
@@ -29,7 +26,7 @@ export const MessageListProvider: FC<{
 
 	const { isMobile } = useLayout();
 
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
 	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
@@ -37,7 +34,9 @@ export const MessageListProvider: FC<{
 	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
 	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
-	const showRoles = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
+	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
+	const showRoles = displayRolesGlobal && hideRolesPreference;
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
@@ -164,7 +163,7 @@ export const MessageListProvider: FC<{
 		],
 	);
 
-	const room = useUserRoom(rid);
+	const room = useRoom();
 
 	if (!room) {
 		throw new Error('Room not found');

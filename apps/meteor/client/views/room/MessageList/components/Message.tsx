@@ -2,12 +2,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message as MessageTemplate, MessageLeftContainer, MessageContainer, MessageBody, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useIsMessageHighlight } from '../contexts/MessageHighlightContext';
 import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
+import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContent from './MessageContent';
 import MessageContentIgnored from './MessageContentIgnored';
 import MessageHeader from './MessageHeader';
@@ -15,7 +17,7 @@ import { MessageIndicators } from './MessageIndicators';
 import Toolbox from './Toolbox';
 
 const Message: FC<{
-	message: IMessage;
+	message: MessageWithMdEnforced;
 	sequential: boolean;
 	id: IMessage['_id'];
 	unread: boolean;

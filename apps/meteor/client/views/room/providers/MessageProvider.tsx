@@ -1,6 +1,7 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, MouseEvent, UIEvent } from 'react';
+import type { ReactNode, MouseEvent, UIEvent } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
@@ -10,9 +11,9 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
-import { useTabBarOpen } from './ToolboxProvider';
+import { useTabBarOpen } from '../contexts/ToolboxContext';
 
-export const MessageProvider = memo(function MessageProvider({
+const MessageProvider = memo(function MessageProvider({
 	rid,
 	broadcast,
 	children,
@@ -80,6 +81,7 @@ export const MessageProvider = memo(function MessageProvider({
 		return {
 			oembedEnabled,
 			oembedMaxWidth: isMobile ? ('100%' as const) : ('368px' as `${number}px`),
+			oembedMaxHeight: '368px' as `${number}px`,
 			broadcast: Boolean(broadcast),
 			actions: {
 				runActionLink,
@@ -118,3 +120,5 @@ export const MessageProvider = memo(function MessageProvider({
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 });
+
+export default MessageProvider;

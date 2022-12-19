@@ -26,7 +26,7 @@ const { FederatedUserEE } = proxyquire.noCallThru().load('../../../../../../app/
 });
 const { FederationDMRoomInternalHooksServiceSender } = proxyquire
 	.noCallThru()
-	.load('../../../../../../app/federation-v2/server/application/sender/DMRoomInternalHooksServiceSender', {
+	.load('../../../../../../app/federation-v2/server/application/sender/room/DMRoomInternalHooksServiceSender', {
 		mongodb: {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -44,11 +44,13 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
 		getFederatedUserByInternalUsername: sinon.stub(),
 		createLocalUser: sinon.stub(),
+		getInternalUserByUsername: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -68,7 +70,13 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 	];
 
 	beforeEach(() => {
-		service = new FederationDMRoomInternalHooksServiceSender(roomAdapter as any, userAdapter as any, settingsAdapter as any, bridge as any);
+		service = new FederationDMRoomInternalHooksServiceSender(
+			roomAdapter as any,
+			userAdapter as any,
+			{} as any,
+			settingsAdapter as any,
+			bridge as any,
+		);
 	});
 
 	afterEach(() => {
@@ -78,7 +86,9 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createLocalUser.reset();
+		userAdapter.getInternalUserByUsername.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();
 		bridge.createDirectMessageRoom.reset();
@@ -121,7 +131,6 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 				username: 'username',
 				existsOnlyOnProxyServer: true,
 			});
-			console.log({ inviter });
 			expect(bridge.createUser.calledWith('username', 'name', 'localDomain')).to.be.true;
 			expect(userAdapter.createFederatedUser.calledWith(inviter)).to.be.true;
 		});
@@ -135,7 +144,8 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 			).to.be.rejectedWith('User with internalId internalInviterId not found');
 		});
 
-		it('should create the external room with all the invitees when the inviter is from the same homeserver', async () => {
+		it('should create the external room with all (the external) the invitees when the inviter is from the same homeserver, when at least one invitee is external', async () => {
+			bridge.extractHomeserverOrigin.onCall(0).returns('matrix.com');
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			userAdapter.getFederatedUserByInternalUsername.resolves(user);
@@ -157,6 +167,23 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 			expect(roomAdapter.updateFederatedRoomByInternalRoomId.calledWith('internalRoomId', 'externalRoomId')).to.be.true;
 		});
 
+		it('should NOT create the external room with any invitee when all of them are local only and the inviter is from the same homeserver', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			userAdapter.getFederatedUserByInternalUsername.resolves(user);
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			bridge.createDirectMessageRoom.resolves('externalRoomId');
+
+			await service.onDirectMessageRoomCreation({
+				invitees,
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			} as any);
+
+			expect(bridge.createDirectMessageRoom.called).to.be.false;
+			expect(roomAdapter.updateFederatedRoomByInternalRoomId.called).to.be.false;
+		});
+
 		it('should NOT create the external room with all the invitees when the inviter is NOT from the same homeserver', async () => {
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 			userAdapter.getFederatedUserByInternalId.resolves(user);
@@ -171,7 +198,8 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 			expect(roomAdapter.updateFederatedRoomByInternalRoomId.called).to.be.false;
 		});
 
-		it('should create the invitee user if it does not exists and it is from the same home server', async () => {
+		it('should create the invitee user if it does not exists and it is from the same home server, but he is not the only one, there is also an external invitee', async () => {
+			bridge.extractHomeserverOrigin.onCall(0).returns('matrix.com');
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
@@ -240,7 +268,8 @@ describe('FederationEE - Application - FederationDMRoomInternalHooksServiceSende
 			expect(bridge.createUser.called).to.be.false;
 		});
 
-		it('should throw an error if the invitee is from the same home server but the federated user does not exists', async () => {
+		it('should throw an error if the invitee is from the same home server but the federated user does not exists and also there is at least one external user', async () => {
+			bridge.extractHomeserverOrigin.onCall(0).returns('matrix.com');
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);

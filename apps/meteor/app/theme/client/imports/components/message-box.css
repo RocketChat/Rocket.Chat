@@ -75,7 +75,7 @@
 
 			width: 0;
 
-			content: "\2026"; /* ascii code for the ellipsis character */
+			content: '\2026'; /* ascii code for the ellipsis character */
 			animation: ellipsis steps(4, end) 1.5s infinite;
 			vertical-align: bottom;
 		}
@@ -97,7 +97,7 @@
 		align-items: center;
 
 		&.editing {
-			background-color: var(--message-box-editing-color);
+			background-color: var(--rcx-color-status-background-warning-2, var(--message-box-editing-color));
 		}
 	}
 
@@ -113,6 +113,7 @@
 
 		resize: none;
 
+		color: var(--message-box-color);
 		border: 0;
 		background-color: transparent;
 
@@ -128,12 +129,15 @@
 
 	&__icon {
 		display: flex;
+
 		flex: auto 0 0;
 
 		width: 50px;
 		height: 21px;
 
 		cursor: pointer;
+
+		color: var(--message-box-color);
 		align-items: center;
 		justify-content: center;
 
@@ -144,10 +148,6 @@
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.1s linear;
 		}
-	}
-
-	&__federation_icon {
-		width: 20px;
 	}
 
 	&__action-menu {
@@ -171,8 +171,7 @@
 
 		&-done,
 		&-cancel,
-		&-timer,
-		&-loading {
+		&-timer {
 			display: none;
 		}
 
@@ -207,12 +206,6 @@
 				border-radius: 50%;
 				background-color: red;
 			}
-		}
-
-		&-loading {
-			cursor: pointer;
-
-			animation: spin 1s linear infinite;
 		}
 
 		&--recording {
@@ -354,7 +347,7 @@
 			order: 3;
 		}
 
-		&__audio-message {
+		&__audio-message-container {
 			order: 4;
 		}
 
@@ -364,6 +357,10 @@
 			font-size: 20px;
 			order: 5;
 		}
+	}
+
+	.js-message-action {
+		cursor: pointer;
 	}
 }
 
