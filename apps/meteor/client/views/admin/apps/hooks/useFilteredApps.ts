@@ -63,14 +63,22 @@ export const useFilteredApps = ({
 		}
 
 		if (purchaseType && purchaseType !== 'all') {
-			if (purchaseType === 'paid') {
-				filtered = filtered.filter(filterAppsByPaid);
-			}
-			if (isEnterpriseOnly) {
-				filtered = filtered.filter(filterAppsByEnterprise);
-			}
-			if (purchaseType === 'free' && !isEnterpriseOnly) {
-				filtered = filtered.filter(filterAppsByFree);
+			switch (purchaseType) {
+				case 'paid':
+					filtered = filtered.filter(filterAppsByPaid);
+					break;
+
+				case 'enterprise':
+					filtered = filtered.filter(filterAppsByEnterprise);
+					break;
+
+				case 'free':
+					filtered = filtered.filter(filterAppsByFree);
+					break;
+
+				default:
+					filtered = filtered.filter(filterAppsByFree);
+					break;
 			}
 
 			if (!filtered.length) shouldShowSearchText = false;
