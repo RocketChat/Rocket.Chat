@@ -25,7 +25,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async pdfComplete(data: any): Promise<void> {
+		// Details should be propagated from requestTranscript to here, so we can know where to send the file
+		// And who to notify (userId requesting)
 		// Do something with the file
 		console.log('pdfComplete', data);
+		// Uploads.sendFileMessage(data.userId, null: store, data.file, { msg: 'We need translation here?' })
+		// Uploads.sendFileMessage(rocket.cat, null, data.file, 'We need translation here?') // Your PDF has been generated!
 	}
 }
