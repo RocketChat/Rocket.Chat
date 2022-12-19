@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Team } from '@rocket.chat/core-sdk';
+import { api, Team } from '@rocket.chat/core-sdk';
 
 import { hasPermission } from '../../app/authorization';
 import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import { api } from '../sdk/api';
 
 Meteor.methods({
 	addRoomOwner(rid, userId) {

@@ -13,14 +13,13 @@ import type {
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
 import type { IVoipService } from '@rocket.chat/core-sdk';
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import { api, ServiceClassInternal } from '@rocket.chat/core-sdk';
 
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
-import { api } from '../../sdk/api';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';

@@ -1,9 +1,8 @@
-import type { IRole } from '@rocket.chat/core-typings';
+import { api, MeteorError } from '@rocket.chat/core-sdk';
 import { Roles } from '@rocket.chat/models';
-import { MeteorError } from '@rocket.chat/core-sdk';
+import type { IRole } from '@rocket.chat/core-typings';
 
 import { isValidRoleScope } from '../../../lib/roles/isValidRoleScope';
-import { api } from '../../sdk/api';
 
 type InsertRoleOptions = {
 	broadcastUpdate?: boolean;

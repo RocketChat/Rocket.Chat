@@ -3,11 +3,10 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { MongoInternals } from 'meteor/mongo';
 import { Users } from '@rocket.chat/models';
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import { ServiceClassInternal } from '@rocket.chat/core-sdk';
+import { api, ServiceClassInternal } from '@rocket.chat/core-sdk';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-sdk';
 
 import { metrics } from '../../../app/metrics';
-import { api } from '../../sdk/api';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';

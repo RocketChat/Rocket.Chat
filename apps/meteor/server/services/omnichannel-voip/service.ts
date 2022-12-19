@@ -15,12 +15,11 @@ import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-sdk';
-import { ServiceClassInternal, Voip } from '@rocket.chat/core-sdk';
+import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-sdk';
 
 import { Logger } from '../../lib/logger/Logger';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import type { IOmniRoomClosingMessage } from './internalTypes';
-import { api } from '../../sdk/api';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
