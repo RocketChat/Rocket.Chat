@@ -9,7 +9,7 @@ const VideoConfMessageSkeleton = (): ReactElement => (
 		<VideoConfMessageRow>
 			<Skeleton width='full' pb='x4' />
 		</VideoConfMessageRow>
-		<VideoConfMessageRow backgroundColor='neutral-100'>
+		<VideoConfMessageRow backgroundColor='tint'>
 			<Skeleton width='full' pb='x4' />
 		</VideoConfMessageRow>
 	</VideoConfMessage>

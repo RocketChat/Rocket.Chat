@@ -11,7 +11,7 @@
 		{{#if replyMessageData}}
 			<div class="reply-preview__wrap message-popup">
 			{{#each reply in replyMessageData}}
-				{{> messageBoxReplyPreview input=input replyMessageData=reply}}
+				{{> messageBoxReplyPreview input=input replyMessageData=reply onDismiss=onDismissReply}}
 			{{/each}}
 			</div>
 		{{/if}}
@@ -20,7 +20,7 @@
 			<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}} js-emoji-picker" aria-haspopup="true">
 				{{> icon block="rc-input__icon-svg" icon="emoji"}}
 			</span>
-			
+
 			<textarea aria-label="{{_ 'Message'}}" name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
 			<div class="js-input-message-shadow"></div>
 			{{#if isSendIconVisible}}
@@ -32,7 +32,7 @@
 					{{> Template.dynamic template=customAction.template data=customAction.data }}
 				{{ else }}
 					{{#if canSend}}
-						{{> messageBoxAudioMessage rid=rid tmid=tmid}}
+						{{> AudioMessageRecorder rid=rid tmid=tmid chatContext=chatContext}}
 						<span class="rc-message-box__action-menu js-action-menu" data-desktop aria-haspopup="true" data-qa-id="menu-more-actions">
 							{{#if actions}}
 								<span class="rc-message-box__icon">

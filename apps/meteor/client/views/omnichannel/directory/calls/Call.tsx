@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React, { useEffect, ReactElement, Suspense } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, Suspense } from 'react';
 
 import { openRoom } from '../../../../../app/ui-utils/client/lib/openRoom';
 import { Room, RoomProvider, RoomSkeleton } from '../../../room';

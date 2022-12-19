@@ -54,10 +54,11 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user)) as [];
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user)) as {};
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
-			const avatarData = avatarSuggestions[+service];
+			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
 			if (service !== 'gravatar') {
 				// eslint-disable-next-line dot-notation
 				setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);

@@ -1,6 +1,7 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import {
 	useVideoConfAcceptCall,

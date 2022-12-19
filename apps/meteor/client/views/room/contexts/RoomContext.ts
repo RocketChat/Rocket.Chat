@@ -1,4 +1,5 @@
-import { IRoom, IOmnichannelRoom, isOmnichannelRoom, isVoipRoom, IVoipRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, IOmnichannelRoom, IVoipRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type RoomContextValue = {
@@ -61,6 +62,11 @@ export const useRoomMessages = (): {
 };
 
 export const useOmnichannelRoom = (): IOmnichannelRoom => {
+	// TODO: today if the user do not belong in the room, the room object will not update on new changes
+	// for normal rooms this is OK, but for Omnichannel rooms,
+	// there are cases where an agent can be outside of the room but need to see the room changes
+	// A solution would be to use subscribeToRoom to get the room updates
+
 	const { room } = useContext(RoomContext) || {};
 
 	if (!room) {

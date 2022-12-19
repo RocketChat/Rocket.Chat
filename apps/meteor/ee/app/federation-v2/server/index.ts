@@ -5,7 +5,9 @@ import {
 	federationQueueInstance,
 	rocketMessageAdapter,
 	rocketFileAdapter,
+	rocketNotificationAdapter,
 } from '../../../../app/federation-v2/server';
+import type { IFederationBridgeRegistrationFile } from '../../../../app/federation-v2/server/domain/IFederationBridge';
 import { onToggledFeature } from '../../license/server/license';
 import { FederationFactoryEE } from './infrastructure/Factory';
 
@@ -16,14 +18,17 @@ const rocketUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
 export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
-	rocketSettingsAdapter,
 	rocketFileAdapter,
+	rocketMessageAdapter,
+	rocketSettingsAdapter,
+	rocketNotificationAdapter,
 	federationBridgeEE,
 );
 
 export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	rocketMessageAdapter,
 	federationBridgeEE,
@@ -32,6 +37,7 @@ export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.bu
 export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
+	rocketFileAdapter,
 	rocketSettingsAdapter,
 	federationBridgeEE,
 );
@@ -43,11 +49,41 @@ const runFederationEE = async (): Promise<void> => {
 
 let cancelSettingsObserverEE: () => void;
 
+const onFederationEnabledStatusChangedEE = async (
+	isFederationEnabled: boolean,
+	appServiceId: string,
+	homeServerUrl: string,
+	homeServerDomain: string,
+	bridgeUrl: string,
+	bridgePort: number,
+	homeServerRegistrationFile: IFederationBridgeRegistrationFile,
+): Promise<void> => {
+	federationBridgeEE.onFederationAvailabilityChanged(
+		isFederationEnabled,
+		appServiceId,
+		homeServerUrl,
+		homeServerDomain,
+		bridgeUrl,
+		bridgePort,
+		homeServerRegistrationFile,
+	);
+	if (isFederationEnabled) {
+		FederationFactoryEE.setupListeners(
+			federationRoomInternalHooksServiceSenderEE,
+			federationDMRoomInternalHooksServiceSenderEE,
+			rocketSettingsAdapter,
+		);
+		await import('./infrastructure/rocket-chat/slash-commands');
+		return;
+	}
+	FederationFactoryEE.removeListeners();
+};
+
 onToggledFeature('federation', {
 	up: async () => {
 		await stopFederation(federationRoomServiceSenderEE);
 		cancelSettingsObserverEE = rocketSettingsAdapter.onFederationEnabledStatusChanged(
-			federationBridgeEE.onFederationAvailabilityChanged.bind(federationBridgeEE),
+			onFederationEnabledStatusChangedEE.bind(onFederationEnabledStatusChangedEE),
 		);
 		if (!rocketSettingsAdapter.isFederationEnabled()) {
 			return;
@@ -58,7 +94,7 @@ onToggledFeature('federation', {
 			federationDMRoomInternalHooksServiceSenderEE,
 			rocketSettingsAdapter,
 		);
-		require('./infrastructure/rocket-chat/slash-commands');
+		await import('./infrastructure/rocket-chat/slash-commands');
 	},
 	down: async () => {
 		await federationBridgeEE.stop();

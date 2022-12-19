@@ -1,5 +1,4 @@
 {
-  "403": "Draudžiama",
   "500": "Vidinė serverio klaida",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ tušti kambariai bus pašalinti automatiškai.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ tušti kambariai bus pašalinti automatiškai:<br/> __rooms__.",
@@ -2636,7 +2635,7 @@
   "User": "Vartotojas",
   "User__username__is_now_a_leader_of__room_name_": "Naudotojas __username__ dabar __room_name__ lyderis",
   "User__username__is_now_a_moderator_of__room_name_": "Vartotojas __username__ dabar yra __room_name__ moderatorius",
-  "User__username__is_now_a_owner_of__room_name_": "Naudotojas __username__ dabar __room_name__ savininkas",
+  "User__username__is_now_an_owner_of__room_name_": "Naudotojas __username__ dabar __room_name__ savininkas",
   "User__username__removed_from__room_name__leaders": "Vartotojo __username__ pašalinta iš __room_name__ lyderių",
   "User__username__removed_from__room_name__moderators": "Vartotojas __username__ pašalintas iš __room_name__ moderatorių",
   "User__username__removed_from__room_name__owners": "Vartotojas __username__ pašalintas iš __room_name__ savininkų",
@@ -2849,5 +2848,16 @@
   "Your_password_is_wrong": "Jūsų slaptažodis neteisingas!",
   "Your_push_was_sent_to_s_devices": "Jūsų paspaudimas buvo išsiųstas į%s įrenginius",
   "Your_server_link": "Jūsų serverio nuoroda",
-  "Your_workspace_is_ready": "Jūsų darbo vieta yra paruošta naudoti 🎉"
+  "Your_workspace_is_ready": "Jūsų darbo vieta yra paruošta naudoti 🎉",
+  "registration.page.registration.waitActivationWarning": "Prieš prisijungdami, administratoriaus rankiniu būdu turi įjungti savo sąskaitą.",
+  "registration.page.login.forgot": "Pamiršai slaptažodį",
+  "registration.page.resetPassword.sent": "Jei šis el. Laiškas yra užregistruotas, atsiųsime instrukcijas, kaip iš naujo nustatyti slaptažodį. Jei netrukus negausite el. Laiško, grįžkite ir bandykite dar kartą.",
+  "registration.component.login": "Prisijungti",
+  "registration.component.login.userNotFound": "Vartotojas nerastas",
+  "registration.component.resetPassword": "Atstatyti slaptažodį",
+  "registration.component.form.emailOrUsername": "El. pastas arba vartotojo vardas",
+  "registration.component.form.email": "Paštas",
+  "registration.component.form.password": "Slaptažodis",
+  "registration.component.form.divider": "arba",
+  "registration.component.form.submit": "Pateikti"
 }

@@ -15,7 +15,7 @@ settingsRegistry.addGroup('Federation', function () {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 			i18nDescription: 'FEDERATION_Enabled',
-			alert: 'FEDERATION_Enabled_Alert',
+			alert: 'This_is_a_deprecated_feature_alert',
 			public: true,
 		});
 

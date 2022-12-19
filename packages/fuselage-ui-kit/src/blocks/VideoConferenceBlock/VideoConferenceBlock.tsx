@@ -1,6 +1,5 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { Avatar } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
   VideoConfMessageSkeleton,
   VideoConfMessage,
@@ -8,9 +7,12 @@ import {
   VideoConfMessageIcon,
   VideoConfMessageText,
   VideoConfMessageFooter,
-  VideoConfMessageAction,
   VideoConfMessageUserStack,
   VideoConfMessageFooterText,
+  VideoConfMessageButton,
+  VideoConfMessageContent,
+  VideoConfMessageActions,
+  VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { useContext, memo } from 'react';
@@ -41,7 +43,6 @@ const VideoConferenceBlock = ({
     return <></>;
   }
 
-  const getUserAvatarPath = useUserAvatarPath();
   const result = useVideoConfDataStream({ rid, callId });
 
   const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
@@ -70,6 +71,19 @@ const VideoConferenceBlock = ({
     );
   };
 
+  const openCallInfo: MouseEventHandler<HTMLButtonElement> = (e) => {
+    action(
+      {
+        blockId: callId,
+        appId,
+        actionId: 'info',
+        value: rid,
+        viewId,
+      },
+      e
+    );
+  };
+
   if (result.isSuccess) {
     const { data } = result;
 
@@ -77,15 +91,20 @@ const VideoConferenceBlock = ({
       return (
         <VideoConfMessage>
           <VideoConfMessageRow>
-            <VideoConfMessageIcon />
-            <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
+            <VideoConfMessageContent>
+              <VideoConfMessageIcon />
+              <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
+            </VideoConfMessageContent>
+            <VideoConfMessageActions>
+              <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+            </VideoConfMessageActions>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
             {data.type === 'direct' && (
               <>
-                <VideoConfMessageAction onClick={callAgainHandler}>
+                <VideoConfMessageButton onClick={callAgainHandler}>
                   {t('Call_back')}
-                </VideoConfMessageAction>
+                </VideoConfMessageButton>
                 <VideoConfMessageFooterText>
                   {t('Call_was_not_answered')}
                 </VideoConfMessageFooterText>
@@ -94,24 +113,13 @@ const VideoConferenceBlock = ({
             {data.type !== 'direct' &&
               (data.users.length ? (
                 <>
-                  <VideoConfMessageUserStack>
-                    {data.users.map(({ username }, index) =>
-                      data.users.length <= MAX_USERS ? (
-                        <Avatar
-                          size='x28'
-                          key={index}
-                          data-tooltip={username}
-                          url={getUserAvatarPath(username as string)}
-                        />
-                      ) : (
-                        <></>
-                      )
-                    )}
-                  </VideoConfMessageUserStack>
+                  <VideoConfMessageUserStack users={data.users} />
                   <VideoConfMessageFooterText>
-                    {data.users.length > 6
-                      ? `+ ${MAX_USERS - data.users.length} ${t('Joined')}`
-                      : t('Joined')}
+                    {data.users.length > MAX_USERS
+                      ? t('__usersCount__member_joined', {
+                          usersCount: data.users.length - MAX_USERS,
+                        })
+                      : t('joined')}
                   </VideoConfMessageFooterText>
                 </>
               ) : (
@@ -128,13 +136,15 @@ const VideoConferenceBlock = ({
       return (
         <VideoConfMessage>
           <VideoConfMessageRow>
-            <VideoConfMessageIcon variant='incoming' />
-            <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
+            <VideoConfMessageContent>
+              <VideoConfMessageIcon variant='incoming' />
+              <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
+            </VideoConfMessageContent>
+            <VideoConfMessageActions>
+              <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+            </VideoConfMessageActions>
           </VideoConfMessageRow>
           <VideoConfMessageFooter>
-            <VideoConfMessageAction primary onClick={joinHandler}>
-              {t('Join')}
-            </VideoConfMessageAction>
             <VideoConfMessageFooterText>
               {t('Waiting_for_answer')}
             </VideoConfMessageFooterText>
@@ -146,32 +156,30 @@ const VideoConferenceBlock = ({
     return (
       <VideoConfMessage>
         <VideoConfMessageRow>
-          <VideoConfMessageIcon variant='outgoing' />
-          <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
+          <VideoConfMessageContent>
+            <VideoConfMessageIcon variant='outgoing' />
+            <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
+          </VideoConfMessageContent>
+          <VideoConfMessageActions>
+            <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+          </VideoConfMessageActions>
         </VideoConfMessageRow>
         <VideoConfMessageFooter>
-          <VideoConfMessageAction primary onClick={joinHandler}>
+          <VideoConfMessageButton primary onClick={joinHandler}>
             {t('Join')}
-          </VideoConfMessageAction>
-          <VideoConfMessageUserStack>
-            {data.users.map(({ username }, index) =>
-              data.users.length <= MAX_USERS ? (
-                <Avatar
-                  size='x28'
-                  key={index}
-                  data-tooltip={username}
-                  url={getUserAvatarPath(username as string)}
-                />
-              ) : (
-                <></>
-              )
-            )}
-          </VideoConfMessageUserStack>
-          <VideoConfMessageFooterText>
-            {data.users.length > 6
-              ? `+ ${MAX_USERS - data.users.length} ${t('Joined')}`
-              : t('Joined')}
-          </VideoConfMessageFooterText>
+          </VideoConfMessageButton>
+          {Boolean(data.users.length) && (
+            <>
+              <VideoConfMessageUserStack users={data.users} />
+              <VideoConfMessageFooterText>
+                {data.users.length > MAX_USERS
+                  ? t('__usersCount__member_joined', {
+                      usersCount: data.users.length - MAX_USERS,
+                    })
+                  : t('joined')}
+              </VideoConfMessageFooterText>
+            </>
+          )}
         </VideoConfMessageFooter>
       </VideoConfMessage>
     );

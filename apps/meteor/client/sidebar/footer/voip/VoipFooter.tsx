@@ -1,12 +1,13 @@
-import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { ICallerInfo, VoIpCallerInfo, VoipClientEvents } from '@rocket.chat/core-typings';
+import type { IVoipRoom, ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
+import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, MouseEvent, ReactNode } from 'react';
+import type { ReactElement, MouseEvent, ReactNode } from 'react';
+import React from 'react';
 
 import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
-import { CallActionsType } from '../../../contexts/CallContext';
+import type { CallActionsType } from '../../../contexts/CallContext';
 import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 
 type VoipFooterPropsType = {
@@ -90,12 +91,12 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium className='sidebar--custom-colors'>
+						<ButtonGroup medium className='sidebar--custom-colors' onClick={(e): void => e.stopPropagation()}>
 							<IconButton
 								small
 								disabled={paused}
 								icon={muted ? 'mic-off' : 'mic'}
-								color={muted ? 'neutral-500' : 'info'}
+								color={muted ? 'disabled' : 'hint'}
 								data-tooltip={muted ? t('Turn_on_microphone') : t('Turn_off_microphone')}
 								onClick={(e): void => {
 									e.stopPropagation();
@@ -107,7 +108,7 @@ export const VoipFooter = ({
 								data-tooltip={holdTitle}
 								disabled={!isEnterprise}
 								icon={paused ? 'pause' : 'pause-unfilled'}
-								color={paused ? 'neutral-500' : 'info'}
+								color={paused ? 'disabled' : 'hint'}
 								onClick={handleHold}
 							/>
 							{options && <Menu color='neutral-500' data-tooltip={t('More_options')} options={options} />}

@@ -1,8 +1,8 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
-import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import UserAvatarButton from './UserAvatarButton';
 import Administration from './actions/Administration';
 import CreateRoom from './actions/CreateRoom';
@@ -15,7 +15,6 @@ import Sort from './actions/Sort';
 const HeaderWithData = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
-	useSidebarPaletteColor();
 
 	return (
 		<>

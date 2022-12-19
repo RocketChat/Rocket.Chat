@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';

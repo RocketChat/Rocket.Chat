@@ -1,4 +1,5 @@
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../avatar/UserAvatar';
 

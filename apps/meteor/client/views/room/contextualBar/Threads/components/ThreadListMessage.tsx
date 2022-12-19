@@ -1,7 +1,8 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, memo, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
@@ -24,7 +25,7 @@ type ThreadListMessageProps = {
 	all: boolean;
 	tlm: number;
 	className?: string | string[];
-} & Omit<ComponentProps<typeof Message>, 'className'>;
+} & Omit<ComponentProps<typeof Message>, 'className' | 'is'>;
 
 function ThreadListMessage({
 	_id,
@@ -49,8 +50,8 @@ function ThreadListMessage({
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
-		<Box className={[className, !following && followStyle].flat()} pb='x8'>
-			<Message {...props}>
+		<Box className={[className, !following && followStyle].flat()}>
+			<Box pbs='x16' is={Message} {...props}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>
@@ -95,7 +96,7 @@ function ThreadListMessage({
 						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
 					</Box>
 				</Message.ContainerFixed>
-			</Message>
+			</Box>
 		</Box>
 	);
 }

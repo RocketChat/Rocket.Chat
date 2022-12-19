@@ -1,11 +1,12 @@
 import { OptionDivider } from '@rocket.chat/fuselage';
-import React, { FC, Fragment } from 'react';
+import type { FC } from 'react';
+import React, { Fragment } from 'react';
 
-import { AccountBoxItem, IAppAccountBoxItem, isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import type { AccountBoxItem, IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import { isAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import AdministrationModelList from './AdministrationModelList';
 import AppsModelList from './AppsModelList';
 import AuditModelList from './AuditModelList';
-import SettingsModelList from './SettingsModelList';
 
 type AdministrationListProps = {
 	accountBoxItems: (IAppAccountBoxItem | AccountBoxItem)[];
@@ -15,7 +16,6 @@ type AdministrationListProps = {
 	hasAuditPermission: boolean;
 	hasAuditLogPermission: boolean;
 	hasManageApps: boolean;
-	hasSettingsPermission: boolean;
 };
 
 const AdministrationList: FC<AdministrationListProps> = ({
@@ -23,7 +23,6 @@ const AdministrationList: FC<AdministrationListProps> = ({
 	hasAuditPermission,
 	hasAuditLogPermission,
 	hasManageApps,
-	hasSettingsPermission,
 	hasAdminPermission,
 	closeList,
 }) => {
@@ -32,11 +31,9 @@ const AdministrationList: FC<AdministrationListProps> = ({
 	const showAudit = hasAuditPermission || hasAuditLogPermission;
 	const showManageApps = hasManageApps || !!appBoxItems.length;
 	const showAdmin = hasAdminPermission || !!adminBoxItems.length;
-	const showSettings = hasSettingsPermission;
 
 	const list = [
 		showAdmin && <AdministrationModelList showAdmin={showAdmin} accountBoxItems={adminBoxItems} closeList={closeList} />,
-		showSettings && <SettingsModelList closeList={closeList} />,
 		showManageApps && <AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />,
 		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />,
 	];

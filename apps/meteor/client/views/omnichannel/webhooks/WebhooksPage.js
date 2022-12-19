@@ -1,7 +1,7 @@
 import { Box, FieldGroup, Field, TextInput, MultiSelect, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import Page from '../../../components/Page';
@@ -56,7 +56,7 @@ const WebhooksPage = ({ settings }) => {
 	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(getInitialValues(settings));
 
 	const save = useMethod('livechat:saveIntegration');
-	const test = useMethod('livechat:webhookTest');
+	const test = useEndpoint('POST', '/v1/livechat/webhook.test');
 
 	const { Livechat_webhookUrl, Livechat_secret_token, sendOn } = values;
 

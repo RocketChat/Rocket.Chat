@@ -1,4 +1,5 @@
-import React, { ReactElement, ContextType, useMemo, ReactNode } from 'react';
+import type { ReactElement, ContextType, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import MessageHighlightContext from '../contexts/MessageHighlightContext';

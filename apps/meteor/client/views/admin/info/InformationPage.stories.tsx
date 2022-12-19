@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import InformationPage from './InformationPage';
@@ -287,8 +287,10 @@ export default {
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
 			totalWebRTCCalls: 0,
-			matrixBridgeEnabled: false,
 			uncaughtExceptionsCount: 0,
+			matrixFederation: {
+				enabled: false,
+			},
 		},
 		instances: [],
 	},
