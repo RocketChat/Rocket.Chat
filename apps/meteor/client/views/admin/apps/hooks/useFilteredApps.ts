@@ -8,6 +8,7 @@ import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
 import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';
+import { filterAppsByEnterprise } from '../helpers/filterAppsByEnterprise';
 import { filterAppsByFree } from '../helpers/filterAppsByFree';
 import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
@@ -24,6 +25,7 @@ export const useFilteredApps = ({
 	itemsPerPage,
 	categories = [],
 	purchaseType,
+	isEnterpriseOnly,
 	sortingMethod,
 	status,
 }: {
@@ -33,6 +35,7 @@ export const useFilteredApps = ({
 	itemsPerPage: number;
 	categories?: string[];
 	purchaseType?: string;
+	isEnterpriseOnly?: boolean;
 	sortingMethod?: string;
 	status?: string;
 }): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] }> => {
@@ -60,7 +63,15 @@ export const useFilteredApps = ({
 		}
 
 		if (purchaseType && purchaseType !== 'all') {
-			filtered = purchaseType === 'paid' ? filtered.filter(filterAppsByPaid) : filtered.filter(filterAppsByFree);
+			if (purchaseType === 'paid') {
+				filtered = filtered.filter(filterAppsByPaid);
+			}
+			if (isEnterpriseOnly) {
+				filtered = filtered.filter(filterAppsByEnterprise);
+			}
+			if (purchaseType === 'free' && !isEnterpriseOnly) {
+				filtered = filtered.filter(filterAppsByFree);
+			}
 
 			if (!filtered.length) shouldShowSearchText = false;
 		}
@@ -92,7 +103,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText, allApps: filtered };
-	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
+	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage, isEnterpriseOnly]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {

@@ -119,7 +119,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		showAppPermissionsReviewModal();
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 
 	return (
 		<Box {...props} display='flex' mis='x4'>

@@ -1,4 +1,3 @@
 import type { App } from '../types';
 
-export const filterAppsByPaid = ({ purchaseType, price, isEnterpriseOnly }: Partial<App>): boolean =>
-	purchaseType === 'subscription' || isEnterpriseOnly || Boolean(price);
+export const filterAppsByPaid = ({ purchaseType, price }: Partial<App>): boolean => purchaseType === 'subscription' || Boolean(price);
