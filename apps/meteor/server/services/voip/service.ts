@@ -94,10 +94,6 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		return getServerConfigDataFromSettings(type);
 	}
 
-	getConnector(): CommandHandler {
-		return this.commandHandler;
-	}
-
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
 		return this.commandHandler.executeCommand(Commands.queue_summary);
 	}

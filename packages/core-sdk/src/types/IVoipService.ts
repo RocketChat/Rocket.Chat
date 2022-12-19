@@ -7,11 +7,8 @@ import type {
 	IManagementServerConnectionStatus,
 } from '@rocket.chat/core-typings';
 
-// import type { CommandHandler } from '../../services/voip/connector/asterisk/CommandHandler';
-
 export interface IVoipService {
 	getServerConfigData(serverType: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig;
-	// getConnector(): CommandHandler; // TODO a service cannot return an instance of an object
 	getConnectorVersion(): string;
 	getQueueSummary(): Promise<IVoipConnectorResult>;
 	getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult>;
