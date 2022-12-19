@@ -67,6 +67,10 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastTs));
 	}
 
+	if (lastTs && lastTs > new Date()) {
+		return false;
+	}
+
 	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLoginOrBlock < attemptsUntilBlock) {
@@ -77,10 +81,6 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 
 	if (!lastAttemptAt) {
 		return true;
-	}
-
-	if (lastTs && lastTs > new Date()) {
-		return false;
 	}
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
@@ -118,6 +118,10 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(lastTs));
 	}
 
+	if (lastTs && lastTs > new Date()) {
+		return false;
+	}
+
 	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLoginOrBlock < attemptsUntilBlock) {
@@ -128,10 +132,6 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 
 	if (!lastAttemptAt) {
 		return true;
-	}
-
-	if (lastTs && lastTs > new Date()) {
-		return false;
 	}
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
