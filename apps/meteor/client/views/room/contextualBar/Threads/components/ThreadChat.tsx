@@ -1,9 +1,10 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { isThreadMessage, isEditedMessage } from '@rocket.chat/core-typings';
+import { isThreadMainMessage, isThreadMessage, isEditedMessage } from '@rocket.chat/core-typings';
 import { CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useMethod, useQueryStringParameter, useRoute, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import type { ReactElement, RefCallback, UIEvent } from 'react';
 import React, { useState, useEffect, useCallback, useContext, useRef, useMemo } from 'react';
 
 import { Messages } from '../../../../../../app/models/client';
@@ -94,17 +95,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 			},
 		}),
 		[roomMessageContext],
-	);
-
-	const customClassMain = useMemo(() => {
-		return ['thread-main', mainMessage._id === messageHighlightContext.highlightMessageId ? 'editing' : ''].filter(Boolean).join(' ');
-	}, [mainMessage._id, messageHighlightContext.highlightMessageId]);
-
-	const customClass = useCallback(
-		(message: IMessage): string => {
-			return message._id === messageHighlightContext.highlightMessageId ? 'editing' : '';
-		},
-		[messageHighlightContext.highlightMessageId],
 	);
 
 	const messages = useReactiveValue(
@@ -286,99 +276,93 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 		});
 	}, [getThreadMessages, mainMessage._id]);
 
-	const viewsRef = useRef<Map<string, Blaze.View>>(new Map());
-
-	const mainMessageRef = useCallback(
-		(mainMessage: IMessage, index: number) => (node: HTMLLIElement | null) => {
-			if (node?.parentElement) {
-				const view = Blaze.renderWithData(
-					Template.message,
-					() => ({
-						index,
-						groupable: false,
-						hideRoles: true,
-						msg: mainMessage,
-						room: threadMessageContext.room,
-						subscription: threadMessageContext.subscription,
-						settings: threadMessageContext.settings,
-						templatePrefix: 'thread-',
-						customClass: customClassMain,
-						u: threadMessageContext.u,
-						ignored: false,
-						shouldCollapseReplies: true,
-						chatContext: chat,
-						messageContext,
-					}),
-					node.parentElement,
-					node,
-				);
-
-				viewsRef.current.set(mainMessage._id, view);
-			}
-
-			if (!node && viewsRef.current.has(mainMessage._id)) {
-				const view = viewsRef.current.get(mainMessage._id);
-				if (view) {
-					Blaze.remove(view);
-				}
-				viewsRef.current.delete(mainMessage._id);
-			}
-		},
-		[
-			chat,
-			customClassMain,
-			messageContext,
-			threadMessageContext.room,
-			threadMessageContext.settings,
-			threadMessageContext.subscription,
-			threadMessageContext.u,
-		],
+	const [reactiveThreadMessageContext] = useState(
+		() =>
+			new ReactiveDict(undefined, {
+				...threadMessageContext,
+				'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
+				messageContext,
+				'chatContext': chat,
+			}),
 	);
+	useEffect(() => {
+		reactiveThreadMessageContext.set({
+			...threadMessageContext,
+			'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
+			messageContext,
+			'chatContext': chat,
+		});
+	}, [chat, messageContext, messageHighlightContext.highlightMessageId, reactiveThreadMessageContext, threadMessageContext]);
 
-	const messageRef = useCallback(
-		(message: IMessage, index: number) => (node: HTMLLIElement | null) => {
-			if (node?.parentElement) {
-				const view = Blaze.renderWithData(
-					Template.message,
-					() => ({
-						index,
-						hideRoles: true,
-						msg: message,
-						room: threadMessageContext.room,
-						shouldCollapseReplies: true,
-						subscription: threadMessageContext.subscription,
-						settings: threadMessageContext.settings,
-						templatePrefix: 'thread-',
-						customClass: customClass(message),
-						u: threadMessageContext.u,
-						context: 'threads',
-						chatContext: chat,
-						messageContext,
-					}),
-					node.parentElement,
-					node,
-				);
+	const refs = useRef<Map<IMessage['_id'], { callback: RefCallback<HTMLLIElement>; reactiveMessage: ReactiveVar<IMessage> }>>(new Map());
 
-				viewsRef.current.set(message._id, view);
+	const getRef = useCallback(
+		(message: IMessage, index: number) => {
+			const pair = refs.current.get(message._id);
+
+			if (pair) {
+				pair.reactiveMessage.set(message);
+				return pair.callback;
 			}
 
-			if (!node && viewsRef.current.has(message._id)) {
-				const view = viewsRef.current.get(message._id);
-				if (view) {
+			let view: Blaze.View;
+
+			const reactiveMessage = new ReactiveVar(message);
+
+			const callback = (node: HTMLLIElement | null) => {
+				if (node?.parentElement) {
+					view = Blaze.renderWithData(
+						Template.message,
+						() => {
+							const message = reactiveMessage.get();
+
+							return {
+								index,
+								msg: message,
+								room: reactiveThreadMessageContext.get('room'),
+								subscription: reactiveThreadMessageContext.get('subscription'),
+								settings: reactiveThreadMessageContext.get('settings'),
+								u: reactiveThreadMessageContext.get('u'),
+								chatContext: reactiveThreadMessageContext.get('chatContext'),
+								messageContext: reactiveThreadMessageContext.get('messageContext'),
+								hideRoles: true,
+								shouldCollapseReplies: true,
+								templatePrefix: 'thread-',
+
+								context: 'threads',
+								...(isThreadMainMessage(message)
+									? {
+											customClass: [
+												'thread-main',
+												message._id === reactiveThreadMessageContext.get('messageHighlightContext.highlightMessageId') ? 'editing' : '',
+											]
+												.filter(Boolean)
+												.join(' '),
+											ignored: false,
+											groupable: false,
+									  }
+									: {
+											customClass:
+												message._id === reactiveThreadMessageContext.get('messageHighlightContext.highlightMessageId') ? 'editing' : '',
+											context: 'threads',
+									  }),
+							};
+						},
+						node.parentElement,
+						node,
+					);
+				}
+
+				if (!node) {
 					Blaze.remove(view);
 				}
-				viewsRef.current.delete(message._id);
-			}
+			};
+
+			refs.current.set(message._id, { callback, reactiveMessage });
+
+			return callback;
 		},
-		[
-			chat,
-			customClass,
-			messageContext,
-			threadMessageContext.room,
-			threadMessageContext.settings,
-			threadMessageContext.subscription,
-			threadMessageContext.u,
-		],
+		[reactiveThreadMessageContext],
 	);
 
 	return (
@@ -393,9 +377,9 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 							</li>
 						) : (
 							<>
-								<li key={mainMessage._id} ref={mainMessageRef(mainMessage, 0)} />
+								<li key={mainMessage._id} ref={getRef(mainMessage, -1)} />
 								{messages.map((message, index) => (
-									<li key={message._id} ref={messageRef(message, index + 1)} />
+									<li key={message._id} ref={getRef(message, index)} />
 								))}
 							</>
 						)}
