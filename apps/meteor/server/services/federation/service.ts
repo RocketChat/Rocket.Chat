@@ -1,7 +1,8 @@
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import type { IFederationService } from '../../sdk/types/IFederationService';
-import { federationUserServiceSender } from '../../../app/federation-v2/server';
+import { federationRoomServiceSender, federationUserServiceSender } from '../../../app/federation-v2/server';
 import { settings } from '../../../app/settings/server';
+import { FederationHooks } from '../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
 
 export class FederationService extends ServiceClassInternal implements IFederationService {
 	protected name = 'federation';
@@ -32,5 +33,9 @@ export class FederationService extends ServiceClassInternal implements IFederati
 			}
 			await federationUserServiceSender.afterUserRealNameChanged(_id, name);
 		});
+		this.onEvent(
+			'federation.userRoleChanged',
+			async (data: Record<string, any>): Promise<void> => FederationHooks.afterRoomRoleChanged(federationRoomServiceSender, data),
+		);
 	}
 }

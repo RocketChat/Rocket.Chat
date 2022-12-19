@@ -11,6 +11,7 @@ import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from '../defini
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
+import type { MatrixEventRoomRoomPowerLevelsChanged } from '../definitions/events/RoomPowerLevelsChanged';
 
 export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_CREATED;
@@ -136,5 +137,17 @@ export class MatrixRoomEventRedactedHandler extends MatrixBaseEventHandler {
 
 	public async handle(externalEvent: MatrixEventRoomRedacted): Promise<void> {
 		await this.roomService.onRedactEvent(MatrixRoomReceiverConverter.toRoomRedactEventDto(externalEvent));
+	}
+}
+
+export class MatrixRoomPowerLevelsChangedHandler extends MatrixBaseEventHandler {
+	public eventType: string = MatrixEventType.ROOM_POWER_LEVELS_CHANGED;
+
+	constructor(private roomService: FederationRoomServiceListener) {
+		super();
+	}
+
+	public async handle(externalEvent: MatrixEventRoomRoomPowerLevelsChanged): Promise<void> {
+		await this.roomService.onChangeRoomPowerLevels(MatrixRoomReceiverConverter.toRoomChangePowerLevelsEventDto(externalEvent));
 	}
 }

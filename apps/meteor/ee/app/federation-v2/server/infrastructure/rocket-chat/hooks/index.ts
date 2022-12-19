@@ -51,14 +51,14 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom) => Promise<void>): void {
+	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom, inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
-			(params: { user: IUser | string }, room: IRoom): void => {
+			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
 				if (!room || !isRoomFederated(room)) {
 					return;
 				}
-				Promise.await(callback(params.user, room));
+				Promise.await(callback(params.user, room, params.inviter));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-add-user-to-the-room',

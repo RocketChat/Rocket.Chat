@@ -174,12 +174,14 @@ export class FederationRoomSenderConverterEE {
 		members: (IUser | string)[],
 		internalRoom: IRoom,
 		homeServerDomainName: string,
+		internalInviter?: IUser,
 	): FederationBeforeAddUserToARoomDto {
 		const { invitees } = FederationRoomSenderConverterEE.toBeforeDirectMessageCreatedDto(members, homeServerDomainName);
 
 		return new FederationBeforeAddUserToARoomDto({
 			internalRoomId: internalRoom._id,
 			invitees,
+			internalInviter,
 		});
 	}
 

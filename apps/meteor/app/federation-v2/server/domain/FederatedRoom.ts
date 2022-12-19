@@ -62,6 +62,10 @@ export abstract class AbstractFederatedRoom {
 		return this.internalReference.u?.username;
 	}
 
+	public isTheCreator(userId: string): boolean {
+		return this.internalReference.u?._id === userId;
+	}
+
 	public getCreatorId(): string | undefined {
 		return this.internalReference.u?._id;
 	}

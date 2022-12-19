@@ -126,9 +126,9 @@ export class FederationFactoryEE {
 				FederationRoomSenderConverterEE.toOnDirectMessageCreatedDto(ownerId, room._id, members, homeServerDomain),
 			),
 		);
-		FederationHooksEE.beforeAddUserToARoom(async (user: IUser | string, room: IRoom) =>
+		FederationHooksEE.beforeAddUserToARoom(async (user: IUser | string, room: IRoom, inviter?: IUser) =>
 			roomInternalHooksServiceSender.beforeAddUserToARoom(
-				FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], room, homeServerDomain),
+				FederationRoomSenderConverterEE.toBeforeAddUserToARoomDto([user], room, homeServerDomain, inviter),
 			),
 		);
 		FederationHooksEE.afterRoomNameChanged(async (roomId: string, roomName: string) =>

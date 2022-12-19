@@ -1,5 +1,15 @@
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-import type { IRoom, RoomType, IRocketChatRecord, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	RoomType,
+	IRocketChatRecord,
+	IUser,
+	IMessage,
+	ReadReceipt,
+	ValueOf,
+	AtLeast,
+	ISubscription,
+} from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
 export interface IRoomTypeRouteConfig {
@@ -63,7 +73,12 @@ export interface IRoomTypeClientDirectives {
 	config: IRoomTypeConfig;
 
 	allowRoomSettingChange: (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
-	allowMemberAction: (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>) => boolean;
+	allowMemberAction: (
+		room: Partial<IRoom>,
+		action: ValueOf<typeof RoomMemberActions>,
+		userId: IUser['_id'],
+		userSubscription?: ISubscription,
+	) => boolean;
 	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
@@ -84,7 +99,7 @@ export interface IRoomTypeServerDirectives {
 	config: IRoomTypeConfig;
 
 	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
-	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>) => boolean;
+	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
 	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;

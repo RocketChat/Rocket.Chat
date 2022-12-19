@@ -4,10 +4,14 @@ import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
+import { Messages } from '../../../../../models/server';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { saveRoomName } from '../../../../../channel-settings/server/functions/saveRoomName';
 import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
 import { getFederatedUserByInternalUsername } from './User';
+import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/InternalFederatedRoomRoles';
+import { settings } from '../../../../../settings/server';
+import { api } from '../../../../../../server/sdk/api';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -143,5 +147,80 @@ export class RocketChatRoomAdapter {
 	public async updateFederatedRoomByInternalRoomId(internalRoomId: string, externalRoomId: string): Promise<void> {
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, externalRoomId);
 		await Rooms.setAsFederated(internalRoomId);
+	}
+
+	public async getInternalRoomRolesByUserId(internalRoomId: string, internalUserId: string): Promise<string[]> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(internalRoomId, internalUserId, { projection: { roles: 1 } });
+		if (!subscription) {
+			return [];
+		}
+		return subscription.roles || [];
+	}
+
+	public async applyRoomRolesToUser(
+		federatedRoom: FederatedRoom,
+		federatedUser: FederatedUser,
+		fromUser: FederatedUser,
+		rolesToAdd: ROCKET_CHAT_FEDERATION_ROLES[],
+		rolesToRemove: ROCKET_CHAT_FEDERATION_ROLES[],
+	): Promise<void> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(federatedRoom.getInternalId(), federatedUser.getInternalId(), {
+			projection: { roles: 1 },
+		});
+		if (!subscription) {
+			return;
+		}
+		const { roles: currentRoles = [] } = subscription;
+		const addTheseRoles = rolesToAdd.filter((role) => !currentRoles.includes(role));
+		const removeTheseRoles = rolesToRemove.filter((role) => currentRoles.includes(role));
+		const whoDidTheChange = {
+			_id: fromUser.getInternalId(),
+			username: fromUser.getUsername(),
+		};
+		if (addTheseRoles.length > 0) {
+			await Subscriptions.addRolesByUserId(federatedUser.getInternalId(), addTheseRoles, federatedRoom.getInternalId());
+			await Promise.all(
+				addTheseRoles.map((role) =>
+					Messages.createSubscriptionRoleAddedWithRoomIdAndUser(federatedRoom.getInternalId(), federatedUser.getInternalReference(), {
+						u: whoDidTheChange,
+						role,
+					}),
+				),
+			);
+		}
+		if (removeTheseRoles.length > 0) {
+			await Subscriptions.removeRolesByUserId(federatedUser.getInternalId(), removeTheseRoles, federatedRoom.getInternalId());
+			await Promise.all(
+				removeTheseRoles.map((role) =>
+					Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(federatedRoom.getInternalId(), federatedUser.getInternalReference(), {
+						u: whoDidTheChange,
+						role,
+					}),
+				),
+			);
+		}
+		if (settings.get('UI_DisplayRoles')) {
+			const addedRoles = addTheseRoles.map((role) => this.createRoleUpdateEvent(federatedUser, federatedRoom, role, 'added'));
+			const removedRoles = removeTheseRoles.map((role) => this.createRoleUpdateEvent(federatedUser, federatedRoom, role, 'removed'));
+			[...addedRoles, ...removedRoles].forEach((event) => api.broadcast('user.roleUpdate', event));
+		}
+	}
+
+	private createRoleUpdateEvent(
+		federatedUser: FederatedUser,
+		federatedRoom: FederatedRoom,
+		role: string,
+		action: 'added' | 'removed',
+	): Record<string, any> {
+		return {
+			type: action,
+			_id: role,
+			u: {
+				_id: federatedUser.getInternalId(),
+				username: federatedUser.getUsername(),
+				name: federatedUser.getName(),
+			},
+			scope: federatedRoom.getInternalId(),
+		};
 	}
 }

@@ -1,5 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
+import type { IExternalRolesChangesToApplyInputDto } from '../../../application/input/RoomReceiverDto';
 import {
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
@@ -10,6 +11,7 @@ import {
 	FederationRoomReceiveExternalFileMessageDto,
 	FederationRoomReceiveExternalMessageDto,
 	FederationRoomRedactEventDto,
+	FederationRoomRoomChangePowerLevelsEventDto,
 } from '../../../application/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
@@ -24,6 +26,12 @@ import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopi
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
 import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
+import type {
+	IMatrixEventContentRoomPowerLevelsChanged,
+	MatrixEventRoomRoomPowerLevelsChanged,
+} from '../definitions/events/RoomPowerLevelsChanged';
+import { MATRIX_POWER_LEVELS } from '../definitions/MatrixPowerLevels';
+import { ROCKET_CHAT_FEDERATION_ROLES } from '../../rocket-chat/definitions/InternalFederatedRoomRoles';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '');
@@ -95,6 +103,102 @@ const tryToExtractAndConvertRoomTypeFromTheRoomState = (
 	return {
 		...(externalRoomJoinRule ? { roomType: convertExternalJoinRuleToInternalRoomType(externalRoomJoinRule, matrixRoomIsDirect) } : {}),
 	};
+};
+
+const convertNumericalPowerLevelToInternalRole = (powerLevel: number): ROCKET_CHAT_FEDERATION_ROLES | undefined => {
+	const mapping: Record<number, ROCKET_CHAT_FEDERATION_ROLES | undefined> = {
+		[MATRIX_POWER_LEVELS.USER]: undefined,
+		[MATRIX_POWER_LEVELS.MODERATOR]: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR,
+		[MATRIX_POWER_LEVELS.OWNER]: ROCKET_CHAT_FEDERATION_ROLES.OWNER,
+	};
+
+	if (mapping[powerLevel]) {
+		return mapping[powerLevel];
+	}
+
+	if (powerLevel <= MATRIX_POWER_LEVELS.USER) {
+		return;
+	}
+	if (powerLevel > MATRIX_POWER_LEVELS.USER && powerLevel <= MATRIX_POWER_LEVELS.MODERATOR) {
+		return ROCKET_CHAT_FEDERATION_ROLES.MODERATOR;
+	}
+	return ROCKET_CHAT_FEDERATION_ROLES.OWNER;
+};
+
+const getActionsWhenChangeOwnership = (action: 'add' | 'remove'): { action: 'remove' | 'add'; role: ROCKET_CHAT_FEDERATION_ROLES }[] => [
+	{
+		action,
+		role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR,
+	},
+	{
+		action,
+		role: ROCKET_CHAT_FEDERATION_ROLES.OWNER,
+	},
+];
+const getActionsWhenChangeModerators = (action: 'add' | 'remove'): { action: 'remove' | 'add'; role: ROCKET_CHAT_FEDERATION_ROLES }[] => [
+	{
+		action,
+		role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR,
+	},
+];
+
+const onlyRolesAddedToDefaultUsers = (previousRolesState: { [key: string]: number }, externalUserId: string): boolean =>
+	!previousRolesState[externalUserId];
+
+const verifyIfNewRolesWereAddedForDefaultUsers = (
+	currentRolesState: { [key: string]: number },
+	previousRolesState: { [key: string]: number },
+	changesAlreadyMadeToRoles: IExternalRolesChangesToApplyInputDto,
+): IExternalRolesChangesToApplyInputDto =>
+	Object.keys(currentRolesState)
+		.filter((externalUserId) => onlyRolesAddedToDefaultUsers(previousRolesState, externalUserId))
+		.reduce((externalRolesChangesForDefaultUsers, externalUserId) => {
+			const isCurrentRoleAnOwner =
+				convertNumericalPowerLevelToInternalRole(currentRolesState[externalUserId]) === ROCKET_CHAT_FEDERATION_ROLES.OWNER;
+			externalRolesChangesForDefaultUsers[externalUserId] = isCurrentRoleAnOwner
+				? getActionsWhenChangeOwnership('add')
+				: getActionsWhenChangeModerators('add');
+			return externalRolesChangesForDefaultUsers;
+		}, changesAlreadyMadeToRoles);
+
+const createExternalRolesChangesActions = (
+	currentRolesState: { [key: string]: number },
+	previousRolesState: { [key: string]: number },
+): IExternalRolesChangesToApplyInputDto => {
+	const changesInRolesBasedOnPreviousState = Object.keys(previousRolesState).reduce((externalRolesChangesByUser, externalUserId) => {
+		const currentPowerLevel = currentRolesState[externalUserId];
+		const previousPowerLevel = previousRolesState[externalUserId];
+		const convertedPreviousExternalRole = convertNumericalPowerLevelToInternalRole(previousPowerLevel);
+		const convertedCurrentExternalRole = convertNumericalPowerLevelToInternalRole(currentPowerLevel);
+		const wasPreviousRoleAnOwner = convertedPreviousExternalRole === ROCKET_CHAT_FEDERATION_ROLES.OWNER;
+		const isCurrentRoleAnOwner = convertedCurrentExternalRole === ROCKET_CHAT_FEDERATION_ROLES.OWNER;
+		const isCurrentRoleADefault = currentPowerLevel === undefined;
+		const isStillTheSameRole = currentPowerLevel === previousPowerLevel;
+		const isDowngradingTheRole = currentPowerLevel < previousPowerLevel;
+		if (isCurrentRoleADefault) {
+			externalRolesChangesByUser[externalUserId] = wasPreviousRoleAnOwner
+				? getActionsWhenChangeOwnership('remove')
+				: getActionsWhenChangeModerators('remove');
+			return externalRolesChangesByUser;
+		}
+		if (isStillTheSameRole) {
+			return externalRolesChangesByUser;
+		}
+		if (isDowngradingTheRole) {
+			externalRolesChangesByUser[externalUserId] = [
+				...(convertedPreviousExternalRole ? [{ action: 'remove', role: convertedPreviousExternalRole }] : []),
+				...(convertedCurrentExternalRole ? [{ action: 'add', role: convertedCurrentExternalRole }] : []),
+			];
+			return externalRolesChangesByUser;
+		}
+		externalRolesChangesByUser[externalUserId] = isCurrentRoleAnOwner
+			? getActionsWhenChangeOwnership('add')
+			: getActionsWhenChangeModerators('add');
+
+		return externalRolesChangesByUser;
+	}, {} as IExternalRolesChangesToApplyInputDto);
+
+	return verifyIfNewRolesWereAddedForDefaultUsers(currentRolesState, previousRolesState, changesInRolesBasedOnPreviousState);
 };
 
 export class MatrixRoomReceiverConverter {
@@ -241,6 +345,21 @@ export class MatrixRoomReceiverConverter {
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			redactsEvent: externalEvent.redacts as string,
+		});
+	}
+
+	public static toRoomChangePowerLevelsEventDto(
+		externalEvent: MatrixEventRoomRoomPowerLevelsChanged,
+	): FederationRoomRoomChangePowerLevelsEventDto {
+		return new FederationRoomRoomChangePowerLevelsEventDto({
+			externalEventId: externalEvent.event_id,
+			externalRoomId: externalEvent.room_id,
+			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
+			externalSenderId: externalEvent.sender,
+			roleChangesToApply: createExternalRolesChangesActions(
+				externalEvent.content.users,
+				(externalEvent.prev_content as IMatrixEventContentRoomPowerLevelsChanged)?.users || {},
+			),
 		});
 	}
 }

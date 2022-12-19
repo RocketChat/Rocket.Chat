@@ -19,6 +19,7 @@ import type {
 	FederationRoomReceiveExternalFileMessageDto,
 	FederationRoomRedactEventDto,
 	FederationRoomEditExternalMessageDto,
+	FederationRoomRoomChangePowerLevelsEventDto,
 } from './input/RoomReceiverDto';
 import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
@@ -411,5 +412,37 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 		await handler.handle();
+	}
+
+	public async onChangeRoomPowerLevels(roomPowerLevelsInput: FederationRoomRoomChangePowerLevelsEventDto): Promise<void> {
+		const { externalRoomId, roleChangesToApply = {}, externalSenderId } = roomPowerLevelsInput;
+
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUserWhoChangedThePermission = await this.internalUserAdapter.getFederatedUserByExternalId(externalSenderId);
+		if (!federatedUserWhoChangedThePermission) {
+			return;
+		}
+
+		const federatedUsers = await this.internalUserAdapter.getFederatedUsersByExternalIds(Object.keys(roleChangesToApply));
+
+		await Promise.all(
+			federatedUsers.map((federatedUser) => {
+				const changes = roleChangesToApply[federatedUser.getExternalId()];
+				const rolesToRemove = changes.filter((change) => change.action === 'remove').map((change) => change.role);
+				const rolesToAdd = changes.filter((change) => change.action === 'add').map((change) => change.role);
+
+				return this.internalRoomAdapter.applyRoomRolesToUser(
+					federatedRoom,
+					federatedUser,
+					federatedUserWhoChangedThePermission,
+					rolesToAdd,
+					rolesToRemove,
+				);
+			}),
+		);
 	}
 }

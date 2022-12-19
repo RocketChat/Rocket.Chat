@@ -11,6 +11,7 @@ import {
 	useMethod,
 	useTranslation,
 	useUser,
+	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -45,6 +46,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
+	const subscription = useUserSubscription(rid);
 
 	const { type, fname, name, prid, joined = true } = room; // TODO implement joined
 
@@ -76,8 +78,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 	const hasPermissionToEdit = usePermission('edit-room', rid);
 	const hasPermissionToConvertRoomToTeam = usePermission('create-team');
-	const canDelete = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToDelete : hasPermissionToDelete;
-	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToEdit : hasPermissionToEdit;
+	const canDelete = isFederated ? false && hasPermissionToDelete : hasPermissionToDelete;
+	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room, subscription) && hasPermissionToEdit : hasPermissionToEdit;
 	const canConvertRoomToTeam = isFederated ? false : hasPermissionToConvertRoomToTeam;
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 

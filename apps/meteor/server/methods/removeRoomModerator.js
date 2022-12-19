@@ -63,18 +63,20 @@ Meteor.methods({
 			Promise.await(Team.removeRolesFromMember(team._id, userId, ['moderator']));
 		}
 
+		const event = {
+			type: 'removed',
+			_id: 'moderator',
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			scope: rid,
+		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'removed',
-				_id: 'moderator',
-				u: {
-					_id: user._id,
-					username: user.username,
-					name: user.name,
-				},
-				scope: rid,
-			});
+			api.broadcast('user.roleUpdate', event);
 		}
+		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
 
 		return true;
 	},

@@ -3,7 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { usePermission, useSetModal, useTranslation, useUser, useUserRoom } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -19,6 +19,8 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	const currentUser = useUser();
+	const subscription = useUserSubscription(rid);
+
 	const { _id: uid } = user;
 
 	if (!room) {
@@ -27,14 +29,14 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 
 	const hasPermissionToRemove = usePermission('remove-user', rid);
 	const userCanRemove = isRoomFederated(room)
-		? Federation.isEditableByTheUser(currentUser || undefined, room) && hasPermissionToRemove
+		? Federation.isEditableByTheUser(currentUser || undefined, room, subscription) && hasPermissionToRemove
 		: hasPermissionToRemove;
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const { roomCanRemove } = getRoomDirectives(room);
+	const { roomCanRemove } = getRoomDirectives(room, uid, subscription);
 
 	const removeFromTeam = useEndpointActionExperimental('POST', '/v1/teams.removeMember', t('User_has_been_removed_from_team'));
 	const removeFromRoom = useEndpointActionExperimental('POST', `${endpointPrefix}.kick`, t('User_has_been_removed_from_s', roomName));

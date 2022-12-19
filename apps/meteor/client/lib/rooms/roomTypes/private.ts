@@ -34,9 +34,9 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action) {
+	allowMemberAction(_room, action, showingUserId, userSubscription) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action);
+			return Federation.actionAllowed(_room, action, showingUserId, userSubscription);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

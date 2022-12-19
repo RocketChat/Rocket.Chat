@@ -1,4 +1,4 @@
-import type { IRoom, RoomType, IUser, AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
@@ -23,7 +23,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			allowRoomSettingChange(_room: Partial<IRoom>, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 				return true;
 			},
-			allowMemberAction(_room: Partial<IRoom>, _action: ValueOf<typeof RoomMemberActions>): boolean {
+			allowMemberAction(
+				_room: Partial<IRoom>,
+				_action: ValueOf<typeof RoomMemberActions>,
+				_showingUserId: IUser['_id'],
+				_userSubscription?: ISubscription,
+			): boolean {
 				return false;
 			},
 			roomName(_room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {

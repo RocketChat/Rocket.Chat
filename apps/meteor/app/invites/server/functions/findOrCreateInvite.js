@@ -52,7 +52,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 	}
 
 	const room = Rooms.findOneById(invite.rid);
-	if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.INVITE)) {
+	if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.INVITE, userId)) {
 		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', {
 			method: 'findOrCreateInvite',
 		});

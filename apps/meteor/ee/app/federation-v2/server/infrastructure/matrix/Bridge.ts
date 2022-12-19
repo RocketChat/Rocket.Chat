@@ -9,6 +9,7 @@ import { MatrixEventType } from '../../../../../../app/federation-v2/server/infr
 import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
+import { MATRIX_POWER_LEVELS } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixPowerLevels';
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
 	constructor(
@@ -21,6 +22,29 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		protected eventHandler: (event: AbstractMatrixEvent) => void,
 	) {
 		super(appServiceId, homeServerUrl, homeServerDomain, bridgeUrl, bridgePort, homeServerRegistrationFile, eventHandler);
+	}
+
+	private mountPowerLevelRulesWithMinimumPowerLevelForEachAction(): Record<string, any> {
+		return {
+			ban: MATRIX_POWER_LEVELS.MODERATOR,
+			events_default: MATRIX_POWER_LEVELS.USER,
+			historical: MATRIX_POWER_LEVELS.OWNER,
+			invite: MATRIX_POWER_LEVELS.MODERATOR,
+			kick: MATRIX_POWER_LEVELS.MODERATOR,
+			redact: MATRIX_POWER_LEVELS.MODERATOR,
+			state_default: MATRIX_POWER_LEVELS.MODERATOR,
+			users_default: MATRIX_POWER_LEVELS.USER,
+			events: {
+				'm.room.avatar': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.canonical_alias': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.encryption': MATRIX_POWER_LEVELS.OWNER,
+				'm.room.history_visibility': MATRIX_POWER_LEVELS.OWNER,
+				'm.room.name': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.power_levels': MATRIX_POWER_LEVELS.MODERATOR,
+				'm.room.server_acl': MATRIX_POWER_LEVELS.OWNER,
+				'm.room.tombstone': MATRIX_POWER_LEVELS.OWNER,
+			},
+		};
 	}
 
 	public async createRoom(externalCreatorId: string, roomType: RoomType, roomName: string, roomTopic?: string): Promise<string> {
@@ -40,6 +64,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				creation_content: {
 					was_internally_programatically_created: true,
 				},
+				power_level_content_override: this.mountPowerLevelRulesWithMinimumPowerLevelForEachAction(),
 			},
 		});
 

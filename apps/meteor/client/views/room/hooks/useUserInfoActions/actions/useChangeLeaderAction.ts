@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
@@ -16,13 +16,14 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetLeader = usePermission('set-leader', rid);
+	const userSubscription = useUserSubscription(rid);
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const { roomCanSetLeader } = getRoomDirectives(room);
+	const { roomCanSetLeader } = getRoomDirectives(room, uid, userSubscription);
 	const isLeader = useUserHasRoomRole(uid, rid, 'leader');
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 

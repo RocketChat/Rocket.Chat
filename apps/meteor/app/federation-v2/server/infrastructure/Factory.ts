@@ -12,6 +12,7 @@ import {
 	MatrixRoomMembershipChangedHandler,
 	MatrixRoomMessageSentHandler,
 	MatrixRoomNameChangedHandler,
+	MatrixRoomPowerLevelsChangedHandler,
 	MatrixRoomTopicChangedHandler,
 } from './matrix/handlers/Room';
 import { InMemoryQueue } from './queue/InMemoryQueue';
@@ -206,6 +207,7 @@ export class FederationFactory {
 			new MatrixRoomEventRedactedHandler(roomServiceReceiver),
 			new MatrixMessageReactedHandler(messageServiceReceiver),
 			new MatrixUserTypingStatusChangedHandler(userServiceReceiver),
+			new MatrixRoomPowerLevelsChangedHandler(roomServiceReceiver),
 		];
 	}
 

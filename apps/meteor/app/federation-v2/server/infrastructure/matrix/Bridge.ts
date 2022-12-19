@@ -262,6 +262,15 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalOwnerId).kick(externalRoomId, externalUserId);
 	}
 
+	public async setRoomPowerLevels(
+		externalRoomId: string,
+		externalOwnerId: string,
+		externalUserId: string,
+		powerLevels: number,
+	): Promise<void> {
+		await this.bridgeInstance.getIntent(externalOwnerId).setPowerLevel(externalRoomId, externalUserId, powerLevels);
+	}
+
 	public async redactEvent(externalRoomId: string, externalUserId: string, externalEventId: string): Promise<void> {
 		await this.bridgeInstance.getIntent(externalUserId).matrixClient.redactEvent(externalRoomId, externalEventId);
 	}

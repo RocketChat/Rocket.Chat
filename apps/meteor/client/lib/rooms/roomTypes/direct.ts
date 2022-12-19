@@ -36,9 +36,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room, action) {
+	allowMemberAction(room, action, showingUserId, userSubscription) {
 		if (isRoomFederated(room as IRoom)) {
-			return Federation.actionAllowed(room, action);
+			return Federation.actionAllowed(room, action, showingUserId, userSubscription);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

@@ -18,7 +18,7 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 		throw Error('Room not provided');
 	}
 
-	const { roomCanBlock } = getRoomDirectives(room);
+	const { roomCanBlock } = getRoomDirectives(room, uid, currentSubscription);
 
 	const isUserBlocked = currentSubscription?.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');

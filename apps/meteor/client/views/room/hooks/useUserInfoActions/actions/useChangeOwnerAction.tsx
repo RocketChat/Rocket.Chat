@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
@@ -17,13 +17,14 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const { _id: uid } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
+	const userSubscription = useUserSubscription(rid);
 
 	if (!room) {
 		throw Error('Room not provided');
 	}
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const { roomCanSetOwner } = getRoomDirectives(room);
+	const { roomCanSetOwner } = getRoomDirectives(room, uid, userSubscription);
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';

@@ -63,18 +63,22 @@ Meteor.methods({
 			Promise.await(Team.addRolesToMember(team._id, userId, ['moderator']));
 		}
 
+		const event = {
+			type: 'added',
+			_id: 'moderator',
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: fromUser.name,
+			},
+			scope: rid,
+		};
+
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'added',
-				_id: 'moderator',
-				u: {
-					_id: user._id,
-					username: user.username,
-					name: fromUser.name,
-				},
-				scope: rid,
-			});
+			api.broadcast('user.roleUpdate', event);
 		}
+
+		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
 
 		return true;
 	},

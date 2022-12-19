@@ -36,7 +36,7 @@ slashCommands.add({
 		}
 
 		// You can not archive direct messages.
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE, userId)) {
 			return;
 		}
 

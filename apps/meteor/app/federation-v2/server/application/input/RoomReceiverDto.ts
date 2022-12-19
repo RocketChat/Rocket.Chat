@@ -1,6 +1,7 @@
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import type { EVENT_ORIGIN } from '../../domain/IFederationBridge';
+import type { ROCKET_CHAT_FEDERATION_ROLES } from '../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
 
 interface IFederationBaseInputDto {
 	externalEventId: string;
@@ -60,6 +61,10 @@ export interface IFederationRoomTopicChangeInputDto extends IFederationReceiverB
 
 export interface IFederationRoomRedactEventInputDto extends IFederationReceiverBaseRoomInputDto {
 	redactsEvent: string;
+	externalSenderId: string;
+}
+export interface IFederationRoomChangePowerLevelsInputDto extends IFederationReceiverBaseRoomInputDto {
+	roleChangesToApply: IExternalRolesChangesToApplyInputDto;
 	externalSenderId: string;
 }
 
@@ -347,6 +352,27 @@ export class FederationRoomRedactEventDto extends FederationBaseRoomInputDto {
 	}
 
 	redactsEvent: string;
+
+	externalSenderId: string;
+}
+
+export interface IExternalRolesChangesToApplyInputDto {
+	[key: string]: { action: string; role: ROCKET_CHAT_FEDERATION_ROLES }[];
+}
+export class FederationRoomRoomChangePowerLevelsEventDto extends FederationBaseRoomInputDto {
+	constructor({
+		externalRoomId,
+		normalizedRoomId,
+		externalEventId,
+		roleChangesToApply,
+		externalSenderId,
+	}: IFederationRoomChangePowerLevelsInputDto) {
+		super({ externalRoomId, normalizedRoomId, externalEventId });
+		this.roleChangesToApply = roleChangesToApply;
+		this.externalSenderId = externalSenderId;
+	}
+
+	roleChangesToApply: IExternalRolesChangesToApplyInputDto;
 
 	externalSenderId: string;
 }

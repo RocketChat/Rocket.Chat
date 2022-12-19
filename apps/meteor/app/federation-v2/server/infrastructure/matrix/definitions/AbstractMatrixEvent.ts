@@ -15,6 +15,8 @@ export abstract class AbstractMatrixEvent {
 
 	public unsigned: { age: number; invite_room_state: AbstractMatrixEvent[] };
 
+	public prev_content: IBaseEventContent;
+
 	public user_id: string;
 
 	public redacts?: string;

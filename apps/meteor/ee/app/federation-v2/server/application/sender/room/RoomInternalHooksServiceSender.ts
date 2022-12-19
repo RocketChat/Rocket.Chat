@@ -1,6 +1,7 @@
 import type { RocketChatFileAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatSettingsAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
+import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
 import { FederatedRoomEE } from '../../../domain/FederatedRoom';
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
@@ -48,9 +49,31 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 	}
 
 	public async beforeAddUserToARoom(dmBeforeAddUserToARoomInput: FederationBeforeAddUserToARoomDto): Promise<void> {
-		const { invitees = [] } = dmBeforeAddUserToARoomInput;
+		const { invitees = [], internalInviter, internalRoomId } = dmBeforeAddUserToARoomInput;
 		if (invitees.length === 0) {
 			return;
+		}
+		if (internalInviter) {
+			const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviter._id);
+			if (!federatedUser) {
+				return;
+			}
+
+			const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+			if (!federatedRoom) {
+				return;
+			}
+			const userRolesInThisRoom = await this.internalRoomAdapter.getInternalRoomRolesByUserId(
+				federatedRoom.getInternalId(),
+				federatedUser.getInternalId(),
+			);
+			const canAddUserToARoom =
+				userRolesInThisRoom.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) ||
+				userRolesInThisRoom.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) ||
+				federatedRoom.isTheCreator(federatedUser.getInternalId());
+			if (!canAddUserToARoom) {
+				throw new Error('You are not allowed to add users to this room');
+			}
 		}
 
 		await this.createUsersLocallyOnly(invitees);

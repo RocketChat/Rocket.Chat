@@ -84,4 +84,5 @@ export interface IFederationBridge {
 	): Promise<string>;
 	notifyUserTyping(externalRoomId: string, externalUserId: string, isTyping: boolean): Promise<void>;
 	setUserDisplayName(externalUserId: string, displayName: string): Promise<void>;
+	setRoomPowerLevels(externalRoomId: string, externalOwnerId: string, externalUserId: string, powerLevels: number): Promise<void>;
 }

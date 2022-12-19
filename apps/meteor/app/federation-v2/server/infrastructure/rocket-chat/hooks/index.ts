@@ -2,6 +2,8 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isMessageFromMatrixFederation, isRoomFederated, isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../lib/callbacks';
+import type { FederationRoomServiceSender } from '../../../application/sender/RoomServiceSender';
+import { settings } from '../../../../../settings/server';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
@@ -141,6 +143,38 @@ export class FederationHooks {
 			callbacks.priority.HIGH,
 			'federation-v2-after-room-message-sent',
 		);
+	}
+
+	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data: Record<string, any>): void {
+		if (!data || !settings.get('Federation_Matrix_enabled')) {
+			return;
+		}
+		const {
+			_id: role,
+			type: action,
+			scope: internalRoomId,
+			u: { _id: internalUserId = undefined } = {},
+			givenByUserId: internalOwnerId,
+		} = data;
+		const roleEventsInterestedIn = ['moderator', 'owner'];
+		if (!roleEventsInterestedIn.includes(role)) {
+			return;
+		}
+		const handlers: Record<string, (internalOwnerId: string, internalUserId: string, internalRoomId: string) => Promise<void>> = {
+			'owner-added': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomOwnerAdded(internalOwnerId, internalUserId, internalRoomId),
+			'owner-removed': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomOwnerRemoved(internalOwnerId, internalUserId, internalRoomId),
+			'moderator-added': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomModeratorAdded(internalOwnerId, internalUserId, internalRoomId),
+			'moderator-removed': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomModeratorRemoved(internalOwnerId, internalUserId, internalRoomId),
+		};
+
+		if (!handlers[`${role}-${action}`]) {
+			return;
+		}
+		Promise.await(handlers[`${role}-${action}`](internalOwnerId, internalUserId, internalRoomId));
 	}
 
 	public static removeCEValidation(): void {
