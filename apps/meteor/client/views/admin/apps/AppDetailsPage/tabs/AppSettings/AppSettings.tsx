@@ -1,10 +1,11 @@
-import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
+import type { FC, MutableRefObject } from 'react';
+import React, { useMemo, useEffect } from 'react';
 
-import { ISettings } from '../../../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../../../app/apps/client/@types/IOrchestrator';
 import { useForm } from '../../../../../../hooks/useForm';
 import AppSettingsAssembler from './AppSettingsAssembler';
 

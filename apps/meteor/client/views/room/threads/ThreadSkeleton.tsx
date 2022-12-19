@@ -1,5 +1,6 @@
 import { Modal, Box } from '@rocket.chat/fuselage';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 

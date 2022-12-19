@@ -61,7 +61,7 @@ export interface ILivechatVisitorDTO {
 		overwrite: boolean;
 	}[];
 	connectionData?: {
-		httpHeaders: Record<string, string>;
+		httpHeaders: Record<string, string | string[] | undefined>;
 	};
 }
 

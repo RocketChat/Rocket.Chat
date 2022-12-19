@@ -1,6 +1,7 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, ReactNode, UIEvent, useCallback, useMemo } from 'react';
+import type { ReactElement, ReactNode, UIEvent } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
