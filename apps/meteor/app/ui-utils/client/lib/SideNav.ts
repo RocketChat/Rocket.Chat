@@ -50,17 +50,16 @@ export const SideNav = new (class extends Emitter<{
 	}
 
 	closeFlex(callback: () => void = (): void => undefined): void {
-		console.log('close');
 		const routeName = FlowRouter.current().route?.name;
-		// if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
-		// 	const subscription = Subscriptions.findOne({ rid: RoomManager.lastRid });
-		// 	if (subscription) {
-		// 		roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
-		// 	} else {
-		// 		FlowRouter.go('home');
-		// 	}
-		// }
-		FlowRouter.go('/');
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
+			const subscription = Subscriptions.findOne({ rid: RoomManager.lastRid });
+			if (subscription) {
+				roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+			} else {
+				FlowRouter.go('home');
+			}
+		}
+
 		if (this.animating === true) {
 			return;
 		}

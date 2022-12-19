@@ -24,16 +24,12 @@ const AccountRouter = ({ children }: AccountRouterProps): ReactElement => {
 	}, [routeName, defaultRoute]);
 
 	return children ? (
-		<Suspense fallback={<PageSkeleton />}>
-			{
-				<>
-					<SidenavPortal>
-						<AccountSidebar />
-					</SidenavPortal>
-					{children}
-				</>
-			}
-		</Suspense>
+		<>
+			<Suspense fallback={<PageSkeleton />}>{children}</Suspense>
+			<SidenavPortal>
+				<AccountSidebar />
+			</SidenavPortal>
+		</>
 	) : (
 		<PageSkeleton />
 	);

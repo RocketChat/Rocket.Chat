@@ -20,7 +20,8 @@
 @import 'imports/general/typography.css';
 
 /* Sidebar */
-@import 'imports/components/sidebar/sidebar.css';
+
+/* @import 'imports/components/sidebar/sidebar.css'; */
 @import 'imports/components/sidebar/rooms-list.css';
 
 /* Main */
