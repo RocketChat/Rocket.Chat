@@ -3,15 +3,27 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/css-in-js": "0.31.16",
+		"@babel/core": "~7.20.5",
+		"@rocket.chat/css-in-js": "next",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "0.31.16",
-		"@rocket.chat/fuselage-hooks": "0.31.16",
-		"@rocket.chat/styled": "0.31.16",
+		"@rocket.chat/fuselage": "next",
+		"@rocket.chat/fuselage-hooks": "next",
+		"@rocket.chat/icons": "next",
+		"@rocket.chat/styled": "next",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@storybook/addon-actions": "~6.5.14",
+		"@storybook/addon-docs": "~6.5.14",
+		"@storybook/addon-essentials": "~6.5.14",
+		"@storybook/builder-webpack4": "~6.5.14",
+		"@storybook/manager-webpack4": "~6.5.14",
+		"@storybook/react": "~6.5.14",
+		"@storybook/testing-library": "~0.0.13",
+		"@types/babel__core": "^7.1.20",
 		"@types/jest": "^27.4.1",
-		"eslint": "^8.20.0",
-		"eslint-plugin-react": "^7.30.1",
+		"eslint": "^8.29.0",
+		"eslint-plugin-react": "^7.31.11",
 		"eslint-plugin-react-hooks": "^4.6.0",
+		"eslint-plugin-storybook": "^0.6.7",
 		"jest": "^27.5.1",
 		"ts-jest": "^27.1.4",
 		"typescript": "~4.5.5"
@@ -20,7 +32,9 @@
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
+		"@rocket.chat/ui-contexts": "*",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2"
 	},
@@ -29,11 +43,15 @@
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"jest": "jest",
 		"build": "tsc -p tsconfig.json",
+		"storybook": "start-storybook -p 6006",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"@rocket.chat/emitter": "next"
+	}
 }

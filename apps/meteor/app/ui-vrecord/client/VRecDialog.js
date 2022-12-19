@@ -1,7 +1,9 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { VideoRecorder } from '../../ui';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { VideoRecorder } from '../../ui/client';
+import { t } from '../../utils/client';
 
 export const VRecDialog = new (class {
 	opened = false;
@@ -12,15 +14,24 @@ export const VRecDialog = new (class {
 		this.dialogView = Blaze.render(Template.vrecDialog, document.body);
 	}
 
-	open(source, { rid, tmid }) {
+	/**
+	 * @param {HTMLElement} source
+	 * @param {{ rid: import('@rocket.chat/core-typings').IRoom['_id']; tmid?: import('@rocket.chat/core-typings').IMessage['_id']; chat: import('react').ContextType<typeof import('../../../client/views/room/contexts/ChatContext').ChatContext> }} options
+	 */
+	open(source, { rid, tmid, chat }) {
 		if (!this.dialogView) {
 			this.init();
+		}
+
+		if (!window.MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus')) {
+			dispatchToastMessage({ type: 'error', message: t('Browser_does_not_support_recording_video') });
+			return;
 		}
 
 		this.dialogView.templateInstance().update({
 			rid,
 			tmid,
-			input: source.querySelector('.js-input-message'),
+			chat,
 		});
 
 		this.source = source;
@@ -35,7 +46,7 @@ export const VRecDialog = new (class {
 	close() {
 		$('.vrec-dialog').removeClass('show');
 		this.opened = false;
-		if (this.video != null) {
+		if (this.video) {
 			return VideoRecorder.stop();
 		}
 	}

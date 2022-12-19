@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, useMemo, useCallback, CSSProperties, ReactElement, MutableRefObject } from 'react';
+import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
@@ -14,8 +15,8 @@ import FilterByTypeAndText from './FilterByTypeAndText';
 type RoomParamsType = {
 	text?: string;
 	types?: string[];
-	current?: number;
-	itemsPerPage?: 25 | 50 | 100;
+	current: number;
+	itemsPerPage: 25 | 50 | 100;
 };
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };

@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Divider, SidebarFooter as Footer } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import React, { ReactElement } from 'react';
+import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { settings } from '../../../app/settings/client';
 import { SidebarFooterWatermark } from '../../../ee/client/sidebar/footer/SidebarFooterWatermark';
@@ -14,14 +14,13 @@ const SidebarFooterDefault = (): ReactElement => {
 		}
 
 		& a:any-link {
-			color: ${colors.n600};
-			color: var(--rc-color-primary-light, ${colors.n600});
+			color: ${Palette.text['font-on-info']};
 		}
 	`;
 
 	return (
 		<Footer>
-			<Divider mbs={-2} mbe={0} borderColor={`${colors.n900}40`} />
+			<SidebarDivider />
 			<Box
 				is='footer'
 				pb='x12'

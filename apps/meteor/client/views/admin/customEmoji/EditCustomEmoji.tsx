@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
+import type { FC, ChangeEvent } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
@@ -92,7 +93,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				await deleteAction();
 				dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				onChange();
 				setModal(null);

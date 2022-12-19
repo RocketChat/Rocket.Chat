@@ -1,6 +1,7 @@
-import { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { Base } from './_Base';
 
 export class LivechatInquiry extends Base {
@@ -244,7 +245,7 @@ export class LivechatInquiry extends Base {
 			aggregate.push({ $match: { _id } });
 		}
 
-		return collectionObj.aggregate(aggregate).toArray();
+		return collectionObj.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	removeDefaultAgentById(inquiryId: string): UpdateResult {

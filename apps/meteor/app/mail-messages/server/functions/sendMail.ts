@@ -3,13 +3,25 @@ import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { Filter } from 'mongodb';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { placeholders } from '../../../utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer';
 
-export const sendMail = function (from: string, subject: string, body: string, dryrun: boolean, query: string): void {
+export const sendMail = function ({
+	from,
+	subject,
+	body,
+	dryrun,
+	query,
+}: {
+	from: string;
+	subject: string;
+	body: string;
+	dryrun?: boolean;
+	query?: string;
+}): void {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 
 	if (body.indexOf('[unsubscribe]') === -1) {

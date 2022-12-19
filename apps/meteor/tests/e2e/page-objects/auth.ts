@@ -1,28 +1,34 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
-import { ADMIN_CREDENTIALS } from '../utils/constants';
-
-export class Auth {
+export class Registration {
 	private readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+	get btnSendInstructions(): Locator {
+		return this.page.locator('role=button[name="Send instructions"]');
 	}
 
-	get toastError(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
+	get btnLogin(): Locator {
+		return this.page.locator('role=button[name="Login"]');
 	}
 
-	get btnSubmit(): Locator {
-		return this.page.locator('.login');
+	get goToRegister(): Locator {
+		return this.page.locator('role=link[name="Create an account"]');
+	}
+
+	get main(): Locator {
+		return this.page.locator('role=main[name="Home"]');
+	}
+
+	get backToLogin(): Locator {
+		return this.page.locator('role=link[name="Back to Login"]');
 	}
 
 	get btnRegister(): Locator {
-		return this.page.locator('button.register');
+		return this.page.locator('role=button[name="Join your team"]');
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
@@ -30,51 +36,42 @@ export class Auth {
 	}
 
 	get btnForgotPassword(): Locator {
-		return this.page.locator('.forgot-password');
+		return this.page.locator('role=link[name="Forgot your password?"]');
 	}
 
-	get inputEmailOrUsername(): Locator {
-		return this.page.locator('[name=emailOrUsername]');
+	get username(): Locator {
+		return this.page.locator('role=textbox[name=/username/i]');
 	}
 
 	get inputName(): Locator {
 		return this.page.locator('[name=name]');
 	}
 
-	get textErrorName(): Locator {
-		return this.page.locator('[name=name]~.input-error');
-	}
-
 	get inputEmail(): Locator {
-		return this.page.locator('[name=email]');
-	}
-
-	get textErrorEmail(): Locator {
-		return this.page.locator('[name=email]~.input-error');
+		return this.page.locator('role=textbox[name=/Email/]');
 	}
 
 	get inputPassword(): Locator {
-		return this.page.locator('[name=pass]');
+		return this.page.locator('[name=password]');
 	}
 
-	get textErrorPassword(): Locator {
-		return this.page.locator('[name=pass]~.input-error');
+	get inputReason(): Locator {
+		return this.page.locator('role=textbox[name=/Reason/]');
 	}
 
 	get inputPasswordConfirm(): Locator {
-		return this.page.locator('[name=confirm-pass]');
+		return this.page.locator('[name=passwordConfirmation]');
 	}
 
-	get textErrorPasswordConfirm(): Locator {
-		return this.page.locator('[name=confirm-pass]~.input-error');
+	// get textErrorPasswordConfirm(): Locator {
+	// 	return this.page.locator('[name=confirm-pass]~.input-error');
+	// }
+
+	get forgotPasswordEmailCallout(): Locator {
+		return this.page.locator('role=status');
 	}
 
-	async doLogin(input = ADMIN_CREDENTIALS): Promise<void> {
-		await this.page.goto('/');
-		await this.page.locator('[name=emailOrUsername]').type(input.email);
-		await this.page.locator('[name=pass]').type(input.password);
-		await this.page.locator('.login').click();
-
-		await this.page.waitForSelector('text="Welcome to Rocket.Chat!"');
+	get registrationDisabledCallout(): Locator {
+		return this.page.locator('role=status >> text=/New user registration is currently disabled/');
 	}
 }

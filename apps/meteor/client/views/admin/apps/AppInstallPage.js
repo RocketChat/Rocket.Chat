@@ -1,5 +1,14 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
-import { useSetModal, useRoute, useQueryStringParameter, useEndpoint, useUpload, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useSetModal,
+	useRoute,
+	useQueryStringParameter,
+	useEndpoint,
+	useUpload,
+	useTranslation,
+	useCurrentRoute,
+	useRouteParameter,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
@@ -8,7 +17,8 @@ import { useFileInput } from '../../../hooks/useFileInput';
 import { useForm } from '../../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
-import { handleInstallError } from './helpers';
+import { useAppsReload } from './AppsContext';
+import { handleAPIError, handleInstallError } from './helpers';
 import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
@@ -16,7 +26,16 @@ const placeholderUrl = 'https://rocket.chat/apps/package.zip';
 function AppInstallPage() {
 	const t = useTranslation();
 
-	const appsRoute = useRoute('admin-apps');
+	const reload = useAppsReload();
+
+	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
+	const router = useRoute(currentRouteName);
+
+	const context = useRouteParameter('context');
+
 	const setModal = useSetModal();
 
 	const appId = useQueryStringParameter('id');
@@ -52,13 +71,20 @@ function AppInstallPage() {
 		fileData.append('app', appFile, appFile.name);
 		fileData.append('permissions', JSON.stringify(permissionsGranted));
 
-		if (appId) {
-			await uploadUpdateApp(fileData);
-		} else {
-			app = await uploadApp(fileData);
+		try {
+			if (appId) {
+				await uploadUpdateApp(fileData);
+			} else {
+				app = await uploadApp(fileData);
+			}
+		} catch (e) {
+			handleAPIError(e);
 		}
 
-		appsRoute.push({ context: 'details', id: appId || app.app.id });
+		router.push({ context: 'installed', page: 'info', id: appId || app.app.id });
+
+		reload();
+
 		setModal(null);
 	};
 
@@ -77,17 +103,13 @@ function AppInstallPage() {
 	};
 
 	const handleAppPermissionsReview = async (permissions, appFile, appId) => {
-		if (!permissions || permissions.length === 0) {
-			await sendFile(permissions, appFile, appId);
-		} else {
-			setModal(
-				<AppPermissionsReviewModal
-					appPermissions={permissions}
-					cancel={cancelAction}
-					confirm={(permissions) => sendFile(permissions, appFile, appId)}
-				/>,
-			);
-		}
+		setModal(
+			<AppPermissionsReviewModal
+				appPermissions={permissions}
+				onCancel={cancelAction}
+				onConfirm={(permissionsGranted) => sendFile(permissionsGranted, appFile, appId)}
+			/>,
+		);
 	};
 
 	const install = async () => {
@@ -123,7 +145,7 @@ function AppInstallPage() {
 	};
 
 	const handleCancel = () => {
-		appsRoute.push();
+		router.push({ context, page: 'list' });
 	};
 
 	return (

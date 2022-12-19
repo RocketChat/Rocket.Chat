@@ -9,6 +9,10 @@
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**"]
 		},
+		"@rocket.chat/ui-contexts#build": {
+			"dependsOn": ["^build"],
+			"cache": false
+		},
 		"testunit": {
 			"dependsOn": ["build"],
 			"outputs": []
@@ -30,6 +34,13 @@
 		},
 		"dsv": {
 			"dependsOn": ["build"],
+			"cache": false
+		},
+		"ms": {
+			"dependsOn": ["^build"]
+		},
+		"@rocket.chat/ui-contexts#build": {
+			"dependsOn": ["^build"],
 			"cache": false
 		}
 	}

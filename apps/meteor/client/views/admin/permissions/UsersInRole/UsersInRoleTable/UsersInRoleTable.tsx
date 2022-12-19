@@ -1,15 +1,16 @@
-import { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import { Tile, Pagination } from '@rocket.chat/fuselage';
+import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
+import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import type { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 
-type UsersInRoleTable = {
+type UsersInRoleTableProps = {
 	users: IUserInRole[];
 	reload: () => void;
 	roleName: IRole['name'];
@@ -20,7 +21,16 @@ type UsersInRoleTable = {
 	paginationData: ReturnType<typeof usePagination>;
 };
 
-const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total, rid, paginationData }: UsersInRoleTable): ReactElement => {
+const UsersInRoleTable = ({
+	users,
+	reload,
+	roleName,
+	roleId,
+	description,
+	total,
+	rid,
+	paginationData,
+}: UsersInRoleTableProps): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -34,8 +44,8 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 			try {
 				await removeUser({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				closeModal();
 				reload();
@@ -52,9 +62,10 @@ const UsersInRoleTable = ({ users, reload, roleName, roleId, description, total,
 	return (
 		<>
 			{users.length === 0 && (
-				<Tile fontScale='p2' elevation='0' color='info' textAlign='center'>
-					{t('No_data_found')}
-				</Tile>
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
 			)}
 			{users.length > 0 && (
 				<>

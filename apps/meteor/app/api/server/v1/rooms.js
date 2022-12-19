@@ -12,7 +12,7 @@ import {
 	findRoomsAvailableForTeams,
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
-import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
@@ -81,39 +81,41 @@ API.v1.addRoute(
 	'rooms.upload/:rid',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!canAccessRoomId(this.urlParams.rid, this.userId)) {
 				return API.v1.unauthorized();
 			}
 
-			const [file, fields] = Promise.await(
-				getUploadFormData(
-					{
-						request: this.request,
-					},
-					{ field: 'file' },
-				),
+			const file = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'file', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-field');
 			}
 
+			const { fields } = file;
+			let { fileBuffer } = file;
+
 			const details = {
 				name: file.filename,
-				size: file.fileBuffer.length,
+				size: fileBuffer.length,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
 			};
 
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			const fileStore = FileUpload.getStore('Uploads');
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				file.fileBuffer = Promise.await(Media.stripExifFromBuffer(file.fileBuffer));
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
 			}
-			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
+
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
 			uploadedFile.description = fields.description;
 
@@ -540,7 +542,11 @@ API.v1.addRoute(
 				dateTo = new Date(dateTo);
 				dateTo.setDate(dateTo.getDate() + 1);
 
-				sendFile(
+				if (dateFrom > dateTo) {
+					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
+				}
+
+				dataExport.sendFile(
 					{
 						rid,
 						format,
@@ -563,7 +569,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = sendViaEmail(
+				const result = dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers,

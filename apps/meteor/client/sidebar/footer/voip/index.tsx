@@ -1,6 +1,7 @@
 import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import {
@@ -61,14 +62,6 @@ export const VoipFooter = (): ReactElement | null => {
 		return subtitles[state] || '';
 	};
 
-	const tooltips = {
-		mute: t('Mute'),
-		holdCall: t('Hold_Call'),
-		holdCallEEOnly: t('Hold_Call_EE_only'),
-		acceptCall: t('Accept_Call'),
-		endCall: t('End_Call'),
-	};
-
 	const getCallsInQueueText = useMemo((): string => {
 		if (queueCounter === 0) {
 			return t('Calls_in_queue_empty');
@@ -96,13 +89,11 @@ export const VoipFooter = (): ReactElement | null => {
 			paused={paused}
 			toggleMic={toggleMic}
 			togglePause={togglePause}
-			tooltips={tooltips}
 			createRoom={createRoom}
 			openRoom={openRoom}
 			callsInQueue={getCallsInQueueText}
 			dispatchEvent={dispatchEvent}
 			openedRoomInfo={openedRoomInfo}
-			anonymousText={t('Anonymous')}
 			isEnterprise={isEnterprise}
 			options={options}
 		/>

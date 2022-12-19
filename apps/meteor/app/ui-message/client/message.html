@@ -132,7 +132,7 @@
 				{{/each}}
 			{{/if}}
 			{{#if hasAttachments}}
-				{{> reactAttachments attachments=msg.attachments file=msg.file }}
+				{{> reactAttachments attachments=msg.attachments file=msg.file messageContext=messageContext chatContext=chatContext }}
 			{{/if}}
 
 
@@ -143,7 +143,6 @@
 			{{/with}}
 			{{#unless hideMessageActions}}
 				<div class="message-actions">
-
 					<div class="message-actions__buttons">
 						{{#each action in messageActions 'message'}}
 							<button class="message-actions__button" data-qa-type="message-action-menu"  data-message-action="{{action.id}}" title="{{_ action.label}}">

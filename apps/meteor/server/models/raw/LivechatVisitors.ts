@@ -31,6 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
+			{ key: { 'livechatData.$**': 1 } },
 		];
 	}
 
@@ -158,29 +159,64 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	/**
 	 * Find visitors by their email or phone or username or name
 	 */
-	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsername(
-		emailOrPhone: string,
-		nameOrUsername: RegExp,
-		options: FindOptions<ILivechatVisitor>,
-	): FindPaginated<FindCursor<ILivechatVisitor>> {
-		const query = {
+	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
+		emailOrPhone?: string,
+		nameOrUsername?: RegExp,
+		allowedCustomFields: string[] = [],
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
+		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
+			return this.findPaginated({}, options);
+		}
+
+		const query: Filter<ILivechatVisitor> = {
 			$or: [
-				{
-					'visitorEmails.address': emailOrPhone,
-				},
-				{
-					'phone.phoneNumber': emailOrPhone,
-				},
-				{
-					name: nameOrUsername,
-				},
-				{
-					username: nameOrUsername,
-				},
+				...(emailOrPhone
+					? [
+							{
+								'visitorEmails.address': emailOrPhone,
+							},
+							{
+								'phone.phoneNumber': emailOrPhone,
+							},
+					  ]
+					: []),
+				...(nameOrUsername
+					? [
+							{
+								name: nameOrUsername,
+							},
+							{
+								username: nameOrUsername,
+							},
+					  ]
+					: []),
+				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
 		};
 
 		return this.findPaginated(query, options);
+	}
+
+	async findOneByEmailAndPhoneAndCustomField(
+		email: string | null | undefined,
+		phone: string | null | undefined,
+		customFields?: { [key: string]: RegExp },
+	): Promise<ILivechatVisitor | null> {
+		const query = Object.assign(
+			{},
+			{
+				...(email && { visitorEmails: { address: email } }),
+				...(phone && { phone: { phoneNumber: phone } }),
+				...customFields,
+			},
+		);
+
+		if (Object.keys(query).length === 0) {
+			return null;
+		}
+
+		return this.findOne(query);
 	}
 
 	async updateLivechatDataByToken(
@@ -200,11 +236,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			}
 		}
 
-		const update = {
+		const update: UpdateFilter<ILivechatVisitor> = {
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		};
+		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
 
 		return this.updateOne(query, update);
 	}

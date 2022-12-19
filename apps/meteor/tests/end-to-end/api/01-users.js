@@ -28,7 +28,7 @@ function createTestUser() {
 		request
 			.post(api('users.create'))
 			.set(credentials)
-			.send({ email, name: username, username, password })
+			.send({ email, name: username, username, password, joinDefaultChannels: false })
 			.end((err, res) => resolve(res.body.user));
 	});
 }
@@ -65,35 +65,57 @@ function deleteTestUser(user) {
 	});
 }
 
+async function createChannel(userCredentials, name) {
+	const res = await request.post(api('channels.create')).set(userCredentials).send({
+		name,
+	});
+
+	return res.body.channel._id;
+}
+
+async function joinChannel(userCredentials, roomId) {
+	return request.post(api('channels.join')).set(userCredentials).send({
+		roomId,
+	});
+}
+
 describe('[Users]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	it('enabling E2E in server and generating keys to user...', (done) => {
-		updateSetting('E2E_Enable', true).then(() => {
-			request
-				.post(api('e2e.setUserPublicAndPrivateKeys'))
-				.set(credentials)
-				.send({
-					private_key: 'test',
-					public_key: 'test',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
+	it('enabling E2E in server and generating keys to user...', async () => {
+		await updateSetting('E2E_Enable', true);
+		await request
+			.post(api('e2e.setUserPublicAndPrivateKeys'))
+			.set(credentials)
+			.send({
+				private_key: 'test',
+				public_key: 'test',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
+		await request
+			.get(api('e2e.fetchMyKeys'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('public_key', 'test');
+				expect(res.body).to.have.property('private_key', 'test');
+			});
 	});
 
 	describe('[/users.create]', () => {
 		before((done) => clearCustomFields(done));
 		after((done) => clearCustomFields(done));
 
-		it('should create a new user', (done) => {
-			request
+		it('should create a new user', async () => {
+			await request
 				.post(api('users.create'))
 				.set(credentials)
 				.send({
@@ -120,8 +142,16 @@ describe('[Users]', function () {
 
 					targetUser._id = res.body.user._id;
 					targetUser.username = res.body.user.username;
+				});
+
+			await request
+				.post(api('login'))
+				.send({
+					user: apiUsername,
+					password,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should create a new user with custom fields', (done) => {
@@ -883,6 +913,42 @@ describe('[Users]', function () {
 		});
 	});
 
+	describe('[/users.getAvatarSuggestion]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
+		it('should get avatar suggestion of the logged user via userId', (done) => {
+			request
+				.get(api('users.getAvatarSuggestion'))
+				.set(userCredentials)
+				.query({
+					userId: userCredentials['X-User-Id'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('suggestions').and.to.be.an('object');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.update]', () => {
 		before(async () =>
 			Promise.all([
@@ -1582,6 +1648,7 @@ describe('[Users]', function () {
 		});
 	});
 
+	// TODO check for all response fields
 	describe('[/users.setPreferences]', () => {
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
@@ -1605,7 +1672,7 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the user try to update info of an inexistent user', (done) => {
+		it('should return an error when the user try to update info of an nonexistent user', (done) => {
 			const userPreferences = {
 				userId: 'invalid-id',
 				data: {
@@ -1744,8 +1811,103 @@ describe('[Users]', function () {
 		});
 	});
 
+	describe('[/users.sendConfirmationEmail]', () => {
+		it('should send email to user (return success), when is a valid email', (done) => {
+			request
+				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
+				.send({
+					email: adminEmail,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should not send email to user(return error), when is a invalid email', (done) => {
+			request
+				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
+				.send({
+					email: 'invalidEmail',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.getUsernameSuggestion]', () => {
 		const testUsername = `test${+new Date()}`;
+		let targetUser;
+		let userCredentials;
+		before('register a new user...', (done) => {
+			request
+				.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${testUsername}.@teste.com`,
+					username: `${testUsername}test`,
+					name: testUsername,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(done);
+		});
+		before('Login...', (done) => {
+			request
+				.post(api('login'))
+				.send({
+					user: targetUser.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		it('should return an username suggestion', (done) => {
+			request
+				.get(api('users.getUsernameSuggestion'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.exist;
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.checkUsernameAvailability]', () => {
+		it('should return 401 unauthorized when user is not logged in', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		const testUsername = `test-username-123456-${+new Date()}`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
@@ -1753,7 +1915,7 @@ describe('[Users]', function () {
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${testUsername}.@teste.com`,
+					email: `${testUsername}.@test-username.com`,
 					username: `${testUsername}test`,
 					name: testUsername,
 					pass: password,
@@ -1782,15 +1944,47 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should return an username suggestion', (done) => {
+		it('should return true if the username is the same user username set', (done) => {
 			request
-				.get(api('users.getUsernameSuggestion'))
+				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
+				.query({
+					username: targetUser.username,
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.be.equal(testUsername);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
+		});
+
+		it('should return true if the username is available', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.set(userCredentials)
+				.query({
+					username: `${targetUser.username}-${+new Date()}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.be.equal(true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the username is invalid', (done) => {
+			request
+				.get(api('users.checkUsernameAvailability'))
+				.set(userCredentials)
+				.query()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
 		});
@@ -2055,22 +2249,9 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.delete]', () => {
-		const updatePermission = (permission, roles) =>
-			new Promise((resolve) => {
-				request
-					.post(api('permissions.update'))
-					.set(credentials)
-					.send({ permissions: [{ _id: permission, roles }] })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(resolve);
-			});
-		const testUsername = `testuserdelete${+new Date()}`;
 		let targetUser;
 		beforeEach((done) => {
+			const testUsername = `testuserdelete${+new Date()}`;
 			request
 				.post(api('users.register'))
 				.set(credentials)
@@ -3055,9 +3236,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -3089,11 +3270,35 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.autocomplete]', () => {
-		it('should return an empty list when the user does not have the necessary permission', (done) => {
-			updatePermission('view-outside-room', []).then(() => {
+		after(() => {
+			updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+		});
+
+		describe('[without permission]', () => {
+			let user;
+			let userCredentials;
+			let user2;
+			let user2Credentials;
+			let roomId;
+
+			this.timeout(20000);
+
+			before(async () => {
+				user = await createTestUser();
+				user2 = await createTestUser();
+
+				userCredentials = await loginTestUser(user);
+				user2Credentials = await loginTestUser(user2);
+
+				await updatePermission('view-outside-room', []);
+
+				roomId = await createChannel(userCredentials, `channel.autocomplete.${Date.now()}`);
+			});
+
+			it('should return an empty list when the user does not have any subscription', (done) => {
 				request
 					.get(api('users.autocomplete?selector={}'))
-					.set(credentials)
+					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -3102,9 +3307,28 @@ describe('[Users]', function () {
 					})
 					.end(done);
 			});
+
+			it('should return users that are subscribed to the same rooms as the requester', async () => {
+				await joinChannel(user2Credentials, roomId);
+
+				request
+					.get(api('users.autocomplete?selector={}'))
+					.set(userCredentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
+					});
+			});
 		});
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('view-outside-room', ['admin', 'user']).then(() => {
+
+		describe('[with permission]', () => {
+			before(() => {
+				updatePermission('view-outside-room', ['admin', 'user']);
+			});
+
+			it('should return an error when the required parameter "selector" is not provided', () => {
 				request
 					.get(api('users.autocomplete'))
 					.set(credentials)
@@ -3113,21 +3337,77 @@ describe('[Users]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
+					});
+			});
+			it('should return the users to fill auto complete', (done) => {
+				request
+					.get(api('users.autocomplete?selector={}'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array');
 					})
 					.end(done);
 			});
-		});
-		it('should return the users to fill auto complete', (done) => {
-			request
-				.get(api('users.autocomplete?selector={}'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('items').and.to.be.an('array');
-				})
-				.end(done);
+
+			it('should filter results when using allowed operators', (done) => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({
+						selector: JSON.stringify({
+							conditions: {
+								$and: [
+									{
+										active: false,
+									},
+									{
+										status: 'online',
+									},
+								],
+							},
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
+					})
+					.end(done);
+			});
+
+			it('should return an error when using forbidden operators', (done) => {
+				request
+					.get(api('users.autocomplete'))
+					.set(credentials)
+					.query({
+						selector: JSON.stringify({
+							conditions: {
+								$nor: [
+									{
+										username: {
+											$exists: false,
+										},
+									},
+									{
+										status: {
+											$exists: false,
+										},
+									},
+								],
+							},
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -3283,6 +3563,19 @@ describe('[Users]', function () {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
+		it('should return an error when the payload is missing all supported fields', (done) => {
+			request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.removeOtherTokens]', () => {
@@ -3302,9 +3595,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {

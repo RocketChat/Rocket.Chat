@@ -3,7 +3,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings, settingsRegistry } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
 	defaultAuthnContextTemplate,
@@ -278,7 +278,7 @@ export const addSettings = function (name: string): void {
 						i18nDescription: 'SAML_Default_User_Role_Description',
 					});
 
-					this.add(`SAML_Custom_${name}_allowed_clock_drift`, false, {
+					this.add(`SAML_Custom_${name}_allowed_clock_drift`, 0, {
 						type: 'int',
 						invalidValue: 0,
 						i18nLabel: 'SAML_Allowed_Clock_Drift',

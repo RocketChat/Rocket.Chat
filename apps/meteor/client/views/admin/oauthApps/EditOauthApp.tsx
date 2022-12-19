@@ -1,8 +1,10 @@
-import { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
+import type { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
@@ -54,7 +56,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 			dispatchToastMessage({ type: 'success', message: t('Application_updated') });
 			onChange();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -73,7 +75,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				</GenericModal>
 			));
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [close, data._id, deleteApp, dispatchToastMessage, setModal, t]);
 

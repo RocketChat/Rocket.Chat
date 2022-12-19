@@ -1,7 +1,8 @@
-import type { IStats } from '@rocket.chat/core-typings';
+import type { IInstanceStatus, IStats } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import { usePermission, useMethod, useServerInformation, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, memo, ReactElement } from 'react';
+import { usePermission, useServerInformation, useEndpoint, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -18,7 +19,7 @@ const InformationRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
-	const [instances, setInstances] = useState([]);
+	const [instances, setInstances] = useState<IInstanceStatus[]>([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
 	const getInstances = useMethod('instances/get');
@@ -37,7 +38,7 @@ const InformationRoute = (): ReactElement => {
 					return;
 				}
 				setStatistics(statistics);
-				setInstances(instances);
+				setInstances(instances as IInstanceStatus[]);
 			} catch (error) {
 				setError(!!error);
 			} finally {

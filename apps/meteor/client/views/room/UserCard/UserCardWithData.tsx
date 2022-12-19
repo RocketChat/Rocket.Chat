@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
@@ -31,15 +32,16 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 
 	ref.current = target;
 
+	const isLoading = state === AsyncStatePhase.LOADING;
+
 	const user = useMemo(() => {
-		const loading = state === AsyncStatePhase.LOADING;
-		const defaultValue = loading ? undefined : null;
+		const defaultValue = isLoading ? undefined : null;
 
 		const {
 			_id,
 			name = username,
 			roles = defaultValue,
-			statusText,
+			statusText = defaultValue,
 			bio = defaultValue,
 			utcOffset = defaultValue,
 			nickname,
@@ -58,7 +60,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, username, showRealNames, state, getRoles]);
+	}, [data, username, showRealNames, isLoading, getRoles]);
 
 	const handleOpen = useMutableCallback((e) => {
 		open?.(e);
@@ -97,7 +99,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 		<>
 			<Backdrop bg='transparent' onClick={onClose} />
 			<PositionAnimated anchor={ref} placement='top-start' margin={8} visible={AnimatedVisibility.UNHIDING}>
-				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} />
+				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} isLoading={isLoading} />
 			</PositionAnimated>
 		</>
 	);

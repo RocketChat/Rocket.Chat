@@ -1,4 +1,4 @@
-import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { addAction, deleteAction } from '../../../../client/views/room/lib/Toolbox';
 import { Utilities } from '../../../apps/lib/misc/Utilities';

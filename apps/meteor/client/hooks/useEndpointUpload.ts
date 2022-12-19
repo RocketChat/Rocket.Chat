@@ -1,4 +1,5 @@
-import { useToastMessageDispatch, UploadResult, useUpload } from '@rocket.chat/ui-contexts';
+import type { UploadResult } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useUpload } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 export const useEndpointUpload = (
@@ -25,7 +26,7 @@ export const useEndpointUpload = (
 
 				return result as any;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return { success: false };
 			}
 		},

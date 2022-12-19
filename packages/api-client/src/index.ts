@@ -41,7 +41,7 @@ const checkIfIsFormData = (data: any = {}): boolean => {
 		return true;
 	}
 	return Object.values(data).some((value) => {
-		if (typeof value === 'object' && !(value instanceof File)) {
+		if (value && typeof value === 'object' && !(value instanceof File)) {
 			return checkIfIsFormData(value);
 		}
 		return value instanceof File;
@@ -141,6 +141,12 @@ export class RestClient implements RestClientInterface {
 
 			...options,
 		});
+
+		// If the server sent no data, return an empty record as we're only expecting objects.
+		if (response.status === 204) {
+			return {} as any;
+		}
+
 		return response.json();
 	}
 

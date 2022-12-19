@@ -81,6 +81,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findRoomsInsideTeams(autoJoin?: boolean): any;
 
+	findOneDirectRoomContainingAllUserIDs(uids: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
 	countByType(t: IRoom['t']): Promise<number>;
 
 	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
@@ -97,4 +99,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findPaginatedByTypeAndIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
+
+	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 }

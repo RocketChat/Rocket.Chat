@@ -1,5 +1,6 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
-import React, { FC, memo, ReactNode, ComponentProps } from 'react';
+import type { FC, ReactNode, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof Box> }> = ({ children, ...props }) => (
 	<Box
@@ -10,7 +11,7 @@ const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof
 		is='h3'
 		pi='x24'
 		borderBlockEndWidth='x2'
-		borderBlockColor='neutral-200'
+		borderBlockColor='extra-light'
 		{...props}
 	>
 		<Box
@@ -21,7 +22,7 @@ const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof
 			fontScale='h4'
 			flexGrow={1}
 			overflow='hidden'
-			color='neutral-800'
+			color='default'
 		>
 			<Margins inline='x4'>{children}</Margins>
 		</Box>

@@ -1,4 +1,4 @@
-import { IBusinessHourBehavior } from './IBusinessHourBehavior';
+import type { IBusinessHourBehavior } from './IBusinessHourBehavior';
 
 export class SingleBusinessHourBehavior implements IBusinessHourBehavior {
 	getView(): string {

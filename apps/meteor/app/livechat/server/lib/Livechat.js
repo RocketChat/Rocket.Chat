@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors } from '@rocket.chat/models';
+import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -22,11 +22,9 @@ import {
 	LivechatRooms,
 	Messages,
 	Subscriptions,
-	Settings,
 	Rooms,
 	LivechatDepartmentAgents,
 	LivechatDepartment,
-	LivechatCustomField,
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
@@ -39,10 +37,10 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents, validateEmail } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
 import { VideoConf } from '../../../../server/sdk';
+import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('Livechat');
 
@@ -57,7 +55,7 @@ export const Livechat = {
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
-			fields: {
+			projection: {
 				name: 1,
 				username: 1,
 				token: 1,
@@ -378,7 +376,8 @@ export const Livechat = {
 		return false;
 	},
 
-	async saveGuest({ _id, name, email, phone, livechatData = {} }, userId) {
+	async saveGuest(guestData, userId) {
+		const { _id, name, email, phone, livechatData = {} } = guestData;
 		Livechat.logger.debug(`Saving data for visitor ${_id}`);
 		const updateData = {};
 
@@ -393,12 +392,13 @@ export const Livechat = {
 		}
 
 		const customFields = {};
-		const fields = LivechatCustomField.find({ scope: 'visitor' });
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
-			fields.forEach((field) => {
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
+			const fields = LivechatCustomField.findByScope('visitor');
+			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
-					return;
+					continue;
 				}
 				const value = s.trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
@@ -408,8 +408,9 @@ export const Livechat = {
 					}
 				}
 				customFields[field._id] = value;
-			});
+			}
 			updateData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
 		}
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
@@ -513,7 +514,7 @@ export const Livechat = {
 		check(overwrite, Boolean);
 		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
 
-		const customField = LivechatCustomField.findOneById(key);
+		const customField = await LivechatCustomField.findOneById(key);
 		if (!customField) {
 			throw new Meteor.Error('invalid-custom-field');
 		}
@@ -538,39 +539,41 @@ export const Livechat = {
 	getInitSettings() {
 		const rcSettings = {};
 
-		Settings.findNotHiddenPublic([
-			'Livechat_title',
-			'Livechat_title_color',
-			'Livechat_enable_message_character_limit',
-			'Livechat_message_character_limit',
-			'Message_MaxAllowedSize',
-			'Livechat_enabled',
-			'Livechat_registration_form',
-			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
-			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
-			'Language',
-			'Livechat_enable_transcript',
-			'Livechat_transcript_message',
-			'Livechat_fileupload_enabled',
-			'FileUpload_Enabled',
-			'Livechat_conversation_finished_message',
-			'Livechat_conversation_finished_text',
-			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form',
-			'Livechat_registration_form_message',
-			'Livechat_force_accept_data_processing_consent',
-			'Livechat_data_processing_consent_text',
-			'Livechat_show_agent_info',
-			'Livechat_clear_local_storage_when_chat_ended',
-		]).forEach((setting) => {
-			rcSettings[setting._id] = setting.value;
-		});
+		Promise.await(
+			Settings.findNotHiddenPublic([
+				'Livechat_title',
+				'Livechat_title_color',
+				'Livechat_enable_message_character_limit',
+				'Livechat_message_character_limit',
+				'Message_MaxAllowedSize',
+				'Livechat_enabled',
+				'Livechat_registration_form',
+				'Livechat_allow_switching_departments',
+				'Livechat_offline_title',
+				'Livechat_offline_title_color',
+				'Livechat_offline_message',
+				'Livechat_offline_success_message',
+				'Livechat_offline_form_unavailable',
+				'Livechat_display_offline_form',
+				'Omnichannel_call_provider',
+				'Language',
+				'Livechat_enable_transcript',
+				'Livechat_transcript_message',
+				'Livechat_fileupload_enabled',
+				'FileUpload_Enabled',
+				'Livechat_conversation_finished_message',
+				'Livechat_conversation_finished_text',
+				'Livechat_name_field_registration_form',
+				'Livechat_email_field_registration_form',
+				'Livechat_registration_form_message',
+				'Livechat_force_accept_data_processing_consent',
+				'Livechat_data_processing_consent_text',
+				'Livechat_show_agent_info',
+				'Livechat_clear_local_storage_when_chat_ended',
+			]).forEach((setting) => {
+				rcSettings[setting._id] = setting.value;
+			}),
+		);
 
 		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
@@ -579,16 +582,17 @@ export const Livechat = {
 		return rcSettings;
 	},
 
-	saveRoomInfo(roomData, guestData, userId) {
+	async saveRoomInfo(roomData, guestData, userId) {
 		Livechat.logger.debug(`Saving room information on room ${roomData._id}`);
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
-			const fields = LivechatCustomField.find({ scope: 'room' });
-			fields.forEach((field) => {
+		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
+			const fields = LivechatCustomField.findByScope('room');
+			for await (const field of fields) {
 				if (!livechatData.hasOwnProperty(field._id)) {
-					return;
+					continue;
 				}
 				const value = s.trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
@@ -598,11 +602,13 @@ export const Livechat = {
 					}
 				}
 				customFields[field._id] = value;
-			});
+			}
 			roomData.livechatData = customFields;
+			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
 		}
 
 		if (!LivechatRooms.saveRoomById(roomData)) {
+			Livechat.logger.debug(`Failed to save room information on room ${roomData._id}`);
 			return false;
 		}
 
@@ -611,7 +617,7 @@ export const Livechat = {
 		});
 		callbacks.runAsync('livechat.saveRoom', roomData);
 
-		if (!_.isEmpty(guestData.name)) {
+		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 			return (
@@ -710,14 +716,29 @@ export const Livechat = {
 			},
 		};
 
-		return Messages.createTransferHistoryWithRoomIdMessageAndUser(room._id, '', { _id, username }, transfer);
+		const type = 'livechat_transfer_history';
+		const transferMessage = {
+			t: type,
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+		};
+
+		Object.assign(transferMessage, transfer);
+
+		sendMessage(transferredBy, transferMessage, room);
 	},
 
 	async transfer(room, guest, transferData) {
 		Livechat.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
 		if (room.onHold) {
 			Livechat.logger.debug('Cannot transfer. Room is on hold');
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+			throw new Error('error-room-onHold');
 		}
 
 		if (transferData.departmentId) {
@@ -730,7 +751,7 @@ export const Livechat = {
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId) {
+	returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
 		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
@@ -770,7 +791,7 @@ export const Livechat = {
 
 		const transferredBy = normalizeTransferredByData(user, room);
 		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
@@ -798,8 +819,8 @@ export const Livechat = {
 		};
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
-		} catch (e) {
-			Livechat.webhookLogger.error(`Response error on ${11 - attempts} try ->`, e);
+		} catch (err) {
+			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 10 seconds each
 			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
 			setTimeout(
@@ -925,7 +946,7 @@ export const Livechat = {
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
 			LivechatDepartmentAgents.removeByAgentId(_id);
-			Promise.await(LivechatVisitors.removeContactManagerByUsername(username));
+			Promise.await(Promise.all([LivechatVisitors.removeContactManagerByUsername(username), UsersRaw.unsetExtension(_id)]));
 			return true;
 		}
 
@@ -1079,6 +1100,10 @@ export const Livechat = {
 			);
 		}
 
+		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
+			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		}
+
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
@@ -1154,6 +1179,11 @@ export const Livechat = {
 		const visitor = await LivechatVisitors.getVisitorByToken(token, {
 			projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
 		});
+
+		if (!visitor) {
+			throw new Meteor.Error('error-invalid-token', 'Invalid token');
+		}
+
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
 		const timezone = getTimezone(user);
 		Livechat.logger.debug(`Transcript will be sent using ${timezone} as timezone`);
@@ -1354,7 +1384,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			notifications.streamLivechatRoom.emit(room._id, {
+			api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1370,7 +1400,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		notifications.streamLivechatRoom.emit(roomId, {
+		api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});

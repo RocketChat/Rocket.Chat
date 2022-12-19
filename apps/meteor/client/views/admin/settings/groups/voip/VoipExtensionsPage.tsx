@@ -1,7 +1,8 @@
 import { Box, Chip, Table, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo, useCallback, useState } from 'react';
+import type { FC } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../../components/GenericTable';
 import Page from '../../../../../components/Page';
@@ -15,7 +16,7 @@ const VoipExtensionsPage: FC = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ current: number; itemsPerPage: 25 | 50 | 100 }>({
 		current: 0,
 		itemsPerPage: 25,
 	});

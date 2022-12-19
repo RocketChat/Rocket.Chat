@@ -1,8 +1,8 @@
-import type Url from 'url';
+import type { UrlWithStringQuery } from 'url';
 
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { parser } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
@@ -19,7 +19,7 @@ type MessageUrl = {
 	meta: Record<string, string>;
 	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 	ignoreParse?: boolean;
-	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
+	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
 type VoipMessageTypesValues =
@@ -48,20 +48,19 @@ type LivechatMessageTypes =
 	| 'livechat_transfer_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
-	| 'livechat_webrtc_video_call';
-
-type OmnichannelTypesValues =
 	| 'livechat_transfer_history_fallback'
 	| 'livechat-close'
-	| 'omnichannel_placed_chat_on_hold'
-	| 'omnichannel_on_hold_chat_resumed';
+	| 'livechat_webrtc_video_call'
+	| 'livechat-started';
+
+type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_on_hold_chat_resumed';
+
+type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
 type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
-	| 'otr'
-	| 'otr-ack'
 	| 'uj'
 	| 'ul'
 	| 'ru'
@@ -88,10 +87,13 @@ export type MessageTypesValues =
 	| 'room-set-read-only'
 	| 'room-allowed-reacting'
 	| 'room-disallowed-reacting'
+	| 'command'
+	| 'videoconf'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
 	| OmnichannelTypesValues
+	| OtrMessageTypeValues
 	| OtrSystemMessages;
 
 export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
@@ -111,6 +113,7 @@ export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	tmid?: string;
+	tshow?: boolean;
 	ts: Date;
 	mentions?: ({
 		type: MentionType;
@@ -121,16 +124,14 @@ export interface IMessage extends IRocketChatRecord {
 	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
-	md?: ReturnType<typeof parser>;
+	md?: Root;
 
-	// TODO: chapter day frontend - wrong type
-	ignored?: boolean;
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
-		coordinates: [string, string];
+		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
@@ -143,6 +144,7 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
+	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -161,7 +163,7 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 
 	reactions?: {
-		[key: string]: { names?: (string | undefined)[]; usernames: string[] };
+		[key: string]: { names?: (string | undefined)[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
 
 	private?: boolean;
@@ -179,6 +181,9 @@ export interface IMessage extends IRocketChatRecord {
 	html?: string;
 	// Messages sent from visitors have this field
 	token?: string;
+	federation?: {
+		eventId: string;
+	};
 }
 
 export type MessageSystem = {
@@ -191,6 +196,10 @@ export interface IEditedMessage extends IMessage {
 }
 
 export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+	'federation' in message && Boolean(message.federation?.eventId);
 
 export interface ITranslatedMessage extends IMessage {
 	translations: { [key: string]: string } & { original?: string };

@@ -3,15 +3,17 @@
 		<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread">
-				{{# with messageContext}}
+				{{#with _messageContext}}
 				{{#if isLoading}}
 					<li class="load-more">
 						{{> loading}}
 					</li>
 				{{else}}
-						{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u ignored=false shouldCollapseReplies=true}}
+						{{#if mainMessage }}
+							{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings templatePrefix='thread-' customClass=customClassMain u=u ignored=false shouldCollapseReplies=true chatContext=chatContext messageContext=messageContext}}
+						{{/if}}
 						{{#each msg in messages}}
-							{{> message hideRoles=true msg=msg room=room shouldCollapseReplies=true subscription=subscription settings=settings templatePrefix='thread-' u=u context="threads"}}
+							{{> message hideRoles=true msg=msg room=room shouldCollapseReplies=true subscription=subscription settings=settings templatePrefix='thread-' customClass=(customClass msg)  u=u context="threads"  chatContext=chatContext messageContext=messageContext}}
 						{{/each}}
 					{{/if}}
 				{{/with}}
@@ -19,7 +21,7 @@
 		</div>
 		{{> messageBox messageBoxData}}
 		<footer class="thread-footer">
-			{{# with checkboxData }}
+			{{#with checkboxData }}
 				<div style="display: flex;">
 					{{> Checkbox . }}
 				</div>

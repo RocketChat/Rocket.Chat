@@ -1,5 +1,6 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useEffect } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect } from 'react';
 
 import { CachedChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';

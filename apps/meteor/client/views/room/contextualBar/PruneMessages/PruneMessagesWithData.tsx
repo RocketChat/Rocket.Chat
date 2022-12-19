@@ -1,12 +1,14 @@
-import { IRoom, IUser, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { useCallback, useEffect, useState, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';
-import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
+import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {
@@ -89,11 +91,11 @@ const PruneMessagesWithData = ({ rid, tabBar }: { rid: IRoom['_id']; tabBar: Too
 					throw new Error(t('No_messages_found_to_prune'));
 				}
 
-				dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
+				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
 				closeModal();
 				reset();
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
 				closeModal();
 			}
 		};

@@ -1,13 +1,14 @@
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { HTMLAttributes, memo } from 'react';
+import type { HTMLAttributes } from 'react';
+import React, { memo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
+import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import UserInfo from '../../room/contextualBar/UserInfo';
 import { useFormsSubscription } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
 
@@ -36,9 +37,11 @@ export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
-			<Box alignSelf='center'>
-				<UserInfo.Avatar data-qa='AgentUserInfoAvatar' size={'x332'} username={username} />
-			</Box>
+			{username && (
+				<Box alignSelf='center'>
+					<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
+				</Box>
+			)}
 
 			<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
 				{children}

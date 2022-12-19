@@ -1,6 +1,6 @@
 declare module 'meteor/rocketchat:tap-i18n' {
-	import { Tracker } from 'meteor/tracker';
-	import i18next from 'i18next';
+	import type { Tracker } from 'meteor/tracker';
+	import type i18next from 'i18next';
 
 	namespace TAPi18n {
 		function __(
@@ -9,7 +9,14 @@ declare module 'meteor/rocketchat:tap-i18n' {
 				lng?: string;
 			} & {
 				[replacements: string]: boolean | number | string | string[];
-			},
+			} & (
+					| {
+							postProcess: 'sprintf';
+							sprintf: (boolean | number | string)[];
+					  }
+					| Record<string, any>
+				),
+			lang?: string,
 		): string;
 		function getLanguages(): {
 			[language: string]: {
@@ -17,6 +24,7 @@ declare module 'meteor/rocketchat:tap-i18n' {
 				en: string;
 			};
 		};
+		function getLanguage(): string;
 		function setLanguage(language: string): void;
 
 		const _language_changed_tracker: Tracker.Dependency;

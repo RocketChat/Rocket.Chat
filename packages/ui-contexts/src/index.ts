@@ -12,8 +12,8 @@ export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './S
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
-export { UserContext, UserContextValue } from './UserContext';
-export { DeviceContext, Device, IExperimentalHTMLAudioElement } from './DeviceContext';
+export { UserContext, UserContextValue, LoginService } from './UserContext';
+export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -37,6 +37,9 @@ export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPo
 export { useLayoutSizes } from './hooks/useLayoutSizes';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
+export { useLoginServices } from './hooks/useLoginServices';
+export { useLoginWithService } from './hooks/useLoginWithService';
+export { useLoginWithToken } from './hooks/useLoginWithToken';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
@@ -76,6 +79,7 @@ export { useUserSubscriptions } from './hooks/useUserSubscriptions';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
 export { useAvailableDevices } from './hooks/useAvailableDevices';
+export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabled';
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 

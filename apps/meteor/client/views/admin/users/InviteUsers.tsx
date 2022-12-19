@@ -1,6 +1,7 @@
 import { Box, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, ReactElement, ChangeEvent, ComponentProps } from 'react';
+import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import VerticalBar from '../../../components/VerticalBar';
@@ -18,8 +19,8 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 		try {
 			await sendInvites(getEmails(text));
 			dispatchToastMessage({ type: 'success', message: t('Emails_sent_successfully!') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

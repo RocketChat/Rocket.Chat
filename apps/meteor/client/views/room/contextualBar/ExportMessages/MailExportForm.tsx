@@ -1,9 +1,10 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, useContext, FC, MouseEventHandler } from 'react';
+import type { FC, MouseEventHandler } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
@@ -128,7 +129,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error as string | Error,
+				message: error,
 			});
 		}
 	};

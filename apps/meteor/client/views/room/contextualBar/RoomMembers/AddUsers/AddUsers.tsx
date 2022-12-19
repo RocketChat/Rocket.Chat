@@ -1,8 +1,10 @@
-import { IUser } from '@rocket.chat/core-typings';
-import { Field, Button } from '@rocket.chat/fuselage';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Field, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
+import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import VerticalBar from '../../../../../components/VerticalBar';
 
@@ -11,10 +13,11 @@ type AddUsersProps = {
 	onClickBack?: () => void;
 	onClickSave: () => Promise<void>;
 	users: Exclude<IUser['username'], undefined>[];
-	onChange: (value: IUser['username'][]) => void;
+	isRoomFederated: boolean;
+	onChange: (value: IUser['username'][], action?: string) => void;
 };
 
-const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: AddUsersProps): ReactElement => {
+const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, isRoomFederated, onChange }: AddUsersProps): ReactElement => {
 	const t = useTranslation();
 
 	return (
@@ -25,15 +28,23 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, users, onChange }: A
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<Field>
-					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-					<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
-				</Field>
+				<FieldGroup>
+					<Field>
+						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
+						{isRoomFederated ? (
+							<UserAutoCompleteMultipleFederated value={users} onChange={onChange} placeholder={t('Choose_users')} />
+						) : (
+							<UserAutoCompleteMultiple value={users} onChange={onChange} placeholder={t('Choose_users')} />
+						)}
+					</Field>
+				</FieldGroup>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
-					{t('Add_users')}
-				</Button>
+				<ButtonGroup stretch>
+					<Button primary disabled={!users || users.length === 0} onClick={onClickSave}>
+						{t('Add_users')}
+					</Button>
+				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
 	);

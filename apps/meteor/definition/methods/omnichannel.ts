@@ -1,3 +1,4 @@
+import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
 import '@rocket.chat/ui-contexts';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -18,9 +19,9 @@ declare module '@rocket.chat/ui-contexts' {
 					subscribed: boolean;
 					id: string;
 			  }[])
-			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => {})
+			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => void)
 			| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
-			| ((...args: [{ action: 'disable' }]) => {});
+			| ((...args: [{ action: 'disable' }]) => void);
 		'livechat:getAgentOverviewData': (...args: any[]) => any;
 		'livechat:getAnalyticsChartData': (...args: any[]) => any;
 		'livechat:getAnalyticsOverviewData': (...args: any[]) => any;
@@ -30,12 +31,12 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:removeCustomField': (...args: any[]) => any;
 		'livechat:removeMonitor': (...args: any[]) => any;
 		'livechat:removePriority': (...args: any[]) => any;
-		'livechat:removeRoom': (...args: any[]) => any;
+		'livechat:removeRoom': (rid: IRoom['_id']) => void;
 		'livechat:removeTag': (...args: any[]) => any;
 		'livechat:removeTrigger': (...args: any[]) => any;
 		'livechat:removeUnit': (...args: any[]) => any;
 		'livechat:requestTranscript': (...args: any[]) => any;
-		'livechat:returnAsInquiry': (...args: any[]) => any;
+		'livechat:returnAsInquiry': (rid: IRoom['_id'], departmentID?: ILivechatDepartment['_id']) => boolean;
 		'livechat:sendTranscript': (...args: any[]) => any;
 		'livechat:transfer': (...args: any[]) => any;
 		'livechat:saveAppearance': (...args: any[]) => any;

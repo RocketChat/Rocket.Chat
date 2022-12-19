@@ -1,8 +1,9 @@
-import { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Field, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useRecordList } from '../../../hooks/lists/useRecordList';
@@ -23,6 +24,7 @@ const ForwardChatModal = ({
 }): ReactElement => {
 	const t = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
 
 	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
 
@@ -43,7 +45,26 @@ const ForwardChatModal = ({
 	const hasDepartments = useMemo(() => departments && departments.length > 0, [departments]);
 
 	const _id = { $ne: room.servedBy?._id };
-	const conditions = { _id, status: { $ne: 'offline' }, statusLivechat: 'available' };
+	const conditions = {
+		_id,
+		...(!idleAgentsAllowedForForwarding && {
+			$or: [
+				{
+					status: {
+						$exists: true,
+						$ne: 'offline',
+					},
+					roles: {
+						$ne: 'bot',
+					},
+				},
+				{
+					roles: 'bot',
+				},
+			],
+		}),
+		statusLivechat: 'available',
+	};
 
 	const endReached = useCallback(
 		(start) => {
@@ -76,7 +97,7 @@ const ForwardChatModal = ({
 	return (
 		<Modal {...props} is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
-				<Icon name='baloon-arrow-top-right' size={20} />
+				<Modal.Icon name='baloon-arrow-top-right' />
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
@@ -85,8 +106,6 @@ const ForwardChatModal = ({
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
 						{
-							// TODO: Definitions on fuselage are incorrect, need to be fixed!
-							// @ts-ignore-next-line
 							<PaginatedSelectFiltered
 								withTitle
 								filter={departmentsFilter as string}
@@ -120,22 +139,22 @@ const ForwardChatModal = ({
 				<Field marginBlock='x15'>
 					<Field.Label>
 						{t('Leave_a_comment')}{' '}
-						<Box is='span' color='neutral-600'>
+						<Box is='span' color='annotation'>
 							({t('Optional')})
 						</Box>
 					</Field.Label>
 					<Field.Row>
-						<TextAreaInput {...register('comment')} rows={8} flexGrow={1} />
+						<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
 					</Field.Row>
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button type='submit' disabled={!username && !department} primary>
 						{t('Forward')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

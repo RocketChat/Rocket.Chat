@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
-import { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { AppScreenshot, Serialized } from '@rocket.chat/core-typings';
+import type { AppScreenshot, Serialized } from '@rocket.chat/core-typings';
 
-import { App } from '../../../client/views/admin/apps/types';
+import type { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { createDeferredValue } from '../lib/misc/DeferredValue';
-import {
+import type {
 	// IAppFromMarketplace,
 	IAppLanguage,
 	IAppExternalURL,
@@ -70,11 +70,11 @@ class AppClientOrchestrator {
 		return this._manager;
 	}
 
-	public handleError(error: Error): void {
+	public handleError(error: unknown): void {
 		if (hasAtLeastOnePermission(['manage-apps'])) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error.message,
+				message: error,
 			});
 		}
 	}
@@ -107,7 +107,7 @@ class AppClientOrchestrator {
 		}
 
 		return (result as App[]).map((app: App) => {
-			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt } = app;
+			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn } = app;
 			return {
 				...latest,
 				price,
@@ -115,6 +115,7 @@ class AppClientOrchestrator {
 				purchaseType,
 				isEnterpriseOnly,
 				modifiedAt,
+				bundledIn,
 			};
 		});
 	}
@@ -215,6 +216,21 @@ class AppClientOrchestrator {
 		if ('url' in result) {
 			return result;
 		}
+
+		throw new Error('Failed to build external url');
+	}
+
+	public async buildIncompatibleExternalUrl(appId: string, appVersion: string, action: string): Promise<IAppExternalURL> {
+		const result = await APIClient.get('/apps/incompatibleModal', {
+			appId,
+			appVersion,
+			action,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+
 		throw new Error('Failed to build external url');
 	}
 

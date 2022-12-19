@@ -57,7 +57,10 @@ export type AppSubscriptionInfo = {
 
 export type AppPermission = {
 	name: string;
+	required?: boolean;
 };
+
+export type PurchaseType = 'buy' | 'subscription';
 
 export type App = {
 	id: string;
@@ -69,6 +72,7 @@ export type App = {
 		support: string;
 	};
 	description: string;
+	shortDescription?: string;
 	privacyPolicySummary: string;
 	detailedDescription: {
 		raw: string;
@@ -80,8 +84,9 @@ export type App = {
 	};
 	categories: string[];
 	version: string;
+	versionIncompatible?: boolean;
 	price: number;
-	purchaseType: string;
+	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
 	iconFileContent: string;
 	installed?: boolean;
@@ -104,7 +109,7 @@ export type App = {
 	};
 	tosLink: string;
 	privacyLink: string;
-	marketplace: unknown;
+	marketplace?: unknown;
 	modifiedAt: string;
 	permissions: AppPermission[];
 	languages: string[];

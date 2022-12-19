@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import {
@@ -14,7 +14,7 @@ import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
 const getUserIsMuted = (
@@ -75,8 +75,8 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 							roomName,
 						}),
 					});
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+				} catch (error: unknown) {
+					dispatchToastMessage({ type: 'error', message: error });
 				} finally {
 					closeModal();
 				}

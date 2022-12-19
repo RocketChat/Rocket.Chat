@@ -1,6 +1,7 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useToastMessageDispatch,
 	useUser,
@@ -8,13 +9,14 @@ import {
 	useSettings,
 	useTranslation,
 	useLoadLanguage,
-	TranslationKey,
 	useRoute,
 } from '@rocket.chat/ui-contexts';
-import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings, EditableSetting } from '../EditableSettingsContext';
+import type { EditableSetting } from '../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 type GroupPageProps = {
@@ -99,7 +101,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 

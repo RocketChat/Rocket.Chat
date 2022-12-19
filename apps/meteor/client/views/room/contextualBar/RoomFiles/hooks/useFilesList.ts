@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { FilesList, FilesListOptions } from '../../../../../lib/lists/FilesList';
-import { MessageList } from '../../../../../lib/lists/MessageList';
+import type { FilesListOptions } from '../../../../../lib/lists/FilesList';
+import { FilesList } from '../../../../../lib/lists/FilesList';
+import type { MessageList } from '../../../../../lib/lists/MessageList';
 import { getConfig } from '../../../../../lib/utils/getConfig';
 
 export const useFilesList = (

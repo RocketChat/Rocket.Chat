@@ -1,11 +1,12 @@
-import { RoomType, IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
-import type { ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
 
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
@@ -93,12 +94,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return subscriptions.map((sub: ISubscription) =>
-			this.orch
-				.getConverters()
-				?.get('users')
-				.convertById(sub.u && sub.u._id),
-		);
+		return subscriptions.map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id));
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -172,5 +168,27 @@ export class AppRoomBridge extends RoomBridge {
 		});
 
 		return rid;
+	}
+
+	protected getModerators(roomId: string, appId: string): Promise<IUser[]> {
+		this.orch.debugLog(`The App ${appId} is getting room moderators for room id: ${roomId}`);
+		return this.getUsersByRoomIdAndSubscriptionRole(roomId, 'moderator');
+	}
+
+	protected getOwners(roomId: string, appId: string): Promise<IUser[]> {
+		this.orch.debugLog(`The App ${appId} is getting room owners for room id: ${roomId}`);
+		return this.getUsersByRoomIdAndSubscriptionRole(roomId, 'owner');
+	}
+
+	protected getLeaders(roomId: string, appId: string): Promise<IUser[]> {
+		this.orch.debugLog(`The App ${appId} is getting room leaders for room id: ${roomId}`);
+		return this.getUsersByRoomIdAndSubscriptionRole(roomId, 'leader');
+	}
+
+	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
+		const subs = await Subscriptions.findByRoomIdAndRoles(roomId, [role], { projection: { uid: '$u._id', _id: 0 } });
+		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid));
+		const userConverter = this.orch.getConverters()!.get('users');
+		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
 	}
 }

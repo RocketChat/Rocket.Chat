@@ -1,6 +1,6 @@
-import { VoIpCallerInfo } from '@rocket.chat/core-typings';
+import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { ComponentStory } from '@storybook/react';
+import type { ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
 
 import { VoipFooter } from './VoipFooter';
@@ -13,14 +13,6 @@ const callActions = {
 	end: () => ({}),
 	pickUp: () => ({}),
 	reject: () => ({}),
-};
-
-const tooltips = {
-	mute: 'Mute',
-	holdCall: 'Hold Call',
-	holdCallEEOnly: 'Hold Call (Enterprise Edition only)',
-	acceptCall: 'Accept Call',
-	endCall: 'End Call',
 };
 
 const callerDefault = {
@@ -84,13 +76,11 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 				paused={paused}
 				toggleMic={toggleMic}
 				togglePause={togglePause}
-				tooltips={tooltips}
 				createRoom={async () => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
-				anonymousText={'Anonymous'}
 				options={{
 					deviceSettings: {
 						label: (

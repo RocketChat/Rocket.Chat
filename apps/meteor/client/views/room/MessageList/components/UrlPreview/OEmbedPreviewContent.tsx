@@ -5,7 +5,8 @@ import {
 	MessageGenericPreviewFooter,
 	Box,
 } from '@rocket.chat/fuselage';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import MarkdownText from '../../../../../components/MarkdownText';
 import type { PreviewMetadata } from './PreviewList';
@@ -28,7 +29,11 @@ const OEmbedPreviewContent = ({
 
 	return (
 		<MessageGenericPreviewContent thumb={thumb}>
-			{title && <MessageGenericPreviewTitle externalUrl={url}>{title}</MessageGenericPreviewTitle>}
+			{title && (
+				<MessageGenericPreviewTitle externalUrl={url} title={title}>
+					{title}
+				</MessageGenericPreviewTitle>
+			)}
 			{description && <MessageGenericPreviewDescription>{description}</MessageGenericPreviewDescription>}
 			{(showSiteName || showAuthorName) && (
 				<MessageGenericPreviewFooter>

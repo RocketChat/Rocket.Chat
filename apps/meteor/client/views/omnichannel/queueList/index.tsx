@@ -1,7 +1,8 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import UserAvatar from '../../../components/avatar/UserAvatar';
@@ -87,7 +88,13 @@ const QueueList = (): ReactElement => {
 		[mediaQuery, t],
 	);
 
-	const [params, setParams] = useState({
+	const [params, setParams] = useState<{
+		servedBy: string;
+		status: string;
+		departmentId: string;
+		itemsPerPage: 25 | 50 | 100;
+		current: number;
+	}>({
 		servedBy: '',
 		status: '',
 		departmentId: '',

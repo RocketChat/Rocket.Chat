@@ -270,7 +270,6 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			// @ts-expect-error recursive types are causing issues here
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
@@ -471,8 +470,7 @@ API.v1.addRoute(
 
 			const room = findChannelByIdOrName({
 				params: {
-					roomId: channelId,
-					roomName: channelName,
+					...(channelId ? { roomId: channelId } : { roomName: channelName }),
 				},
 				userId: this.userId,
 			});
@@ -485,7 +483,7 @@ API.v1.addRoute(
 				fields: { 'u._id': 1 },
 			});
 
-			const members = subscriptions.fetch().map((s: ISubscription) => s.u && s.u._id);
+			const members = subscriptions.fetch().map((s: ISubscription) => s.u?._id);
 
 			const teamData = {
 				team: {

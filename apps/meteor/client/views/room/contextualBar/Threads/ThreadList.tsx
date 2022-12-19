@@ -1,15 +1,25 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useCurrentRoute, useQueryStringParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import {
+	useRoute,
+	useCurrentRoute,
+	useQueryStringParameter,
+	useSetting,
+	useTranslation,
+	useUserSubscription,
+} from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTabContext } from '../../providers/ToolboxProvider';
+import { useTabContext } from '../../contexts/ToolboxContext';
+import ChatProvider from '../../providers/ChatProvider';
+import MessageProvider from '../../providers/MessageProvider';
 import ThreadComponent from '../../threads/ThreadComponent';
-import Row from './Row';
+import ThreadRow from './ThreadRow';
 import { withData } from './withData';
 
 export type ThreadListProps = {
@@ -36,7 +46,9 @@ export type ThreadListProps = {
 	loadMoreItems: (min: number, max: number) => void;
 };
 
-export const ThreadList: FC<ThreadListProps> = function ThreadList({
+const subscriptionFields = {};
+
+const ThreadList: FC<ThreadListProps> = function ThreadList({
 	total = 10,
 	threads = [],
 	room,
@@ -53,6 +65,8 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 	userId = '',
 	setText,
 }) {
+	const subscription = useUserSubscription(room._id, subscriptionFields);
+
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const t = useTranslation();
@@ -105,7 +119,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 					p='x24'
 					borderBlockEndWidth='x2'
 					borderBlockEndStyle='solid'
-					borderBlockEndColor='neutral-200'
+					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
@@ -135,7 +149,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 				)}
 
 				{!loading && total === 0 && (
-					<Box p='x24' color='neutral-600' textAlign='center' width='full'>
+					<Box p='x24' color='annotation' textAlign='center' width='full'>
 						{t('No_Threads')}
 					</Box>
 				)}
@@ -154,7 +168,7 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 							components={{ Scroller: ScrollableContentWrapper as any }}
 							itemContent={(_index, data: IMessage): FC<IMessage> =>
 								(
-									<Row
+									<ThreadRow
 										thread={data}
 										showRealNames={showRealNames}
 										unread={unread}
@@ -172,7 +186,11 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 
 			{typeof mid === 'string' && (
 				<VerticalBar.InnerContent>
-					<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />
+					<ChatProvider tmid={mid}>
+						<MessageProvider rid={room._id} broadcast={subscription?.broadcast ?? false}>
+							<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />
+						</MessageProvider>
+					</ChatProvider>
 				</VerticalBar.InnerContent>
 			)}
 		</>

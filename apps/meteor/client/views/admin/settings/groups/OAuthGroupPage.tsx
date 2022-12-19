@@ -1,7 +1,8 @@
-import { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 import s from 'underscore.string';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -38,7 +39,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 			await refreshOAuthService();
 			dispatchToastMessage({ type: 'success', message: t('Done') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -48,7 +49,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 				await addOAuthService(text);
 				dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_added') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error as Error });
+				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setModal(null);
 			}
@@ -72,7 +73,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 							await removeOAuthService(id);
 							dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
 						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error as Error });
+							dispatchToastMessage({ type: 'error', message: error });
 						} finally {
 							setModal(null);
 						}

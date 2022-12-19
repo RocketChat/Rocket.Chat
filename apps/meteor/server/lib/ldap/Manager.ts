@@ -5,8 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import ldapEscape from 'ldap-escape';
 import _ from 'underscore';
-import { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername } from '@rocket.chat/core-typings';
-import type { IImportUser } from '@rocket.chat/core-typings';
+import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -17,6 +16,7 @@ import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { callbacks } from '../../../lib/callbacks';
 import { setUserAvatar } from '../../../app/lib/server/functions';
+import { omit } from '../../../lib/utils/omit';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -269,7 +269,7 @@ export class LDAPManager {
 	): Promise<IUser | undefined> {
 		logger.debug({
 			msg: 'Syncing user data',
-			ldapUser: _.omit(ldapUser, '_raw'),
+			ldapUser: omit(ldapUser, '_raw'),
 			user: { ...(existingUser && { email: existingUser.emails, _id: existingUser._id }) },
 		});
 
@@ -383,7 +383,7 @@ export class LDAPManager {
 			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
 		}
 
-		if (ldapUser.mail && ldapUser.mail.includes('@')) {
+		if (ldapUser.mail?.includes('@')) {
 			return [ldapUser.mail];
 		}
 

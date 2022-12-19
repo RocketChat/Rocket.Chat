@@ -1,4 +1,4 @@
-import { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo, useCallback } from 'react';
 
@@ -55,7 +55,7 @@ export const useUpdateAvatar = (
 				await setAvatarFromService(blob, contentType, service);
 				dispatchToastMessage({ type: 'success', message: successText });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			return;
 		}

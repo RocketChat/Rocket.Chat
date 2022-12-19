@@ -15,9 +15,10 @@ export type TelemetryEvents = keyof TelemetryMap;
 
 type Param = {
 	eventName: TelemetryEvents;
+	timestamp?: number;
 } & (OTREnded | SlashCommand | SettingsCounter);
 
-export type TelemetryPayload = {
+type TelemetryPayload = {
 	params: Param[];
 };
 

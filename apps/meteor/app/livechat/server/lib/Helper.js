@@ -21,11 +21,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
+import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('LivechatHelper');
 
@@ -268,7 +268,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	notifications.streamLivechatRoom.emit(rid, {
+	api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
 		data: agent,
 	});
@@ -349,24 +349,18 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
-		throw new Meteor.Error('error-user-is-offline', 'User is offline', {
-			function: 'forwardRoomToAgent',
-		});
+		throw new Error('error-user-is-offline');
 	}
 
 	const { _id: rid, servedBy: oldServedBy } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
 		logger.debug(`No inquiries found for room ${room._id}. Cannot forward`);
-		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', {
-			function: 'forwardRoomToAgent',
-		});
+		throw new Error('error-invalid-inquiry');
 	}
 
 	if (oldServedBy && agentId === oldServedBy._id) {
-		throw new Meteor.Error('error-selected-agent-room-agent-are-same', 'The selected agent and the room agent are the same', {
-			function: 'forwardRoomToAgent',
-		});
+		throw new Error('error-selected-agent-room-agent-are-same');
 	}
 
 	const { username } = user;
@@ -445,16 +439,12 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
 		logger.debug(`Cannot forward room ${room._id}. No inquiries found`);
-		throw new Meteor.Error('error-transferring-inquiry');
+		throw new Error('error-transferring-inquiry');
 	}
 
 	const { departmentId } = transferData;
 	if (oldDepartmentId === departmentId) {
-		throw new Meteor.Error(
-			'error-forwarding-chat-same-department',
-			'The selected department and the current room department are the same',
-			{ function: 'forwardRoomToDepartment' },
-		);
+		throw new Error('error-forwarding-chat-same-department');
 	}
 
 	const { userId: agentId, clientAction } = transferData;
@@ -462,15 +452,11 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
 		let user = Users.findOneOnlineAgentById(agentId);
 		if (!user) {
-			throw new Meteor.Error('error-user-is-offline', 'User is offline', {
-				function: 'forwardRoomToAgent',
-			});
+			throw new Error('error-user-is-offline');
 		}
 		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
 		if (!user) {
-			throw new Meteor.Error('error-user-not-belong-to-department', 'The selected user does not belong to this department', {
-				function: 'forwardRoomToDepartment',
-			});
+			throw new Error('error-user-not-belong-to-department');
 		}
 		const { username } = user;
 		agent = { agentId, username };
@@ -562,21 +548,6 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	return users && users.count() > 0;
 };
 
-export const userCanTakeInquiry = (user) => {
-	check(
-		user,
-		Match.ObjectIncluding({
-			status: String,
-			statusLivechat: String,
-			roles: [String],
-		}),
-	);
-
-	const { roles, status, statusLivechat } = user;
-	// TODO: hasRole when the user has already been fetched from DB
-	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
-};
-
 export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
 	check(departmentId, String);
 	check(
@@ -600,14 +571,15 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 	}
 
 	upsert.forEach((agent) => {
-		if (!Users.findOneById(agent.agentId, { fields: { _id: 1 } })) {
+		const agentFromDb = Users.findOneById(agent.agentId, { fields: { _id: 1, username: 1 } });
+		if (!agentFromDb) {
 			return;
 		}
 
 		LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
-			username: agent.username,
+			username: agentFromDb.username,
 			count: agent.count ? parseInt(agent.count) : 0,
 			order: agent.order ? parseInt(agent.order) : 0,
 			departmentEnabled,

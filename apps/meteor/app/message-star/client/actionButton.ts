@@ -7,7 +7,6 @@ import { settings } from '../../settings/client';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../models/client';
-import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
@@ -21,7 +20,7 @@ Meteor.startup(function () {
 			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -34,7 +33,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return !Array.isArray(message.starred) || !message.starred.find((star: any) => star._id === user._id);
+			return !Array.isArray(message.starred) || !message.starred.find((star: any) => star._id === user?._id);
 		},
 		order: 9,
 		group: 'menu',
@@ -50,7 +49,7 @@ Meteor.startup(function () {
 
 			Meteor.call('starMessage', { ...message, starred: false }, function (error?: any) {
 				if (error) {
-					handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -59,7 +58,7 @@ Meteor.startup(function () {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star: any) => star._id === user._id));
+			return Boolean(message.starred?.find((star: any) => star._id === user?._id));
 		},
 		order: 9,
 		group: 'menu',
@@ -91,14 +90,14 @@ Meteor.startup(function () {
 					},
 				);
 			}
-			RoomHistoryManager.getSurroundingMessages(message, 50);
+			RoomHistoryManager.getSurroundingMessages(message);
 		},
 		condition({ message, subscription, user }) {
 			if (subscription == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
 		order: 100,
 		group: ['message', 'menu'],
@@ -111,17 +110,21 @@ Meteor.startup(function () {
 		// classes: 'clipboard',
 		context: ['starred', 'threads'],
 		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
-			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			try {
+				const { message = messageArgs(this).msg } = props;
+				const permalink = await MessageAction.getPermaLink(message._id);
+				navigator.clipboard.writeText(permalink);
+				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		},
 		condition({ message, subscription, user }) {
 			if (subscription == null) {
 				return false;
 			}
 
-			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
+			return Boolean(message.starred?.find((star) => star._id === user?._id));
 		},
 		order: 101,
 		group: 'menu',

@@ -1,5 +1,5 @@
-import { FileAttachmentProps, FileProp, MessageAttachmentDefault } from '@rocket.chat/core-typings';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { FileAttachmentProps, FileProp, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import Attachments from '.';
@@ -83,6 +83,13 @@ const audio: FileAttachmentProps = {
 const message = {
 	_id: '12312321',
 	rid: 'GENERAL',
+	ts: new Date('2016-12-09T16:53:06.761Z'),
+	u: {
+		_id: 'rocket.cat',
+		name: 'rocket.cat',
+		username: 'rocket.cat',
+	},
+	_updatedAt: new Date(),
 	msg: 'Sample message',
 	alias: 'Gruggy',
 	emoji: ':smirk:',

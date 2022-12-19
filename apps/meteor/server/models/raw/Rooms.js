@@ -2,6 +2,7 @@ import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw {
 	constructor(db, trash) {
@@ -57,7 +58,7 @@ export class RoomsRaw extends BaseRaw {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate).toArray();
+		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 		return statistic;
 	}
 
@@ -529,15 +530,15 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	setRoomTypeById(roomId, roomType) {
-		return this.update({ _id: roomId }, { $set: { t: roomType } });
+		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
 	setRoomNameById(roomId, name, fname) {
-		return this.update({ _id: roomId }, { $set: { name, fname } });
+		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
 	}
 
 	setRoomTopicById(roomId, topic) {
-		return this.update({ _id: roomId }, { $set: { description: topic } });
+		return this.updateOne({ _id: roomId }, { $set: { description: topic } });
 	}
 
 	findByE2E(options) {
@@ -652,5 +653,22 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.findPaginated(query, options);
+	}
+
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
+		const query = {
+			t: 'd',
+			uids: { $size: uid.length, $all: uid },
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findFederatedRooms(options) {
+		const query = {
+			federated: true,
+		};
+
+		return this.find(query, options);
 	}
 }

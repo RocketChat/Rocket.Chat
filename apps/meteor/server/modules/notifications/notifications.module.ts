@@ -5,6 +5,7 @@ import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { streamDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -161,6 +162,14 @@ export class NotificationsModule {
 				return true;
 			}
 
+			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v' | '_id'>>(rid, {
+				projection: { 't': 1, 'v.token': 1 },
+			});
+
+			if (!room) {
+				return false;
+			}
+
 			// typing from livechat widget
 			if (extraData?.token) {
 				// TODO improve this to make a query 'v.token'
@@ -173,9 +182,9 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
+			const canAccess = await Authorization.canAccessRoomId(room._id, this.userId);
 
-			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
-			return subsCount > 0;
+			return canAccess;
 		});
 
 		async function canType({
@@ -218,7 +227,7 @@ export class NotificationsModule {
 
 				return user[key] === username;
 			} catch (e) {
-				SystemLogger.error('Error: ', e);
+				SystemLogger.error(e);
 				return false;
 			}
 		}
@@ -238,7 +247,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (!(await canType({ extraData, rid, username, userId: this.userId }))) {
+			if (!(await canType({ extraData, rid, username, userId: this.userId ?? undefined }))) {
 				return false;
 			}
 
@@ -247,6 +256,7 @@ export class NotificationsModule {
 			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
 				streamRoom._emit(`${rid}/typing`, [username, _activity.includes('user-typing')], this.connection, true);
 			} else if (e === 'typing') {
+				streamDeprecationLogger.warn(`The 'typing' event is deprecated and will be removed in the next major version of Rocket.Chat`);
 				streamRoom._emit(`${rid}/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
 			}
 
@@ -282,21 +292,32 @@ export class NotificationsModule {
 
 		this.streamUser.allowWrite(async function (eventName: string, data: unknown) {
 			const [, e] = eventName.split('/');
+			if (e === 'otr' && (data === 'handshake' || data === 'acknowledge')) {
+				const isEnable = await Settings.getValueById('OTR_Enable');
+				return Boolean(this.userId) && (isEnable === 'true' || isEnable === true);
+			}
 			if (e === 'webrtc') {
 				return true;
 			}
-			if (e.startsWith('video-conference.')) {
+			if (e === 'video-conference') {
 				if (!this.userId || !data || typeof data !== 'object') {
 					return false;
 				}
 
-				const callId = 'callId' in data && typeof (data as any).callId === 'string' ? (data as any).callId : '';
-				const uid = 'uid' in data && typeof (data as any).uid === 'string' ? (data as any).uid : '';
-				const rid = 'rid' in data && typeof (data as any).rid === 'string' ? (data as any).rid : '';
+				const { action: videoAction, params } = data as {
+					action: string | undefined;
+					params: { callId?: string; uid?: string; rid?: string };
+				};
 
-				const action = e.replace('video-conference.', '');
+				if (!videoAction || typeof videoAction !== 'string' || !params || typeof params !== 'object') {
+					return false;
+				}
 
-				return VideoConf.validateAction(action, this.userId, {
+				const callId = 'callId' in params && typeof params.callId === 'string' ? params.callId : '';
+				const uid = 'uid' in params && typeof params.uid === 'string' ? params.uid : '';
+				const rid = 'rid' in params && typeof params.rid === 'string' ? params.rid : '';
+
+				return VideoConf.validateAction(videoAction, this.userId, {
 					callId,
 					uid,
 					rid,
@@ -308,11 +329,15 @@ export class NotificationsModule {
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId, e] = eventName.split('/');
 
+			if (e === 'otr') {
+				const isEnable = await Settings.getValueById('OTR_Enable');
+				return Boolean(this.userId) && this.userId === userId && (isEnable === 'true' || isEnable === true);
+			}
 			if (e === 'webrtc') {
 				return true;
 			}
 
-			return this.userId != null && this.userId === userId;
+			return Boolean(this.userId) && this.userId === userId;
 		});
 
 		this.streamImporters.allowRead('all');
