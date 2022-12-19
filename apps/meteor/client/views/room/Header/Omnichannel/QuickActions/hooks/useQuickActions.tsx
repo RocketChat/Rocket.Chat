@@ -202,7 +202,7 @@ export const useQuickActions = (
 		},
 	});
 
-	const openModal = useMutableCallback(async (id: string) => {
+	const handleAction = useMutableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -214,7 +214,7 @@ export const useQuickActions = (
 					/>,
 				);
 				break;
-			case QuickActionsEnum.Transcript:
+			case QuickActionsEnum.TranscriptEmail:
 				const visitorEmail = await getVisitorEmail();
 
 				if (!visitorEmail) {
@@ -297,11 +297,11 @@ export const useQuickActions = (
 	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
 
 	const actionDefault = useMutableCallback((actionId) => {
-		openModal(actionId);
+		handleAction(actionId);
 	});
 
 	const getAction = useMutableCallback((id) => {
-		openModal(id);
+		handleAction(id);
 	});
 
 	return { visibleActions, actionDefault, getAction };
