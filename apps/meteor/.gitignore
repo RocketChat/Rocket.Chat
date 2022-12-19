@@ -86,3 +86,4 @@ tests/e2e/test-failures/
 out.txt
 dist
 *-session.json
+matrix-federation-config/*

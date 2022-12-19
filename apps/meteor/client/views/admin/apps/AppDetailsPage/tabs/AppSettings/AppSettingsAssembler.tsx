@@ -1,9 +1,10 @@
-import { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { ISettings } from '../../../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../../../app/apps/client/@types/IOrchestrator';
 import AppSetting from './AppSetting';
 
 type AppSettingsAssemblerProps = {

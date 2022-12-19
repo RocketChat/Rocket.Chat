@@ -1,5 +1,4 @@
 {
-  "403": "Забранен",
   "500": "Вътрешна грешка на сървъра",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ вече не е __role__ от __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ бе зададено __role__ от __user_by__",
@@ -2578,7 +2577,7 @@
   "User": "потребител",
   "User__username__is_now_a_leader_of__room_name_": "Потребителят __username__ сега е лидер на __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Потребителят __username__ сега е модератор на __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Потребител __username__ сега е собственик на __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Потребител __username__ сега е собственик на __room_name__",
   "User__username__removed_from__room_name__leaders": "Потребителят __username__ е премахнат от лидерите __room_name__",
   "User__username__removed_from__room_name__moderators": "Потребителят __username__ е премахнат от модераторите __room_name__",
   "User__username__removed_from__room_name__owners": "Потребителят __username__ е премахнат от собствениците на __room_name__",
@@ -2789,5 +2788,14 @@
   "Your_password_is_wrong": "Вашата парола е грешна!",
   "Your_push_was_sent_to_s_devices": "Натискането ви бе изпратено на %s устройства",
   "Your_server_link": "Вашата сървърна връзка",
-  "Your_workspace_is_ready": "Работното ви пространство е готово за използване 🎉"
+  "Your_workspace_is_ready": "Работното ви пространство е готово за използване 🎉",
+  "registration.page.registration.waitActivationWarning": "Преди да можете да влезете, вашият акаунт трябва да бъде активиран ръчно от администратор.",
+  "registration.page.resetPassword.sent": "Ако този имейл е регистриран, ще изпратим инструкции как да зададете нова парола. Ако скоро не получите имейл, моля, върнете се и опитайте отново.",
+  "registration.component.login": "Влез",
+  "registration.component.login.userNotFound": "Потребителят не е намерен",
+  "registration.component.resetPassword": "Нулиране на паролата",
+  "registration.component.form.email": "Електрона поща",
+  "registration.component.form.password": "Парола",
+  "registration.component.form.divider": "или",
+  "registration.component.form.submit": "Подайте"
 }

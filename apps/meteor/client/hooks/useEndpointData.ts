@@ -1,10 +1,11 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
 import { getConfig } from '../lib/utils/getConfig';
-import { AsyncState, useAsyncState } from './useAsyncState';
+import type { AsyncState } from './useAsyncState';
+import { useAsyncState } from './useAsyncState';
 
 const log = (name: string): Console['log'] =>
 	process.env.NODE_ENV !== 'production' || getConfig('debug') === 'true'

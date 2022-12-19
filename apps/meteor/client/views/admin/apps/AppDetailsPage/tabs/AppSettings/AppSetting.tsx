@@ -1,7 +1,8 @@
-import { ISettingSelectValue } from '@rocket.chat/apps-engine/definition/settings';
-import { ISettingBase, SettingValue } from '@rocket.chat/core-typings';
+import type { ISettingSelectValue } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISettingBase, SettingValue } from '@rocket.chat/core-typings';
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import MarkdownText from '../../../../../../components/MarkdownText';
 import MemoizedSetting from '../../../../settings/MemoizedSetting';

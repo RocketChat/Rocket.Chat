@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-import { Subscription, useSubscription } from 'use-subscription';
+import type { Subscription } from 'use-subscription';
+import { useSubscription } from 'use-subscription';
 
-import { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import type { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 
 export type VideoConfPopupPayload = {
 	id: string;

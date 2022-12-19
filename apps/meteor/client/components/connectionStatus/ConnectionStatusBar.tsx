@@ -1,6 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import { useConnectionStatus, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useRef, useState, MouseEventHandler, FC } from 'react';
+import type { MouseEventHandler, FC } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import './ConnectionStatusBar.styles.css';
 

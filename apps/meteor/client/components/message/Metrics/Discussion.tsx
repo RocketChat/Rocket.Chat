@@ -1,6 +1,7 @@
 import { Message } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, UIEvent } from 'react';
+import type { FC, UIEvent } from 'react';
+import React from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useBlockRendered } from '../hooks/useBlockRendered';

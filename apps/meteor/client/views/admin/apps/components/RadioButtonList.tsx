@@ -1,7 +1,8 @@
 import { Box, Option, RadioButton, Tile } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions';
 
 const RadioButtonList = ({ group, onSelected }: RadioDropDownProps): ReactElement => (
 	<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>

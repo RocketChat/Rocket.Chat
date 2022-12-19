@@ -1,5 +1,4 @@
 {
-  "403": "Tiltott",
   "500": "Belső szerver hiba",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ üres szobát automatikusan eltávolítunk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ üres szobát automatikusan eltávolítunk:<br/>__rooms__.",
@@ -3565,7 +3564,7 @@
   "User Search (Group Validation)": "Felhasználó keresés (csoport ellenőrzés)",
   "User__username__is_now_a_leader_of__room_name_": "__username__ mostantól a __room_name__ csatorna vezetője",
   "User__username__is_now_a_moderator_of__room_name_": "__username__ mostantól moderátor a __room_name__ csatornán",
-  "User__username__is_now_a_owner_of__room_name_": "__username__ mostantól tulajdonosa a __room_name__ csatornának",
+  "User__username__is_now_an_owner_of__room_name_": "__username__ mostantól tulajdonosa a __room_name__ csatornának",
   "User__username__muted_in_room__roomName__": "__username__ felhasználó elnémítva a __roomName__ szobában",
   "User__username__removed_from__room_name__leaders": "__username__ már nem vezetője a __room_name__ csatornának",
   "User__username__removed_from__room_name__moderators": "__username__ már nem moderátora a __room_name__ csatornának",
@@ -3839,5 +3838,18 @@
   "Your_server_link": "A szerver linkje",
   "Your_temporary_password_is_password": "Az ideiglenes jelszavad: <strong>[password]</strong>",
   "Your_TOTP_has_been_reset": "A kétfaktoros TOTP-d visszaállításra került.",
-  "Your_workspace_is_ready": "A munkaterület készen áll a 🎉 használatára"
+  "Your_workspace_is_ready": "A munkaterület készen áll a 🎉 használatára",
+  "registration.page.login.errors.wrongCredentials": "Felhasználó nem található vagy hibás jelszó",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "Az alkalmazás felhasználóinak nem engedélyezett a közvetlen bejelentkezés.",
+  "registration.page.registration.waitActivationWarning": "Mielőtt bejelentkezés fiókját manuálisan kell aktiválni a rendszergazda.",
+  "registration.page.login.forgot": "Elfelejtetted a jelszavad?",
+  "registration.page.resetPassword.sent": "Ha regisztrálta ezt az e-mailt, utasításokat küldünk a jelszó visszaállításáról. Ha hamarosan nem kap e-mailt, kérjük, térjen vissza és próbálkozzon újra.",
+  "registration.component.login": "Bejelentkezés",
+  "registration.component.login.userNotFound": "Felhasználó nem található",
+  "registration.component.resetPassword": "Jelszó visszaállítása",
+  "registration.component.form.emailOrUsername": "E-mail vagy felhasználónév",
+  "registration.component.form.email": "Email",
+  "registration.component.form.password": "Jelszó",
+  "registration.component.form.divider": "vagy",
+  "registration.component.form.submit": "Küldés"
 }

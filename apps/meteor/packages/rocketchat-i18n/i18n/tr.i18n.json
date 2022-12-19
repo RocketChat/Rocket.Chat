@@ -1,5 +1,4 @@
 {
-  "403": "Yasak",
   "500": "İç Sunucu Hatası",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ adlı kullanıcı __user_by__ tarafından __role__ rolünden çıkarıldı.",
   "__username__was_set__role__by__user_by_": "__username__ adlı kullanıcı __user_by__ tarafından __role__ rolüne atandı.",
@@ -3066,7 +3065,7 @@
   "User Search (Group Validation)": "Kullanıcı Arama (Grup Doğrulama)",
   "User__username__is_now_a_leader_of__room_name_": "Kullanıcı __username__ şimdi __room_name__ lider",
   "User__username__is_now_a_moderator_of__room_name_": "Kullanıcı __username__ adlı şimdi __room_name__ bir moderatör olduğunu",
-  "User__username__is_now_a_owner_of__room_name_": "Kullanıcı __username__ adlı şimdi __room_name__ bir sahibidir",
+  "User__username__is_now_an_owner_of__room_name_": "Kullanıcı __username__ adlı şimdi __room_name__ bir sahibidir",
   "User__username__removed_from__room_name__leaders": "Kullanıcı __username__, __room_name__ liderlerinden kaldırıldı",
   "User__username__removed_from__room_name__moderators": "Kullanıcı __username__ adlı __room_name__ moderatörler kaldırıldı",
   "User__username__removed_from__room_name__owners": "Kullanıcı __username__ adlı __room_name__ sahipleri kaldırılır",
@@ -3304,5 +3303,15 @@
   "Your_push_was_sent_to_s_devices": "Anlık bildiriminiz %s aygıta gönderildi",
   "Your_question": "Sorunuz",
   "Your_server_link": "Sunucu bağlantınız",
-  "Your_workspace_is_ready": "Çalışma alanınız kullanılmaya hazır 🎉"
+  "Your_workspace_is_ready": "Çalışma alanınız kullanılmaya hazır 🎉",
+  "registration.page.login.errors.wrongCredentials": "Kullanıcı bulunamadı veya parola yanlış",
+  "registration.page.registration.waitActivationWarning": "Oturum açmadan önce, hesabınızın yönetici tarafından etkinleştirilmesi gerekiyor.",
+  "registration.page.resetPassword.sent": "Bu e-posta kayıtlıysa, şifrenizi nasıl sıfırlayacağınıza ilişkin talimatlar göndeririz. Kısa süre içinde bir e-posta almıyorsanız, lütfen geri dönün ve tekrar deneyin.",
+  "registration.component.login": "Oturum aç",
+  "registration.component.login.userNotFound": "Kullanıcı bulunamadı",
+  "registration.component.resetPassword": "Şifreyi sıfırla",
+  "registration.component.form.email": "E-posta",
+  "registration.component.form.password": "Şifre",
+  "registration.component.form.divider": "ya da",
+  "registration.component.form.submit": "Gönder"
 }

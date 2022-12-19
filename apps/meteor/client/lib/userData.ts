@@ -1,5 +1,4 @@
-import type { ILivechatAgent, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, IUserDataEvent, Serialized } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -92,7 +91,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 	// }
 
 	if (userData) {
-		const { email, resume, email2fa, emailCode, ...services } = rawServices || {};
+		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
 
 		updateUser({
 			...userData,
@@ -110,6 +109,14 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
 										})),
 									}),
+								},
+						  }
+						: {}),
+					...(cloud
+						? {
+								cloud: {
+									...cloud,
+									expiresAt: new Date(cloud.expiresAt),
 								},
 						  }
 						: {}),

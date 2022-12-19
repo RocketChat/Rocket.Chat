@@ -1,5 +1,7 @@
-import { IconButton, Icon } from '@rocket.chat/fuselage';
-import React, { ReactElement, memo, MouseEventHandler, ComponentProps } from 'react';
+import type { Icon } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
+import type { ReactElement, MouseEventHandler, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 const VerticalBarAction = ({
 	name,
