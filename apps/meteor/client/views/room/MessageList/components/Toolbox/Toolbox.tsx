@@ -54,10 +54,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 		<MessageToolbox>
 			{messageActions.map((action) => (
 				<MessageToolboxItem
-					onClick={(e): void => {
-						e.stopPropagation();
-						action.action(e, { message, tabbar: toolbox, room, chat });
-					}}
+					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat })}
 					key={action.id}
 					icon={action.icon}
 					title={t(action.label)}
@@ -69,10 +66,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 				<MessageActionMenu
 					options={menuActions.map((action) => ({
 						...action,
-						action: (e): void => {
-							e.stopPropagation();
-							action.action(e, { message, tabbar: toolbox, room, chat });
-						},
+						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat }),
 					}))}
 					data-qa-type='message-action-menu-options'
 				/>
