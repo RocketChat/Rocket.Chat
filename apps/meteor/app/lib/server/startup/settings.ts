@@ -1572,7 +1572,7 @@ settingsRegistry.addGroup('Layout', function () {
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Home_Custom_Block_Enabled', true, {
+		this.add('Layout_Home_Custom_Block_Visible', true, {
 			type: 'boolean',
 			invalidValue: false,
 			enterprise: true,
