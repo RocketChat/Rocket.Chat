@@ -161,6 +161,12 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		call('updateMessage', message);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			return false;
+		}
+
 		if (MessageTypes.isSystemMessage(message)) {
 			return false;
 		}
@@ -170,35 +176,29 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return true;
 		}
 
-		const deletionEnabled = settings.get('Message_AllowDeleting');
+		const deletionEnabled = settings.get('Message_AllowDeleting') as boolean | undefined;
 		if (!deletionEnabled) {
 			return false;
 		}
 
 		const deleteAnyAllowed = hasPermission('delete-message', rid);
 		const deleteOwnAllowed = hasPermission('delete-own-message');
+		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
 
-		if (!deleteAnyAllowed && !deleteOwnAllowed) {
+		if (!deleteAllowed) {
 			return false;
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
-		const onTimeForDelete = !elapsedMinutes || !blockDeleteInMinutes || elapsedMinutes <= blockDeleteInMinutes;
+		const onTimeForDelete = !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
-		if (deleteAnyAllowed && onTimeForDelete) {
-			return true;
-		}
-
-		if (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId() && onTimeForDelete) {
-			return true;
-		}
-
-		return false;
+		return deleteAllowed && onTimeForDelete;
 	};
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
 		await call('deleteMessage', { _id: mid });
+		Messages.remove({ _id: mid });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();
