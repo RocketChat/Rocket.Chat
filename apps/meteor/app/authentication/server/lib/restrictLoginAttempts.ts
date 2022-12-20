@@ -61,14 +61,14 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 	let failedAttemptsSinceLastLoginOrBlock;
 	const lastTs = lastLoginOrBlock?.blockedUntil || lastLoginOrBlock?.ts;
 
+	if (lastTs && lastTs > new Date()) {
+		return false;
+	}
+
 	if (!lastLoginOrBlock || !lastTs) {
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByIp(ip);
 	} else {
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastTs));
-	}
-
-	if (lastTs && lastTs > new Date()) {
-		return false;
 	}
 
 	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
@@ -112,14 +112,14 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 
 	const lastTs = lastLoginOrBlock?.blockedUntil || lastLoginOrBlock?.ts;
 
+	if (lastTs && lastTs > new Date()) {
+		return false;
+	}
+
 	if (!lastTs) {
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByUsername(user.username);
 	} else {
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(lastTs));
-	}
-
-	if (lastTs && lastTs > new Date()) {
-		return false;
 	}
 
 	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
