@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { saveSLA, deleteSLA, generateRandomSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
+import { createSLA, deleteSLA, generateRandomSLAData, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
 import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
 import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -49,7 +49,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 				'manage-livechat-sla': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});
-			const sla = await saveSLA();
+			const sla = await createSLA();
 			expect(sla).to.not.be.undefined;
 			expect(sla).to.have.property('_id');
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(200);
@@ -68,7 +68,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 			const response = await request
 				.post(api('livechat/sla'))
 				.set(credentials)
-				.send(generateRandomSLA())
+				.send(generateRandomSLAData())
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 			expect(response.body).to.have.property('success', false);
@@ -76,7 +76,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		it('should create a new sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
 
-			const sla = generateRandomSLA();
+			const sla = generateRandomSLAData();
 
 			const response = await request
 				.post(api('livechat/sla'))
@@ -108,7 +108,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 				'manage-livechat-sla': ['admin', 'livechat-manager'],
 				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
 			});
-			const sla = await saveSLA();
+			const sla = await createSLA();
 			const response = await request
 				.get(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
@@ -127,7 +127,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 			const response = await request
 				.put(api('livechat/sla/123'))
 				.set(credentials)
-				.send(generateRandomSLA())
+				.send(generateRandomSLAData())
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 
@@ -136,8 +136,8 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		it('should update an sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
 
-			const sla = await saveSLA();
-			const newSlaData = generateRandomSLA();
+			const sla = await createSLA();
+			const newSlaData = generateRandomSLAData();
 
 			const response = await request
 				.put(api(`livechat/sla/${sla._id}`))
@@ -166,7 +166,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		});
 		it('should delete an sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-			const sla = await saveSLA();
+			const sla = await createSLA();
 			const response = await request
 				.delete(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
@@ -264,7 +264,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		it('should prioritize an inquiry', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			const sla = await saveSLA();
+			const sla = await createSLA();
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
