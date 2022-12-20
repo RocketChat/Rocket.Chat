@@ -1,4 +1,4 @@
-import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -11,6 +11,7 @@ import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
 import { MessageActionMenu } from './MessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
@@ -23,7 +24,7 @@ const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext
 	return 'message';
 };
 
-export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
+export const Toolbox: FC<{ message: ITranslatedMessage }> = ({ message }) => {
 	const t = useTranslation();
 
 	const room = useRoom();
@@ -46,6 +47,8 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const chat = useChat();
 
+	const autoTranslateOptions = useAutoTranslate(subscription);
+
 	if (isSelecting) {
 		return null;
 	}
@@ -56,7 +59,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 				<MessageToolboxItem
 					onClick={(e): void => {
 						e.stopPropagation();
-						action.action(e, { message, tabbar: toolbox, room, chat });
+						action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions });
 					}}
 					key={action.id}
 					icon={action.icon}
@@ -71,7 +74,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 						...action,
 						action: (e): void => {
 							e.stopPropagation();
-							action.action(e, { message, tabbar: toolbox, room, chat });
+							action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions });
 						},
 					}))}
 					data-qa-type='message-action-menu-options'
