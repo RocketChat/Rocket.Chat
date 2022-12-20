@@ -21,6 +21,8 @@ import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
 import { ReadsService } from './reads/service';
+import { FederationService } from './federation/service';
+import { UploadService } from './upload/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -43,6 +45,8 @@ api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
 api.registerService(new ReadsService());
+api.registerService(new FederationService());
+api.registerService(new UploadService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

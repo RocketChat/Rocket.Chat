@@ -1,20 +1,16 @@
 /* eslint-disable react/display-name */
-import {
-	IMessage,
-	IRoom,
-	isDirectMessageRoom,
-	isMultipleDirectMessageRoom,
-	isOmnichannelRoom,
-	ISubscription,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode } from 'react';
+import type { useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
+import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnType<typeof useTranslation>): string | undefined => {
@@ -61,7 +57,6 @@ type RoomListRowProps = {
 	isAnonymous?: boolean;
 
 	room: ISubscription & IRoom;
-	lastMessage?: IMessage;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
@@ -115,6 +110,17 @@ function SideBarItemTemplateWithData({
 		</Sidebar.Item.Icon>
 	);
 
+	const actions = useMemo(
+		() =>
+			videoConfActions && (
+				<>
+					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
+					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
+				</>
+			),
+		[videoConfActions],
+	);
+
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 
 	const threadUnread = tunread.length > 0;
@@ -151,14 +157,7 @@ function SideBarItemTemplateWithData({
 			style={style}
 			badges={badges}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
-			actions={
-				videoConfActions && (
-					<>
-						<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
-						<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-					</>
-				)
-			}
+			actions={actions}
 			menu={
 				!isAnonymous &&
 				!isQueued &&
@@ -195,6 +194,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'AvatarTemplate',
 	't',
 	'sidebarViewMode',
+	'videoConfActions',
 ];
 
 // eslint-disable-next-line react/no-multi-comp
@@ -213,13 +213,13 @@ export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
 		return false;
 	}
-	if (safeDateNotEqualCheck(prevProps.lastMessage?._updatedAt, nextProps.lastMessage?._updatedAt)) {
+	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
 		return false;
 	}
-	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room.v.status !== nextProps.room.v.status) {
+	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
 		return false;
 	}
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {

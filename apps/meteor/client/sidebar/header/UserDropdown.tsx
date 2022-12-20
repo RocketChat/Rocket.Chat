@@ -1,9 +1,20 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { UserStatus as UserStatusEnum, ValueOf } from '@rocket.chat/core-typings';
-import { Box, Margins, Option, OptionColumn, OptionContent, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IUser, ValueOf } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import {
+	Box,
+	Margins,
+	Option,
+	OptionColumn,
+	OptionContent,
+	OptionDivider,
+	OptionIcon,
+	OptionTitle,
+	RadioButton,
+} from '@rocket.chat/fuselage';
+import { useMutableCallback, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { AccountBox } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
@@ -13,6 +24,7 @@ import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
+import { useIsExperimentalThemeEnabled } from '../../views/hooks/useExperimentalTheme';
 import EditStatusModal from './EditStatusModal';
 
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
@@ -42,6 +54,10 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountRoute = useRoute('account-index');
 	const logout = useLogout();
 	const { isMobile } = useLayout();
+
+	const [selectedTheme, setTheme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
+
+	const isExperimentalThemeEnabled = useIsExperimentalThemeEnabled();
 
 	const { username, avatarETag, status, statusText } = user;
 
@@ -122,6 +138,27 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				})}
 			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus}></Option>
 			<OptionDivider />
+
+			{isExperimentalThemeEnabled && (
+				<>
+					<OptionTitle>{t('Theme')}</OptionTitle>
+					<Option>
+						<OptionIcon name='sun' />
+						<OptionContent>{t('Theme_light')}</OptionContent>
+						<OptionColumn>
+							<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
+						</OptionColumn>
+					</Option>
+					<Option>
+						<OptionIcon name='moon' />
+						<OptionContent>{t('Theme_dark')}</OptionContent>
+						<OptionColumn>
+							<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
+						</OptionColumn>
+					</Option>
+					<OptionDivider />
+				</>
+			)}
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>

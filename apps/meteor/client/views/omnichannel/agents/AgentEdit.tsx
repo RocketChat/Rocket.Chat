@@ -1,8 +1,9 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
+import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { FC, ReactElement } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserInfo from '../../../components/UserInfo';
@@ -76,14 +77,14 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
 	const { departments, status, voipExtension } = values as {
 		departments: string[];
-		status: string;
+		status: ILivechatAgent['statusLivechat'];
 		voipExtension: string;
 	};
 
 	const MaxChats = useMaxChatsPerAgent();
 
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
-	const saveAgentStatus = useMethod('livechat:changeLivechatStatus');
+	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

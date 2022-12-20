@@ -1,9 +1,10 @@
 import { Button } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
 import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import CreateChannelWithData from '../../../sidebar/header/CreateChannelWithData';
+import CreateChannelWithData from '../../../sidebar/header/CreateChannel';
 
 const CreateChannelsCard = (): ReactElement => {
 	const t = useTranslation();

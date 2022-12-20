@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { markRoomAsRead } from '../lib/markRoomAsRead';
+import { readMessages } from '../lib/readMessages';
 import { canAccessRoom } from '../../app/authorization/server';
 import { Rooms } from '../../app/models/server';
 
 Meteor.methods({
-	readMessages(rid) {
+	async readMessages(rid, readThreads = false) {
 		check(rid, String);
 
 		const userId = Meteor.userId();
@@ -18,10 +18,13 @@ Meteor.methods({
 
 		const user = Meteor.user();
 		const room = Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'readMessages' });
+		}
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}
 
-		Promise.await(markRoomAsRead(rid, userId));
+		await readMessages(rid, userId, readThreads);
 	},
 });

@@ -79,22 +79,25 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 		return this.col.aggregate<{
 			_id: IAnalytic['date'];
 			messages: number;
-		}>([
-			{
-				$match: {
-					type: 'messages',
-					date: { $gte: start, $lte: end },
+		}>(
+			[
+				{
+					$match: {
+						type: 'messages',
+						date: { $gte: start, $lte: end },
+					},
 				},
-			},
-			{
-				$group: {
-					_id: '$date',
-					messages: { $sum: '$messages' },
+				{
+					$group: {
+						_id: '$date',
+						messages: { $sum: '$messages' },
+					},
 				},
-			},
-			...(options.sort ? [{ $sort: options.sort }] : []),
-			...(options.count ? [{ $limit: options.count }] : []),
-		]);
+				...(options.sort ? [{ $sort: options.sort }] : []),
+				...(options.count ? [{ $limit: options.count }] : []),
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 
 	getMessagesOrigin({ start, end }: { start: IAnalytic['date']; end: IAnalytic['date'] }): AggregationCursor<{
@@ -122,7 +125,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 				},
 			},
 		];
-		return this.col.aggregate(params);
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
 	getMostPopularChannelsByMessagesSentQuantity({
@@ -139,31 +142,34 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 		messages: number;
 		usernames: string[];
 	}> {
-		return this.col.aggregate([
-			{
-				$match: {
-					type: 'messages',
-					date: { $gte: start, $lte: end },
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						type: 'messages',
+						date: { $gte: start, $lte: end },
+					},
 				},
-			},
-			{
-				$group: {
-					_id: { t: '$room.t', name: '$room.name', usernames: '$room.usernames' },
-					messages: { $sum: '$messages' },
+				{
+					$group: {
+						_id: { t: '$room.t', name: '$room.name', usernames: '$room.usernames' },
+						messages: { $sum: '$messages' },
+					},
 				},
-			},
-			{
-				$project: {
-					_id: 0,
-					t: '$_id.t',
-					name: '$_id.name',
-					usernames: '$_id.usernames',
-					messages: 1,
+				{
+					$project: {
+						_id: 0,
+						t: '$_id.t',
+						name: '$_id.name',
+						usernames: '$_id.usernames',
+						messages: 1,
+					},
 				},
-			},
-			...(options.sort ? [{ $sort: options.sort }] : []),
-			...(options.count ? [{ $limit: options.count }] : []),
-		]);
+				...(options.sort ? [{ $sort: options.sort }] : []),
+				...(options.count ? [{ $limit: options.count }] : []),
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 
 	getTotalOfRegisteredUsersByDate({
@@ -181,22 +187,25 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 		return this.col.aggregate<{
 			_id: IAnalytic['date'];
 			users: number;
-		}>([
-			{
-				$match: {
-					type: 'users',
-					date: { $gte: start, $lte: end },
+		}>(
+			[
+				{
+					$match: {
+						type: 'users',
+						date: { $gte: start, $lte: end },
+					},
 				},
-			},
-			{
-				$group: {
-					_id: '$date',
-					users: { $sum: '$users' },
+				{
+					$group: {
+						_id: '$date',
+						users: { $sum: '$users' },
+					},
 				},
-			},
-			...(options.sort ? [{ $sort: options.sort }] : []),
-			...(options.count ? [{ $limit: options.count }] : []),
-		]);
+				...(options.sort ? [{ $sort: options.sort }] : []),
+				...(options.count ? [{ $limit: options.count }] : []),
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 
 	findByTypeBeforeDate({ type, date }: { type: IAnalytic['type']; date: IAnalytic['date'] }): FindCursor<IAnalytic> {

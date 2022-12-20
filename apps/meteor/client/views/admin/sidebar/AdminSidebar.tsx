@@ -1,5 +1,6 @@
 import { useRoutePath, useCurrentRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, memo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useEffect, memo } from 'react';
 
 import { menu, SideNav } from '../../../../app/ui-utils/client';
 import PlanTag from '../../../components/PlanTag';

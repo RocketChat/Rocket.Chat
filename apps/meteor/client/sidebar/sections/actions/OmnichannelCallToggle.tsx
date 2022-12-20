@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useIsCallReady, useIsCallError } from '../../../contexts/CallContext';
 import { OmnichannelCallToggleError } from './OmnichannelCallToggleError';

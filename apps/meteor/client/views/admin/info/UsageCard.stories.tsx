@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import UsageCard from './UsageCard';
@@ -235,8 +235,10 @@ export default {
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
 			totalWebRTCCalls: 0,
-			matrixBridgeEnabled: false,
 			uncaughtExceptionsCount: 0,
+			matrixFederation: {
+				enabled: false,
+			},
 		},
 	},
 } as ComponentMeta<typeof UsageCard>;

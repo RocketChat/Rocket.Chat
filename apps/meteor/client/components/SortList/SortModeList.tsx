@@ -1,16 +1,17 @@
 import { RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
 function SortModeList(): ReactElement {
 	const t = useTranslation();
-	const saveUserPreferences = useMethod('saveUserPreferences');
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
 
 	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
-		useCallback(() => saveUserPreferences({ sidebarSortby: value }), [value]);
+		useCallback(() => saveUserPreferences({ data: { sidebarSortby: value } }), [value]);
 
 	const setToAlphabetical = useHandleChange('alphabetical');
 	const setToActivity = useHandleChange('activity');

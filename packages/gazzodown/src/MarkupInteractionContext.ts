@@ -13,6 +13,7 @@ type MarkupInteractionContextValue = {
 	onUserMentionClick?: (mentionedUser: UserMention) => ((e: UIEvent) => void) | undefined;
 	resolveChannelMention?: (mention: string) => ChannelMention | undefined;
 	onChannelMentionClick?: (mentionedChannel: ChannelMention) => ((e: UIEvent) => void) | undefined;
+	convertAsciiToEmoji?: boolean;
 };
 
 export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({});

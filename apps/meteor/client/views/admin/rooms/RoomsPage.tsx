@@ -1,5 +1,6 @@
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useRef } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -31,10 +32,9 @@ const RoomsPage = (): ReactElement => {
 			{context && (
 				<VerticalBar>
 					<VerticalBar.Header>
-						{t('Room_Info')}
+						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
-
 					<EditRoomContextBar rid={id} onReload={reloadRef.current} />
 				</VerticalBar>
 			)}
