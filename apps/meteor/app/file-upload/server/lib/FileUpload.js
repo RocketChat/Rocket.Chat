@@ -676,6 +676,14 @@ export class FileUploadClass {
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
+		console.log('FileUploadClass._doInsert', fileId, token, tmpFile);
+		console.log(
+			'FileUploadClass._doInsert',
+			streamOrBuffer,
+			typeof streamOrBuffer,
+			streamOrBuffer instanceof stream,
+			streamOrBuffer instanceof Buffer,
+		);
 		try {
 			if (streamOrBuffer instanceof stream) {
 				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
@@ -704,6 +712,11 @@ export class FileUploadClass {
 	insert(fileData, streamOrBuffer, cb) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+		}
+
+		if (streamOrBuffer instanceof Uint8Array) {
+			// Services compat :)
+			streamOrBuffer = Buffer.from(streamOrBuffer);
 		}
 
 		// Check if the fileData matches store filter

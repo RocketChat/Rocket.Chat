@@ -13,9 +13,11 @@ import { FileUpload } from '../../../app/file-upload/server';
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
-		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+	async uploadFile({ buffer, details, userId }: IUploadFileParams): Promise<IUpload> {
+		return Meteor.runAsUser(userId, () => {
+			const fileStore = FileUpload.getStore('Uploads');
+			return fileStore.insert(details, buffer);
+		});
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<IMessage | undefined> {

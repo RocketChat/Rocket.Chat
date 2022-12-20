@@ -75,7 +75,7 @@ export class NetworkBroker implements IBroker {
 		this.broker.destroyService(instance.getName());
 	}
 
-	createService(instance: IServiceClass): void {
+	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
@@ -102,7 +102,8 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
+		// Allow services to depend on other services too
+		const dependencies = name !== 'license' ? { dependencies: ['license', ...(serviceDependencies || [])] } : {};
 
 		const service: ServiceSchema = {
 			name,
