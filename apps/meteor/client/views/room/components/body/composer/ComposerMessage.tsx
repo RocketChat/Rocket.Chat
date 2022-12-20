@@ -19,6 +19,7 @@ export type ComposerMessageProps = {
 	chatMessagesInstance: ContextType<typeof ChatContext>;
 	onResize?: () => void;
 	onEscape?: () => void;
+	onSend?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
@@ -30,12 +31,39 @@ const ComposerMessage = ({
 	chatMessagesInstance,
 	onResize,
 	onEscape,
+	onSend,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
 	onUploadFiles,
 }: ComposerMessageProps): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const handleSend = useCallback(
+		async (
+			_event: Event,
+			{
+				value: text,
+				tshow,
+			}: {
+				value: string;
+				tshow?: boolean;
+			},
+		): Promise<void> => {
+			try {
+				const newMessageSent = await chatMessagesInstance?.flows.sendMessage({
+					text,
+					tshow,
+				});
+				if (newMessageSent) onSend?.();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		[chatMessagesInstance?.flows, dispatchToastMessage, onSend],
+	);
 
 	const messageBoxViewRef = useRef<Blaze.View>();
 	const messageBoxViewDataRef = useRef(
@@ -46,6 +74,7 @@ const ComposerMessage = ({
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
 			onResize,
 			onEscape,
+			onSend: handleSend,
 			onNavigateToNextMessage,
 			onNavigateToPreviousMessage,
 			onUploadFiles,
@@ -61,6 +90,7 @@ const ComposerMessage = ({
 			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
 			onResize,
 			onEscape,
+			onSend: handleSend,
 			onNavigateToNextMessage,
 			onNavigateToPreviousMessage,
 			onUploadFiles,
@@ -77,49 +107,20 @@ const ComposerMessage = ({
 		onNavigateToNextMessage,
 		onNavigateToPreviousMessage,
 		onUploadFiles,
+		handleSend,
 	]);
 
-	const dispatchToastMessage = useToastMessageDispatch();
+	const footerRef = useCallback((footer: HTMLElement | null) => {
+		if (footer) {
+			messageBoxViewRef.current = Blaze.renderWithData(Template.messageBox, () => messageBoxViewDataRef.current.get(), footer);
+			return;
+		}
 
-	const footerRef = useCallback(
-		(footer: HTMLElement | null) => {
-			if (footer) {
-				messageBoxViewRef.current = Blaze.renderWithData(
-					Template.messageBox,
-					(): MessageBoxTemplateInstance['data'] => ({
-						...messageBoxViewDataRef.current.get(),
-						onSend: async (
-							_event: Event,
-							{
-								value: text,
-								tshow,
-							}: {
-								value: string;
-								tshow?: boolean;
-							},
-						): Promise<void> => {
-							try {
-								await chatMessagesInstance?.flows.sendMessage({
-									text,
-									tshow,
-								});
-							} catch (error) {
-								dispatchToastMessage({ type: 'error', message: error });
-							}
-						},
-					}),
-					footer,
-				);
-				return;
-			}
-
-			if (messageBoxViewRef.current) {
-				Blaze.remove(messageBoxViewRef.current);
-				messageBoxViewRef.current = undefined;
-			}
-		},
-		[chatMessagesInstance, dispatchToastMessage],
-	);
+		if (messageBoxViewRef.current) {
+			Blaze.remove(messageBoxViewRef.current);
+			messageBoxViewRef.current = undefined;
+		}
+	}, []);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
 

@@ -61,8 +61,9 @@ export const palette = [
 	{
 		description: 'Font',
 		list: [
-			{ name: 'button-font-on-secondary', token: 'N400', color: '#6c727a' },
-			{ name: 'button-font-on-disabled', token: '', color: '#9EA2A8' },
+			{ name: 'button-font-on-secondary', token: '', color: '#9EA2A8' },
+			{ name: 'button-font-on-secondary-disabled', token: '', color: '#6C727A' },
+			{ name: 'button-icon-disabled-color', token: '', color: '#6C727A' },
 		],
 	},
 ];
