@@ -93,6 +93,7 @@ const EmailInboxTable = (): ReactElement => {
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination
+						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
 						count={result.data.count}
