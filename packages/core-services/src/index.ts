@@ -1,4 +1,5 @@
 import { proxify, proxifyWithWait } from './lib/proxify';
+import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IAuthorizationVoip } from './types/IAuthorizationVoip';
@@ -93,6 +94,10 @@ export {
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,
+	ISendFileLivechatMessageParams,
+	ISendFileMessageParams,
+	IUploadFileParams,
+	IUploadService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -114,6 +119,7 @@ export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
+export const Upload = proxifyWithWait<IUploadService>('upload');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
