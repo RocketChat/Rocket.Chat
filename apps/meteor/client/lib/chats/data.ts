@@ -12,7 +12,6 @@ import { call } from '../utils/call';
 import { prependReplies } from '../utils/prependReplies';
 import type { DataAPI } from './ChatAPI';
 
-const messagesCollection = Messages as Mongo.Collection<IMessage>;
 const roomsCollection = Rooms as Mongo.Collection<IRoom>;
 const subscriptionsCollection = Subscriptions as Mongo.Collection<ISubscription>;
 
@@ -38,7 +37,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | undefined> =>
-		messagesCollection.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
+		Messages.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);
@@ -51,7 +50,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findLastMessage = async (): Promise<IMessage | undefined> =>
-		messagesCollection.findOne({ rid, tmid: tmid ?? { $exists: false }, _hidden: { $ne: true } }, { sort: { ts: -1 }, reactive: false });
+		Messages.findOne({ rid, tmid: tmid ?? { $exists: false }, _hidden: { $ne: true } }, { sort: { ts: -1 }, reactive: false });
 
 	const getLastMessage = async (): Promise<IMessage> => {
 		const message = await findLastMessage();
@@ -70,7 +69,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		return messagesCollection.findOne(
+		return Messages.findOne(
 			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true } },
 			{ sort: { ts: -1 }, reactive: false },
 		);
@@ -93,7 +92,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		return messagesCollection.findOne(
+		return Messages.findOne(
 			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $lt: message.ts } },
 			{ sort: { ts: -1 }, reactive: false },
 		);
@@ -116,7 +115,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		return messagesCollection.findOne(
+		return Messages.findOne(
 			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $gt: message.ts } },
 			{ sort: { ts: 1 }, reactive: false },
 		);
@@ -133,7 +132,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		messagesCollection.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
+		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
 	const canUpdateMessage = async (message: IMessage): Promise<boolean> => {
