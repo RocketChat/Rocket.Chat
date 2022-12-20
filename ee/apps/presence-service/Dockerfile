@@ -7,8 +7,8 @@ WORKDIR /app
 COPY ./packages/presence/package.json packages/presence/package.json
 COPY ./packages/presence/dist packages/presence/dist
 
-COPY ./packages/core-sdk/package.json packages/core-sdk/package.json
-COPY ./packages/core-sdk/dist packages/core-sdk/dist
+COPY ./packages/core-services/package.json packages/core-services/package.json
+COPY ./packages/core-services/dist packages/core-services/dist
 
 COPY ./packages/core-typings/package.json packages/core-typings/package.json
 COPY ./packages/core-typings/dist packages/core-typings/dist
