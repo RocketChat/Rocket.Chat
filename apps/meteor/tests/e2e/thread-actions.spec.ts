@@ -80,7 +80,7 @@ test.describe.serial('message-actions', () => {
 		await expect(page).toHaveURL(/.*thread/);
 
 		await expect(page.locator('//main//aside >> [data-qa-type="message"]')).toBeVisible();
-		await page.locator('[name="msg"]').last().focus();
+		await expect(page.locator('[name="msg"]').last()).toBeFocused();
 		await page.keyboard.press('Escape');
 
 		await expect(page).not.toHaveURL(/.*thread/);
