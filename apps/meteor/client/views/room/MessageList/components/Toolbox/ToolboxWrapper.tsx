@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { ITranslatedMessage } from '@rocket.chat/core-typings';
 import { MessageToolboxWrapper } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import React, { memo, useRef } from 'react';
@@ -6,7 +6,7 @@ import React, { memo, useRef } from 'react';
 import { useIsVisible } from '../../../hooks/useIsVisible';
 import Toolbox from './Toolbox';
 
-export const ToolboxWrapper: FC<{ message: IMessage }> = (props) => {
+export const ToolboxWrapper: FC<{ message: ITranslatedMessage }> = (props) => {
 	const ref = useRef(null);
 
 	const [isVisible] = useIsVisible(ref);
