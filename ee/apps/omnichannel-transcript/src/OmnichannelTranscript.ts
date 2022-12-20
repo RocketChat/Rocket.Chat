@@ -1,14 +1,9 @@
-import { Users } from '@rocket.chat/models';
-import type { IUser } from '@rocket.chat/core-typings';
-
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
 import type { Upload, Message, QueueWorker } from '../../../../apps/meteor/server/sdk';
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';
-
-	private rcUser: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
 
 	constructor(
 		private readonly uploadService: typeof Upload,
@@ -24,29 +19,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return null;
 	}
 
-	private async getRocketCatUser(): Promise<Required<Pick<IUser, '_id' | 'username' | 'name'>>> {
-		// Cache the user
-		if (this.rcUser) {
-			return this.rcUser;
-		}
-
-		const u = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>('rocket.cat', {
-			projection: { _id: 1, username: 1, name: 1 },
-		});
-		if (!u) {
-			throw new Error('Rocket.Chat user not found');
-		}
-
-		this.rcUser = u;
-		return this.rcUser;
-	}
-
 	// You're the only one missing :troll:
 	async requestTranscript(): Promise<void> {
 		// Temporary while we implement the actual logic :)
 		await this.queueService.queueWork('work', 'pdf-worker.renderToStream', {
 			template: 'omnichannel-transcript',
-			details: { userId: 'rocket.cat', rid: 'GENERAL', from: this.name },
+			details: { userId: 'rocketchat.internal.admin.test', rid: 'GENERAL', from: this.name },
 			data: { some: 'data' },
 		});
 	}
@@ -56,13 +34,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		try {
 			await this.uploadService.sendFileMessage({
 				roomId: details.rid,
-				userId: details.userId,
+				userId: 'rocket.cat',
 				file,
 				// @ts-expect-error - why?
 				message: {
+					// Translate from service
 					msg: 'Your PDF has been generated!',
-					rid: details.rid,
-					u: await this.getRocketCatUser(),
 				},
 			});
 
@@ -74,9 +51,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				file,
 				// @ts-expect-error - why?
 				message: {
+					// Translate from service
 					msg: 'Your PDF has been generated!',
-					rid,
-					u: await this.getRocketCatUser(),
 				},
 			});
 		} catch (e) {
