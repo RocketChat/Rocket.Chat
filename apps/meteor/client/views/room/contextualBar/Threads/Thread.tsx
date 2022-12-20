@@ -23,7 +23,14 @@ type ThreadProps = {
 };
 
 const Thread = ({ tmid }: ThreadProps): ReactElement => {
-	const mainMessageQueryResult = useThreadMainMessageQuery(tmid);
+	const goToThreadList = useGoToThreadList();
+	const closeTabBar = useTabBarClose();
+
+	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
+		onDelete: () => {
+			closeTabBar();
+		},
+	});
 
 	const room = useRoom();
 	const subscription = useRoomSubscription();
@@ -31,8 +38,6 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const closeTabBar = useTabBarClose();
-	const goToThreadList = useGoToThreadList();
 	const canExpand = useLayoutContextualBarExpanded();
 	const [expanded, setExpanded] = useLocalStorage('expand-threads', false);
 
