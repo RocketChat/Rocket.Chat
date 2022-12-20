@@ -57,13 +57,13 @@
     "@rocket.chat/apps-engine": "~1.30.0",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/fuselage": "next",
-    "@rocket.chat/fuselage-hooks": "0.31.22",
-    "@rocket.chat/fuselage-polyfills": "0.31.22",
+    "@rocket.chat/fuselage-hooks": "next",
+    "@rocket.chat/fuselage-polyfills": "next",
     "@rocket.chat/icons": "next",
     "@rocket.chat/prettier-config": "next",
-    "@rocket.chat/styled": "0.31.22",
+    "@rocket.chat/styled": "next",
     "@rocket.chat/ui-contexts": "workspace:^",
-    "@rocket.chat/ui-kit": "0.31.22",
+    "@rocket.chat/ui-kit": "next",
     "@rocket.chat/ui-video-conf": "workspace:^",
     "@storybook/addon-essentials": "~6.5.14",
     "@storybook/addons": "~6.5.14",
@@ -89,7 +89,7 @@
     "webpack": "~5.68.0"
   },
   "dependencies": {
-    "@rocket.chat/ui-kit": "0.31.22",
+    "@rocket.chat/ui-kit": "next",
     "tslib": "^2.3.1"
   }
 }
