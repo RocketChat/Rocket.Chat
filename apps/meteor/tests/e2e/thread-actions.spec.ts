@@ -58,7 +58,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[name="msg"]').last().fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
+		await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
 	});
 
 	test('expect star the thread message', async ({ page }) => {
