@@ -88,8 +88,8 @@ export async function configureEmailInboxes(): Promise<void> {
 			});
 
 			inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
-		} catch (error) {
-			logger.error(`Error setting up email interceptor for ${emailInboxRecord.email}`, error);
+		} catch (err) {
+			logger.error({ msg: `Error setting up email interceptor for ${emailInboxRecord.email}`, err });
 		}
 	}
 
