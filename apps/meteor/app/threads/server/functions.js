@@ -1,6 +1,7 @@
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 import { Reads } from '../../../server/sdk';
+import { settings } from '../../settings/server';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
 	const { rid, ts, u, editedAt } = message;
@@ -21,8 +22,14 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
 	const replies = Messages.getThreadFollowsByThreadId(tmid);
+	console.log('replies', replies);
+
+	if (replies && replies.length === 1) {
+		console.log('Readng thread')
+	}
 
 	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
+	console.log('repliesFiltered', repliesFiltered);
 
 	if (toAll || toHere) {
 		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {
@@ -76,8 +83,9 @@ export const readThread = ({ userId, rid, tmid }) => {
 	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
-
-	Reads.readThread(userId, tmid);
+	if (settings.get('Message_Read_Receipt_Enabled')) {
+		Reads.readThread(userId, tmid);
+	}
 };
 
 export const readAllThreads = (rid, userId) => Subscriptions.removeAllUnreadThreadsByRoomIdAndUserId(rid, userId);

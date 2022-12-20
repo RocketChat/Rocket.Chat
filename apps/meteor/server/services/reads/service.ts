@@ -1,46 +1,35 @@
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import type { IReadsService } from '../../sdk/types/IReadsService';
-// import { ReadReceipt } from '/imports/message-read-receipt/server/lib/ReadReceipt';
-
-type IRead = {
-	_id: string;
-	// rid: string;
-	tmid: string;
-	ls: Date;
-	userId: string;
-	// following: boolean;
-};
+import { Reads } from '@rocket.chat/models';
+import { Messages } from '../../../app/models/server';
+import { ReadReceipt } from '../../../imports/message-read-receipt/server/lib/ReadReceipt';
 
 export class ReadsService extends ServiceClassInternal implements IReadsService {
 	protected name = 'reads';
 
-	readThread(userId: string, tmid: string): Promise<boolean> {
-		console.log('received readThread', userId, tmid);
+	async readThread(userId: string, tmid: string): Promise<void> {
+		const read = await Reads.findOneByUserIdAndThreadId(userId, tmid);
+		Reads.updateOne({
+		 	userId,
+		 	tmid,
+		}, {
+		 	$set: {
+		 		ls: new Date(),
+		 	},
+		}, {
+		 	upsert: true,
+		});
 
-		// Reads.updateOne({
-		// 	userId,
-		// 	tmid,
-		// }, {
-		// 	$set: {
-		// 		ls: new Date(),
-		// 	},
-		// }, {
-		// 	upsert: true,
-		// });
+		const threadMessage = Messages.findOneById(tmid);
+		if (!threadMessage || !threadMessage.tlm) {
+			return;
+		}
 
-		// const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
-		// if (!firstSubscription || !firstSubscription.ls) {
-		// 	return;
-		// }
+		ReadReceipt.storeThreadMessagesReadReceipts(tmid, userId, read?.ls || threadMessage.ts);
 
-		// Messages.setAsRead(_id, firstSubscription.ls);
-
-		// if (lm <= firstSubscription.ls) {
-		// 	Rooms.setLastMessageAsRead(_id);
-		// }
-
-		// ReadReceipt.storeReadReceipts(userId, [tmid]);
-
-		return Promise.resolve(!!tmid);
+		const firstRead = await Reads.getMinimumLastSeenByThreadId(tmid);
+		if (firstRead && firstRead.ls) {
+			Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
+		}
 	}
 }

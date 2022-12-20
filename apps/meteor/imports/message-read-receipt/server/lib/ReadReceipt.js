@@ -26,7 +26,7 @@ const updateMessages = debounceByRoomId(
 			return;
 		}
 
-		Messages.setAsRead(_id, firstSubscription.ls);
+		Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
 
 		if (lm <= firstSubscription.ls) {
 			Rooms.setLastMessageAsRead(_id);
@@ -47,7 +47,7 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 
 		updateMessages(room);
 	},
@@ -69,6 +69,21 @@ export const ReadReceipt = {
 
 		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
+	},
+
+	storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		const message = Messages.findOneById(tmid, { fields: { tlm: 1, rid: 1 } });
+
+		// if users last seen is greater than thread's last message, it means the user already have this thread marked as read
+		if (!message || userLastSeen > message.tlm) {
+			return;
+		}
+
+		this.storeReadReceipts(Messages.findUnreadThreadMessagesByDate(tmid, userLastSeen), message.rid, userId);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {

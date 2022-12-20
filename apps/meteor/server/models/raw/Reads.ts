@@ -1,6 +1,6 @@
 import type { Reads, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IReadsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,8 +13,8 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { tmid: 1 } }];
 	}
 
-	findByThreadId(tmid: string): FindCursor<Reads> {
-		return this.find({ tmid });
+	findOneByUserIdAndThreadId(userId: string, tmid: string): Promise<Reads | null> {
+		return this.findOne({ userId, tmid });
 	}
 
 	getMinimumLastSeenByThreadId(tmid: string): Promise<Reads | null> {
