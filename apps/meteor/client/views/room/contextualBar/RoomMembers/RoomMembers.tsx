@@ -67,6 +67,15 @@ const RoomMembers = ({
 		[t],
 	);
 
+	if (members.length > 1) {
+		members = members.sort((a, b) => {
+			const nameA = a.name?.toUpperCase() || '';
+			const nameB = b.name?.toUpperCase() || '';
+
+			return nameA.localeCompare(nameB);
+		});
+	}
+
 	return (
 		<>
 			<VerticalBar.Header data-qa-id='RoomHeader-Members'>
