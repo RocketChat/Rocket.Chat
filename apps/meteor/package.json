@@ -79,6 +79,7 @@
 		"@storybook/addons": "~6.5.14",
 		"@storybook/react": "~6.5.14",
 		"@storybook/testing-library": "0.0.13",
+		"@tanstack/react-query-devtools": "^4.19.1",
 		"@testing-library/react": "~12.1.5",
 		"@testing-library/react-hooks": "^8.0.1",
 		"@testing-library/user-event": "~13.5.0",
