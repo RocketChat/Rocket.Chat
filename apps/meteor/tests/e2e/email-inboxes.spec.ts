@@ -38,13 +38,13 @@ test.describe.serial('email-inboxes', () => {
 
 		await poAdminEmailInboxes.btnSave.click();
 
-		expect(poAdminEmailInboxes.itemRow(name)).toBeVisible();
+		await expect(poAdminEmailInboxes.itemRow(name)).toBeVisible();
 	});
 
 	test('expect delete an email inbox', async () => {
 		await poAdminEmailInboxes.findEmailInbox(email).click();
 		await poAdminEmailInboxes.btnDelete.click();
 		await poUtils.btnModalConfirmDelete.click();
-		expect(poUtils.toastBarSuccess).toBeVisible();
+		await expect(poUtils.toastBarSuccess).toBeVisible();
 	});
 });
