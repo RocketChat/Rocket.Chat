@@ -170,10 +170,10 @@ const mergeRoomSub = (room: IRoom): IRoom => {
 	return room;
 };
 
-callbacks.add('cachedCollection-after-received-rooms', mergeRoomSub);
-callbacks.add('cachedCollection-after-sync-rooms', mergeRoomSub);
-callbacks.add('cachedCollection-after-loadFromServer-rooms', mergeRoomSub);
+callbacks.add('cachedCollection-received-rooms', mergeRoomSub);
+callbacks.add('cachedCollection-sync-rooms', mergeRoomSub);
+callbacks.add('cachedCollection-loadFromServer-rooms', mergeRoomSub);
 
-callbacks.add('cachedCollection-after-received-subscriptions', mergeSubRoom);
-callbacks.add('cachedCollection-after-sync-subscriptions', mergeSubRoom);
-callbacks.add('cachedCollection-after-loadFromServer-subscriptions', mergeSubRoom);
+callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
+callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);
+callbacks.add('cachedCollection-loadFromServer-subscriptions', mergeSubRoom);

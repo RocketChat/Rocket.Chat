@@ -46,7 +46,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 	test("expect reset user's e2e encryption key", async ({ page }) => {
 		// Reset key to start the flow from the beginning
-		// It will execute a logoout
+		// It will execute a logout
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
