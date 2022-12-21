@@ -2,7 +2,7 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 
-import { hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
@@ -161,27 +161,44 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		call('updateMessage', message);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			return false;
+		}
+
 		if (MessageTypes.isSystemMessage(message)) {
 			return false;
 		}
 
-		const hasPermission = hasAtLeastOnePermission('force-delete-message', message.rid);
-		if (!hasPermission) {
+		const forceDeleteAllowed = hasPermission('force-delete-message', message.rid);
+		if (forceDeleteAllowed) {
+			return true;
+		}
+
+		const deletionEnabled = settings.get('Message_AllowDeleting') as boolean | undefined;
+		if (!deletionEnabled) {
+			return false;
+		}
+
+		const deleteAnyAllowed = hasPermission('delete-message', rid);
+		const deleteOwnAllowed = hasPermission('delete-own-message');
+		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
+
+		if (!deleteAllowed) {
 			return false;
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
+		const onTimeForDelete = !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
-		if (elapsedMinutes && blockDeleteInMinutes && elapsedMinutes > blockDeleteInMinutes) {
-			return false;
-		}
-
-		return true;
+		return deleteAllowed && onTimeForDelete;
 	};
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
 		await call('deleteMessage', { _id: mid });
+		Messages.remove({ _id: mid });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();
