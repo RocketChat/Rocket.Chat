@@ -176,27 +176,32 @@ describe('[Incoming Integrations]', function () {
 				.end(done);
 		});
 
-		it('should not send a message for a channel that is not in the webhooks configuration', (done) => {
+		it("should return an error when sending 'channel' field telling its deprecated", (done) => {
 			request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: 'Example message',
 					channel: [testChannelName],
 				})
-				.expect(200);
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', "'channel' and 'roomId' are deprecated, please remove these values to proceed");
+				})
+				.end(done);
+		});
 
+		it("should return an error when sending 'roomId' field telling its deprecated", (done) => {
 			request
-				.get(api('channels.messages'))
-				.set(credentials)
-				.query({
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: 'Example message',
 					roomId: channel._id,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(res.body.messages).to.eql([]);
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', "'channel' and 'roomId' are deprecated, please remove these values to proceed");
 				})
 				.end(done);
 		});
@@ -206,7 +211,6 @@ describe('[Incoming Integrations]', function () {
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: successfulMesssage,
-					channel: [testChannelName],
 				})
 				.expect(200)
 				.end(() => {
