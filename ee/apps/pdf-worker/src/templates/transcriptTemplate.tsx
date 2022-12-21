@@ -287,5 +287,6 @@ const OmnichannelTranscript = (_data: any) => (
 );
 
 export default async (data: any): Promise<NodeJS.ReadableStream> => {
+	console.log('data', data);
 	return ReactPDF.renderToStream(<OmnichannelTranscript {...{ data }} />);
 };

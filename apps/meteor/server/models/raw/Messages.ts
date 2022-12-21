@@ -232,6 +232,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
+	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+			},
+			options,
+		);
+	}
+
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne(
 			{ _id },

@@ -1288,4 +1288,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		]);
 	}
+
+	setTranscriptRequestedPdfById() {
+		throw new Error('not-implemented');
+	}
+
+	unsetTranscriptRequestedPdfById() {
+		throw new Error('not-implemented');
+	}
+
+	setPdfTranscriptFileIdById() {
+		throw new Error('not-implemented');
+	}
 }
