@@ -1,12 +1,22 @@
 import { LivechatRooms, Messages, Uploads } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker2';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { Templates } from '@rocket.chat/pdf-worker2';
+import type { IMessage, IUser, IRoom, IUpload } from '@rocket.chat/core-typings';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
 import type { Upload, Message, QueueWorker } from '../../../../apps/meteor/server/sdk';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
+
+type WorkDetails = {
+	rid: IRoom['_id'];
+	userId: IUser['_id'];
+};
+
+type WorkDetailsWithSource = WorkDetails & {
+	from: string;
+};
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';
@@ -23,19 +33,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// your stuff
 	}
 
-	getConfig(): unknown {
-		return null;
-	}
-
-	getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
+	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
 		return Messages.findLivechatMessages(rid, {
 			sort: { ts: 1 },
 			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1 },
 		}).toArray();
 	}
 
-	// You're the only one missing :troll:
-	async requestTranscript({ details }: { details: any }): Promise<void> {
+	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			throw new Error('room-not-found');
@@ -110,8 +115,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	async workOnPdf({ template, details }: { template: string; details: any }): Promise<void> {
-		console.log('workOnPdf', details);
+	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			throw new Error('room-not-found');
@@ -125,19 +129,17 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		};
 
 		try {
-			console.log('doRender', { template, data, details });
 			await this.doRender({ template, data, details });
 		} catch (error) {
-			console.error(error);
-			await this.pdfFailed({ details, e: error });
+			await this.pdfFailed({ details, e: error as Error });
 		}
 	}
 
-	async doRender({ template, data, details }: { template: string; data: any; details: any }): Promise<void> {
+	async doRender({ template, data, details }: { template: Templates; data: any; details: WorkDetailsWithSource }): Promise<void> {
 		const buf: Uint8Array[] = [];
 		let outBuff = Buffer.alloc(0);
 
-		const stream = await this.worker.renderToStream({ template, data, details });
+		const stream = await this.worker.renderToStream({ template, data });
 		stream.on('data', (chunk) => {
 			buf.push(chunk);
 		});
@@ -162,21 +164,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	async pdfFailed({ details, e }: { details: any; e: any }): Promise<void> {
-		console.error('pdfFailed', e);
-		// Remove `transcriptRequestedPdf` from room
+	async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			return;
 		}
 
+		// Remove `transcriptRequestedPdf` from room to allow another request
 		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
 		const { rid } = await this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 		await this.messageService.sendMessage({ fromId: 'rocket.cat', rid, msg: `PDF Failed :( => ${e.message}` });
 	}
 
-	async pdfComplete({ details, file }: any): Promise<void> {
+	async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
 			const [, { rid }] = await Promise.all([

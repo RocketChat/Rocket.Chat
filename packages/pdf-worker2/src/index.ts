@@ -2,10 +2,12 @@ import exportTranscript from './templates/transcriptTemplate';
 
 export type Data = { header: Record<string, unknown>; body: unknown[]; footer: Record<string, unknown> };
 
+export type Templates = 'omnichannel-transcript';
+
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png'];
 
-	private async renderTemplate(template: string, data: any): Promise<NodeJS.ReadableStream> {
+	private async renderTemplate(template: Templates, data: Data): Promise<NodeJS.ReadableStream> {
 		switch (template) {
 			case 'omnichannel-transcript':
 				return exportTranscript(data);
@@ -14,7 +16,7 @@ export class PdfWorker {
 		}
 	}
 
-	private parseTemplateData(template: string, data: any): Data {
+	private parseTemplateData(template: Templates, data: Record<string, unknown | unknown[]>): Data {
 		switch (template) {
 			case 'omnichannel-transcript':
 				return {
@@ -22,7 +24,7 @@ export class PdfWorker {
 						visitor: data.visitor,
 						agent: data.agent,
 					},
-					body: data.messages,
+					body: Array.isArray(data.messages) ? data.messages : [],
 					footer: {},
 				};
 			default:
@@ -34,7 +36,13 @@ export class PdfWorker {
 		return this.validMimeTypes.includes(mimeType);
 	}
 
-	async renderToStream({ template, data }: { details: any; template: string; data: any }): Promise<NodeJS.ReadableStream> {
+	async renderToStream({
+		template,
+		data,
+	}: {
+		template: Templates;
+		data: Record<string, unknown | unknown[]>;
+	}): Promise<NodeJS.ReadableStream> {
 		const parsedData = this.parseTemplateData(template, data);
 		return this.renderTemplate(template, parsedData);
 	}
