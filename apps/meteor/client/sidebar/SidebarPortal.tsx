@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import React, { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-const SidenavPortal: FC = ({ children }) => {
+const SidebarPortal: FC = ({ children }) => {
 	const sidebarRoot = document.getElementById('sidebar-region');
 
 	if (!sidebarRoot) {
@@ -13,4 +13,4 @@ const SidenavPortal: FC = ({ children }) => {
 	return createPortal(<Box className='rcx-sidebar flex-nav'>{children}</Box>, sidebarRoot);
 };
 
-export default memo<typeof SidenavPortal>(SidenavPortal);
+export default memo<typeof SidebarPortal>(SidebarPortal);

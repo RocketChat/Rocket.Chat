@@ -1,15 +1,15 @@
 import type { FC } from 'react';
 import React from 'react';
 
-import SidenavPortal from '../../sidebar/SidenavPortal';
+import SidebarPortal from '../../sidebar/SidebarPortal';
 import AdminSidebar from './sidebar/AdminSidebar';
 
 const AdministrationLayout: FC = ({ children }) => {
 	return (
 		<>
-			<SidenavPortal>
+			<SidebarPortal>
 				<AdminSidebar />
-			</SidenavPortal>
+			</SidebarPortal>
 			{children}
 		</>
 	);

@@ -1,14 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import SidebarChats from './RoomList';
+import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
 
-const SideNav = () => {
-	const t = useTranslation();
+const Sidebar = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { isMobile, sidebar } = useLayout();
@@ -114,9 +113,7 @@ const SideNav = () => {
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
 					<SidebarHeader />
-					<div className='rooms-list sidebar--custom-colors' aria-label={t('Channels')} role='region'>
-						<SidebarChats />
-					</div>
+					<SidebarRoomList />
 					<SidebarFooter />
 				</Box>
 			</Box>
@@ -127,4 +124,4 @@ const SideNav = () => {
 	);
 };
 
-export default SideNav;
+export default Sidebar;

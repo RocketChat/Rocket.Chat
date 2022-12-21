@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import SidenavPortal from '../../sidebar/SidenavPortal';
+import SidebarPortal from '../../sidebar/SidebarPortal';
 import AccountSidebar from './AccountSidebar';
 
 type AccountRouterProps = {
@@ -25,9 +25,9 @@ const AccountRouter = ({ children }: AccountRouterProps): ReactElement => {
 	return children ? (
 		<>
 			<Suspense fallback={<PageSkeleton />}>{children}</Suspense>
-			<SidenavPortal>
+			<SidebarPortal>
 				<AccountSidebar />
-			</SidenavPortal>
+			</SidebarPortal>
 		</>
 	) : (
 		<PageSkeleton />

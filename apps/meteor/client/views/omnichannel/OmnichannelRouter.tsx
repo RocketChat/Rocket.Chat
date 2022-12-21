@@ -3,7 +3,7 @@ import type { ReactNode, ReactElement } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import SidenavPortal from '../../sidebar/SidenavPortal';
+import SidebarPortal from '../../sidebar/SidebarPortal';
 import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
 
 type OmnichannelRouterProps = {
@@ -23,9 +23,9 @@ const OmnichannelRouter = ({ children }: OmnichannelRouterProps): ReactElement =
 	return children ? (
 		<>
 			<Suspense fallback={<PageSkeleton />}>{children}</Suspense>
-			<SidenavPortal>
+			<SidebarPortal>
 				<OmnichannelSidebar />
-			</SidenavPortal>
+			</SidebarPortal>
 		</>
 	) : (
 		<PageSkeleton />
