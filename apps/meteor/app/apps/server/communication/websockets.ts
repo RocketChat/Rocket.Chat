@@ -36,22 +36,15 @@ export class AppServerListener {
 		this.clientStreamer = clientStreamer;
 		this.received = received;
 
-		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
-		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
-		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
-		this.engineStreamer.on(AppEvents.ACTIONS_CHANGED, this.onActionsChanged.bind(this));
-
+		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
+		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
+		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
-		this.engineStreamer.on(AppEvents.COMMAND_ADDED, this.onCommandAdded.bind(this));
-		this.engineStreamer.on(AppEvents.COMMAND_DISABLED, this.onCommandDisabled.bind(this));
-		this.engineStreamer.on(AppEvents.COMMAND_UPDATED, this.onCommandUpdated.bind(this));
-		this.engineStreamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemoved.bind(this));
 	}
 
 	async onAppAdded(appId: string): Promise<void> {
 		await (this.orch.getManager()! as any).loadOne(appId); // TO-DO: fix type
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 	}
 
 	async onAppStatusUpdated({ appId, status }: { appId: string; status: AppStatus }): Promise<void> {
@@ -69,10 +62,8 @@ export class AppServerListener {
 
 		if (AppStatusUtils.isEnabled(status)) {
 			await this.orch.getManager()?.enable(appId).catch(SystemLogger.error);
-			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		} else if (AppStatusUtils.isDisabled(status)) {
 			await this.orch.getManager()?.disable(appId, status, true).catch(SystemLogger.error);
-			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		}
 	}
 
@@ -86,7 +77,6 @@ export class AppServerListener {
 			.getManager()!
 			.getSettingsManager()
 			.updateAppSetting(appId, setting as any); // TO-DO: fix type of `setting`
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
 
 	async onAppUpdated(appId: string): Promise<void> {
@@ -97,8 +87,6 @@ export class AppServerListener {
 		const appPackage = await this.orch.getAppSourceStorage()!.fetch(storageItem);
 
 		await this.orch.getManager()!.updateLocal(storageItem, appPackage);
-
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 	}
 
 	async onAppRemoved(appId: string): Promise<void> {
@@ -109,27 +97,6 @@ export class AppServerListener {
 		}
 
 		await this.orch.getManager()!.removeLocal(appId);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_REMOVED, appId);
-	}
-
-	async onCommandAdded(command: string): Promise<void> {
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_ADDED, command);
-	}
-
-	async onCommandDisabled(command: string): Promise<void> {
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_DISABLED, command);
-	}
-
-	async onCommandUpdated(command: string): Promise<void> {
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_UPDATED, command);
-	}
-
-	async onCommandRemoved(command: string): Promise<void> {
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_REMOVED, command);
-	}
-
-	async onActionsChanged(): Promise<void> {
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.ACTIONS_CHANGED);
 	}
 }
 
