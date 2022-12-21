@@ -161,8 +161,12 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	setSlaForRoom(
 		_rid: string,
-		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
+		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
 	): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	unsetSlaForRoom(_roomId: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 

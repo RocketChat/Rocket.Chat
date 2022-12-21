@@ -7,8 +7,12 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { cbLogger } from '../lib/logger';
 
 const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) => {
-	const sla = slaId && (await OmnichannelServiceLevelAgreements.findOneById(slaId));
+	if (!slaId) {
+		await LivechatEnterprise.removeRoomSLA(room._id);
+		return;
+	}
 
+	const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId);
 	await LivechatEnterprise.updateRoomSLA(room._id, user, sla);
 };
 
@@ -17,6 +21,7 @@ const updatePriority = async (room: IOmnichannelRoom, priorityId?: string) => {
 		await removePriorityFromRoom(room._id);
 		return;
 	}
+
 	await updateRoomPriority(room._id, priorityId);
 };
 

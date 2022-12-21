@@ -29,3 +29,7 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 		estimatedServiceTimeAt,
 	});
 };
+
+export const removeInquiryQueueSla = async (roomId: string) => {
+	await LivechatInquiry.unsetSlaForRoom(roomId);
+};

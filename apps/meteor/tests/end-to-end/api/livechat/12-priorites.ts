@@ -626,10 +626,8 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		let priorities: ILivechatPriority[];
 		let slas: Awaited<ReturnType<typeof bulkCreateSLA>>;
 
-		const hasSlaProps = (
-			inquiry: ILivechatInquiryRecord,
-		): inquiry is ILivechatInquiryRecord & { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date } =>
-			!!inquiry.estimatedWaitingTimeQueue && !!inquiry.estimatedServiceTimeAt;
+		const hasSlaProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { slaId: string } =>
+			!!inquiry.estimatedWaitingTimeQueue && !!inquiry.estimatedServiceTimeAt && !!inquiry.slaId;
 		const hasPriorityProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { priorityId: string } =>
 			inquiry.priorityId !== undefined;
 
@@ -719,6 +717,34 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 			return sortByTimestamp(inquiry1, inquiry2);
 		};
 
+		const filterUnnecessaryProps = (inquiries: ILivechatInquiryRecord[]) =>
+			inquiries.map((inquiry) => {
+				return {
+					_id: inquiry._id,
+					rid: inquiry.rid,
+					...(hasPriorityProps(inquiry) && {
+						priority: {
+							priorityWeight: getPriorityOrderById(inquiry.priorityId),
+							id: inquiry.priorityWeight,
+						},
+					}),
+					...(hasSlaProps(inquiry) && {
+						sla: {
+							estimatedWaitingTimeQueue: inquiry.estimatedWaitingTimeQueue,
+							estimatedServiceTimeAt: inquiry.estimatedServiceTimeAt,
+						},
+					}),
+					ts: inquiry.ts,
+				};
+			});
+
+		const compareInquiries = (inquiries1: ILivechatInquiryRecord[], inquiries2: ILivechatInquiryRecord[]) => {
+			const filteredInquiries1 = filterUnnecessaryProps(inquiries1);
+			const filteredInquiries2 = filterUnnecessaryProps(inquiries2);
+
+			expect(filteredInquiries1).to.deep.equal(filteredInquiries2);
+		};
+
 		it('it should create all the data required for further testing', async () => {
 			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
 
@@ -764,49 +790,36 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		it('it should sort the queue based on priority', async () => {
 			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Priority);
 
-			const allInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
-			expect(allInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+			const origInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(origInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
 
-			const sortedInquiries = allInquiries.sort(sortByPriority);
+			const expectedSortedInquiries: ILivechatInquiryRecord[] = JSON.parse(JSON.stringify(origInquiries));
 
-			expect(allInquiries).to.deep.equal(sortedInquiries);
+			expectedSortedInquiries.sort(sortByPriority);
 
-			// For debugging purposes
-			// const allInquiriesWithPrioritySlasAndTs = allInquiries.map((inquiry) => {
-			// 	return {
-			// 		...(inquiry.priorityId && { priority: getPriorityOrderById(inquiry.priorityId) }),
-			// 		...(hasSlaProps(inquiry) && {
-			// 			sla: {
-			// 				estimatedWaitingTimeQueue: inquiry.estimatedWaitingTimeQueue,
-			// 				estimatedServiceTimeAt: inquiry.estimatedServiceTimeAt,
-			// 			},
-			// 		}),
-			// 		ts: inquiry.ts,
-			// 	};
-			// });
-			// console.log('Priorities', JSON.stringify(allInquiriesWithPrioritySlasAndTs));
+			compareInquiries(origInquiries, expectedSortedInquiries);
 		});
 
 		it('it should sort the queue based on slas', async () => {
 			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.SLAs);
 
-			const allInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
-			expect(allInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+			const origInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(origInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
 
-			const sortedInquiries = allInquiries.sort(sortBySLA);
+			const expectedSortedInquiries = origInquiries.sort(sortBySLA);
 
-			expect(allInquiries).to.deep.equal(sortedInquiries);
+			compareInquiries(origInquiries, expectedSortedInquiries);
 		});
 
 		it('it should sort the queue based on timestamp', async () => {
 			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Timestamp);
 
-			const allInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
-			expect(allInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+			const origInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(origInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
 
-			const sortedInquiries = allInquiries.sort(sortByTimestamp);
+			const expectedSortedInquiries = origInquiries.sort(sortByTimestamp);
 
-			expect(allInquiries).to.deep.equal(sortedInquiries);
+			compareInquiries(origInquiries, expectedSortedInquiries);
 		});
 	});
 });

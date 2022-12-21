@@ -1,4 +1,5 @@
 import type { ILivechatInquiryRecord, ILivechatPriority } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_INQUIRY_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { ModifyResult, UpdateResult, Document } from 'mongodb';
 
@@ -10,6 +11,7 @@ declare module '@rocket.chat/model-typings' {
 			rid: string,
 			sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
 		): Promise<ModifyResult<ILivechatInquiryRecord>>;
+		unsetSlaForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;
 		setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		unsetPriorityForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
@@ -36,6 +38,21 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
+	unsetSlaForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		return this.findOneAndUpdate(
+			{ rid },
+			{
+				$unset: {
+					slaId: 1,
+				},
+				$set: {
+					estimatedServiceTimeAt: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_SERVICE_TIME,
+					estimatedWaitingTimeQueue: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+				},
+			},
+		);
+	}
+
 	bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult> {
 		return this.updateMany(
 			{
@@ -43,8 +60,11 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 			},
 			{
 				$unset: {
-					estimatedServiceTimeAt: 1,
-					estimatedWaitingTimeQueue: 1,
+					slaId: 1,
+				},
+				$set: {
+					estimatedServiceTimeAt: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_SERVICE_TIME,
+					estimatedWaitingTimeQueue: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 				},
 			},
 		);
@@ -68,7 +88,9 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 			{
 				$unset: {
 					priorityId: 1,
-					priorityWeight: 1,
+				},
+				$set: {
+					priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 				},
 			},
 		);
