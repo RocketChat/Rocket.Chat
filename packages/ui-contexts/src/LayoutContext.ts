@@ -15,7 +15,7 @@ export type LayoutContextValue = {
 		collapse: () => void;
 		expand: () => void;
 		close: () => void;
-	}
+	};
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
 	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
