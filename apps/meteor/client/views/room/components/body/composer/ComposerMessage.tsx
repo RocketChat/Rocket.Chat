@@ -14,6 +14,7 @@ export type ComposerMessageProps = {
 	children?: ReactElement;
 	subscription?: ISubscription;
 	readOnly?: boolean;
+	tshow?: boolean;
 	chatMessagesInstance: ContextType<typeof ChatContext>;
 	onResize?: () => void;
 	onEscape?: () => void;
@@ -66,7 +67,15 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props
 				return chatMessagesInstance?.flows.uploadFiles(files);
 			},
 		}),
-		[chatMessagesInstance, dispatchToastMessage, onSend],
+		[
+			chatMessagesInstance?.composer?.text,
+			chatMessagesInstance?.flows,
+			chatMessagesInstance?.messageEditing,
+			dispatchToastMessage,
+			joinEndpoint,
+			onSend,
+			rid,
+		],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
