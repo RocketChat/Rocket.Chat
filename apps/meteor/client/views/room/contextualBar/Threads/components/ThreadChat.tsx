@@ -125,6 +125,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 					onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 					onNavigateToNextMessage={handleNavigateToNextMessage}
 					onUploadFiles={handleUploadFiles}
+					tshow={sendToChannel}
 				>
 					<div className='thread-footer__row'>
 						<div style={{ display: 'flex', alignItems: 'center' }}>
