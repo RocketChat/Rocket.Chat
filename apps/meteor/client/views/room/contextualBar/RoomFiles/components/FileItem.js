@@ -9,7 +9,7 @@ import MenuItem from './MenuItem';
 const hoverClass = css`
 	&:hover {
 		cursor: pointer;
-		background-color: ${Palette.surface['surface-tint'].toString()};
+		background-color: ${Palette.surface['surface-tint']};
 	}
 `;
 
