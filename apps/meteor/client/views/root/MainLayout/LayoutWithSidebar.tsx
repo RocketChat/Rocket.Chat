@@ -1,11 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useCurrentRoute, useRoutePath, useSetting, useCurrentModal } from '@rocket.chat/ui-contexts';
+import { useLayout, useCurrentRoute, useRoutePath, useSetting, useCurrentModal, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import Sidebar from '../../../sidebar';
-import BlazeTemplate from '../BlazeTemplate';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -13,10 +11,32 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 
 	const modal = useCurrentModal();
 	const currentRoutePath = useRoutePath(currentRouteName, currentParameters);
-	const removeSidenav = useReactiveValue(
-		useCallback(() => embeddedLayout && !currentRoutePath?.startsWith('/admin'), [currentRoutePath, embeddedLayout]),
-	);
+	const channelRoute = useRoute('channel');
+	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
+
+	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
+
+	const redirected = useRef(false);
+
+	useEffect(() => {
+		const needToBeRedirect = currentRoutePath && ['/', '/home'].includes(currentRoutePath);
+
+		if (!needToBeRedirect) {
+			return;
+		}
+
+		if (!firstChannelAfterLogin || typeof firstChannelAfterLogin !== 'string') {
+			return;
+		}
+
+		if (redirected.current) {
+			return;
+		}
+		redirected.current = true;
+
+		channelRoute.push({ name: firstChannelAfterLogin });
+	}, [channelRoute, currentRoutePath, firstChannelAfterLogin]);
 
 	return (
 		<Box

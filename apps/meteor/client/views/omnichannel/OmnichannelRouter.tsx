@@ -4,7 +4,7 @@ import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
 import SidenavPortal from '../../sidebar/SidenavPortal';
-import OminichannelSidebar from './sidebar/OmnichannelSidebar';
+import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
 
 type OmnichannelRouterProps = {
 	children?: ReactNode;
@@ -24,7 +24,7 @@ const OmnichannelRouter = ({ children }: OmnichannelRouterProps): ReactElement =
 		<>
 			<Suspense fallback={<PageSkeleton />}>{children}</Suspense>
 			<SidenavPortal>
-				<OminichannelSidebar />
+				<OmnichannelSidebar />
 			</SidenavPortal>
 		</>
 	) : (

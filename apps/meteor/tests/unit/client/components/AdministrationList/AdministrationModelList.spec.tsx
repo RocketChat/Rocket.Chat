@@ -9,7 +9,6 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 const COMPONENT_PATH = '../../../../../client/components/AdministrationList/AdministrationModelList';
 const defaultConfig = {
 	'../../../app/ui-utils/client': {
-		'SideNav': {},
 		'@noCallThru': true,
 	},
 	'meteor/kadira:flow-router': {
@@ -139,13 +138,6 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const openFlex = spy();
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
 				...defaultConfig,
-				'../../../app/ui-utils/client': {
-					'SideNav': {
-						setFlex,
-						openFlex,
-					},
-					'@noCallThru': true,
-				},
 			}).default;
 			render(
 				<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' }]} showAdmin={true} />,

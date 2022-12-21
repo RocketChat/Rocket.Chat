@@ -100,7 +100,7 @@ const SideNav = () => {
 					'sidebar--main',
 					`sidebar--${sidebarViewMode}`,
 					sidebarHideAvatar && 'sidebar--hide-avatar',
-					sidebar.isOpen && isMobile && 'opened',
+					!sidebar.isCollapsed && isMobile && 'opened',
 					sideBarStyle,
 				].filter(Boolean)}
 			>
@@ -111,7 +111,7 @@ const SideNav = () => {
 					is='nav'
 					className='rcx-sidebar--template'
 					role='navigation'
-					data-qa-opened='{{dataQa}}'
+					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
 					<SidebarHeader />
 					<div className='rooms-list sidebar--custom-colors' aria-label={t('Channels')} role='region'>
@@ -120,7 +120,9 @@ const SideNav = () => {
 					<SidebarFooter />
 				</Box>
 			</Box>
-			{isMobile && <Box className={[sidebarWrapStyle, sidebar.isOpen && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()}></Box>}
+			{isMobile && (
+				<Box className={[sidebarWrapStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()}></Box>
+			)}
 		</>
 	);
 };
