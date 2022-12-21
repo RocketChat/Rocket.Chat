@@ -134,8 +134,6 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 
 		it('should render admin box and call sidenav', async () => {
 			const closeList = spy();
-			const setFlex = spy();
-			const openFlex = spy();
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
 				...defaultConfig,
 			}).default;
@@ -145,8 +143,6 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);
-			await waitFor(() => expect(setFlex).to.have.been.called.with('admin'));
-			await waitFor(() => expect(openFlex).to.have.been.called());
 			await waitFor(() => expect(closeList).to.have.been.called());
 		});
 	});
