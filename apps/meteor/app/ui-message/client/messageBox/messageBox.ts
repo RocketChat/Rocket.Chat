@@ -11,6 +11,7 @@ export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
+	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
 	onEscape?: () => void;

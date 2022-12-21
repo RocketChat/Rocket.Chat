@@ -9,7 +9,8 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useSetting, useUserPreference, useLayout, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type {
 	MouseEventHandler,
 	ReactElement,
@@ -19,7 +20,6 @@ import type {
 	MutableRefObject,
 	Ref,
 	ClipboardEventHandler,
-	FormEventHandler,
 } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -85,6 +85,7 @@ export const MessageBox = ({
 	rid,
 	tmid,
 	onSend,
+	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
 	onUploadFiles,
@@ -101,7 +102,6 @@ export const MessageBox = ({
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
 
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const chat = useChat();
 
@@ -160,22 +160,6 @@ export const MessageBox = ({
 			tshow,
 		});
 	});
-
-	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
-	const handleJoin = useCallback<FormEventHandler<HTMLElement>>(
-		async (e) => {
-			e.preventDefault();
-			try {
-				await joinEndpoint({
-					roomId: rid,
-				});
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		},
-		[joinEndpoint, rid, dispatchToastMessage],
-	);
-
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
@@ -282,6 +266,8 @@ export const MessageBox = ({
 	const sizes = useContentBoxSize(textareaRef);
 
 	const format = useFormatDateAndTime();
+
+	const joinMutation = useMutation(async () => onJoin?.());
 
 	const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { clipboardData } = event;
@@ -406,7 +392,7 @@ export const MessageBox = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<Button small primary onClick={handleJoin}>
+							<Button small primary onClick={onJoin} disabled={joinMutation.isLoading}>
 								{t('Join')}
 							</Button>
 						)}
