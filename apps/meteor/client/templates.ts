@@ -32,15 +32,6 @@ createTemplateForComponent('UploadProgressIndicator', () => import('./views/room
 
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
 
-createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
-
-createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
-	renderContainerView: () =>
-		HTML.DIV({
-			style: 'display: flex; flex: 1 1 100%;',
-		}),
-});
-
 createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
@@ -58,8 +49,6 @@ createTemplateForComponent('adminFlex', () => import('./views/admin/sidebar/Admi
 createTemplateForComponent('accountFlex', () => import('./views/account/AccountSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
-
-createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
 
 createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
