@@ -1,3 +1,5 @@
+import { css } from '@rocket.chat/css-in-js';
+import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -21,30 +23,46 @@ const MessageBoxReplies = (): ReactElement | null => {
 		return null;
 	}
 
+	const closeWrapperStyle = css`
+		position: absolute;
+		right: 0.5rem;
+		top: 0.75rem;
+	`;
+
 	return (
-		<div className='reply-preview__wrap message-popup'>
-			{replies.map((reply) => (
-				<div className='reply-preview message-popup'>
-					<div className='message'>
-						<Attachments attachments={[{ text: reply.msg, author_name: reply.u.username } as any]} />
-					</div>
-					<div
-						className='rc-message-box__icon cancel-reply'
-						data-mid='{{replyMessageData._id}}'
-						onClick={(): void => {
-							chat.composer?.dismissQuotedMessage(reply._id);
-						}}
-					>
-						<svg
-							className={`rc-icon rc-message-box__toolbar-formatting-icon rc-message-box__toolbar-formatting-icon--cross`}
-							aria-hidden='true'
-						>
-							<use xlinkHref={`#icon-cross`} />
-						</svg>
-					</div>
-				</div>
-			))}
-		</div>
+		<Box mbe='x8' position='relative'>
+			{replies.map((reply, key) => {
+				console.log(reply);
+				return (
+					<Margins block='x4' key={key}>
+						<Box display='flex' position='relative'>
+							<Attachments
+								attachments={[
+									{
+										...(!reply.attachments && { text: reply.msg }),
+										author_name: reply.u.username,
+										author_icon: `/avatar/${reply.u.username}`,
+										message_link: 'test',
+										ts: reply.ts,
+										attachments: reply.attachments,
+									} as any,
+								]}
+							/>
+							<Box
+								className={closeWrapperStyle}
+								// className='rc-message-box__icon cancel-reply'
+								data-mid={reply._id}
+								onClick={(): void => {
+									chat.composer?.dismissQuotedMessage(reply._id);
+								}}
+							>
+								<IconButton mini icon='cross' />
+							</Box>
+						</Box>
+					</Margins>
+				);
+			})}
+		</Box>
 	);
 };
 
