@@ -1,3 +1,5 @@
+import type { ILivechatPriority } from '@rocket.chat/core-typings/src';
+
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage';
 import type { IUser, Username } from './IUser';
@@ -172,7 +174,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	waitingResponse: any;
 	responseBy: any;
 	priorityId?: string;
-	priorityWeight?: number;
+	priorityWeight?: ILivechatPriority['sortItem'];
 
 	slaId?: string;
 

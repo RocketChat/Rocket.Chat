@@ -3,6 +3,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
+import { DEFAULT_SLA_INQUIRY_CONFIG } from '@rocket.chat/core-typings/src/IInquiry';
 
 import { hasRole } from '../../../authorization';
 import {
@@ -128,24 +130,26 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 
 	logger.debug(`Creating livechat inquiry for visitor ${_id}`);
 
-	const inquiry = Object.assign(
-		{
-			rid,
-			name,
-			ts,
-			department,
-			message: msg,
-			status: initialStatus || 'ready',
-			v: {
-				_id,
-				username,
-				token,
-				status,
-			},
-			t: 'l',
+	const inquiry = {
+		rid,
+		name,
+		ts,
+		department,
+		message: msg,
+		status: initialStatus || 'ready',
+		v: {
+			_id,
+			username,
+			token,
+			status,
 		},
-		extraInquiryInfo,
-	);
+		t: 'l',
+		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+		estimatedWaitingTimeQueue: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		estimatedServiceTimeAt: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_SERVICE_TIME,
+
+		...extraInquiryInfo,
+	};
 
 	const result = LivechatInquiry.insert(inquiry);
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);

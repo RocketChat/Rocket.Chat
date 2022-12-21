@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
-import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
@@ -44,16 +44,11 @@ const beforeNewInquiry = async (extraData: Props) => {
 
 	const now = new Date();
 	const ts = new Date(now.getTime());
-	const changes: {
-		ts: Date;
-		estimatedWaitingTimeQueue?: number;
-		estimatedServiceTimeAt?: Date;
-		priorityId?: string;
-		priorityWeight?: number;
-	} = {
+	const changes: Partial<ILivechatInquiryRecord> = {
 		ts,
 	};
 	if (sla) {
+		changes.slaId = sla._id;
 		changes.estimatedWaitingTimeQueue = sla.dueTimeInMinutes;
 		changes.estimatedServiceTimeAt = new Date(now.setMinutes(now.getMinutes() + sla.dueTimeInMinutes));
 	}

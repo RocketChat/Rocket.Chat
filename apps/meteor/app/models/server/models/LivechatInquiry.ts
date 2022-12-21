@@ -1,4 +1,5 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
 import { Base } from './_Base';
@@ -14,8 +15,14 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		this.tryEnsureIndex({ priorityId: 1, priorityWeight: 1 }, { sparse: true });
-		this.tryEnsureIndex({ priorityWeight: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 }, { sparse: true }); // used for sorting inquiries when OmnichannelSortingMechanismSettingType.Priority is selected
-		this.tryEnsureIndex({ estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, priorityWeight: 1, ts: 1 }, { sparse: true }); // used for sorting inquiries when OmnichannelSortingMechanismSettingType.SLAs is selected
+		this.tryEnsureIndex(
+			{ priorityWeight: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 },
+			{ partialFilterExpression: { status: { $eq: LivechatInquiryStatus.QUEUED } } },
+		); // used for sorting inquiries when OmnichannelSortingMechanismSettingType.Priority is selected
+		this.tryEnsureIndex(
+			{ estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, priorityWeight: 1, ts: 1 },
+			{ partialFilterExpression: { status: { $eq: LivechatInquiryStatus.QUEUED } } },
+		); // used for sorting inquiries when OmnichannelSortingMechanismSettingType.SLAs is selected
 		this.tryEnsureIndex({ 'v.token': 1, 'status': 1 }); // visitor token and status
 		this.tryEnsureIndex({ locked: 1, lockedAt: 1 }, { sparse: true }); // locked and lockedAt
 	}

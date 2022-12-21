@@ -11,19 +11,20 @@ export const removeSLAFromRooms = async (slaId: string) => {
 	await LivechatRooms.unsetSlaById(slaId);
 };
 
-export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes'>) => {
+export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
 	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
 	if (!inquiry) {
 		return;
 	}
 
 	const { ts: chatStartedAt } = inquiry;
-	const { dueTimeInMinutes } = sla;
+	const { dueTimeInMinutes, _id: slaId } = sla;
 
 	const estimatedWaitingTimeQueue = dueTimeInMinutes;
 	const estimatedServiceTimeAt = new Date(chatStartedAt.setMinutes(chatStartedAt.getMinutes() + dueTimeInMinutes));
 
 	await LivechatInquiry.setSlaForRoom(inquiry.rid, {
+		slaId,
 		estimatedWaitingTimeQueue,
 		estimatedServiceTimeAt,
 	});

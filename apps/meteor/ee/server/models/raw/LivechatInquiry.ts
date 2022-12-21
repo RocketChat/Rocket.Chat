@@ -8,7 +8,7 @@ declare module '@rocket.chat/model-typings' {
 	export interface ILivechatInquiryModel {
 		setSlaForRoom(
 			rid: string,
-			sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
+			sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
 		): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;
 		setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>>;
@@ -20,14 +20,15 @@ declare module '@rocket.chat/model-typings' {
 export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivechatInquiryModel {
 	setSlaForRoom(
 		rid: string,
-		sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date },
+		sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
 	): Promise<ModifyResult<ILivechatInquiryRecord>> {
-		const { estimatedWaitingTimeQueue, estimatedServiceTimeAt } = sla;
+		const { estimatedWaitingTimeQueue, estimatedServiceTimeAt, slaId } = sla;
 
 		return this.findOneAndUpdate(
 			{ rid },
 			{
 				$set: {
+					slaId,
 					estimatedServiceTimeAt,
 					estimatedWaitingTimeQueue,
 				},

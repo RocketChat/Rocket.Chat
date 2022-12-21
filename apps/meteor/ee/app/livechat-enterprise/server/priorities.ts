@@ -1,30 +1,31 @@
 import { LivechatPriority } from '@rocket.chat/models';
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
 const defaultPriorities: Omit<ILivechatPriority, '_id' | '_updatedAt'>[] = [
 	{
 		i18n: 'Lowest',
-		sortItem: 5,
+		sortItem: LivechatPriorityWeight.LOWEST,
 		dirty: false,
 	},
 	{
 		i18n: 'Low',
-		sortItem: 4,
+		sortItem: LivechatPriorityWeight.LOW,
 		dirty: false,
 	},
 	{
 		i18n: 'Medium',
-		sortItem: 3,
+		sortItem: LivechatPriorityWeight.MEDIUM,
 		dirty: false,
 	},
 	{
 		i18n: 'High',
-		sortItem: 2,
+		sortItem: LivechatPriorityWeight.HIGH,
 		dirty: false,
 	},
 	{
 		i18n: 'Highest',
-		sortItem: 1,
+		sortItem: LivechatPriorityWeight.HIGHEST,
 		dirty: false,
 	},
 ];
