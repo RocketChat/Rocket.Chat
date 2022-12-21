@@ -41,7 +41,7 @@ export class AccountProfile {
 	}
 
 	get btnClose(): Locator {
-		return this.page.locator('button >> i.rcx-icon--name-cross.rcx-icon');
+		return this.page.locator('aside[role="navigation"] button >> i.rcx-icon--name-cross.rcx-icon');
 	}
 
 	get inputToken(): Locator {
@@ -74,5 +74,25 @@ export class AccountProfile {
 
 	get inputImageFile(): Locator {
 		return this.page.locator('input[type=file]');
+	}
+
+	get securityE2EEncryptionSection(): Locator {
+		return this.page.locator("[data-qa-type='e2e-encryption-section']");
+	}
+
+	get securityE2EEncryptionResetKeyButton(): Locator {
+		return this.page.locator("[data-qa-type='e2e-encryption-reset-key-button']");
+	}
+
+	get securityE2EEncryptionPassword(): Locator {
+		return this.page.locator("[data-qa-type='e2e-encryption-password']");
+	}
+
+	get securityE2EEncryptionPasswordConfirmation(): Locator {
+		return this.page.locator("[data-qa-type='e2e-encryption-password-confirmation']");
+	}
+
+	get securityE2EEncryptionSavePasswordButton(): Locator {
+		return this.page.locator("[data-qa-type='e2e-encryption-save-password-button']");
 	}
 }

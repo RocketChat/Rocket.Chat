@@ -189,7 +189,12 @@ const CreateChannel = ({
 								<Field.Label>{t('Encrypted')}</Field.Label>
 								<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
 							</Box>
-							<ToggleSwitch checked={values.encrypted} disabled={e2edisabled || values.federated} onChange={handlers.handleEncrypted} />
+							<ToggleSwitch
+								checked={values.encrypted}
+								disabled={e2edisabled || values.federated}
+								onChange={handlers.handleEncrypted}
+								data-qa-type='encryption-toggle'
+							/>
 						</Box>
 					</Field>
 					<Field>
