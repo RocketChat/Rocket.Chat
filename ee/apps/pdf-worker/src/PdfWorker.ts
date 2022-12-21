@@ -70,8 +70,14 @@ export class PdfWorker extends ServiceClass implements IPDFWorkerService {
 					return this.notifyCompletion(details.from, details, file);
 				})
 				.then(() => console.log('Succesfuly notified file completion'))
-				.catch((err) => console.error('Error in processing', err));
+				.catch((err) => this.notifyFailure(details.from, details, err));
 		});
+	}
+
+	// When Job fails, we return the error to the queue
+	private async notifyFailure(from: string, details: any, error: any): Promise<void> {
+		console.log('notifyFailure', from, error);
+		await this.queueService.queueWork(`workComplete`, `${from}.pdfFailed`, { error, details });
 	}
 
 	// When Job is completed, we return the file info to the queue

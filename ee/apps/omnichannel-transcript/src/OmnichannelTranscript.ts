@@ -1,3 +1,5 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
 import type { Upload, Message, QueueWorker } from '../../../../apps/meteor/server/sdk';
@@ -20,13 +22,30 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	// You're the only one missing :troll:
-	async requestTranscript(): Promise<void> {
+	async requestTranscript({ details }: { details: any }): Promise<void> {
+		// @ts-expect-error - wait for implementation
+		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
+		// On here we should check if the room has already a PDF transcript requested, and return true if that's the case
 		// Temporary while we implement the actual logic :)
 		await this.queueService.queueWork('work', 'pdf-worker.renderToStream', {
 			template: 'omnichannel-transcript',
 			details: { userId: 'rocketchat.internal.admin.test', rid: 'GENERAL', from: this.name },
 			data: { some: 'data' },
 		});
+	}
+
+	async pdfFailed({ details }: any): Promise<void> {
+		// Remove `transcriptRequestedPdf` from room
+		const room = await LivechatRooms.findOneById(details.rid);
+		if (!room) {
+			return;
+		}
+
+		// @ts-expect-error - wait for implementation
+		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
+
+		const { rid } = await this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
+		await this.messageService.sendMessage({ fromId: 'rocket.cat', rid, msg: 'Your PDF has failed to generate!' });
 	}
 
 	async pdfComplete({ details, file }: any): Promise<void> {
