@@ -20,7 +20,6 @@ import type { IVideoConfService } from './types/IVideoConfService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IQueueWorkerService } from './types/IQueueWorkerService';
-import type { IPDFWorkerService } from './types/IPDFWorkerService';
 import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
 import { FibersContextStore } from './lib/ContextStore';
 import type { IUploadService } from './types/IUploadService';
@@ -47,7 +46,6 @@ export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('devic
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 export const Upload = proxifyWithWait<IUploadService>('upload');
 export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
-export const PdfWorker = proxifyWithWait<IPDFWorkerService>('pdf-worker');
 export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxifyWithWait<IMessageService>('message');
 

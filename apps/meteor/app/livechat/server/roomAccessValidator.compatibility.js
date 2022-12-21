@@ -70,4 +70,15 @@ export const validators = [
 		}
 		return hasPermission(user._id, 'view-livechat-room-closed-same-department');
 	},
+	function (room, user) {
+		console.log('roomAccessValidator.compatibility.js: room', room);
+		// Check if user is rocket.cat
+		if (!user?._id) {
+			return false;
+		}
+
+		// This opens the ability for rocketcat to upload files to a livechat room without being included in it :)
+		// Worst case, someone manages to log in as rocketcat lol
+		return user._id === 'rocket.cat';
+	},
 ];

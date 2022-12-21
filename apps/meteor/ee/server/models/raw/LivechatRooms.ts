@@ -215,40 +215,4 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateMany', query: restrictedQuery });
 		return super.updateMany(restrictedQuery, ...restArgs);
 	}
-
-	// @ts-expect-error - forgive me father for I have sinned, but file is JS
-	setTranscriptRequestedPdfById(rid: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$set: { pdfTranscriptRequested: true },
-			},
-		);
-	}
-
-	// @ts-expect-error - forgive me father for I have sinned, but file is JS
-	unsetTranscriptRequestedPdfById(rid: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$unset: { pdfTranscriptRequested: 1 },
-			},
-		);
-	}
-
-	// @ts-expect-error - forgive me father for I have sinned, but file is JS
-	setPdfTranscriptFileIdById(rid: string, fileId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$set: { pdfTranscriptFileId: fileId },
-			},
-		);
-	}
 }

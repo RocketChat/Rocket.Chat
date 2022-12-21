@@ -1,12 +1,17 @@
-import { LivechatRooms, Messages } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Uploads } from '@rocket.chat/models';
+import { PdfWorker } from '@rocket.chat/pdf-worker2';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
 import type { Upload, Message, QueueWorker } from '../../../../apps/meteor/server/sdk';
 
+const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
+
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';
+
+	private worker: PdfWorker;
 
 	constructor(
 		private readonly uploadService: typeof Upload,
@@ -14,7 +19,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		private readonly queueService: typeof QueueWorker,
 	) {
 		super();
-
+		this.worker = new PdfWorker();
 		// your stuff
 	}
 
@@ -53,24 +58,112 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
 
-		// On here, we're doing something "interesting". We're fetching all messages and putting them in the queue to be processed
-		// This may not be ideal, since a message list could be huge. We could instead just pass the room ID and have the worker
-		// fetch the messages itself. This would be a bit more efficient, but would require the worker to be "contaminated" with
-		// this extra logic, and having 2 purposes.
-		// This way provides one advantage, that is: whenever the worker is ready to process the job, it will have all the data it needs
-		// to do so. This is a bit more "pure" in the sense that the worker is just a worker, and doesn't have to know about the
-		// business logic of the app, apart from fetching buffers for files.
-		// As a note: queue perf won't be affected, as the size of the object will only affect in transit, not in the queue itself.
-		// The only drawback would be memory usage on the queue and network usage, but that's a tradeoff we can make.
-		// Otherwise, we can just pass the room ID and have the worker fetch the messages itself.
-		await this.queueService.queueWork('work', 'pdf-worker.renderToStream', {
+		// Even when processing is done "in-house", we still need to queue the work
+		// to avoid blocking the request
+		await this.queueService.queueWork('work', `${this.name}.workOnPdf`, {
 			template: 'omnichannel-transcript',
 			details: { userId: details.userId, rid: details.rid, from: this.name },
-			data: { messages: await this.getMessagesFromRoom({ rid: details.rid }), visitor: room.v, agent: room.servedBy },
 		});
 	}
 
-	async pdfFailed({ details }: any): Promise<void> {
+	private async getFiles(
+		userId: string,
+		messages: IMessage[],
+	): Promise<(Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({ name?: string; buffer: Buffer | null } | undefined)[] })[]> {
+		return Promise.all(
+			messages.map(async (message: IMessage) => {
+				if (!message.attachments || !message.attachments.length) {
+					return { _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg };
+				}
+
+				const files = await Promise.all(
+					message.attachments.map(async (attachment) => {
+						// @ts-expect-error - messages...
+						if (attachment.type !== 'file') {
+							// ignore other types of attachments
+							return;
+						}
+						// @ts-expect-error - messages...
+						if (!this.worker.isMimeTypeValid(attachment.image_type)) {
+							// ignore invalid mime types
+							return { name: attachment.title, buffer: null };
+						}
+						const file = message.files?.find((file) => file.name === attachment.title);
+						if (!file) {
+							// ignore attachments without file
+							// This shouldn't happen, but just in case :)
+							return;
+						}
+						const uploadedFile = await Uploads.findOneById(file._id);
+						if (!uploadedFile) {
+							// ignore attachments without file
+							return { name: file.name, buffer: null };
+						}
+
+						const fileBuffer = await this.uploadService.getFileBuffer({ userId, file: uploadedFile });
+						return { name: file.name, buffer: fileBuffer };
+					}),
+				);
+
+				return { _id: message._id, msg: message.msg, u: message.u, files, ts: message.ts };
+			}),
+		);
+	}
+
+	async workOnPdf({ template, details }: { template: string; details: any }): Promise<void> {
+		console.log('workOnPdf', details);
+		const room = await LivechatRooms.findOneById(details.rid);
+		if (!room) {
+			throw new Error('room-not-found');
+		}
+		const messages = await this.getMessagesFromRoom({ rid: room._id });
+
+		const data = {
+			visitor: room.v,
+			agent: room.servedBy,
+			messages: await this.getFiles(details.userId, messages),
+		};
+
+		try {
+			console.log('doRender', { template, data, details });
+			await this.doRender({ template, data, details });
+		} catch (error) {
+			console.error(error);
+			await this.pdfFailed({ details, e: error });
+		}
+	}
+
+	async doRender({ template, data, details }: { template: string; data: any; details: any }): Promise<void> {
+		const buf: Uint8Array[] = [];
+		let outBuff = Buffer.alloc(0);
+
+		const stream = await this.worker.renderToStream({ template, data, details });
+		stream.on('data', (chunk) => {
+			buf.push(chunk);
+		});
+		stream.on('end', () => {
+			outBuff = Buffer.concat(buf);
+
+			return this.uploadService
+				.uploadFile({
+					userId: details.userId,
+					buffer: outBuff,
+					details: {
+						name: 'transcript.pdf',
+						type: 'application/pdf',
+						rid: details.rid,
+						// Rocket.cat is the goat
+						userId: 'rocket.cat',
+						size: outBuff.length,
+					},
+				})
+				.then((file) => this.pdfComplete({ details, file }))
+				.catch((e) => this.pdfFailed({ details, e }));
+		});
+	}
+
+	async pdfFailed({ details, e }: { details: any; e: any }): Promise<void> {
+		console.error('pdfFailed', e);
 		// Remove `transcriptRequestedPdf` from room
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
@@ -80,36 +173,44 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
 		const { rid } = await this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
-		await this.messageService.sendMessage({ fromId: 'rocket.cat', rid, msg: 'PDF Generation failed :(' });
+		await this.messageService.sendMessage({ fromId: 'rocket.cat', rid, msg: `PDF Failed :( => ${e.message}` });
 	}
 
 	async pdfComplete({ details, file }: any): Promise<void> {
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
-			await LivechatRooms.setPdfTranscriptFileIdById(details.rid, file._id);
-			await this.uploadService.sendFileMessage({
-				roomId: details.rid,
-				userId: 'rocket.cat',
-				file,
-				// @ts-expect-error - why?
-				message: {
-					// Translate from service
-					msg: 'Your PDF has been generated!',
-				},
-			});
+			const [, { rid }] = await Promise.all([
+				LivechatRooms.setPdfTranscriptFileIdById(details.rid, file._id),
+				this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
+			]);
 
-			// Send the file to the user who requested it, so they can download it
-			const { rid } = await this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
-			await this.uploadService.sendFileMessage({
-				roomId: rid,
-				userId: 'rocket.cat',
-				file,
-				// @ts-expect-error - why?
-				message: {
-					// Translate from service
-					msg: 'Your PDF has been generated!',
-				},
-			});
+			const result = await Promise.allSettled([
+				this.uploadService.sendFileMessage({
+					roomId: details.rid,
+					userId: 'rocket.cat',
+					file,
+					// @ts-expect-error - why?
+					message: {
+						// Translate from service
+						msg: 'Your PDF has been generated!',
+					},
+				}),
+				// Send the file to the user who requested it, so they can download it
+				this.uploadService.sendFileMessage({
+					roomId: rid,
+					userId: 'rocket.cat',
+					file,
+					// @ts-expect-error - why?
+					message: {
+						// Translate from service
+						msg: 'Your PDF has been generated!',
+					},
+				}),
+			]);
+			const e = result.find((r) => isPromiseRejectedResult(r));
+			if (e && isPromiseRejectedResult(e)) {
+				throw e.reason;
+			}
 		} catch (e) {
 			console.error('Error sending transcript as message', e);
 		}

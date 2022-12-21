@@ -18,10 +18,15 @@ API.v1.addRoute(
 			// Flow is as follows:
 			// 1. Call OmnichannelTranscript.requestTranscript()
 			// 2. OmnichannelTranscript.requestTranscript() calls QueueWorker.queueWork()
-			// 3. QueueWorker.queueWork() eventually calls PdfWorker.renderToStream()
-			// 4. PdfWorker.renderToStream() calls QueueWorker.queueWork() when processing ends and file has been uploaded
-			// 5. QueueWorker.queueWork() eventually calls OmnichannelTranscript.pdfComplete() and it notifies the user
-			await OmnichannelTranscript.requestTranscript();
+			// 3. QueueWorker.queueWork() eventually calls OmnichannelTranscript.workOnPdf()
+			// 4. OmnichannelTranscript.workOnPdf() calls OmnichannelTranscript.pdfComplete() when processing ends
+			// 5. OmnichannelTranscript.pdfComplete() sends the messages to the user, and updates the room with the flags
+			await OmnichannelTranscript.requestTranscript({
+				details: {
+					userId: 'rocketchat.internal.admin.test',
+					rid: '5YaYgnEiqEDEYyPXN',
+				},
+			});
 		},
 	},
 );

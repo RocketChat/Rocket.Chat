@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3036;
 	// need to import service after models are registered
 	const { OmnichannelTranscript } = await import('./OmnichannelTranscript');
 
-	api.registerService(new OmnichannelTranscript(Upload, Message, QueueWorker), ['queue-worker', 'pdf-worker']);
+	api.registerService(new OmnichannelTranscript(Upload, Message, QueueWorker), ['queue-worker']);
 
 	await api.start();
 
