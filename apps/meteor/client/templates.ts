@@ -16,7 +16,7 @@ createTemplateForComponent('MessageActions', () => import('./components/message/
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/message/Metrics/Thread'), {
+createTemplateForComponent('ThreadMetric', () => import('./components/message/Metrics/ThreadMetric'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',

@@ -1,13 +1,15 @@
 import { Message, MessageMetricsItem, MessageBlock } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEvent as ReactMouseEvent } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import * as NotificationStatus from '../NotificationStatus';
 import { followStyle, anchor } from '../helpers/followSyle';
+import AllMentionNotification from '../notification/AllMentionNotification';
+import MeMentionNotification from '../notification/MeMentionNotification';
+import UnreadMessagesNotification from '../notification/UnreadMessagesNotification';
 
-type ThreadReplyOptions = {
+type ThreadMetricProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
@@ -17,10 +19,21 @@ type ThreadReplyOptions = {
 	counter: number;
 	participants: number;
 	following: boolean;
-	openThread: (e: ReactMouseEvent<Element, MouseEvent>) => void;
+	openThread: (e: MouseEvent) => void;
 };
 
-const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
+const ThreadMetric = ({
+	unread,
+	mention,
+	all,
+	rid,
+	mid,
+	counter,
+	participants,
+	following,
+	lm,
+	openThread,
+}: ThreadMetricProps): ReactElement => {
 	const t = useTranslation();
 
 	const followMessage = useEndpoint('POST', '/v1/chat.followMessage');
@@ -62,7 +75,7 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, 
 				</MessageMetricsItem>
 				<MessageMetricsItem>
 					<MessageMetricsItem.Label>
-						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
+						{(mention && <MeMentionNotification />) || (all && <AllMentionNotification />) || (unread && <UnreadMessagesNotification />)}
 					</MessageMetricsItem.Label>
 				</MessageMetricsItem>
 			</Message.Metrics>

@@ -11,7 +11,7 @@ import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
 import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
 import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
-import ThreadMetric from '../../../../components/message/Metrics/Thread';
+import ThreadMetric from '../../../../components/message/Metrics/ThreadMetric';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
