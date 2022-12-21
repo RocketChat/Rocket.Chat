@@ -200,7 +200,7 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 			)}
 			{state === 'loading' && (
 				<div className='rc-message-box__icon'>
-					<Throbber inheritColor size='x12' />a
+					<Throbber inheritColor size='x12' />
 				</div>
 			)}
 		</div>

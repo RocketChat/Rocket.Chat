@@ -8,7 +8,7 @@ import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
 
 const maxUsernames = 5;
 
-export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
+const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
 	const t = useTranslation();
 	const actions = useReactiveValue(
 		useCallback(() => {
@@ -50,3 +50,5 @@ export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?:
 		</Box>
 	);
 };
+
+export default ComposerUserActionIndicator;
