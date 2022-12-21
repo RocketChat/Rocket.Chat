@@ -2,7 +2,8 @@ import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } f
 import { Field, TextInput, Button, Margins, Box, MultiSelect, Icon, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useRef, useState, FC, ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserInfo from '../../../components/UserInfo';

@@ -1,5 +1,6 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { Dispatch, SetStateAction } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { RoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';

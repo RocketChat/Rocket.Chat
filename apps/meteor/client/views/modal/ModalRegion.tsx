@@ -1,5 +1,6 @@
 import { useModal, useCurrentModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { FocusScope } from 'react-aria';
 
 import ModalBackdrop from '../../components/modal/ModalBackdrop';

@@ -1,11 +1,12 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, SidebarItem } from '@rocket.chat/fuselage';
 import type colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { memo, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 type SidebarGenericItemProps = {
 	href?: string;
 	active?: boolean;
+	featured?: boolean;
 	children: ReactNode;
 	customColors?: {
 		default: typeof colors[string];
@@ -15,42 +16,12 @@ type SidebarGenericItemProps = {
 	textColor?: string;
 };
 
-const SidebarGenericItem = ({
-	href,
-	active,
-	children,
-	customColors,
-	textColor = 'default',
-	...props
-}: SidebarGenericItemProps): ReactElement => (
-	<Box
-		is='a'
-		color={textColor}
-		pb='x8'
-		pi='x24'
-		href={href}
-		className={[
-			active && 'active',
-			css`
-				${customColors ? `background-color: ${customColors.default} !important;` : ''}
-				&:hover,
-				&:focus,
-
-				&.active:hover {
-					background-color: ${customColors?.hover || 'var(--sidebar-background-light-hover)'} !important;
-				}
-
-				&.active {
-					background-color: ${customColors?.active || 'var(--sidebar-background-light-active)'} !important;
-				}
-			`,
-		].filter(Boolean)}
-		{...props}
-	>
-		<Box mi='neg-x4' display='flex' flexDirection='row' alignItems='center'>
+const SidebarGenericItem = ({ href, active, children, ...props }: SidebarGenericItemProps): ReactElement => (
+	<SidebarItem {...{ ...props, selected: active }} clickable is='a' href={href}>
+		<Box display='flex' flexDirection='row' alignItems='center' pb='x8' pi='x12'>
 			{children}
 		</Box>
-	</Box>
+	</SidebarItem>
 );
 
 export default memo(SidebarGenericItem);

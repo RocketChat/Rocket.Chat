@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { forwardRef, ReactNode, ComponentProps, MouseEvent } from 'react';
+import type { ReactNode, ComponentProps, MouseEvent } from 'react';
+import React, { forwardRef } from 'react';
 
 import MarkdownText from '../MarkdownText';
 import * as Status from '../UserStatus';

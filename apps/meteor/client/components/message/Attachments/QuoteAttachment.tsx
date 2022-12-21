@@ -1,7 +1,8 @@
-import { MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
