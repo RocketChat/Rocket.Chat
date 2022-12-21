@@ -1,19 +1,23 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { API } from '../../../../../app/api/server';
+import { canAccessRoomAsync } from '../../../../../app/authorization/server/functions/canAccessRoom';
 import { OmnichannelTranscript } from '../../../../../server/sdk';
 
 // This is a public route for testing purposes, this should be updated before merging into develop
 API.v1.addRoute(
-	'omnichannel/request-transcript',
-	{ authRequired: false },
+	'omnichannel/:rid/request-transcript',
+	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'] },
 	{
 		async post() {
-			// Missing:
-			// Authentication
-			// Permissions
-			// Validation
-			// Actual body parsing
-			// Room access validation
-			// etc.
+			const room = await LivechatRooms.findOneById(this.urlParams.rid);
+			if (!room) {
+				throw new Error('error-invalid-room');
+			}
+
+			if (!(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				throw new Error('error-not-allowed');
+			}
 
 			// Flow is as follows:
 			// 1. Call OmnichannelTranscript.requestTranscript()
@@ -23,10 +27,12 @@ API.v1.addRoute(
 			// 5. OmnichannelTranscript.pdfComplete() sends the messages to the user, and updates the room with the flags
 			await OmnichannelTranscript.requestTranscript({
 				details: {
-					userId: 'rocketchat.internal.admin.test',
-					rid: '5YaYgnEiqEDEYyPXN',
+					userId: this.userId,
+					rid: this.urlParams.rid,
 				},
 			});
+
+			return API.v1.success();
 		},
 	},
 );

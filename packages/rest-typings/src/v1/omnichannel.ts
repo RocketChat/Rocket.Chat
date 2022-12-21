@@ -3221,4 +3221,7 @@ export type OmnichannelEndpoints = {
 			}[];
 		}>;
 	};
+	'/v1/omnichannel/:rid/request-transcript': {
+		POST: () => void;
+	};
 };
