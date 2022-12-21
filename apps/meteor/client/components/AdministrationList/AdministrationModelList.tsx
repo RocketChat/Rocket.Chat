@@ -5,7 +5,6 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { userHasAllPermission } from '../../../app/authorization/client';
-import { SideNav } from '../../../app/ui-utils/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
@@ -74,10 +73,6 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 							const action = (): void => {
 								if (item.href) {
 									FlowRouter.go(item.href);
-								}
-								if (item.sideNav) {
-									SideNav.setFlex(item.sideNav);
-									SideNav.openFlex();
 								}
 								closeList();
 							};
