@@ -1,8 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Button, Field, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, FC, useCallback } from 'react';
+import type { FC } from 'react';
+import React, { memo, useCallback } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
 import RoomsInput from './RoomsInput';

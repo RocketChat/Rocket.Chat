@@ -187,10 +187,18 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id: string;
 		username: IUser['username'];
 	};
+	closingMessage?: IMessage;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	t: 'l';
+	omnichannel?: {
+		predictedVisitorAbandonmentAt: Date;
+	};
+	// sms field is used when the room is created from one of the internal SMS integrations (e.g. Twilio)
+	sms?: {
+		from: string;
+	};
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -256,6 +264,7 @@ export type RoomAdminFieldsType =
 	| 'default'
 	| 'favorite'
 	| 'featured'
+	| 'reactWhenReadOnly'
 	| 'topic'
 	| 'msgs'
 	| 'archived'

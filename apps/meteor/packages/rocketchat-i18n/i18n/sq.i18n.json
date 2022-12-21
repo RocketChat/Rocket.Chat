@@ -1,5 +1,4 @@
 {
-  "403": "i ndaluar",
   "500": "Server Error brendshme",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ nuk është më __role__, duke __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ u __role__ nga __user_by__",
@@ -1143,7 +1142,6 @@
   "File_uploaded": "Skedari u ngarkua",
   "files": "fotografi",
   "Files_only": "Hiqni vetëm dosjet e bashkangjitura, mbajini mesazhet",
-  "files_pruned": "fotografi të shkurtuara",
   "FileUpload": "Ngarko skedarin",
   "FileUpload_Disabled": "Ngarkimet e skedarëve janë të çaktivizuara.",
   "FileUpload_Enabled": "Ngarkimet fotografi Enabled",
@@ -1433,6 +1431,7 @@
   "It_works": "Punon",
   "italics": "italics",
   "Job_Title": "Titulli i Punës",
+  "Join": "Bashkohuni",
   "Join_audio_call": "Join thirrje audio",
   "Join_Chat": "Bashkohu me Chat",
   "Join_default_channels": "Join kanale parazgjedhur",
@@ -2580,7 +2579,7 @@
   "User": "Përdorues",
   "User__username__is_now_a_leader_of__room_name_": "User __username__ është tani një udhëheqës i __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "User __username__ tani është një moderator i __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "User __username__ është tani një pronar i __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "User __username__ është tani një pronar i __room_name__",
   "User__username__removed_from__room_name__leaders": "Përdoruesi __username__ u hoq nga udhëheqësit __room_name__",
   "User__username__removed_from__room_name__moderators": "User __username__ hequr nga moderatorëve __room_name__",
   "User__username__removed_from__room_name__owners": "User __username__ hequr nga pronarët __room_name__",
@@ -2792,5 +2791,14 @@
   "Your_password_is_wrong": "Fjalëkalimi juaj është e gabuar!",
   "Your_push_was_sent_to_s_devices": "shtytje juaj u dërgua në pajisjet %s",
   "Your_server_link": "Lidhjet e serverit tuaj",
-  "Your_workspace_is_ready": "Hapësira e punës tënde është e gatshme të përdorë 🎉"
+  "Your_workspace_is_ready": "Hapësira e punës tënde është e gatshme të përdorë 🎉",
+  "registration.page.login.errors.wrongCredentials": "Përdoruesi nuk u gjet ose fjalëkalim është i gabuar",
+  "registration.page.registration.waitActivationWarning": "Para se ju të identifikoheni, llogaria juaj duhet të aktivizohet nga një administrator.",
+  "registration.page.resetPassword.sent": "Nëse kjo e-mail është regjistruar, ne do të dërgojmë udhëzime se si të rivendosni fjalëkalimin tuaj. Nëse nuk merrni një email së shpejti, lutemi të ktheheni dhe provoni përsëri.",
+  "registration.component.login": "Hyrje",
+  "registration.component.login.userNotFound": "Përdoruesi nuk u gjet",
+  "registration.component.resetPassword": "Rivendos fjalëkalimin",
+  "registration.component.form.password": "Fjalëkalim",
+  "registration.component.form.divider": "ose",
+  "registration.component.form.submit": "Paraqit"
 }

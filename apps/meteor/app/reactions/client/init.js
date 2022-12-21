@@ -55,7 +55,7 @@ Meteor.startup(function () {
 		id: 'reaction-message',
 		icon: 'add-reaction',
 		label: 'Add_Reaction',
-		context: ['message', 'message-mobile', 'threads'],
+		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(event, props) {
 			event.stopPropagation();
 			const { message = messageArgs(this).msg } = props;

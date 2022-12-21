@@ -1,7 +1,8 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import CounterSet from '../../../components/dataView/CounterSet';
 

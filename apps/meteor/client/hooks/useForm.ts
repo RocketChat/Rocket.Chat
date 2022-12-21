@@ -1,5 +1,6 @@
 import { capitalize } from '@rocket.chat/string-helpers';
-import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
+import { useCallback, useReducer, useMemo } from 'react';
 
 type Field = {
 	name: string;

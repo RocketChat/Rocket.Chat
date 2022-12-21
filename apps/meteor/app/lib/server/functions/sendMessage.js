@@ -276,6 +276,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
+
 		// Execute all callbacks
 		callbacks.runAsync('afterSaveMessage', message, room);
 		return message;

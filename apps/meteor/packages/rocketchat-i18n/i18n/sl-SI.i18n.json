@@ -1,5 +1,4 @@
 {
-  "403": "Prepovedano",
   "500": "Notranja napaka strežnika",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ni več __role__ by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ je bil nastavljen kot __role__ by __user_by__",
@@ -1133,7 +1132,6 @@
   "File_uploaded": "Datoteka naložena",
   "files": "datoteke",
   "Files_only": "Odstranite le priložene datoteke in hranite sporočila",
-  "files_pruned": "datoteke obrezane",
   "FileUpload": "Nalaganje datotek",
   "FileUpload_Disabled": "Nalaganje datotek je onemogočeno. ",
   "FileUpload_Enabled": "Nalaganje datotek je omogočeno",
@@ -1424,6 +1422,7 @@
   "It_works": "Deluje",
   "italics": "poševno",
   "Job_Title": "Naziv delovnega mesta",
+  "Join": "Pridruži se",
   "Join_audio_call": "Pridruži se avdio klicu",
   "Join_Chat": "Pridružite se klepetu",
   "Join_default_channels": "Pridružite se privzetim kanalom",
@@ -2570,7 +2569,7 @@
   "User": "Uporabnik",
   "User__username__is_now_a_leader_of__room_name_": "Uporabnik __username__ je zdaj vodja sobe  __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Uporabnik __username__ je zdaj moderator sobe  __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Uporabnik __username__ je zdaj lastnik sobe  __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Uporabnik __username__ je zdaj lastnik sobe  __room_name__",
   "User__username__removed_from__room_name__leaders": "Uporabnik __username__ ni več vodja sobe __room_name__ ",
   "User__username__removed_from__room_name__moderators": "Uporabnik __username__ ni več moderator sobe __room_name__ ",
   "User__username__removed_from__room_name__owners": "Uporabnik __username__ ni več lastnik sobe __room_name__",
@@ -2782,5 +2781,14 @@
   "Your_password_is_wrong": "Napačno geslo!",
   "Your_push_was_sent_to_s_devices": "Vaš potisk je bil poslan v naprave %s",
   "Your_server_link": "Povezava strežnika",
-  "Your_workspace_is_ready": "Vaš delovni prostor je pripravljen za uporabo 🎉"
+  "Your_workspace_is_ready": "Vaš delovni prostor je pripravljen za uporabo 🎉",
+  "registration.page.registration.waitActivationWarning": "Preden se lahko prijavite, mora skrbnik ročno aktivirati vaš račun.",
+  "registration.page.resetPassword.sent": "Če je ta e-poštni naslov registriran, vam bomo poslali navodila za ponastavitev gesla. Če elektronske pošte ne boste prejeli v kratkem, prosimo, poskusite znova. ",
+  "registration.component.login": "Prijava",
+  "registration.component.login.userNotFound": "Uporabnik ni bil najden",
+  "registration.component.resetPassword": "Ponastavitev gesla",
+  "registration.component.form.email": "E-poštni naslov",
+  "registration.component.form.password": "Geslo",
+  "registration.component.form.divider": "ali",
+  "registration.component.form.submit": "Pošlji"
 }

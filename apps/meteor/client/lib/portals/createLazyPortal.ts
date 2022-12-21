@@ -1,4 +1,4 @@
-import { ComponentType, PropsWithoutRef, ReactPortal } from 'react';
+import type { ComponentType, PropsWithoutRef, ReactPortal } from 'react';
 import { createPortal } from 'react-dom';
 
 import { createLazyElement } from './createLazyElement';

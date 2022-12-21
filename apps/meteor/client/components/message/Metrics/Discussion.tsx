@@ -1,6 +1,7 @@
 import { Message } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC, UIEvent } from 'react';
+import React from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useBlockRendered } from '../hooks/useBlockRendered';
@@ -8,7 +9,7 @@ import { useBlockRendered } from '../hooks/useBlockRendered';
 type DicussionOptions = {
 	drid: string;
 	rid: string;
-	openDiscussion: () => void;
+	openDiscussion: (event: UIEvent) => void;
 	count: number;
 	lm?: Date;
 };

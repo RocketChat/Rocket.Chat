@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import moment, { MomentInput } from 'moment';
+import type { MomentInput } from 'moment';
+import moment from 'moment';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';

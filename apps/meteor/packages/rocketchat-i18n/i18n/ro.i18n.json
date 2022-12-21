@@ -1,5 +1,4 @@
 {
-  "403": "Interzis",
   "500": "eroare interna a serverului",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ nu mai este __role__, prin __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ a fost stabilită __role__ de __user_by__",
@@ -1141,7 +1140,6 @@
   "File_uploaded": "Fișier încărcat",
   "files": "fișiere",
   "Files_only": "Eliminați numai fișierele atașate, păstrați mesajele",
-  "files_pruned": "fișiere tăiate",
   "FileUpload": "Încărcare fișier",
   "FileUpload_Disabled": "Încărcările de fișiere sunt dezactivate.",
   "FileUpload_Enabled": "Încărcarea de fișiere activată",
@@ -1433,6 +1431,7 @@
   "It_works": "Functioneaza",
   "italics": "cursive",
   "Job_Title": "Denumirea funcției",
+  "Join": "Alăturați-vă",
   "Join_audio_call": "Intră în apel audio",
   "Join_Chat": "Alăturați-vă Chat",
   "Join_default_channels": "Alăturați-vă canale implicite",
@@ -2580,7 +2579,7 @@
   "User": "Utilizator",
   "User__username__is_now_a_leader_of__room_name_": "Utilizatorul __username__ este acum un lider al __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "Utilizator __username__  este acum un moderator al __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "Utilizatorul __username__ este acum proprietar al  __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "Utilizatorul __username__ este acum proprietar al  __room_name__",
   "User__username__removed_from__room_name__leaders": "Utilizatorul __username__ a fost eliminat de la liderii __room_name__",
   "User__username__removed_from__room_name__moderators": "Utilizatorul __username__ a fost eliminat din moderatorii  __room_name__",
   "User__username__removed_from__room_name__owners": "Utilizatorul __username__ scos din proprietarii __room_name__",
@@ -2790,5 +2789,15 @@
   "Your_password_is_wrong": "Parola dvs. este greșită!",
   "Your_push_was_sent_to_s_devices": "Mesajul Push a fost trimis la %s dispozitive",
   "Your_server_link": "Linkul dvs. de server",
-  "Your_workspace_is_ready": "Spațiul dvs. de lucru este gata de utilizare 🎉"
+  "Your_workspace_is_ready": "Spațiul dvs. de lucru este gata de utilizare 🎉",
+  "registration.page.login.errors.wrongCredentials": "Utilizator nu a fost găsit sau parolă incorectă",
+  "registration.page.registration.waitActivationWarning": "Ca să vă puteți autentifica, contul dumneavoastră trebuie să fie activat manual de către un administrator.",
+  "registration.page.resetPassword.sent": "Dacă acest e-mail este înregistrat, vă vom trimite instrucțiuni despre resetarea parolei. Dacă în scurt timp nu primiți un e-mail, reveniți și încercați din nou.",
+  "registration.component.login": "Autentificare",
+  "registration.component.login.userNotFound": "Utilizatorul nu a fost găsit",
+  "registration.component.resetPassword": "Resetează parola",
+  "registration.component.form.email": "E-mail",
+  "registration.component.form.password": "Parolă",
+  "registration.component.form.divider": "sau",
+  "registration.component.form.submit": "Trimite"
 }

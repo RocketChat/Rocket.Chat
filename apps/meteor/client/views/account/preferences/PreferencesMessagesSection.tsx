@@ -1,6 +1,8 @@
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, SelectOption } from '@rocket.chat/fuselage';
-import { useUserPreference, useSetting, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';
@@ -82,9 +84,9 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
-			['default', t('Default')],
-			['always', t('Always' as TranslationKey)], // TO DO: add "Always" to en.json ui-contexts
-			['never', t('Never')],
+			['default', t('Selected_first_reply_unselected_following_replies')],
+			['always', t('Selected_by_default')],
+			['never', t('Unselected_by_default')],
 		],
 		[t],
 	);

@@ -22,17 +22,6 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/messag
 
 createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));
 
-createTemplateForComponent(
-	'Checkbox',
-	async (): Promise<{ default: typeof import('@rocket.chat/fuselage').CheckBox }> => {
-		const { CheckBox } = await import('@rocket.chat/fuselage');
-		return { default: CheckBox };
-	},
-	{
-		attachment: 'at-parent',
-	},
-);
-
 createTemplateForComponent('UnreadMessagesIndicator', () => import('./views/room/components/body/UnreadMessagesIndicator'), {
 	attachment: 'at-parent',
 });
@@ -56,10 +45,6 @@ createTemplateForComponent('omnichannelFlex', () => import('./views/omnichannel/
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
 
-createTemplateForComponent('loginLayoutHeader', () => import('./views/login/LoginLayout/Header'));
-
-createTemplateForComponent('loginLayoutFooter', () => import('./views/login/LoginLayout/Footer'));
-
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
 });
@@ -78,4 +63,8 @@ createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));
 
 createTemplateForComponent('loggedOutBanner', () => import('../ee/client/components/deviceManagement/LoggedOutBanner'), {
 	renderContainerView: () => HTML.DIV({ style: 'max-width: 520px; margin: 0 auto;' }),
+});
+
+createTemplateForComponent('AudioMessageRecorder', () => import('./views/composer/AudioMessageRecorder'), {
+	renderContainerView: () => HTML.DIV({ class: 'rc-message-box__audio-message-container' }),
 });

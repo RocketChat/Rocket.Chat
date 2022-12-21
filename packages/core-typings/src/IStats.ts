@@ -76,6 +76,7 @@ export interface IStats {
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
+	msEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine: string;
 	pushQueue: number;
@@ -133,10 +134,10 @@ export interface IStats {
 		modules: string[];
 		tags: string[];
 		seatRequests: number;
-		livechatTags: number;
-		cannedResponses: number;
-		priorities: number;
-		businessUnits: number;
+		livechatTags?: number;
+		cannedResponses?: number;
+		priorities?: number;
+		businessUnits?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;
@@ -195,6 +196,8 @@ export interface IStats {
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
 	totalWebRTCCalls: number;
-	matrixBridgeEnabled: boolean;
 	uncaughtExceptionsCount: number;
+	matrixFederation: {
+		enabled: boolean;
+	};
 }

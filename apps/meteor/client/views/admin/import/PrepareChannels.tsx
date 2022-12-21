@@ -1,6 +1,7 @@
 import { CheckBox, Table, Tag, Pagination } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import type { FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 type ChannelDescriptor = {
 	channel_id: string;

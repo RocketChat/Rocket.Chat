@@ -160,26 +160,37 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	 * Find visitors by their email or phone or username or name
 	 */
 	async findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
-		emailOrPhone: string,
-		nameOrUsername: RegExp,
+		emailOrPhone?: string,
+		nameOrUsername?: RegExp,
 		allowedCustomFields: string[] = [],
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<FindPaginated<FindCursor<ILivechatVisitor>>> {
-		const query = {
+		if (!emailOrPhone && !nameOrUsername && allowedCustomFields.length === 0) {
+			return this.findPaginated({}, options);
+		}
+
+		const query: Filter<ILivechatVisitor> = {
 			$or: [
-				{
-					'visitorEmails.address': emailOrPhone,
-				},
-				{
-					'phone.phoneNumber': emailOrPhone,
-				},
-				{
-					name: nameOrUsername,
-				},
-				{
-					username: nameOrUsername,
-				},
-				// nameorusername is a clean regex, so we should be good
+				...(emailOrPhone
+					? [
+							{
+								'visitorEmails.address': emailOrPhone,
+							},
+							{
+								'phone.phoneNumber': emailOrPhone,
+							},
+					  ]
+					: []),
+				...(nameOrUsername
+					? [
+							{
+								name: nameOrUsername,
+							},
+							{
+								username: nameOrUsername,
+							},
+					  ]
+					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
 		};
@@ -225,11 +236,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			}
 		}
 
-		const update = {
+		const update: UpdateFilter<ILivechatVisitor> = {
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		};
+		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
 
 		return this.updateOne(query, update);
 	}

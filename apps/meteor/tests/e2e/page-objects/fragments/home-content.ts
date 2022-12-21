@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
-	private readonly page: Page;
+	protected readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -66,8 +66,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
-	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
+	get lastMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+	}
+
+	get lastThreadMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -104,14 +108,6 @@ export class HomeContent {
 
 	get linkUserCard(): Locator {
 		return this.page.locator('[data-qa="UserCard"] a');
-	}
-
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
-	}
-
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
 	}
 
 	get btnContactInformation(): Locator {
@@ -175,7 +171,33 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 
+	async openLastThreadMessageMenu(): Promise<void> {
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.waitFor();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.click();
+	}
+
 	get takeOmnichannelChatButton(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
+	}
+
+	get lastSystemMessageBody(): Locator {
+		return this.page.locator('[data-qa-type="system-message-body"]').last();
+	}
+
+	get resumeOnHoldOmnichannelChatButton(): Locator {
+		return this.page.locator('button.rcx-button--primary >> text=Resume');
+	}
+
+	get btnOnHold(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 }
