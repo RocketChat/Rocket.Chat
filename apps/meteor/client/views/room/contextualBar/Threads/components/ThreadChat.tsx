@@ -127,7 +127,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 					onUploadFiles={handleUploadFiles}
 				>
 					<div className='thread-footer__row'>
-						<div style={{ display: 'flex' }}>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
 							<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
 							<label htmlFor={sendToChannelID} className='thread-footer__text' style={{ display: 'flex', alignItems: 'center' }}>
 								{t('Also_send_to_channel')}

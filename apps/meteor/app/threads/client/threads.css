@@ -35,7 +35,7 @@
 		flex-direction: column;
 
 		&:not(:last-child) {
-			margin-block-end: 4px;
+			margin-block-end: 0.5rem;
 		}
 	}
 }
@@ -52,7 +52,7 @@
 
 	font-size: 12px;
 
-	margin-inline-start: 0.5rem;
+	margin-inline-start: 0.25rem;
 }
 
 .message {
