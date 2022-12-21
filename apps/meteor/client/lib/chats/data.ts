@@ -2,7 +2,7 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 
-import { hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
@@ -12,7 +12,6 @@ import { call } from '../utils/call';
 import { prependReplies } from '../utils/prependReplies';
 import type { DataAPI } from './ChatAPI';
 
-const messagesCollection = Messages as Mongo.Collection<IMessage>;
 const roomsCollection = Rooms as Mongo.Collection<IRoom>;
 const subscriptionsCollection = Subscriptions as Mongo.Collection<ISubscription>;
 
@@ -38,7 +37,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | undefined> =>
-		messagesCollection.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
+		Messages.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);
@@ -51,7 +50,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findLastMessage = async (): Promise<IMessage | undefined> =>
-		messagesCollection.findOne({ rid, tmid: tmid ?? { $exists: false }, _hidden: { $ne: true } }, { sort: { ts: -1 }, reactive: false });
+		Messages.findOne({ rid, tmid: tmid ?? { $exists: false }, _hidden: { $ne: true } }, { sort: { ts: -1 }, reactive: false });
 
 	const getLastMessage = async (): Promise<IMessage> => {
 		const message = await findLastMessage();
@@ -70,7 +69,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		return messagesCollection.findOne(
+		return Messages.findOne(
 			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true } },
 			{ sort: { ts: -1 }, reactive: false },
 		);
@@ -93,7 +92,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		return messagesCollection.findOne(
+		return Messages.findOne(
 			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $lt: message.ts } },
 			{ sort: { ts: -1 }, reactive: false },
 		);
@@ -116,7 +115,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		return messagesCollection.findOne(
+		return Messages.findOne(
 			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $gt: message.ts } },
 			{ sort: { ts: 1 }, reactive: false },
 		);
@@ -133,7 +132,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		messagesCollection.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
+		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
 	const canUpdateMessage = async (message: IMessage): Promise<boolean> => {
@@ -162,27 +161,44 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		call('updateMessage', message);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			return false;
+		}
+
 		if (MessageTypes.isSystemMessage(message)) {
 			return false;
 		}
 
-		const hasPermission = hasAtLeastOnePermission('force-delete-message', message.rid);
-		if (!hasPermission) {
+		const forceDeleteAllowed = hasPermission('force-delete-message', message.rid);
+		if (forceDeleteAllowed) {
+			return true;
+		}
+
+		const deletionEnabled = settings.get('Message_AllowDeleting') as boolean | undefined;
+		if (!deletionEnabled) {
+			return false;
+		}
+
+		const deleteAnyAllowed = hasPermission('delete-message', rid);
+		const deleteOwnAllowed = hasPermission('delete-own-message');
+		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
+
+		if (!deleteAllowed) {
 			return false;
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
+		const onTimeForDelete = !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
-		if (elapsedMinutes && blockDeleteInMinutes && elapsedMinutes > blockDeleteInMinutes) {
-			return false;
-		}
-
-		return true;
+		return deleteAllowed && onTimeForDelete;
 	};
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
 		await call('deleteMessage', { _id: mid });
+		Messages.remove({ _id: mid });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();
