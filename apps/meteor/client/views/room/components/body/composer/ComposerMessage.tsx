@@ -11,17 +11,19 @@ import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
+	children?: ReactElement;
 	subscription?: ISubscription;
 	readOnly?: boolean;
 	chatMessagesInstance: ContextType<typeof ChatContext>;
 	onResize?: () => void;
 	onEscape?: () => void;
+	onSend?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const composerProps = useMemo(
@@ -29,10 +31,11 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, ...props }: Comp
 			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
 				try {
 					await chatMessagesInstance?.flows.action.stop('typing');
-					await chatMessagesInstance?.flows.sendMessage({
+					const newMessageSent = await chatMessagesInstance?.flows.sendMessage({
 						text,
 						tshow,
 					});
+					if (newMessageSent) onSend?.();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
@@ -50,7 +53,7 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, ...props }: Comp
 				return chatMessagesInstance?.flows.uploadFiles(files);
 			},
 		}),
-		[chatMessagesInstance, dispatchToastMessage],
+		[chatMessagesInstance, dispatchToastMessage, onSend],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
