@@ -1010,7 +1010,7 @@ describe('[Rooms]', function () {
 						expect(res.body).to.have.property('discussion').and.to.be.an('object');
 						expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
 						expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}-team`);
-						expect(res.body.discussion).to.have.property('type').and.to.be.equal('p');
+						expect(res.body.discussion).to.have.property('t').and.to.be.equal('p');
 					})
 					.end(done);
 			});
