@@ -115,6 +115,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 					// TODO: create new thread message list
 					<LegacyThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
 				)}
+
 				<ComposerContainer
 					rid={mainMessage.rid}
 					subscription={subscription}
@@ -124,15 +125,16 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 					onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 					onNavigateToNextMessage={handleNavigateToNextMessage}
 					onUploadFiles={handleUploadFiles}
-				/>
-				<footer className='thread-footer'>
-					<div style={{ display: 'flex' }}>
-						<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
+				>
+					<div className='thread-footer__row'>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
+							<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
+							<label htmlFor={sendToChannelID} className='thread-footer__text' style={{ display: 'flex', alignItems: 'center' }}>
+								{t('Also_send_to_channel')}
+							</label>
+						</div>
 					</div>
-					<label htmlFor={sendToChannelID} className='thread-footer__text'>
-						{t('Also_send_to_channel')}
-					</label>
-				</footer>
+				</ComposerContainer>
 			</section>
 		</VerticalBar.Content>
 	);
