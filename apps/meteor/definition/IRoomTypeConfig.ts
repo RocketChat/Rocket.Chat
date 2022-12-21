@@ -89,7 +89,7 @@ export interface IRoomTypeServerDirectives {
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
 	preventRenaming: () => boolean;
-	getDiscussionType: () => RoomType;
+	getDiscussionType: (options?: { isInPrivateTeam: boolean }) => RoomType;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,

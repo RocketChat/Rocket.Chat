@@ -57,7 +57,10 @@ roomCoordinator.add(PublicRoomType, {
 		return true;
 	},
 
-	getDiscussionType() {
+	getDiscussionType(options) {
+		if (options?.isInPrivateTeam) {
+			return 'p';
+		}
 		return 'c';
 	},
 
