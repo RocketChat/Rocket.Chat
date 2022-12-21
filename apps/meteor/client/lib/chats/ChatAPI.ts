@@ -87,7 +87,7 @@ export type ChatAPI = {
 		| undefined;
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
-		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<void>;
+		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
