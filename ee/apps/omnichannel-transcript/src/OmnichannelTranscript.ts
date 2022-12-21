@@ -164,7 +164,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
+	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			return;
@@ -177,7 +177,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		await this.messageService.sendMessage({ fromId: 'rocket.cat', rid, msg: `PDF Failed :( => ${e.message}` });
 	}
 
-	async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
+	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
 			const [, { rid }] = await Promise.all([
