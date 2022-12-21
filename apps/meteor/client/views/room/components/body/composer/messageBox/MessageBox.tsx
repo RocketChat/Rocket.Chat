@@ -9,7 +9,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useUserPreference, useLayout, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type {
 	MouseEventHandler,
 	ReactElement,
@@ -19,6 +19,7 @@ import type {
 	MutableRefObject,
 	Ref,
 	ClipboardEventHandler,
+	FormEventHandler,
 } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -38,7 +39,7 @@ import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
-import UserActionIndicator from '../ComposerUserActionIndicator';
+import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
@@ -100,6 +101,7 @@ export const MessageBox = ({
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
 
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const chat = useChat();
 
@@ -158,6 +160,21 @@ export const MessageBox = ({
 			tshow,
 		});
 	});
+
+	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
+	const handleJoin = useCallback<FormEventHandler<HTMLElement>>(
+		async (e) => {
+			e.preventDefault();
+			try {
+				await joinEndpoint({
+					roomId: rid,
+				});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		[joinEndpoint, rid, dispatchToastMessage],
+	);
 
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
@@ -389,22 +406,24 @@ export const MessageBox = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<Button small primary>
+							<Button small primary onClick={handleJoin}>
 								{t('Join')}
 							</Button>
 						)}
-						<MessageComposerAction
-							aria-label={t('Send')}
-							icon='send'
-							disabled={!canSend || !typing}
-							onClick={handleSendMessage}
-							secondary={typing}
-							info={typing}
-						/>
+						{canSend && (
+							<MessageComposerAction
+								aria-label={t('Send')}
+								icon='send'
+								disabled={!canSend || !typing}
+								onClick={handleSendMessage}
+								secondary={typing}
+								info={typing}
+							/>
+						)}
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
-			<UserActionIndicator rid={rid} tmid={tmid} />
+			<ComposerUserActionIndicator rid={rid} tmid={tmid} />
 		</>
 	);
 };
