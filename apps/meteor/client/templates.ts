@@ -22,17 +22,6 @@ createTemplateForComponent('DiscussionMetric', () => import('./components/messag
 
 createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));
 
-createTemplateForComponent(
-	'Checkbox',
-	async (): Promise<{ default: typeof CheckBox }> => {
-		const { CheckBox } = await import('@rocket.chat/fuselage');
-		return { default: CheckBox };
-	},
-	{
-		attachment: 'at-parent',
-	},
-);
-
 createTemplateForComponent('UnreadMessagesIndicator', () => import('./views/room/components/body/UnreadMessagesIndicator'), {
 	attachment: 'at-parent',
 });
@@ -78,4 +67,8 @@ createTemplateForComponent('loggedOutBanner', () => import('../ee/client/compone
 
 createTemplateForComponent('AudioMessageRecorder', () => import('./views/composer/AudioMessageRecorder'), {
 	renderContainerView: () => HTML.DIV({ class: 'rc-message-box__audio-message-container' }),
+});
+
+createTemplateForComponent('messageBox', () => import('./views/room/components/body/composer/messageBox/MessageBoxBlazeWrapper'), {
+	attachment: 'at-parent',
 });

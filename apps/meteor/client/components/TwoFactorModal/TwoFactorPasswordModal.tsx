@@ -1,4 +1,4 @@
-import { Box, PasswordInput, Icon } from '@rocket.chat/fuselage';
+import { Box, PasswordInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, Ref } from 'react';
@@ -34,7 +34,7 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 			title={t('Please_enter_your_password')}
 			onClose={onClose}
 			variant='warning'
-			icon={<Icon size='x20' name='info' color='default' />}
+			icon='info'
 			confirmDisabled={!code}
 		>
 			<Box mbe='x16'>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</Box>
