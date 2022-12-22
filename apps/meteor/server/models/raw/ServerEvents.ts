@@ -48,7 +48,7 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		return this.findOne<IServerEvent>(
 			{
 				ip,
-				t: { $in: [ServerEventType.BLOCKED_AT, ServerEventType.LOGIN] },
+				t: { $in: [ServerEventType.BLOCKED_AT_BY_IP, ServerEventType.LOGIN] },
 			},
 			{ sort: { ts: -1 } },
 		);
@@ -58,7 +58,7 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		return this.findOne<IServerEvent>(
 			{
 				'u.username': username,
-				't': { $in: [ServerEventType.BLOCKED_AT, ServerEventType.LOGIN] },
+				't': { $in: [ServerEventType.BLOCKED_AT_BY_USERNAME, ServerEventType.LOGIN] },
 			},
 			{ sort: { ts: -1 } },
 		);

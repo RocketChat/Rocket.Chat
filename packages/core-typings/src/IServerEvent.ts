@@ -3,7 +3,8 @@ import type { IUser } from './IUser';
 export enum ServerEventType {
 	FAILED_LOGIN_ATTEMPT = 'failed-login-attempt',
 	LOGIN = 'login',
-	BLOCKED_AT = 'blocked-at',
+	BLOCKED_AT_BY_IP = 'blocked-at-ip',
+	BLOCKED_AT_BY_USERNAME = 'blocked-at-username',
 }
 
 export interface IServerEvent {

@@ -85,7 +85,7 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
-	await saveBlockedLogin(login, willBeBlockedUntil);
+	await saveBlockedLogin(login, willBeBlockedUntil, ServerEventType.BLOCKED_AT_BY_IP);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
 		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
@@ -136,7 +136,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
-	await saveBlockedLogin(login, willBeBlockedUntil);
+	await saveBlockedLogin(login, willBeBlockedUntil, ServerEventType.BLOCKED_AT_BY_USERNAME);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
 		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
@@ -159,7 +159,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 	});
 };
 
-export const saveBlockedLogin = async (login: ILoginAttempt, blockedUntil: Date): Promise<void> => {
+export const saveBlockedLogin = async (login: ILoginAttempt, blockedUntil: Date, type: ServerEventType): Promise<void> => {
 	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
 		username: login.user?.username || login.methodArguments[0].user?.username,
@@ -167,7 +167,7 @@ export const saveBlockedLogin = async (login: ILoginAttempt, blockedUntil: Date)
 
 	await ServerEvents.insertOne({
 		ip: getClientAddress(login.connection),
-		t: ServerEventType.BLOCKED_AT,
+		t: type,
 		ts: new Date(),
 		blockedUntil,
 		u: user,
