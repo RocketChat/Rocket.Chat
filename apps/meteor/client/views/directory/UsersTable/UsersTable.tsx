@@ -1,6 +1,8 @@
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -14,8 +16,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useDirectoryQuery } from '../hooks/useDirectoryQuery';
 import UsersTableRow from './UsersTableRow';
 
@@ -79,7 +79,9 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	);
 
 	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
-	const { value: data, phase } = useEndpointData('/v1/directory', query);
+	const getDirectoryData = useEndpoint('GET', '/v1/directory');
+
+	const { data, isFetched, isLoading } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
 	const handleClick = useCallback(
 		(username) => (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -93,13 +95,15 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	return (
 		<>
 			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
-			{phase === AsyncStatePhase.LOADING && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={5} />
+					</GenericTableBody>
 				</GenericTable>
 			)}
-			{data?.result && data.result.length > 0 && phase === AsyncStatePhase.RESOLVED && (
+			{data?.result && data.result.length > 0 && isFetched && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
@@ -109,7 +113,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 									key={user._id}
 									onClick={handleClick}
 									mediaQuery={mediaQuery}
-									user={user}
+									user={user as unknown as Serialized<IUser>}
 									federation={federation}
 									canViewFullOtherUserInfo={canViewFullOtherUserInfo}
 								/>
@@ -127,7 +131,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 					/>
 				</>
 			)}
-			{phase === AsyncStatePhase.RESOLVED && data?.result.length === 0 && (
+			{isFetched && data?.result.length === 0 && (
 				<States>
 					<StatesIcon name='magnifier' />
 					<StatesTitle>{t('No_results_found')}</StatesTitle>
