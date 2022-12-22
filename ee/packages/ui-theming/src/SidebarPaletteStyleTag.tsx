@@ -16,7 +16,7 @@ export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
 		<style id='sidebar-palette' data-style={theme}>
 			{convertToCss(
 				theme === 'dark' ? filterOnlyChangedColors(darkPalette, sidebarPaletteDark) : { ...darkPalette, ...defaultSidebarPalette },
-				'.rcx-sidebar--template',
+				'.rcx-sidebar--main',
 			)}
 		</style>,
 		document.head,
