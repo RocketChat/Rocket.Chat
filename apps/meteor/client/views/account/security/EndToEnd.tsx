@@ -102,14 +102,16 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!canSave} onClick={saveNewPassword}>
+				<Button primary disabled={!canSave} onClick={saveNewPassword} data-qa-type='e2e-encryption-save-password-button'>
 					{t('Save_changes')}
 				</Button>
 				<Box fontScale='h4' mbs='x16'>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
-				<Button onClick={handleResetE2eKey}>{t('Reset_E2E_Key')}</Button>
+				<Button onClick={handleResetE2eKey} data-qa-type='e2e-encryption-reset-key-button'>
+					{t('Reset_E2E_Key')}
+				</Button>
 			</Margins>
 		</Box>
 	);

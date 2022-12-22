@@ -70,12 +70,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
-	get waitForLastMessageTextAttachmentEqualsText(): Locator {
+	get lastMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
-	get waitForLastThreadMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('//main//aside >> [data-qa-type="message"]:last-child .rcx-attachment__details');
+	get lastThreadMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -147,7 +147,7 @@ export class HomeContent {
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
-		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
 	}

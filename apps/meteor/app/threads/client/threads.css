@@ -24,9 +24,20 @@
 .thread-footer {
 	display: flex;
 
-	padding: 0 1.5rem 1rem;
+	flex-direction: column;
 
-	align-items: center;
+	padding: 0 1.5rem;
+
+	align-items: stretch;
+
+	&__row {
+		display: flex;
+		flex-direction: column;
+
+		&:not(:last-child) {
+			margin-block-end: 0.5rem;
+		}
+	}
 }
 
 @media (width < 500px) {
@@ -41,7 +52,7 @@
 
 	font-size: 12px;
 
-	margin-inline-start: 0.5rem;
+	margin-inline-start: 0.25rem;
 }
 
 .message {
