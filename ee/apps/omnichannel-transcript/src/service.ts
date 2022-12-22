@@ -5,7 +5,8 @@ import { api } from '../../../../apps/meteor/server/sdk/api';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { Message, QueueWorker, Upload } from '../../../../apps/meteor/server/sdk';
+import { Message, QueueWorker, Upload, Translation } from '../../../../apps/meteor/server/sdk';
+import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const PORT = process.env.PORT || 3036;
 
@@ -21,7 +22,7 @@ const PORT = process.env.PORT || 3036;
 	// need to import service after models are registered
 	const { OmnichannelTranscript } = await import('./OmnichannelTranscript');
 
-	api.registerService(new OmnichannelTranscript(Upload, Message, QueueWorker), ['queue-worker']);
+	api.registerService(new OmnichannelTranscript(Upload, Message, QueueWorker, Translation, Logger), ['queue-worker']);
 
 	await api.start();
 
