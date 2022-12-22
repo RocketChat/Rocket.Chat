@@ -2220,46 +2220,6 @@
 	background-color: var(--selection-background);
 }
 
-.rc-old .dropzone {
-	& .dropzone-overlay {
-		position: absolute;
-		z-index: 1000000;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		display: none;
-
-		animation-name: zoomIn;
-		animation-duration: 0.1s;
-
-		text-align: center;
-
-		background: rgba(255, 255, 255, 0.8);
-
-		font-size: 42px;
-		align-items: center;
-		justify-content: center;
-
-		&--enabled {
-			color: var(--color-blue);
-
-			border: 4px dashed var(--color-blue);
-		}
-
-		&--disabled {
-			color: var(--color-red);
-
-			border: 4px dashed var(--color-red);
-		}
-	}
-
-	&.over .dropzone-overlay {
-		display: flex;
-	}
-}
-
 @keyframes zoomIn {
 	0% {
 		transform: scale3d(0.9, 0.9, 0.9);

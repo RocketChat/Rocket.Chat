@@ -27,6 +27,9 @@
 		"react": "~17.0.2",
 		"use-sync-external-store": "^1.2.0"
 	},
+	"volta": {
+		"extends": "../../package.json"
+	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",

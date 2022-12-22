@@ -58,7 +58,6 @@ import '../app/ui-clean-history/client';
 import '../app/ui-login';
 import '../app/ui-master/client';
 import '../app/ui-message/client';
-import '../app/ui-sidenav/client';
 import '../app/ui-vrecord/client';
 import '../app/videobridge/client';
 import '../app/webdav/client';
