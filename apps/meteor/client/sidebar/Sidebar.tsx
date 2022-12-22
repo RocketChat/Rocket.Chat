@@ -92,23 +92,17 @@ const Sidebar = () => {
 
 	return (
 		<>
-			<Box
-				id='sidebar-region'
-				className={[
-					'rcx-sidebar',
-					'sidebar--main',
-					`sidebar--${sidebarViewMode}`,
-					sidebarHideAvatar && 'sidebar--hide-avatar',
-					!sidebar.isCollapsed && isMobile && 'opened',
-					sideBarStyle,
-				].filter(Boolean)}
-			>
+			<Box id='sidebar-region' className={['rcx-sidebar', !sidebar.isCollapsed && isMobile && 'opened', sideBarStyle].filter(Boolean)}>
 				<Box
 					display='flex'
 					flexDirection='column'
 					height='100%'
 					is='nav'
-					className='rcx-sidebar--template'
+					className={[
+						'rcx-sidebar--main',
+						`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
+						sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+					].filter(Boolean)}
 					role='navigation'
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
