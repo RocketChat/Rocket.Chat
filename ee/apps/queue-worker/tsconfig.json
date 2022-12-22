@@ -26,6 +26,6 @@
 		"declarationMap": false
 	},
 	"files": ["./src/service.ts"],
-	"include": ["../../../apps/meteor/definition/externals/meteor"],
+	"include": ["../../../apps/meteor/definition/externals/meteor", "./src/externals"],
 	"exclude": ["./dist"]
 }
