@@ -98073,6 +98073,28 @@
           ]
         }
       ]
+    },
+    "5.4.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27574",
+          "title": "[FIX] E2EE initial banner not showing",
+          "userLogin": "rodrigok",
+          "milestone": "5.4.2",
+          "contributors": [
+            "rodrigok",
+            "web-flow",
+            "ggazzo"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
