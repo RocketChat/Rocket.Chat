@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Avatar } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -10,7 +9,7 @@ import MenuItem from './MenuItem';
 const hoverClass = css`
 	&:hover {
 		cursor: pointer;
-		background-color: ${colors.n100};
+		background-color: ${Palette.surface['surface-tint']};
 	}
 `;
 
