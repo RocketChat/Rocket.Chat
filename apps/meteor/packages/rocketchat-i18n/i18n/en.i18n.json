@@ -1617,7 +1617,7 @@
   "Discover_public_channels_and_teams_in_the_workspace_directory": "Discover public channels and teams in the workspace directory.",
   "Discussion": "Discussion",
   "Discussion_Description": "Discussionns are an aditional way to organize conversations that allows invite users from outside channels to participate in specific conversations.",
-  "Discussion_description": "Help keeping an overview about what's going on! By creating a discussion, a sub-channel of the one you selected is created and both are linked.",
+  "Discussion_description": "Help keep an overview on what's going on! By creating a discussion, a sub-channel of the one you selected is created and both are linked.",
   "Discussion_first_message_disabled_due_to_e2e": "You can start sending End-to-End encrypted messages in this discussion after its creation.",
   "Discussion_first_message_title": "Your message",
   "Discussion_name": "Discussion name",
