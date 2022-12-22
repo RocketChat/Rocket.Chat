@@ -1,0 +1,4 @@
+username,email,status,billing-active,has-2fa,has-sso,userid,fullname,displayname,expiration-timestamp
+user4.test,user4@email.com.br,Primary Owner,0,0,0,U03TVFGMHUY,user4.test,,
+user5.test,user5@email.com.br,Primary Owner,0,0,0,U0G9QF9C6,user5.test,,
+user6.test,user6@email.com.br,Primary Owner,0,0,0,U03TVFGMH,user6.test,,

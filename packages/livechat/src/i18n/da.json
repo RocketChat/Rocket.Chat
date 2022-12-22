@@ -1,0 +1,14 @@
+{
+    "translation": {
+        "are_you_sure_you_want_to_switch_the_department": "Er du sikker på, at du vil skifte afdeling?",
+        "cancel": "Annuller",
+        "conversation_finished": "Samtalen er slut",
+        "department_switched": "Du har skiftet afdeling",
+        "no": "Nej",
+        "options": "Indstillinger",
+        "user_joined": "Brugeren sluttede sig til",
+        "user_left": "Brugeren tog sin afsked",
+        "we_are_not_online_right_now_please_leave_a_message": "Vi er ikke online lige nu. Efterlad en besked til os.",
+        "yes": "Ja"
+    }
+}
