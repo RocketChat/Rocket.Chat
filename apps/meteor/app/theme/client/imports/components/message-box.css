@@ -56,7 +56,7 @@
 			color: var(--message-box-placeholder-color);
 		}
 	}
-	
+
 	&__audio-message {
 		display: flex;
 
