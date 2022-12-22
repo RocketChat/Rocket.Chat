@@ -19,7 +19,7 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete, index }) => {
 	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
 
 	return (
-		<Box display='flex' p='x12' style={style} className={[className, hoverClass]}>
+		<Box display='flex' p='x12' borderRadius='x4' style={style} className={[className, hoverClass]}>
 			<Box
 				is='a'
 				minWidth={0}
