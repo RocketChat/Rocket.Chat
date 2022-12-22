@@ -1,10 +1,11 @@
+import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
 
-import { OAuthEEManager } from '../lib/oauth/Manager';
-import { onLicense } from '../../app/license/server';
-import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
+import { settings } from '../../../app/settings/server';
+import { callbacks } from '../../../lib/callbacks';
+import { onLicense } from '../../app/license/server';
+import { OAuthEEManager } from '../lib/oauth/Manager';
 
 interface IOAuthUserService {
 	serviceName: string;
@@ -82,7 +83,10 @@ onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			auth.user.roles = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
+			const rolesFromSSO = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
+			const mappedRoles = Promise.await(Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
+
+			auth.user.roles = mappedRoles;
 		}
 	});
 });
