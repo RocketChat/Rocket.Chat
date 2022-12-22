@@ -3699,6 +3699,8 @@
   "Paid_Apps": "Paid Apps",
   "Payload": "Payload",
   "PDF": "PDF",
+  "pdf_success_message": "PDF Transcript successfully generated",
+  "pdf_error_message": "Error generating PDF Transcript",
   "Peer_Password": "Peer Password",
   "People": "People",
   "Permalink": "Permalink",

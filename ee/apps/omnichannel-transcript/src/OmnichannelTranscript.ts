@@ -1,11 +1,12 @@
-import { LivechatRooms, Messages, Uploads } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker2';
 import type { Templates } from '@rocket.chat/pdf-worker2';
 import type { IMessage, IUser, IRoom, IUpload } from '@rocket.chat/core-typings';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
-import type { Upload, Message, QueueWorker } from '../../../../apps/meteor/server/sdk';
+import type { Upload, Message, QueueWorker, Translation } from '../../../../apps/meteor/server/sdk';
+import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -23,13 +24,19 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private worker: PdfWorker;
 
+	private log: Logger;
+
 	constructor(
 		private readonly uploadService: typeof Upload,
 		private readonly messageService: typeof Message,
 		private readonly queueService: typeof QueueWorker,
+		private readonly translationService: typeof Translation,
+		loggerClass: typeof Logger,
 	) {
 		super();
 		this.worker = new PdfWorker();
+		// eslint-disable-next-line new-cap
+		this.log = new loggerClass('OmnichannelTranscript');
 		// your stuff
 	}
 
@@ -41,6 +48,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
+		this.log.log(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			throw new Error('room-not-found');
@@ -57,7 +65,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Don't request a transcript if there's already one requested :)
 		if (room.pdfTranscriptRequested) {
 			// TODO: use logger
-			console.log('Transcript already requested for this room');
+			this.log.log(`Transcript already requested for room ${details.rid}`);
 			return;
 		}
 
@@ -65,6 +73,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
+		this.log.log(`Queuing work for room ${details.rid}`);
 		await this.queueService.queueWork('work', `${this.name}.workOnPdf`, {
 			template: 'omnichannel-transcript',
 			details: { userId: details.userId, rid: details.rid, from: this.name },
@@ -116,6 +125,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
+		this.log.log(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			throw new Error('room-not-found');
@@ -165,8 +175,13 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
+		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
+			return;
+		}
+		const user = await Users.findOneById(details.userId);
+		if (!user) {
 			return;
 		}
 
@@ -174,10 +189,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
 		const { rid } = await this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
-		await this.messageService.sendMessage({ fromId: 'rocket.cat', rid, msg: `PDF Failed :( => ${e.message}` });
+		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
+		await this.messageService.sendMessage({
+			fromId: 'rocket.cat',
+			rid,
+			msg: `${await this.translationService.translate('pdf_error_message', user)}: ${e.message}`,
+		});
 	}
 
 	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
+		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
+		const user = await Users.findOneById(details.userId);
+		if (!user) {
+			return;
+		}
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
 			const [, { rid }] = await Promise.all([
@@ -185,6 +210,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				this.messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
 			]);
 
+			this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
 			const result = await Promise.allSettled([
 				this.uploadService.sendFileMessage({
 					roomId: details.rid,
@@ -193,7 +219,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					// @ts-expect-error - why?
 					message: {
 						// Translate from service
-						msg: 'Your PDF has been generated!',
+						msg: await this.translationService.translateToServerLanguage('pdf_success_message'),
 					},
 				}),
 				// Send the file to the user who requested it, so they can download it
@@ -204,7 +230,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					// @ts-expect-error - why?
 					message: {
 						// Translate from service
-						msg: 'Your PDF has been generated!',
+						msg: await this.translationService.translate('pdf_success_message', user),
 					},
 				}),
 			]);
@@ -212,8 +238,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			if (e && isPromiseRejectedResult(e)) {
 				throw e.reason;
 			}
-		} catch (e) {
-			console.error('Error sending transcript as message', e);
+		} catch (err) {
+			this.log.error({ msg: `Transcript for room ${details.rid} by user ${details.userId} - Failed to send message`, err });
 		}
 	}
 }

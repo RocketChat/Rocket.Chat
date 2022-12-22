@@ -24,6 +24,7 @@ import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscri
 import { FibersContextStore } from './lib/ContextStore';
 import type { IUploadService } from './types/IUploadService';
 import type { IMessageService } from './types/IMessageService';
+import type { ITranslationService } from './types/ITranslationService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -48,6 +49,7 @@ export const Upload = proxifyWithWait<IUploadService>('upload');
 export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxifyWithWait<IMessageService>('message');
+export const Translation = proxifyWithWait<ITranslationService>('translation');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
