@@ -10,6 +10,7 @@ export class PdfWorker {
 	private async renderTemplate(template: Templates, data: Data): Promise<NodeJS.ReadableStream> {
 		switch (template) {
 			case 'omnichannel-transcript':
+				// @ts-expect-error - i dont know what im doing
 				return exportTranscript(data);
 			default:
 				throw new Error('Template not found');
@@ -23,6 +24,7 @@ export class PdfWorker {
 					header: {
 						visitor: data.visitor,
 						agent: data.agent,
+						closedAt: data.closedAt,
 					},
 					body: Array.isArray(data.messages) ? data.messages : [],
 					footer: {},

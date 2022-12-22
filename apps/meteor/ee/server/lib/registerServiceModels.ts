@@ -28,6 +28,7 @@ import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
 import { UploadsRaw } from '../../../server/models/raw/Uploads';
+import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
 
 // TODO add trash param to appropiate model instances
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
@@ -59,4 +60,5 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
+	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 }

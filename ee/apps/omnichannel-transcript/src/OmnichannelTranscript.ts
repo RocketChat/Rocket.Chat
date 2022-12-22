@@ -1,4 +1,4 @@
-import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker2';
 import type { Templates } from '@rocket.chat/pdf-worker2';
 import type { IMessage, IUser, IRoom, IUpload } from '@rocket.chat/core-typings';
@@ -43,7 +43,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
 		return Messages.findLivechatMessages(rid, {
 			sort: { ts: 1 },
-			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1 },
+			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1 },
 		}).toArray();
 	}
 
@@ -87,6 +87,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return Promise.all(
 			messages.map(async (message: IMessage) => {
 				if (!message.attachments || !message.attachments.length) {
+					// If there's no attachment and no message, what was sent? lol
 					return { _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg };
 				}
 
@@ -115,11 +116,16 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						}
 
 						const fileBuffer = await this.uploadService.getFileBuffer({ userId, file: uploadedFile });
+						console.log('fileBuffer', fileBuffer);
 						return { name: file.name, buffer: fileBuffer };
 					}),
 				);
 
-				return { _id: message._id, msg: message.msg, u: message.u, files, ts: message.ts };
+				// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
+				// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
+				const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
+				// Remove nulls from final array
+				return { _id: message._id, msg, u: message.u, files: files.filter(Boolean), ts: message.ts };
 			}),
 		);
 	}
@@ -133,8 +139,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		const messages = await this.getMessagesFromRoom({ rid: room._id });
 
 		const data = {
-			visitor: room.v,
-			agent: room.servedBy,
+			visitor: room.v && (await LivechatVisitors.findById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } })),
+			agent: room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1 } })),
+			closedAt: room.closedAt,
 			messages: await this.getFiles(details.userId, messages),
 		};
 

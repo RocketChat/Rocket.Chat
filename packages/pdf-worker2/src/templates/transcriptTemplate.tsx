@@ -1,5 +1,14 @@
-import React from 'react';
-import ReactPDF, { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import type { ILivechatAgent, ILivechatVisitor, IMessage, Serialized } from '@rocket.chat/core-typings';
+import ReactPDF, { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
+
+type OmnichannelData = {
+	header: {
+		agent: ILivechatAgent;
+		visitor: ILivechatVisitor;
+		closedAt: Date;
+	};
+	body: (Serialized<Omit<Pick<IMessage, 'msg' | 'u' | 'ts'>, 'files'>> & { files?: { name?: string; buffer: Buffer | null }[] })[];
+};
 
 const styles = StyleSheet.create({
 	page: {
@@ -69,150 +78,6 @@ const styles2 = StyleSheet.create({
 	},
 });
 
-const messages = [
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Hello, how can I help you?',
-	},
-	{
-		user: 'Juanito Verdulero De Ponce',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Hello, Im having issues with my credit card',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Can you please tell me what is the problem?',
-	},
-	{
-		user: 'Juanito Verdulero De Ponce',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'I cant pay my bills',
-		attachments: [
-			{
-				name: 'image.png',
-				url: './logo.png',
-			},
-		],
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Thats sad to hear, unfortunately, we cannot help you with that problem :(',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 12:00 AM',
-		msg: 'But, we can offer you financial help with other stuff on board, have you ever thought of adding a widget to your website to promote your business and foster the communication with your customers?',
-	},
-	{
-		user: 'Juanito Verdulero De Ponce',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Jesus, why i didnt thought of this before? Im gonna do it right now!',
-		attachments: [
-			{
-				name: 'image.png',
-				url: './logo.png',
-			},
-		],
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Maybe because you are not a rocket scientist like me :)',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Yeah, thats true, im not that smart, but i can still use the widget to promote my business, right?',
-	},
-	{
-		user: 'Juanito Verdulero De Ponce',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Of course, you can do it right now, just go to https://rocket.chat and click on the button "Add to your website"',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Yeah, but, can I also use some custom logo over there? I want to use this one',
-		attachments: [
-			{
-				name: 'moneylogo.png',
-				url: './moneylogo.png',
-			},
-		],
-	},
-	{
-		user: 'Juanito Verdulero De Ponce',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Of course, you can do it right now, just go to https://rocket.chat and click on the button "Add to your website"',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		// msg with a 1000 words lorem
-		msg: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultr',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		// msg with a 1000 words lorem
-		msg: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultr',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		// msg with a 1000 words lorem
-		msg: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultr',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		// msg with a 1000 words lorem
-		msg: 'Lorem ipsum dolor sit amet ame amet amet amet amet amet amet amet amet amet amet amet amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultr',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		// msg with a 1000 words lorem
-		msg: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultricies lacinia, nisl nisl aliquet nisl, eget aliquet nisl nisl eget nisl. Donec auctor, nisl eget ultr',
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Yeah, but, can I also use some custom logo over there? I want to use this one',
-		attachments: [
-			{
-				name: 'moneylogo.png',
-				url: './moneylogo.png',
-			},
-		],
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Yeah, but, can I also use some custom logo over there? I want to use this one',
-		attachments: [
-			{
-				name: 'moneylogo.png',
-				url: './moneylogo.png',
-			},
-		],
-	},
-	{
-		user: 'Christian Castro',
-		ts: 'Nov 21, 2022 11:00 AM',
-		msg: 'Yeah, but, can I also use some custom logo over there? I want to use this one',
-		attachments: [
-			{
-				name: 'moneylogo.png',
-				url: './moneylogo.png',
-			},
-		],
-	},
-];
-
 const InvoiceTableHeader = ({ values }: { values: { key: string; value: string }[] }) => (
 	<View style={styles2.container}>
 		<Text style={{ ...styles2.description, width: '60%' }}>
@@ -231,7 +96,7 @@ const InvoiceTableHeader = ({ values }: { values: { key: string; value: string }
 );
 
 // Create Document Component
-const OmnichannelTranscript = (_data: any) => (
+const OmnichannelTranscript = ({ header, body }: OmnichannelData) => (
 	<Document>
 		<Page size='A4' style={styles.page}>
 			<View style={styles.section}>
@@ -248,35 +113,48 @@ const OmnichannelTranscript = (_data: any) => (
 					<View style={styles.tableContainer}>
 						<InvoiceTableHeader
 							values={[
-								{ key: 'Agent: ', value: 'Christian Castro' },
-								{ key: 'Date: ', value: 'Nov 21, 2022' },
+								{ key: 'Agent: ', value: header.agent.name || header.agent.username || 'Omnichannel Agent' },
+								{ key: 'Date: ', value: `${header.closedAt}` },
 							]}
 						/>
 						<InvoiceTableHeader
 							values={[
-								{ key: 'Customer: ', value: 'Juanito Verdulero de Ponce' },
-								{ key: 'Time: ', value: '11:00 AM' },
+								{ key: 'Customer: ', value: header.visitor.username },
+								{ key: 'Time: ', value: `${header.closedAt}` },
 							]}
 						/>
 					</View>
 				</div>
 				<div>
+					{/* Leaving this rendering as an example of how the data comes
+						We get the messages from `body` and we can do whatever we want with them.
+						Messages are a simplified version of IMessage, containing only msg, ts, u and files (if any)
+					*/}
 					<View style={styles.messagesContainer}>
-						{messages.map((message, index) => (
+						{body.map((message, index) => (
 							<View style={styles.message} id={`${index}`}>
 								<View style={{ flexDirection: 'row' }}>
-									<Text style={{ fontWeight: 'bold' }}>{message.user}</Text>
-									<Text style={{ marginLeft: 10, color: '#9e9e9e' }}>{message.ts}</Text>
+									<Text style={{ fontWeight: 'bold' }}>{message.u.username}</Text>
+									{/* closedAt date will come as an actual date, and reactpdf doesnt like it so remember to parse it before passing to Text*/}
+									<Text style={{ marginLeft: 10, color: '#9e9e9e' }}>{`${message.ts}`}</Text>
 								</View>
 								<View style={{ marginTop: 10, flexDirection: 'column' }}>
 									<Text>{message.msg}</Text>
 								</View>
-								{/* {message.attachments?.map((attachment, index) => (
+								{message.files?.map((attachment, index) => (
 									<View style={{ marginTop: 10, flexDirection: 'column' }} id={`attachment-${index}`}>
 										<Text style={{ color: '#9e9e9e', marginBottom: 0 }}>{attachment.name}</Text>
-										<Image style={{ width: 200 }} src={attachment.url} />
+										{/* When buffer is received, that means the image is valid (already checked by service) and the buffer is complete */}
+										{attachment.buffer ? (
+											// IMPORTANT: Buffer.from is a required step to get the image to work
+											// Since the buffer we receive here is a Uint8Array, we need to convert it to a Buffer
+											// Otherwise the lib will just put a blank box where the image should be
+											<Image style={{ width: 200 }} src={Buffer.from(attachment.buffer)} />
+										) : (
+											<Text>This attachment is not supported</Text>
+										)}
 									</View>
-								))} */}
+								))}
 							</View>
 						))}
 					</View>
@@ -286,7 +164,6 @@ const OmnichannelTranscript = (_data: any) => (
 	</Document>
 );
 
-export default async (data: any): Promise<NodeJS.ReadableStream> => {
-	console.log('data', data);
-	return ReactPDF.renderToStream(<OmnichannelTranscript {...{ data }} />);
+export default async (data: OmnichannelData): Promise<NodeJS.ReadableStream> => {
+	return ReactPDF.renderToStream(<OmnichannelTranscript {...data} />);
 };
