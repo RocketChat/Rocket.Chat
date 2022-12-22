@@ -1,7 +1,8 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import { GenericTableBody, GenericTableHeader, GenericTableHeaderCell, GenericTableLoadingTable } from '../../../components/GenericTable';

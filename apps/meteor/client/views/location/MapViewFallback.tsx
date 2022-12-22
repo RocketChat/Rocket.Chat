@@ -1,7 +1,8 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 type MapViewFallbackProps = {
 	linkUrl: string;

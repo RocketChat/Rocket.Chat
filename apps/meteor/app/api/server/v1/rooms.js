@@ -13,7 +13,7 @@ import {
 	findRoomsAvailableForTeams,
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
-import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
@@ -543,7 +543,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
 				}
 
-				sendFile(
+				dataExport.sendFile(
 					{
 						rid,
 						format,
@@ -566,7 +566,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = sendViaEmail(
+				const result = dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers,

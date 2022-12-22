@@ -1,6 +1,7 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useOpenEmojiPicker, useReactionsFilter, useReactToMessage, useUserHasReacted } from '../contexts/MessageListContext';
 import { MessageReaction } from './MessageReaction';

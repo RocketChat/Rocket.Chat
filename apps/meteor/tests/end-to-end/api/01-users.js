@@ -634,6 +634,8 @@ describe('[Users]', function () {
 	});
 
 	describe('[/users.list]', () => {
+		let user;
+
 		it('should query all users in the system', (done) => {
 			request
 				.get(api('users.list'))
@@ -646,6 +648,74 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 					const myself = res.body.users.find((user) => user.username === adminUsername);
 					expect(myself).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
+		before((done) =>
+			setCustomFields({ customFieldText }, async (error) => {
+				if (error) {
+					return done(error);
+				}
+
+				const username = `customField_${Date.now()}${apiUsername}`;
+				const email = `customField_+${Date.now()}${apiEmail}`;
+				const customFields = { customFieldText: 'success' };
+
+				const userData = {
+					email,
+					name: username,
+					username,
+					password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified: true,
+					customFields,
+				};
+
+				user = await createUser(userData);
+
+				expect(user).to.not.be.null;
+				expect(user).to.have.nested.property('username', username);
+				expect(user).to.have.nested.property('emails[0].address', email);
+				expect(user).to.have.nested.property('active', true);
+				expect(user).to.have.nested.property('name', username);
+				expect(user).to.have.nested.property('customFields.customFieldText', 'success');
+				expect(user).to.not.have.nested.property('e2e');
+
+				return done();
+			}),
+		);
+
+		after((done) => clearCustomFields(done));
+
+		it('should query all users in the system by custom fields', (done) => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					customFields: 1,
+				}),
+				query: JSON.stringify({
+					'customFields.customFieldText': 'success',
+				}),
+			};
+
+			request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const queriedUser = res.body.users.find((u) => u._id === user._id);
+					expect(queriedUser).to.have.property('customFields');
+					expect(queriedUser.customFields).to.have.property('customFieldText', 'success');
 				})
 				.end(done);
 		});
@@ -1648,6 +1718,7 @@ describe('[Users]', function () {
 		});
 	});
 
+	// TODO check for all response fields
 	describe('[/users.setPreferences]', () => {
 		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
 			const userPreferences = {
@@ -1671,7 +1742,7 @@ describe('[Users]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the user try to update info of an inexistent user', (done) => {
+		it('should return an error when the user try to update info of an nonexistent user', (done) => {
 			const userPreferences = {
 				userId: 'invalid-id',
 				data: {
@@ -3235,9 +3306,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -3594,9 +3665,9 @@ describe('[Users]', function () {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-			However, the removal of the tokens is done asynchronously.
-			Thus, we check that within the next seconds, at least one try to
-			access an authentication requiring route fails */
+      		However, the removal of the tokens is done asynchronously.
+      		Thus, we check that within the next seconds, at least one try to
+      		access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {

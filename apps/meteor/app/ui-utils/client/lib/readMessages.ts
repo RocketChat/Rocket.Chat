@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IRoom } from '@rocket.chat/core-typings';
+import $ from 'jquery';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
@@ -94,22 +95,22 @@ export class ReadMessage extends Emitter {
 	}
 
 	public refreshUnreadMark(rid: IRoom['_id']) {
-		if (rid == null) {
+		if (!rid) {
 			return;
 		}
 
 		const subscription = ChatSubscription.findOne({ rid }, { reactive: false });
-		if (subscription == null) {
+		if (!subscription) {
 			return;
 		}
 
 		const room = RoomManager.openedRooms[subscription.t + subscription.name];
-		if (room == null) {
+		if (!room) {
 			return;
 		}
 
 		if (!subscription.alert && subscription.unread === 0) {
-			$('.message.first-unread').removeClass('first-unread');
+			document.querySelector('.message.first-unread')?.classList.remove('first-unread');
 			room.unreadSince.set(undefined);
 			return;
 		}
@@ -129,7 +130,7 @@ export class ReadMessage extends Emitter {
 		) as { ts: Date } | undefined;
 		const { unreadNotLoaded } = RoomHistoryManager.getRoom(rid);
 
-		if (lastReadRecord == null && unreadNotLoaded.get() === 0) {
+		if (!lastReadRecord && unreadNotLoaded.get() === 0) {
 			lastReadRecord = { ts: new Date(0) };
 		}
 
@@ -158,8 +159,8 @@ export class ReadMessage extends Emitter {
 
 		if (firstUnreadRecord) {
 			room.unreadFirstId = firstUnreadRecord._id;
-			$('.message.first-unread').removeClass('first-unread');
-			$(`.message#${firstUnreadRecord._id}`).addClass('first-unread');
+			document.querySelector('.message.first-unread')?.classList.remove('first-unread');
+			document.querySelector(`.message[data-id="${firstUnreadRecord._id}"]`)?.classList.add('first-unread');
 		}
 	}
 }

@@ -1,7 +1,8 @@
 import { Margins, Icon, Tabs, Button, Pagination, Tile } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';

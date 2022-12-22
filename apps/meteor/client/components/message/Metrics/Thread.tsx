@@ -1,6 +1,7 @@
 import { Message, MessageMetricsItem, MessageBlock } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, FC, MouseEvent as ReactMouseEvent } from 'react';
+import type { FC, MouseEvent as ReactMouseEvent } from 'react';
+import React, { useCallback } from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import * as NotificationStatus from '../NotificationStatus';

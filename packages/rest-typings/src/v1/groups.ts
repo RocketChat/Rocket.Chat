@@ -382,7 +382,7 @@ export type GroupsEndpoints = {
 	};
 	'/v1/groups.create': {
 		POST: (params: GroupsCreateProps) => {
-			group: Partial<IRoom>;
+			group: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 		};
 	};
 	'/v1/groups.convertToTeam': {
