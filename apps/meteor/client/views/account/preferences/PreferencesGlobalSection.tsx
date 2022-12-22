@@ -1,9 +1,11 @@
-import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
-import { FormSectionProps } from './AccountPreferencesPage';
+import type { FormSectionProps } from './AccountPreferencesPage';
 
 const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
 	const t = useTranslation();

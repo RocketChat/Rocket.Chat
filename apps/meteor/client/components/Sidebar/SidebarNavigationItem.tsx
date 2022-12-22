@@ -1,6 +1,8 @@
-import { Box, Icon, IconProps, Tag } from '@rocket.chat/fuselage';
+import type { IconProps } from '@rocket.chat/fuselage';
+import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import { useRoutePath } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
@@ -33,8 +35,8 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	return (
 		<SidebarGenericItem active={isActive} href={path} key={path}>
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
-			<Box withTruncatedText fontScale='p2' mi='x4' color='hint'>
-				{label} {tag && <Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>{tag}</Tag>}
+			<Box withTruncatedText fontScale='p2' mi='x4'>
+				{label} {tag && <Tag>{tag}</Tag>}
 			</Box>
 		</SidebarGenericItem>
 	);

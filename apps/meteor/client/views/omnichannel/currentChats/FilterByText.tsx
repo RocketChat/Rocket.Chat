@@ -2,7 +2,8 @@ import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import type { Dispatch, FC, SetStateAction } from 'react';
+import React, { useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';

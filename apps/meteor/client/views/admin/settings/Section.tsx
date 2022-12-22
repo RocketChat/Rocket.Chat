@@ -1,8 +1,10 @@
 import { isSettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useMemo } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 
 import { useEditableSettings, useEditableSettingsDispatch } from '../EditableSettingsContext';
 import SectionSkeleton from './SectionSkeleton';

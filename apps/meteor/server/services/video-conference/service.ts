@@ -163,15 +163,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		return [
 			{
-				blockId: 'id',
-				type: 'context',
-				elements: [
-					{
-						type: 'plain_text',
-						text: `${TAPi18n.__('Video_Conference_Url')}: ${call.url}`,
-						emoji: false,
-					},
-				],
+				blockId: 'videoconf-info',
+				type: 'section',
+				text: {
+					type: 'mrkdwn',
+					text: `**${TAPi18n.__('Video_Conference_Url')}**: ${call.url}`,
+				},
 			} as IBlock,
 		];
 	}

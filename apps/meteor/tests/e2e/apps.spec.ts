@@ -3,7 +3,7 @@ import { HomeChannel } from './page-objects';
 
 test.use({ storageState: 'user1-session.json' });
 
-test.describe.parallel('Apps', () => {
+test.describe.serial('Apps', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {

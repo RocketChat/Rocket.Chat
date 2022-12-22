@@ -1,7 +1,8 @@
 import { Button, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';

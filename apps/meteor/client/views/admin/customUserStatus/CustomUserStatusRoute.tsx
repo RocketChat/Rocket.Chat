@@ -1,6 +1,7 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
