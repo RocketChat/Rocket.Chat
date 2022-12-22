@@ -295,6 +295,8 @@
   "add-livechat-department-agents_description": "Permission to add omnichannel agents to departments",
   "add-oauth-service": "Add OAuth Service",
   "add-oauth-service_description": "Permission to add a new OAuth service",
+  "bypass-time-limit-edit-and-create": "Bypass time limit",
+  "bypass-time-limit-edit-and-create_description": "Permission to Bypass time limit for editing and deleting messages",
   "add-team-channel": "Add Team Channel",
   "add-team-channel_description": "Permission to add a channel to a team",
   "add-team-member": "Add Team Member",
