@@ -1,10 +1,8 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
-		"target": "es2015",
-		"lib": ["dom", "esnext"],
 		"rootDir": "./src",
-		"outDir": "./dist",
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"]
 }

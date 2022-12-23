@@ -1,11 +1,9 @@
 {
-	"extends": "../../../tsconfig.base.json",
+	"extends": "../../../tsconfig.base.server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"allowJs": true, // TODO: Remove this line
-		"outDir": "./dist",
-		"declaration": false,
-		"declarationMap": false
+		"outDir": "./dist"
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],

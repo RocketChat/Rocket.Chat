@@ -1,8 +1,7 @@
 {
-	"extends": "../../../tsconfig.base.json",
+	"extends": "../../../tsconfig.base.server.json",
 	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": false,
+		"allowJs": true, // TODO remove asap
 		"incremental": true,
 
 		/* Strict Type-Checking Options */
@@ -18,10 +17,9 @@
 		"noFallthroughCasesInSwitch": false,
 
 		/* Module Resolution Options */
-		"outDir": "./dist",
 		"importsNotUsedAsValues": "preserve",
-		"declaration": false,
-		"declarationMap": false
+
+		"outDir": "./dist"
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],
