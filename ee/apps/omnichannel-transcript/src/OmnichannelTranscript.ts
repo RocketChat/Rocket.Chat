@@ -1,6 +1,6 @@
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
-import { PdfWorker } from '@rocket.chat/pdf-worker2';
-import type { Templates } from '@rocket.chat/pdf-worker2';
+import { PdfWorker } from '@rocket.chat/pdf-worker';
+import type { Templates } from '@rocket.chat/pdf-worker';
 import type { IMessage, IUser, IRoom, IUpload } from '@rocket.chat/core-typings';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';

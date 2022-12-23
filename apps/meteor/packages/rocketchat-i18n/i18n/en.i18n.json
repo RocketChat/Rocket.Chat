@@ -3987,6 +3987,8 @@
   "Request_comment_when_closing_conversation": "Request comment when closing conversation",
   "Request_comment_when_closing_conversation_description": "If enabled, the agent will need to set a comment before the conversation is closed.",
   "Request_tag_before_closing_chat": "Request tag(s) before closing conversation",
+  "request-pdf-transcript": "Request PDF Transcript",
+  "request-pdf-transcript_description": "Permission to request a PDF transcript for a given Omnichannel room",
   "Requested_At": "Requested At",
   "Requested_By": "Requested By",
   "Require": "Require",

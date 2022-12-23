@@ -10,8 +10,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	protected name = 'message';
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
-		const toUser = await Users.findOneByUsername(to);
-		const fromUser = await Users.findOneByUsername(from);
+		const [toUser, fromUser] = await Promise.all([Users.findOneByUsername(to), Users.findOneByUsername(from)]);
 
 		if (!toUser || !fromUser) {
 			throw new Error('error-invalid-user');

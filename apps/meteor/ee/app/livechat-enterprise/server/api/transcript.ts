@@ -4,7 +4,6 @@ import { API } from '../../../../../app/api/server';
 import { canAccessRoomAsync } from '../../../../../app/authorization/server/functions/canAccessRoom';
 import { OmnichannelTranscript } from '../../../../../server/sdk';
 
-// This is a public route for testing purposes, this should be updated before merging into develop
 API.v1.addRoute(
 	'omnichannel/:rid/request-transcript',
 	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'] },
