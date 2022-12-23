@@ -80,7 +80,7 @@ const RoomBody = (): ReactElement => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
 		const wrapper = wrapperRef.current;

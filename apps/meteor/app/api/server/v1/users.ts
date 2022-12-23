@@ -431,6 +431,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
 						inclusiveFieldsKeys.includes('type') && 'type.*',
+						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)
