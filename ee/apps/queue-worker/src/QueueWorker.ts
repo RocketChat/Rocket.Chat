@@ -30,6 +30,10 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		return message.includes('is not found');
 	}
 
+	isServiceRetryError(message: string): boolean {
+		return message.includes('retry');
+	}
+
 	async created(): Promise<void> {
 		this.logger.info('Starting queue worker');
 		this.queue.databasePromise = () => {
@@ -61,6 +65,13 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		this.queue.stopPolling();
 	}
 
+	private isRetryableError(error: string): boolean {
+		// Let's retry on 2 circumstances: (for now)
+		// 1. When the error is "service not found" -> this means the service is not yet registered
+		// 2. When the error is "retry" -> this means the service is registered, but is not willing to process it right now, maybe due to load
+		return this.isServiceNotFoundMessage(error) || this.isServiceRetryError(error);
+	}
+
 	private async workerCallback(queueItem: Work<{ to: string; data: any }>): Promise<ValidResult> {
 		this.logger.info(`Processing queue item ${queueItem._id} for work`);
 		this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
@@ -74,7 +85,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 			queueItem.releasedReason = e.message;
 			// Let's only retry for X times when the error is "service not found"
 			// For any other error, we'll just reject the item
-			if ((queueItem.retryCount || 0) < this.retryCount && this.isServiceNotFoundMessage(e.message)) {
+			if ((queueItem.retryCount || 0) < this.retryCount && this.isRetryableError(e.message)) {
 				this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
 				queueItem.nextReceivableTime = new Date(Date.now() + this.retryDelay);
 				return 'Retry' as const;

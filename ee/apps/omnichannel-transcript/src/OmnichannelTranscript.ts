@@ -1,7 +1,7 @@
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { Templates } from '@rocket.chat/pdf-worker';
-import type { IMessage, IUser, IRoom, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IUpload, IOmnichannelRoom, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
 
 import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
@@ -19,12 +19,25 @@ type WorkDetailsWithSource = WorkDetails & {
 	from: string;
 };
 
+type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({ name?: string; buffer: Buffer | null } | undefined)[] };
+
+type WorkerData = {
+	visitor: ILivechatVisitor | null;
+	agent: ILivechatAgent | undefined;
+	closedAt: IOmnichannelRoom['closedAt'];
+	messages: MessageWithFiles[];
+};
+
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';
 
 	private worker: PdfWorker;
 
 	private log: Logger;
+
+	maxNumberOfConcurrentJobs = 25;
+
+	currentJobNumber = 0;
 
 	constructor(
 		private readonly uploadService: typeof Upload,
@@ -80,10 +93,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	private async getFiles(
-		userId: string,
-		messages: IMessage[],
-	): Promise<(Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({ name?: string; buffer: Buffer | null } | undefined)[] })[]> {
+	private async getFiles(userId: string, messages: IMessage[]): Promise<MessageWithFiles[]> {
 		return Promise.all(
 			messages.map(async (message: IMessage) => {
 				if (!message.attachments || !message.attachments.length) {
@@ -116,7 +126,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						}
 
 						const fileBuffer = await this.uploadService.getFileBuffer({ userId, file: uploadedFile });
-						console.log('fileBuffer', fileBuffer);
 						return { name: file.name, buffer: fileBuffer };
 					}),
 				);
@@ -132,6 +141,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
 		this.log.log(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
+		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
+			this.log.error(`Processing transcript for room ${details.rid} by user ${details.userId} - Too many concurrent jobs, queuing again`);
+			throw new Error('retry');
+		}
+		this.currentJobNumber++;
+
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			throw new Error('room-not-found');
@@ -139,7 +154,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		const messages = await this.getMessagesFromRoom({ rid: room._id });
 
 		const data = {
-			visitor: room.v && (await LivechatVisitors.findById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } })),
+			visitor:
+				room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } })),
 			agent: room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1 } })),
 			closedAt: room.closedAt,
 			messages: await this.getFiles(details.userId, messages),
@@ -152,7 +168,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async doRender({ template, data, details }: { template: Templates; data: any; details: WorkDetailsWithSource }): Promise<void> {
+	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const buf: Uint8Array[] = [];
 		let outBuff = Buffer.alloc(0);
 
@@ -182,6 +198,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
+		this.currentJobNumber--;
+
 		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
@@ -205,6 +223,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
+		this.currentJobNumber--;
+
 		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
 		const user = await Users.findOneById(details.userId);
 		if (!user) {
