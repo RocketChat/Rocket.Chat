@@ -193,7 +193,7 @@ export class APIClass extends Restivus {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg || 'unauthorized',
+				error: msg || 'error-not-authorized',
 			},
 		};
 	}
