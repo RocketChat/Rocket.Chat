@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 
