@@ -798,6 +798,7 @@
   "call-management": "Call Management",
   "call-management_description": "Permission to start a meeting",
   "Call_ongoing": "Call ongoing",
+  "Call_started": "Call started",
   "Call_unavailable_for_federation": "Call is unavailable for Federated rooms",
   "Call_was_not_answered": "Call was not answered",
   "Caller": "Caller",
