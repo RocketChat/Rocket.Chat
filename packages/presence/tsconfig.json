@@ -2,6 +2,7 @@
 	"extends": "../../tsconfig.base.server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
+		"declaration": true,
 		"outDir": "./dist"
 	},
 	"include": ["../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
