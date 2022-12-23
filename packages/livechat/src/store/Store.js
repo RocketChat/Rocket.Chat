@@ -7,10 +7,10 @@ function getLocalStorage() {
 	try {
 		return window.localStorage;
 	} catch (_) {
-		const store = {}
+		const store = {};
 		return {
-			getItem: (name) => store.name,
-			setItem: (name, val) => store.name = val
+			getItem(name) { return store[name]; },
+			setItem(name, val) { store[name] = val; }
 		};
 	}
 }
