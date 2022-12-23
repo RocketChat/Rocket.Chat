@@ -1,4 +1,4 @@
-import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
@@ -50,7 +50,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 			title={t('Two-factor_authentication_email')}
 			onClose={onClose}
 			variant='warning'
-			icon={<Icon size='x20' name='info' color='default' />}
+			icon='info'
 			confirmDisabled={!code}
 		>
 			<Box mbe='x16'>{t('Verify_your_email_for_the_code_we_sent')}</Box>
