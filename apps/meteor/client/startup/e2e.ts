@@ -68,7 +68,8 @@ Meteor.startup(() => {
 					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
 						e2e.acceptSuggestedKey(sub.rid);
 					} else {
-						console.log('Invalid E2ESuggestedKey', sub.E2ESuggestedKey);
+						console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+						e2e.rejectSuggestedKey(sub.rid);
 					}
 				}
 

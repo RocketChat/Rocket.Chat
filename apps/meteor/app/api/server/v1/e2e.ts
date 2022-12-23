@@ -212,3 +212,20 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'e2e.rejectSuggestedGroupKey',
+	{
+		authRequired: true,
+		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+	},
+	{
+		post() {
+			const { rid } = this.bodyParams;
+
+			Meteor.call('e2e.rejectSuggestedGroupKey', rid);
+
+			return API.v1.success();
+		},
+	},
+);

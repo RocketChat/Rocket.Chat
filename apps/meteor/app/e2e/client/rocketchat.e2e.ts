@@ -142,6 +142,12 @@ class E2E extends Emitter {
 		});
 	}
 
+	async rejectSuggestedKey(rid: string): Promise<void> {
+		await APIClient.post('/v1/e2e.rejectSuggestedGroupKey', {
+			rid,
+		});
+	}
+
 	getKeysFromLocalStorage(): KeyPair {
 		return {
 			public_key: Meteor._localStorage.getItem('public_key'),
