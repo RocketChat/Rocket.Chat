@@ -1,4 +1,4 @@
-import { useBorderBoxSize } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
 import type { CSSProperties, RefObject } from 'react';
 import { useEffect, useState } from 'react';
 
@@ -9,6 +9,7 @@ const shadowStyleBase: CSSProperties = {
 	resize: 'none',
 	whiteSpace: 'pre-wrap',
 	wordWrap: 'break-word',
+	willChange: 'contents',
 };
 
 export const useAutoGrow = (
@@ -56,16 +57,17 @@ export const useAutoGrow = (
 		};
 	}, [ref, shadowRef]);
 
-	const shadowContentSize = useBorderBoxSize(shadowRef, {
-		debounceDelay: 10,
-	});
+	const shadowContentSize = useContentBoxSize(shadowRef);
 
-	const composerContentSize = useBorderBoxSize(ref);
+	const composerContentSize = useContentBoxSize(ref);
 
 	return {
 		textAreaStyle: {
 			whiteSpace: 'pre-wrap',
 			wordWrap: 'break-word',
+			overflowWrap: 'break-word',
+			willChange: 'contents',
+			wordBreak: 'normal',
 			overflowY: shadowContentSize.blockSize > parseInt(style?.maxHeight || '0') ? 'scroll' : 'hidden',
 			...(shadowContentSize.blockSize && {
 				height: `${shadowContentSize.blockSize}px`,
