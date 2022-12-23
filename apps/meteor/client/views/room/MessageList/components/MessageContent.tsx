@@ -6,13 +6,13 @@ import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
-import Attachments from '../../../../components/message/Attachments';
 import MessageActions from '../../../../components/message/MessageActions';
-import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
-import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
-import ThreadMetric from '../../../../components/message/Metrics/ThreadMetric';
 import ReadReceiptIndicator from '../../../../components/message/ReadReceiptIndicator';
-import UiKitContent from '../../../../components/message/content/UiKitContent';
+import Attachments from '../../../../components/message/content/Attachments';
+import BroadcastMetrics from '../../../../components/message/content/BroadcastMetrics';
+import DicussionMetrics from '../../../../components/message/content/DicussionMetrics';
+import ThreadMetrics from '../../../../components/message/content/ThreadMetrics';
+import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import MessageLocation from '../../../location/MessageLocation';
@@ -65,7 +65,7 @@ const MessageContent: FC<{
 				</>
 			)}
 
-			{message.blocks && <UiKitContent mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
 			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
@@ -86,7 +86,7 @@ const MessageContent: FC<{
 			{shouldShowReactionList && <ReactionsList message={message} />}
 
 			{isThreadMainMessage(message) && (
-				<ThreadMetric
+				<ThreadMetrics
 					openThread={openThread(message._id)}
 					counter={message.tcount}
 					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
@@ -101,7 +101,7 @@ const MessageContent: FC<{
 			)}
 
 			{isDiscussionMessage(message) && (
-				<DiscussionMetric
+				<DicussionMetrics
 					count={message.dcount}
 					drid={message.drid}
 					lm={message.dlm}
@@ -113,7 +113,7 @@ const MessageContent: FC<{
 			{message.location && <MessageLocation location={message.location} />}
 
 			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
-				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
 			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
