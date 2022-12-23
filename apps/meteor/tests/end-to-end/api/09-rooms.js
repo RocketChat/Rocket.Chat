@@ -504,9 +504,10 @@ describe('[Rooms]', function () {
 				})
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.keys(expectedKeys);
+					const { body } = res;
+					expect(body).to.have.property('success', true);
+					expect(body).to.have.property('room').and.to.be.an('object');
+					expect(body.room).to.have.all.keys(expectedKeys);
 				})
 				.end(done);
 		});
@@ -534,9 +535,23 @@ describe('[Rooms]', function () {
 				})
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.all.keys(expectedKeys);
+					const { body } = res;
+					expect(body).to.have.property('success', true);
+					expect(body).to.have.property('room').and.to.be.an('object');
+					expect(body.room).to.have.property('_id').and.to.be.a('string');
+					expect(body.room).to.have.property('name').and.to.be.a('string');
+					expect(body.room).to.have.property('fname').and.to.be.a('string');
+					expect(body.room).to.have.property('t').and.to.be.a('string');
+					expect(body.room).to.have.property('msgs').and.to.be.a('number');
+					expect(body.room).to.have.property('usersCount').and.to.be.a('number');
+					expect(body.room).to.have.property('u').and.to.be.an('object');
+					expect(body.room).to.have.property('customFields').and.to.be.an('object');
+					expect(body.room).to.have.property('ts').and.to.be.an('string');
+					expect(body.room).to.have.property('ro').and.to.be.a('boolean');
+					expect(body.room).to.have.property('sysMes').and.to.be.a('boolean');
+					expect(body.room).to.have.property('default').and.to.be.a('boolean');
+					expect(body.room).to.have.property('_updatedAt').and.to.be.an('string');
+					expect(body.room).to.have.property('encrypted').and.to.be.a('boolean');
 				})
 				.end(done);
 		});
@@ -549,9 +564,23 @@ describe('[Rooms]', function () {
 				})
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.all.keys(expectedKeys);
+					const { body } = res;
+					expect(body).to.have.property('success', true);
+					expect(body).to.have.property('room').and.to.be.an('object');
+					expect(body.room).to.have.property('_id').and.to.be.a('string');
+					expect(body.room).to.have.property('name').and.to.be.a('string');
+					expect(body.room).to.have.property('fname').and.to.be.a('string');
+					expect(body.room).to.have.property('t').and.to.be.a('string');
+					expect(body.room).to.have.property('msgs').and.to.be.a('number');
+					expect(body.room).to.have.property('usersCount').and.to.be.a('number');
+					expect(body.room).to.have.property('u').and.to.be.an('object');
+					expect(body.room).to.have.property('customFields').and.to.be.an('object');
+					expect(body.room).to.have.property('ts').and.to.be.an('string');
+					expect(body.room).to.have.property('ro').and.to.be.a('boolean');
+					expect(body.room).to.have.property('sysMes').and.to.be.a('boolean');
+					expect(body.room).to.have.property('default').and.to.be.a('boolean');
+					expect(body.room).to.have.property('_updatedAt').and.to.be.an('string');
+					expect(body.room).to.have.property('encrypted').and.to.be.a('boolean');
 				})
 				.end(done);
 		});
@@ -581,8 +610,9 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.property('_id').and.to.be.a('string');
+					expect(res.body.room).to.have.property('name').and.to.be.a('string');
 					expect(res.body.room).to.have.property('name').and.to.be.equal(testChannelName);
-					expect(res.body.room).to.have.all.keys(['_id', 'name']);
 				})
 				.end(done);
 		});
