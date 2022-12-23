@@ -222,6 +222,6 @@ export class HomeContent {
 	}
 
 	get btnJoinCall(): Locator {
-		return this.page.locator('.rcx-button--small >> text="Join call"');
+		return this.page.locator('.rcx-button--small >> text="Join"');
 	}
 }
