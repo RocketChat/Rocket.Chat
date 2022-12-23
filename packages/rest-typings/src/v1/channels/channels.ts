@@ -49,7 +49,7 @@ export type ChannelsEndpoints = {
 				teamId?: string;
 			};
 		}) => {
-			group: Partial<IRoom>;
+			channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 		};
 	};
 	'/v1/channels.convertToTeam': {
@@ -77,34 +77,38 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'/v1/channels.close': {
-		POST: (params: { roomId: string } | { roomName: string }) => {};
+		POST: (params: { roomId: string } | { roomName: string }) => void;
 	};
 	'/v1/channels.kick': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {
+			channel: IRoom;
+		};
 	};
 	'/v1/channels.delete': {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'/v1/channels.leave': {
-		POST: (params: { roomId: string } | { roomName: string }) => {};
+		POST: (params: { roomId: string } | { roomName: string }) => {
+			channel: IRoom;
+		};
 	};
 	'/v1/channels.addModerator': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
 	};
 	'/v1/channels.removeModerator': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
 	};
 	'/v1/channels.addOwner': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
 	};
 	'/v1/channels.removeOwner': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
 	};
 	'/v1/channels.addLeader': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
 	};
 	'/v1/channels.removeLeader': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
 	};
 	'/v1/channels.roles': {
 		GET: (params: { roomId: string } | { roomName: string }) => { roles: IGetRoomRoles[] };
@@ -133,7 +137,9 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.setAnnouncement': {
-		POST: (params: ChannelsSetAnnouncementProps) => {};
+		POST: (params: ChannelsSetAnnouncementProps) => {
+			announcement: string;
+		};
 	};
 	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{

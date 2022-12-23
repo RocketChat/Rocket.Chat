@@ -1,10 +1,11 @@
 import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
-import Card from '../../../components/Card';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';
 
@@ -56,9 +57,9 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('MongoDB')}</Card.Col.Title>
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} (oplog ${
-							statistics.oplogEnabled ? t('Enabled') : t('Disabled')
-						})`}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
+							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
+						}`}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Commit_details')}</Card.Col.Title>

@@ -2,6 +2,11 @@
 	background-color: var(--content-background-color);
 }
 
+:root {
+	--rcx-color-surface-light: var(--content-background-color);
+	--rcx-color-background-light: var(--content-background-color);
+}
+
 .color-content-background-color {
 	color: var(--content-background-color);
 }
@@ -66,10 +71,6 @@
 	color: var(--error-color);
 }
 
-.background-error-color {
-	background-color: var(--error-color);
-}
-
 .color-info-font-color {
 	color: var(--info-font-color);
 }
@@ -92,10 +93,6 @@
 
 .error-border {
 	border-color: var(--error-border);
-}
-
-.color-error-contrast {
-	color: var(--error-contrast);
 }
 
 .background-transparent-darkest {
@@ -172,16 +169,6 @@
 	}
 }
 
-.burger i {
-	background-color: var(--primary-font-color);
-}
-
-.input-line {
-	&.setting-changed > label {
-		color: var(--selection-color);
-	}
-}
-
 input:-webkit-autofill {
 	color: var(--primary-font-color) !important;
 	background-color: transparent !important;
@@ -217,8 +204,8 @@ textarea {
 	background-color: var(--popup-list-selected-background);
 }
 
-.rc-old input[type="button"],
-.rc-old input[type="submit"] {
+.rc-old input[type='button'],
+.rc-old input[type='submit'] {
 	color: var(--button-secondary-text-color);
 	border-color: var(--button-secondary-background);
 	background: var(--button-secondary-background);
@@ -255,7 +242,7 @@ textarea {
 .message,
 .flex-tab {
 	a i,
-	a[class^="icon-"] {
+	a[class^='icon-'] {
 		color: var(--primary-font-color);
 
 		&:hover {
@@ -268,28 +255,11 @@ textarea {
 	border-color: var(--error-color);
 }
 
-.page-list,
-.page-settings {
-	a:not(.rc-button) {
-		color: var(--primary-font-color);
-
-		&:hover {
-			color: var(--primary-action-color);
-		}
-	}
-}
-
 .admin-table-row {
 	background-color: var(--transparent-light);
 
 	&:nth-of-type(even) {
 		background-color: var(--transparent-lightest);
-	}
-}
-
-.avatar-suggestion-item {
-	.question-mark::before {
-		color: var(--secondary-font-color);
 	}
 }
 
@@ -314,12 +284,6 @@ textarea {
 
 .upload-progress-progress {
 	background-color: var(--success-background);
-}
-
-.messages-container {
-	.footer {
-		background: var(--content-background-color);
-	}
 }
 
 .message.editing {
@@ -363,20 +327,6 @@ textarea {
 	}
 }
 
-.sidebar-item__last-message {
-	a:not(.mention-link) {
-		color: var(--link-font-color);
-
-		&:hover {
-			opacity: 0.6;
-		}
-	}
-}
-
-i.status-online {
-	color: var(--rc-status-online);
-}
-
 .status-bg-online {
 	background-color: var(--rc-status-online);
 }
@@ -404,21 +354,9 @@ i.status-busy {
 	color: var(--rc-status-busy);
 }
 
-.status-bg-busy {
-	background-color: var(--rc-status-busy);
-}
-
 .popup-user-status-busy,
 .status-busy::after {
 	background-color: var(--rc-status-busy);
-}
-
-i.status-offline {
-	color: var(--rc-status-offline);
-}
-
-.status-bg-offline {
-	background-color: var(--rc-status-offline);
 }
 
 .popup-user-status-offline,

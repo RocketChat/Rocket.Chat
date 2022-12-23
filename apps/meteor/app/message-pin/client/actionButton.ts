@@ -8,7 +8,6 @@ import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { settings } from '../../settings/client';
 import { hasAtLeastOnePermission } from '../../authorization/client';
 import { Rooms } from '../../models/client';
-import { handleError } from '../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
@@ -23,7 +22,7 @@ Meteor.startup(function () {
 			message.pinned = true;
 			Meteor.call('pinMessage', message, function (error: Error) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -51,7 +50,7 @@ Meteor.startup(function () {
 			message.pinned = false;
 			Meteor.call('unpinMessage', message, function (error: Error) {
 				if (error) {
-					return handleError(error);
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			});
 		},
@@ -91,7 +90,7 @@ Meteor.startup(function () {
 					},
 				);
 			}
-			return RoomHistoryManager.getSurroundingMessages(message, 50);
+			return RoomHistoryManager.getSurroundingMessages(message);
 		},
 		condition({ subscription }) {
 			return !!subscription;
@@ -107,10 +106,14 @@ Meteor.startup(function () {
 		// classes: 'clipboard',
 		context: ['pinned'],
 		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
-			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			try {
+				const { message = messageArgs(this).msg } = props;
+				const permalink = await MessageAction.getPermaLink(message._id);
+				navigator.clipboard.writeText(permalink);
+				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		},
 		condition({ subscription }) {
 			return !!subscription;

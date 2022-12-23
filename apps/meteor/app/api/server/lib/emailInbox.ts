@@ -1,21 +1,18 @@
-import { IEmailInbox } from '@rocket.chat/core-typings';
-import { InsertOneWriteOpResult, UpdateWriteOpResult, WithId } from 'mongodb';
+import type { IEmailInbox } from '@rocket.chat/core-typings';
+import type { Filter, InsertOneResult, Sort, UpdateResult, WithId } from 'mongodb';
 import { EmailInbox } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models/server';
 
 export const findEmailInboxes = async ({
-	userId,
 	query = {},
 	pagination: { offset, count, sort },
 }: {
-	userId: string;
-	query?: {};
+	query?: Filter<IEmailInbox>;
 	pagination: {
 		offset: number;
 		count: number;
-		sort?: {};
+		sort?: Sort;
 	};
 }): Promise<{
 	emailInboxes: IEmailInbox[];
@@ -23,18 +20,13 @@ export const findEmailInboxes = async ({
 	count: number;
 	offset: number;
 }> => {
-	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
-		throw new Error('error-not-allowed');
-	}
-	const cursor = EmailInbox.find(query, {
+	const { cursor, totalCount } = EmailInbox.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
 	});
 
-	const total = await cursor.count();
-
-	const emailInboxes = await cursor.toArray();
+	const [emailInboxes, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
 		emailInboxes,
@@ -44,16 +36,13 @@ export const findEmailInboxes = async ({
 	};
 };
 
-export const findOneEmailInbox = async ({ userId, _id }: { userId: string; _id: string }): Promise<IEmailInbox | null> => {
-	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
-		throw new Error('error-not-allowed');
-	}
+export const findOneEmailInbox = async ({ _id }: { _id: string }): Promise<IEmailInbox | null> => {
 	return EmailInbox.findOneById(_id);
 };
 export const insertOneEmailInbox = async (
 	userId: string,
 	emailInboxParams: Pick<IEmailInbox, 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
-): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>>> => {
+): Promise<InsertOneResult<WithId<IEmailInbox>>> => {
 	const obj = {
 		...emailInboxParams,
 		_createdAt: new Date(),
@@ -64,12 +53,11 @@ export const insertOneEmailInbox = async (
 };
 
 export const updateEmailInbox = async (
-	userId: string,
 	emailInboxParams: Pick<IEmailInbox, '_id' | 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
-): Promise<InsertOneWriteOpResult<WithId<IEmailInbox>> | UpdateWriteOpResult> => {
+): Promise<InsertOneResult<WithId<IEmailInbox>> | UpdateResult> => {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
 
-	const emailInbox = await findOneEmailInbox({ userId, _id });
+	const emailInbox = await findOneEmailInbox({ _id });
 
 	if (!emailInbox) {
 		throw new Error('error-invalid-email-inbox');
@@ -91,11 +79,4 @@ export const updateEmailInbox = async (
 	};
 
 	return EmailInbox.updateOne({ _id }, updateEmailInbox);
-};
-
-export const findOneEmailInboxByEmail = async ({ userId, email }: { userId: string; email: string }): Promise<IEmailInbox | null> => {
-	if (!(await hasPermissionAsync(userId, 'manage-email-inbox'))) {
-		throw new Error('error-not-allowed');
-	}
-	return EmailInbox.findOne({ email });
 };

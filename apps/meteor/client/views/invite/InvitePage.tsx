@@ -7,8 +7,9 @@ import {
 	useSetting,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { APIClient } from '../../../app/utils/client';
 import LoginPage from '../root/MainLayout/LoginPage';

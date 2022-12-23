@@ -1,8 +1,7 @@
-import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -40,21 +39,13 @@ const ShieldSvgSchema = {
 
 export const isShieldSvgProps = ajv.compile<ShieldSvg>(ShieldSvgSchema);
 
-type Spotlight = { query: string; limit: number; offset: number };
+type Spotlight = { query: string };
 
 const SpotlightSchema = {
 	type: 'object',
 	properties: {
 		query: {
 			type: 'string',
-		},
-		limit: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
 		},
 	},
 	required: ['query'],
@@ -170,6 +161,21 @@ const MethodCallAnonSchema = {
 
 export const isMethodCallAnonProps = ajv.compile<MethodCallAnon>(MethodCallAnonSchema);
 
+type PwGetPolicyReset = { token: string };
+
+const PwGetPolicyResetSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const validateParamsPwGetPolicyRest = ajv.compile<PwGetPolicyReset>(PwGetPolicyResetSchema);
+
 export type MiscEndpoints = {
 	'/v1/stdout.queue': {
 		GET: () => {
@@ -189,15 +195,23 @@ export type MiscEndpoints = {
 
 	'/v1/spotlight': {
 		GET: (params: Spotlight) => {
-			users: Pick<IUser, 'username' | 'name' | 'status' | 'statusText' | 'avatarETag'>[];
-			rooms: IRoom[];
+			users: Pick<Required<IUser>, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
+			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
 		};
 	};
 
-	'/v1/directory': {
-		GET: (params: Directory) => PaginatedResult<{
-			result: (IUser | IRoom | ITeam)[];
-		}>;
+	'/v1/pw.getPolicy': {
+		GET: () => {
+			enabled: boolean;
+			policy: [name: string, options?: Record<string, unknown>][];
+		};
+	};
+
+	'/v1/pw.getPolicyReset': {
+		GET: (params: PwGetPolicyReset) => {
+			enabled: boolean;
+			policy: [name: string, options?: Record<string, unknown>][];
+		};
 	};
 
 	'/v1/method.call/:method': {

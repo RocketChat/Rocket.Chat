@@ -6,8 +6,8 @@ import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
 import fiber from 'fibers';
-import CAS from 'cas';
 import { CredentialTokens } from '@rocket.chat/models';
+import { validate } from '@rocket.chat/cas-validate';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
@@ -38,13 +38,12 @@ const casTicket = function (req, token, callback) {
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${baseUrl}`);
 
-	const cas = new CAS({
-		base_url: baseUrl,
-		version: cas_version,
-		service: `${appUrl}/_cas/${token}`,
-	});
-
-	cas.validate(
+	validate(
+		{
+			base_url: baseUrl,
+			version: cas_version,
+			service: `${appUrl}/_cas/${token}`,
+		},
 		ticketId,
 		Meteor.bindEnvironment(async function (err, status, username, details) {
 			if (err) {
@@ -94,7 +93,7 @@ const middleware = function (req, res, next) {
 			closePopup(res);
 		});
 	} catch (err) {
-		logger.error(`Unexpected error : ${err.message}`);
+		logger.error({ msg: 'Unexpected error', err });
 		closePopup(res);
 	}
 };
@@ -113,7 +112,7 @@ WebApp.connectHandlers.use(function (req, res, next) {
  * It is call after Accounts.callLoginMethod() is call from client.
  *
  */
-Accounts.registerLoginHandler(function (options) {
+Accounts.registerLoginHandler('cas', function (options) {
 	if (!options.cas) {
 		return undefined;
 	}

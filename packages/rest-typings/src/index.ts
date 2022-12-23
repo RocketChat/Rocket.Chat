@@ -11,6 +11,7 @@ import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
+import type { DirectoryEndpoint } from './v1/directory';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
@@ -34,13 +35,15 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
+import type { MailerEndpoints } from './v1/mailer';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
+import type { ImportEndpoints } from './v1/import';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
 	extends ChannelsEndpoints,
 		MeEndpoints,
@@ -52,6 +55,7 @@ export interface Endpoints
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
+		DirectoryEndpoint,
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,
@@ -77,29 +81,33 @@ export interface Endpoints
 		AssetsEndpoints,
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
+		MailerEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
-		AutoTranslateEndpoints {}
-
-type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
-	? OperationsByPathPatternAndMethod<TPathPattern>
-	: never;
+		AutoTranslateEndpoints,
+		ImportEndpoints {}
 
 type OperationsByPathPatternAndMethod<
-	TPathPattern extends keyof Endpoints,
-	TMethod extends KeyOfEach<Endpoints[TPathPattern]> = KeyOfEach<Endpoints[TPathPattern]>,
+	TEndpoints extends Endpoints,
+	TPathPattern extends keyof TEndpoints,
+	TMethod extends KeyOfEach<TEndpoints[TPathPattern]> = KeyOfEach<TEndpoints[TPathPattern]>,
 > = TMethod extends any
 	? {
 			pathPattern: TPathPattern;
 			method: TMethod;
-			path: ReplacePlaceholders<TPathPattern>;
-			params: GetParams<Endpoints[TPathPattern][TMethod]>;
-			result: GetResult<Endpoints[TPathPattern][TMethod]>;
+			fn: TEndpoints[TPathPattern][TMethod];
+			path: ReplacePlaceholders<TPathPattern extends string ? TPathPattern : never>;
+			params: GetParams<TEndpoints[TPathPattern][TMethod]>;
+			result: GetResult<TEndpoints[TPathPattern][TMethod]>;
 	  }
 	: never;
 
-type Operations = OperationsByPathPattern<keyof Endpoints>;
+type OperationsByPathPattern<TEndpoints extends Endpoints, TPathPattern extends keyof TEndpoints> = TPathPattern extends any
+	? OperationsByPathPatternAndMethod<TEndpoints, TPathPattern>
+	: never;
+
+type Operations = OperationsByPathPattern<Endpoints, keyof Endpoints>;
 
 export type PathPattern = Operations['pathPattern'];
 
@@ -107,9 +115,59 @@ export type Method = Operations['method'];
 
 export type Path = Operations['path'];
 
-export type MethodFor<TPath extends Path> = TPath extends any ? Extract<Operations, { path: TPath }>['method'] : never;
+type MethodToPathMap = {
+	[TOperation in Operations as TOperation['method']]: TOperation['path'];
+};
 
-export type PathFor<TMethod extends Method> = TMethod extends any ? Extract<Operations, { method: TMethod }>['path'] : never;
+type MethodToPathWithParamsMap = {
+	[TOperation in Operations as Parameters<TOperation['fn']> extends { length: 0 } ? never : TOperation['method']]: TOperation['path'];
+};
+
+type MethodToPathWithoutParamsMap = {
+	[TOperation in Operations as Parameters<TOperation['fn']> extends { length: 0 }
+		? TOperation['method']
+		: undefined extends Parameters<TOperation['fn']>[0]
+		? TOperation['method']
+		: never]: TOperation['path'];
+};
+
+export type PathFor<TMethod extends Method> = MethodToPathMap[TMethod];
+
+export type PathWithParamsFor<TMethod extends Method> = MethodToPathWithParamsMap[TMethod extends keyof MethodToPathWithParamsMap
+	? TMethod
+	: never];
+
+export type PathWithoutParamsFor<TMethod extends Method> = MethodToPathWithoutParamsMap[TMethod extends keyof MethodToPathWithoutParamsMap
+	? TMethod
+	: never];
+
+type MethodToPathPatternToParamsMap = {
+	[TMethod in Method]: {
+		[TPathPattern in keyof Endpoints]: TMethod extends keyof Endpoints[TPathPattern]
+			? Endpoints[TPathPattern][TMethod] extends infer TOperation
+				? TOperation extends (...args: any) => any
+					? Parameters<TOperation>[0]
+					: never
+				: never
+			: never;
+	};
+};
+
+type MethodToPathPatternToResultMap = {
+	[TMethod in Method]: {
+		[TPathPattern in keyof Endpoints]: TMethod extends keyof Endpoints[TPathPattern]
+			? Endpoints[TPathPattern][TMethod] extends infer TOperation
+				? TOperation extends (...args: any) => any
+					? ReturnType<TOperation>
+					: never
+				: never
+			: never;
+	};
+};
+
+export type ParamsFor<TMethod extends Method, TPathPattern extends PathPattern> = MethodToPathPatternToParamsMap[TMethod][TPathPattern];
+
+export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> = MethodToPathPatternToResultMap[TMethod][TPathPattern];
 
 export type MatchPathPattern<TPath extends Path> = TPath extends any ? Extract<Operations, { path: TPath }>['pathPattern'] : never;
 
@@ -118,11 +176,7 @@ export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends st
 	`${TBasePath}/${TSubPathPattern}` | TSubPathPattern
 >;
 
-type GetParams<TOperation> = TOperation extends (...args: any) => any
-	? Parameters<TOperation>[0] extends void
-		? void
-		: Parameters<TOperation>[0]
-	: never;
+type GetParams<TOperation> = TOperation extends (...args: any) => any ? Parameters<TOperation>[0] : never;
 
 type GetResult<TOperation> = TOperation extends (...args: any) => any ? ReturnType<TOperation> : never;
 
@@ -136,11 +190,11 @@ export type OperationResult<TMethod extends Method, TPathPattern extends PathPat
 
 export type UrlParams<T extends string> = string extends T
 	? Record<string, string>
-	: T extends `${infer _Start}:${infer Param}/${infer Rest}`
+	: T extends `${string}:${infer Param}/${infer Rest}`
 	? { [k in Param | keyof UrlParams<Rest>]: string }
-	: T extends `${infer _Start}:${infer Param}`
+	: T extends `${string}:${infer Param}`
 	? { [k in Param]: string }
-	: undefined | {};
+	: undefined | Record<string, never>;
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
@@ -148,6 +202,7 @@ export * from './v1/permissions';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
+export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels/ChannelsAddAllProps';
 export * from './v1/channels/ChannelsArchiveProps';
@@ -165,11 +220,12 @@ export * from './v1/channels/ChannelsModeratorsProps';
 export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
-
 export * from './v1/subscriptionsEndpoints';
+export * from './v1/mailer';
+export * from './v1/mailer/MailerParamsPOST';
+export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
 export * from './v1/invites';
-
 export * from './v1/dm';
 export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
@@ -178,19 +234,24 @@ export * from './v1/oauthapps';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
+export * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
-
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
-export * from './v1/import/UploadImportFileParamsPOST';
-export * from './v1/import/DownloadPublicImportFileParamsPOST';
-export * from './v1/import/StartImportParamsPOST';
-export * from './v1/import/GetImportFileDataParamsGET';
-export * from './v1/import/GetImportProgressParamsGET';
-export * from './v1/import/GetLatestImportOperationsParamsGET';
-export * from './v1/import/DownloadPendingFilesParamsPOST';
-export * from './v1/import/DownloadPendingAvatarsParamsPOST';
-export * from './v1/import/GetCurrentImportOperationParamsGET';
+export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
+export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
+export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+
+export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
+export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
+export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
+export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
+export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
+export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
+export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
+export * from './v1/import';
+export * from './v1/voip';
+export * from './v1/email-inbox';

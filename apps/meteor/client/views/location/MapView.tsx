@@ -1,13 +1,14 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import MapViewFallback from './MapViewFallback';
 import MapViewImage from './MapViewImage';
 import { useAsyncImage } from './useAsyncImage';
 
 type MapViewProps = {
-	latitude: string;
-	longitude: string;
+	latitude: number;
+	longitude: number;
 };
 
 const MapView: FC<MapViewProps> = ({ latitude, longitude }) => {

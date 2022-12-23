@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React from 'react';
 
 const ImageBox: FC<ComponentProps<typeof Box>> = (props) => (
 	<Box
@@ -12,7 +13,7 @@ const ImageBox: FC<ComponentProps<typeof Box>> = (props) => (
 		borderRadius='x2'
 		borderWidth='x2'
 		borderStyle='solid'
-		borderColor='neutral-200'
+		borderColor='extra-light'
 		{...props}
 	/>
 );

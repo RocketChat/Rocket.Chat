@@ -8,7 +8,7 @@ import { canAccessRoom } from '../../../../authorization/server';
 
 API.v1.addRoute(
 	'voip/events',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async post() {
 			check(this.requestParams(), {

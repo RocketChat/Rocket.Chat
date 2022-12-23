@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import OmniChannel from '../lib/OmniChannel';
-import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:facebook'(options) {
@@ -49,20 +49,20 @@ Meteor.methods({
 					return OmniChannel.unsubscribe(options.page);
 				}
 			}
-		} catch (e) {
-			if (e.response && e.response.data && e.response.data.error) {
-				if (e.response.data.error.error) {
-					throw new Meteor.Error(e.response.data.error.error, e.response.data.error.message);
+		} catch (err) {
+			if (err.response && err.response.data && err.response.data.error) {
+				if (err.response.data.error.error) {
+					throw new Meteor.Error(err.response.data.error.error, err.response.data.error.message);
 				}
-				if (e.response.data.error.response) {
-					throw new Meteor.Error('integration-error', e.response.data.error.response.error.message);
+				if (err.response.data.error.response) {
+					throw new Meteor.Error('integration-error', err.response.data.error.response.error.message);
 				}
-				if (e.response.data.error.message) {
-					throw new Meteor.Error('integration-error', e.response.data.error.message);
+				if (err.response.data.error.message) {
+					throw new Meteor.Error('integration-error', err.response.data.error.message);
 				}
 			}
-			SystemLogger.error('Error contacting omni.rocket.chat:', e);
-			throw new Meteor.Error('integration-error', e.error);
+			SystemLogger.error({ msg: 'Error contacting omni.rocket.chat:', err });
+			throw new Meteor.Error('integration-error', err.error);
 		}
 	},
 });

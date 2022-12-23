@@ -1,13 +1,17 @@
-import { Box, Button, ButtonGroup, Field, FieldGroup, Modal, Select, SelectOption, Tabs, TextInput } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldGroup, Modal, Select, Tabs, TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useSettingSetValue, useTranslation } from '@rocket.chat/ui-contexts';
-import { parse as parseDomain, ParsedDomain } from 'psl';
-import React, { FC, ReactElement, useCallback, useState } from 'react';
+import type { ParsedDomain } from 'psl';
+import { parse as parseDomain } from 'psl';
+import type { FC, ReactElement } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
 import InviteUsers from './InviteUsers';
-import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
+import type { DNSRecordName, ResolvedDNS } from './Types';
+import { TXTRecordValue } from './Types';
 
 export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): ReactElement => {
 	const t = useTranslation();
@@ -186,18 +190,18 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 					</Modal.Content>
 				</>
 			)}
-			<Modal.Footer>
+			<Modal.Footer justifyContent='space-between'>
 				{currentStep === 2 && (
-					<Box mbs='x8' color='hint' fontSize='x12' position='absolute'>
+					<Box color='hint' fontSize='x12'>
 						{t('Federation_DNS_info_update')}
 					</Box>
 				)}
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={previousStep}>{currentStep === 1 ? t('Cancel') : t('Back')}</Button>
 					<Button primary onClick={nextStep}>
 						{currentStep === 3 ? t('Finish') : t('Next')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

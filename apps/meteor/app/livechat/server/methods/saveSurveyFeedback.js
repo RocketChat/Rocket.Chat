@@ -1,17 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
+import { LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatRooms, LivechatVisitors } from '../../../models/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
+	async 'livechat:saveSurveyFeedback'(visitorToken, visitorRoom, formData) {
+		methodDeprecationLogger.warn('livechat:saveSurveyFeedback will be deprecated in future versions of Rocket.Chat');
+
 		check(visitorToken, String);
 		check(visitorRoom, String);
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
 
-		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-		const room = LivechatRooms.findOneById(visitorRoom);
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
+		const room = await LivechatRooms.findOneById(visitorRoom);
 
 		if (visitor !== undefined && room !== undefined && room.v !== undefined && room.v.token === visitor.token) {
 			const updateData = {};

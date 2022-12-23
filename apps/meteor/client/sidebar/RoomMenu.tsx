@@ -1,6 +1,7 @@
-import { RoomType } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -10,20 +11,21 @@ import {
 	usePermission,
 	useMethod,
 	useTranslation,
-	TranslationKey,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import { Fields } from '@rocket.chat/ui-contexts/dist/UserContext';
-import React, { memo, ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { Rooms } from '../../app/models/client/index';
 import { applyButtonFilters } from '../../app/ui-message/client/actionButtons/lib/applyButtonFilters';
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
-import { ISidebarButton, SidebarRoomAction } from '../../app/ui-utils/client/lib/SidebarRoomAction';
+import type { ISidebarButton } from '../../app/ui-utils/client/lib/SidebarRoomAction';
+import { SidebarRoomAction } from '../../app/ui-utils/client/lib/SidebarRoomAction';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields: Fields = {
 	f: true,
@@ -42,6 +44,24 @@ type RoomMenuProps = {
 	name?: string;
 };
 
+const closeEndpoints = {
+	p: '/v1/groups.close',
+	c: '/v1/channels.close',
+	d: '/v1/im.close',
+
+	v: '/v1/channels.close',
+	l: '/v1/groups.close',
+} as const;
+
+const leaveEndpoints = {
+	p: '/v1/groups.leave',
+	c: '/v1/channels.leave',
+	d: '/v1/im.leave',
+
+	v: '/v1/channels.leave',
+	l: '/v1/groups.leave',
+} as const;
+
 const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }: RoomMenuProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -57,11 +77,12 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
-	const hideRoom = useMethod('hideRoom');
-	const readMessages = useMethod('readMessages');
+	const hideRoom = useEndpoint('POST', closeEndpoints[type]);
+	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
+	const toggleFavorite = useEndpoint('POST', '/v1/rooms.favorite');
+	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
+
 	const unreadMessages = useMethod('unreadMessages');
-	const toggleFavorite = useMethod('toggleFavorite');
-	const leaveRoom = useMethod('leaveRoom');
 
 	const isUnread = alert || unread || threadUnread;
 
@@ -81,13 +102,13 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const handleLeave = useMutableCallback(() => {
 		const leave = async (): Promise<void> => {
 			try {
-				await leaveRoom(rid);
+				await leaveRoom({ roomId: rid });
 				if (roomOpen) {
 					router.push({});
 				}
 				RoomManager.close(rid);
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
 		};
@@ -109,9 +130,9 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const handleHide = useMutableCallback(async () => {
 		const hide = async (): Promise<void> => {
 			try {
-				await hideRoom(rid);
+				await hideRoom({ roomId: rid });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
 		};
@@ -143,7 +164,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
 			if (isUnread) {
-				await readMessages(rid);
+				await readMessages({ rid, readThreads: true });
 				return;
 			}
 			await unreadMessages(null, rid);
@@ -154,15 +175,15 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 			router.push({});
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
 	const handleToggleFavorite = useMutableCallback(async () => {
 		try {
-			await toggleFavorite(rid, !isFavorite);
+			await toggleFavorite({ roomId: rid, favorite: !isFavorite });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -216,7 +237,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props} />}
+			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>
 	);
 };

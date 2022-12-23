@@ -2,7 +2,7 @@ import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
@@ -48,8 +48,20 @@ MessageTypes.registerType({
 					...(comment && { comment }),
 				}),
 			queue: (): string =>
-				TAPi18n.__('Livechat_transfer_return_to_the_queue', {
+				TAPi18n.__(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
 					from,
+					...(comment && { comment }),
+				}),
+			autoTransferUnansweredChatsToAgent: (): string =>
+				TAPi18n.__(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
+					from,
+					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
+					duration: comment,
+				}),
+			autoTransferUnansweredChatsToQueue: (): string =>
+				TAPi18n.__(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
+					from,
+					duration: comment,
 				}),
 		};
 		return {
@@ -108,7 +120,7 @@ MessageTypes.registerType({
 		}
 		return escapeHTML(message.msg);
 	},
-	message: 'room_changed_privacy',
+	message: 'room_changed_type',
 });
 
 MessageTypes.registerType({

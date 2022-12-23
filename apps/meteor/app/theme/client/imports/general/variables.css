@@ -110,7 +110,7 @@
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
 	--border: 2px;
-	--border-radius: 2px;
+	--border-radius: 4px;
 	--rc-status-online: var(--rc-color-success);
 	--rc-status-away: var(--rc-color-alert);
 	--rc-status-busy: var(--rc-color-error);
@@ -171,14 +171,14 @@
 	*/
 	--input-font-size: 0.875rem;
 	--input-title-text-size: var(--input-font-size);
-	--input-title-color: #2d343d;
-	--input-text-color: var(--color-dark-medium);
-	--input-placeholder-color: var(--color-gray-medium);
-	--input-icon-color: var(--color-dark);
-	--input-border-color: var(--color-gray-light);
+	--input-title-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
+	--input-text-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
+	--input-placeholder-color: var(--rc-input-colors-placeholder-color, var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8)));
+	--input-icon-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
+	--input-border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-light))));
 	--input-border-width: var(--border);
 	--input-border-radius: var(--border-radius);
-	--input-description-text-color: var(--color-gray);
+	--input-description-text-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--input-description-text-size: var(--input-font-size);
 	--input-error-color: var(--rc-color-error);
 
@@ -271,20 +271,6 @@
 	--sidebar-item-text-size: 0.875rem;
 
 	/*
-	* Modal - Create Channel
-	*/
-	--create-channel-gap-between-elements: 1rem;
-	--create-channel-title-color: var(--color-darkest);
-	--create-channel-title-text-size: 1.375rem;
-	--create-channel-description-color: var(--color-gray);
-	--create-channel-description-text-size: 0.875rem;
-
-	/*
-	* Toolbar
-	*/
-	--toolbar-placeholder-color: var(--color-gray);
-
-	/*
 	* Rooms list
 	*/
 	--rooms-list-title-color: var(--rc-color-primary-light);
@@ -332,33 +318,19 @@
 	* Message box
 	*/
 	--message-box-text-size: var(--input-font-size);
-	--message-box-placeholder-color: var(--color-gray-medium);
-	--message-box-markdown-color: var(--color-gray);
-	--message-box-markdown-hover-color: var(--color-dark);
-	--message-box-user-activity-color: var(--color-gray);
+	--message-box-placeholder-color: var(--rc-input-colors-placeholder-color, var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8)));
+	--message-box-markdown-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
+	--message-box-markdown-hover-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
+	--message-box-user-activity-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-user-activity-text-size: 0.75rem;
-	--message-box-user-activity-user-color: var(--color-dark);
-	--message-box-container-border-color: var(--color-gray-medium);
+	--message-box-user-activity-user-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
+	--message-box-container-border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-medium))));
 	--message-box-container-border-width: var(--border);
 	--message-box-container-border-radius: var(--border-radius);
-	--message-box-editing-color: #fff6d6;
-	--message-box-popover-title-text-color: var(--color-gray);
+	--message-box-editing-color: var(--rcx-color-status-background-warning-2, #fff6d6);
+	--message-box-popover-title-text-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-popover-title-text-size: 0.75rem;
-
-	/*
-	* Header
-	*/
-	--header-height: 77px;
-	--header-padding: 16px;
-	--header-title-username-color-darker: var(--color-dark);
-	--header-title-font-size: var(--text-default-size);
-	--header-title-font-size--subtitle: var(--text-small-size);
-	--header-title-status-color: var(--color-gray);
-	--header-title-username-weight: 400;
-	--header-title-status-name-weight: 400;
-	--header-title-status-bullet-radius: var(--status-bullet-radius);
-	--header-title-status-bullet-size: var(--status-bullet-size);
-	--header-background-color: var(--color-white);
+	--message-box-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
 
 	/*
 	* Flex nav
@@ -387,21 +359,4 @@
 	--tooltip-text-color: var(--color-white);
 	--tooltip-text-size: 0.75rem;
 	--tooltip-radius: var(--border-radius);
-
-	/*
-	* alert
-	*/
-	--alerts-padding: var(--sidebar-default-padding);
-	--alerts-padding-vertical: 10px;
-	--alerts-padding-vertical-large: 20px;
-	--alerts-background: #1d73f5;
-	--alerts-color: var(--color-white);
-	--alerts-font-size: var(--text-default-size);
-	--content-page-padding: 2.5rem;
-
-	/*
-	* badge
-	*/
-	--badge-size: 14px;
-	--badge-font-size: 0.625rem;
 }

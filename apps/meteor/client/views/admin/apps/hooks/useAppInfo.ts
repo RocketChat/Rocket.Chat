@@ -1,11 +1,11 @@
-import { App } from '@rocket.chat/core-typings';
-import { useEndpoint, EndpointFunction } from '@rocket.chat/ui-contexts';
+import type { App } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
-import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
-import { AppInfo } from '../definitions/AppInfo';
+import type { AppInfo } from '../definitions/AppInfo';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	const { bundledIn = [] } = app;
@@ -29,7 +29,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
 
 	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
-	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as EndpointFunction<'GET', '/apps/:id'>;
+	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as any;
 
 	useEffect(() => {
 		const apps: App[] = [];
@@ -70,7 +70,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 							update: 'true',
 							appVersion: appId,
 					  })
-							.then(({ app }) => {
+							.then(({ app }: any) => {
 								appResult.tosLink = app.tosLink;
 								appResult.privacyLink = app.privacyLink;
 								return getBundledInApp(app);

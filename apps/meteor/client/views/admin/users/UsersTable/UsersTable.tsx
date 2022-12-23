@@ -1,7 +1,8 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, MutableRefObject, useState, useEffect } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import {
@@ -70,6 +71,45 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		}),
 	);
 
+	const headers = useMemo(
+		() => [
+			<GenericTableHeaderCell w='x200' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				{t('Name')}
+			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell
+					w='x140'
+					key='username'
+					direction={sortDirection}
+					active={sortBy === 'username'}
+					onClick={setSort}
+					sort='username'
+				>
+					{t('Username')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell
+				w='x120'
+				key='email'
+				direction={sortDirection}
+				active={sortBy === 'emails.address'}
+				onClick={setSort}
+				sort='emails.address'
+			>
+				{t('Email')}
+			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
+					{t('Roles')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
+				{t('Status')}
+			</GenericTableHeaderCell>,
+		],
+		[mediaQuery, setSort, sortBy, sortDirection, t],
+	);
+
 	if (phase === AsyncStatePhase.REJECTED) {
 		return null;
 	}
@@ -77,82 +117,38 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
-			{value?.users.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
+			{phase === AsyncStatePhase.LOADING && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+				</GenericTable>
 			)}
-			{value?.users && value.users.length > 0 && (
+			{value?.users && value.users.length > 0 && phase === AsyncStatePhase.RESOLVED && (
 				<>
 					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell
-								w='x200'
-								key='name'
-								direction={sortDirection}
-								active={sortBy === 'name'}
-								onClick={setSort}
-								sort='name'
-							>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							{mediaQuery && (
-								<GenericTableHeaderCell
-									w='x140'
-									key='username'
-									direction={sortDirection}
-									active={sortBy === 'username'}
-									onClick={setSort}
-									sort='username'
-								>
-									{t('Username')}
-								</GenericTableHeaderCell>
-							)}
-							<GenericTableHeaderCell
-								w='x120'
-								key='email'
-								direction={sortDirection}
-								active={sortBy === 'emails.address'}
-								onClick={setSort}
-								sort='emails.address'
-							>
-								{t('Email')}
-							</GenericTableHeaderCell>
-							{mediaQuery && (
-								<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
-									{t('Roles')}
-								</GenericTableHeaderCell>
-							)}
-							<GenericTableHeaderCell
-								w='x100'
-								key='status'
-								direction={sortDirection}
-								active={sortBy === 'status'}
-								onClick={setSort}
-								sort='status'
-							>
-								{t('Status')}
-							</GenericTableHeaderCell>
-						</GenericTableHeader>
+						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}
 							{value?.users.map((user) => (
 								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					{phase === AsyncStatePhase.RESOLVED && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={value?.total || 0}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
-					)}
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={value?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
+			)}
+			{phase === AsyncStatePhase.RESOLVED && value?.users.length === 0 && (
+				<States>
+					<StatesIcon name='magnifier' />
+					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
 			)}
 		</>
 	);

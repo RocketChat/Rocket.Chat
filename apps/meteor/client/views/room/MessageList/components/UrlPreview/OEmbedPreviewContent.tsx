@@ -5,7 +5,8 @@ import {
 	MessageGenericPreviewFooter,
 	Box,
 } from '@rocket.chat/fuselage';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import MarkdownText from '../../../../../components/MarkdownText';
 import type { PreviewMetadata } from './PreviewList';
@@ -28,15 +29,21 @@ const OEmbedPreviewContent = ({
 
 	return (
 		<MessageGenericPreviewContent thumb={thumb}>
-			<MessageGenericPreviewTitle externalUrl={url}>{title}</MessageGenericPreviewTitle>
-			<MessageGenericPreviewDescription>{description}</MessageGenericPreviewDescription>
-			<MessageGenericPreviewFooter>
-				<Box display='flex' justifyContent='flex-start'>
-					{showSiteName && <MarkdownText variant='inline' content={`[${siteName}](${siteUrl})`} />}
-					{showFooterSeparator && <Box marginInline='x4'>{'|'}</Box>}
-					{showAuthorName && <MarkdownText variant='inline' content={`[${authorName}](${authorUrl})`} />}
-				</Box>
-			</MessageGenericPreviewFooter>
+			{title && (
+				<MessageGenericPreviewTitle externalUrl={url} title={title}>
+					{title}
+				</MessageGenericPreviewTitle>
+			)}
+			{description && <MessageGenericPreviewDescription>{description}</MessageGenericPreviewDescription>}
+			{(showSiteName || showAuthorName) && (
+				<MessageGenericPreviewFooter>
+					<Box display='flex' justifyContent='flex-start'>
+						{showSiteName && <MarkdownText variant='inline' content={`[${siteName}](${siteUrl})`} />}
+						{showFooterSeparator && <Box marginInline='x4'>{'|'}</Box>}
+						{showAuthorName && <MarkdownText variant='inline' content={`[${authorName}](${authorUrl})`} />}
+					</Box>
+				</MessageGenericPreviewFooter>
+			)}
 		</MessageGenericPreviewContent>
 	);
 };

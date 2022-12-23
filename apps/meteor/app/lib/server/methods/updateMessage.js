@@ -20,7 +20,10 @@ Meteor.methods({
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
-		if (originalMessage.msg === message.msg) {
+
+		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+
+		if (msgText === message.msg) {
 			return;
 		}
 
@@ -50,13 +53,13 @@ Meteor.methods({
 			let currentTsDiff;
 			let msgTs;
 
-			if (Match.test(originalMessage.ts, Number)) {
+			if (originalMessage.ts instanceof Date || Match.test(originalMessage.ts, Number)) {
 				msgTs = moment(originalMessage.ts);
 			}
 			if (msgTs) {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
-			if (currentTsDiff > blockEditInMinutes) {
+			if (currentTsDiff >= blockEditInMinutes) {
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', {
 					method: 'updateMessage',
 				});

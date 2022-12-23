@@ -16,7 +16,7 @@ class SwitchDepartmentContainer extends Component {
 		});
 
 		return typeof result.success === 'boolean' && result.success;
-	}
+	};
 
 	handleSubmit = async (fields) => {
 		const { alerts, dispatch, room, token, t, guest, iframe } = this.props;
@@ -52,19 +52,19 @@ class SwitchDepartmentContainer extends Component {
 			route('/');
 		} catch (error) {
 			console.error(error);
-			await dispatch({ alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts) });
+			await dispatch({
+				alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts),
+			});
 		} finally {
 			await dispatch({ loading: false });
 		}
-	}
+	};
 
 	handleCancel = () => {
 		route('/');
-	}
+	};
 
-	render = (props) => (
-		<SwitchDepartment {...props} onSubmit={this.handleSubmit} onCancel={this.handleCancel} />
-	)
+	render = (props) => <SwitchDepartment {...props} onSubmit={this.handleSubmit} onCancel={this.handleCancel} />;
 }
 
 export default withTranslation()(SwitchDepartmentContainer);

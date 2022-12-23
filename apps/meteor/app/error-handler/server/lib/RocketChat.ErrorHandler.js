@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms } from '../../../models/server';
@@ -33,6 +34,7 @@ class ErrorHandler {
 		process.on(
 			'uncaughtException',
 			Meteor.bindEnvironment((error) => {
+				Settings.incrementValueById('Uncaught_Exceptions_Count');
 				if (!this.reporting) {
 					return;
 				}

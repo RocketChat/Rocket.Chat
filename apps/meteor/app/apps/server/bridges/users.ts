@@ -1,12 +1,11 @@
 import { Random } from 'meteor/random';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
-import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function
@@ -84,7 +83,11 @@ export class AppUserBridge extends UserBridge {
 		return true;
 	}
 
-	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
+	protected async update(
+		user: IUser & { id: string },
+		fields: Partial<IUser> & { statusDefault: string },
+		appId: string,
+	): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is updating a user`);
 
 		if (!user) {
@@ -98,11 +101,11 @@ export class AppUserBridge extends UserBridge {
 		const { status } = fields;
 		delete fields.status;
 
-		await UsersRaw.update({ _id: user.id }, { $set: fields as any });
-
 		if (status) {
-			UserPresence.setDefaultStatus(user.id, status);
+			fields.statusDefault = status;
 		}
+
+		await UsersRaw.updateOne({ _id: user.id }, { $set: fields as any });
 
 		return true;
 	}

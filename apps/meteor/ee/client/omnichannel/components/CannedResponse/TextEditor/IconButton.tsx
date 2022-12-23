@@ -1,5 +1,6 @@
 import { IconButton as Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, memo, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 type IconButtonProps = {
 	name: ComponentProps<typeof Icon>['icon'];
@@ -11,9 +12,8 @@ const IconButton = ({ name, action, title }: IconButtonProps): ReactElement => (
 	<Icon
 		icon={name}
 		size='24px'
-		color='neutral-700'
+		color='hint'
 		small
-		square
 		display='flex'
 		justifyContent='center'
 		alignItems='center'

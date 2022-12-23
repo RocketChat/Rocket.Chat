@@ -1,7 +1,8 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
@@ -44,7 +45,7 @@ const CannedResponsesRoute: FC = () => {
 	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
 	const { handleSharing, handleCreatedBy, handleText } = handlers;
 
-	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ current: number; itemsPerPage: 25 | 50 | 100 }>({
 		current: 0,
 		itemsPerPage: 25,
 	});

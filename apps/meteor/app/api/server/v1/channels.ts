@@ -18,9 +18,10 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
+import { Messages } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Messages } from '../../../models/server';
-import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { Rooms, Subscriptions } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -247,7 +248,7 @@ API.v1.addRoute(
 		validateParams: isChannelsMessagesProps,
 	},
 	{
-		get() {
+		async get() {
 			const { roomId } = this.queryParams;
 			const findResult = findChannelByIdOrName({
 				params: { roomId },
@@ -269,15 +270,14 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const cursor = Messages.find(ourQuery, {
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			});
 
-			const total = cursor.count();
-			const messages = cursor.fetch();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages: normalizeMessagesForUser(messages, this.userId),
@@ -454,7 +454,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			if (!hasPermission(this.userId, 'create-team')) {
 				return API.v1.unauthorized();
 			}
 
@@ -464,10 +464,13 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
+			if (!hasPermission(this.userId, 'edit-room', channelId)) {
+				return API.v1.unauthorized();
+			}
+
 			const room = findChannelByIdOrName({
 				params: {
-					roomId: channelId,
-					roomName: channelName,
+					...(channelId ? { roomId: channelId } : { roomName: channelName }),
 				},
 				userId: this.userId,
 			});
@@ -480,7 +483,7 @@ API.v1.addRoute(
 				fields: { 'u._id': 1 },
 			});
 
-			const members = subscriptions.fetch().map((s: ISubscription) => s.u && s.u._id);
+			const members = subscriptions.fetch().map((s: ISubscription) => s.u?._id);
 
 			const teamData = {
 				team: {

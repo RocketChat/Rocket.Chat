@@ -1,12 +1,12 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getCollectionName } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw {
 	constructor(db, trash) {
-		super(db, getCollectionName('room'), trash);
+		super(db, 'room', trash);
 	}
 
 	findOneByRoomIdAndUserId(rid, uid, options = {}) {
@@ -26,6 +26,15 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findPaginatedByIds(roomIds, options) {
+		return this.findPaginated(
+			{
+				_id: { $in: roomIds },
+			},
+			options,
+		);
 	}
 
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
@@ -49,7 +58,7 @@ export class RoomsRaw extends BaseRaw {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate).toArray();
+		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 		return statistic;
 	}
 
@@ -81,7 +90,7 @@ export class RoomsRaw extends BaseRaw {
 			...teamCondition,
 			...onlyTeamsQuery,
 		};
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
@@ -103,7 +112,7 @@ export class RoomsRaw extends BaseRaw {
 			...teamCondition,
 			...onlyTeamsCondition,
 		};
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
@@ -132,7 +141,7 @@ export class RoomsRaw extends BaseRaw {
 			...onlyTeamsCondition,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByTeamId(teamId, options = {}) {
@@ -146,7 +155,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
+	findPaginatedByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
 		const query = {
 			teamId,
 			teamMain: {
@@ -157,7 +166,7 @@ export class RoomsRaw extends BaseRaw {
 			...(ids ? { $or: [{ t: 'c' }, { _id: { $in: ids } }] } : {}),
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
@@ -252,6 +261,38 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findPaginatedRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
+
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: roomIds,
+					},
+				},
+			],
+			prid: { $exists: false },
+		};
+
+		return this.findPaginated(query, options);
 	}
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
@@ -466,8 +507,38 @@ export class RoomsRaw extends BaseRaw {
 		]);
 	}
 
+	findByBroadcast(options) {
+		return this.find(
+			{
+				broadcast: true,
+			},
+			options,
+		);
+	}
+
+	findByActiveLivestream(options) {
+		return this.find(
+			{
+				'streamingOptions.type': 'livestream',
+			},
+			options,
+		);
+	}
+
 	setAsFederated(roomId) {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
+	}
+
+	setRoomTypeById(roomId, roomType) {
+		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
+	}
+
+	setRoomNameById(roomId, name, fname) {
+		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
+	}
+
+	setRoomTopicById(roomId, topic) {
+		return this.updateOne({ _id: roomId }, { $set: { description: topic } });
 	}
 
 	findByE2E(options) {
@@ -485,5 +556,119 @@ export class RoomsRaw extends BaseRaw {
 			teamMain: { $exists: false },
 			...(autoJoin && { teamDefault: true }),
 		});
+	}
+
+	countByType(t) {
+		return this.col.countDocuments({ t });
+	}
+
+	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, teamIds, roomIds, options) {
+		const query = {
+			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
+				{
+					$or: [
+						{
+							t: 'c',
+							teamId: { $exists: false },
+						},
+						{
+							t: 'c',
+							teamId: { $in: teamIds },
+						},
+						...(roomIds?.length > 0
+							? [
+									{
+										_id: {
+											$in: roomIds,
+										},
+									},
+							  ]
+							: []),
+					],
+				},
+				...(searchTerm
+					? [
+							{
+								$or: [
+									{
+										name: searchTerm,
+									},
+									{
+										fname: searchTerm,
+									},
+								],
+							},
+					  ]
+					: []),
+			],
+		};
+
+		return this.findPaginated(query, options);
+	}
+
+	findPaginatedContainingNameOrFNameInIdsAsTeamMain(searchTerm, rids, options) {
+		const query = {
+			teamMain: true,
+			$and: [
+				{
+					$or: [
+						{
+							t: 'p',
+							_id: {
+								$in: rids,
+							},
+						},
+						{
+							t: 'c',
+						},
+					],
+				},
+			],
+		};
+
+		if (searchTerm) {
+			query.$and.push({
+				$or: [
+					{
+						name: searchTerm,
+					},
+					{
+						fname: searchTerm,
+					},
+				],
+			});
+		}
+
+		return this.findPaginated(query, options);
+	}
+
+	findPaginatedByTypeAndIds(type, ids, options) {
+		const query = {
+			t: type,
+			_id: {
+				$in: ids,
+			},
+		};
+
+		return this.findPaginated(query, options);
+	}
+
+	findOneDirectRoomContainingAllUserIDs(uid, options) {
+		const query = {
+			t: 'd',
+			uids: { $size: uid.length, $all: uid },
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findFederatedRooms(options) {
+		const query = {
+			federated: true,
+		};
+
+		return this.find(query, options);
 	}
 }

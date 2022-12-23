@@ -1,7 +1,8 @@
 import { Button, Field, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import { Random } from 'meteor/random';
-import React, { ChangeEventHandler, DragEvent, ReactElement } from 'react';
+import type { ChangeEventHandler, DragEvent, ReactElement } from 'react';
+import React from 'react';
 
 import './AssetSettingInput.styles.css';
 
@@ -17,8 +18,8 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const setAsset = useMethod('setAsset');
-	const unsetAsset = useMethod('unsetAsset');
+	const setAsset = useUpload('/v1/assets.setAsset');
+	const unsetAsset = useEndpoint('POST', '/v1/assets.unsetAsset');
 
 	const isDataTransferEvent = <T,>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
@@ -32,26 +33,26 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			}
 		}
 
-		Object.values(files ?? []).forEach((blob) => {
+		Object.values(files ?? []).forEach(async (blob) => {
 			dispatchToastMessage({ type: 'info', message: t('Uploading_file') });
-			const reader = new FileReader();
-			reader.readAsBinaryString(blob);
-			reader.onloadend = async (): Promise<void> => {
-				try {
-					await setAsset(reader.result, blob.type, asset);
-					dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
-				}
-			};
+
+			const fileData = new FormData();
+			fileData.append('asset', blob, asset);
+			fileData.append('assetName', asset);
+
+			try {
+				await setAsset(fileData);
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		});
 	};
 
 	const handleDeleteButtonClick = async (): Promise<void> => {
 		try {
-			await unsetAsset(asset);
+			await unsetAsset({ assetName: asset });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -63,7 +64,12 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 			<Field.Row>
 				<div className='settings-file-preview'>
 					{value?.url ? (
-						<div className='preview' style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }} />
+						<div
+							className='preview'
+							style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }}
+							role='img'
+							aria-label={t('Asset_preview')}
+						/>
 					) : (
 						<div className='preview no-file background-transparent-light secondary-font-color'>
 							<Icon name='upload' />

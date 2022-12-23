@@ -344,7 +344,7 @@ export type GroupsEndpoints = {
 	};
 	'/v1/groups.create': {
 		POST: (params: GroupsCreateProps) => {
-			group: Partial<IRoom>;
+			group: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 		};
 	};
 	'/v1/groups.convertToTeam': {
@@ -362,16 +362,16 @@ export type GroupsEndpoints = {
 		};
 	};
 	'/v1/groups.close': {
-		POST: (params: GroupsCloseProps) => {};
+		POST: (params: GroupsCloseProps) => void;
 	};
 	'/v1/groups.kick': {
-		POST: (params: GroupsKickProps) => {};
+		POST: (params: GroupsKickProps) => void;
 	};
 	'/v1/groups.delete': {
-		POST: (params: GroupsDeleteProps) => {};
+		POST: (params: GroupsDeleteProps) => void;
 	};
 	'/v1/groups.leave': {
-		POST: (params: GroupsLeaveProps) => {};
+		POST: (params: GroupsLeaveProps) => void;
 	};
 	'/v1/groups.roles': {
 		GET: (params: GroupsRolesProps) => { roles: IGetRoomRoles[] };
@@ -382,21 +382,21 @@ export type GroupsEndpoints = {
 		}>;
 	};
 	'/v1/groups.addModerator': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string }) => void;
 	};
 	'/v1/groups.removeModerator': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string }) => void;
 	};
 	'/v1/groups.addOwner': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string }) => void;
 	};
 	'/v1/groups.removeOwner': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string }) => void;
 	};
 	'/v1/groups.addLeader': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string }) => void;
 	};
 	'/v1/groups.removeLeader': {
-		POST: (params: { roomId: string; userId: string }) => {};
+		POST: (params: { roomId: string; userId: string }) => void;
 	};
 };

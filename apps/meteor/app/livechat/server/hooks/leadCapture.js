@@ -1,6 +1,8 @@
+import { LivechatVisitors } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { LivechatVisitors } from '../../../models/server';
 
 function validateMessage(message, room) {
 	// skips this callback if the message was edited
@@ -29,6 +31,10 @@ function validateMessage(message, room) {
 callbacks.add(
 	'afterSaveMessage',
 	function (message, room) {
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		if (!validateMessage(message, room)) {
 			return message;
 		}
@@ -40,7 +46,7 @@ callbacks.add(
 		const msgEmails = message.msg.match(emailRegexp);
 
 		if (msgEmails || msgPhones) {
-			LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones);
+			Promise.await(LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones));
 
 			callbacks.run('livechat.leadCapture', room);
 		}

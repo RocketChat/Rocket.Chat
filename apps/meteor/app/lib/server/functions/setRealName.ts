@@ -41,6 +41,11 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 			username: user.username,
 		});
 	}
+	api.broadcast('user.realNameChanged', {
+		_id: user._id,
+		name,
+		username: user.username,
+	});
 
 	return user;
 };

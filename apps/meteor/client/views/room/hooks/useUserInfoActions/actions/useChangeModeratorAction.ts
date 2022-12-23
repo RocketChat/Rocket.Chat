@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
@@ -34,7 +34,6 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	const changeModerator = useEndpointActionExperimental(
 		'POST',
 		`${endpointPrefix}.${changeModeratorEndpoint}`,
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		t(changeModeratorMessage, { username: user.username, room_name: roomName }),
 	);
 	const changeModeratorAction = useMutableCallback(() => changeModerator({ roomId: rid, userId: uid }));

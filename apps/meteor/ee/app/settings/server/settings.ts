@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
-import SettingsModel from '../../../../app/models/server/models/Settings';
 import { use } from '../../../../app/settings/server/Middleware';
 import { settings, SettingsEvents } from '../../../../app/settings/server';
 
@@ -16,7 +16,7 @@ export function changeSettingValue(record: ISetting): SettingValue {
 	}
 
 	if (!record.modules?.length) {
-		return record.invalidValue;
+		return record.value;
 	}
 
 	for (const moduleName of record.modules) {
@@ -50,7 +50,7 @@ SettingsEvents.on('fetch-settings', (settings: Array<ISetting>): void => {
 });
 
 function updateSettings(): void {
-	const enterpriseSettings = SettingsModel.findEnterpriseSettings();
+	const enterpriseSettings = Promise.await(Settings.findEnterpriseSettings());
 
 	enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }

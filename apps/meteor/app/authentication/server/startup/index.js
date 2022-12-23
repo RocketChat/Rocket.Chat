@@ -4,12 +4,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { Roles, Users as UsersRaw } from '@rocket.chat/models';
+import { Roles, Settings, Users as UsersRaw } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Settings, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -205,7 +205,11 @@ Accounts.onCreateUser(function (options, user = {}) {
 			to: destinations,
 			from: settings.get('From_Email'),
 			subject: Accounts.emailTemplates.userToActivate.subject(),
-			html: Accounts.emailTemplates.userToActivate.html(options),
+			html: Accounts.emailTemplates.userToActivate.html({
+				...options,
+				name: options.name || options.profile?.name,
+				email: options.email || user.emails[0].address,
+			}),
 		};
 
 		Mailer.send(email);
@@ -295,7 +299,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	if (!roles.includes('admin') && !hasAdmin) {
 		roles.push('admin');
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			Promise.await(Settings.updateValueById('Show_Setup_Wizard', 'in_progress'));
 		}
 	}
 
@@ -414,12 +418,14 @@ Accounts.validateNewUser(function (user) {
 export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
 
 Accounts.onLogin(async ({ user }) => {
-	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens) {
+	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {
 		return;
 	}
+
 	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
 		return;
 	}
+
 	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
 	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
 		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];

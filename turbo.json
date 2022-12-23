@@ -7,8 +7,11 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**"],
-			"inputs": ["!tests/**"]
+			"outputs": ["dist/**"]
+		},
+		"@rocket.chat/ui-contexts#build": {
+			"dependsOn": ["^build"],
+			"cache": false
 		},
 		"testunit": {
 			"dependsOn": ["build"],
@@ -22,7 +25,7 @@
 			"outputs": []
 		},
 		"typecheck": {
-			"dependsOn": ["build"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"dev": {
@@ -31,6 +34,13 @@
 		},
 		"dsv": {
 			"dependsOn": ["build"],
+			"cache": false
+		},
+		"ms": {
+			"dependsOn": ["^build"]
+		},
+		"@rocket.chat/ui-contexts#build": {
+			"dependsOn": ["^build"],
 			"cache": false
 		}
 	}

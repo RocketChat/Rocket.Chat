@@ -6,6 +6,7 @@ import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
 import { api } from '../../../../server/sdk/api';
+import { Federation } from '../../../federation-v2/server/Federation';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -65,14 +66,14 @@ Meteor.methods({
 		const user = Meteor.user();
 		data.users.forEach((username) => {
 			const newUser = Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser) {
+			if (!newUser && !Federation.isAFederatedUsername(username)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});
 			}
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+			const subscription = newUser && Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				addUserToRoom(data.rid, newUser, user);
+				addUserToRoom(data.rid, newUser || username, user);
 			} else {
 				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
 					msg: TAPi18n.__(

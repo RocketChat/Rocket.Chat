@@ -1,5 +1,6 @@
-import { Option } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { OptionDivider } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GroupingList from './GroupingList';
 import SortModeList from './SortModeList';
@@ -9,9 +10,9 @@ function SortList(): ReactElement {
 	return (
 		<>
 			<ViewModeList />
-			<Option.Divider />
+			<OptionDivider />
 			<SortModeList />
-			<Option.Divider />
+			<OptionDivider />
 			<GroupingList />
 		</>
 	);

@@ -1,13 +1,15 @@
 import { createHash } from 'crypto';
 
-import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '@rocket.chat/core-typings';
+import type { INpsVote, INps } from '@rocket.chat/core-typings';
+import { NPSStatus, INpsVoteStatus } from '@rocket.chat/core-typings';
 import { Nps, NpsVote, Settings } from '@rocket.chat/models';
 
-import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
+import type { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
 import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
+import { SystemLogger } from '../../lib/logger/system';
 
 export class NPSService extends ServiceClassInternal implements INPSService {
 	protected name = 'nps';
@@ -27,14 +29,16 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const { npsId, startAt, expireAt, createdBy } = nps;
 
-		const { result } = await Nps.save({
-			_id: npsId,
-			startAt,
-			expireAt,
-			createdBy,
-			status: NPSStatus.OPEN,
-		});
-		if (!result) {
+		try {
+			await Nps.save({
+				_id: npsId,
+				startAt,
+				expireAt,
+				createdBy,
+				status: NPSStatus.OPEN,
+			});
+		} catch (err) {
+			SystemLogger.error({ msg: 'Error creating NPS', err });
 			throw new Error('Error creating NPS');
 		}
 

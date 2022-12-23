@@ -1,13 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization';
-import { LivechatRooms, Subscriptions, LivechatVisitors, Users } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
+import { LivechatRooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
+// Deprecated in favor of "livechat/room.forward" endpoint
+// TODO: Deprecated: Remove in v6.0.0
 Meteor.methods({
-	'livechat:transfer'(transferData) {
+	async 'livechat:transfer'(transferData) {
+		methodDeprecationLogger.warn('livechat:transfer method is deprecated in favor of "livechat/room.forward" endpoint');
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
 		}
@@ -38,7 +43,7 @@ Meteor.methods({
 			});
 		}
 
-		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
+		const guest = await LivechatVisitors.findOneById(room.v && room.v._id);
 		transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
 		if (transferData.userId) {
 			const userToTransfer = Users.findOneById(transferData.userId);

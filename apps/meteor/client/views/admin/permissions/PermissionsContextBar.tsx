@@ -1,6 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import EditRolePageWithData from './EditRolePageWithData';
@@ -19,7 +20,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 		(context && (
 			<VerticalBar>
 				<VerticalBar.Header>
-					{context === 'edit' ? t('Role_Editing') : t('New_role')}
+					<VerticalBar.Text>{context === 'edit' ? t('Role_Editing') : t('New_role')}</VerticalBar.Text>
 					<VerticalBar.Close onClick={handleCloseVerticalBar} />
 				</VerticalBar.Header>
 				<EditRolePageWithData roleId={_id} />

@@ -1,5 +1,7 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { FindCursor, UpdateResult, AggregationCursor, Document } from 'mongodb';
 
+import type { FindPaginated } from '..';
 import type { IBaseModel } from './IBaseModel';
 
 type Period = {
@@ -19,7 +21,7 @@ type WithOptions = {
 	options?: any;
 };
 
-export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
+export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
 	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
@@ -62,6 +64,8 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 
 	findByVisitorId(visitorId: any, options: any): any;
 
+	findPaginatedByVisitorId(visitorId: any, options: any): any;
+
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;
 		searchText: any;
@@ -69,6 +73,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 		served: any;
 		onlyCount?: boolean;
 		options?: any;
+		source?: string;
 	}): any;
 
 	findRoomsWithCriteria(params: {
@@ -76,16 +81,16 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 		roomName: any;
 		departmentId: any;
 		open: any;
-		served: any;
+		served?: any;
 		createdAt: any;
 		closedAt: any;
 		tags: any;
 		customFields: any;
-		visitorId: any;
-		roomIds: any;
+		visitorId?: any;
+		roomIds?: any;
 		onhold: any;
 		options?: any;
-	}): any;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
 
 	getOnHoldConversationsBetweenDate(from: any, to: any, departmentId: any): any;
 
@@ -94,4 +99,14 @@ export interface ILivechatRoomsModel extends IBaseModel<IRocketChatRecord> {
 	findAllAverageServiceTimeByAgents(params: Period & WithOptions & WithOnlyCount): any;
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
+
+	findOpen(): FindCursor<IOmnichannelRoom>;
+
+	setAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
+
+	unsetAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;
+
+	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
+
+	findAvailableSources(): AggregationCursor<Document>;
 }

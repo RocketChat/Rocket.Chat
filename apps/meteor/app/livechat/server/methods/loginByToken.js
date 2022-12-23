@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '@rocket.chat/models';
 
-import { LivechatVisitors } from '../../../models/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	'livechat:loginByToken'(token) {
-		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+	async 'livechat:loginByToken'(token) {
+		methodDeprecationLogger.warn('livechat:loginByToken will be deprecated in future versions of Rocket.Chat');
+		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (!visitor) {
 			return;

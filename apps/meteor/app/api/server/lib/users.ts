@@ -1,26 +1,24 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { ILivechatDepartmentRecord, IUser } from '@rocket.chat/core-typings';
-import { FilterQuery } from 'mongodb';
-import { Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Filter } from 'mongodb';
+import { Users, Subscriptions } from '@rocket.chat/models';
+import type { Mongo } from 'meteor/mongo';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
+
+type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
 
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
 }: {
 	uid: string;
-	selector: {
-		exceptions: string[];
-		conditions: FilterQuery<ILivechatDepartmentRecord>;
-		term: string;
-	};
+	selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string };
 }): Promise<{
-	items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
+	items: UserAutoComplete[];
 }> {
-	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
-		return { items: [] };
-	}
+	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
 	const options = {
@@ -37,7 +35,21 @@ export async function findUsersToAutocomplete({
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(
+	// Search on DMs first, to list known users before others.
+	const contacts = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10, 'd');
+	if (contacts.length >= options.limit) {
+		return { items: contacts as UserAutoComplete[] };
+	}
+
+	options.limit -= contacts.length;
+	contacts.forEach(({ username }) => exceptions.push(username));
+
+	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
+		const users = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10);
+		return { items: contacts.concat(users) as UserAutoComplete[] };
+	}
+
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
 		conditions,
@@ -45,15 +57,14 @@ export async function findUsersToAutocomplete({
 	).toArray();
 
 	return {
-		items: users,
+		items: (contacts as UserAutoComplete[]).concat(users),
 	};
 }
 
 /**
  * Returns a new query object with the inclusive fields only
- * @param {Object} query search query for matching rows
  */
-export function getInclusiveFields(query: { [k: string]: 1 }): {} {
+export function getInclusiveFields(query: Record<string, 1 | 0>): Record<string, 1> {
 	const newQuery = Object.create(null);
 
 	for (const [key, value] of Object.entries(query)) {
@@ -67,9 +78,9 @@ export function getInclusiveFields(query: { [k: string]: 1 }): {} {
 
 /**
  * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
- * @param {Object|null|undefined} fields the fields from parsed jsonQuery
+ * @param fields the fields from parsed jsonQuery
  */
-export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]: 1 } {
+export function getNonEmptyFields(fields: Record<string, 1 | 0>): Record<string, 1 | 0> {
 	const defaultFields = {
 		name: 1,
 		username: 1,
@@ -79,6 +90,7 @@ export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]
 		active: 1,
 		avatarETag: 1,
 		lastLogin: 1,
+		type: 1,
 	} as const;
 
 	if (!fields || Object.keys(fields).length === 0) {
@@ -88,28 +100,18 @@ export function getNonEmptyFields(fields: { [k: string]: 1 | 0 }): { [k: string]
 	return { ...defaultFields, ...fields };
 }
 
-const _defaultQuery = {
-	$or: [
-		{ 'emails.address': { $regex: '', $options: 'i' } },
-		{ username: { $regex: '', $options: 'i' } },
-		{ name: { $regex: '', $options: 'i' } },
-	],
-};
-
 /**
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
- * @param {Object|null|undefined} query the query from parsed jsonQuery
+ * @param query the query from parsed jsonQuery
  */
-
-type Query = { [k: string]: unknown };
-export function getNonEmptyQuery(query: Query): typeof _defaultQuery | (typeof _defaultQuery & Query) {
-	const defaultQuery = {
-		$or: [
-			{ 'emails.address': { $regex: '', $options: 'i' } },
-			{ username: { $regex: '', $options: 'i' } },
-			{ name: { $regex: '', $options: 'i' } },
-		],
+export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefined | null, canSeeAllUserInfo?: boolean): Mongo.Query<T> {
+	const defaultQuery: Mongo.Query<IUser> = {
+		$or: [{ username: { $regex: '', $options: 'i' } }, { name: { $regex: '', $options: 'i' } }],
 	};
+
+	if (canSeeAllUserInfo) {
+		defaultQuery.$or?.push({ 'emails.address': { $regex: '', $options: 'i' } });
+	}
 
 	if (!query || Object.keys(query).length === 0) {
 		return defaultQuery;

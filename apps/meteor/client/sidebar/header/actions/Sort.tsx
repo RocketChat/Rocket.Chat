@@ -1,5 +1,6 @@
-import { Box, Sidebar, Dropdown } from '@rocket.chat/fuselage';
-import React, { VFC, useRef, HTMLAttributes } from 'react';
+import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
+import type { VFC, HTMLAttributes } from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import SortList from '../../../components/SortList';
@@ -12,9 +13,7 @@ const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 
 	return (
 		<>
-			<Box ref={reference}>
-				<Sidebar.TopBar.Action {...props} icon='sort' onClick={(): void => toggle()} />
-			</Box>
+			<Sidebar.TopBar.Action {...props} icon='sort' onClick={(): void => toggle()} ref={reference} />
 			{isVisible &&
 				createPortal(
 					<Dropdown reference={reference} ref={target}>

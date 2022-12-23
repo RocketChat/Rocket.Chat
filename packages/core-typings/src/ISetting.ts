@@ -1,5 +1,3 @@
-import type { FilterQuery } from 'mongodb';
-
 import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
 
 export type SettingId = string;
@@ -14,7 +12,7 @@ export enum SettingEditor {
 type AssetValue = { defaultUrl?: string };
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = Array<{ _id: string; name: string }> | string;
-export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined;
+export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined | null;
 
 export interface ISettingSelectOption {
 	key: string | number;
@@ -22,6 +20,8 @@ export interface ISettingSelectOption {
 }
 
 export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
+
+type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
 export interface ISettingBase {
 	_id: SettingId;
@@ -42,7 +42,8 @@ export interface ISettingBase {
 		| 'asset'
 		| 'roomPick'
 		| 'group'
-		| 'date';
+		| 'date'
+		| 'lookup';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
@@ -52,8 +53,8 @@ export interface ISettingBase {
 	value: SettingValue;
 	packageValue: SettingValue;
 	blocked: boolean;
-	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
-	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
+	enableQuery?: EnableQuery;
+	displayQuery?: EnableQuery;
 	sorter: number;
 	properties?: unknown;
 	enterprise?: boolean;
@@ -73,6 +74,7 @@ export interface ISettingBase {
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;
+	lookupEndpoint?: string;
 	wizard?: {
 		step: number;
 		order: number;
@@ -90,7 +92,7 @@ export interface ISettingGroup {
 	ts?: Date;
 	sorter: number;
 	i18nLabel: string;
-	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
+	displayQuery?: EnableQuery;
 	i18nDescription: string;
 	value?: undefined;
 	type: 'group';
@@ -168,8 +170,6 @@ export interface ISettingStatistics {
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
-	bigBlueButton?: boolean;
-	jitsiEnabled?: boolean;
 	webRTCEnableChannel?: boolean;
 	webRTCEnablePrivate?: boolean;
 	webRTCEnableDirect?: boolean;

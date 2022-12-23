@@ -1,92 +1,94 @@
 import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IMessagesModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
-	CollectionAggregationOptions,
-	Cursor,
+	CountDocumentsOptions,
+	AggregateOptions,
+	FindCursor,
 	Db,
-	FilterQuery,
-	FindOneOptions,
-	WithoutProjection,
+	Filter,
+	FindOptions,
+	IndexDescription,
 } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
-		super(db, getCollectionName('message'), trash);
+		super(db, 'message', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { 'federation.eventId': 1 }, sparse: true }];
 	}
 
 	findVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+		options: FindOptions<IMessage>,
+	): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
-	findStarredByUserAtRoom(
-		userId: IUser['_id'],
-		roomId: IRoom['_id'],
-		options: WithoutProjection<FindOneOptions<IMessage>>,
-	): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
-	findByRoomIdAndType(
+	findPaginatedByRoomIdAndType(
 		roomId: IRoom['_id'],
 		type: IMessage['t'],
-		options: WithoutProjection<FindOneOptions<IMessage>> = {},
-	): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+		options: FindOptions<IMessage> = {},
+	): FindPaginated<FindCursor<IMessage>> {
+		const query = {
 			rid: roomId,
 			t: type,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
-	findSnippetedByRoom(roomId: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findSnippetedByRoom(roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			_hidden: { $ne: true },
 			snippeted: true,
 			rid: roomId,
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	// TODO: do we need this? currently not used anywhere
-	findDiscussionsByRoom(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = { rid, drid: { $exists: true } };
+	findDiscussionsByRoom(rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
 
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
 			rid,
 			drid: { $exists: true },
 			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
-		return this.find(query, options);
+		return this.findPaginated(query, options);
 	}
 
 	findAllNumberOfTransferredRooms({
@@ -150,7 +152,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params = [...firstParams, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
+			return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -158,7 +160,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true });
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
@@ -216,20 +218,36 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		return this.find(
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		return this.findPaginated(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+				...(searchTerm && { msg: new RegExp(escapeRegExp(searchTerm), 'ig') }),
 			},
 			options,
 		);
 	}
 
-	async countRoomsWithStarredMessages(options: CollectionAggregationOptions): Promise<number> {
+	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					blocks,
+				},
+			},
+		);
+	}
+
+	async addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
+		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
+	}
+
+	async countRoomsWithStarredMessages(options: AggregateOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
 				[
@@ -249,7 +267,31 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	async countRoomsWithPinnedMessages(options: CollectionAggregationOptions): Promise<number> {
+	async countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number> {
+		const queryResult = await this.col
+			.aggregate<{ _id: null; total: number }>(
+				[
+					{ $match: { t: type } },
+					{ $group: { _id: '$rid' } },
+					{
+						$group: {
+							_id: null,
+							total: { $sum: 1 },
+						},
+					},
+				],
+				options,
+			)
+			.next();
+
+		return queryResult?.total || 0;
+	}
+
+	async countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number> {
+		return this.col.countDocuments({ t: type }, options);
+	}
+
+	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
 		const queryResult = await this.col
 			.aggregate<{ _id: null; total: number }>(
 				[
@@ -269,12 +311,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	async countE2EEMessages(options: WithoutProjection<FindOneOptions<IMessage>>): Promise<number> {
-		return this.find({ t: 'e2e' }, options).count();
-	}
-
-	findPinned(options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' as MessageTypesValues },
 			_hidden: { $ne: true },
 			pinned: true,
@@ -283,12 +321,97 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findStarred(options: WithoutProjection<FindOneOptions<IMessage>>): Cursor<IMessage> {
-		const query: FilterQuery<IMessage> = {
+	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
+			t: { $ne: 'rm' },
+			_hidden: { $ne: true },
+			pinned: true,
+			rid: roomId,
+		};
+
+		return this.findPaginated(query, options);
+	}
+
+	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': { $exists: true },
 		};
 
 		return this.find(query, options);
+	}
+
+	async setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
+				} as any,
+			},
+		);
+	}
+
+	async unsetFederationReactionEventId(federationEventId: string, _id: string, reaction: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$unset: {
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: 1,
+				},
+			},
+		);
+	}
+
+	async findOneByFederationId(federationEventId: string): Promise<IMessage | null> {
+		return this.findOne({ 'federation.eventId': federationEventId });
+	}
+
+	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					'federation.eventId': federationEventId,
+				},
+			},
+		);
+	}
+
+	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
+		return (
+			await this.col
+				.aggregate(
+					[
+						{
+							$match: {
+								t: { $ne: 'rm' },
+							},
+						},
+						{
+							$project: {
+								document: '$$ROOT',
+								reactions: { $objectToArray: '$reactions' },
+							},
+						},
+						{
+							$unwind: {
+								path: '$reactions',
+							},
+						},
+						{
+							$match: {
+								$and: [
+									{ 'reactions.v.usernames': { $in: [username] } },
+									{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
+								],
+							},
+						},
+						{ $replaceRoot: { newRoot: '$document' } },
+					],
+					{ readPreference: readSecondaryPreferred() },
+				)
+				.toArray()
+		)[0] as IMessage;
 	}
 }

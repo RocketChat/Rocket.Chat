@@ -1,23 +1,37 @@
 import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState } from 'react';
+import type { ReactNode, ChangeEvent, FormEvent, ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 
-type FilterByTextProps = {
+type FilterByTextCommonProps = {
+	children?: ReactNode | undefined;
 	placeholder?: string;
-	onChange: (filter: { text: string }) => void;
 	inputRef?: () => void;
+	shouldFiltersStack?: boolean;
+	onChange: (filter: { text: string }) => void;
+	autoFocus?: boolean;
 };
 
-type FilterByTextPropsWithButton = FilterByTextProps & {
+type FilterByTextPropsWithButton = FilterByTextCommonProps & {
 	displayButton: true;
 	textButton: string;
 	onButtonClick: () => void;
 };
 
+type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
+
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter, inputRef, children, ...props }) => {
+const FilterByText = ({
+	placeholder,
+	onChange: setFilter,
+	inputRef,
+	children,
+	shouldFiltersStack,
+	autoFocus,
+	...props
+}: FilterByTextProps): ReactElement => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -35,13 +49,14 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
 			<TextInput
 				placeholder={placeholder ?? t('Search')}
 				ref={inputRef}
 				addon={<Icon name='magnifier' size='x20' />}
 				onChange={handleInputChange}
 				value={text}
+				autoFocus={autoFocus}
 			/>
 			{isFilterByTextPropsWithButton(props) ? (
 				<Button onClick={props.onButtonClick} mis='x8' primary>
@@ -49,7 +64,7 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 				</Button>
 			) : (
 				children && (
-					<Box mis='x8' display='flex' flexDirection='row'>
+					<Box mis={shouldFiltersStack ? '' : 'x8'} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
 						{children}
 					</Box>
 				)
@@ -58,4 +73,4 @@ const FilterByText: FC<FilterByTextProps> = ({ placeholder, onChange: setFilter,
 	);
 };
 
-export default memo<FC<FilterByTextProps>>(FilterByText);
+export default memo<FilterByTextProps>(FilterByText);

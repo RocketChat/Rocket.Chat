@@ -1,6 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
@@ -12,21 +13,19 @@ const UnitEditWithData: FC<{
 	title: string;
 	reload: () => void;
 }> = function UnitEditWithData({ unitId, reload, title }) {
-	const query = useMemo(() => ({ unitId }), [unitId]);
-
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/units.getOne', query);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/units/${unitId}`);
 
 	const {
 		value: unitMonitors,
 		phase: unitMonitorsState,
 		error: unitMonitorsError,
-	} = useEndpointData('/v1/livechat/unitMonitors.list', query);
+	} = useEndpointData(`/v1/livechat/units/${unitId}/monitors`);
 
 	const {
 		value: unitDepartments,
 		phase: unitDepartmentsState,
 		error: unitDepartmentsError,
-	} = useEndpointData(`/v1/livechat/departments.by-unit/${unitId}`);
+	} = useEndpointData(`/v1/livechat/units/${unitId}/departments`);
 
 	const t = useTranslation();
 

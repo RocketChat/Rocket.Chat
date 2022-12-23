@@ -36,10 +36,10 @@ type Keys =
 
 export type MeEndpoints = {
 	'/v1/me': {
-		GET: (params: { fields: Record<Keys, 0> | Record<Keys, 1>; user: IUser }) => IUser & {
+		GET: (params?: { fields: Record<Keys, 0> | Record<Keys, 1>; user: IUser }) => IUser & {
 			email?: string;
 			settings: {
-				profile: {};
+				profile: Record<string, unknown>;
 				preferences: unknown;
 			};
 			avatarUrl: string;

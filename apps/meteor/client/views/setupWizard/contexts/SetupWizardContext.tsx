@@ -1,6 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { AdminInfoPage, OrganizationInfoPage, RegisteredServerPage } from '@rocket.chat/onboarding-ui';
-import { ComponentProps, createContext, useContext, Dispatch, SetStateAction } from 'react';
+import type { ComponentProps, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext } from 'react';
 
 type SetupWizardData = {
 	adminData: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>;
@@ -51,10 +52,9 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 			registerType: 'registered',
 			updates: false,
 		},
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		registrationData: { cloudEmail: '', user_code: '', device_code: '' },
 	},
-	setSetupWizardData: (data: {}) => data,
+	setSetupWizardData: (data) => data,
 	loaded: false,
 	settings: [],
 	skipCloudRegistration: false,

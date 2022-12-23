@@ -76,7 +76,7 @@ export class WebdavStore extends UploadFS.Store {
 				.then((data) => {
 					callback && callback(null, data);
 				})
-				.catch(SystemLogger.error);
+				.catch((...args) => SystemLogger.error(...args));
 		};
 
 		/**
@@ -107,7 +107,7 @@ export class WebdavStore extends UploadFS.Store {
 		 */
 		this.getWriteStream = function (fileId, file) {
 			const writeStream = new stream.PassThrough();
-			const webdavStream = client.createWriteStream(this.getPath(file));
+			const webdavStream = client.createWriteStream(this.getPath(file), file.size || 0);
 
 			// TODO remove timeout when UploadFS bug resolved
 			const newListenerCallback = (event, listener) => {

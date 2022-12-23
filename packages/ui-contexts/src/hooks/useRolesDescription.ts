@@ -1,7 +1,8 @@
 import { useCallback, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { AuthorizationContext, IRoles } from '../AuthorizationContext';
+import type { IRoles } from '../AuthorizationContext';
+import { AuthorizationContext } from '../AuthorizationContext';
 
 export const useRolesDescription = (): ((ids: Array<string>) => [string]) => {
 	const { roleStore } = useContext(AuthorizationContext);

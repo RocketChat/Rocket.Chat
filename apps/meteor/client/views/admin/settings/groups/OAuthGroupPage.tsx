@@ -1,12 +1,15 @@
-import { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
-import { useModal, useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 import s from 'underscore.string';
 
+import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
+import CreateOAuthModal from './CreateOAuthModal';
 
 type OAuthGroupPageProps = ISetting;
 
@@ -28,7 +31,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const refreshOAuthService = useMethod('refreshOAuthService');
 	const addOAuthService = useMethod('addOAuthService');
 	const removeOAuthService = useMethod('removeOAuthService');
-	const modal = useModal();
+	const setModal = useSetModal();
 
 	const handleRefreshOAuthServicesButtonClick = async (): Promise<void> => {
 		dispatchToastMessage({ type: 'info', message: t('Refreshing') });
@@ -36,36 +39,48 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 			await refreshOAuthService();
 			dispatchToastMessage({ type: 'success', message: t('Done') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
 	const handleAddCustomOAuthButtonClick = (): void => {
-		modal.open(
-			{
-				title: t('Add_custom_oauth'),
-				text: t('Give_a_unique_name_for_the_custom_oauth'),
-				type: 'input',
-				showCancelButton: true,
-				closeOnConfirm: true,
-				inputPlaceholder: t('Custom_oauth_unique_name'),
-			},
-			async (inputValue: unknown) => {
-				if (inputValue === false) {
-					return false;
-				}
-				if (inputValue === '') {
-					modal.showInputError(t('Name_cant_be_empty'));
-					return false;
-				}
-				try {
-					await addOAuthService(inputValue);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: String(error) });
-				}
-			},
-		);
+		const onConfirm = async (text: string): Promise<void> => {
+			try {
+				await addOAuthService(text);
+				dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_added') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
+			}
+		};
+		setModal(<CreateOAuthModal onConfirm={onConfirm} onClose={(): void => setModal(null)} />);
 	};
+
+	const removeCustomOauthFactory =
+		(id: string): (() => void) =>
+		(): void => {
+			const close = (): void => setModal(null);
+			setModal(
+				<GenericModal
+					onClose={close}
+					onCancel={close}
+					title={t('Are_you_sure')}
+					variant='danger'
+					confirmText={t('Yes_delete_it')}
+					onConfirm={async (): Promise<void> => {
+						try {
+							await removeOAuthService(id);
+							dispatchToastMessage({ type: 'success', message: t('Custom_OAuth_has_been_removed') });
+						} catch (error) {
+							dispatchToastMessage({ type: 'error', message: error });
+						} finally {
+							setModal(null);
+						}
+					}}
+				></GenericModal>,
+			);
+		};
 
 	return (
 		<GroupPage
@@ -82,26 +97,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 				if (sectionIsCustomOAuth(sectionName)) {
 					const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 
-					const handleRemoveCustomOAuthButtonClick = (): void => {
-						modal.open(
-							{
-								title: t('Are_you_sure'),
-								type: 'warning',
-								showCancelButton: true,
-								confirmButtonColor: '#DD6B55',
-								confirmButtonText: t('Yes_delete_it'),
-								cancelButtonText: t('Cancel'),
-								closeOnConfirm: true,
-							},
-							async () => {
-								try {
-									await removeOAuthService(id);
-								} catch (error) {
-									dispatchToastMessage({ type: 'error', message: String(error) });
-								}
-							},
-						);
-					};
+					const handleRemoveCustomOAuthButtonClick = removeCustomOauthFactory(id);
 
 					return (
 						<Section

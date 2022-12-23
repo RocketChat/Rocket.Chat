@@ -1,6 +1,8 @@
-import { Sidebar, IconButton, IconProps } from '@rocket.chat/fuselage';
+import type { IconProps } from '@rocket.chat/fuselage';
+import { Sidebar, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState, VFC } from 'react';
+import type { VFC } from 'react';
+import React, { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
@@ -70,7 +72,7 @@ const Extended: VFC<ExtendedProps> = ({
 						<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
 						{menu && (
 							<Sidebar.Item.Menu {...handleMenuEvent}>
-								{menuVisibility ? menu() : <IconButton square mini rcx-sidebar-item__menu icon='kebab' />}
+								{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
 							</Sidebar.Item.Menu>
 						)}
 					</Sidebar.Item.Wrapper>

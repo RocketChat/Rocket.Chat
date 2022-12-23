@@ -1,6 +1,7 @@
 import { AutoComplete, Option, Box, Chip, Options } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
@@ -38,9 +39,10 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 			onChange={props.onChange as any}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ value, label }): ReactElement => {
+			data-qa-id='UserAutoComplete'
+			renderSelected={({ value, label }): ReactElement | null => {
 				if (!value) {
-					undefined;
+					return null;
 				}
 
 				return (

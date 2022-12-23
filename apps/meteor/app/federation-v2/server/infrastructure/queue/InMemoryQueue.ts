@@ -1,10 +1,12 @@
-import * as fastq from 'fastq';
+import fastq from 'fastq';
+
+import type { AbstractMatrixEvent } from '../matrix/definitions/AbstractMatrixEvent';
 
 export class InMemoryQueue {
 	private instance: any;
 
-	public setHandler(handler: Function, concurrency: number): void {
-		this.instance = fastq.promise(handler as any, concurrency);
+	public setHandler(handler: (event: AbstractMatrixEvent) => Promise<void>, concurrency: number): void {
+		this.instance = fastq.promise(handler, concurrency);
 	}
 
 	public addToQueue(task: Record<string, any>): void {

@@ -1,40 +1,26 @@
 import type {
+	BulkWriteOptions,
 	ChangeStream,
 	Collection,
-	CollectionInsertOneOptions,
-	CommonOptions,
-	Cursor,
-	DeleteWriteOpResultObject,
-	FilterQuery,
-	FindAndModifyWriteOpResultObject,
-	FindOneAndUpdateOption,
-	FindOneOptions,
-	InsertOneWriteOpResult,
-	InsertWriteOpResult,
-	ObjectId,
-	UpdateManyOptions,
-	UpdateOneOptions,
-	UpdateQuery,
-	UpdateWriteOpResult,
+	DeleteOptions,
+	DeleteResult,
+	Document,
+	EnhancedOmit,
+	Filter,
+	FindCursor,
+	FindOneAndUpdateOptions,
+	FindOptions,
+	InsertManyResult,
+	InsertOneOptions,
+	InsertOneResult,
+	ModifyResult,
+	OptionalId,
+	UpdateFilter,
+	UpdateOptions,
+	UpdateResult,
 	WithId,
-	WithoutProjection,
-	WriteOpResult,
 } from 'mongodb';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-
-type EnhancedOmit<T, K> = string | number extends keyof T
-	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
-	: T extends any
-	? Pick<T, Exclude<keyof T, K>> // discriminated unions
-	: never;
-
-type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
-	? {} extends U
-		? Exclude<U, {}>
-		: unknown extends U
-		? ObjectId
-		: U
-	: ObjectId;
 
 export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
@@ -43,83 +29,89 @@ export type ResultFields<Base, Defaults> = Defaults extends void
 	? Pick<Defaults, keyof Defaults>
 	: Omit<Defaults, keyof Defaults>;
 
-export type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
-export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & {
+export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;
 };
 
-export interface IBaseModel<T, C extends DefaultFields<T> = undefined> {
+export type FindPaginated<C> = {
+	cursor: C;
+	totalCount: Promise<number>;
+};
+
+export interface IBaseModel<
+	T extends { _id: string },
+	C extends DefaultFields<T> = undefined,
+	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
+> {
 	col: Collection<T>;
 
-	findOneAndUpdate(
-		query: FilterQuery<T>,
-		update: UpdateQuery<T> | T,
-		options?: FindOneAndUpdateOption<T>,
-	): Promise<FindAndModifyWriteOpResultObject<T>>;
-	findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
-	findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
-	findOneById<P>(_id: string, options?: any): Promise<T | P | null>;
-	findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
-	findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
-	findOne<P>(query: FilterQuery<T> | string, options?: any): Promise<T | P | null>;
-	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
-	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
-	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
-	update(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<WriteOpResult>;
-	updateOne(
-		filter: FilterQuery<T>,
-		update: UpdateQuery<T> | Partial<T>,
-		options?: UpdateOneOptions & { multi?: boolean },
-	): Promise<UpdateWriteOpResult>;
-	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult>;
-	insertMany(docs: Array<InsertionModel<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>>;
-	insertOne(doc: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>>;
-	removeById(_id: string): Promise<DeleteWriteOpResultObject>;
-	deleteOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject>;
-	deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject>;
-	trashFind<P extends RocketChatRecordDeleted<T>>(
-		query: FilterQuery<RocketChatRecordDeleted<T>>,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<T>> | undefined;
-	trashFindOneById(_id: string): Promise<RocketChatRecordDeleted<T> | null>;
-	trashFindOneById(
-		_id: string,
-		options: WithoutProjection<RocketChatRecordDeleted<T>>,
-	): Promise<RocketChatRecordDeleted<RocketChatRecordDeleted<T>> | null>;
-	trashFindOneById<P>(
-		_id: string,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Promise<P | null>;
-	trashFindOneById<P extends RocketChatRecordDeleted<T>>(
-		_id: string,
-		options?:
-			| undefined
-			| WithoutProjection<RocketChatRecordDeleted<T>>
-			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Promise<RocketChatRecordDeleted<P> | null>;
-	trashFindDeletedAfter(deletedAt: Date): Cursor<RocketChatRecordDeleted<T>>;
-	trashFindDeletedAfter(
-		deletedAt: Date,
-		query: FilterQuery<RocketChatRecordDeleted<T>>,
-		options: WithoutProjection<RocketChatRecordDeleted<T>>,
-	): Cursor<RocketChatRecordDeleted<T>>;
-	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
-		deletedAt: Date,
-		query: FilterQuery<P>,
-		options: FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<P>>;
+	getCollectionName(): string;
 
-	trashFindDeletedAfter<P = RocketChatRecordDeleted<T>>(
+	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
+
+	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
+	findOneById<P = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
+	findOneById(_id: T['_id'], options?: any): Promise<T | null>;
+
+	findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
+	findOne<P = T>(query: Filter<T> | T['_id'], options: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	findOne<P>(query: Filter<T> | T['_id'], options?: any): Promise<WithId<T> | WithId<P> | null>;
+
+	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
+	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
+	find<P>(query: Filter<T> | undefined, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
+
+	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
+	findPaginated(query: Filter<T>, options?: any): FindPaginated<FindCursor<WithId<T>>>;
+
+	update(
+		filter: Filter<T>,
+		update: UpdateFilter<T> | Partial<T>,
+		options?: UpdateOptions & { multi?: true },
+	): Promise<UpdateResult | Document>;
+
+	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult>;
+
+	updateMany(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<Document | UpdateResult>;
+
+	insertMany(docs: InsertionModel<T>[], options?: BulkWriteOptions): Promise<InsertManyResult<T>>;
+
+	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>>;
+
+	removeById(_id: T['_id']): Promise<DeleteResult>;
+
+	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
+
+	deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>;
+
+	// Trash
+	trashFind<P extends TDeleted>(
+		query: Filter<TDeleted>,
+		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
+	): FindCursor<WithId<TDeleted>> | undefined;
+
+	trashFindOneById(_id: TDeleted['_id']): Promise<TDeleted | null>;
+
+	trashFindOneById<P>(_id: TDeleted['_id'], options: FindOptions<P extends TDeleted ? TDeleted : P>): Promise<P | null>;
+
+	trashFindOneById<P extends TDeleted>(
+		_id: TDeleted['_id'],
+		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
+	): Promise<WithId<RocketChatRecordDeleted<P> | TDeleted> | null>;
+
+	trashFindDeletedAfter(deletedAt: Date): FindCursor<WithId<TDeleted>>;
+
+	trashFindDeletedAfter<P = TDeleted>(
 		deletedAt: Date,
-		query?: FilterQuery<RocketChatRecordDeleted<T>>,
-		options?:
-			| WithoutProjection<RocketChatRecordDeleted<T>>
-			| FindOneOptions<P extends RocketChatRecordDeleted<T> ? RocketChatRecordDeleted<T> : P>,
-	): Cursor<RocketChatRecordDeleted<T>>;
+		query?: Filter<TDeleted>,
+		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
+	): FindCursor<WithId<TDeleted>>;
+
+	trashFindPaginatedDeletedAfter<P = TDeleted>(
+		deletedAt: Date,
+		query?: Filter<TDeleted>,
+		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
+	): FindPaginated<FindCursor<WithId<TDeleted>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
 }

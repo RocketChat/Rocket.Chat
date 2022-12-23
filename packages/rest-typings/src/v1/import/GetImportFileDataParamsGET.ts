@@ -4,19 +4,13 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetImportFileDataParamsGET = {
-	userId: string;
-};
+export type GetImportFileDataParamsGET = Record<string, unknown>;
 
 const GetImportFileDataParamsGETSchema = {
 	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-		},
-	},
+	properties: {},
 	additionalProperties: false,
-	required: ['userId'],
+	required: [],
 };
 
 export const isGetImportFileDataParamsGET = ajv.compile<GetImportFileDataParamsGET>(GetImportFileDataParamsGETSchema);
