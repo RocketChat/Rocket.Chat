@@ -2,10 +2,12 @@ import { MessageBlock } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useMessageOembedMaxWidth } from '../../../contexts/MessageContext';
-import { isValidLink } from '../../lib/isValidLink';
-import OEmbedResolver from './OEmbedResolver';
-import UrlPreview from './UrlPreview';
+import { useMessageOembedMaxWidth } from '../../../views/room/contexts/MessageContext';
+import type { OEmbedPreviewMetadata } from './urlPreviews/OEmbedPreviewMetadata';
+import OEmbedResolver from './urlPreviews/OEmbedResolver';
+import UrlPreview from './urlPreviews/UrlPreview';
+import type { UrlPreviewMetadata } from './urlPreviews/UrlPreviewMetadata';
+import { buildImageURL } from './urlPreviews/buildImageURL';
 
 type OembedUrlLegacy = {
 	url: string;
@@ -13,57 +15,14 @@ type OembedUrlLegacy = {
 	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 };
 
-type PreviewType = 'photo' | 'video' | 'link' | 'rich';
-
-export type PreviewMetadata = Partial<{
-	siteName: string; // nome
-	siteUrl: string; // parsedUrl.host
-	siteColor: string; // ogColor
-	title: string; // ogTitle
-	description: string; // ogDescription
-	authorName: string;
-	authorUrl?: string;
-	image: {
-		// preview?: string; // base64 low res preview
-		url: string;
-		dimensions: {
-			width?: number;
-			height?: number;
-		};
-	};
-	url: string;
-	type: PreviewType;
-	html?: string; // for embedded OembedType
-}>;
-
-export type UrlPreviewMetadata = {
-	type: 'image' | 'video' | 'audio';
-	originalType: string;
-	url: string;
-};
-
-type PreviewListProps = { urls: OembedUrlLegacy[] | undefined };
-
 type PreviewTypes = 'headers' | 'oembed';
 
 type PreviewData = {
 	type: PreviewTypes;
-	data: PreviewMetadata | UrlPreviewMetadata;
+	data: OEmbedPreviewMetadata | UrlPreviewMetadata;
 };
 
-export const buildImageURL = (url: string, imageUrl: string): string => {
-	if (isValidLink(imageUrl)) {
-		return JSON.stringify(imageUrl);
-	}
-
-	const { origin } = new URL(url);
-	const imgURL = `${origin}/${imageUrl}`;
-	const normalizedUrl = imgURL.replace(/([^:]\/)\/+/gm, '$1');
-
-	return JSON.stringify(normalizedUrl);
-};
-
-const normalizeMeta = ({ url, meta }: OembedUrlLegacy): PreviewMetadata => {
+const normalizeMeta = ({ url, meta }: OembedUrlLegacy): OEmbedPreviewMetadata => {
 	const image = meta.ogImage || meta.twitterImage || meta.msapplicationTileImage || meta.oembedThumbnailUrl || meta.oembedThumbnailUrl;
 
 	const imageHeight = meta.ogImageHeight || meta.oembedHeight || meta.oembedThumbnailHeight;
@@ -111,7 +70,16 @@ const getHeaderType = (headers: OembedUrlLegacy['headers']): UrlPreviewMetadata[
 	}
 };
 
-const isValidPreviewMeta = ({ siteName, siteUrl, authorName, authorUrl, title, description, image, html }: PreviewMetadata): boolean =>
+const isValidPreviewMeta = ({
+	siteName,
+	siteUrl,
+	authorName,
+	authorUrl,
+	title,
+	description,
+	image,
+	html,
+}: OEmbedPreviewMetadata): boolean =>
 	!((!siteName || !siteUrl) && (!authorName || !authorUrl) && !title && !description && !image && !html);
 
 const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
@@ -137,15 +105,12 @@ const processMetaAndHeaders = (url: OembedUrlLegacy): PreviewData | false => {
 
 const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data;
 
-const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is PreviewMetadata => type === 'oembed';
+const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is OEmbedPreviewMetadata => type === 'oembed';
 
-const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
+type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
+
+const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
 	const oembedWidth = useMessageOembedMaxWidth();
-
-	if (!urls) {
-		throw new Error('urls is undefined - PreviewList');
-	}
-
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
@@ -168,4 +133,4 @@ const PreviewList = ({ urls }: PreviewListProps): ReactElement | null => {
 	);
 };
 
-export default PreviewList;
+export default UrlPreviews;

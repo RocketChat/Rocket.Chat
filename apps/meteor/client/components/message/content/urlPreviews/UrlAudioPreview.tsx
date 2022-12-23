@@ -1,9 +1,11 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { UrlPreviewMetadata } from './PreviewList';
+import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 
-const UrlAudioPreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>): ReactElement => (
+type UrlAudioPreviewProps = Pick<UrlPreviewMetadata, 'url'>;
+
+const UrlAudioPreview = ({ url }: UrlAudioPreviewProps): ReactElement => (
 	<audio controls>
 		<source src={url} />
 		Your browser doesn't support the audio element.

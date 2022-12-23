@@ -4,9 +4,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import OEmbedCollapsible from './OEmbedCollapsible';
-import type { PreviewMetadata } from './PreviewList';
+import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-const OEmbedLinkPreview = ({ image, url, ...props }: PreviewMetadata): ReactElement => (
+const OEmbedLinkPreview = ({ image, url, ...props }: OEmbedPreviewMetadata): ReactElement => (
 	<OEmbedCollapsible url={url} {...props}>
 		{image?.url && url && (
 			<ExternalLink to={url}>

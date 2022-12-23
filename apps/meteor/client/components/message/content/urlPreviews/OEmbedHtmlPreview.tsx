@@ -3,9 +3,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import OEmbedCollapsible from './OEmbedCollapsible';
-import type { PreviewMetadata } from './PreviewList';
+import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-const OEmbedHtmlPreview = ({ html, ...props }: PreviewMetadata): ReactElement => (
+const OEmbedHtmlPreview = ({ html, ...props }: OEmbedPreviewMetadata): ReactElement => (
 	<OEmbedCollapsible {...props}>{html && <Box withRichContent dangerouslySetInnerHTML={{ __html: html }} />}</OEmbedCollapsible>
 );
 

@@ -3,11 +3,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
-import { useCollapse } from '../../../../../components/message/content/attachments/hooks/useCollapse';
+import { useCollapse } from '../../hooks/useCollapse';
 import OEmbedPreviewContent from './OEmbedPreviewContent';
-import type { PreviewMetadata } from './PreviewList';
+import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-type OEmbedCollapsibleProps = { children?: ReactNode } & PreviewMetadata;
+type OEmbedCollapsibleProps = { children?: ReactNode } & OEmbedPreviewMetadata;
 
 const OEmbedCollapsible = ({ children, ...props }: OEmbedCollapsibleProps): ReactElement => {
 	const t = useTranslation();

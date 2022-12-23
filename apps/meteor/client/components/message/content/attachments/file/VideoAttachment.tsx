@@ -7,7 +7,7 @@ import React from 'react';
 
 import { userAgentMIMETypeFallback } from '../../../../../lib/utils/userAgentMIMETypeFallback';
 import MarkdownText from '../../../../MarkdownText';
-import { useCollapse } from '../hooks/useCollapse';
+import { useCollapse } from '../../../hooks/useCollapse';
 import Attachment from '../structure/Attachment';
 import AttachmentContent from '../structure/AttachmentContent';
 import AttachmentDetails from '../structure/AttachmentDetails';

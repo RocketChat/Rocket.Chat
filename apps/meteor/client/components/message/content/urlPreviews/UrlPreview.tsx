@@ -3,8 +3,8 @@ import { useAttachmentAutoLoadEmbedMedia, useTranslation } from '@rocket.chat/ui
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useCollapse } from '../../../../../components/message/content/attachments/hooks/useCollapse';
-import type { UrlPreviewMetadata } from './PreviewList';
+import { useCollapse } from '../../hooks/useCollapse';
+import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 import UrlPreviewResolver from './UrlPreviewResolver';
 
 const UrlPreview = (props: UrlPreviewMetadata): ReactElement => {

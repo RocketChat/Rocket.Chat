@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { UrlPreviewMetadata } from './PreviewList';
+import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 
 const style = { maxWidth: '100%' };
 const UrlVideoPreview = ({ url, originalType }: Omit<UrlPreviewMetadata, 'type'>): ReactElement => (

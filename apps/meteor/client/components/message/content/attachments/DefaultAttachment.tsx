@@ -4,9 +4,9 @@ import type { ReactNode, ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../MarkdownText';
+import { useCollapse } from '../../hooks/useCollapse';
 import { ActionAttachment } from './default/ActionAttachtment';
 import FieldsAttachment from './default/FieldsAttachment';
-import { useCollapse } from './hooks/useCollapse';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './structure/AttachmentAuthorName';

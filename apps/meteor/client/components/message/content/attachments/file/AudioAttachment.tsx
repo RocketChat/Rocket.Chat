@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
-import { useCollapse } from '../hooks/useCollapse';
+import { useCollapse } from '../../../hooks/useCollapse';
 import Attachment from '../structure/Attachment';
 import AttachmentContent from '../structure/AttachmentContent';
 import AttachmentDescription from '../structure/AttachmentDescription';

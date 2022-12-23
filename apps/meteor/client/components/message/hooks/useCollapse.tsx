@@ -1,11 +1,12 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useAttachmentIsCollapsedByDefault } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-import AttachmentCollapse from '../structure/AttachmentCollapse';
+import CollapsibleContent from '../content/collapsible/CollapsibleContent';
 
-export const useCollapse = (attachmentCollapsed: boolean): [boolean, JSX.Element] => {
+export const useCollapse = (attachmentCollapsed: boolean): [collapsed: boolean, node: ReactNode] => {
 	const collpaseByDefault = useAttachmentIsCollapsedByDefault();
 	const [collapsed, toogleCollapsed] = useToggle(collpaseByDefault || attachmentCollapsed);
-	return [collapsed, <AttachmentCollapse collapsed={collapsed} onClick={toogleCollapsed as any} />];
+	return [collapsed, <CollapsibleContent collapsed={collapsed} onClick={toogleCollapsed as any} />];
 };

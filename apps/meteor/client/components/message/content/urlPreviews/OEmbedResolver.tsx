@@ -4,10 +4,10 @@ import React from 'react';
 import OEmbedHtmlPreview from './OEmbedHtmlPreview';
 import OEmbedImagePreview from './OEmbedImagePreview';
 import OEmbedLinkPreview from './OEmbedLinkPreview';
-import type { PreviewMetadata } from './PreviewList';
+import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
 type OEmbedResolverProps = {
-	meta: PreviewMetadata;
+	meta: OEmbedPreviewMetadata;
 };
 
 const OEmbedResolver = ({ meta }: OEmbedResolverProps): ReactElement | null => {

@@ -13,6 +13,7 @@ import BroadcastMetrics from '../../../../components/message/content/BroadcastMe
 import DicussionMetrics from '../../../../components/message/content/DicussionMetrics';
 import ThreadMetrics from '../../../../components/message/content/ThreadMetrics';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
+import UrlPreviews from '../../../../components/message/content/UrlPreviews';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import MessageLocation from '../../../location/MessageLocation';
@@ -22,7 +23,6 @@ import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
-import PreviewList from './UrlPreview';
 
 const MessageContent: FC<{
 	message: MessageWithMdEnforced;
@@ -69,7 +69,7 @@ const MessageContent: FC<{
 
 			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
-			{oembedIsEnabled && !!message.urls?.length && <PreviewList urls={message.urls} />}
+			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions

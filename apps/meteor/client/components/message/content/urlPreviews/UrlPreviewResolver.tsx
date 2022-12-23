@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { UrlPreviewMetadata } from './PreviewList';
 import UrlAudioPreview from './UrlAudioPreview';
 import UrlImagePreview from './UrlImagePreview';
+import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 import UrlVideoPreview from './UrlVideoPreview';
 
 const UrlPreviewResolver = ({ url, type, originalType }: UrlPreviewMetadata): ReactElement | null => {

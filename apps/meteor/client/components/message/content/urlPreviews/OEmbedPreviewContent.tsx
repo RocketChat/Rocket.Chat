@@ -8,10 +8,10 @@ import {
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
-import MarkdownText from '../../../../../components/MarkdownText';
-import type { PreviewMetadata } from './PreviewList';
+import MarkdownText from '../../../MarkdownText';
+import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-type OEmbedPreviewContentProps = { thumb?: ReactElement; children?: ReactNode } & PreviewMetadata;
+type OEmbedPreviewContentProps = { thumb?: ReactElement; children?: ReactNode } & OEmbedPreviewMetadata;
 
 const OEmbedPreviewContent = ({
 	title,
