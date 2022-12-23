@@ -27,7 +27,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
+		<Box color='default' display='flex' flexDirection='row' mbe='x20' w='full'>
 			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x8'>
@@ -42,7 +42,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage mis='x8' />}
 				</Box>
-				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
+				<Box display='flex' flexDirection='row' color='font-hint' alignItems='center'>
 					<Box fontScale='p2m' mie='x16'>
 						{t('By_author', { author: author?.name })}
 					</Box>
