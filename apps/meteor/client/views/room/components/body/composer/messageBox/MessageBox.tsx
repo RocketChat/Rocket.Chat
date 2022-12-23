@@ -171,10 +171,11 @@ export const MessageBox = ({
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
 
+			event.preventDefault();
 			if (!isSending) {
+				chat?.composer?.insertNewLine();
 				return false;
 			}
-			event.preventDefault();
 
 			const text = chat?.composer?.text;
 			if (!text) {
