@@ -8,7 +8,7 @@ createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedM
 
 // TODO: Remove those after threads Message/Pinned/Starred/Audit are migrated to React
 
-createTemplateForComponent('Blocks', () => import('./views/blocks/MessageBlock'));
+createTemplateForComponent('Blocks', () => import('./components/message/content/UiKitContent'));
 
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
 

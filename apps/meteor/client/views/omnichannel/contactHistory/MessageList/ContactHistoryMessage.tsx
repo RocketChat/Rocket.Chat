@@ -4,7 +4,6 @@ import {
 	MessageLeftContainer,
 	MessageContainer,
 	MessageBody,
-	MessageBlock,
 	MessageDivider,
 	MessageName,
 	MessageUsername,
@@ -23,10 +22,10 @@ import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import UiKitContent from '../../../../components/message/content/UiKitContent';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageContentBody from '../../../room/MessageList/components/MessageContentBody';
 import { MessageIndicators } from '../../../room/MessageList/components/MessageIndicators';
 import { useMessageActions } from '../../../room/contexts/MessageContext';
@@ -104,11 +103,7 @@ const ContactHistoryMessage: FC<{
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
-					{message.blocks && (
-						<MessageBlock fixedWidth>
-							<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
-						</MessageBlock>
-					)}
+					{message.blocks && <UiKitContent mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

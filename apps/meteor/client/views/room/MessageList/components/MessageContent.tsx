@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageBlock } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -13,9 +12,9 @@ import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
 import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
 import ThreadMetric from '../../../../components/message/Metrics/ThreadMetric';
 import ReadReceiptIndicator from '../../../../components/message/ReadReceiptIndicator';
+import UiKitContent from '../../../../components/message/content/UiKitContent';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import MessageBlockUiKit from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
@@ -66,11 +65,7 @@ const MessageContent: FC<{
 				</>
 			)}
 
-			{message.blocks && (
-				<MessageBlock fixedWidth>
-					<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
-				</MessageBlock>
-			)}
+			{message.blocks && <UiKitContent mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
 			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
