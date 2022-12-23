@@ -12,13 +12,9 @@
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */
-		"noImplicitAny": true,
-		"strictNullChecks": true,
 		"strictPropertyInitialization": false,
 
 		/* Additional Checks */
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
 		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
 

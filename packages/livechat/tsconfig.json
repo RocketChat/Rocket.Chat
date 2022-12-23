@@ -4,7 +4,6 @@
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
-		"noImplicitAny": true,
 		"jsxImportSource": "preact",
 	},
 	"exclude": [
