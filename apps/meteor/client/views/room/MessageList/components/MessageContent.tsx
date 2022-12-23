@@ -12,6 +12,7 @@ import MessageActions from '../../../../components/message/MessageActions';
 import BroadcastMetric from '../../../../components/message/Metrics/Broadcast';
 import DiscussionMetric from '../../../../components/message/Metrics/Discussion';
 import ThreadMetric from '../../../../components/message/Metrics/ThreadMetric';
+import ReadReceiptIndicator from '../../../../components/message/ReadReceiptIndicator';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import MessageBlockUiKit from '../../../blocks/MessageBlock';
@@ -22,7 +23,6 @@ import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContentBody from './MessageContentBody';
 import ReactionsList from './MessageReactionsList';
-import ReadReceipt from './MessageReadReceipt';
 import PreviewList from './UrlPreview';
 
 const MessageContent: FC<{
@@ -121,7 +121,7 @@ const MessageContent: FC<{
 				<BroadcastMetric replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
-			{shouldShowReadReceipt && <ReadReceipt unread={message.unread} />}
+			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
 		</>
 	);
 };

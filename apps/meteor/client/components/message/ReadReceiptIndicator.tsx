@@ -3,7 +3,11 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-const MessageReadReceipt = ({ unread }: { unread?: boolean }): ReactElement | null => (
+type ReadReceiptIndicatorProps = {
+	unread?: boolean;
+};
+
+const ReadReceiptIndicator = ({ unread }: ReadReceiptIndicatorProps): ReactElement | null => (
 	<Box
 		position='absolute'
 		className={css`
@@ -15,4 +19,4 @@ const MessageReadReceipt = ({ unread }: { unread?: boolean }): ReactElement | nu
 	</Box>
 );
 
-export default MessageReadReceipt;
+export default ReadReceiptIndicator;
