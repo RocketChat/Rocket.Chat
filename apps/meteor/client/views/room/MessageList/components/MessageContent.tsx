@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -6,23 +5,23 @@ import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
-import MessageActions from '../../../../components/message/MessageActions';
 import ReadReceiptIndicator from '../../../../components/message/ReadReceiptIndicator';
 import Attachments from '../../../../components/message/content/Attachments';
 import BroadcastMetrics from '../../../../components/message/content/BroadcastMetrics';
 import DicussionMetrics from '../../../../components/message/content/DicussionMetrics';
+import Location from '../../../../components/message/content/Location';
+import MessageActions from '../../../../components/message/content/MessageActions';
+import Reactions from '../../../../components/message/content/Reactions';
 import ThreadMetrics from '../../../../components/message/content/ThreadMetrics';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import UrlPreviews from '../../../../components/message/content/UrlPreviews';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
 import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
 import { isOwnUserMessage } from '../lib/isOwnUserMessage';
 import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import MessageContentBody from './MessageContentBody';
-import ReactionsList from './MessageReactionsList';
 
 const MessageContent: FC<{
 	message: MessageWithMdEnforced;
@@ -83,7 +82,7 @@ const MessageContent: FC<{
 				/>
 			)}
 
-			{shouldShowReactionList && <ReactionsList message={message} />}
+			{shouldShowReactionList && <Reactions message={message} />}
 
 			{isThreadMainMessage(message) && (
 				<ThreadMetrics
@@ -110,7 +109,7 @@ const MessageContent: FC<{
 				/>
 			)}
 
-			{message.location && <MessageLocation location={message.location} />}
+			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
 				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />

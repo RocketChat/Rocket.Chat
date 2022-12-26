@@ -1,14 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
-import MapView from './MapView';
+import MapView from './location/MapView';
 
-type MessageLocationProps = {
+type LocationProps = {
 	location?: IMessage['location'];
 };
 
-const MessageLocation: FC<MessageLocationProps> = ({ location }) => {
+const Location = ({ location }: LocationProps): ReactElement | null => {
 	const [longitude, latitude] = location?.coordinates ?? [];
 
 	if (!latitude || !longitude) {
@@ -18,4 +18,4 @@ const MessageLocation: FC<MessageLocationProps> = ({ location }) => {
 	return <MapView latitude={latitude} longitude={longitude} />;
 };
 
-export default MessageLocation;
+export default Location;

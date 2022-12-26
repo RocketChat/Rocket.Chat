@@ -3,10 +3,19 @@ import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useOpenEmojiPicker, useReactionsFilter, useReactToMessage, useUserHasReacted } from '../contexts/MessageListContext';
-import { MessageReaction } from './MessageReaction';
+import {
+	useOpenEmojiPicker,
+	useReactionsFilter,
+	useReactToMessage,
+	useUserHasReacted,
+} from '../../../views/room/MessageList/contexts/MessageListContext';
+import Reaction from './reactions/Reaction';
 
-const MessageReactionsList = ({ message }: { message: IMessage }): ReactElement | null => {
+type ReactionsProps = {
+	message: IMessage;
+};
+
+const Reactions = ({ message }: ReactionsProps): ReactElement => {
 	const hasReacted = useUserHasReacted(message);
 	const reactToMessage = useReactToMessage(message);
 	const filterReactions = useReactionsFilter(message);
@@ -16,7 +25,7 @@ const MessageReactionsList = ({ message }: { message: IMessage }): ReactElement 
 		<MessageReactions>
 			{message.reactions &&
 				Object.entries(message.reactions).map(([name, reactions]) => (
-					<MessageReaction
+					<Reaction
 						key={name}
 						counter={reactions.usernames.length}
 						hasReacted={hasReacted}
@@ -30,4 +39,4 @@ const MessageReactionsList = ({ message }: { message: IMessage }): ReactElement 
 	);
 };
 
-export default MessageReactionsList;
+export default Reactions;

@@ -18,8 +18,8 @@ import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import MessageActions from '../../../../components/message/MessageActions';
 import Attachments from '../../../../components/message/content/Attachments';
+import MessageActions from '../../../../components/message/content/MessageActions';
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../../lib/presence';

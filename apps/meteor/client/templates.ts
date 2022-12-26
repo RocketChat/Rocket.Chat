@@ -10,9 +10,9 @@ createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedM
 
 createTemplateForComponent('Blocks', () => import('./components/message/content/UiKitSurface'));
 
-createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
+createTemplateForComponent('messageLocation', () => import('./components/message/content/Location'));
 
-createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
+createTemplateForComponent('MessageActions', () => import('./components/message/content/MessageActions'));
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/content/Attachments'));
 

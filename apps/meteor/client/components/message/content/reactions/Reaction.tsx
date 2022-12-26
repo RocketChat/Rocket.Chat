@@ -1,11 +1,11 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import MarkdownText from '../../../../components/MarkdownText';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
+import MarkdownText from '../../../MarkdownText';
 
 const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 	if (users.length === 0) {
@@ -26,13 +26,16 @@ const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 	}
 	return 'Users_reacted_with';
 };
-export const MessageReaction: FC<{
+
+type ReactionProps = {
 	hasReacted: (name: string) => boolean;
 	reactToMessage: (name: string) => void;
 	counter: number;
 	name: string;
 	names: string[];
-}> = ({ hasReacted, reactToMessage, counter, name, names, ...props }) => {
+};
+
+const Reaction = ({ hasReacted, reactToMessage, counter, name, names, ...props }: ReactionProps): ReactElement => {
 	const t = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
@@ -77,3 +80,5 @@ export const MessageReaction: FC<{
 		</MessageReactionTemplate>
 	);
 };
+
+export default Reaction;

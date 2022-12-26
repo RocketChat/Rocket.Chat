@@ -4,7 +4,7 @@ import React, { memo } from 'react';
 
 import MapViewFallback from './MapViewFallback';
 import MapViewImage from './MapViewImage';
-import { useAsyncImage } from './useAsyncImage';
+import { useAsyncImage } from './hooks/useAsyncImage';
 
 type MapViewProps = {
 	latitude: number;

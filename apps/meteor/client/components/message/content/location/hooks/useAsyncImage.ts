@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useAsyncState } from '../../hooks/useAsyncState';
+import { useAsyncState } from '../../../../../hooks/useAsyncState';
 
 export const useAsyncImage = (src: string | undefined): string | undefined => {
 	const { value, resolve, reject, reset } = useAsyncState<string>();
