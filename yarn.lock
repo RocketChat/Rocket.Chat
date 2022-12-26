@@ -6986,6 +6986,7 @@ __metadata:
     "@storybook/react": ~6.5.14
     "@storybook/testing-library": 0.0.13
     "@tanstack/react-query": ^4.16.1
+    "@tanstack/react-query-devtools": ^4.19.1
     "@testing-library/react": ~12.1.5
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ~13.5.0
@@ -9319,10 +9320,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/match-sorter-utils@npm:^8.7.0":
+  version: 8.7.2
+  resolution: "@tanstack/match-sorter-utils@npm:8.7.2"
+  dependencies:
+    remove-accents: 0.4.2
+  checksum: 0821430d7de76911481b5300f4812f7cfefb804bf2f23fb1bab45e66c273379f0c919785ca1aecd8614b72d9e5e0e0edf9f449cbbb87dd91166d77ca285351f6
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:4.15.1":
   version: 4.15.1
   resolution: "@tanstack/query-core@npm:4.15.1"
   checksum: ee98e75a3770fd35a6a10b9e7b3c417ea9da2b072481b5191d759182b29fd7bc4e8e340f83e2961b46fe4e1adac356087df04d4661c9459d09ff4d0574f683eb
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^4.19.1":
+  version: 4.19.1
+  resolution: "@tanstack/react-query-devtools@npm:4.19.1"
+  dependencies:
+    "@tanstack/match-sorter-utils": ^8.7.0
+    superjson: ^1.10.0
+    use-sync-external-store: ^1.2.0
+  peerDependencies:
+    "@tanstack/react-query": 4.19.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 0c40e7b55d06600ff8a2448f8679e52657f22f05ae397ccee83842ee9ce6dcd681f41bd33606adc6590535bb868561dce3da631233c339701fffa602ec1e381c
   languageName: node
   linkType: hard
 
@@ -15133,6 +15158,15 @@ __metadata:
   version: 2.1.3
   resolution: "cookiejar@npm:2.1.3"
   checksum: 88259983ebc52ceb23cdacfa48762b6a518a57872eff1c7ed01d214fff5cf492e2660d7d5c04700a28f1787a76811df39e8639f8e17670b3cf94ecd86e161f07
+  languageName: node
+  linkType: hard
+
+"copy-anything@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "copy-anything@npm:3.0.3"
+  dependencies:
+    is-what: ^4.1.8
+  checksum: d456dc5ec98dee7c7cf87d809eac30dc2ac942acd4cf970fab394e280ceb6dd7a8a7a5a44fcbcc50e0206658de3cc20b92863562f5797930bb2619f164f4c182
   languageName: node
   linkType: hard
 
@@ -22441,6 +22475,13 @@ __metadata:
   dependencies:
     call-bind: ^1.0.2
   checksum: 95bd9a57cdcb58c63b1c401c60a474b0f45b94719c30f548c891860f051bc2231575c290a6b420c6bc6e7ed99459d424c652bd5bf9a1d5259505dc35b4bf83de
+  languageName: node
+  linkType: hard
+
+"is-what@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "is-what@npm:4.1.8"
+  checksum: b9bec3acff102d14ad467f4c74c9886af310fa160e07a63292c8c181e6768c7c4c1054644e13d67185b963644e4a513bce8c6b8ce3d3ca6f9488a69fccad5f97
   languageName: node
   linkType: hard
 
@@ -31379,6 +31420,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"remove-accents@npm:0.4.2":
+  version: 0.4.2
+  resolution: "remove-accents@npm:0.4.2"
+  checksum: 84a6988555dea24115e2d1954db99509588d43fe55a1590f0b5894802776f7b488b3151c37ceb9e4f4b646f26b80b7325dcea2fae58bc3865df146e1fa606711
+  languageName: node
+  linkType: hard
+
 "remove-markdown@npm:^0.2.2":
   version: 0.2.2
   resolution: "remove-markdown@npm:0.2.2"
@@ -33964,6 +34012,15 @@ __metadata:
     readable-stream: ^3.6.0
     semver: ^7.3.7
   checksum: 14343e59327eafd85fa230acb876017079d5efcecc72a56566abc0f965220bb460af2e070dddecd9e2856410b2d2b318d81d9cc1d342aa5922da93c29a295dd7
+  languageName: node
+  linkType: hard
+
+"superjson@npm:^1.10.0":
+  version: 1.12.0
+  resolution: "superjson@npm:1.12.0"
+  dependencies:
+    copy-anything: ^3.0.2
+  checksum: 57b4a2086ab613a88672f617fa0840af0ba25f253f7b778a8859aa1846b01600f55dba31663fad3439fcead874614ae32a8cf72117c32428e9487eca676964ca
   languageName: node
   linkType: hard
 

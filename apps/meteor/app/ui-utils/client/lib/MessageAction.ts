@@ -52,6 +52,7 @@ type MessageActionConditionProps = {
 	subscription?: ISubscription;
 	context?: MessageActionContext;
 	settings: { [key: string]: SettingValue };
+	chat: ContextType<typeof ChatContext>;
 };
 
 export type MessageActionConfig = {
@@ -80,7 +81,7 @@ export type MessageActionConfig = {
 			autoTranslateOptions?: AutoTranslateOptions;
 		},
 	) => any;
-	condition?: (props: MessageActionConditionProps) => boolean;
+	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
 };
 
 type MessageActionConfigList = MessageActionConfig[];
@@ -146,11 +147,19 @@ export const MessageAction = new (class {
 
 	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 });
 
-	getButtonsByCondition(
+	async getButtonsByCondition(
 		prop: MessageActionConditionProps,
 		arr: MessageActionConfigList = MessageAction._getButtons(),
-	): MessageActionConfigList {
-		return arr.filter((button) => !button.condition || button.condition(prop));
+	): Promise<MessageActionConfigList> {
+		return (
+			await Promise.all(
+				arr.map(async (button) => {
+					return [button, !button.condition || (await button.condition(prop))] as const;
+				}),
+			)
+		)
+			.filter(([, condition]) => condition)
+			.map(([button]) => button);
 	}
 
 	getButtonsByGroup = mem(
@@ -164,7 +173,11 @@ export const MessageAction = new (class {
 		return !context ? arr : arr.filter((button) => !button.context || button.context.includes(context));
 	}
 
-	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
+	async getButtons(
+		props: MessageActionConditionProps,
+		context: MessageActionContext,
+		group: MessageActionGroup,
+	): Promise<MessageActionConfigList> {
 		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
 
 		if (props.message) {
