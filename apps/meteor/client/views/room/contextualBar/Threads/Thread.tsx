@@ -7,7 +7,6 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { useAutoTranslate } from '../../MessageList/hooks/useAutoTranslate';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import ChatProvider from '../../providers/ChatProvider';
@@ -35,7 +34,6 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 
 	const room = useRoom();
 	const subscription = useRoomSubscription();
-	const autoTranslateOptions = useAutoTranslate(subscription);
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -98,9 +96,7 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 					<VerticalBar.Header>
 						<VerticalBar.Action name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
 						{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
-							(mainMessageQueryResult.isSuccess && (
-								<ThreadTitle mainMessage={mainMessageQueryResult.data} autoTranslateOptions={autoTranslateOptions} />
-							)) ||
+							(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
 							null}
 						<VerticalBar.Actions>
 							{canExpand && (

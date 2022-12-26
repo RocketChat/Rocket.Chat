@@ -1,4 +1,4 @@
-import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, ITranslatedMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isOTRMessage, isQuoteAttachment, isTranslatedAttachment, isTranslatedMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
@@ -10,7 +10,7 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 
-export type MessageWithMdEnforced = WithRequiredProperty<IMessage, 'md'>;
+export type MessageWithMdEnforced = WithRequiredProperty<IMessage & Partial<ITranslatedMessage>, 'md'>;
 /*
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.

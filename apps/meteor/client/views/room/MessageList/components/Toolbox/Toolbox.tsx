@@ -25,7 +25,7 @@ const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext
 	return 'message';
 };
 
-export const Toolbox: FC<{ message: ITranslatedMessage }> = ({ message }) => {
+export const Toolbox: FC<{ message: IMessage & Partial<ITranslatedMessage> }> = ({ message }) => {
 	const t = useTranslation();
 
 	const room = useRoom();

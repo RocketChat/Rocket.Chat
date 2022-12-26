@@ -74,7 +74,7 @@ export type MessageActionConfig = {
 			chat,
 			autoTranslateOptions,
 		}: {
-			message?: ITranslatedMessage;
+			message?: IMessage & Partial<ITranslatedMessage>;
 			tabbar: ToolboxContextValue;
 			room?: IRoom;
 			chat: ContextType<typeof ChatContext>;
