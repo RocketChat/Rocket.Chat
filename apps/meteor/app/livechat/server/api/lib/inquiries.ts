@@ -1,6 +1,11 @@
-import type { ILivechatInquiryRecord, IRoom, IUser, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { Filter } from 'mongodb';
+
+import { getInquirySortQuery } from '../../../lib/inquiries';
+import { getInquirySortMechanismSetting } from '../../lib/settings';
 
 const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {
 	const agentDepartments = (await LivechatDepartmentAgents.findByAgentId(userId).toArray()).map(({ departmentId }) => departmentId);
@@ -20,7 +25,6 @@ const applyDepartmentRestrictions = async (
 		if (!allowedDepartments.includes(filterDepartment)) {
 			throw new Error('error-not-authorized');
 		}
-
 		return filterDepartment;
 	}
 
@@ -39,15 +43,15 @@ export async function findInquiries({
 	pagination: { offset: number; count: number; sort: Record<string, number> };
 }): Promise<PaginatedResult<{ inquiries: Array<ILivechatInquiryRecord> }>> {
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
-
+	const defaultSort = getInquirySortQuery(getInquirySortMechanismSetting());
 	const options = {
 		limit: count,
-		sort: sort || { ts: -1 },
 		skip: offset,
+		sort: { ...sort, ...defaultSort },
 	};
 
-	const filter = {
-		...(status && { status }),
+	const filter: Filter<ILivechatInquiryRecord> = {
+		...(status && status in LivechatInquiryStatus && { status }),
 		$or: [
 			{
 				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],

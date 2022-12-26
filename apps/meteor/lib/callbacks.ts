@@ -15,6 +15,7 @@ import type {
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -122,6 +123,7 @@ type ChainedCallbackSignatures = {
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
+	'livechat.saveInfo': (newRoom: IOmnichannelRoom, { user, oldRoom }: { user: IUser; oldRoom: IOmnichannelRoom }) => IOmnichannelRoom;
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: {
 		urlObj: Omit<Url.UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };

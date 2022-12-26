@@ -1,9 +1,17 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
-import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, ModifyResult } from 'mongodb';
+import type {
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	OmnichannelSortingMechanismSettingType,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { getInquirySortQuery } from '../../../app/livechat/lib/inquiries';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -41,7 +49,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne({ rid }, { $set: { lastMessage: message } });
 	}
 
-	async findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null> {
+	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		const result = await this.col.findOneAndUpdate(
 			{
@@ -70,10 +78,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 			},
 			{
-				sort: {
-					estimatedWaitingTimeQueue: 1,
-					estimatedServiceTimeAt: 1,
-				},
+				sort: getInquirySortQuery(queueSortBy),
 			},
 		);
 
@@ -89,5 +94,91 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
 			{ $unset: { locked: 1, lockedAt: 1 } },
 		);
+	}
+
+	async getCurrentSortedQueueAsync({
+		inquiryId,
+		department,
+		queueSortBy,
+	}: {
+		inquiryId?: string;
+		department: string;
+		queueSortBy: OmnichannelSortingMechanismSettingType;
+	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
+		const filter: UpdateFilter<ILivechatInquiryRecord>[] = [
+			{
+				$match: {
+					status: 'queued',
+					...(department && { department }),
+				},
+			},
+			{ $sort: getInquirySortQuery(queueSortBy) },
+			{
+				$group: {
+					_id: 1,
+					inquiry: {
+						$push: {
+							_id: '$_id',
+							rid: '$rid',
+							name: '$name',
+							ts: '$ts',
+							status: '$status',
+							department: '$department',
+						},
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$inquiry',
+					includeArrayIndex: 'position',
+				},
+			},
+			{
+				$project: {
+					_id: '$inquiry._id',
+					rid: '$inquiry.rid',
+					name: '$inquiry.name',
+					ts: '$inquiry.ts',
+					status: '$inquiry.status',
+					department: '$inquiry.department',
+					position: 1,
+				},
+			},
+		];
+
+		// To get the current room position in the queue, we need to apply the next $match after the $project
+		if (inquiryId) {
+			filter.push({ $match: { _id: inquiryId } });
+		}
+
+		return this.col
+			.aggregate<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }>(filter, {
+				readPreference: readSecondaryPreferred(),
+			})
+			.toArray();
+	}
+
+	setSlaForRoom(
+		_rid: string,
+		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
+	): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	unsetSlaForRoom(_roomId: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	bulkUnsetSla(_roomIds: string[]): Promise<Document | UpdateResult> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	setPriorityForRoom(_rid: string, _priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
+	}
+
+	unsetPriorityForRoom(_rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		throw new Error('Method not implemented on the community edition.');
 	}
 }

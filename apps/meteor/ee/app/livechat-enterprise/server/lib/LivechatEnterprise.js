@@ -7,13 +7,15 @@ import LivechatTag from '../../../models/server/models/LivechatTag';
 import { Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
-import { processWaitingQueue, removeSLAFromRooms, updateInquiryQueueSla, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
+import { processWaitingQueue, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
+import { updateInquiryQueueSla, removeSLAFromRooms, removeInquiryQueueSla } from './InquiryHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { LivechatUnitMonitors } from '../../../models/server';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -135,6 +137,11 @@ export const LivechatEnterprise = {
 
 	async saveSLA(_id, slaData) {
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
+		if (exists) {
+			throw new Error('error-duplicated-sla');
+		}
+
 		const sla = await OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id);
 		if (!oldSLA) {
 			return sla;
@@ -164,9 +171,12 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	updateRoomSLA(roomId, user, sla) {
-		updateInquiryQueueSla(roomId, sla);
-		updateRoomSLAHistory(roomId, user, sla);
+	async updateRoomSLA(roomId, user, sla) {
+		await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSLAHistory(roomId, user, sla)]);
+	},
+
+	async removeRoomSLA(roomId, user) {
+		await Promise.all([removeInquiryQueueSla(roomId), updateRoomSLAHistory(roomId, user)]);
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {
@@ -250,7 +260,7 @@ const queueWorker = {
 	async checkQueue(queue) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;

@@ -117,7 +117,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			_id: 'on-hold-others-livechat-room',
 			roles: ['livechat-manager', 'livechat-monitor', 'admin'],
 		},
-		{ _id: 'save-others-livechat-room-info', roles: ['livechat-manager', 'livechat-monitor'] },
+		{ _id: 'save-others-livechat-room-info', roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
 		{
 			_id: 'remove-closed-livechat-rooms',
 			roles: ['livechat-manager', 'livechat-monitor', 'admin'],

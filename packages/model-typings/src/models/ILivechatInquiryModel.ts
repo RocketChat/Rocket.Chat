@@ -1,5 +1,10 @@
 import type { FindOptions, DistinctOptions, Document, UpdateResult } from 'mongodb';
-import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	ILivechatInquiryRecord,
+	LivechatInquiryStatus,
+	OmnichannelSortingMechanismSettingType,
+} from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -12,7 +17,12 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<string[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
-	findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null>;
+	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
+	getCurrentSortedQueueAsync(props: {
+		inquiryId?: string;
+		department: string;
+		queueSortBy: OmnichannelSortingMechanismSettingType;
+	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
 }

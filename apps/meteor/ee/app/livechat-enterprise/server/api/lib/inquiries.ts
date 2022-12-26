@@ -13,5 +13,5 @@ export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string;
 		throw new Error('error-invalid-sla');
 	}
 
-	LivechatEnterprise.updateRoomSLA(roomId, await Users.findOneById(userId, { projection: { username: 1 } }), slaData);
+	await LivechatEnterprise.updateRoomSLA(roomId, await Users.findOneById(userId, { projection: { username: 1 } }), slaData);
 }

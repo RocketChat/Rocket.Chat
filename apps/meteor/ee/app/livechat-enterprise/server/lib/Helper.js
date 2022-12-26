@@ -5,16 +5,19 @@ import {
 	LivechatRooms as LivechatRoomsRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
+	LivechatInquiry,
 } from '@rocket.chat/models';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users, LivechatInquiry, Messages } from '../../../../../app/models/server';
+import { Users, Messages } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { api } from '../../../../../server/sdk/api';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { updateInquiryQueueSla } from './InquiryHelper';
 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -98,7 +101,10 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	}
 
 	helperLogger.debug(`Updating statuses for queue ${department || 'Public'}`);
-	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
+	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({
+		department,
+		queueSortBy: getInquirySortMechanismSetting(),
+	});
 
 	if (!queue.length) {
 		return;
@@ -199,7 +205,7 @@ export const updateQueueInactivityTimeout = () => {
 	});
 };
 
-export const updateRoomSLAHistory = (rid, user, sla) => {
+export const updateRoomSLAHistory = async (rid, user, sla) => {
 	const history = {
 		slaData: {
 			definedBy: user,
@@ -210,43 +216,15 @@ export const updateRoomSLAHistory = (rid, user, sla) => {
 	Messages.createSLAHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
-export const updateInquiryQueueSla = (roomId, sla) => {
-	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
-	if (!inquiry) {
-		return;
-	}
-
-	let { ts: estimatedServiceTimeAt } = inquiry;
-	let estimatedWaitingTimeQueue = 0;
-
-	if (sla) {
-		const { dueTimeInMinutes } = sla;
-		estimatedWaitingTimeQueue = dueTimeInMinutes;
-		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
-	}
-
-	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, {
-		estimatedWaitingTimeQueue,
-		estimatedServiceTimeAt,
-	});
-};
-
-export const removeSLAFromRooms = async (slaId) => {
-	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
-		updateInquiryQueueSla(room._id);
-	});
-
-	await LivechatRoomsRaw.unsetSlaById(slaId);
-};
-
 export const updateSLAInquiries = async (sla) => {
 	if (!sla) {
 		return;
 	}
 
 	const { _id: slaId } = sla;
-	const promises = LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
-		updateInquiryQueueSla(room._id, sla);
+	const promises = [];
+	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
+		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises.length ? promises : []);
 };
@@ -282,7 +260,7 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	const { _id: rid, departmentId: department } = room;
-	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid, { projection: { _id: 1, status: 1 } });
 	if (!inquiry) {
 		return null;
 	}
@@ -292,7 +270,11 @@ export const getLivechatQueueInfo = async (room) => {
 		return null;
 	}
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+		_id,
+		department,
+		queueSortBy: getInquirySortMechanismSetting(),
+	});
 
 	if (!inq) {
 		return null;

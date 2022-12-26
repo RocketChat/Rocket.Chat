@@ -1,14 +1,22 @@
 /* eslint-env mocha */
 
-import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type {
+	ILivechatInquiryRecord,
+	ILivechatPriority,
+	IOmnichannelRoom,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import faker from '@faker-js/faker';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { saveSLA, deleteSLA, generateRandomSLA } from '../../../data/livechat/priorities';
-import { createAgent, createVisitor, createLivechatRoom, takeInquiry } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { createSLA, deleteSLA, generateRandomSLAData, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
+import { createAgent, createVisitor, createLivechatRoom, takeInquiry, bulkCreateLivechatRooms } from '../../../data/livechat/rooms';
+import { addPermissions, removePermissions, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', function () {
 	this.retries(0);
@@ -22,23 +30,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	this.afterAll(async () => {
-		await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-		await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-		await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
+		addPermissions({
+			'manage-livechat-priorities': ['admin', 'livechat-manager'],
+			'manage-livechat-sla': ['admin', 'livechat-manager'],
+			'view-l-room': ['admin', 'livechat-manager', 'livechat-agent'],
+		});
 	});
 
 	describe('livechat/sla', () => {
 		// GET
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla endpoint', async () => {
-			await updatePermission('manage-livechat-sla', []);
-			await updatePermission('view-l-room', []);
+			await removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of slas', async () => {
-			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent', 'admin', 'livechat-manager']);
-			const sla = await saveSLA();
+			await addPermissions({
+				'manage-livechat-sla': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
+			const sla = await createSLA();
+			expect(sla).to.not.be.undefined;
+			expect(sla).to.have.property('_id');
 			const response = await request.get(api('livechat/sla')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.sla).to.be.an('array').with.lengthOf.greaterThan(0);
@@ -55,7 +68,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const response = await request
 				.post(api('livechat/sla'))
 				.set(credentials)
-				.send(generateRandomSLA())
+				.send(generateRandomSLAData())
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 			expect(response.body).to.have.property('success', false);
@@ -63,7 +76,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should create a new sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
 
-			const sla = generateRandomSLA();
+			const sla = generateRandomSLAData();
 
 			const response = await request
 				.post(api('livechat/sla'))
@@ -86,15 +99,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('livechat/sla/:slaId', () => {
 		// GET
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [GET] livechat/sla/:slaId endpoint', async () => {
-			await updatePermission('manage-livechat-sla', []);
-			await updatePermission('view-l-room', []);
+			await removePermissions(['manage-livechat-sla', 'view-l-room']);
 			const response = await request.get(api('livechat/sla/123')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should create, find and delete an sla', async () => {
-			await updatePermission('manage-livechat-sla', ['admin']);
-			await updatePermission('view-l-room', ['livechat-agent']);
-			const sla = await saveSLA();
+			await addPermissions({
+				'manage-livechat-sla': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
+			const sla = await createSLA();
 			const response = await request
 				.get(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
@@ -113,7 +127,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const response = await request
 				.put(api('livechat/sla/123'))
 				.set(credentials)
-				.send(generateRandomSLA())
+				.send(generateRandomSLAData())
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 
@@ -122,8 +136,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should update an sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
 
-			const sla = await saveSLA();
-			const newSlaData = generateRandomSLA();
+			const sla = await createSLA();
+			const newSlaData = generateRandomSLAData();
 
 			const response = await request
 				.put(api(`livechat/sla/${sla._id}`))
@@ -152,7 +166,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should delete an sla', async () => {
 			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-			const sla = await saveSLA();
+			const sla = await createSLA();
 			const response = await request
 				.delete(api(`livechat/sla/${sla._id}`))
 				.set(credentials)
@@ -164,9 +178,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	describe('livechat/inquiry.setSLA', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-priorities', []);
-			await updatePermission('manage-livechat-sla', []);
-			await updatePermission('view-l-room', []);
+			await removePermissions(['manage-livechat-sla', 'view-l-room', 'manage-livechat-priorities']);
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
@@ -179,9 +191,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should fail if roomId is not in request body', async () => {
-			await updatePermission('manage-livechat-priorities', ['admin']);
-			await updatePermission('manage-livechat-sla', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			await addPermissions({
+				'manage-livechat-sla': ['admin', 'livechat-manager'],
+				'manage-livechat-priorities': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
@@ -250,7 +264,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should prioritize an inquiry', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			const sla = await saveSLA();
+			const sla = await createSLA();
 			const response = await request
 				.put(api('livechat/inquiry.setSLA'))
 				.set(credentials)
@@ -265,9 +279,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('livechat/priorities', () => {
+		let priority: ILivechatPriority;
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-priorities', []);
-			await updatePermission('view-l-room', []);
+			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request
 				.get(api('livechat/priorities'))
 				.set(credentials)
@@ -276,8 +290,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 		});
 		it('should return an array of priorities', async () => {
-			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			await addPermissions({
+				'manage-livechat-priorities': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const response = await request
 				.get(api('livechat/priorities'))
 				.set(credentials)
@@ -289,6 +305,21 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.priorities[0]).to.have.property('_id');
 			expect(response.body.priorities[0]).to.have.property('i18n');
 			expect(response.body.priorities[0]).to.have.property('dirty');
+			priority = response.body.priorities[0];
+		});
+		it('should return an array of priorities matching text param', async () => {
+			const response = await request
+				.get(api('livechat/priorities'))
+				.set(credentials)
+				.query({
+					text: priority.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.priorities).to.be.an('array');
+			expect(response.body.priorities).to.have.length.greaterThan(0);
+			expect(response.body.priorities[0]).to.have.property('_id');
 		});
 	});
 
@@ -296,16 +327,17 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let priority: ILivechatPriority;
 		const name = faker.random.word();
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
-			await updatePermission('manage-livechat-priorities', []);
-			await updatePermission('view-l-room', []);
+			await removePermissions(['manage-livechat-priorities', 'view-l-room']);
 			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
 			expect(response.body?.error).to.contain('error-unauthorized');
 		});
 		it('should return a priority by id', async () => {
-			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
-			await updatePermission('view-l-room', ['livechat-agent']);
+			await addPermissions({
+				'manage-livechat-priorities': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 			const {
 				body: { priorities },
 			} = await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200);
@@ -585,6 +617,209 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
 			expect(response.body?.error).to.contain('error-unauthorized');
+		});
+	});
+
+	describe('Inquiry queue sorting mechanism', () => {
+		let omniRooms: IOmnichannelRoom[];
+		let departmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+		let priorities: ILivechatPriority[];
+		let slas: Awaited<ReturnType<typeof bulkCreateSLA>>;
+
+		const hasSlaProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { slaId: string } =>
+			!!inquiry.estimatedWaitingTimeQueue && !!inquiry.estimatedServiceTimeAt && !!inquiry.slaId;
+		const hasPriorityProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { priorityId: string } =>
+			inquiry.priorityId !== undefined;
+
+		const getPriorityOrderById = (id: string) => {
+			const priority = priorities.find((priority) => priority._id === id);
+			return priority?.sortItem || 0;
+		};
+
+		const sortBySLAProps = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord): number => {
+			if (hasSlaProps(inquiry1) || hasSlaProps(inquiry2)) {
+				if (hasSlaProps(inquiry1) && hasSlaProps(inquiry2)) {
+					// if both inquiries have sla props, then sort by estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1
+					const estimatedWaitingTimeQueue1 = inquiry1.estimatedWaitingTimeQueue;
+					const estimatedWaitingTimeQueue2 = inquiry2.estimatedWaitingTimeQueue;
+
+					if (estimatedWaitingTimeQueue1 !== estimatedWaitingTimeQueue2) {
+						return estimatedWaitingTimeQueue1 - estimatedWaitingTimeQueue2;
+					}
+
+					return new Date(inquiry1.estimatedServiceTimeAt).getTime() - new Date(inquiry2.estimatedServiceTimeAt).getTime();
+				}
+
+				if (hasSlaProps(inquiry1)) {
+					return -1;
+				}
+
+				if (hasSlaProps(inquiry2)) {
+					return 1;
+				}
+			}
+
+			return 0;
+		};
+
+		const sortByPriorityProps = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord): number => {
+			if (hasPriorityProps(inquiry1) || hasPriorityProps(inquiry2)) {
+				if (hasPriorityProps(inquiry1) && hasPriorityProps(inquiry2)) {
+					// if both inquiries have priority props, then sort by priorityId: 1
+					return getPriorityOrderById(inquiry1.priorityId) - getPriorityOrderById(inquiry2.priorityId);
+				}
+
+				if (hasPriorityProps(inquiry1)) {
+					return -1;
+				}
+
+				if (hasPriorityProps(inquiry2)) {
+					return 1;
+				}
+			}
+
+			return 0;
+		};
+
+		// this should sort using logic - { ts: 1 }
+		const sortByTimestamp = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
+			return new Date(inquiry1.ts).getTime() - new Date(inquiry2.ts).getTime();
+		};
+
+		// this should sort using logic - { priorityWeight: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 }
+		const sortByPriority = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
+			const priorityPropsSort = sortByPriorityProps(inquiry1, inquiry2);
+			if (priorityPropsSort !== 0) {
+				return priorityPropsSort;
+			}
+
+			// check if sla props are present in both inquiries
+			const slaPropsSort = sortBySLAProps(inquiry1, inquiry2);
+			if (slaPropsSort !== 0) {
+				return slaPropsSort;
+			}
+
+			return sortByTimestamp(inquiry1, inquiry2);
+		};
+
+		// this should sort using logic - { estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, priorityWeight: 1, ts: 1 }
+		const sortBySLA = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
+			const slaPropsSort = sortBySLAProps(inquiry1, inquiry2);
+			if (slaPropsSort !== 0) {
+				return slaPropsSort;
+			}
+
+			const priorityPropsSort = sortByPriorityProps(inquiry1, inquiry2);
+			if (priorityPropsSort !== 0) {
+				return priorityPropsSort;
+			}
+
+			return sortByTimestamp(inquiry1, inquiry2);
+		};
+
+		const filterUnnecessaryProps = (inquiries: ILivechatInquiryRecord[]) =>
+			inquiries.map((inquiry) => {
+				return {
+					_id: inquiry._id,
+					rid: inquiry.rid,
+					...(hasPriorityProps(inquiry) && {
+						priority: {
+							priorityWeight: getPriorityOrderById(inquiry.priorityId),
+							id: inquiry.priorityWeight,
+						},
+					}),
+					...(hasSlaProps(inquiry) && {
+						sla: {
+							estimatedWaitingTimeQueue: inquiry.estimatedWaitingTimeQueue,
+							estimatedServiceTimeAt: inquiry.estimatedServiceTimeAt,
+						},
+					}),
+					ts: inquiry.ts,
+				};
+			});
+
+		const compareInquiries = (inquiries1: ILivechatInquiryRecord[], inquiries2: ILivechatInquiryRecord[]) => {
+			const filteredInquiries1 = filterUnnecessaryProps(inquiries1);
+			const filteredInquiries2 = filterUnnecessaryProps(inquiries2);
+
+			expect(filteredInquiries1).to.deep.equal(filteredInquiries2);
+		};
+
+		it('it should create all the data required for further testing', async () => {
+			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
+
+			const {
+				body: { priorities: prioritiesResponse },
+			} = (await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(200)) as {
+				body: { priorities: ILivechatPriority[] };
+			};
+			priorities = prioritiesResponse;
+
+			await deleteAllSLA();
+			slas = await bulkCreateSLA(5);
+
+			type RoomParamsReturnType = { priority: string } | { sla: string } | { priority: string; sla: string } | undefined;
+
+			// create 20 rooms, 5 with only priority, 5 with only SLA, 5 with both, 5 without priority or SLA
+			omniRooms = await bulkCreateLivechatRooms(20, departmentWithAgent.department._id, (index): RoomParamsReturnType => {
+				if (index < 5) {
+					return {
+						priority: priorities[index]._id,
+					};
+				}
+
+				if (index < 10) {
+					return {
+						sla: slas[index - 5]._id,
+					};
+				}
+
+				if (index < 15) {
+					// random number between 0 and 4
+					const randomPriorityIndex = Math.floor(Math.random() * 5);
+					const randomSlaIndex = Math.floor(Math.random() * 5);
+
+					return {
+						priority: priorities[randomPriorityIndex]._id,
+						sla: slas[randomSlaIndex]._id,
+					};
+				}
+			});
+		});
+
+		it('it should sort the queue based on priority', async () => {
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Priority);
+
+			const origInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(origInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+
+			const expectedSortedInquiries: ILivechatInquiryRecord[] = JSON.parse(JSON.stringify(origInquiries));
+
+			expectedSortedInquiries.sort(sortByPriority);
+
+			compareInquiries(origInquiries, expectedSortedInquiries);
+		});
+
+		it('it should sort the queue based on slas', async () => {
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.SLAs);
+
+			const origInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(origInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+
+			const expectedSortedInquiries = origInquiries.sort(sortBySLA);
+
+			compareInquiries(origInquiries, expectedSortedInquiries);
+		});
+
+		it('it should sort the queue based on timestamp', async () => {
+			await updateEESetting('Omnichannel_sorting_mechanism', OmnichannelSortingMechanismSettingType.Timestamp);
+
+			const origInquiries = await fetchAllInquiries(departmentWithAgent.agent.credentials, departmentWithAgent.department._id);
+			expect(origInquiries.length).to.be.greaterThanOrEqual(omniRooms.length);
+
+			const expectedSortedInquiries = origInquiries.sort(sortByTimestamp);
+
+			compareInquiries(origInquiries, expectedSortedInquiries);
 		});
 	});
 });

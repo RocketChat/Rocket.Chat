@@ -16,6 +16,10 @@ export class ServiceLevelAgreements extends BaseRaw<IOmnichannelServiceLevelAgre
 		];
 	}
 
+	findDuplicate(_id: string, name: string, dueTimeInMinutes: number): Promise<Pick<IOmnichannelServiceLevelAgreements, '_id'> | null> {
+		return this.findOne({ _id: { $ne: _id }, $or: [{ name }, { dueTimeInMinutes }] }, { projection: { _id: 1 } });
+	}
+
 	findOneByIdOrName(_idOrName: string, options = {}): Promise<IOmnichannelServiceLevelAgreements | null> {
 		const query = {
 			$or: [

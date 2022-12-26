@@ -1,4 +1,4 @@
-import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig } from '@rocket.chat/core-typings';
+import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -6,6 +6,7 @@ import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from '
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
+import { getInquirySortQuery } from '../../app/livechat/lib/inquiries';
 import { Notifications } from '../../app/notifications/client';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
@@ -24,6 +25,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
+	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
@@ -92,14 +94,11 @@ const OmnichannelProvider: FC = ({ children }) => {
 					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
 				},
 				{
-					sort: {
-						estimatedWaitingTimeQueue: 1,
-						estimatedServiceTimeAt: 1,
-					},
+					sort: getInquirySortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
-		}, [manuallySelected, omnichannelPoolMaxIncoming, user?._id]),
+		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism, user?._id]),
 	);
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {

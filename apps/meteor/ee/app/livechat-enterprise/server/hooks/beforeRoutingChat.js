@@ -1,14 +1,14 @@
-import { LivechatDepartment, LivechatInquiry as LivechatInquiryRaw, LivechatRooms } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { cbLogger } from '../lib/logger';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 
 const beforeRouteChat = async (inquiry, agent) => {
 	// check here if department has fallback before queueing
@@ -20,12 +20,12 @@ const beforeRouteChat = async (inquiry, agent) => {
 				`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
 			);
 			// update visitor
-			Livechat.setDepartmentForGuest({
+			await Livechat.setDepartmentForGuest({
 				token: inquiry?.v?.token,
 				department: department.fallbackForwardDepartment,
 			});
 			// update inquiry
-			inquiry = await LivechatInquiryRaw.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
+			inquiry = await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
 			// update room
 			await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
 			cbLogger.debug(`Inquiry ${inquiry._id} moved. Continue normal queue process`);
@@ -59,7 +59,11 @@ const beforeRouteChat = async (inquiry, agent) => {
 	saveQueueInquiry(inquiry);
 
 	if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
-		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
+		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+			_id,
+			department,
+			queueSortBy: getInquirySortMechanismSetting(),
+		});
 		if (inq) {
 			dispatchInquiryPosition(inq);
 			cbLogger.debug(`Callback success. Inquiry ${_id} position has been notified`);

@@ -4,9 +4,10 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { createUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Rooms]', function () {
 	this.retries(0);
@@ -1141,8 +1142,8 @@ describe('[Rooms]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('can-audit', ['admin']).then(() => {
+		(IS_EE ? it : it.skip)('should return an error when the required parameter "selector" is not provided', (done) => {
+			updateEEPermission('can-audit', ['admin']).then(() => {
 				request
 					.get(api('rooms.autocomplete.adminRooms'))
 					.set(credentials)
