@@ -28,12 +28,12 @@ export const ComposerAnonymous = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<ButtonGroup>
-			<Button small primary onClick={() => setForceLogin(true)}>
+		<ButtonGroup marginBlock='x16'>
+			<Button small primary onClick={() => setForceLogin(true)} data-qa-id='composer-anonymous-sign-in-button'>
 				{t('Sign_in_to_start_talking')}
 			</Button>
 			{isAnonymousWriteEnabled && (
-				<Button small secondary onClick={() => joinAnonymous()}>
+				<Button small secondary onClick={() => joinAnonymous()} data-qa-id='composer-anonymous-talk-button'>
 					{t('Or_talk_as_anonymous')}
 				</Button>
 			)}

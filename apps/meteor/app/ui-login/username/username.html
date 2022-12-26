@@ -1,7 +1,7 @@
 <template name="username">
 	<section class="rc-old full-page color-tertiary-font-color" style="{{#with backgroundUrl}}background-image: url('{{.}}'){{/with}}">
 		<div class="wrapper">
-			<form id="login-card" class="content-background-color color-primary-font-color" method='/'>
+			<form id="login-card" class="content-background-color color-primary-font-color" method='/' data-qa="username-form">
 				<header>
 					<h2>{{_ "Username_title"}}</h2>
 					<p>{{_ "Username_description"}}</p>
@@ -30,7 +30,7 @@
 					<div class='input-text active'>
 						{{#if username.ready}}
 							<span>
-								<input type="text" name='username' id="username" value="{{username.username}}" dir="auto" class="rc-input__element" placeholder="{{_ 'Username'}}"/>
+								<input type="text" name='username' id="username" value="{{username.username}}" dir="auto" class="rc-input__element" placeholder="{{_ 'Username'}}" data-qa-id="username-input"/>
 							</span>
 							<i></i>
 						{{else}}
@@ -43,7 +43,7 @@
 
 				{{#if username.ready}}
 					<div class="rc-button__group rc-button__group--vertical">
-						<button data-loading-text="{{_ " Please_wait "}}..." class='rc-button rc-button--primary login'>{{_ "Use_this_username"}}</button>
+						<button data-loading-text="{{_ " Please_wait "}}..." class='rc-button rc-button--primary login' data-qa-id="username-submit">{{_ "Use_this_username"}}</button>
 						<button type="reset" class='rc-button rc-button--nude'>{{_ "Logout"}}</button>
 					</div>
 				{{/if}}

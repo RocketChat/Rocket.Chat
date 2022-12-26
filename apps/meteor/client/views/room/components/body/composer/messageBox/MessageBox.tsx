@@ -324,6 +324,7 @@ export const MessageBox = ({
 					onKeyDown={handler}
 					onPaste={handlePaste}
 					is='textarea'
+					data-qa-id='message-composer-input'
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
@@ -396,6 +397,7 @@ export const MessageBox = ({
 								onClick={handleSendMessage}
 								secondary={typing || isEditing}
 								info={typing || isEditing}
+								data-qa-id='message-composer-send'
 							/>
 						)}
 					</MessageComposerToolbarSubmit>

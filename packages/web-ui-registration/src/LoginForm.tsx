@@ -87,6 +87,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	return (
 		<Form
+			data-qa-id='login-form'
 			aria-labelledby={formLabelId}
 			onSubmit={handleSubmit(async (data) => {
 				if (loginMutation.isLoading) {
