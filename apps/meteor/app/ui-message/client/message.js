@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
@@ -439,22 +440,8 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.actionContext;
 	},
-	messageActions(group) {
-		const { msg, context: ctx } = this;
-		let messageGroup = group;
-		let context = ctx || msg.actionContext;
-
-		if (!group) {
-			messageGroup = 'message';
-		}
-
-		if (!context) {
-			const room = Rooms.findOne({ _id: this.msg.rid });
-
-			context = isRoomFederated(room) ? 'federated' : 'message';
-		}
-
-		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);
+	messageActions() {
+		return Template.instance().actions.get();
 	},
 	isSnippet() {
 		const { msg } = this;
@@ -639,6 +626,28 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 		}
 	}
 };
+
+Template.message.onCreated(function () {
+	this.actions = new ReactiveVar([]);
+
+	this.autorun(() => {
+		const { msg, context: ctx, u, chatContext } = Template.currentData();
+		const messageGroup = 'message';
+		let context = ctx || msg.actionContext;
+
+		if (!context) {
+			const room = Rooms.findOne({ _id: msg.rid });
+
+			context = isRoomFederated(room) ? 'federated' : 'message';
+		}
+
+		MessageAction.getButtons({ ...Template.currentData(), message: msg, user: u, chat: chatContext }, context, messageGroup).then(
+			(actions) => {
+				this.actions.set(actions);
+			},
+		);
+	});
+});
 
 Template.message.onRendered(function () {
 	const currentNode = this.firstNode;

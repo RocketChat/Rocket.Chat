@@ -14,6 +14,7 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
+import { UserAction } from '..';
 
 export class ChatMessages implements ChatAPI {
 	private currentEditingMID?: string;
@@ -43,8 +44,7 @@ export class ChatMessages implements ChatAPI {
 				return;
 			}
 
-			this.composer.setText((await this.data.getDraft(undefined)) ?? '');
-			await this.currentEditing.stop();
+			await this.currentEditing.cancel();
 		},
 		toNextMessage: async () => {
 			if (!this.composer || !this.currentEditing) {
@@ -55,18 +55,16 @@ export class ChatMessages implements ChatAPI {
 			const nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
 
 			if (nextMessage) {
-				this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });
+				await this.messageEditing.editMessage(nextMessage, { cursorAtStart: true });
 				return;
 			}
 
-			await this.currentEditing.stop();
-			this.composer.setText((await this.data.getDraft(undefined)) ?? '');
+			await this.currentEditing.cancel();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0].description || message.msg;
-			const cursorPosition = cursorAtStart ? 0 : text.length;
 
-			this.currentEditing?.stop();
+			await this.currentEditing?.stop();
 
 			if (!this.composer || !(await this.data.canUpdateMessage(message))) {
 				return;
@@ -74,10 +72,12 @@ export class ChatMessages implements ChatAPI {
 
 			this.currentEditingMID = message._id;
 			setHighlightMessage(message._id);
-			this.composer?.setEditingMode(true);
+			this.composer.setEditingMode(true);
 
-			this.composer.setText(text, { selection: { start: cursorPosition, end: cursorPosition } });
-			this.composer?.focus();
+			this.composer.setText(text);
+			cursorAtStart && this.composer.setCursorToStart();
+			!cursorAtStart && this.composer.setCursorToEnd();
+			this.composer.focus();
 		},
 	};
 
@@ -100,6 +100,18 @@ export class ChatMessages implements ChatAPI {
 			processMessageEditing: processMessageEditing.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
+
+			action: {
+				start: async (action: 'typing') => {
+					UserAction.start(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+				performContinuously: async (action: 'recording' | 'uploading' | 'playing') => {
+					UserAction.performContinuously(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+				stop: async (action: 'typing' | 'recording' | 'uploading' | 'playing') => {
+					UserAction.stop(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+			},
 		};
 	}
 
@@ -152,16 +164,17 @@ export class ChatMessages implements ChatAPI {
 				}
 
 				await this.data.discardDraft(this.currentEditingMID);
-				this.currentEditing?.stop();
+				await this.currentEditing?.stop();
+				this.composer?.setText((await this.data.getDraft(undefined)) ?? '');
 			},
 		};
 	}
 
-	private release() {
+	private async release() {
 		this.composer?.release();
 		if (this.currentEditing) {
 			if (!this.params.tmid) {
-				this.currentEditing.cancel();
+				await this.currentEditing.cancel();
 			}
 			this.composer?.clear();
 		}

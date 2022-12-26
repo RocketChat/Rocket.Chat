@@ -5,7 +5,6 @@ import { Rooms, Subscriptions } from '../../models/client';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { EmojiPicker } from '../../emoji';
-import { tooltip } from '../../ui/client/components/tooltip';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 export const EmojiEvents = {
@@ -47,19 +46,7 @@ export const EmojiEvents = {
 		const {
 			msg: { _id: mid },
 		} = messageArgs(data);
-		Meteor.call('setReaction', $(event.currentTarget).attr('data-emoji'), mid, () => {
-			tooltip.hide();
-		});
-	},
-
-	'mouseenter .reactions > li:not(.add-reaction)'(event) {
-		event.stopPropagation();
-		tooltip.showElement($(event.currentTarget).find('.people').get(0), event.currentTarget);
-	},
-
-	'mouseleave .reactions > li:not(.add-reaction)'(event) {
-		event.stopPropagation();
-		tooltip.hide();
+		Meteor.call('setReaction', $(event.currentTarget).attr('data-emoji'), mid);
 	},
 };
 
