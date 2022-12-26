@@ -29,15 +29,11 @@ const AdministrationList: FC<AdministrationListProps> = ({
 	const showAudit = hasAuditPermission || hasAuditLogPermission;
 	const showManageApps = hasManageApps || !!appBoxItems.length;
 	const showAdmin = hasAdminPermission || !!adminBoxItems.length;
+	const showWorkspace = hasAdminPermission;
 
 	const list = [
 		showAdmin && (
-			<AdministrationModelList
-				hasAdminPermission={hasAdminPermission}
-				showAdmin={showAdmin}
-				accountBoxItems={adminBoxItems}
-				closeList={closeList}
-			/>
+			<AdministrationModelList showWorkspace={showWorkspace} showAdmin={showAdmin} accountBoxItems={adminBoxItems} closeList={closeList} />
 		),
 		showManageApps && <AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />,
 		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />,

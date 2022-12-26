@@ -37,7 +37,7 @@ const defaultConfig = {
 describe('components/AdministrationList/AdministrationModelList', () => {
 	it('should render administration', async () => {
 		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} hasAdminPermission={true} />);
+		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} showWorkspace={true} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.getByText('Workspace')).to.exist;
@@ -46,7 +46,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 
 	it('should not render workspace', async () => {
 		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} hasAdminPermission={false} />);
+		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} showWorkspace={false} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.queryByText('Workspace')).to.not.exist;
@@ -69,7 +69,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} hasAdminPermission={true} />
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} showWorkspace={true} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Workspace');
@@ -91,7 +91,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} hasAdminPermission={true} />
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} showWorkspace={true} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Workspace');

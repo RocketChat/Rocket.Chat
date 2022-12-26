@@ -13,14 +13,14 @@ import ListItem from '../Sidebar/ListItem';
 
 type AdministrationModelListProps = {
 	accountBoxItems: AccountBoxItem[];
-	hasAdminPermission: boolean;
+	showWorkspace: boolean;
 	showAdmin: boolean;
 	closeList: () => void;
 };
 
 const INFO_PERMISSIONS = ['view-statistics'];
 
-const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, hasAdminPermission, showAdmin, closeList }) => {
+const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showWorkspace, showAdmin, closeList }) => {
 	const t = useTranslation();
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
@@ -52,7 +52,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 								}}
 							/>
 						)}
-						{hasAdminPermission && (
+						{showWorkspace && (
 							<ListItem
 								icon='cog'
 								text={t('Workspace')}
