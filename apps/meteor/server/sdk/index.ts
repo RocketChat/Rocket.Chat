@@ -20,6 +20,7 @@ import type { IVideoConfService } from './types/IVideoConfService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import { FibersContextStore } from './lib/ContextStore';
+import type { IUploadService } from './types/IUploadService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -40,7 +41,7 @@ export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
-
+export const Upload = proxifyWithWait<IUploadService>('upload');
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
