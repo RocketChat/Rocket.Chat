@@ -5,5 +5,5 @@ addMigration({
 	version: 283,
 	up() {
 		upsertPermissions();
-    }
+	},
 });

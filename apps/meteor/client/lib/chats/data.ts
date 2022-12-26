@@ -90,17 +90,19 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = (settings.get('Message_AllowEditing') as boolean | undefined) ?? false;
 		const editOwn = message?.u && message.u._id === Meteor.userId();
 
-		if (!hasPermission && (!editAllowed || !editOwn)) {
+		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-create');
+
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
-		if (elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
+		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
 			return false;
 		}
 
