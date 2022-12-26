@@ -37,10 +37,19 @@ const defaultConfig = {
 describe('components/AdministrationList/AdministrationModelList', () => {
 	it('should render administration', async () => {
 		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} />);
+		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} hasAdminPermission={true} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.getByText('Workspace')).to.exist;
+		expect(screen.getByText('Upgrade')).to.exist;
+	});
+
+	it('should not render workspace', async () => {
+		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} hasAdminPermission={false} />);
+
+		expect(screen.getByText('Administration')).to.exist;
+		expect(screen.queryByText('Workspace')).to.not.exist;
 		expect(screen.getByText('Upgrade')).to.exist;
 	});
 
@@ -60,7 +69,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} hasAdminPermission={true} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Workspace');
@@ -82,7 +91,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
+					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} hasAdminPermission={true} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Workspace');
