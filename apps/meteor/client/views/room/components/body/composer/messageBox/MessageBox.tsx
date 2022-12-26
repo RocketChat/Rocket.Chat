@@ -9,7 +9,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useSetting, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type {
 	MouseEventHandler,
@@ -115,10 +115,8 @@ export const MessageBox = ({
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
 			const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+			chat.composer?.release();
 			if (node === null) {
-				return;
-			}
-			if (!chat || chat.composer) {
 				return;
 			}
 			chat.setComposerAPI(createComposerAPI(node, storageID));
@@ -126,8 +124,6 @@ export const MessageBox = ({
 		},
 		[chat, rid, tmid],
 	);
-
-	const maxLength = useSetting('Message_MaxAllowedSize');
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -318,7 +314,6 @@ export const MessageBox = ({
 					disabled={isRecording}
 					onChange={setTyping}
 					style={textAreaStyle}
-					maxLength={Number.isInteger(maxLength) ? parseInt(maxLength as string) : undefined}
 					placeholder={t('Message')}
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
