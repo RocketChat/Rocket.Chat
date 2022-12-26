@@ -2,28 +2,28 @@ import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import ReadReceiptIndicator from '../../../../components/message/ReadReceiptIndicator';
-import Attachments from '../../../../components/message/content/Attachments';
-import BroadcastMetrics from '../../../../components/message/content/BroadcastMetrics';
-import DicussionMetrics from '../../../../components/message/content/DicussionMetrics';
-import Location from '../../../../components/message/content/Location';
-import MessageActions from '../../../../components/message/content/MessageActions';
-import Reactions from '../../../../components/message/content/Reactions';
-import ThreadMetrics from '../../../../components/message/content/ThreadMetrics';
-import UiKitSurface from '../../../../components/message/content/UiKitSurface';
-import UrlPreviews from '../../../../components/message/content/UrlPreviews';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../contexts/MessageListContext';
-import { isOwnUserMessage } from '../lib/isOwnUserMessage';
-import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
-import MessageContentBody from './MessageContentBody';
+import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
+import { isOwnUserMessage } from '../../../../views/room/MessageList/lib/isOwnUserMessage';
+import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
+import MessageContentBody from '../../MessageContentBody';
+import ReadReceiptIndicator from '../../ReadReceiptIndicator';
+import Attachments from '../../content/Attachments';
+import BroadcastMetrics from '../../content/BroadcastMetrics';
+import DicussionMetrics from '../../content/DicussionMetrics';
+import Location from '../../content/Location';
+import MessageActions from '../../content/MessageActions';
+import Reactions from '../../content/Reactions';
+import ThreadMetrics from '../../content/ThreadMetrics';
+import UiKitSurface from '../../content/UiKitSurface';
+import UrlPreviews from '../../content/UrlPreviews';
 
-const MessageContent: FC<{
+type RoomMessageContentProps = {
 	message: MessageWithMdEnforced;
 	sequential: boolean;
 	subscription?: ISubscription;
@@ -31,7 +31,9 @@ const MessageContent: FC<{
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
-}> = ({ message, unread, all, mention, subscription }) => {
+};
+
+const RoomMessageContent = ({ message, unread, all, mention, subscription }: RoomMessageContentProps): ReactElement => {
 	const {
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },
@@ -120,4 +122,4 @@ const MessageContent: FC<{
 	);
 };
 
-export default memo(MessageContent);
+export default memo(RoomMessageContent);

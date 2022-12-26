@@ -3,12 +3,12 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-type MessageRolesListProps = {
+type RoomMessageRolesProps = {
 	roles: Array<string>;
 	isBot?: boolean;
 };
 
-const MessageRolesList = ({ roles, isBot }: MessageRolesListProps): ReactElement | null => {
+const RoomMessageRoles = ({ roles, isBot }: RoomMessageRolesProps): ReactElement | null => {
 	const t = useTranslation();
 
 	return (
@@ -21,4 +21,4 @@ const MessageRolesList = ({ roles, isBot }: MessageRolesListProps): ReactElement
 	);
 };
 
-export default MessageRolesList;
+export default RoomMessageRoles;

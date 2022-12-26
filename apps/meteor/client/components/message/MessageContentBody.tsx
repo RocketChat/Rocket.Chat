@@ -8,11 +8,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
-import { emoji } from '../../../../../app/emoji/client';
-import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
-import { useMessageActions } from '../../contexts/MessageContext';
-import { useMessageListHighlights } from '../contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
+import { emoji } from '../../../app/emoji/client';
+import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
+import { useMessageListHighlights } from '../../views/room/MessageList/contexts/MessageListContext';
+import type { MessageWithMdEnforced } from '../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { useMessageActions } from '../../views/room/contexts/MessageContext';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 

@@ -2,7 +2,7 @@ import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
 import { MessageStatusIndicator, MessageStatusIndicatorItem, MessageStatusIndicatorText } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import {
@@ -11,11 +11,13 @@ import {
 	useShowTranslated,
 	useShowFollowing,
 	useTranslateProvider,
-} from '../contexts/MessageListContext';
+} from '../../views/room/MessageList/contexts/MessageListContext';
 
-export const MessageIndicators: FC<{
+type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
-}> = ({ message }) => {
+};
+
+const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 	const t = useTranslation();
 	const translated = useShowTranslated({ message });
 	const translateProvider = useTranslateProvider({ message });
@@ -64,3 +66,5 @@ export const MessageIndicators: FC<{
 		</MessageStatusIndicator>
 	);
 };
+
+export default StatusIndicators;

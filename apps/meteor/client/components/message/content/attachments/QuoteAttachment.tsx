@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import MessageContentBody from '../../../../views/room/MessageList/components/MessageContentBody';
+import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';

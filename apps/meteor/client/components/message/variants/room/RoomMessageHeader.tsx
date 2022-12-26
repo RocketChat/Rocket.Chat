@@ -8,19 +8,27 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../../lib/presence';
-import { useMessageActions } from '../../contexts/MessageContext';
-import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from '../contexts/MessageListContext';
-import { useMessageRoles } from '../hooks/useMessageRoles';
-import { MessageIndicators } from './MessageIndicators';
-import RolesList from './MessageRolesList';
+import {
+	useMessageListShowUsername,
+	useMessageListShowRealName,
+	useMessageListShowRoles,
+} from '../../../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageRoles } from '../../../../views/room/MessageList/hooks/useMessageRoles';
+import { useMessageActions } from '../../../../views/room/contexts/MessageContext';
+import StatusIndicators from '../../StatusIndicators';
+import RolesList from './RoomMessageRoles';
 
-const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
+type RoomMessageHeaderProps = {
+	message: IMessage;
+};
+
+const RoomMessageHeader = ({ message }: RoomMessageHeaderProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		actions: { openUserCard },
@@ -66,9 +74,9 @@ const MessageHeader: FC<{ message: IMessage }> = ({ message }) => {
 			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
-			<MessageIndicators message={message} />
+			<StatusIndicators message={message} />
 		</MessageHeaderTemplate>
 	);
 };
 
-export default memo(MessageHeader);
+export default memo(RoomMessageHeader);

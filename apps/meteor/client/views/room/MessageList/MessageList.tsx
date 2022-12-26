@@ -6,12 +6,12 @@ import type { ReactElement } from 'react';
 import React, { Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import RoomMessage from '../../../components/message/variants/RoomMessage';
+import SystemMessage from '../../../components/message/variants/SystemMessage';
+import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import MessageProvider from '../providers/MessageProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import Message from './components/Message';
-import MessageSystem from './components/MessageSystem';
-import ThreadMessagePreview from './components/ThreadMessagePreview';
 import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
@@ -63,7 +63,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 								)}
 
 								{shouldShowMessage && (
-									<Message
+									<RoomMessage
 										id={message._id}
 										data-id={message._id}
 										data-system-message={Boolean(message.t)}
@@ -92,7 +92,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 									/>
 								)}
 
-								{isSystemMessage && <MessageSystem message={message} />}
+								{isSystemMessage && <SystemMessage message={message} />}
 							</Fragment>
 						);
 					})}

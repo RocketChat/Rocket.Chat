@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import {
-	MessageSystem as MessageSystemTemplate,
+	MessageSystem,
 	MessageSystemBody,
 	MessageSystemContainer,
 	MessageSystemLeftContainer,
@@ -13,21 +13,30 @@ import {
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { MessageTypes } from '../../../../../app/ui-utils/client';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import Attachments from '../../../../components/message/content/Attachments';
-import MessageActions from '../../../../components/message/content/MessageActions';
-import { useUserData } from '../../../../hooks/useUserData';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import type { UserPresence } from '../../../../lib/presence';
-import { useMessageActions, useMessageRunActionLink } from '../../contexts/MessageContext';
-import { useMessageListShowRealName, useMessageListShowUsername } from '../contexts/MessageListContext';
-import { useIsSelecting, useToggleSelect, useIsSelectedMessage, useCountSelected } from '../contexts/SelectedMessagesContext';
+import { MessageTypes } from '../../../../app/ui-utils/client';
+import { useUserData } from '../../../hooks/useUserData';
+import { getUserDisplayName } from '../../../lib/getUserDisplayName';
+import type { UserPresence } from '../../../lib/presence';
+import { useMessageListShowRealName, useMessageListShowUsername } from '../../../views/room/MessageList/contexts/MessageListContext';
+import {
+	useIsSelecting,
+	useToggleSelect,
+	useIsSelectedMessage,
+	useCountSelected,
+} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useMessageActions, useMessageRunActionLink } from '../../../views/room/contexts/MessageContext';
+import UserAvatar from '../../avatar/UserAvatar';
+import Attachments from '../content/Attachments';
+import MessageActions from '../content/MessageActions';
 
-export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
+type SystemMessageProps = {
+	message: IMessage;
+};
+
+export const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		actions: { openUserCard },
@@ -47,7 +56,7 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 	useCountSelected();
 
 	return (
-		<MessageSystemTemplate
+		<MessageSystem
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
 			data-qa-selected={isSelected}
@@ -109,8 +118,8 @@ export const MessageSystem: FC<{ message: IMessage }> = ({ message }) => {
 					/>
 				)}
 			</MessageSystemContainer>
-		</MessageSystemTemplate>
+		</MessageSystem>
 	);
 };
 
-export default memo(MessageSystem);
+export default memo(SystemMessage);
