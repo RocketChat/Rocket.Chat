@@ -13,17 +13,7 @@ const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
 const callMethod = <MethodName extends ServerMethodName>(
 	methodName: MethodName,
 	...args: ServerMethodParameters<MethodName>
-): Promise<ServerMethodReturn<MethodName>> =>
-	new Promise((resolve, reject) => {
-		Meteor.call(methodName, ...args, (error: Error, result: ServerMethodReturn<MethodName>) => {
-			if (error) {
-				reject(error);
-				return;
-			}
-
-			resolve(result);
-		});
-	});
+): Promise<ServerMethodReturn<MethodName>> => Meteor.callAsync(methodName, ...args);
 
 const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
