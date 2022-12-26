@@ -10,9 +10,9 @@ import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
-const OmnichannelDirectoryPage = (): ReactElement => {
-	const defaultTab = 'contacts';
+const DEFAULT_TAB = 'contacts';
 
+const OmnichannelDirectoryPage = (): ReactElement => {
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('page');
 	const directoryRoute = useRoute('omnichannel-directory');
@@ -24,13 +24,12 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 		}
 
 		if (!tab) {
-			return directoryRoute.replace({ page: defaultTab });
+			return directoryRoute.replace({ page: DEFAULT_TAB });
 		}
-	}, [routeName, directoryRoute, tab, defaultTab]);
+	}, [routeName, directoryRoute, tab]);
 
 	const handleTabClick = useCallback((tab) => (): void => directoryRoute.push({ tab }), [directoryRoute]);
 
-	const [contactReload, setContactReload] = useState();
 	const [chatReload, setChatReload] = useState();
 
 	const t = useTranslation();
@@ -55,12 +54,12 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 					</Tabs.Item>
 				</Tabs>
 				<Page.Content>
-					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
+					{(tab === 'contacts' && <ContactTab />) ||
 						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />) ||
 						(tab === 'calls' && <CallTab />)}
 				</Page.Content>
 			</Page>
-			<ContextualBar chatReload={chatReload} contactReload={contactReload} />
+			<ContextualBar chatReload={chatReload} />
 		</Page>
 	);
 };

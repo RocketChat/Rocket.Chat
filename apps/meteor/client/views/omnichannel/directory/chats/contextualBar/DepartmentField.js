@@ -6,7 +6,7 @@ import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import { FormSkeleton } from '../../Skeleton';
+import { FormSkeleton } from '../../components/FormSkeleton';
 
 const DepartmentField = ({ departmentId }) => {
 	const t = useTranslation();

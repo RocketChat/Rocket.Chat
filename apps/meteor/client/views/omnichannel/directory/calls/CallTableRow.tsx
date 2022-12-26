@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { useIsCallReady } from '../../../../contexts/CallContext';
-import { CallDialpadButton } from '../CallDialpadButton';
+import { CallDialpadButton } from '../components/CallDialpadButton';
 
 type CallTableRowProps = {
 	room: IVoipRoom;
