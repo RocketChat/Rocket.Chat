@@ -79,10 +79,10 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js 14.19.3
+      - name: Use Node.js 14.21.1
         uses: actions/setup-node@v3
         with:
-          node-version: '14.19.3'
+          node-version: '14.21.1'
           cache: 'yarn'
 
       - name: Free disk space
@@ -222,7 +222,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.19.3']
+        node-version: ['14.21.1']
         mongodb-version: ['4.2', '4.4', '5.0']
 
     steps:
@@ -423,7 +423,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ['14.19.3']
+        node-version: ['14.21.1']
         mongodb-version-ee: ['4.4']
 
     steps:
@@ -693,7 +693,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"14.19.3\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"14.21.1\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
