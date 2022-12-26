@@ -4,7 +4,7 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { AppScreenshot, App, FeaturedAppsSection, ILogItem } from '@rocket.chat/core-typings';
+import type { AppScreenshot, App, FeaturedAppsSection, ILogItem, AppRequest, PaginationMeta, Pagination, AppRequestFilter, RestResponse } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
@@ -117,6 +117,10 @@ export type AppsEndpoints = {
 		GET: () => {
 			sections: FeaturedAppsSection[];
 		};
+	};
+
+	'/apps/app-request': {
+		GET: (params: { appId: string; filter: AppRequestFilter; sort: string; pagination: Pagination }) => RestResponse;
 	};
 
 	'/apps': {

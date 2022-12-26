@@ -48,6 +48,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const appRequestNotifications = useEndpoint('GET', `/apps/app-request?appId=${app.id}`);
 
 	const [loading, setLoading] = useState(false);
 
@@ -68,7 +69,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		(permissionsGranted) => {
 			setModal(null);
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
+			marketplaceActions[action]({ ...app, permissionsGranted }).then(async () => {
+				// notify user
+				if (action === 'install') {
+					const pagination = {
+						limit: 10,
+						offset: 0,
+					};
+
+					await Apps.appRequests(app.id, 'notification-not-sent', '-createdDate', pagination);
+				}
+
 				setLoading(false);
 			});
 		},

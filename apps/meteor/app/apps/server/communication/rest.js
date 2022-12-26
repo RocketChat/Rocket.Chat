@@ -885,5 +885,31 @@ export class AppsRestApi {
 				},
 			},
 		);
+
+		this.api.addRoute(
+			'app-request',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const { appId } = this.queryParams;
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&filter=notification-not-sent`, { headers });
+						return API.v1.success({ data });
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
+
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
 	}
 }
