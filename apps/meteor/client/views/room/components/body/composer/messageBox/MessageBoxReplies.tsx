@@ -31,35 +31,32 @@ const MessageBoxReplies = (): ReactElement | null => {
 
 	return (
 		<Box mbe='x8' position='relative' overflowY='auto' maxHeight='x256'>
-			{replies.map((reply, key) => {
-				console.log(reply);
-				return (
-					<Margins block='x4' key={key}>
-						<Box display='flex' position='relative'>
-							<QuoteAttachment
-								attachment={
-									{
-										text: reply.msg,
-										author_name: reply.u.username,
-										author_icon: `/avatar/${reply.u.username}`,
-										ts: reply.ts,
-										attachments: reply.attachments,
-									} as any
-								}
-							/>
-							<Box
-								className={closeWrapperStyle}
-								data-mid={reply._id}
-								onClick={(): void => {
-									chat.composer?.dismissQuotedMessage(reply._id);
-								}}
-							>
-								<IconButton mini icon='cross' />
-							</Box>
+			{replies.map((reply, key) => (
+				<Margins block='x4' key={key}>
+					<Box display='flex' position='relative'>
+						<QuoteAttachment
+							attachment={
+								{
+									text: reply.msg,
+									author_name: reply.u.username,
+									author_icon: `/avatar/${reply.u.username}`,
+									ts: reply.ts,
+									attachments: reply.attachments,
+								} as any
+							}
+						/>
+						<Box
+							className={closeWrapperStyle}
+							data-mid={reply._id}
+							onClick={(): void => {
+								chat.composer?.dismissQuotedMessage(reply._id);
+							}}
+						>
+							<IconButton mini icon='cross' />
 						</Box>
-					</Margins>
-				);
-			})}
+					</Box>
+				</Margins>
+			))}
 		</Box>
 	);
 };
