@@ -1,8 +1,10 @@
+import { css } from '@rocket.chat/css-in-js';
+import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import Attachments from '../../../../../../components/message/content/Attachments';
+import { QuoteAttachment } from '../../../../../../components/message/content/attachments/QuoteAttachment';
 import { useChat } from '../../../../contexts/ChatContext';
 
 const MessageBoxReplies = (): ReactElement | null => {
@@ -21,30 +23,41 @@ const MessageBoxReplies = (): ReactElement | null => {
 		return null;
 	}
 
+	const closeWrapperStyle = css`
+		position: absolute;
+		right: 0.5rem;
+		top: 0.75rem;
+	`;
+
 	return (
-		<div className='reply-preview__wrap message-popup'>
-			{replies.map((reply) => (
-				<div className='reply-preview message-popup'>
-					<div className='message'>
-						<Attachments attachments={[{ text: reply.msg, author_name: reply.u.username } as any]} />
-					</div>
-					<div
-						className='rc-message-box__icon cancel-reply'
-						data-mid='{{replyMessageData._id}}'
-						onClick={(): void => {
-							chat.composer?.dismissQuotedMessage(reply._id);
-						}}
-					>
-						<svg
-							className={`rc-icon rc-message-box__toolbar-formatting-icon rc-message-box__toolbar-formatting-icon--cross`}
-							aria-hidden='true'
+		<Box mbe='x8' position='relative' overflowY='auto' maxHeight='x256'>
+			{replies.map((reply, key) => (
+				<Margins block='x4' key={key}>
+					<Box display='flex' position='relative'>
+						<QuoteAttachment
+							attachment={
+								{
+									text: reply.msg,
+									author_name: reply.u.username,
+									author_icon: `/avatar/${reply.u.username}`,
+									ts: reply.ts,
+									attachments: reply.attachments,
+								} as any
+							}
+						/>
+						<Box
+							className={closeWrapperStyle}
+							data-mid={reply._id}
+							onClick={(): void => {
+								chat.composer?.dismissQuotedMessage(reply._id);
+							}}
 						>
-							<use xlinkHref={`#icon-cross`} />
-						</svg>
-					</div>
-				</div>
+							<IconButton mini icon='cross' />
+						</Box>
+					</Box>
+				</Margins>
 			))}
-		</div>
+		</Box>
 	);
 };
 
