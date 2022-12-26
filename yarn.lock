@@ -6186,7 +6186,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -6206,7 +6206,7 @@ __metadata:
     moment-timezone: ~0.5.27
     mongodb: ^4.12.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6225,7 +6225,7 @@ __metadata:
     split-on-first: ^3.0.0
     strict-uri-encode: ^2.0.0
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6283,7 +6283,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6296,7 +6296,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6312,7 +6312,7 @@ __metadata:
     eslint: ^8.29.0
     mongodb: ^4.12.1
     prettier: ^2.7.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6372,7 +6372,7 @@ __metadata:
     polka: ^0.5.2
     sharp: ^0.30.7
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
     underscore: ^1.13.4
     uuid: ^7.0.3
     ws: ^8.8.1
@@ -6409,7 +6409,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: ^8.29.0
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6645,7 +6645,7 @@ __metadata:
     react-dom: ~17.0.2
     react-error-boundary: ^3.1.4
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   peerDependencies:
     "@rocket.chat/core-typings": "*"
     "@rocket.chat/css-in-js": "*"
@@ -6750,7 +6750,7 @@ __metadata:
     stylelint: ^14.9.1
     stylelint-order: ^5.0.0
     svg-loader: ^0.0.2
-    typescript: ~4.5.5
+    typescript: 4.6.4
     url-loader: ^4.1.1
     webpack: ^4.44.1
     webpack-cli: ^3.3.12
@@ -6903,7 +6903,7 @@ __metadata:
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
     "@types/marked": ^4.0.3
-    "@types/meteor": 2.7.1
+    "@types/meteor": 2.8.1
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
     "@types/moment-timezone": ^0.5.30
@@ -7109,7 +7109,7 @@ __metadata:
     turndown: ^7.1.1
     twilio: ^3.76.1
     twit: ^2.2.11
-    typescript: ~4.5.5
+    typescript: 4.6.4
     ua-parser-js: ^1.0.2
     underscore: ^1.13.4
     underscore.string: ^3.3.6
@@ -7139,7 +7139,7 @@ __metadata:
     jest: ^27.5.1
     mongodb: ^4.12.1
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7152,7 +7152,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7195,7 +7195,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7223,7 +7223,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7244,7 +7244,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^29.0.3
     mongodb: ^4.12.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7272,7 +7272,7 @@ __metadata:
     jest: ^27.5.1
     mongodb: ^4.12.1
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7315,7 +7315,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7390,7 +7390,7 @@ __metadata:
     postcss-url: ~10.1.3
     react: ~17.0.2
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -7424,7 +7424,7 @@ __metadata:
     eslint-plugin-storybook: ^0.6.7
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
@@ -7450,7 +7450,7 @@ __metadata:
     mongodb: ^4.12.1
     react: ~17.0.2
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: 4.6.4
     use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -7506,7 +7506,7 @@ __metadata:
     postcss-url: ~10.1.3
     react: ~17.0.2
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -7544,7 +7544,7 @@ __metadata:
     eslint-plugin-storybook: ^0.6.7
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: 4.6.4
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9855,6 +9855,19 @@ __metadata:
     "@types/underscore": "*"
     mongodb: ^4.3.1
   checksum: a363cbcdec41e233997f3e05fd616e9ba1840bf7648b265144102769c0afdbeb614bf6d17e969343ed70883396a341ea876149d3f23fd2ea60a07c99f067f91e
+  languageName: node
+  linkType: hard
+
+"@types/meteor@npm:2.8.1":
+  version: 2.8.1
+  resolution: "@types/meteor@npm:2.8.1"
+  dependencies:
+    "@types/connect": "*"
+    "@types/jquery": "*"
+    "@types/react": "*"
+    "@types/underscore": "*"
+    mongodb: ^4.3.1
+  checksum: 00d29816a05db7dac92f27e22ced92f4db36b56a5778479f3c3aa4b00165944536ce1c37600f9b61c497dc85a77a91e1244f1ed346daea383af1c54f86013d72
   languageName: node
   linkType: hard
 
@@ -31421,7 +31434,7 @@ __metadata:
     sodium-native: ^3.3.0
     sodium-plus: ^0.9.0
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: 4.6.4
     underscore.string: ^3.3.6
     uuid: ^8.3.2
     ws: ^8.8.1
@@ -34821,6 +34834,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:4.6.4":
+  version: 4.6.4
+  resolution: "typescript@npm:4.6.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~4.3.5":
   version: 4.3.5
   resolution: "typescript@npm:4.3.5"
@@ -34838,6 +34861,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 506f4c919dc8aeaafa92068c997f1d213b9df4d9756d0fae1a1e7ab66b585ab3498050e236113a1c9e57ee08c21ec6814ca7a7f61378c058d79af50a4b1f5a5e
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@4.6.4#~builtin<compat/typescript>":
+  version: 4.6.4
+  resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=f456af"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1cb434fbc637d347be90e3a0c6cd05e33c38f941713c8786d3031faf1842c2c148ba91d2fac01e7276b0ae3249b8633f1660e32686cc7a8c6a8fd5361dc52c66
   languageName: node
   linkType: hard
 
