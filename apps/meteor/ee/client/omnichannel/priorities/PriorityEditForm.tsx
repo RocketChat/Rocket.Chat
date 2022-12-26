@@ -9,7 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import StringSettingInput from '../../../../client/views/admin/settings/inputs/StringSettingInput';
 
-export type PriorityFormData = { name: string };
+export type PriorityFormData = { name: string; reset: boolean };
 
 export type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 	i18n: TranslationKey;
@@ -27,6 +27,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 	const [isSaving, setSaving] = useState(false);
 
 	const { name, i18n, dirty, _id } = data;
+	const defaultName = t(i18n);
 
 	const {
 		control,
@@ -35,11 +36,11 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		formState: { errors, isValid, isDirty },
 	} = useForm<PriorityFormData>({
 		mode: 'onChange',
-		defaultValues: data ? { name: dirty ? name : t(i18n) } : {},
+		defaultValues: data ? { name: dirty ? name : defaultName } : {},
 	});
 
 	const handleSave = useMutableCallback(async () => {
-		const values = getValues();
+		const { name } = getValues();
 
 		if (!isValid) {
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
@@ -47,14 +48,14 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 
 		try {
 			setSaving(true);
-			await onSave(values);
+			await onSave({ name, reset: name === defaultName });
 		} finally {
 			setSaving(false);
 		}
 	});
 
-	const resetName = (): void => {
-		setValue('name', t(i18n), {
+	const onReset = (): void => {
+		setValue('name', defaultName, {
 			shouldDirty: true,
 			shouldValidate: true,
 		});
@@ -66,7 +67,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 				<Controller
 					name='name'
 					control={control}
-					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v.trim() !== '' }}
+					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v?.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
 							_id={_id}
@@ -74,7 +75,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 							placeholder={t('Name')}
 							value={value}
 							hasResetButton={value !== t(i18n)}
-							onResetButtonClick={resetName}
+							onResetButtonClick={onReset}
 							onChangeValue={onChange}
 							disabled={isSaving}
 						/>
