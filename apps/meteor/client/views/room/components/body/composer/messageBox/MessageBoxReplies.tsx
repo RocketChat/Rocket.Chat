@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import Attachments from '../../../../../../components/message/Attachments';
+import { QuoteAttachment } from '../../../../../../components/message/Attachments/QuoteAttachment';
 import { useChat } from '../../../../contexts/ChatContext';
 
 const MessageBoxReplies = (): ReactElement | null => {
@@ -30,27 +30,25 @@ const MessageBoxReplies = (): ReactElement | null => {
 	`;
 
 	return (
-		<Box mbe='x8' position='relative'>
+		<Box mbe='x8' position='relative' overflowY='auto' maxHeight='x256'>
 			{replies.map((reply, key) => {
 				console.log(reply);
 				return (
 					<Margins block='x4' key={key}>
 						<Box display='flex' position='relative'>
-							<Attachments
-								attachments={[
+							<QuoteAttachment
+								attachment={
 									{
-										...(!reply.attachments && { text: reply.msg }),
+										text: reply.msg,
 										author_name: reply.u.username,
 										author_icon: `/avatar/${reply.u.username}`,
-										message_link: 'test',
 										ts: reply.ts,
 										attachments: reply.attachments,
-									} as any,
-								]}
+									} as any
+								}
 							/>
 							<Box
 								className={closeWrapperStyle}
-								// className='rc-message-box__icon cancel-reply'
 								data-mid={reply._id}
 								onClick={(): void => {
 									chat.composer?.dismissQuotedMessage(reply._id);

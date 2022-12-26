@@ -6,7 +6,6 @@ import $ from 'jquery';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
-import './messageBoxReplyPreview.ts';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 
