@@ -148,11 +148,7 @@ export const MessageBox = ({
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
-		const text = chat?.composer?.text;
-		if (!text) {
-			console.warn('No text to send');
-			return;
-		}
+		const text = chat?.composer?.text ?? '';
 		chat?.composer?.clear();
 
 		onSend?.({
@@ -160,6 +156,7 @@ export const MessageBox = ({
 			tshow,
 		});
 	});
+
 	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { which: keyCode } = event;
 
@@ -171,15 +168,10 @@ export const MessageBox = ({
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
 
-			if (!isSending) {
-				return false;
-			}
 			event.preventDefault();
-
-			const text = chat?.composer?.text;
-			if (!text) {
-				console.warn('No text to send');
-				return;
+			if (!isSending) {
+				chat?.composer?.insertNewLine();
+				return false;
 			}
 			handleSendMessage();
 			return false;
@@ -400,10 +392,10 @@ export const MessageBox = ({
 							<MessageComposerAction
 								aria-label={t('Send')}
 								icon='send'
-								disabled={!canSend || !typing}
+								disabled={!canSend || (!typing && !isEditing)}
 								onClick={handleSendMessage}
-								secondary={typing}
-								info={typing}
+								secondary={typing || isEditing}
+								info={typing || isEditing}
 							/>
 						)}
 					</MessageComposerToolbarSubmit>
