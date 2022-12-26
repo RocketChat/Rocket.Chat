@@ -45,15 +45,15 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 
 	return (
 		<Page.ScrollableContentWithShadow
-			pb='x24'
-			mi='neg-x24'
+			// pb='x24'
+			// mi='neg-x24'
 			is='form'
 			onSubmit={useCallback((e) => e.preventDefault(), [])}
 			qa-admin-user-edit='form'
 			{...props}
 		>
 			<Margins block='x16'>
-				<FieldGroup width='x600' alignSelf='center'>
+				<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
 					{useMemo(
 						() => (
 							<Field>
