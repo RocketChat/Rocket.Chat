@@ -2747,6 +2747,7 @@
   "Reacted_with": "გამოხატა რეაქცია __ - ით",
   "Reactions": "რეაქციები",
   "Read_only": "მხოლოდ წაკითხვა",
+  "This_room_is_read_only": "ოთახი არის მხოლოდ წაკითხვის უფლებით",
   "Real_Estate": "უძრავი ქონება",
   "Real_Time_Monitoring": "რეალურ დროში მონიტორინგი",
   "RealName_Change_Disabled": "თქვენი Rocket.Chat ადმინისტრატორმა გამორთო სახელების შეცვლა",

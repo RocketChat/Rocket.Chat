@@ -3520,6 +3520,7 @@
   "Reactions": "التفاعلات",
   "Read_by": "قراءة بواسطة",
   "Read_only": "القراءة فقط",
+  "This_room_is_read_only": "يُمكن قراءة دردشة هذه الغرفة فقط",
   "Read_only_changed_successfully": "تم تغيير وضع القراءة فقط بنجاح",
   "Read_only_channel": "Channel للقراءة فقط",
   "Read_only_group": "مجموعة القراءة فقط",

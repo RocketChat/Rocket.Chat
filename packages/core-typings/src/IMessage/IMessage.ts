@@ -329,5 +329,10 @@ export type IOTRMessage = IMessage & {
 	t: 'otr' | 'otr-ack';
 };
 
+export type IVideoConfMessage = IMessage & {
+	t: 'videoconf';
+};
+
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
+export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';

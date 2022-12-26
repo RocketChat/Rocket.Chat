@@ -12,13 +12,18 @@ import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
 
+// TODO: Remove styles from here
 const HeaderWithData = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
 
 	return (
 		<>
-			<Sidebar.TopBar.Section className='sidebar--custom-colors'>
+			<Sidebar.TopBar.Section
+				{...{
+					style: { flexShrink: 0 },
+				}}
+			>
 				<UserAvatarButton />
 				<Sidebar.TopBar.Actions>
 					<Home title={t('Home')} />

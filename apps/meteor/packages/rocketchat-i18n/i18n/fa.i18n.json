@@ -2340,6 +2340,7 @@
   "Reactions": "واکنش",
   "Read_by": "خوانده شده توسط",
   "Read_only": "فقط خواندنی",
+  "This_room_is_read_only": "این اتاق فقط خواندنی است",
   "Read_only_changed_successfully": "فقط خواندنی با موفقیت تغییر کرد",
   "Read_only_channel": "کانال فقط خواندنی",
   "Read_only_group": "فقط گروه را بخوان",
