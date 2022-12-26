@@ -49,7 +49,7 @@ addAction('start-call', ({ room }) => {
 	const enabledChannel = useSetting('VideoConf_Enable_Channels') !== false;
 	const enabledTeams = useSetting('VideoConf_Enable_Teams') !== false;
 	const enabledGroups = useSetting('VideoConf_Enable_Groups') !== false;
-	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'Jitsi';
+	const enabledLiveChat = useSetting('Omnichannel_call_provider') === 'default-provider';
 
 	const live = room?.streamingOptions && room.streamingOptions.type === 'call';
 	const enabled = enabledDMs || enabledChannel || enabledTeams || enabledGroups || enabledLiveChat;
