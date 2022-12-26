@@ -33,7 +33,7 @@ const ToolBoxActionOptions: FC<ToolBoxActionOptionsProps> = ({ options, room, ac
 					{options.map(({ id, label, validate }) => {
 						const { value: valid = true, tooltip } = validate?.(room) || {};
 						return (
-							<Option key={id} onClick={handleClick(id)} disabled={!valid} title={tooltip ? t(tooltip) : undefined}>
+							<Option key={id} onClick={handleClick(id)} disabled={!valid} aria-disabled={!valid} title={tooltip ? t(tooltip) : undefined}>
 								<Box fontScale='p2m' minWidth='180px'>
 									{t(label)}
 								</Box>
