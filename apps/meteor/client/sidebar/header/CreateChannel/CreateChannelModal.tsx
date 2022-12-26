@@ -259,7 +259,13 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 								control={control}
 								name='encrypted'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch ref={ref} checked={value} disabled={e2eDisabled || federated} onChange={onChange} />
+									<ToggleSwitch
+										ref={ref}
+										checked={value}
+										disabled={e2eDisabled || federated}
+										onChange={onChange}
+										data-qa-type='encryption-toggle'
+									/>
 								)}
 							/>
 						</Box>
