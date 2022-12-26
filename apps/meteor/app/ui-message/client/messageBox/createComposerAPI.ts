@@ -230,7 +230,10 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 	};
 
+	const insertNewLine = (): void => insertText('\n');
+
 	return {
+		insertNewLine,
 		setCursorToEnd: () => {
 			input.selectionEnd = input.value.length;
 			input.selectionStart = input.selectionEnd;
