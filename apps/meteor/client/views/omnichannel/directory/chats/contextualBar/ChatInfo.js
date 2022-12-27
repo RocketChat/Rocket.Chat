@@ -171,7 +171,7 @@ function ChatInfo({ id, route }) {
 							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
 					{slaId && <SlaField id={slaId} />}
-					{slaId && <PriorityField id={priorityId} />}
+					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
