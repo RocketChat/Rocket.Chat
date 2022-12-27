@@ -113,7 +113,7 @@ const OmnichannelTranscript = ({ header, body }: OmnichannelData) => (
 					<View style={styles.tableContainer}>
 						<InvoiceTableHeader
 							values={[
-								{ key: 'Agent: ', value: header.agent.name || header.agent.username || 'Omnichannel Agent' },
+								{ key: 'Agent: ', value: header.agent?.name || header.agent?.username || 'Omnichannel Agent' },
 								{ key: 'Date: ', value: `${header.closedAt}` },
 							]}
 						/>
@@ -143,7 +143,7 @@ const OmnichannelTranscript = ({ header, body }: OmnichannelData) => (
 								</View>
 								{message.files?.map((attachment, index) => (
 									<View style={{ marginTop: 10, flexDirection: 'column' }} id={`attachment-${index}`}>
-										<Text style={{ color: '#9e9e9e', marginBottom: 0 }}>{attachment.name}</Text>
+										<Text style={{ color: '#9e9e9e', marginBottom: 0 }}>{attachment?.name}</Text>
 										{/* When buffer is received, that means the image is valid (already checked by service) and the buffer is complete */}
 										{attachment.buffer ? (
 											// IMPORTANT: Buffer.from is a required step to get the image to work

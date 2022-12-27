@@ -146,25 +146,26 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			throw new Error('retry');
 		}
 		this.currentJobNumber++;
-
-		const room = await LivechatRooms.findOneById(details.rid);
-		if (!room) {
-			throw new Error('room-not-found');
-		}
-		const messages = await this.getMessagesFromRoom({ rid: room._id });
-
-		const data = {
-			visitor:
-				room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } })),
-			agent: room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1 } })),
-			closedAt: room.closedAt,
-			messages: await this.getFiles(details.userId, messages),
-		};
-
 		try {
+			const room = await LivechatRooms.findOneById(details.rid);
+			if (!room) {
+				throw new Error('room-not-found');
+			}
+			const messages = await this.getMessagesFromRoom({ rid: room._id });
+
+			const data = {
+				visitor:
+					room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } })),
+				agent: room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1 } })),
+				closedAt: room.closedAt,
+				messages: await this.getFiles(details.userId, messages),
+			};
+
 			await this.doRender({ template, data, details });
 		} catch (error) {
 			await this.pdfFailed({ details, e: error as Error });
+		} finally {
+			this.currentJobNumber--;
 		}
 	}
 
@@ -198,8 +199,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
-		this.currentJobNumber--;
-
 		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
@@ -223,8 +222,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
-		this.currentJobNumber--;
-
 		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
 		const user = await Users.findOneById(details.userId);
 		if (!user) {
