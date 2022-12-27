@@ -19,7 +19,6 @@ import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
-import { appRequestNotificationForUsers } from './helpers/notifyAppRequests';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -72,7 +71,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			marketplaceActions[action]({ ...app, permissionsGranted }).then(async () => {
 				// notify user
 				if (action === 'install') {
-					appRequestNotificationForUsers(app);
+					await Apps.notifyUsers(app);
 				}
 
 				setLoading(false);

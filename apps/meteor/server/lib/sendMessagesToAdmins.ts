@@ -15,7 +15,7 @@ type Banner = {
 	link: string;
 };
 
-export const getData = <T>(param: T[] | ((params: { adminUser: IUser }) => T[]), adminUser: IUser): T[] => {
+const getData = <T>(param: T[] | ((params: { adminUser: IUser }) => T[]), adminUser: IUser): T[] => {
 	const result = typeof param === 'function' ? param({ adminUser }) : param;
 
 	if (!Array.isArray(result)) {

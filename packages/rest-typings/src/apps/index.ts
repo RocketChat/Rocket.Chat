@@ -11,7 +11,8 @@ import type {
 	ILogItem,
 	Pagination,
 	AppRequestFilter,
-	RestResponse,
+	IRestResponse,
+	AppRequest,
 } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
@@ -128,7 +129,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; q: AppRequestFilter; sort: string; pagination: Pagination }) => RestResponse;
+		GET: (params: { appId: string; q: AppRequestFilter; sort: string; pagination: Pagination }) => IRestResponse<AppRequest>;
 	};
 
 	'/apps/app-request/notify-users': {

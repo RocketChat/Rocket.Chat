@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -13,7 +12,7 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
-import { sendMessagesToUsers } from '../../../../server/lib/sendMessagesToUsers';
+import { appRequestNotififyForUsers } from '../marketplace/appRequestNotifyUsers';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -906,6 +905,7 @@ export class AppsRestApi {
 						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 							headers,
 						});
+
 						return API.v1.success({ data });
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
@@ -921,42 +921,16 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async post() {
-					if (!this.bodyParams.userIds) {
-						return API.v1.failure('bad request, missing userIds');
+					if (!this.bodyParams.appId) {
+						return API.v1.failure('bad request, missing appId');
 					}
 
 					if (!this.bodyParams.appName) {
 						return API.v1.failure('bad request, missing appName');
 					}
 
-					const msgFn = (user) => {
-						const msg = `${TAPi18n.__('App_request_enduser_message', { appname: this.bodyParams.appName }, { lang: user.language })}`;
-
-						return { msg };
-					};
-
-					try {
-						const success = await sendMessagesToUsers('rocket.cat', this.bodyParams.userIds, msgFn);
-						const baseUrl = orchestrator.getMarketplaceUrl();
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						// Mark all success messages for users as sent
-						await HTTP.post(`${baseUrl}/v1/app-request/markAsSent`, {
-							data: {
-								appId: this.bodyParams.appId,
-								userIds: success,
-							},
-							headers,
-						});
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error sending app request notification to users:', e.message);
-						return API.v1.failure(e.message);
-					}
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					await appRequestNotififyForUsers(baseUrl, this.bodyParams.appId, this.bodyParams.appName);
 				},
 			},
 		);

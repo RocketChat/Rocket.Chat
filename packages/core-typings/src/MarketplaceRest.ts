@@ -11,7 +11,7 @@ export type Pagination = {
 	limit: number;
 };
 
-export type RestResponse = {
-	data: any;
+export interface IRestResponse<T> {
+	data: T[];
 	meta: PaginationMeta;
-};
+}

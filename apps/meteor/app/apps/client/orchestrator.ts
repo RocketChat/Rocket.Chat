@@ -7,7 +7,7 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import type { AppScreenshot, AppRequestFilter, Pagination, RestResponse, Serialized } from '@rocket.chat/core-typings';
+import type { AppScreenshot, AppRequestFilter, Pagination, IRestResponse, Serialized } from '@rocket.chat/core-typings';
 
 import type { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
@@ -234,7 +234,7 @@ class AppClientOrchestrator {
 		throw new Error('Failed to build external url');
 	}
 
-	public async appRequests(appId: string, filter: AppRequestFilter, sort: string, pagination: Pagination): Promise<RestResponse> {
+	public async appRequests(appId: string, filter: AppRequestFilter, sort: string, pagination: Pagination): Promise<IRestResponse> {
 		try {
 			const response = await APIClient.get(
 				`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${pagination.limit}&offset=${pagination.offset}`,
@@ -251,10 +251,9 @@ class AppClientOrchestrator {
 		}
 	}
 
-	public async notifyUsers(userIds: string[], app: App): Promise<void> {
+	public async notifyUsers(app: App): Promise<void> {
 		try {
 			await APIClient.post('/apps/app-request/notify-users', {
-				userIds,
 				appName: app.name,
 				appId: app.id,
 			});
