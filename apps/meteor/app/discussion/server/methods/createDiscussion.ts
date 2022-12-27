@@ -4,7 +4,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 
 import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
-import { Team } from '../../../../server/sdk';
 import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
@@ -58,8 +57,7 @@ type CreateDiscussionProperties = {
 	encrypted?: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const create = ({ prid, pmid, t_name, reply, users, user, encrypted }: CreateDiscussionProperties) => {
+const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: undefined | IMessage;
 	if (pmid) {
@@ -124,18 +122,12 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }: CreateDis
 		}
 	}
 
-	let isInPrivateTeam = false;
-	if (parentRoom.teamId) {
-		const team = Promise.await(Team.getOneById(parentRoom.teamId, { projection: { _id: 1, type: 1 } }));
-		isInPrivateTeam = Boolean(team?.type);
-	}
-
 	const name = Random.id();
 
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	const type = roomCoordinator.getRoomDirectives(parentRoom.t)?.getDiscussionType({ isInPrivateTeam });
+	const type = roomCoordinator.getRoomDirectives(parentRoom.t)?.getDiscussionType(parentRoom);
 	const description = parentRoom.encrypted ? '' : message?.msg;
 	const topic = parentRoom.name;
 
@@ -152,7 +144,7 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }: CreateDis
 		[...new Set(invitedUsers)].filter(Boolean),
 		false,
 		{
-			fname: t_name,
+			fname: discussionName,
 			description, // TODO discussions remove
 			topic, // TODO discussions remove
 			prid,
@@ -172,9 +164,9 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }: CreateDis
 		}
 		mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 
-		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, parentRoom));
+		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, discussionName, attachMessage(message, parentRoom));
 	} else {
-		discussionMsg = createDiscussionMessage(prid, user, discussion._id, t_name);
+		discussionMsg = createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
 	callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
@@ -196,8 +188,7 @@ Meteor.methods({
 	 * @param {string[]} users - users to be added
 	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	 */
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	createDiscussion({ prid, pmid, t_name, reply, users, encrypted }: CreateDiscussionProperties) {
+	createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
@@ -213,6 +204,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ prid, pmid, t_name, reply, users, user: Meteor.user() as IUser, encrypted });
+		return create({ prid, pmid, t_name: discussionName, reply, users, user: Meteor.user() as IUser, encrypted });
 	},
 });
