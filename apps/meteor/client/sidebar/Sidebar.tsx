@@ -41,24 +41,11 @@ const Sidebar = () => {
 
 			.rtl & {
 				transform: translate3d(200%, 0, 0);
-			}
-		}
 
-		@media (width <= 400px) {
-			flex: 0 0 var(--sidebar-small-width);
-			width: var(--sidebar-small-width);
-			max-width: var(--sidebar-small-width);
-
-			&__footer {
-				display: none;
-			}
-
-			&:not(&--light) {
-				transform: translate3d(-100%, 0, 0);
-			}
-
-			.rtl & {
-				transform: translate3d(200%, 0, 0);
+				&.opened {
+					box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
+					transform: translate3d(0px, 0px, 0px);
+				}
 			}
 		}
 
