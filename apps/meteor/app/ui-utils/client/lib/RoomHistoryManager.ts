@@ -332,7 +332,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
-		if (!result || !result.messages) {
+		if (!result) {
 			return;
 		}
 
