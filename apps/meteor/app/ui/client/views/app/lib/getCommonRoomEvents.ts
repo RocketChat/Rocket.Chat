@@ -1,8 +1,6 @@
 import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
@@ -10,13 +8,11 @@ import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWi
 import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
-import { ChatMessage, Rooms, Messages } from '../../../../../models/client';
+import { ChatMessage, Rooms } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
-import { ChatMessages } from '../../../lib/ChatMessages';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
-import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 import { mountPopover } from './mountPopover';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
@@ -107,7 +103,7 @@ function handleMessageActionButtonClick(event: JQuery.ClickEvent, template: Comm
 	const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
 	const messageElement = event.target.closest('.message') as HTMLElement;
 	const dataContext = Blaze.getData(messageElement);
-	button?.action.call(dataContext, event, { tabbar: tabBar });
+	button?.action.call(dataContext, event, { tabbar: tabBar, chat: template.data.chatContext });
 }
 
 function handleFollowThreadButtonClick(event: JQuery.ClickEvent) {
@@ -190,56 +186,7 @@ function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: Commo
 	}
 }
 
-function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
-	const { rid } = template.data;
-	const msg = event.currentTarget.value;
-	if (!msg) {
-		return;
-	}
-
-	const input = ChatMessages.get({ rid })?.input;
-	if (input) {
-		input.value = msg;
-		input.focus();
-	}
-}
-
-function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
-	const { rid } = template.data;
-	const { id: msgId } = event.currentTarget;
-	const chatMessagesInstance = ChatMessages.get({ rid });
-	const input = chatMessagesInstance?.input;
-
-	if (!msgId || !input) {
-		return;
-	}
-
-	const message = Messages.findOne({ _id: msgId });
-
-	chatMessagesInstance.quotedMessages.add(message);
-
-	$(input)?.trigger('focus').data('mention-user', false).trigger('dataChange');
-}
-
-async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
-	const { rid } = template.data;
-	const msg = event.currentTarget.value;
-	let msgObject = { _id: Random.id(), rid, msg } as IMessage;
-	if (!msg) {
-		return;
-	}
-
-	msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
-
-	const _chatMessages = ChatMessages.get({ rid });
-	if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
-		return;
-	}
-
-	await callWithErrorHandling('sendMessage', msgObject);
-}
-
-function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+async function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
 	const { rid, tabBar } = template.data;
 	const messageElement = event.target.closest('.message') as HTMLElement;
 	const dataContext = Blaze.getData(messageElement);
@@ -249,13 +196,15 @@ function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: Common
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	// @ts-ignore
 	const context = ctx || message.context || message.actionContext || federationContext || 'message';
-	const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
+	const allItems = (
+		await MessageAction.getButtons({ ...messageContext, message, user, chat: template.data.chatContext }, context, 'menu')
+	).map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
-		action: () => item.action(event, { tabbar: tabBar, message, room }),
+		action: () => item.action(event, { tabbar: tabBar, message, room, chat: template.data.chatContext }),
 	}));
 
 	const itemsBelowDivider = ['delete-message', 'report-message'];
@@ -340,9 +289,6 @@ export const getCommonRoomEvents = (useLegacyMessageTemplate = true) => ({
 	'click .js-open-thread': handleOpenThreadButtonClick,
 	'click .image-to-download': handleDownloadImageButtonClick,
 	'click .user-card-message': handleOpenUserCardButtonClick,
-	'click .js-actionButton-respondWithMessage': handleRespondWithMessageActionButtonClick,
-	'click .js-actionButton-respondWithQuotedMessage': handleRespondWithQuotedMessageActionButtonClick,
-	'click .js-actionButton-sendMessage': handleSendMessageActionButtonClick,
 	'click .message-actions__menu': handleMessageActionMenuClick,
 	...(useLegacyMessageTemplate && { 'click .mention-link': handleMentionLinkClick }),
 });

@@ -1,5 +1,4 @@
 {
-  "403": "ຫ້າມ",
   "500": "ເກີດຂໍ້ຜິດພາດຂອງເຄື່ອງແມ່ຂ່າຍພາຍໃນ",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ ຫ້ອງທີ່ຫວ່າງຈະຖືກລືບອອກໂດຍອັດຕະໂນມັດ: <br/> __rooms__.",
@@ -2071,6 +2070,7 @@
   "Reactions": "ຕິກິລິຍາ",
   "Read_by": "ອ່ານໂດຍ",
   "Read_only": "ອ່ານ​ຢ່າງ​ດຽວ",
+  "This_room_is_read_only": "ຫ້ອງນີ້ຖືກອ່ານເທົ່ານັ້ນ",
   "Read_only_changed_successfully": "ອ່ານພຽງແຕ່ມີການປ່ຽນແປງຢ່າງສໍາເລັດຜົນ",
   "Read_only_channel": "ອ່ານເສພາະຊ່ອງ",
   "Read_only_group": "ອ່ານພຽງແຕ່ກຸ່ມ",
@@ -2835,6 +2835,7 @@
   "registration.page.login.forgot": "ລືມ​ລະ​ຫັດ​ຜ່ານ​",
   "registration.page.resetPassword.sent": "ຖ້າອີເມວນີ້ຖືກລົງທະບຽນ, ພວກເຮົາຈະສົ່ງຄໍາແນະນໍາກ່ຽວກັບວິທີການປັບລະຫັດຜ່ານຂອງທ່ານ. ຖ້າທ່ານບໍ່ໄດ້ຮັບອີເມວໃນໄວໆນີ້, ກະລຸນາກັບຄືນແລະລອງອີກເທື່ອຫນຶ່ງ.",
   "registration.component.login": "ເຂົ້າ​ສູ່​ລະ​ບົບ",
+  "registration.component.login.userNotFound": "ບໍ່ໄດ້ພົບເຫັນຜູ້ໃຊ້",
   "registration.component.resetPassword": "ປັບລະຫັດຜ່ານ",
   "registration.component.form.emailOrUsername": "ອີ​ເມລ​ຫຼື​ຊື່​ຜູ້​ໃຊ້",
   "registration.component.form.email": "Email",

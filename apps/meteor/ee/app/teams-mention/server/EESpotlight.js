@@ -1,4 +1,4 @@
-import { Team } from '../../../../server/sdk';
+import { Team } from '@rocket.chat/core-services';
 
 export const SpotlightEnterprise = {
 	mapTeams(_, teams) {

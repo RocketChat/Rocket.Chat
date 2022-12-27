@@ -1,5 +1,5 @@
 import { Margins } from '@rocket.chat/fuselage';
-import { Meta, Story } from '@storybook/react';
+import type { Meta, Story } from '@storybook/react';
 import React from 'react';
 
 import MessagesTab from './MessagesTab';

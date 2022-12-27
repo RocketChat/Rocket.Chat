@@ -1,5 +1,4 @@
 {
-  "403": "Заборонено",
   "500": "Внутрішня помилка сервера",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ порожні кімнати буде видалено автоматично.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ порожні кімнати будуть видалені автоматично: <br/> __rooms__.",
@@ -2573,6 +2572,7 @@
   "Reactions": "реакції",
   "Read_by": "Прочитано",
   "Read_only": "Лише для читання",
+  "This_room_is_read_only": "Цей номер тільки для читання",
   "Read_only_changed_successfully": "Тільки читання змінилося успішно",
   "Read_only_channel": "Читати лише канали",
   "Read_only_group": "Тільки читай групу",
@@ -3398,6 +3398,7 @@
   "registration.page.login.forgot": "Забули пароль?",
   "registration.page.resetPassword.sent": "Якщо ця електронна адреса зареєстрована, ми надішлемо інструкції щодо скидання пароля. Якщо ви не отримаєте електронного листа незабаром, будь ласка, поверніться і повторіть спробу.",
   "registration.component.login": "Логін",
+  "registration.component.login.userNotFound": "Користувача не знайдено",
   "registration.component.resetPassword": "Скинути пароль",
   "registration.component.form.emailOrUsername": "Адреса електронної пошти або логін",
   "registration.component.form.email": "Email",

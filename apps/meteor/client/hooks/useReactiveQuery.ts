@@ -1,5 +1,6 @@
-import { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { useQuery, UseQueryOptions, QueryKey, UseQueryResult, useQueryClient } from '@tanstack/react-query';
+import type { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { UseQueryOptions, QueryKey, UseQueryResult } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
 
 import { Roles, RoomRoles, Rooms, Subscriptions, Users } from '../../app/models/client';

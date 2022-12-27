@@ -1,8 +1,9 @@
-import { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import Page from '../../../../components/Page';

@@ -1,7 +1,9 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { UserContext, LoginService, useSetting } from '@rocket.chat/ui-contexts';
+import type { LoginService } from '@rocket.chat/ui-contexts';
+import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { FC, useEffect, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';

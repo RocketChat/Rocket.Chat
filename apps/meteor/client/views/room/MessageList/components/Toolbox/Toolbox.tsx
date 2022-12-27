@@ -1,9 +1,14 @@
-import { IMessage, isRoomFederated, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import type { FC } from 'react';
+import React, { memo, useMemo } from 'react';
 
-import { MessageAction, MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
+import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useToolboxContext } from '../../../contexts/ToolboxContext';
 import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
@@ -32,9 +37,18 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
 
-	const messageActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, context, 'message');
+	const chat = useChat();
 
-	const menuActions = MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings }, context, 'menu');
+	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
+		const messageActions = await MessageAction.getButtons(
+			{ message, room, user, subscription, settings: mapSettings, chat },
+			context,
+			'message',
+		);
+		const menuActions = await MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings, chat }, context, 'menu');
+
+		return { message: messageActions, menu: menuActions };
+	});
 
 	const toolbox = useToolboxContext();
 
@@ -46,12 +60,9 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	return (
 		<MessageToolbox>
-			{messageActions.map((action) => (
+			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
-					onClick={(e): void => {
-						e.stopPropagation();
-						action.action(e, { message, tabbar: toolbox, room });
-					}}
+					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat })}
 					key={action.id}
 					icon={action.icon}
 					title={t(action.label)}
@@ -59,15 +70,14 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 					data-qa-type='message-action-menu'
 				/>
 			))}
-			{menuActions.length > 0 && (
+			{(actionsQueryResult.data?.menu.length ?? 0) > 0 && (
 				<MessageActionMenu
-					options={menuActions.map((action) => ({
-						...action,
-						action: (e): void => {
-							e.stopPropagation();
-							action.action(e, { message, tabbar: toolbox, room });
-						},
-					}))}
+					options={
+						actionsQueryResult.data?.menu.map((action) => ({
+							...action,
+							action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat }),
+						})) ?? []
+					}
 					data-qa-type='message-action-menu-options'
 				/>
 			)}

@@ -1,6 +1,7 @@
 import { Box, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useState, Dispatch, ComponentProps } from 'react';
+import type { FC, Dispatch, ComponentProps } from 'react';
+import React, { useState } from 'react';
 
 type OnToggleProps = {
 	onToggle: (id: string, isSubscribed: boolean, setSubscribed: Dispatch<boolean>) => void;

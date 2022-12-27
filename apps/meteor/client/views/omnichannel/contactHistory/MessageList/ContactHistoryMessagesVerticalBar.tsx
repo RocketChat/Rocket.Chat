@@ -1,6 +1,7 @@
 import { Box, Icon, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, TextInput, Throbber } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, Dispatch, ReactElement, SetStateAction, useMemo, useState } from 'react';
+import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';

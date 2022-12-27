@@ -1,6 +1,7 @@
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -33,7 +34,7 @@ const AccountSecurityPage = (): ReactElement => {
 							</Accordion.Item>
 						)}
 						{e2eEnabled && (
-							<Accordion.Item title={t('E2E Encryption')} defaultExpanded={!twoFactorEnabled}>
+							<Accordion.Item title={t('E2E Encryption')} defaultExpanded={!twoFactorEnabled} data-qa-type='e2e-encryption-section'>
 								<EndToEnd />
 							</Accordion.Item>
 						)}
