@@ -894,7 +894,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					const { appId, filter, sort, limit, offset } = this.queryParams;
+					const { appId, q, sort, limit, offset } = this.queryParams;
 					const headers = getDefaultHeaders();
 
 					const token = await getWorkspaceAccessToken();
@@ -903,10 +903,9 @@ export class AppsRestApi {
 					}
 
 					try {
-						const data = HTTP.get(
-							`${baseUrl}/v1/app-request?appId=${appId}&filter=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`,
-							{ headers },
-						);
+						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+							headers,
+						});
 						return API.v1.success({ data });
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
@@ -936,7 +935,28 @@ export class AppsRestApi {
 						return { msg };
 					};
 
-					await sendMessagesToUsers('rocket.cat', this.bodyParams.userIds, msgFn);
+					try {
+						const success = await sendMessagesToUsers('rocket.cat', this.bodyParams.userIds, msgFn);
+						const baseUrl = orchestrator.getMarketplaceUrl();
+						const headers = getDefaultHeaders();
+						const token = await getWorkspaceAccessToken();
+
+						if (token) {
+							headers.Authorization = `Bearer ${token}`;
+						}
+
+						// Mark all success messages for users as sent
+						await HTTP.post(`${baseUrl}/v1/app-request/markAsSent`, {
+							data: {
+								appId: this.bodyParams.appId,
+								userIds: success,
+							},
+							headers,
+						});
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error sending app request notification to users:', e.message);
+						return API.v1.failure(e.message);
+					}
 				},
 			},
 		);

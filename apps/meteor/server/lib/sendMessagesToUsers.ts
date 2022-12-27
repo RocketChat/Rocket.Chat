@@ -10,13 +10,14 @@ export async function sendMessagesToUsers(
 	fromId = 'rocket.cat',
 	toIds: string[],
 	msgs: Partial<IMessage>[] | ((params: { adminUser: IUser }) => Partial<IMessage>[]),
-): Promise<void> {
+): Promise<string[]> {
 	const fromUser = await Users.findOneById(fromId, { projection: { _id: 1 } });
 	if (!fromUser) {
 		throw new Error(`User not found: ${fromId}`);
 	}
 
 	const users = await Users.findByIds(toIds, { projection: { _id: 1, username: 1, language: 1 } }).toArray();
+	const success: string[] = [];
 
 	users.forEach((user) => {
 		try {
@@ -24,9 +25,13 @@ export async function sendMessagesToUsers(
 
 			getData<Partial<IMessage>>(msgs, user).forEach((msg) => {
 				executeSendMessage(fromId, Object.assign({ rid }, msg));
+
+				success.push(user._id);
 			});
 		} catch (error) {
 			SystemLogger.error(error);
 		}
 	});
+
+	return success;
 }

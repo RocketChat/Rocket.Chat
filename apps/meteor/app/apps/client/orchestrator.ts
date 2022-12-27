@@ -237,7 +237,7 @@ class AppClientOrchestrator {
 	public async appRequests(appId: string, filter: AppRequestFilter, sort: string, pagination: Pagination): Promise<RestResponse> {
 		try {
 			const response = await APIClient.get(
-				`/apps/app-request?appId=${appId}&filter=${filter}&sort=${sort}&limit=${pagination.limit}&offset=${pagination.offset}`,
+				`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${pagination.limit}&offset=${pagination.offset}`,
 			);
 
 			const restResponse = {
@@ -253,7 +253,11 @@ class AppClientOrchestrator {
 
 	public async notifyUsers(userIds: string[], app: App): Promise<void> {
 		try {
-			await APIClient.post('/apps/app-request/notify-users', { userIds: userIds, appName: app.name });
+			await APIClient.post('/apps/app-request/notify-users', {
+				userIds,
+				appName: app.name,
+				appId: app.id,
+			});
 		} catch (e: unknown) {
 			throw new Error('Could not notify end users');
 		}

@@ -128,11 +128,11 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; filter: AppRequestFilter; sort: string; pagination: Pagination }) => RestResponse;
+		GET: (params: { appId: string; q: AppRequestFilter; sort: string; pagination: Pagination }) => RestResponse;
 	};
 
 	'/apps/app-request/notify-users': {
-		POST: (params: { userIds: string[]; appName: string }) => void;
+		POST: (params: { userIds: string[]; appName: string }) => string[];
 	};
 
 	'/apps': {
