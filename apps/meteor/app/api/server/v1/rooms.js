@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
 import { isRoomsInfoProps } from '@rocket.chat/rest-typings/dist/v1/rooms';
+import { Media } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -15,7 +16,6 @@ import {
 } from '../lib/rooms';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
-import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 

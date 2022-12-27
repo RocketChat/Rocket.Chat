@@ -7,7 +7,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { useRef, useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
