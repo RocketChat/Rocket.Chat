@@ -153,7 +153,7 @@ Meteor.startup(async function () {
 				return false;
 			}
 			const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes;
-			const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-create');
+			const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
 
 			if (!bypassBlockTimeLimit && blockEditInMinutes) {
 				let msgTs;

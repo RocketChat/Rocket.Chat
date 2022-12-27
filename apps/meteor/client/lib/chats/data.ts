@@ -99,7 +99,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-create');
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
 
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {

@@ -49,7 +49,7 @@ Meteor.methods({
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		const bypassBlockTimeLimit = hasPermission(Meteor.userId(), 'bypass-time-limit-edit-and-create');
+		const bypassBlockTimeLimit = hasPermission(Meteor.userId(), 'bypass-time-limit-edit-and-delete');
 
 		if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff;

@@ -31,7 +31,7 @@ export const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IU
 	if (!allowed) {
 		return false;
 	}
-	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-create');
+	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete');
 
 	if (!bypassBlockTimeLimit) {
 		const blockDeleteInMinutes = await getValue('Message_AllowDeleting_BlockDeleteInMinutes');
