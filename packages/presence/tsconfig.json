@@ -1,11 +1,12 @@
 {
 	"extends": "../../tsconfig.base.server.json",
 	"compilerOptions": {
+		"lib": ["es2020"],
+		"target": "es2020",
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"declaration": true,
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"rootDir": "./src",
 	},
-	"include": ["../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
-	"exclude": ["./dist"],
 	"files": ["./src/Presence.ts"]
 }

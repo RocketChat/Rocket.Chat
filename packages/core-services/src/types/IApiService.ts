@@ -1,6 +1,6 @@
 import type { IBroker, IBrokerNode } from './IBroker';
 import type { IServiceClass } from './ServiceClass';
-import type { EventSignatures } from '../lib/Events';
+import type { EventSignatures } from '../Events';
 
 export interface IApiService {
 	setBroker(broker: IBroker): void;
