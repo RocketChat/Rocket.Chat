@@ -6163,6 +6163,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/account-service@workspace:ee/apps/account-service"
   dependencies:
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
@@ -6262,6 +6263,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/authorization-service@workspace:ee/apps/authorization-service"
   dependencies:
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
@@ -6296,6 +6298,27 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
+    typescript: ~4.5.5
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/core-services@workspace:^, @rocket.chat/core-services@workspace:packages/core-sdk":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/core-services@workspace:packages/core-sdk"
+  dependencies:
+    "@rocket.chat/apps-engine": ^1.32.0
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/icons": next
+    "@rocket.chat/message-parser": 0.31.22
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/ui-kit": next
+    "@types/fibers": ^3.1.1
+    eslint: ^8.29.0
+    fibers: ^5.0.3
+    mongodb: ^4.12.1
+    prettier: ^2.7.1
     typescript: ~4.5.5
   languageName: unknown
   linkType: soft
@@ -6343,6 +6366,7 @@ __metadata:
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
@@ -6817,6 +6841,7 @@ __metadata:
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": 1.36.0
     "@rocket.chat/cas-validate": "workspace:^"
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": next
     "@rocket.chat/emitter": next
@@ -7203,6 +7228,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/presence-service@workspace:ee/apps/presence-service"
   dependencies:
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
@@ -7235,6 +7261,7 @@ __metadata:
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.18.6
     "@rocket.chat/apps-engine": ^1.32.0
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -7293,6 +7320,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service"
   dependencies:
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
@@ -31383,6 +31411,7 @@ __metadata:
   resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/icons": next
