@@ -457,21 +457,6 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let testGroup;
 		let testDM;
-		const expectedKeys = [
-			'_id',
-			'name',
-			'fname',
-			't',
-			'msgs',
-			'usersCount',
-			'u',
-			'customFields',
-			'ts',
-			'ro',
-			'sysMes',
-			'default',
-			'_updatedAt',
-		];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
 		after((done) => {
