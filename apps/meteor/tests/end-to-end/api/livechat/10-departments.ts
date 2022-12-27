@@ -5,7 +5,15 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createDepartment } from '../../../data/livechat/rooms';
+import {
+	makeAgentAvailable,
+	createAgent,
+	createDepartment,
+	createVisitor,
+	createLivechatRoom,
+	getLivechatRoomInfo,
+} from '../../../data/livechat/rooms';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 
 describe('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
@@ -150,6 +158,61 @@ describe('LIVECHAT - Departments', function () {
 						})
 						.end(done);
 				});
+		});
+	});
+
+	describe('DELETE livechat/department/:_id', () => {
+		it('should return unauthorized error when the user does not have the necessary permission', async () => {
+			await updatePermission('manage-livechat-departments', []);
+			await updatePermission('remove-livechat-department', []);
+
+			await request
+				.delete(api('livechat/department/testetetetstetete'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+		});
+
+		it('should return an error when the department does not exist', async () => {
+			await updatePermission('manage-livechat-departments', ['admin']);
+
+			const resp: Response = await request
+				.delete(api('livechat/department/testesteteste'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(resp.body).to.have.property('success', false);
+			expect(resp.body).to.have.property('error', 'error-department-not-found');
+		});
+
+		it('it should remove the department', async () => {
+			const department = await createDepartment();
+
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(resp.body).to.have.property('success', true);
+		});
+
+		it('it should remove the department and disassociate the rooms from it', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+			const newVisitor = await createVisitor(department._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(resp.body).to.have.property('success', true);
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom.departmentId).to.be.undefined;
 		});
 	});
 
