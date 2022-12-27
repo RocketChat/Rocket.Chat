@@ -18,7 +18,8 @@ export const chooseElement = (arrayOrString: string | string[]) => {
 	return arrayOrString[index];
 };
 
-export const createRandomString = (charsCount: number, alphabet: string) => Array.from({ length: charsCount }, () => chooseElement(alphabet)).join('');
+export const createRandomString = (charsCount: number, alphabet: string) =>
+	Array.from({ length: charsCount }, () => chooseElement(alphabet)).join('');
 
 export const createRandomId = (charsCount = 17) => createRandomString(charsCount, UNMISTAKABLE_CHARS);
 
