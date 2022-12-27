@@ -14,7 +14,7 @@ function getLocalStorage() {
 			},
 			setItem(name, val) {
 				store[name] = val;
-			}
+			},
 		};
 	}
 }
