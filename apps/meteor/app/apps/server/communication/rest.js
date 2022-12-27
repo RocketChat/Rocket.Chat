@@ -12,6 +12,7 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { sendMessagesToUsers } from '../../../../server/lib/sendMessagesToUsers';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -892,7 +893,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					const { appId } = this.queryParams;
+					const { appId, filter, sort, limit, offset } = this.queryParams;
 					const headers = getDefaultHeaders();
 
 					const token = await getWorkspaceAccessToken();
@@ -901,12 +902,30 @@ export class AppsRestApi {
 					}
 
 					try {
-						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&filter=notification-not-sent`, { headers });
+						const data = HTTP.get(
+							`${baseUrl}/v1/app-request?appId=${appId}&filter=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`,
+							{ headers },
+						);
 						return API.v1.success({ data });
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
 
 						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/notify-users',
+			{ authRequired: true },
+			{
+				async post() {
+					if (this.bodyParams.userIds && this.bodyParams.appName) {
+						const msg = `The app you requested, ${this.bodyParams.appName} has just been installed on this workspace.`;
+						const msgFn = () => ({ msg });
+
+						await sendMessagesToUsers('rocket.cat', this.bodyParams.userIds, msgFn);
 					}
 				},
 			},

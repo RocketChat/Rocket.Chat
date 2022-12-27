@@ -19,6 +19,7 @@ import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import { batchAppRequests } from './helpers/notifyAppRequests';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -48,7 +49,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
-	const appRequestNotifications = useEndpoint('GET', `/apps/app-request?appId=${app.id}`);
 
 	const [loading, setLoading] = useState(false);
 
@@ -72,12 +72,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			marketplaceActions[action]({ ...app, permissionsGranted }).then(async () => {
 				// notify user
 				if (action === 'install') {
-					const pagination = {
-						limit: 10,
-						offset: 0,
-					};
-
-					await Apps.appRequests(app.id, 'notification-not-sent', '-createdDate', pagination);
+					batchAppRequests(app);
 				}
 
 				setLoading(false);
