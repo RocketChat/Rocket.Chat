@@ -12,7 +12,7 @@ import {
 	findDepartmentsBetweenIds,
 	findDepartmentAgents,
 } from '../../../server/api/lib/departments';
-import { DepartmentHelper } from '../../../server/lib/DepartmentsHelper';
+import { DepartmentHelper } from '../../../server/lib/Departments';
 
 API.v1.addRoute(
 	'livechat/department',

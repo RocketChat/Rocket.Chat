@@ -30,11 +30,16 @@ class DepartmentHelperClass {
 			`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
 		);
 
-		await Promise.all([
+		const promiseResponses = await Promise.allSettled([
 			LivechatDepartmentAgents.removeByDepartmentId(_id),
 			LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
 			LivechatRooms.bulkRemoveDepartmentFromRooms(_id),
 		]);
+		promiseResponses.forEach((response, index) => {
+			if (response.status === 'rejected') {
+				this.logger.error(`Error while performing post-department-removal actions: ${_id}. Action No: ${index}. Error:`, response.reason);
+			}
+		});
 
 		this.logger.debug(`Post-department-removal actions completed: ${_id}. Notifying callbacks with department and agentsIds`);
 

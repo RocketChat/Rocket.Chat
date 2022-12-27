@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { DepartmentHelper } from '../lib/DepartmentsHelper';
+import { DepartmentHelper } from '../lib/Departments';
 
 Meteor.methods({
 	'livechat:removeDepartment'(_id) {
