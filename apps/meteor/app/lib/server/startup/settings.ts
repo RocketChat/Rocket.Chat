@@ -1566,7 +1566,7 @@ settingsRegistry.addGroup('Layout', function () {
 			public: true,
 		});
 		this.add('Layout_Home_Body', '<p>Admins may insert content html to be rendered in this white space.</p>', {
-			i18nDescription: 'Layout_Custom_Content_description',
+			description: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1579,7 +1579,7 @@ settingsRegistry.addGroup('Layout', function () {
 			public: true,
 		});
 		this.add('Layout_Custom_Body_Only', false, {
-			i18nDescription: 'Layout_Custom_Body_Only_description',
+			i18nDescription: 'Layout_Custom_Body_Only_Description',
 			type: 'boolean',
 			invalidValue: false,
 			enterprise: true,
