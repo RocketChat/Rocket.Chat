@@ -319,8 +319,6 @@
 		"katex": "^0.11.1",
 		"ldap-escape": "^2.0.6",
 		"ldapjs": "^2.3.3",
-		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
-		"less-plugin-autoprefixer": "^2.1.0",
 		"limax": "^3.0.0",
 		"localforage": "^1.10.0",
 		"lodash.clonedeep": "^4.5.0",
