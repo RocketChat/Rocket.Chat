@@ -12,6 +12,7 @@ import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { hasPermission } from '../../authorization/server';
 import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
+import { settingsRegenerator } from './settingsRegenerator';
 
 import './roomAccessValidator.internalService';
 
@@ -83,4 +84,6 @@ Meteor.startup(async () => {
 			!user?.roles?.includes('bot') &&
 			Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }),
 	);
+
+	await settingsRegenerator();
 });

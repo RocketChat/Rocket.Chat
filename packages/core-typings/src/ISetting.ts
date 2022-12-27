@@ -132,6 +132,17 @@ export interface ISettingDate extends ISettingBase {
 	value: Date;
 }
 
+// Checks if setting has at least the required properties
+export const isSetting = (setting: any): setting is ISetting =>
+	'_id' in setting &&
+	'type' in setting &&
+	'public' in setting &&
+	'value' in setting &&
+	'packageValue' in setting &&
+	'blocked' in setting &&
+	'sorter' in setting &&
+	'i18nLabel' in setting;
+
 export const isDateSetting = (setting: ISetting): setting is ISettingDate => setting.type === 'date';
 
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
