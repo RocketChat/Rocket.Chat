@@ -1,6 +1,6 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';

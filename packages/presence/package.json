@@ -23,12 +23,13 @@
 		"testunit": "jest tests/**/*.test.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
-	"main": "./dist/packages/presence/src/Presence.js",
-	"typings": "./dist/packages/presence/src/Presence.d.ts",
+	"main": "./dist/Presence.js",
+	"typings": "./dist/Presence.d.ts",
 	"files": [
 		"/dist"
 	],
 	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"mongodb": "^4.12.1"

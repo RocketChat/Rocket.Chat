@@ -5,13 +5,14 @@ import { password, adminUsername } from '../../data/user.js';
 import { deleteRoom } from '../../data/rooms.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
+import { testFileUploads } from '../../data/uploads.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	it('/chat.postMessage', (done) => {
+	before('/chat.postMessage', (done) => {
 		request
 			.post(api('chat.postMessage'))
 			.set(credentials)
@@ -330,23 +331,8 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	it('/im.files', (done) => {
-		request
-			.get(api('im.files'))
-			.set(credentials)
-			.query({
-				roomId: directMessage._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('files');
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('offset');
-				expect(res.body).to.have.property('total');
-			})
-			.end(done);
+	describe('[/im.files]', async function () {
+		await testFileUploads('im.files', directMessage, 'invalid-channel');
 	});
 
 	describe('/im.messages.others', () => {

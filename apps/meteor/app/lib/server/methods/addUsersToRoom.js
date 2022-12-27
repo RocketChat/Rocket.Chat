@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
-import { api } from '../../../../server/sdk/api';
 import { Federation } from '../../../federation-v2/server/Federation';
 
 Meteor.methods({
