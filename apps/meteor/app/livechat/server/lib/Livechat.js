@@ -1129,30 +1129,6 @@ export const Livechat = {
 		return true;
 	},
 
-	removeDepartment(_id) {
-		check(_id, String);
-
-		const department = LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found', 'Department not found', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-		const ret = LivechatDepartment.removeById(_id);
-		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id)
-			.fetch()
-			.map((agent) => agent.agentId);
-		LivechatDepartmentAgents.removeByDepartmentId(_id);
-		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
-		if (ret) {
-			Meteor.defer(() => {
-				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
-			});
-		}
-		return ret;
-	},
-
 	showConnecting() {
 		const { showConnecting } = RoutingManager.getConfig();
 		return showConnecting;

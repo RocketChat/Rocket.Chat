@@ -12,6 +12,7 @@ import {
 	findDepartmentsBetweenIds,
 	findDepartmentAgents,
 } from '../../../server/api/lib/departments';
+import { DepartmentHelper } from '../../../server/lib/DepartmentsHelper';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -133,15 +134,14 @@ API.v1.addRoute(
 
 			return API.v1.failure();
 		},
-		delete() {
+		async delete() {
 			check(this.urlParams, {
 				_id: String,
 			});
 
-			if (Livechat.removeDepartment(this.urlParams._id)) {
-				return API.v1.success();
-			}
-			return API.v1.failure();
+			await DepartmentHelper.removeDepartment(this.urlParams._id);
+
+			return API.v1.success();
 		},
 	},
 );
