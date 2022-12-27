@@ -230,6 +230,7 @@ export class CachedCollection extends Emitter {
 		data.forEach((record) => {
 			const newRecord = callbacks.run(`cachedCollection-loadFromServer-${this.name}`, record, 'changed');
 			this.collection.direct.upsert({ _id: newRecord._id }, omit(newRecord, '_id'));
+			callbacks.run(`cachedCollection-after-loadFromServer-${this.name}`, record, 'changed');
 
 			this.onSyncData('changed', newRecord);
 
@@ -296,6 +297,7 @@ export class CachedCollection extends Emitter {
 				const { _id, ...recordData } = newRecord;
 				this.collection.direct.upsert({ _id }, recordData);
 			}
+			callbacks.run(`cachedCollection-after-received-${this.name}`, record, t);
 			this.save();
 		});
 	}
@@ -362,6 +364,7 @@ export class CachedCollection extends Emitter {
 			if (actionTime > this.updatedAt) {
 				this.updatedAt = actionTime;
 			}
+			callbacks.run(`cachedCollection-after-sync-${this.name}`, record, action);
 			this.onSyncData(action, newRecord);
 		}
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;

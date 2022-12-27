@@ -1,5 +1,5 @@
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import type { IPDFWorkerService } from '../../../../apps/meteor/server/sdk/types/IPDFWorkerService';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { IPDFWorkerService } from '@rocket.chat/core-services';
 
 export class PdfWorker extends ServiceClass implements IPDFWorkerService {
 	protected name = 'pdf-worker';

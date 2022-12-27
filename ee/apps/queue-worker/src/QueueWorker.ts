@@ -1,9 +1,9 @@
 import type { Db } from 'mongodb';
 import type { ValidResult, Work } from 'mongo-message-queue';
 import MessageQueue from 'mongo-message-queue';
+import { ServiceClass, api } from '@rocket.chat/core-services';
+import type { IQueueWorkerService, HealthAggResult } from '@rocket.chat/core-services';
 
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import type { IQueueWorkerService, HealthAggResult } from '../../../../apps/meteor/server/sdk/types/IQueueWorkerService';
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 export class QueueWorker extends ServiceClass implements IQueueWorkerService {
@@ -52,7 +52,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		this.queue.registerWorker('work', (queueItem: Work<{ to: string; foo: string }>): Promise<ValidResult> => {
 			this.logger.info(`Processing queue item ${queueItem._id}`);
 			this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
-			return this.api
+			return api
 				.waitAndCall(queueItem.message.to, queueItem.message)
 				.then(() => {
 					this.logger.info(`Queue item ${queueItem._id} completed`);

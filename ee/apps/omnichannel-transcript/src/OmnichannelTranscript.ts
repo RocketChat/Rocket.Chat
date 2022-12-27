@@ -1,5 +1,5 @@
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';

@@ -21,6 +21,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
+import { Team, api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
@@ -40,11 +41,9 @@ import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonE
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
-import { Team } from '../../../../server/sdk';
 import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { api } from '../../../../server/sdk/api';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -432,6 +431,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
 						inclusiveFieldsKeys.includes('type') && 'type.*',
+						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)
