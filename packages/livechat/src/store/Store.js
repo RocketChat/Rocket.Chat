@@ -9,8 +9,12 @@ function getLocalStorage() {
 	} catch (_) {
 		const store = {};
 		return {
-			getItem(name) { return store[name]; },
-			setItem(name, val) { store[name] = val; }
+			getItem(name) {
+				return store[name];
+			},
+			setItem(name, val) {
+				store[name] = val;
+			}
 		};
 	}
 }
