@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export function useQuery(
+export function useDirectoryQuery(
 	{ text, itemsPerPage, current }: { text: string; current: number; itemsPerPage: number },
 	[column, direction]: [string, 'asc' | 'desc'],
 	type: string,
