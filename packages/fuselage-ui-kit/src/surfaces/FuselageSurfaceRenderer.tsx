@@ -1,6 +1,6 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import ContextBlock from '../blocks/ContextBlock';
@@ -18,17 +18,23 @@ import OverflowElement from '../elements/OverflowElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
 
+type FuselageSurfaceRendererProps = ConstructorParameters<
+  typeof UiKit.SurfaceRenderer
+>[0];
+
 export class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
-  public constructor() {
-    super([
-      'actions',
-      'context',
-      'divider',
-      'image',
-      'input',
-      'section',
-      'preview',
-    ]);
+  public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
+    super(
+      allowedBlocks || [
+        'actions',
+        'context',
+        'divider',
+        'image',
+        'input',
+        'section',
+        'preview',
+      ]
+    );
   }
 
   public plain_text(

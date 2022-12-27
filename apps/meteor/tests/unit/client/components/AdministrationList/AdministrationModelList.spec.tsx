@@ -9,7 +9,6 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 const COMPONENT_PATH = '../../../../../client/components/AdministrationList/AdministrationModelList';
 const defaultConfig = {
 	'../../../app/ui-utils/client': {
-		'SideNav': {},
 		'@noCallThru': true,
 	},
 	'meteor/kadira:flow-router': {
@@ -144,17 +143,8 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 
 		it('should render admin box and call sidenav', async () => {
 			const closeList = spy();
-			const setFlex = spy();
-			const openFlex = spy();
 			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
 				...defaultConfig,
-				'../../../app/ui-utils/client': {
-					'SideNav': {
-						setFlex,
-						openFlex,
-					},
-					'@noCallThru': true,
-				},
 			}).default;
 			render(
 				<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' }]} showAdmin={true} />,
@@ -162,8 +152,6 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);
-			await waitFor(() => expect(setFlex).to.have.been.called.with('admin'));
-			await waitFor(() => expect(openFlex).to.have.been.called());
 			await waitFor(() => expect(closeList).to.have.been.called());
 		});
 	});

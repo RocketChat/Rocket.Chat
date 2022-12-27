@@ -1,7 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Field, Select, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTabBarClose } from '../../contexts/ToolboxContext';

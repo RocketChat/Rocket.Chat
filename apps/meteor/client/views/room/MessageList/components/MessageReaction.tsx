@@ -1,6 +1,8 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
-import { useTooltipClose, useTooltipOpen, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { FC, useRef } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useRef } from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';

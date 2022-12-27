@@ -1,7 +1,8 @@
 import { Box, Button, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';

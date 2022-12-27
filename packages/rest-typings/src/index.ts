@@ -11,6 +11,7 @@ import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
+import type { DirectoryEndpoint } from './v1/directory';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
@@ -34,6 +35,7 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
+import type { MailerEndpoints } from './v1/mailer';
 import type { WebdavEndpoints } from './v1/webdav';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { CommandsEndpoints } from './v1/commands';
@@ -53,6 +55,7 @@ export interface Endpoints
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
+		DirectoryEndpoint,
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,
@@ -78,6 +81,7 @@ export interface Endpoints
 		AssetsEndpoints,
 		CustomSoundEndpoint,
 		EmailInboxEndpoints,
+		MailerEndpoints,
 		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
@@ -217,6 +221,9 @@ export * from './v1/channels/ChannelsConvertToTeamProps';
 export * from './v1/channels/ChannelsSetReadOnlyProps';
 export * from './v1/channels/ChannelsDeleteProps';
 export * from './v1/subscriptionsEndpoints';
+export * from './v1/mailer';
+export * from './v1/mailer/MailerParamsPOST';
+export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
 export * from './v1/invites';
 export * from './v1/dm';
@@ -234,6 +241,10 @@ export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
+export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
+export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
+export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
+
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
@@ -243,3 +254,4 @@ export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/email-inbox';

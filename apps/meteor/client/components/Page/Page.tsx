@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import Colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { useState, ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useState } from 'react';
 
 import PageContext from './PageContext';
 
@@ -26,6 +27,7 @@ const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 				flexShrink={1}
 				height='full'
 				overflow='hidden'
+				aria-labelledby='PageHeader-title'
 				{...props}
 				backgroundColor={`var(--rcx-color-surface-${background}, ${surfaceMap[background]})`}
 			/>

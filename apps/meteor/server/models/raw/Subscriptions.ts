@@ -1,7 +1,18 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	DeleteResult,
+	Document,
+	AggregateOptions,
+	IndexDescription,
+} from 'mongodb';
 import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -10,6 +21,10 @@ import { BaseRaw } from './BaseRaw';
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
 		super(db, 'subscription', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { E2EKey: 1 }, unique: true, sparse: true }];
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {
@@ -104,6 +119,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads = false,
 		alert = false,
 		options: FindOptions<ISubscription> = {},
 	): ReturnType<BaseRaw<ISubscription>['update']> {
@@ -113,6 +129,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update = {
+			...(readThreads && {
+				$unset: {
+					tunread: 1,
+					tunreadUser: 1,
+					tunreadGroup: 1,
+				} as const,
+			}),
 			$set: {
 				open: true,
 				alert,

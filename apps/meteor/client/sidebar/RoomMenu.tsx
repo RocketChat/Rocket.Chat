@@ -1,6 +1,7 @@
-import { RoomType } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -10,11 +11,10 @@ import {
 	usePermission,
 	useMethod,
 	useTranslation,
-	TranslationKey,
-	Fields,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
@@ -160,7 +160,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
 			if (isUnread) {
-				await readMessages({ rid });
+				await readMessages({ rid, readThreads: true });
 				return;
 			}
 			await unreadMessages(null, rid);
@@ -222,7 +222,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} title={label} icon={icon} {...props} />}
+			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>
 	);
 };

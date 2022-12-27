@@ -10,6 +10,7 @@ import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -39,8 +40,6 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
-import { VideoConf } from '../../../../server/sdk';
-import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('Livechat');
 
@@ -751,7 +750,7 @@ export const Livechat = {
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId) {
+	returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
 		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
@@ -791,7 +790,7 @@ export const Livechat = {
 
 		const transferredBy = normalizeTransferredByData(user, room);
 		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);

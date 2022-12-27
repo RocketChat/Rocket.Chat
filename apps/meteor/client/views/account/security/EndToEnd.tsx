@@ -2,7 +2,8 @@ import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.
 import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { ComponentProps, ReactElement, useCallback, useEffect } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { callbacks } from '../../../../lib/callbacks';
@@ -77,7 +78,13 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 					<Field>
 						<Field.Label>{t('New_encryption_password')}</Field.Label>
 						<Field.Row>
-							<PasswordInput value={password} onChange={handlePassword} placeholder={t('New_Password_Placeholder')} disabled={!keysExist} />
+							<PasswordInput
+								value={password}
+								onChange={handlePassword}
+								placeholder={t('New_Password_Placeholder')}
+								disabled={!keysExist}
+								data-qa-type='e2e-encryption-password'
+							/>
 						</Field.Row>
 						{!keysExist && <Field.Hint>{t('EncryptionKey_Change_Disabled')}</Field.Hint>}
 					</Field>
@@ -89,19 +96,22 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 								value={passwordConfirm}
 								onChange={handlePasswordConfirm}
 								placeholder={t('Confirm_New_Password_Placeholder')}
+								data-qa-type='e2e-encryption-password-confirmation'
 							/>
 							<Field.Error>{passwordError}</Field.Error>
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!canSave} onClick={saveNewPassword}>
+				<Button primary disabled={!canSave} onClick={saveNewPassword} data-qa-type='e2e-encryption-save-password-button'>
 					{t('Save_changes')}
 				</Button>
 				<Box fontScale='h4' mbs='x16'>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
-				<Button onClick={handleResetE2eKey}>{t('Reset_E2E_Key')}</Button>
+				<Button onClick={handleResetE2eKey} data-qa-type='e2e-encryption-reset-key-button'>
+					{t('Reset_E2E_Key')}
+				</Button>
 			</Margins>
 		</Box>
 	);

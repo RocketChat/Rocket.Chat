@@ -140,7 +140,8 @@ jobs:
         run: yarn
 
       - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
@@ -266,7 +267,8 @@ jobs:
         run: yarn
 
       - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
@@ -440,7 +442,8 @@ jobs:
           cache: 'yarn'
 
       - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
@@ -482,7 +485,9 @@ jobs:
           RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
           DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
           TRANSPORTER: nats://nats:4222
-          ENTERPRISE_LICENSE: ${{ secrets.ENTERPRISE_LICENSE }}
+          # this is 100% intentional, secrets are not available at forks, so ee-tests will always fail
+          # to avoid this, we are using a dummy license, expiring on 2022-12-31
+          ENTERPRISE_LICENSE: GWHMQe3C3lu3if4ropk1iQ09sCKjIaQogwMymgl7pbuotLpHPhTzxvuSqJYmEtHGKX4MQsrYA+8witFF3JMOc3AswwAkxQz+TZz9+XfiBo49p7OL0xfO6f9ElhLHclptcEPFDSilQlmDI1Jjr7k+MdqXxE4XbZ4Pdeg9vdEDtroKvSvd0ngtFMkIXa6829Cg0nzTCCcWo3Jc80JPub6VMgpdZ2KnsswQt8dBz+psvztcwrqF7X5731HkPX0lTttjF6SSIs+WAIdwAY4b2VRtD3PbMWxbe0ac+2x5+ItIRH0PFRh/gVWdtiKfskQpcucU739CX/d4pQGK/OWxKifH1XH824doeyYuvjXwvCW5anPlRXKAqIn2gh6LcdGfFNIbjX9wG4/U162vDr3AtEpRYdjzfvvBW1gveYMGidIiEhQZu7h5Ie9b3tNBkNBgBcqibL9JO6K3/2pxX7gymjT+9VRZgB5+ME2pziD54SjSWCwkLcf/RByxArdDSqI3llKjyDnRXjhqzsLhmsc6UdJCJd1IiqjQ4v5QXH2C57cJlej93ZLuNRFcnb0cE0nAFHIfLSZP5CSJA/gY7mtBL0b0osUisNL/os7a74JFMoa4DDfTD2CarYV5E4+fpX3NqINzpYwFzZi9pH2wIL6oe1yuZPcn9vjRhK2jvG81tHSR/4s=
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 

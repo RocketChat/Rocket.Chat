@@ -73,6 +73,7 @@ type EventLikeCallbackSignatures = {
 	) => void;
 	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
+	'usernameSet': () => void;
 };
 
 /**
@@ -176,6 +177,12 @@ type Hook =
 	| 'cachedCollection-received-subscriptions'
 	| 'cachedCollection-sync-rooms'
 	| 'cachedCollection-sync-subscriptions'
+	| 'cachedCollection-after-loadFromServer-rooms'
+	| 'cachedCollection-after-loadFromServer-subscriptions'
+	| 'cachedCollection-after-received-rooms'
+	| 'cachedCollection-after-received-subscriptions'
+	| 'cachedCollection-after-sync-rooms'
+	| 'cachedCollection-after-sync-subscriptions'
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'

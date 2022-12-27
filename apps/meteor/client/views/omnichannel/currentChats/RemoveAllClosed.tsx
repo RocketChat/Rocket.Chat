@@ -1,6 +1,7 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 const RemoveAllClosed: FC<{
 	handleClearFilters: any;

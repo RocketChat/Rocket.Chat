@@ -1,5 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, memo, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 import VerticalBarAction from './VerticalBarAction';
 

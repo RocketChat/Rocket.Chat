@@ -1,5 +1,4 @@
 {
-  "403": "Prohibido",
   "500": "Erro interno do servidor",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ salas vacías serán eliminadas automaticamente.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "Vanse eliminar automaticamente __count__ salas vacías:<br/>__rooms__.",

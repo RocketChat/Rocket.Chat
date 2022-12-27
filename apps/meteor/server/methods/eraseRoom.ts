@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Team } from '@rocket.chat/core-services';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
@@ -7,7 +8,6 @@ import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
 import { Apps } from '../../app/apps/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { Team } from '../sdk';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	const room = Rooms.findOneById(rid);

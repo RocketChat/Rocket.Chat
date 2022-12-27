@@ -2,7 +2,6 @@
 import { Message, Avatar } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
-import React from 'react';
 
 import { kitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
@@ -41,8 +40,10 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
       </Message.LeftContainer>
       <Message.Container>
         <Message.Header>
-          <Message.Name>Haylie George</Message.Name>
-          <Message.Username>@haylie.george</Message.Username>
+          <Message.NameContainer>
+            <Message.Name>Haylie George</Message.Name>
+            <Message.Username>@haylie.george</Message.Username>
+          </Message.NameContainer>
           <Message.Role>Admin</Message.Role>
           <Message.Role>User</Message.Role>
           <Message.Role>Owner</Message.Role>

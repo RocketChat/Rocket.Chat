@@ -1,6 +1,7 @@
 import { ProgressBar, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 type SeatsCapUsageProps = {
 	limit: number;
@@ -12,7 +13,7 @@ const SeatsCapUsage = ({ limit, members }: SeatsCapUsageProps): ReactElement => 
 	const percentage = Math.max(0, Math.min((100 / limit) * members, 100));
 	const closeToLimit = percentage >= 80;
 	const reachedLimit = percentage >= 100;
-	const color = closeToLimit ? 'danger-500' : 'success-500';
+	const color = closeToLimit ? 'status-font-on-danger' : 'status-font-on-success';
 	const seatsLeft = Math.max(0, limit - members);
 
 	return (

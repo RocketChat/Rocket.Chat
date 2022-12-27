@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
 
+	get encryptedRoomHeaderIcon(): Locator {
+		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
@@ -66,8 +70,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
-	get waitForLastMessageTextAttachmentEqualsText(): Locator {
+	get lastMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+	}
+
+	get lastThreadMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -139,7 +147,7 @@ export class HomeContent {
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
-		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
 	}
@@ -167,7 +175,33 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 
+	async openLastThreadMessageMenu(): Promise<void> {
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.waitFor();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.click();
+	}
+
 	get takeOmnichannelChatButton(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
+	}
+
+	get lastSystemMessageBody(): Locator {
+		return this.page.locator('[data-qa-type="system-message-body"]').last();
+	}
+
+	get resumeOnHoldOmnichannelChatButton(): Locator {
+		return this.page.locator('button.rcx-button--primary >> text=Resume');
+	}
+
+	get btnOnHold(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 }

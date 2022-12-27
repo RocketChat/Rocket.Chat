@@ -1,16 +1,15 @@
-import { Box, Button, Icon, IconButton, Pagination } from '@rocket.chat/fuselage';
+import { Button, Icon, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useCustomSound, useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState, useCallback, ReactElement } from 'react';
+import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import { GenericTable } from '../../../components/GenericTable/V2/GenericTable';
 import { GenericTableBody } from '../../../components/GenericTable/V2/GenericTableBody';
-import { GenericTableCell } from '../../../components/GenericTable/V2/GenericTableCell';
 import { GenericTableHeader } from '../../../components/GenericTable/V2/GenericTableHeader';
 import { GenericTableHeaderCell } from '../../../components/GenericTable/V2/GenericTableHeaderCell';
 import { GenericTableLoadingTable } from '../../../components/GenericTable/V2/GenericTableLoadingTable';
-import { GenericTableRow } from '../../../components/GenericTable/V2/GenericTableRow';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
@@ -19,16 +18,15 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
+import CustomSoundRow from './CustomSoundRow';
 import EditCustomSound from './EditCustomSound';
 
-function CustomSoundsRoute(): ReactElement {
+const CustomSoundsRoute = (): ReactElement => {
+	const t = useTranslation();
+	const id = useRouteParameter('id');
 	const route = useRoute('custom-sounds');
 	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
 	const canManageCustomSounds = usePermission('manage-sounds');
-
-	const t = useTranslation();
-	const customSound = useCustomSound();
 
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -58,13 +56,6 @@ function CustomSoundsRoute(): ReactElement {
 			});
 		},
 		[route],
-	);
-
-	const handlePlay = useCallback(
-		(sound) => {
-			customSound.play(sound);
-		},
-		[customSound],
 	);
 
 	const handleNewButtonClick = useCallback(() => {
@@ -103,33 +94,7 @@ function CustomSoundsRoute(): ReactElement {
 						<GenericTableBody>
 							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
 							{result.phase === AsyncStatePhase.RESOLVED &&
-								result.value.sounds.map((sound) => (
-									<GenericTableRow
-										key={sound._id}
-										onKeyDown={handleItemClick(sound._id)}
-										onClick={handleItemClick(sound._id)}
-										tabIndex={0}
-										role='link'
-										action
-										qa-emoji-id={sound._id}
-									>
-										<GenericTableCell fontScale='p1' color='default'>
-											<Box withTruncatedText>{sound.name}</Box>
-										</GenericTableCell>
-										<GenericTableCell>
-											<IconButton
-												icon='play'
-												small
-												aria-label={t('Play')}
-												onClick={(e): void => {
-													e.preventDefault();
-													e.stopPropagation();
-													handlePlay(sound._id);
-												}}
-											/>
-										</GenericTableCell>
-									</GenericTableRow>
-								))}
+								result.value.sounds.map((sound) => <CustomSoundRow sound={sound} onClick={handleItemClick} />)}
 						</GenericTableBody>
 					</GenericTable>
 					{result.phase === AsyncStatePhase.RESOLVED && (
@@ -147,8 +112,8 @@ function CustomSoundsRoute(): ReactElement {
 			{context && (
 				<VerticalBar flexShrink={0}>
 					<VerticalBar.Header>
-						{context === 'edit' && t('Custom_Sound_Edit')}
-						{context === 'new' && t('Custom_Sound_Add')}
+						{context === 'edit' && <VerticalBar.Text>{t('Custom_Sound_Edit')}</VerticalBar.Text>}
+						{context === 'new' && <VerticalBar.Text>{t('Custom_Sound_Add')}</VerticalBar.Text>}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
 					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleChange} />}
@@ -157,6 +122,6 @@ function CustomSoundsRoute(): ReactElement {
 			)}
 		</Page>
 	);
-}
+};
 
 export default CustomSoundsRoute;

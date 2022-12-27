@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageToolboxWrapper } from '@rocket.chat/fuselage';
-import React, { FC, memo, useRef } from 'react';
+import type { FC } from 'react';
+import React, { memo, useRef } from 'react';
 
 import { useIsVisible } from '../../../hooks/useIsVisible';
 import Toolbox from './Toolbox';

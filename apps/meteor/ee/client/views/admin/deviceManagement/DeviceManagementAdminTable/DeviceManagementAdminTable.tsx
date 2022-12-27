@@ -1,7 +1,8 @@
-import { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
+import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo, useEffect, MutableRefObject } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import FilterByText from '../../../../../../client/components/FilterByText';
 import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
