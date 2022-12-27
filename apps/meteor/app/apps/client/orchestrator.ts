@@ -253,7 +253,7 @@ class AppClientOrchestrator {
 
 	public async notifyUsers(userIds: string[], app: App): Promise<void> {
 		try {
-			await APIClient.post('/apps/app-request/notify-users', { userIds, appName: app.name });
+			await APIClient.post('/apps/app-request/notify-users', { userIds: userIds, appName: app.name });
 		} catch (e: unknown) {
 			throw new Error('Could not notify end users');
 		}

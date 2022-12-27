@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -921,12 +922,21 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async post() {
-					if (this.bodyParams.userIds && this.bodyParams.appName) {
-						const msg = `The app you requested, ${this.bodyParams.appName} has just been installed on this workspace.`;
-						const msgFn = () => ({ msg });
-
-						await sendMessagesToUsers('rocket.cat', this.bodyParams.userIds, msgFn);
+					if (!this.bodyParams.userIds) {
+						return API.v1.failure('bad request, missing userIds');
 					}
+
+					if (!this.bodyParams.appName) {
+						return API.v1.failure('bad request, missing appName');
+					}
+
+					const msgFn = (user) => {
+						const msg = `${TAPi18n.__('App_request_enduser_message', { appname: this.bodyParams.appName }, { lang: user.language })}`;
+
+						return { msg };
+					};
+
+					await sendMessagesToUsers('rocket.cat', this.bodyParams.userIds, msgFn);
 				},
 			},
 		);

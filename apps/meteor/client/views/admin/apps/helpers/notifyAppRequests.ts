@@ -1,4 +1,4 @@
-import type { App, AppRequest, RestResponse } from '@rocket.chat/core-typings';
+import type { App, AppRequest, Pagination, RestResponse } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 
@@ -20,13 +20,10 @@ const notifyBatchOfUsers = async (app: App, appRequests: RestResponse) => {
 	Apps.notifyUsers(batchRequesters, app);
 };
 
-export const batchAppRequests = async (app: App): Promise<void> => {
+export const appRequestNotificationForUsers = async (app: App): Promise<void> => {
 	try {
 		// First request
-		const pagination = {
-			limit: 50,
-			offset: 0,
-		};
+		const pagination: Pagination = { limit: 50, offset: 0 };
 
 		// First request to get the total and the first batch
 		const appRequests = await Apps.appRequests(app.id, 'notification-not-sent', '-createdDate', pagination);

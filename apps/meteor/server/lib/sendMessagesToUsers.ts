@@ -16,7 +16,7 @@ export async function sendMessagesToUsers(
 		throw new Error(`User not found: ${fromId}`);
 	}
 
-	const users = await Users.findByIds(toIds, { projection: { _id: 1, username: 1 } }).toArray();
+	const users = await Users.findByIds(toIds, { projection: { _id: 1, username: 1, language: 1 } }).toArray();
 
 	users.forEach((user) => {
 		try {

@@ -5110,6 +5110,7 @@
   "Version": "Version",
   "Version_version": "Version __version__",
   "App_version_incompatible_tooltip": "App incompatible with Rocket.Chat version",
+  "App_request_enduser_message": "The app you requested, __appname__ has just been installed on this workspace.",
   "Video_Conference_Description": "Configure conferencing calls for your workspace.",
   "Video_Chat_Window": "Video Chat",
   "Video_Conference": "Conference Call",
