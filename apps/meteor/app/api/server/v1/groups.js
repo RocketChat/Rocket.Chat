@@ -2,11 +2,8 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
-<<<<<<< HEAD
 import { isGroupsMembersProps, isRoomIdOrRoomNameProps } from '@rocket.chat/rest-typings/dist/v1/groups';
-=======
 import { Team } from '@rocket.chat/core-services';
->>>>>>> develop
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
