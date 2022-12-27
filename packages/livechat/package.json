@@ -89,6 +89,7 @@
 	"dependencies": {
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "next",
+		"@types/crypto-js": "^4.1.1",
 		"crypto-js": "^4.1.1",
 		"css-vars-ponyfill": "^2.4.7",
 		"date-fns": "^2.15.0",
