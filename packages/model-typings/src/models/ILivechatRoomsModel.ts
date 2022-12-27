@@ -110,5 +110,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findAvailableSources(): AggregationCursor<Document>;
 
-	bulkRemoveDepartmentFromRooms(departmentId: string): Promise<UpdateResult>;
+	bulkRemoveDepartmentFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 }
