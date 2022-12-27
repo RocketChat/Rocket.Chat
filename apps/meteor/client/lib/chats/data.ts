@@ -212,10 +212,11 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		const onTimeForDelete = !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
-		return deleteAllowed && onTimeForDelete;
+		return !bypassBlockTimeLimit && deleteAllowed && onTimeForDelete;
 	};
 
 	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
