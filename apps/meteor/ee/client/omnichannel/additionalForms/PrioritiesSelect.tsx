@@ -14,10 +14,10 @@ type PrioritiesSelectProps = {
 
 export const PrioritiesSelect = ({ value, label, options, onChange }: PrioritiesSelectProps) => {
 	const t = useTranslation();
-	const optionsSelect = useMemo<SelectOption[]>(
-		() => options?.map(({ dirty, name, i18n, _id }) => [_id, dirty && name ? name : t(i18n as TranslationKey)]),
-		[options, t],
-	);
+	const optionsSelect = useMemo<SelectOption[]>(() => {
+		const opts: SelectOption[] = options?.map(({ dirty, name, i18n, _id }) => [_id, dirty && name ? name : t(i18n as TranslationKey)]);
+		return [['', t('Unprioritized')], ...opts];
+	}, [options, t]);
 
 	return (
 		<Field>
