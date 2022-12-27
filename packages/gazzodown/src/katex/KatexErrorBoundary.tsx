@@ -12,7 +12,6 @@ const Fallback = styled('span')`
 
 const KatexErrorBoundary = ({ children, code }: KatexErrorBoundaryProps): ReactElement => {
 	const [error, setError] = useState<Error | null>(null);
-	// @ts-expect-error - I don't know why
 	return <ErrorBoundary children={children} onError={setError} fallback={<Fallback title={error?.message}>{code}</Fallback>} />;
 };
 

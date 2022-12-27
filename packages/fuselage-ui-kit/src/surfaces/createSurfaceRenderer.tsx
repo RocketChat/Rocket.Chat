@@ -13,7 +13,6 @@ export const createSurfaceRenderer = <
     conditions: UiKit.Conditions = {}
   ): ReactElement {
     return (
-      // @ts-expect-error - I don't know why
       <SurfaceComponent>
         {surfaceRenderer.render(blocks, {
           engine: 'rocket.chat',
