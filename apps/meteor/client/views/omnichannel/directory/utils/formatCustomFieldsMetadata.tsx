@@ -11,13 +11,16 @@ type CustomFieldsMetadata = Record<
 	}
 >;
 
-export const formatCustomFieldsMetadata = (customFields: Serialized<ILivechatCustomField>[]): CustomFieldsMetadata => {
+export const formatCustomFieldsMetadata = (
+	customFields: Serialized<ILivechatCustomField>[],
+	scope: 'visitor' | 'room',
+): CustomFieldsMetadata => {
 	if (!customFields) {
 		return {};
 	}
 
 	return customFields
-		.filter(({ visibility, scope }) => visibility === 'visible' && scope === 'visitor')
+		.filter((field) => field.visibility === 'visible' && field.scope === scope)
 		.reduce((obj, { _id, label, options, defaultValue, required }) => {
 			obj[_id] = {
 				label,

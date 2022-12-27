@@ -58,6 +58,7 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 
 export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canViewCustomFields = (): boolean =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
@@ -67,12 +68,14 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 	const ContactManager = useContactManager?.();
 
 	const [userId, setUserId] = useState('no-agent-selected');
-	const dispatchToastMessage = useToastMessageDispatch();
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 
-	const { data: customFieldsMetadata = {}, isLoading: isLoadingCustomFields } = useCustomFieldsMetadata();
+	const { data: customFieldsMetadata = {}, isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+		scope: 'visitor',
+		enabled: canViewCustomFields(),
+	});
 
 	const initialValue = getInitialValues(data);
 	const { username: initialUsername } = initialValue;

@@ -3,19 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 
 import { formatCustomFieldsMetadata } from '../utils/formatCustomFieldsMetadata';
 
-export const useCustomFieldsMetadata = ({ enabled = true } = {}) => {
+type UseCustomFieldsMetadataOptions = {
+	enabled?: boolean;
+	scope: 'visitor' | 'room';
+};
+
+export const useCustomFieldsMetadata = ({ enabled = true, scope }: UseCustomFieldsMetadataOptions) => {
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data = {}, ...props } = useQuery(
-		['/v1/livechat/custom-fields'],
+	return useQuery(
+		['/v1/livechat/custom-fields', scope],
 		async () => {
-			const rawFields = await getCustomFields();
-			return formatCustomFieldsMetadata(rawFields?.customFields);
+			const { customFields } = (await getCustomFields()) ?? {};
+			return formatCustomFieldsMetadata(customFields, scope);
 		},
 		{ enabled },
 	);
-
-	return {
-		data,
-		...props,
-	};
 };

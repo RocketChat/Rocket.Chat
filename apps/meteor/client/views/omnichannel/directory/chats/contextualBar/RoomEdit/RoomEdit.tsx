@@ -51,7 +51,10 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
 	const { data: slaPolicies, isLoading: isSlaPoliciesLoading } = useSlaPolicies();
-	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({ enabled: canViewCustomFields });
+	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
+		scope: 'room',
+		enabled: canViewCustomFields,
+	});
 	const { data: { priorities } = {}, isLoading: isPrioritiesLoading } = usePrioritiesData();
 
 	const { useSlaPoliciesSelect = () => undefined, usePrioritiesSelect = () => undefined } = useFormsSubscription();
@@ -94,8 +97,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 			topic,
 			tags: tags.sort(),
 			livechatData,
-			...(slaId && { slaId }),
-			...(priorityId && { priorityId }),
+			slaId,
+			priorityId,
 		};
 
 		try {
