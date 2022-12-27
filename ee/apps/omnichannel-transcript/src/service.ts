@@ -1,11 +1,10 @@
 import type { Document } from 'mongodb';
 import polka from 'polka';
+import { api, Message, QueueWorker, Upload, Translation } from '@rocket.chat/core-services';
 
-import { api } from '../../../../apps/meteor/server/sdk/api';
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { Message, QueueWorker, Upload, Translation } from '../../../../apps/meteor/server/sdk';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const PORT = process.env.PORT || 3036;

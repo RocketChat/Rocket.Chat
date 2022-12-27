@@ -3,8 +3,7 @@ import type { Readable } from 'stream';
 import type { Request } from 'express';
 import busboy from 'busboy';
 import type { ValidateFunction } from 'ajv';
-
-import { MeteorError } from '../../../../server/sdk/errors';
+import { MeteorError } from '@rocket.chat/core-services';
 
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };

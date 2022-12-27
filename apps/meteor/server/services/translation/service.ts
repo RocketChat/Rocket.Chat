@@ -2,9 +2,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Settings } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 import mem from 'mem';
-
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { ITranslationService } from '../../sdk/types/ITranslationService';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { ITranslationService } from '@rocket.chat/core-services';
 
 export class TranslationService extends ServiceClassInternal implements ITranslationService {
 	protected name = 'translation';

@@ -1,5 +1,5 @@
 {
-	"extends": "../../../tsconfig.base.json",
+	"extends": "../../../tsconfig.base.server.json",
 	"compilerOptions": {
 		"target": "es2018",
 		"lib": ["esnext", "dom"],

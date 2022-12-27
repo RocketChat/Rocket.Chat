@@ -8,11 +8,10 @@ type FieldProps = {
 	value: ReactNode;
 } & Omit<ComponentProps<typeof Box>, 'title' | 'value'>;
 
+// TODO: description missing color token
 const Field: FC<FieldProps> = ({ title, value, ...props }) => (
-	<Box mb='x4' pi='x4' width='full' flexBasis={100} flexShrink={0} {...props}>
-		<Box fontScale='p2m' color='default'>
-			{title}
-		</Box>
+	<Box mb='x4' pi='x4' width='full' flexBasis={100} flexShrink={0} color='default' {...props}>
+		<Box fontScale='p2m'>{title}</Box>
 		{value}
 	</Box>
 );

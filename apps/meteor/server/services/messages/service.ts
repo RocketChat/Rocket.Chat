@@ -1,8 +1,8 @@
 import { Users } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessageService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IMessageService } from '../../sdk/types/IMessageService';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 

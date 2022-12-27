@@ -2,10 +2,9 @@ import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rock
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { Templates } from '@rocket.chat/pdf-worker';
 import type { IMessage, IUser, IRoom, IUpload, IOmnichannelRoom, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import type { IOmnichannelTranscriptService } from '../../../../apps/meteor/server/sdk/types/IOmnichannelTranscriptService';
-import type { Upload, Message, QueueWorker, Translation } from '../../../../apps/meteor/server/sdk';
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';

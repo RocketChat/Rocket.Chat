@@ -18,6 +18,7 @@ to: ee/apps/<%= name %>/package.json
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "0.31.22",
 		"@rocket.chat/model-typings": "workspace:^",
