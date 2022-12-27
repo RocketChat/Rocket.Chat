@@ -2572,6 +2572,7 @@
   "Reactions": "реакції",
   "Read_by": "Прочитано",
   "Read_only": "Лише для читання",
+  "This_room_is_read_only": "Цей номер тільки для читання",
   "Read_only_changed_successfully": "Тільки читання змінилося успішно",
   "Read_only_channel": "Читати лише канали",
   "Read_only_group": "Тільки читай групу",

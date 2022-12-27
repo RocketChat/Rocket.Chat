@@ -6,7 +6,6 @@ import $ from 'jquery';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import './messageBoxActions';
-import './messageBoxReplyPreview.ts';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 
@@ -27,7 +26,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	let _quotedMessages: IMessage[] = [];
 
-	const persist = withDebouncing({ wait: 1000 })(() => {
+	const persist = withDebouncing({ wait: 300 })(() => {
 		if (input.value) {
 			Meteor._localStorage.setItem(storageID, input.value);
 			return;
@@ -72,8 +71,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		if (!selection) {
 			input.value = text;
 		}
-
-		persist();
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
@@ -160,8 +157,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		setEditing(editing);
 	};
 
-	setText(Meteor._localStorage.getItem(storageID) ?? '');
-
 	const [formatters, stopFormatterTracker] = (() => {
 		let actions: FormattingButton[] = [];
 
@@ -230,7 +225,12 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 	};
 
+	const insertNewLine = (): void => insertText('\n');
+
+	setText(Meteor._localStorage.getItem(storageID) ?? '');
+
 	return {
+		insertNewLine,
 		setCursorToEnd: () => {
 			input.selectionEnd = input.value.length;
 			input.selectionStart = input.selectionEnd;
