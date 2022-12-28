@@ -1,39 +1,30 @@
-import exportTranscript, { isOmnichannelData } from './templates/transcriptTemplate';
-
-export type Data = { header: Record<string, unknown>; body: unknown[]; footer: Record<string, unknown> };
+import type { IStrategy } from './types/IStrategy';
+import { OmnichannelPDF } from './strategies/OmnichannelPDF';
 
 export type Templates = 'omnichannel-transcript';
 
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png'];
 
-	private async renderTemplate(template: Templates, data: Data): Promise<NodeJS.ReadableStream> {
-		switch (template) {
-			case 'omnichannel-transcript':
-				if (!isOmnichannelData(data)) {
-					throw new Error('Invalid data');
-				}
-				return exportTranscript(data);
-			default:
-				throw new Error('Template not found');
+	mode: Templates;
+
+	worker: IStrategy;
+
+	constructor(mode: Templates) {
+		if (!mode) {
+			throw new Error('Invalid mode');
 		}
+
+		this.mode = mode;
+		this.worker = this.getWorkerClass();
 	}
 
-	private parseTemplateData(template: Templates, data: Record<string, unknown | unknown[]>): Data {
-		switch (template) {
+	getWorkerClass(): IStrategy {
+		switch (this.mode) {
 			case 'omnichannel-transcript':
-				return {
-					header: {
-						visitor: data.visitor,
-						agent: data.agent,
-						closedAt: data.closedAt,
-						timezone: data.timezone,
-					},
-					body: Array.isArray(data.messages) ? data.messages : [],
-					footer: {},
-				};
+				return new OmnichannelPDF();
 			default:
-				throw new Error('Template not found');
+				throw new Error('Invalid mode');
 		}
 	}
 
@@ -41,14 +32,8 @@ export class PdfWorker {
 		return this.validMimeTypes.includes(mimeType);
 	}
 
-	async renderToStream({
-		template,
-		data,
-	}: {
-		template: Templates;
-		data: Record<string, unknown | unknown[]>;
-	}): Promise<NodeJS.ReadableStream> {
-		const parsedData = this.parseTemplateData(template, data);
-		return this.renderTemplate(template, parsedData);
+	async renderToStream({ data }: { template: Templates; data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {
+		const parsedData = this.worker.parseTemplateData(data);
+		return this.worker.renderTemplate(parsedData);
 	}
 }

@@ -49,7 +49,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		loggerClass: typeof Logger,
 	) {
 		super();
-		this.worker = new PdfWorker();
+		this.worker = new PdfWorker('omnichannel-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
 		// your stuff
