@@ -2029,6 +2029,7 @@
   "Reactions": "Урвал",
   "Read_by": "Уншсан",
   "Read_only": "Зөвхөн унших",
+  "This_room_is_read_only": "Энэ өрөөнд зөвхөн уншигддаг",
   "Read_only_changed_successfully": "Зөвхөн амжилттай уншина уу",
   "Read_only_channel": "Зөвхөн суваг унших боломжтой",
   "Read_only_group": "Зөвхөн бүлэг унш",

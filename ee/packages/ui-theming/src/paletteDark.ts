@@ -28,6 +28,14 @@ export const palette = [
 		],
 	},
 	{
+		category: 'Shadow',
+		description: 'Use as a shadow color',
+		list: [
+			{ name: 'shadow-highlight', token: '', color: '#D1EBFE' },
+			{ name: 'shadow-danger', token: '', color: '#FFE9EC' },
+		],
+	},
+	{
 		category: 'Font',
 		description: 'These should be applied according to surfaces',
 		list: [

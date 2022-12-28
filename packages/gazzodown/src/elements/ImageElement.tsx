@@ -12,7 +12,7 @@ const flattenMarkup = (markup: MessageParser.Markup | MessageParser.Link): strin
 			return markup.value.map(flattenMarkup).join('');
 
 		case 'LINK': {
-			const label = flattenMarkup(markup.value.label);
+			const label = flattenMarkup(markup.value.label as MessageParser.Markup);
 			const href = markup.value.src.value;
 
 			return label ? `${label} (${href})` : href;

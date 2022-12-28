@@ -8,7 +8,7 @@ const BlazeTemplate: FC<
 	Omit<ComponentProps<typeof Box>, 'children'> & {
 		name: string;
 	} & Record<string, unknown>
-> = ({ name, flexShrink, overflow, onClick, ...props }) => {
+> = ({ name, flexShrink, overflow, onClick, w, ...props }) => {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const ref = useRef(null!);
 	useLayoutEffect(() => {
@@ -23,7 +23,15 @@ const BlazeTemplate: FC<
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [name, JSON.stringify(props)]);
 	return (
-		<Box rcx-blaze-template display='flex' onClick={onClick} flexDirection='column' flexGrow={1} ref={ref} {...{ flexShrink, overflow }} />
+		<Box
+			rcx-blaze-template
+			display='flex'
+			onClick={onClick}
+			flexDirection='column'
+			flexGrow={1}
+			ref={ref}
+			{...{ w, flexShrink, overflow }}
+		/>
 	);
 };
 
