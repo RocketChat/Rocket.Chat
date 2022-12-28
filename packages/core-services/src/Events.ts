@@ -26,7 +26,7 @@ import type {
 	UserStatus,
 } from '@rocket.chat/core-typings';
 
-import type { AutoUpdateRecord } from '../types/IMeteor';
+import type { AutoUpdateRecord } from './types/IMeteor';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 

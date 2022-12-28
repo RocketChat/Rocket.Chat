@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
 
-import { asyncLocalStorage } from '..';
+import { asyncLocalStorage } from '../lib/asyncLocalStorage';
 import type { IBroker, IBrokerNode } from './IBroker';
-import type { EventSignatures } from '../lib/Events';
+import type { EventSignatures } from '../Events';
 import type { IApiService } from './IApiService';
 
 export interface IServiceContext {
@@ -26,7 +26,7 @@ export interface IServiceContext {
 }
 
 export interface IServiceClass {
-	getName(): string;
+	getName(): string | undefined;
 	onNodeConnected?({ node, reconnected }: { node: IBrokerNode; reconnected: boolean }): void;
 	onNodeUpdated?({ node }: { node: IBrokerNode }): void;
 	onNodeDisconnected?({ node, unexpected }: { node: IBrokerNode; unexpected: boolean }): Promise<void>;
@@ -45,13 +45,13 @@ export interface IServiceClass {
 }
 
 export abstract class ServiceClass implements IServiceClass {
-	protected name: string;
+	protected name?: string;
 
 	protected events = new EventEmitter();
 
 	protected internal = false;
 
-	protected api: IApiService;
+	protected api?: IApiService;
 
 	constructor() {
 		this.emit = this.emit.bind(this);
@@ -65,7 +65,7 @@ export abstract class ServiceClass implements IServiceClass {
 		return this.events.eventNames() as unknown as Array<keyof EventSignatures>;
 	}
 
-	getName(): string {
+	getName(): string | undefined {
 		return this.name;
 	}
 
