@@ -563,7 +563,6 @@ describe('[Rooms]', function () {
 					expect(body.room).to.have.property('sysMes').and.to.be.a('boolean');
 					expect(body.room).to.have.property('default').and.to.be.a('boolean');
 					expect(body.room).to.have.property('_updatedAt').and.to.be.an('string');
-					expect(body.room).to.have.property('encrypted').and.to.be.a('boolean');
 				})
 				.end(done);
 		});
@@ -592,7 +591,6 @@ describe('[Rooms]', function () {
 					expect(body.room).to.have.property('sysMes').and.to.be.a('boolean');
 					expect(body.room).to.have.property('default').and.to.be.a('boolean');
 					expect(body.room).to.have.property('_updatedAt').and.to.be.an('string');
-					expect(body.room).to.have.property('encrypted').and.to.be.a('boolean');
 				})
 				.end(done);
 		});
