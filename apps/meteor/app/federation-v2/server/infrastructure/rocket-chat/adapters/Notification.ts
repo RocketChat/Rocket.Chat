@@ -1,7 +1,7 @@
 import { Rooms } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
-import { api } from '../../../../../../server/sdk/api';
 import notifications from '../../../../../notifications/server/lib/Notifications';
 
 export class RocketChatNotificationAdapter {

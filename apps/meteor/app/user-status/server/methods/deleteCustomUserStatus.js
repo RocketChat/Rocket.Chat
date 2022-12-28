@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { CustomUserStatus } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization/server';
-import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	async deleteCustomUserStatus(userStatusID) {
