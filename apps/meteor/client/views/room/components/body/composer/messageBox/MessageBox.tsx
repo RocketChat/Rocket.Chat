@@ -319,7 +319,6 @@ export const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 					onPaste={handlePaste}
-					is='textarea'
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
