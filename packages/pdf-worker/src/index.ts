@@ -1,4 +1,4 @@
-import exportTranscript from './templates/transcriptTemplate';
+import exportTranscript, { isOmnichannelData } from './templates/transcriptTemplate';
 
 export type Data = { header: Record<string, unknown>; body: unknown[]; footer: Record<string, unknown> };
 
@@ -10,7 +10,9 @@ export class PdfWorker {
 	private async renderTemplate(template: Templates, data: Data): Promise<NodeJS.ReadableStream> {
 		switch (template) {
 			case 'omnichannel-transcript':
-				// @ts-expect-error - i dont know what im doing
+				if (!isOmnichannelData(data)) {
+					throw new Error('Invalid data');
+				}
 				return exportTranscript(data);
 			default:
 				throw new Error('Template not found');
@@ -25,6 +27,7 @@ export class PdfWorker {
 						visitor: data.visitor,
 						agent: data.agent,
 						closedAt: data.closedAt,
+						timezone: data.timezone,
 					},
 					body: Array.isArray(data.messages) ? data.messages : [],
 					footer: {},

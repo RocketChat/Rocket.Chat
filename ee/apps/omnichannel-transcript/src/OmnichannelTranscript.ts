@@ -3,7 +3,8 @@ import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { Templates } from '@rocket.chat/pdf-worker';
 import type { IMessage, IUser, IRoom, IUpload, IOmnichannelRoom, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
 import { ServiceClass } from '@rocket.chat/core-services';
-import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService } from '@rocket.chat/core-services';
+import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService, Settings } from '@rocket.chat/core-services';
+import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -25,6 +26,7 @@ type WorkerData = {
 	agent: ILivechatAgent | undefined;
 	closedAt: IOmnichannelRoom['closedAt'];
 	messages: MessageWithFiles[];
+	timezone: string;
 };
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -43,6 +45,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		private readonly messageService: typeof Message,
 		private readonly queueService: typeof QueueWorker,
 		private readonly translationService: typeof Translation,
+		private readonly settingsService: typeof Settings,
 		loggerClass: typeof Logger,
 	) {
 		super();
@@ -50,6 +53,22 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
 		// your stuff
+	}
+
+	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
+		const reportingTimezone = await this.settingsService.get('Default_Timezone_For_Reporting');
+
+		switch (reportingTimezone) {
+			case 'custom':
+				return this.settingsService.get<string>('Default_Custom_Timezone');
+			case 'user':
+				if (user?.utcOffset) {
+					return guessTimezoneFromOffset(user.utcOffset);
+				}
+				return guessTimezone();
+			default:
+				return guessTimezone();
+		}
 	}
 
 	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
@@ -152,12 +171,17 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			}
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
 
+			const visitor =
+				room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
+			const agent =
+				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
+
 			const data = {
-				visitor:
-					room.v && (await LivechatVisitors.findOneById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } })),
-				agent: room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1 } })),
+				visitor,
+				agent,
 				closedAt: room.closedAt,
 				messages: await this.getFiles(details.userId, messages),
+				timezone: await this.getTimezone(agent),
 			};
 
 			await this.doRender({ template, data, details });

@@ -23,6 +23,7 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "0.31.22",
+		"@rocket.chat/tools": "workspace:^",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",

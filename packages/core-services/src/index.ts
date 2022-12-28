@@ -39,6 +39,7 @@ import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscri
 import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
 import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
+import type { ISettingsService } from './types/ISettingsService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -107,6 +108,7 @@ export {
 	HealthAggResult,
 	ITranslationService,
 	IMessageService,
+	ISettingsService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -133,6 +135,7 @@ export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxifyWithWait<IMessageService>('message');
 export const Translation = proxifyWithWait<ITranslationService>('translation');
+export const Settings = proxifyWithWait<ISettingsService>('settings');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

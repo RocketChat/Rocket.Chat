@@ -1,13 +1,25 @@
 import type { ILivechatAgent, ILivechatVisitor, IMessage, Serialized } from '@rocket.chat/core-typings';
 import ReactPDF, { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 
-type OmnichannelData = {
+export type OmnichannelData = {
 	header: {
 		agent: ILivechatAgent;
 		visitor: ILivechatVisitor;
 		closedAt: Date;
+		timezone: string;
 	};
 	body: (Serialized<Omit<Pick<IMessage, 'msg' | 'u' | 'ts'>, 'files'>> & { files?: { name?: string; buffer: Buffer | null }[] })[];
+};
+
+export const isOmnichannelData = (data: any): data is OmnichannelData => {
+	return (
+		'header' in data &&
+		'body' in data &&
+		'agent' in data.header &&
+		'visitor' in data.header &&
+		'closedAt' in data.header &&
+		'timezone' in data.header
+	);
 };
 
 const styles = StyleSheet.create({
