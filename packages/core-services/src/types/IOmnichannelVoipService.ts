@@ -3,16 +3,32 @@ import type {
 	IAgentExtensionMap,
 	IRoomCreationResponse,
 	ILivechatVisitor,
-	IVoipRoom,
 	IRoom,
 	IUser,
 	IVoipExtensionWithAgentInfo,
 	ILivechatAgent,
 	VoipClientEvents,
+	IVoipRoom,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
-import type { FindVoipRoomsParams } from '../../services/omnichannel-voip/internalTypes';
+export type FindVoipRoomsParams = {
+	agents?: string[];
+	open?: boolean;
+	createdAt?: { start?: string; end?: string };
+	closedAt?: { start?: string; end?: string };
+	tags?: string[];
+	queue?: string;
+	visitorId?: string;
+	options?: {
+		sort?: FindOptions<IVoipRoom>['sort'];
+		count?: number;
+		fields?: Record<string, unknown>;
+		offset?: number;
+	};
+	direction?: IVoipRoom['direction'];
+	roomName?: string;
+};
 
 export interface IOmnichannelVoipService {
 	getFreeExtensions(): Promise<string[]>;
