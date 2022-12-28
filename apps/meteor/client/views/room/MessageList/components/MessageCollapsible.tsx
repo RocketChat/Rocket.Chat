@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import AttachmentDownload from '../../../../components/message/Attachments/Attachment/AttachmentDownload';
 import AttachmentSize from '../../../../components/message/Attachments/Attachment/AttachmentSize';
