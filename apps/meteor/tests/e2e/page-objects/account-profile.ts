@@ -77,7 +77,7 @@ export class AccountProfile {
 	}
 
 	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator('role=section >> role=generic >> text="E2E Encryption"');
+		return this.page.locator('role=region[name="Security"] >> role=region[name="E2E Encryption"]');
 	}
 
 	get securityE2EEncryptionResetKeyButton(): Locator {
