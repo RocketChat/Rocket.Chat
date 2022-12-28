@@ -1,5 +1,5 @@
 import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -20,6 +20,9 @@ const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext
 	}
 	if (isRoomFederated(room)) {
 		return 'federated';
+	}
+	if (isThreadMessage(message)) {
+		return 'threads';
 	}
 	return 'message';
 };
@@ -52,9 +55,9 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 
 	const toolbox = useToolboxContext();
 
-	const isSelecting = useIsSelecting();
+	const selecting = useIsSelecting();
 
-	if (isSelecting) {
+	if (selecting) {
 		return null;
 	}
 

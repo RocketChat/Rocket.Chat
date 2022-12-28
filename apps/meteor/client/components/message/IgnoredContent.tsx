@@ -3,11 +3,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-type RoomMessageIgnoredContentProps = {
+type IgnoredContentProps = {
 	onShowMessageIgnored: () => void;
 };
 
-const RoomMessageIgnoredContent = ({ onShowMessageIgnored }: RoomMessageIgnoredContentProps): ReactElement => {
+const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
 	const t = useTranslation();
 
 	const showMessageIgnored = (event: React.SyntheticEvent): void => {
@@ -27,4 +27,4 @@ const RoomMessageIgnoredContent = ({ onShowMessageIgnored }: RoomMessageIgnoredC
 	);
 };
 
-export default memo(RoomMessageIgnoredContent);
+export default memo(IgnoredContent);

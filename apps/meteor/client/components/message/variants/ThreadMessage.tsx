@@ -1,3 +1,4 @@
+import type { ISubscription, IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
@@ -6,30 +7,27 @@ import React, { memo } from 'react';
 import Toolbox from '../../../views/room/MessageList/components/Toolbox';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
+	useCountSelected,
+	useIsSelectedMessage,
 	useIsSelecting,
 	useToggleSelect,
-	useIsSelectedMessage,
-	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import type { MessageWithMdEnforced } from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
-import RoomMessageContent from './room/RoomMessageContent';
+import ThreadMessageContent from './thread/ThreadMessageContent';
 
-type RoomMessageProps = {
-	message: MessageWithMdEnforced;
+type ThreadMessageProps = {
+	message: IMessage;
 	sequential: boolean;
-	unread: boolean;
-	mention: boolean;
-	all: boolean;
+	subscription?: ISubscription;
 } & Record<`data-${string}`, string>;
 
-const RoomMessage = ({ message, sequential, all, mention, unread, ...props }: RoomMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, subscription, ...props }: ThreadMessageProps): ReactElement => {
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored ?? false);
+	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
@@ -71,7 +69,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, ...props }: Ro
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
 				) : (
-					<RoomMessageContent id={message._id} message={message} unread={unread} mention={mention} all={all} sequential={sequential} />
+					<ThreadMessageContent id={message._id} message={message} subscription={subscription} sequential={sequential} />
 				)}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}
@@ -79,4 +77,4 @@ const RoomMessage = ({ message, sequential, all, mention, unread, ...props }: Ro
 	);
 };
 
-export default memo(RoomMessage);
+export default memo(ThreadMessage);

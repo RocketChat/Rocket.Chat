@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import {
-	MessageHeader as MessageHeaderTemplate,
+	MessageHeader as FuselageMessageHeader,
 	MessageName,
 	MessageTimestamp,
 	MessageUsername,
@@ -11,24 +11,24 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useUserData } from '../../../../hooks/useUserData';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import type { UserPresence } from '../../../../lib/presence';
+import { useUserData } from '../../hooks/useUserData';
+import { getUserDisplayName } from '../../lib/getUserDisplayName';
+import type { UserPresence } from '../../lib/presence';
 import {
 	useMessageListShowUsername,
 	useMessageListShowRealName,
 	useMessageListShowRoles,
-} from '../../../../views/room/MessageList/contexts/MessageListContext';
-import { useMessageRoles } from '../../../../views/room/MessageList/hooks/useMessageRoles';
-import { useMessageActions } from '../../../../views/room/contexts/MessageContext';
-import StatusIndicators from '../../StatusIndicators';
-import RolesList from './RoomMessageRoles';
+} from '../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageActions } from '../../views/room/contexts/MessageContext';
+import StatusIndicators from './StatusIndicators';
+import MessageRoles from './header/MessageRoles';
+import { useMessageRoles } from './header/hooks/useMessageRoles';
 
-type RoomMessageHeaderProps = {
+type MessageHeaderProps = {
 	message: IMessage;
 };
 
-const RoomMessageHeader = ({ message }: RoomMessageHeaderProps): ReactElement => {
+const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		actions: { openUserCard },
@@ -45,7 +45,7 @@ const RoomMessageHeader = ({ message }: RoomMessageHeaderProps): ReactElement =>
 	const shouldShowRolesList = roles.length > 0;
 
 	return (
-		<MessageHeaderTemplate>
+		<FuselageMessageHeader>
 			<MessageNameContainer>
 				<MessageName
 					{...(!showUsername && { 'data-qa-type': 'username' })}
@@ -71,12 +71,12 @@ const RoomMessageHeader = ({ message }: RoomMessageHeaderProps): ReactElement =>
 				)}
 			</MessageNameContainer>
 
-			{shouldShowRolesList && <RolesList roles={roles} isBot={message.bot} />}
+			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
 			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<StatusIndicators message={message} />
-		</MessageHeaderTemplate>
+		</FuselageMessageHeader>
 	);
 };
 
-export default memo(RoomMessageHeader);
+export default memo(MessageHeader);

@@ -29,7 +29,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const subscription = useUserSubscription(rid);
 	const isBroadcast = Boolean(subscription?.broadcast);
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
-	const format = useFormatDate();
+	const formatDate = useFormatDate();
 
 	return (
 		<MessageListProvider rid={rid}>
@@ -38,17 +38,17 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 					{messages.map((message, index, arr) => {
 						const previous = arr[index - 1];
 
-						const isSequential = isMessageSequential(message, previous, messageGroupingPeriod);
+						const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 
-						const isNewDay = isMessageNewDay(message, previous);
-						const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
-						const isUserOwnMessage = isOwnUserMessage(message, subscription);
-						const shouldShowDivider = isNewDay || isFirstUnread;
+						const newDay = isMessageNewDay(message, previous);
+						const firstUnread = isMessageFirstUnread(subscription, message, previous);
+						const own = isOwnUserMessage(message, subscription);
+						const showDivider = newDay || firstUnread;
 
-						const shouldShowAsSequential = isSequential && !isNewDay;
+						const shouldShowAsSequential = sequential && !newDay;
 
-						const isSystemMessage = MessageTypes.isSystemMessage(message);
-						const shouldShowMessage = !isThreadMessage(message) && !isSystemMessage;
+						const system = MessageTypes.isSystemMessage(message);
+						const visible = !isThreadMessage(message) && !system;
 
 						const unread = Boolean(subscription?.tunread?.includes(message._id));
 						const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
@@ -56,27 +56,26 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 
 						return (
 							<Fragment key={message._id}>
-								{shouldShowDivider && (
-									<MessageDivider unreadLabel={isFirstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-										{isNewDay && format(message.ts)}
+								{showDivider && (
+									<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+										{newDay && formatDate(message.ts)}
 									</MessageDivider>
 								)}
 
-								{shouldShowMessage && (
+								{visible && (
 									<RoomMessage
-										id={message._id}
-										data-id={message._id}
-										data-system-message={Boolean(message.t)}
-										data-mid={message._id}
-										data-unread={isFirstUnread}
-										data-sequential={isSequential}
-										data-own={isUserOwnMessage}
-										data-qa-type='message'
 										sequential={shouldShowAsSequential}
 										message={message}
 										unread={unread}
 										mention={mention}
 										all={all}
+										data-id={message._id}
+										data-system-message={Boolean(message.t)}
+										data-mid={message._id}
+										data-unread={firstUnread}
+										data-sequential={sequential}
+										data-own={own}
+										data-qa-type='message'
 									/>
 								)}
 
@@ -85,14 +84,14 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 										data-system-message={Boolean(message.t)}
 										data-mid={message._id}
 										data-tmid={message.tmid}
-										data-unread={isFirstUnread}
-										data-sequential={isSequential}
+										data-unread={firstUnread}
+										data-sequential={sequential}
 										sequential={shouldShowAsSequential}
 										message={message as IThreadMessage}
 									/>
 								)}
 
-								{isSystemMessage && <SystemMessage message={message} />}
+								{system && <SystemMessage message={message} />}
 							</Fragment>
 						);
 					})}
