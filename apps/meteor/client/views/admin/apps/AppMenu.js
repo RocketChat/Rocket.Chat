@@ -69,12 +69,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			setModal(null);
 
 			marketplaceActions[action]({ ...app, permissionsGranted }).then(async () => {
-				// notify user
-				if (action === 'install') {
-					await Apps.notifyUsers(app);
-				}
-
 				setLoading(false);
+
+				// Notify all users which requested the app
+				if (action === 'install') {
+					await Apps.appRequestsNotifyEndUsers(app);
+				}
 			});
 		},
 		[setModal, action, app, setLoading],

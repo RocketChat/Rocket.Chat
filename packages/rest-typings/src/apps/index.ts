@@ -133,7 +133,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request/notify-users': {
-		POST: (params: { userIds: string[]; appName: string }) => string[];
+		POST: (params: { appId: string; appName: string }) => string[];
 	};
 
 	'/apps': {

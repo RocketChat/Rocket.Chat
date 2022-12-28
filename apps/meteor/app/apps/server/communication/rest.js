@@ -929,8 +929,26 @@ export class AppsRestApi {
 						return API.v1.failure('bad request, missing appName');
 					}
 
+					const { appId, appName } = this.bodyParams;
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					await appRequestNotififyForUsers(baseUrl, this.bodyParams.appId, this.bodyParams.appName);
+					const token = await getWorkspaceAccessToken();
+					const headers = {
+						Authorization: `Bearer ${token}`,
+					};
+
+					try {
+						// Notify users
+						await appRequestNotififyForUsers(baseUrl, appId, appName);
+
+						// Mark all as sent
+						await HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, { headers });
+
+						return API.v1.success();
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Could not notify users who requested the app installation:', e.message);
+
+						return API.v1.failure({ error: e.message });
+					}
 				},
 			},
 		);

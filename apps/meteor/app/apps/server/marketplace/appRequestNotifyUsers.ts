@@ -4,20 +4,16 @@ import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
-import { Info } from '../../../utils';
-import { sendMessagesToUsers } from '../../../../server/lib/sendMessagesToUsers';
+import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 
-const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
-const getDefaultHeaders = () => ({
-	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
-	'Authorization': '',
-});
+const ROCKET_CAT_USERID = 'rocket.cat';
+const DEFAULT_LIMIT = 100;
 
 const notifyBatchOfUsersError = (error: unknown) => {
 	throw error;
 };
 
-const notifyBatchOfUsers = async (marketplaceBaseUrl: string, appId: string, appName: string, appRequests: AppRequest[]) => {
+const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): Promise<string[]> => {
 	const batchRequesters = appRequests.reduce((acc: string[], appRequest: AppRequest) => {
 		// Prevent duplicate requesters
 		if (!acc.includes(appRequest.requester.id)) {
@@ -27,9 +23,6 @@ const notifyBatchOfUsers = async (marketplaceBaseUrl: string, appId: string, app
 		return acc;
 	}, []);
 
-	const headers = getDefaultHeaders();
-	const token = await getWorkspaceAccessToken();
-
 	const msgFn = (user: IUser): string => {
 		const defaultLang = user.language || 'en';
 		const msg = `${TAPi18n.__('App_request_enduser_message', { appname: appName, lng: defaultLang })}`;
@@ -38,50 +31,33 @@ const notifyBatchOfUsers = async (marketplaceBaseUrl: string, appId: string, app
 	};
 
 	try {
-		const success = await sendMessagesToUsers('rocket.cat', batchRequesters, msgFn);
-
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		}
-
-		// Mark all success messages for users as sent
-		await HTTP.post(`${marketplaceBaseUrl}/v1/app-request/markAsSent`, {
-			data: {
-				appId,
-				userIds: success,
-			},
-			headers,
-		});
+		return await sendDirectMessageToUsers(ROCKET_CAT_USERID, batchRequesters, msgFn);
 	} catch (e) {
 		throw e;
 	}
 };
 
-export const appRequestNotififyForUsers = async (marketplaceBaseUrl: string, appId: string, appName: string) => {
+export const appRequestNotififyForUsers = async (marketplaceBaseUrl: string, appId: string, appName: string): Promise<string[]> => {
 	try {
-		const headers = getDefaultHeaders();
 		const token = await getWorkspaceAccessToken();
-
-		if (token) {
-			headers.Authorization = `Bearer ${token}`;
-		}
+		const headers = {
+			Authorization: `Bearer ${token}`,
+		};
 
 		// First request
-		const pagination: Pagination = { limit: 5, offset: 0 };
+		const pagination: Pagination = { limit: DEFAULT_LIMIT, offset: 0 };
 
 		// First request to get the total and the first batch
 		const data = HTTP.get(
 			`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
-			{
-				headers,
-			},
+			{ headers },
 		);
 
 		const appRequests = API.v1.success({ data });
 		const { total } = appRequests.body.data.data.meta;
 
-		if (total === 0) {
-			return;
+		if (total === undefined || total === 0) {
+			return [];
 		}
 
 		// Calculate the number of loops - 1 because the first request was already made
@@ -91,7 +67,7 @@ export const appRequestNotififyForUsers = async (marketplaceBaseUrl: string, app
 		// Notify first batch
 		requestsCollection.push(
 			Promise.resolve(appRequests.body.data.data.data)
-				.then((response) => notifyBatchOfUsers(marketplaceBaseUrl, appId, appName, response))
+				.then((response) => notifyBatchOfUsers(appName, response))
 				.catch(notifyBatchOfUsersError),
 		);
 
@@ -101,15 +77,16 @@ export const appRequestNotififyForUsers = async (marketplaceBaseUrl: string, app
 
 			const request = HTTP.get(
 				`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
-				{
-					headers,
-				},
+				{ headers },
 			);
 
-			requestsCollection.push(notifyBatchOfUsers(marketplaceBaseUrl, appId, appName, request.data.data));
+			requestsCollection.push(notifyBatchOfUsers(appName, request.data.data));
 		}
 
-		await Promise.all(requestsCollection);
+		const finalResult = await Promise.all(requestsCollection);
+
+		// Return the list of users that were notified
+		return finalResult.flat();
 	} catch (e) {
 		throw e;
 	}

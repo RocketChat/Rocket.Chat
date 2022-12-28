@@ -247,18 +247,18 @@ class AppClientOrchestrator {
 
 			return restResponse;
 		} catch (e: unknown) {
-			throw new Error('Could not get app requests');
+			throw new Error('Could not get the list of app requests');
 		}
 	}
 
-	public async notifyUsers(app: App): Promise<void> {
+	public async appRequestsNotifyEndUsers(app: App): Promise<string[]> {
 		try {
-			await APIClient.post('/apps/app-request/notify-users', {
+			return await APIClient.post('/apps/app-request/notify-users', {
 				appName: app.name,
 				appId: app.id,
 			});
 		} catch (e: unknown) {
-			throw new Error('Could not notify end users');
+			throw new Error('Could not notify end users due to an error');
 		}
 	}
 
