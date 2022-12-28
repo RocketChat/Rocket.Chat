@@ -25,7 +25,7 @@ const AccountSecurityPage = (): ReactElement => {
 		<Page>
 			<Page.Header title={t('Security')} />
 			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
 					<Accordion>
 						{(twoFactorTOTP || twoFactorByEmailEnabled) && twoFactorEnabled && (
 							<Accordion.Item title={t('Two Factor Authentication')} defaultExpanded>
