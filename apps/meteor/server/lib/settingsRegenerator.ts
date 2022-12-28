@@ -1,6 +1,5 @@
 // Validates settings on DB are correct on structure
 // And deletes invalid ones
-import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
 
 import { Logger } from './logger/Logger';
@@ -34,7 +33,3 @@ export async function settingsRegenerator() {
 		logger.info('No invalid settings found on DB.');
 	}
 }
-
-Meteor.startup(async () => {
-	await settingsRegenerator();
-});
