@@ -85,11 +85,11 @@ export class AccountProfile {
 	}
 
 	get securityE2EEncryptionPassword(): Locator {
-		return this.page.locator('role=textbox[name="New encryption password"');
+		return this.page.locator('role=textbox[name="New encryption password"]');
 	}
 
 	get securityE2EEncryptionPasswordConfirmation(): Locator {
-		return this.page.locator('role=textbox[name="Confirm new encryption password"');
+		return this.page.locator('role=textbox[name="Confirm new encryption password"]');
 	}
 
 	get securityE2EEncryptionSavePasswordButton(): Locator {
