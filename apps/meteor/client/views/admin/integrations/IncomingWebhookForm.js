@@ -45,8 +45,6 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 
 	return (
 		<Page.ScrollableContentWithShadow
-			// pb='x24'
-			// mi='neg-x24'
 			is='form'
 			onSubmit={useCallback((e) => e.preventDefault(), [])}
 			qa-admin-user-edit='form'
