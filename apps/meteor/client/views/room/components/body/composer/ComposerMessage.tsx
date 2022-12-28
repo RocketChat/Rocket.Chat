@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
@@ -27,15 +27,11 @@ export type ComposerMessageProps = {
 const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
-
 	const composerProps = useMemo(
 		() => ({
 			onJoin: async (): Promise<void> => {
 				try {
-					await joinEndpoint({
-						roomId: rid,
-					});
+					await chatMessagesInstance?.data?.joinRoom();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 					throw error;
@@ -68,13 +64,12 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props
 			},
 		}),
 		[
-			chatMessagesInstance?.composer?.text,
+			chatMessagesInstance?.data,
 			chatMessagesInstance?.flows,
+			chatMessagesInstance?.composer?.text,
 			chatMessagesInstance?.messageEditing,
 			dispatchToastMessage,
-			joinEndpoint,
 			onSend,
-			rid,
 		],
 	);
 
