@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { Users } from '../../models/server';
-import { api } from '../../../server/sdk/api';
 
 /*
  * Msg is a named function that will replace /msg commands
