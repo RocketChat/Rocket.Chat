@@ -8,9 +8,6 @@ const defaultConfig = {
 	'@rocket.chat/ui-contexts': {
 		useAtLeastOnePermission: () => true,
 	},
-	'../../../app/ui-utils/client': {
-		SideNav: {},
-	},
 	'../../../app/ui-utils/client/lib/AccountBox': {
 		AccountBoxItem: {},
 		isAppAccountBoxItem: () => false,

@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ComponentProps, FC } from 'react';
-import React from 'react';
 
 const HeaderLink: FC<ComponentProps<typeof Box>> = (props) => (
 	<Box
