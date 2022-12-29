@@ -6302,9 +6302,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/core-services@workspace:^, @rocket.chat/core-services@workspace:packages/core-sdk":
+"@rocket.chat/core-services@workspace:^, @rocket.chat/core-services@workspace:packages/core-services":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/core-services@workspace:packages/core-sdk"
+  resolution: "@rocket.chat/core-services@workspace:packages/core-services"
   dependencies:
     "@rocket.chat/apps-engine": ^1.32.0
     "@rocket.chat/core-typings": "workspace:^"
@@ -6804,6 +6804,13 @@ __metadata:
   version: 0.31.23-dev.14
   resolution: "@rocket.chat/memo@npm:0.31.23-dev.14"
   checksum: 5350a6a3e01170acd6f2e04aceb81e7c80082a39fdafdf0894defd01aae23b8f4fdedf506bc7cea7c6b82bd8b3109262b5e59608a955daa42308c4c66b170c28
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/message-parser@npm:0.31.22":
+  version: 0.31.22
+  resolution: "@rocket.chat/message-parser@npm:0.31.22"
+  checksum: f5fa9ee5c239d03ad512af30c049b9d09a6b35776d2888e98a795b401b6a8f817473c94d8bd06afdb8b8f087c083646684ceb0516c11fa5e2aa8c3c9b29256ab
   languageName: node
   linkType: hard
 
