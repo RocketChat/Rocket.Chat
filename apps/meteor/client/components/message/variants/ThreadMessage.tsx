@@ -2,16 +2,22 @@ import type { ISubscription, IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import Toolbox from '../../../views/room/MessageList/components/Toolbox';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
+import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
 import {
 	useCountSelected,
 	useIsSelectedMessage,
 	useIsSelecting,
 	useToggleSelect,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import type { MessageWithMdEnforced } from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import {
+	parseMessageTextToAstMarkdown,
+	removePossibleNullMessageValues,
+} from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
@@ -36,6 +42,23 @@ const ThreadMessage = ({ message, sequential, subscription, ...props }: ThreadMe
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
 	useCountSelected();
+
+	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
+
+	const normalizeMessage = useMemo(() => {
+		const parseOptions = {
+			colors: showColors,
+			emoticons: true,
+			...(Boolean(katex) && {
+				katex: {
+					dollarSyntax: katex?.dollarSyntaxEnabled,
+					parenthesisSyntax: katex?.parenthesisSyntaxEnabled,
+				},
+			}),
+		};
+		return (message: IMessage): MessageWithMdEnforced =>
+			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateLanguage, useShowTranslated);
+	}, [autoTranslateLanguage, katex, showColors, useShowTranslated]);
 
 	return (
 		<Message
@@ -69,7 +92,7 @@ const ThreadMessage = ({ message, sequential, subscription, ...props }: ThreadMe
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
 				) : (
-					<ThreadMessageContent id={message._id} message={message} subscription={subscription} sequential={sequential} />
+					<ThreadMessageContent id={message._id} message={normalizeMessage(message)} subscription={subscription} sequential={sequential} />
 				)}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}

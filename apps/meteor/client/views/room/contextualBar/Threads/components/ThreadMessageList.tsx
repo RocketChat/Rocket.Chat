@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -46,7 +46,7 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 };
 
 type ThreadMessageListProps = {
-	mainMessage: IMessage;
+	mainMessage: IThreadMainMessage;
 	jumpTo?: string;
 	onJumpTo?: (mid: IMessage['_id']) => void;
 };
