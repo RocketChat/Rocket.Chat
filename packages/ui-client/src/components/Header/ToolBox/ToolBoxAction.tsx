@@ -1,6 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 const ToolBoxAction: FC<any> = forwardRef(function ToolBoxAction(
 	{ id, icon, color, action, className, index, title, 'data-tooltip': tooltip, ...props },
