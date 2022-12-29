@@ -44,7 +44,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		return {
 			...subscriptionQuery.data,
 			...roomQuery.data,
-			// name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
+			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
 		};
 	}, [roomQuery.data, subscriptionQuery.data]);
 
