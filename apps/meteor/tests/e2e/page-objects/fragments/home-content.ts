@@ -59,7 +59,7 @@ export class HomeContent {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get fileNameInput(): Locator {
