@@ -1,5 +1,5 @@
-import type { ISubscription, IMessage } from '@rocket.chat/core-typings';
-import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
+import type { ISubscription, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
@@ -7,13 +7,7 @@ import React, { useMemo, memo } from 'react';
 import Toolbox from '../../../views/room/MessageList/components/Toolbox';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
-import {
-	useCountSelected,
-	useIsSelectedMessage,
-	useIsSelecting,
-	useToggleSelect,
-} from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import type { MessageWithMdEnforced } from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { isOwnUserMessage } from '../../../views/room/MessageList/lib/isOwnUserMessage';
 import {
 	parseMessageTextToAstMarkdown,
 	removePossibleNullMessageValues,
@@ -26,22 +20,18 @@ import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
-	message: IMessage;
-	sequential: boolean;
+	message: IThreadMessage | IThreadMainMessage;
 	subscription?: ISubscription;
-} & Record<`data-${string}`, string>;
+	unread: boolean;
+	sequential: boolean;
+};
 
-const ThreadMessage = ({ message, sequential, subscription, ...props }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, subscription, unread }: ThreadMessageProps): ReactElement => {
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
-
-	const selecting = useIsSelecting();
-	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id);
-	useCountSelected();
 
 	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
 
@@ -56,33 +46,36 @@ const ThreadMessage = ({ message, sequential, subscription, ...props }: ThreadMe
 				},
 			}),
 		};
-		return (message: IMessage): MessageWithMdEnforced =>
+		return <TMessage extends IThreadMessage | IThreadMainMessage>(message: TMessage) =>
 			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateLanguage, useShowTranslated);
 	}, [autoTranslateLanguage, katex, showColors, useShowTranslated]);
+
+	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
 
 	return (
 		<Message
 			id={message._id}
-			onClick={selecting ? toggleSelected : undefined}
-			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
 			data-qa-editing={editing}
-			data-qa-selected={selected}
-			{...props}
+			data-id={message._id}
+			data-mid={message._id}
+			data-unread={unread}
+			data-sequential={sequential}
+			data-own={isOwnUserMessage(message, subscription)}
+			data-qa-type='message'
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && !selecting && (
+				{!sequential && message.u.username && (
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
 						size={'x36'}
-						onClick={openUserCard(message.u.username)}
 						style={{ cursor: 'pointer' }}
+						onClick={openUserCard(message.u.username)}
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 
@@ -92,7 +85,7 @@ const ThreadMessage = ({ message, sequential, subscription, ...props }: ThreadMe
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
 				) : (
-					<ThreadMessageContent id={message._id} message={normalizeMessage(message)} subscription={subscription} sequential={sequential} />
+					<ThreadMessageContent message={normalizedMessage} subscription={subscription} />
 				)}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}

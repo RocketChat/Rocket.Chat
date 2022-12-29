@@ -1,4 +1,4 @@
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,6 +9,7 @@ import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import { useMessageListShowReadReceipt, useTranslateAttachments } from '../../../../views/room/MessageList/contexts/MessageListContext';
 import { isOwnUserMessage } from '../../../../views/room/MessageList/lib/isOwnUserMessage';
+import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
@@ -21,10 +22,8 @@ import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 
 type ThreadMessageContentProps = {
-	message: IMessage;
-	sequential: boolean;
+	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
 	subscription?: ISubscription;
-	id: IMessage['_id'];
 };
 
 const ThreadMessageContent = ({ message, subscription }: ThreadMessageContentProps): ReactElement => {

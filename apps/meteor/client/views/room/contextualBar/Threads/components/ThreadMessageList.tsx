@@ -13,7 +13,6 @@ import ThreadMessage from '../../../../../components/message/variants/ThreadMess
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageFirstUnread } from '../../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
-import { isOwnUserMessage } from '../../../MessageList/lib/isOwnUserMessage';
 import { MessageListProvider } from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
@@ -83,7 +82,6 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
 								const firstUnread = isMessageFirstUnread(subscription, message, previous);
-								const own = isOwnUserMessage(message, subscription);
 								const showDivider = newDay || firstUnread;
 
 								const shouldShowAsSequential = sequential && !newDay;
@@ -99,28 +97,13 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 										)}
 										<li>
 											{system ? (
-												<SystemMessage
-													message={message}
-													data-id={message._id}
-													data-system-message={Boolean(message.t)}
-													data-mid={message._id}
-													data-unread={firstUnread}
-													data-sequential={shouldShowAsSequential}
-													data-own={own}
-													data-qa-type='message'
-												/>
+												<SystemMessage message={message} />
 											) : (
 												<ThreadMessage
 													message={message}
-													sequential={shouldShowAsSequential}
 													subscription={subscription}
-													data-id={message._id}
-													data-system-message={Boolean(message.t)}
-													data-mid={message._id}
-													data-unread={firstUnread}
-													data-sequential={shouldShowAsSequential}
-													data-own={own}
-													data-qa-type='message'
+													sequential={shouldShowAsSequential}
+													unread={firstUnread}
 												/>
 											)}
 										</li>
