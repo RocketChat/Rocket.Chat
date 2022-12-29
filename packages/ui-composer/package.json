@@ -11,7 +11,7 @@
     "@storybook/addon-docs": "~6.5.14",
     "@storybook/addon-essentials": "~6.5.14",
     "@storybook/builder-webpack4": "~6.5.14",
-    "@storybook/manager-webpack4": "~6.5.14",
+    "@storybook/manager-webpack4": "~6.5.15",
     "@storybook/react": "~6.5.14",
     "@storybook/testing-library": "~0.0.13",
     "@types/babel__core": "^7.1.20",
