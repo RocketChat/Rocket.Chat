@@ -4,8 +4,8 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import { ToolboxDropdownDesktop } from './ToolboxDropdownDesktop';
-import { ToolboxDropdownMobile } from './ToolboxDropdownMobile';
+import DesktopToolboxDropdown from './DesktopToolboxDropdown';
+import MobileToolboxDropdown from './MobileToolboxDropdown';
 
 const style = css`
 	top: 0;
@@ -13,26 +13,27 @@ const style = css`
 	left: 0;
 	right: 0;
 `;
-export const ToolboxDropdown = <R extends HTMLElement>({
-	reference,
-	container,
-	children,
-	...rest
-}: {
+
+type ToolboxDropdownProps<R> = {
+	children: ReactNode;
 	reference: React.RefObject<R>;
 	container: Element;
-	children: ReactNode;
-}): ReactElement => {
+};
+
+const ToolboxDropdown = <R extends HTMLElement>({ children, reference, container, ...props }: ToolboxDropdownProps<R>): ReactElement => {
 	const { isMobile } = useLayout();
 	const target = useRef<HTMLButtonElement>(null);
 
-	const DropdownTemplate = isMobile ? ToolboxDropdownMobile : ToolboxDropdownDesktop;
+	const Dropdown = isMobile ? MobileToolboxDropdown : DesktopToolboxDropdown;
+
 	return (
 		<>
 			<Box className={style} position='fixed' />
-			<DropdownTemplate ref={target} reference={reference} container={container} {...rest}>
+			<Dropdown ref={target} reference={reference} container={container} {...props}>
 				{children}
-			</DropdownTemplate>
+			</Dropdown>
 		</>
 	);
 };
+
+export default ToolboxDropdown;

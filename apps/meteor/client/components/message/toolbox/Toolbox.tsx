@@ -3,16 +3,16 @@ import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
-import type { MessageActionContext } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { useChat } from '../../../contexts/ChatContext';
-import { useRoom } from '../../../contexts/RoomContext';
-import { useToolboxContext } from '../../../contexts/ToolboxContext';
-import { useIsSelecting } from '../../contexts/SelectedMessagesContext';
-import { MessageActionMenu } from './MessageActionMenu';
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useChat } from '../../../views/room/contexts/ChatContext';
+import { useRoom } from '../../../views/room/contexts/RoomContext';
+import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
+import MessageActionMenu from './MessageActionMenu';
 
 const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
 	if (message.t === 'videoconf') {
@@ -27,7 +27,11 @@ const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext
 	return 'message';
 };
 
-export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
+type ToolboxProps = {
+	message: IMessage;
+};
+
+const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const room = useRoom();
@@ -65,10 +69,10 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 		<MessageToolbox>
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
-					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat })}
 					key={action.id}
 					icon={action.icon}
 					title={t(action.label)}
+					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat })}
 					data-qa-id={action.label}
 					data-qa-type='message-action-menu'
 				/>

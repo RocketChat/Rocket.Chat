@@ -4,7 +4,6 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import Toolbox from '../../../views/room/MessageList/components/Toolbox';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -19,6 +18,7 @@ import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
+import ToolboxHolder from '../ToolboxHolder';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
@@ -82,7 +82,7 @@ const RoomMessage = ({ message, subscription, sequential, all, mention, unread }
 					<RoomMessageContent message={message} subscription={subscription} unread={unread} mention={mention} all={all} />
 				)}
 			</MessageContainer>
-			{!message.private && <Toolbox message={message} />}
+			{!message.private && <ToolboxHolder message={message} />}
 		</Message>
 	);
 };

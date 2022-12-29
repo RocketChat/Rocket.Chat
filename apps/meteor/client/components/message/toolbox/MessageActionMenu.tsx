@@ -1,18 +1,20 @@
 import { MessageToolboxItem, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps, UIEvent } from 'react';
+import type { ComponentProps, UIEvent, ReactElement } from 'react';
 import React, { useState, Fragment, useRef } from 'react';
 
-import type { MessageActionConfig } from '../../../../../../app/ui-utils/client/lib/MessageAction';
-import { ToolboxDropdown } from './ToolboxDropdown';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import ToolboxDropdown from './ToolboxDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: (event: UIEvent) => void;
 };
 
-export const MessageActionMenu: FC<{
+type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
-}> = ({ options, ...rest }) => {
+};
+
+export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
 	const ref = useRef(null);
 
 	const t = useTranslation();
@@ -47,7 +49,7 @@ export const MessageActionMenu: FC<{
 			title={t('More')}
 		>
 			{visible && (
-				<ToolboxDropdown reference={ref} container={messagesContainer} {...rest}>
+				<ToolboxDropdown reference={ref} container={messagesContainer} {...props}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (
@@ -70,3 +72,5 @@ export const MessageActionMenu: FC<{
 		</MessageToolboxItem>
 	);
 };
+
+export default MessageActionMenu;

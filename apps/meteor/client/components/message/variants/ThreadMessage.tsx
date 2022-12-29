@@ -4,7 +4,6 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
-import Toolbox from '../../../views/room/MessageList/components/Toolbox';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
 import { isOwnUserMessage } from '../../../views/room/MessageList/lib/isOwnUserMessage';
@@ -17,6 +16,7 @@ import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
+import ToolboxHolder from '../ToolboxHolder';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
@@ -88,7 +88,7 @@ const ThreadMessage = ({ message, sequential, subscription, unread }: ThreadMess
 					<ThreadMessageContent message={normalizedMessage} subscription={subscription} />
 				)}
 			</MessageContainer>
-			{!message.private && <Toolbox message={message} />}
+			{!message.private && <ToolboxHolder message={message} />}
 		</Message>
 	);
 };
