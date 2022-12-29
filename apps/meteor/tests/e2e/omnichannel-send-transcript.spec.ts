@@ -61,6 +61,7 @@ test.describe('omnichannel-transcript', () => {
 
 		await test.step('Expect to be not able send transcript as PDF', async () => {
 			await agent.poHomeChannel.content.btnSendTranscript.click();
+			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
 			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
 		});
 	});
