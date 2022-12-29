@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
@@ -21,7 +22,7 @@ import ToolboxHolder from '../ToolboxHolder';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
-	message: MessageWithMdEnforced;
+	message: MessageWithMdEnforced<IMessage & { ignored?: boolean }>;
 	sequential: boolean;
 	unread: boolean;
 	mention: boolean;
@@ -33,7 +34,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, ignoredUser }:
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
-	const ignored = (ignoredUser || (message as { ignored?: boolean }).ignored) && !displayIgnoredMessage;
+	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();

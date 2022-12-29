@@ -1,10 +1,14 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { render, screen } from '@testing-library/react';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import React from 'react';
 
+import type { default as _RoomMessage } from '../../../../../../client/components/message/variants/RoomMessage';
+import type { MessageWithMdEnforced } from '../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+
 const date = new Date('2021-10-27T00:00:00.000Z');
-const baseMessage = {
+const baseMessage: MessageWithMdEnforced<IMessage> = {
 	ts: date,
 	u: {
 		_id: 'userId',
@@ -29,46 +33,55 @@ const baseMessage = {
 	urls: [],
 };
 
-const Message = proxyquire.noCallThru().load('../../../../../../client/views/room/MessageList/components/Message.tsx', {
-	'../../../../components/avatar/UserAvatar': () => <p>user avatar</p>,
-	'../../contexts/MessageContext': {
+const RoomMessage = proxyquire.noCallThru().load('../../../../../../client/components/message/variants/RoomMessage.tsx', {
+	'../../avatar/UserAvatar': () => <p>user avatar</p>,
+	'../../../views/room/contexts/MessageContext': {
 		useMessageActions: () => ({
 			actions: {
 				openUserCard: () => '',
 			},
 		}),
 	},
-	'../contexts/MessageHighlightContext': {
+	'../../../views/room/MessageList/contexts/MessageHighlightContext': {
 		useIsMessageHighlight: () => false,
 	},
-	'../contexts/SelectedMessagesContext': {
+	'../../../views/room/MessageList/contexts/SelectedMessagesContext': {
 		useIsSelecting: () => '',
 		useToggleSelect: () => '',
 		useIsSelectedMessage: () => '',
 		useCountSelected: () => '',
 	},
-	'./MessageContentIgnored': () => <p>message ignored</p>,
-	'./MessageContent': () => baseMessage.msg,
-	'./MessageHeader': () => <p>message header</p>,
-	'./MessageIndicators': { MessageIndicators: () => <p>message indicators</p> },
-	'./Toolbox': () => <p>toolbox</p>,
-}).default;
+	'../IgnoredContent': () => <p>message ignored</p>,
+	'./room/RoomMessageContent': () => baseMessage.msg,
+	'../MessageHeader': () => <p>message header</p>,
+	'../StatusIndicators': { MessageIndicators: () => <p>message indicators</p> },
+	'../ToolboxHolder': () => <p>toolbox</p>,
+}).default as typeof _RoomMessage;
 
 describe('Message', () => {
 	it('should show normal message', () => {
-		render(<Message message={baseMessage} isUserIgnored={false} />);
+		render(<RoomMessage message={baseMessage} sequential={false} all={false} mention={false} unread={false} ignoredUser={false} />);
 
 		expect(screen.getByText(baseMessage.msg)).to.exist;
 	});
 
 	it('should show ignored message', () => {
-		render(<Message message={baseMessage} isUserIgnored={true} />);
+		render(<RoomMessage message={baseMessage} sequential={false} all={false} mention={false} unread={false} ignoredUser={true} />);
 
 		expect(screen.getByText('message ignored')).to.exist;
 	});
 
 	it('should show ignored message', () => {
-		render(<Message message={{ ...baseMessage, ignored: true }} isUserIgnored={false} />);
+		render(
+			<RoomMessage
+				message={{ ...baseMessage, ignored: true }}
+				sequential={false}
+				all={false}
+				mention={false}
+				unread={false}
+				ignoredUser={false}
+			/>,
+		);
 
 		expect(screen.getByText('message ignored')).to.exist;
 	});
