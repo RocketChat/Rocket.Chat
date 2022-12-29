@@ -10,7 +10,7 @@ const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof
 		maxHeight='56px'
 		is='h3'
 		pi='x24'
-		borderBlockEndWidth='x2'
+		borderBlockEndWidth='default'
 		borderBlockColor='extra-light'
 		{...props}
 	>
