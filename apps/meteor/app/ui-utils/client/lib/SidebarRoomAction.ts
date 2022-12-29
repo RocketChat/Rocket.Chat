@@ -1,5 +1,6 @@
-import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
+import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import { Emitter } from '@rocket.chat/emitter';
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
 
 import { triggerActionButtonAction } from '../../../ui-message/client/ActionManager';
 
@@ -28,11 +29,11 @@ export class SidebarRoomActionBase {
 			(listener: () => void): (() => void) =>
 			(): OffCallbackHandler =>
 				this.emitter.on('update', listener),
-		addItem: (value: ISideBarActionItem): void => {
+		addItem: (value: IUIActionButton): void => {
 			this.addItem(value);
 			this.emitter.emit('update');
 		},
-		removeItem: (value: ISideBarActionItem): void => {
+		removeItem: (value: IUIActionButton): void => {
 			this.deleteItem(value);
 			this.emitter.emit('update');
 		},

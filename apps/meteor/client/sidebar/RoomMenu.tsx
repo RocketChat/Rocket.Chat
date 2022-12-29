@@ -16,7 +16,6 @@ import {
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
-import { Rooms } from '../../app/models/client/index';
 import { applyButtonFilters } from '../../app/ui-message/client/actionButtons/lib/applyButtonFilters';
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import type { ISidebarButton } from '../../app/ui-utils/client/lib/SidebarRoomAction';
@@ -25,6 +24,7 @@ import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
+import { useRoomInfoEndpoint } from '../hooks/useRoomInfoEndpoint';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 const fields: Fields = {
@@ -187,15 +187,21 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		}
 	});
 
-	const room = Rooms.findOne({ _id: rid });
+	const { data, isLoading, isError } = useRoomInfoEndpoint(rid);
 
-	const actionButtons = SidebarRoomAction.actions
-		.getCurrentValue()
-		.filter((action) => applyButtonFilters(action, room))
-		.reduce((result, item) => {
-			result[item.actionId] = item.sidebarActionButton;
-			return result;
-		}, {} as Record<string, ISidebarButton>);
+	const appsButtons = useMemo(
+		() =>
+			!isLoading &&
+			!isError &&
+			SidebarRoomAction.actions
+				.getCurrentValue()
+				.filter((action) => applyButtonFilters(action, data.room))
+				.reduce((result, item) => {
+					result[item.actionId] = item.sidebarActionButton;
+					return result;
+				}, {} as Record<string, ISidebarButton>),
+		[data, isError, isLoading],
+	);
 
 	const menuOptions = useMemo(
 		() => ({
@@ -224,9 +230,9 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					action: handleLeave,
 				},
 			}),
-			...actionButtons,
+			...appsButtons,
 		}),
-		[actionButtons, t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
+		[appsButtons, t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
 	);
 
 	return (

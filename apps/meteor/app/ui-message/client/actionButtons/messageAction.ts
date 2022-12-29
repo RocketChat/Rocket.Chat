@@ -9,7 +9,6 @@ import { applyButtonFilters } from './lib/applyButtonFilters';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
-// eslint-disable-next-line no-void
 export const onAdded = (button: IUIActionButton): void =>
 	MessageAction.addButton({
 		id: getIdForActionButton(button),
