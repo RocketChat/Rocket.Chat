@@ -70,11 +70,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 			marketplaceActions[action]({ ...app, permissionsGranted }).then(async () => {
 				setLoading(false);
-
-				// Notify all users which requested the app
-				if (action === 'install') {
-					await Apps.appRequestsNotifyEndUsers(app);
-				}
 			});
 		},
 		[setModal, action, app, setLoading],

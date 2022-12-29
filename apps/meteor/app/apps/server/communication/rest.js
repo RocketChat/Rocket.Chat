@@ -12,7 +12,6 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
-import { appRequestNotififyForUsers } from '../marketplace/appRequestNotifyUsers';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -911,43 +910,6 @@ export class AppsRestApi {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
 
 						return API.v1.failure(e.message);
-					}
-				},
-			},
-		);
-
-		this.api.addRoute(
-			'app-request/notify-users',
-			{ authRequired: true },
-			{
-				async post() {
-					if (!this.bodyParams.appId) {
-						return API.v1.failure('bad request, missing appId');
-					}
-
-					if (!this.bodyParams.appName) {
-						return API.v1.failure('bad request, missing appName');
-					}
-
-					const { appId, appName } = this.bodyParams;
-					const baseUrl = orchestrator.getMarketplaceUrl();
-					const token = await getWorkspaceAccessToken();
-					const headers = {
-						Authorization: `Bearer ${token}`,
-					};
-
-					try {
-						// Notify users
-						await appRequestNotififyForUsers(baseUrl, appId, appName);
-
-						// Mark all as sent
-						await HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, { headers });
-
-						return API.v1.success();
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Could not notify users who requested the app installation:', e.message);
-
-						return API.v1.failure({ error: e.message });
 					}
 				},
 			},

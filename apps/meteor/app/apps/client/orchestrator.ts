@@ -251,17 +251,6 @@ class AppClientOrchestrator {
 		}
 	}
 
-	public async appRequestsNotifyEndUsers(app: App): Promise<string[]> {
-		try {
-			return await APIClient.post('/apps/app-request/notify-users', {
-				appName: app.name,
-				appId: app.id,
-			});
-		} catch (e: unknown) {
-			throw new Error('Could not notify end users due to an error');
-		}
-	}
-
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
 		const result = await APIClient.get('/apps', { categories: 'true' });
 
