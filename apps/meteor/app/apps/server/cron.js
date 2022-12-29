@@ -9,6 +9,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 import { Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
@@ -101,6 +102,49 @@ export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUp
 	}
 
 	Promise.await(Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps));
+});
+
+export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequests() {
+	try {
+		const installedApps = Promise.await(Apps.installedApps({ enabled: true }));
+		if (!installedApps || installedApps.length === 0) {
+			return;
+		}
+
+		const token = Promise.await(getWorkspaceAccessToken());
+		const baseUrl = Apps.getMarketplaceUrl();
+		const options = {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		};
+
+		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
+		const result = HTTP.get(pendingSentUrl, options);
+		const data = result.data?.data;
+		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
+
+		filtered.forEach((app) => {
+			const appId = app.getID();
+			const appName = app.getName();
+
+			appRequestNotififyForUsers(baseUrl, appId, appName)
+				.then(() => HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options))
+				.catch((err) => {
+					Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
+				});
+		});
+	} catch (err) {
+		Apps.debugLog(err);
+	}
+});
+
+SyncedCron.add({
+	name: 'Apps-Request:check',
+	schedule: (parser) => parser.text('at 6:00 am'),
+	job() {
+		appsNotifyAppRequests();
+	},
 });
 
 SyncedCron.add({
