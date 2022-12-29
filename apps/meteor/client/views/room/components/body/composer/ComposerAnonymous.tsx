@@ -29,11 +29,11 @@ export const ComposerAnonymous = (): ReactElement => {
 
 	return (
 		<ButtonGroup marginBlock='x16'>
-			<Button small primary onClick={() => setForceLogin(true)} data-qa-id='composer-anonymous-sign-in-button'>
+			<Button small primary onClick={() => setForceLogin(true)}>
 				{t('Sign_in_to_start_talking')}
 			</Button>
 			{isAnonymousWriteEnabled && (
-				<Button small secondary onClick={() => joinAnonymous()} data-qa-id='composer-anonymous-talk-button'>
+				<Button small secondary onClick={() => joinAnonymous()}>
 					{t('Or_talk_as_anonymous')}
 				</Button>
 			)}

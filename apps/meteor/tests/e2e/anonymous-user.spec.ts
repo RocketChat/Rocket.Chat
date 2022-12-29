@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { HomeChannel } from './page-objects';
+import { HomeChannel, Registration } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
@@ -12,40 +12,38 @@ test.describe('anonymous-user', () => {
 		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', true)).status()).toBe(200);
 	});
 
+	test.afterAll(async ({ api }) => {
+		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false)).status()).toBe(200);
+		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', false)).status()).toBe(200);
+	});
+
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await page.waitForSelector('[data-qa="page-home"]');
 		await poHomeChannel.sidenav.openChat('general');
 	});
 
 	test('expect to go to the login page as anonymous user', async ({ page }) => {
-		const SIGN_IN_BUTTON = page.locator('[data-qa-id="composer-anonymous-sign-in-button"]');
+		await expect(poHomeChannel.content.btnAnonymousSignIn).toBeVisible({ timeout: 10000 });
+		await poHomeChannel.content.btnAnonymousSignIn.click();
 
-		await expect(SIGN_IN_BUTTON).toBeVisible({ timeout: 10000 });
-		await SIGN_IN_BUTTON.click();
-
-		await expect(page.locator('[data-qa-id="login-form"]')).toBeVisible();
+		await expect(page.locator('role=form')).toBeVisible();
 	});
 
 	test('expect to chat as anonymous user', async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		const TALK_ANONYMOUS_BUTTON = page.locator('[data-qa-id="composer-anonymous-talk-button"]');
+		const poRegistration = new Registration(page);
 
-		await expect(TALK_ANONYMOUS_BUTTON).toBeVisible({ timeout: 10000 });
-		await TALK_ANONYMOUS_BUTTON.click();
+		await expect(poHomeChannel.content.btnAnonymousTalk).toBeVisible({ timeout: 10000 });
+		await poHomeChannel.content.btnAnonymousTalk.click();
 
-		await expect(page.locator('[data-qa="username-form"]')).toBeVisible();
+		await expect(poRegistration.username).toBeVisible();
+		await poRegistration.username.type(faker.internet.userName());
 
-		await expect(page.locator('[data-qa-id="username-input"]')).toBeVisible();
-		await page.locator('[data-qa-id="username-input"]').fill(faker.internet.userName());
+		await expect(poRegistration.btnRegisterConfirmUsername).toBeVisible();
+		await poRegistration.btnRegisterConfirmUsername.click();
 
-		await expect(page.locator('[data-qa-id="username-submit"]')).toBeVisible();
-		await page.locator('[data-qa-id="username-submit"]').click();
-
-		await expect(page.locator('[data-qa-id="message-composer-input"]')).toBeVisible();
-		await page.locator('[data-qa-id="message-composer-input"]').fill('Hello World!');
-		await page.locator('[data-qa-id="message-composer-send"]').click();
+		await poHomeChannel.content.sendMessage('hello world');
 	});
 });
