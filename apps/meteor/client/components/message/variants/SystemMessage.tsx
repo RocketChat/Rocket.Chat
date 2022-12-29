@@ -36,7 +36,7 @@ type SystemMessageProps = {
 	message: IMessage;
 };
 
-export const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		actions: { openUserCard },

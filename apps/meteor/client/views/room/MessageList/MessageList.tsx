@@ -16,7 +16,6 @@ import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
-import { isOwnUserMessage } from './lib/isOwnUserMessage';
 import { MessageListProvider } from './providers/MessageListProvider';
 
 type MessageListProps = {
@@ -42,7 +41,6 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 
 						const newDay = isMessageNewDay(message, previous);
 						const firstUnread = isMessageFirstUnread(subscription, message, previous);
-						const own = isOwnUserMessage(message, subscription);
 						const showDivider = newDay || firstUnread;
 
 						const shouldShowAsSequential = sequential && !newDay;
@@ -64,24 +62,17 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 
 								{visible && (
 									<RoomMessage
-										sequential={shouldShowAsSequential}
 										message={message}
+										subscription={subscription}
+										sequential={shouldShowAsSequential}
 										unread={unread}
 										mention={mention}
 										all={all}
-										data-id={message._id}
-										data-system-message={Boolean(message.t)}
-										data-mid={message._id}
-										data-unread={firstUnread}
-										data-sequential={sequential}
-										data-own={own}
-										data-qa-type='message'
 									/>
 								)}
 
 								{isThreadMessage(message) && (
 									<ThreadMessagePreview
-										data-system-message={Boolean(message.t)}
 										data-mid={message._id}
 										data-tmid={message.tmid}
 										data-unread={firstUnread}

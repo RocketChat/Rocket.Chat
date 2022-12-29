@@ -1,4 +1,4 @@
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription, IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -24,16 +24,14 @@ import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 
 type RoomMessageContentProps = {
-	message: MessageWithMdEnforced;
-	sequential: boolean;
-	subscription?: ISubscription;
-	id: IMessage['_id'];
+	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
+	subscription: ISubscription | undefined;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
 };
 
-const RoomMessageContent = ({ message, unread, all, mention, subscription }: RoomMessageContentProps): ReactElement => {
+const RoomMessageContent = ({ message, subscription, unread, all, mention }: RoomMessageContentProps): ReactElement => {
 	const {
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },

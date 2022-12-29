@@ -1,3 +1,4 @@
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
@@ -11,6 +12,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { isOwnUserMessage } from '../../../views/room/MessageList/lib/isOwnUserMessage';
 import type { MessageWithMdEnforced } from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
@@ -21,13 +23,14 @@ import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
 	message: MessageWithMdEnforced;
+	subscription: ISubscription | undefined;
 	sequential: boolean;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
-} & Record<`data-${string}`, string>;
+};
 
-const RoomMessage = ({ message, sequential, all, mention, unread, ...props }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({ message, subscription, sequential, all, mention, unread }: RoomMessageProps): ReactElement => {
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored ?? false);
 	const {
@@ -49,7 +52,12 @@ const RoomMessage = ({ message, sequential, all, mention, unread, ...props }: Ro
 			sequential={sequential}
 			data-qa-editing={editing}
 			data-qa-selected={selected}
-			{...props}
+			data-id={message._id}
+			data-mid={message._id}
+			data-unread={unread}
+			data-sequential={sequential}
+			data-own={isOwnUserMessage(message, subscription)}
+			data-qa-type='message'
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && (
@@ -71,7 +79,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, ...props }: Ro
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
 				) : (
-					<RoomMessageContent id={message._id} message={message} unread={unread} mention={mention} all={all} sequential={sequential} />
+					<RoomMessageContent message={message} subscription={subscription} unread={unread} mention={mention} all={all} />
 				)}
 			</MessageContainer>
 			{!message.private && <Toolbox message={message} />}
