@@ -79,15 +79,7 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 				) : (
 					<MessageListProvider rid={mainMessage.rid}>
 						<MessageProvider rid={mainMessage.rid} broadcast={subscription?.broadcast ?? false}>
-							<MessageDivider
-								unreadLabel={isMessageFirstUnread(subscription, mainMessage, undefined) ? t('Unread_Messages').toLowerCase() : undefined}
-							>
-								{formatDate(mainMessage.ts)}
-							</MessageDivider>
-							<li key={mainMessage._id}>
-								<ThreadMessage message={mainMessage} sequential={false} subscription={subscription} />
-							</li>
-							{messages.map((message, index, { [index - 1]: previous = mainMessage }) => {
+							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
 								const firstUnread = isMessageFirstUnread(subscription, message, previous);
