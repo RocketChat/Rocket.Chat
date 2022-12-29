@@ -1,14 +1,13 @@
-import type { ISubscription, IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import { useMessageListShowReadReceipt, useTranslateAttachments } from '../../../../views/room/MessageList/contexts/MessageListContext';
-import { isOwnUserMessage } from '../../../../views/room/MessageList/lib/isOwnUserMessage';
 import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
 import MessageContentBody from '../../MessageContentBody';
@@ -23,10 +22,10 @@ import UrlPreviews from '../../content/UrlPreviews';
 
 type ThreadMessageContentProps = {
 	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
-	subscription?: ISubscription;
 };
 
-const ThreadMessageContent = ({ message, subscription }: ThreadMessageContentProps): ReactElement => {
+const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
+	const uid = useUserId();
 	const {
 		broadcast,
 		actions: { replyBroadcast },
@@ -79,7 +78,7 @@ const ThreadMessageContent = ({ message, subscription }: ThreadMessageContentPro
 
 			{message.location && <Location location={message.location} />}
 
-			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
+			{broadcast && !!user.username && message.u._id !== uid && (
 				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 

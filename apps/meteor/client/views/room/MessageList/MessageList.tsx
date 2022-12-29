@@ -1,7 +1,7 @@
-import type { IThreadMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
-import { useUserSubscription, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment, memo } from 'react';
 
@@ -10,6 +10,7 @@ import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import { useRoomSubscription } from '../contexts/RoomContext';
 import MessageProvider from '../providers/MessageProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
@@ -25,7 +26,7 @@ type MessageListProps = {
 export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
-	const subscription = useUserSubscription(rid);
+	const subscription = useRoomSubscription();
 	const isBroadcast = Boolean(subscription?.broadcast);
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
@@ -61,14 +62,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 								)}
 
 								{visible && (
-									<RoomMessage
-										message={message}
-										subscription={subscription}
-										sequential={shouldShowAsSequential}
-										unread={unread}
-										mention={mention}
-										all={all}
-									/>
+									<RoomMessage message={message} sequential={shouldShowAsSequential} unread={unread} mention={mention} all={all} />
 								)}
 
 								{isThreadMessage(message) && (
@@ -78,7 +72,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 										data-unread={firstUnread}
 										data-sequential={sequential}
 										sequential={shouldShowAsSequential}
-										message={message as IThreadMessage}
+										message={message}
 									/>
 								)}
 

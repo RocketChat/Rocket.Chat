@@ -1,12 +1,12 @@
 import type { ISubscription, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
-import { isOwnUserMessage } from '../../../views/room/MessageList/lib/isOwnUserMessage';
 import {
 	parseMessageTextToAstMarkdown,
 	removePossibleNullMessageValues,
@@ -26,7 +26,8 @@ type ThreadMessageProps = {
 	sequential: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, subscription, unread }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): ReactElement => {
+	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
 	const {
@@ -63,7 +64,7 @@ const ThreadMessage = ({ message, sequential, subscription, unread }: ThreadMess
 			data-mid={message._id}
 			data-unread={unread}
 			data-sequential={sequential}
-			data-own={isOwnUserMessage(message, subscription)}
+			data-own={message.u._id === uid}
 			data-qa-type='message'
 		>
 			<MessageLeftContainer>
@@ -71,7 +72,7 @@ const ThreadMessage = ({ message, sequential, subscription, unread }: ThreadMess
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
-						size={'x36'}
+						size='x36'
 						style={{ cursor: 'pointer' }}
 						onClick={openUserCard(message.u.username)}
 					/>
@@ -82,11 +83,7 @@ const ThreadMessage = ({ message, sequential, subscription, unread }: ThreadMess
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{ignored ? (
-					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
-				) : (
-					<ThreadMessageContent message={normalizedMessage} subscription={subscription} />
-				)}
+				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
 			</MessageContainer>
 			{!message.private && <ToolboxHolder message={message} />}
 		</Message>

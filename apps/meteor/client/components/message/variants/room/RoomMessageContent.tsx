@@ -1,4 +1,4 @@
-import type { ISubscription, IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -8,7 +8,6 @@ import React, { memo } from 'react';
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
 import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
-import { isOwnUserMessage } from '../../../../views/room/MessageList/lib/isOwnUserMessage';
 import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
 import MessageContentBody from '../../MessageContentBody';
@@ -25,13 +24,13 @@ import UrlPreviews from '../../content/UrlPreviews';
 
 type RoomMessageContentProps = {
 	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
-	subscription: ISubscription | undefined;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
 };
 
-const RoomMessageContent = ({ message, subscription, unread, all, mention }: RoomMessageContentProps): ReactElement => {
+const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
+	const uid = useUserId();
 	const {
 		broadcast,
 		actions: { openRoom, openThread, replyBroadcast },
@@ -111,7 +110,7 @@ const RoomMessageContent = ({ message, subscription, unread, all, mention }: Roo
 
 			{message.location && <Location location={message.location} />}
 
-			{broadcast && !!user.username && !isOwnUserMessage(message, subscription) && (
+			{broadcast && !!user.username && message.u._id !== uid && (
 				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
 			)}
 
