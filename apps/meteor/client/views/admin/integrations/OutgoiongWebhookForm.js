@@ -88,12 +88,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
 	return (
-		<Page.ScrollableContentWithShadow
-			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
-			qa-admin-user-edit='form'
-			{...props}
-		>
+		<Page.ScrollableContentWithShadow is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' {...props}>
 			<Margins block='x16'>
 				<Accordion maxWidth='x600' alignSelf='center' w='full'>
 					<FieldGroup>
