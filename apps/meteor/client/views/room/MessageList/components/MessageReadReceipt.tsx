@@ -11,7 +11,7 @@ const MessageReadReceipt = ({ unread }: { unread?: boolean }): ReactElement | nu
 			right: 0.5rem;
 		`}
 	>
-		<Icon name='check' size='x11' color={unread ? 'secondary' : 'primary'} />
+		<Icon name='check' size='x16' color={unread ? 'secondary' : 'primary'} />
 	</Box>
 );
 
