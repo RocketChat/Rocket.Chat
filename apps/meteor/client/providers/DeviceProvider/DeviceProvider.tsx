@@ -1,6 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useEffect, useState, useMemo } from 'react';
+import type { Device, IExperimentalHTMLAudioElement, DeviceContextValue } from '@rocket.chat/ui-contexts';
+import { DeviceContext } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 
 import { isSetSinkIdAvailable } from './lib/isSetSinkIdAvailable';
 

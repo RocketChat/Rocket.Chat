@@ -1,7 +1,8 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, memo, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
@@ -16,17 +17,16 @@ type ThreadListMessageProps = {
 	username: IMessage['u']['username'];
 	name?: IMessage['u']['name'];
 	ts: IMessage['ts'];
-	replies: IMessage['replies'];
+	replies: ReactNode;
 	participants: ReactNode;
 	handleFollowButton: MouseEventHandler;
 	unread: boolean;
-	mention: number;
+	mention: boolean;
 	all: boolean;
-	tlm: number;
-	className?: string | string[];
-} & Omit<ComponentProps<typeof Message>, 'className' | 'is'>;
+	tlm: Date | undefined;
+} & Omit<ComponentProps<typeof Box>, 'is'>;
 
-function ThreadListMessage({
+const ThreadListMessage = ({
 	_id,
 	msg,
 	following,
@@ -42,7 +42,7 @@ function ThreadListMessage({
 	tlm,
 	className = [],
 	...props
-}: ThreadListMessageProps): ReactElement {
+}: ThreadListMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
@@ -72,10 +72,12 @@ function ThreadListMessage({
 								<Message.Metrics.Item.Icon name='user' />
 								<Message.Metrics.Item.Label>{participants}</Message.Metrics.Item.Label>
 							</Message.Metrics.Item>
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Icon name='clock' />
-								<Message.Metrics.Item.Label>{formatDate(tlm)}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							{tlm && (
+								<Message.Metrics.Item>
+									<Message.Metrics.Item.Icon name='clock' />
+									<Message.Metrics.Item.Label>{formatDate(tlm)}</Message.Metrics.Item.Label>
+								</Message.Metrics.Item>
+							)}
 						</Message.Metrics>
 					</Message.Block>
 				</Message.Container>
@@ -98,6 +100,6 @@ function ThreadListMessage({
 			</Box>
 		</Box>
 	);
-}
+};
 
 export default memo(ThreadListMessage);

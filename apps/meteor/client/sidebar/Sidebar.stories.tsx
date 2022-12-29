@@ -1,11 +1,12 @@
 import type { ISetting, ISubscription } from '@rocket.chat/core-typings';
-import { UserContext, SettingsContext, LoginService } from '@rocket.chat/ui-contexts';
-import { Meta, Story } from '@storybook/react';
+import type { LoginService } from '@rocket.chat/ui-contexts';
+import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
+import type { Meta, Story } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
-import React, { ContextType } from 'react';
+import type { ContextType } from 'react';
+import React from 'react';
 
-import RoomList from './RoomList/index';
-import Header from './header';
+import Sidebar from './Sidebar';
 
 export default {
 	title: 'Sidebar',
@@ -95,15 +96,8 @@ const userContextValue: ContextType<typeof UserContext> = {
 	logout: () => Promise.resolve(),
 };
 
-export const Sidebar: Story = () => (
-	<aside className='sidebar sidebar--main' role='navigation'>
-		<Header />
-		<div className='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
-			<RoomList />
-		</div>
-	</aside>
-);
-Sidebar.decorators = [
+export const SidebarStory: Story = () => <Sidebar />;
+SidebarStory.decorators = [
 	(fn) => (
 		<SettingsContext.Provider value={settingContextValue}>
 			<UserContext.Provider value={userContextValue}>{fn()}</UserContext.Provider>

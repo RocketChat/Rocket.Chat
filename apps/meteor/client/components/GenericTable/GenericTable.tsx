@@ -1,7 +1,8 @@
 import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, forwardRef, ReactNode, ReactElement, Key, useMemo, Ref } from 'react';
+import type { ReactNode, ReactElement, Key, Ref } from 'react';
+import React, { useState, useEffect, forwardRef, useMemo } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import { GenericTable as GenericTableV2 } from './V2/GenericTable';
@@ -43,7 +44,7 @@ const GenericTable = forwardRef(function GenericTable<
 		params: paramsDefault = defaultParamsValue,
 		setParams = defaultSetParamsValue,
 		renderFilter,
-		renderRow: RenderRow,
+		renderRow: RenderRowComponent,
 		results,
 		total,
 		pagination = true,
@@ -83,7 +84,8 @@ const GenericTable = forwardRef(function GenericTable<
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={headerCells} />}
 							{!isLoading &&
-								((RenderRow && results?.map((props, index) => <RenderRow key={'_id' in props ? props._id : index} {...props} />)) ||
+								((RenderRowComponent &&
+									results?.map((props, index) => <RenderRowComponent key={'_id' in props ? props._id : index} {...props} />)) ||
 									(children && results?.map(children)))}
 						</GenericTableBody>
 					</GenericTableV2>

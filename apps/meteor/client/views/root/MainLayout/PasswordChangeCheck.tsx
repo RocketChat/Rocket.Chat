@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
-import React, { lazy, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { lazy } from 'react';
 
 import TwoFactorAuthSetupCheck from './TwoFactorAuthSetupCheck';
 

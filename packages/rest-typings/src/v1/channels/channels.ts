@@ -49,7 +49,7 @@ export type ChannelsEndpoints = {
 				teamId?: string;
 			};
 		}) => {
-			group: Partial<IRoom>;
+			channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 		};
 	};
 	'/v1/channels.convertToTeam': {

@@ -1,6 +1,7 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import AppsList from '../AppsList';
 import normalizeFeaturedApps from '../helpers/normalizeFeaturedApps';
@@ -12,7 +13,6 @@ type FeaturedSectionsProps = {
 
 const FeaturedAppsSections = ({ appsResult }: FeaturedSectionsProps): ReactElement | null => {
 	const t = useTranslation();
-
 	const featuredApps = useFeaturedApps();
 
 	if (featuredApps.isSuccess) {

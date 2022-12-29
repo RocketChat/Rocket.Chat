@@ -1,8 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import type { Box } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, FC, ComponentProps } from 'react';
+import type { FC, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 import { useQuickActions } from './hooks/useQuickActions';
 

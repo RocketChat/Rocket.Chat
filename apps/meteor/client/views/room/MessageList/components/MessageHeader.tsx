@@ -1,4 +1,4 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import {
 	MessageHeader as MessageHeaderTemplate,
 	MessageName,
@@ -8,11 +8,12 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { UserPresence } from '../../../../lib/presence';
+import type { UserPresence } from '../../../../lib/presence';
 import { useMessageActions } from '../../contexts/MessageContext';
 import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from '../contexts/MessageListContext';
 import { useMessageRoles } from '../hooks/useMessageRoles';

@@ -1,7 +1,8 @@
-import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { Box } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, Fragment } from 'react';
+import type { FC } from 'react';
+import React, { Fragment } from 'react';
 
 import { apiCurlGetter } from '../../../helpers';
 

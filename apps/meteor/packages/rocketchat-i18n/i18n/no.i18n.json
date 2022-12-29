@@ -1,5 +1,4 @@
 {
-  "403": "Forbudt",
   "500": "Intern server feil",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ er ikke lenger __role__ av __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ble satt __role__ av __user_by__",
@@ -2903,6 +2902,7 @@
   "registration.page.registration.waitActivationWarning": "Før du kan logge inn, må kontoen din aktiveres manuelt av en administrator.",
   "registration.page.resetPassword.sent": "Hvis denne e-posten er registrert, sender vi instruksjoner om hvordan du tilbakestiller passordet ditt. Hvis du ikke mottar en epost, vennligst kom tilbake og prøv igjen.",
   "registration.component.login": "Logg inn",
+  "registration.component.login.userNotFound": "Bruker ikke funnet",
   "registration.component.resetPassword": "Tilbakestilling av passord",
   "registration.component.form.email": "E-post",
   "registration.component.form.password": "Passord",

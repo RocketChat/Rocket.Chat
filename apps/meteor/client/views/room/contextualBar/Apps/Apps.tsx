@@ -1,7 +1,7 @@
-import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal } from '@rocket.chat/fuselage-ui-kit';
-import { LayoutBlock } from '@rocket.chat/ui-kit';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import React from 'react';
 
 import { getURL } from '../../../../../app/utils/lib/getURL';

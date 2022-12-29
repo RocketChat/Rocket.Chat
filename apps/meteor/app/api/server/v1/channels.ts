@@ -19,12 +19,12 @@ import {
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
 import { Messages } from '@rocket.chat/models';
+import { Team } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { Team } from '../../../../server/sdk';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({
@@ -270,7 +270,6 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			// @ts-expect-error recursive types are causing issues here
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,

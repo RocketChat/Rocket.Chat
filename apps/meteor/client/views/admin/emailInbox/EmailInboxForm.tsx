@@ -1,4 +1,4 @@
-import { IEmailInboxPayload } from '@rocket.chat/core-typings';
+import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	Button,
@@ -15,7 +15,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';

@@ -1,4 +1,4 @@
-import { IMessage, IRoom, ISubscription, IUser, SettingValue } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser, SettingValue } from '@rocket.chat/core-typings';
 
 export const messageArgs = (
 	context: any,

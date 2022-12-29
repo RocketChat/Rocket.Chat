@@ -1,5 +1,4 @@
 {
-  "403": "i ndaluar",
   "500": "Server Error brendshme",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ nuk është më __role__, duke __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ u __role__ nga __user_by__",
@@ -2797,6 +2796,7 @@
   "registration.page.registration.waitActivationWarning": "Para se ju të identifikoheni, llogaria juaj duhet të aktivizohet nga një administrator.",
   "registration.page.resetPassword.sent": "Nëse kjo e-mail është regjistruar, ne do të dërgojmë udhëzime se si të rivendosni fjalëkalimin tuaj. Nëse nuk merrni një email së shpejti, lutemi të ktheheni dhe provoni përsëri.",
   "registration.component.login": "Hyrje",
+  "registration.component.login.userNotFound": "Përdoruesi nuk u gjet",
   "registration.component.resetPassword": "Rivendos fjalëkalimin",
   "registration.component.form.password": "Fjalëkalim",
   "registration.component.form.divider": "ose",

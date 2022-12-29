@@ -1,5 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Page from '../../../../../client/components/Page';
 import DeviceManagementAccountTable from './DeviceManagementAccountTable';
