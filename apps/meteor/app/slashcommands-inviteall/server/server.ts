@@ -6,11 +6,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
-import { api } from '../../../server/sdk/api';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return function inviteAll(command: T, params: string, item): void {
