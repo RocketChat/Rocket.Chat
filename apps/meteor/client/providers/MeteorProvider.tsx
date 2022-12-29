@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import React from 'react';
 
-import AttachmentProvider from '../components/message/Attachments/providers/AttachmentProvider';
+import AttachmentProvider from './AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
