@@ -62,8 +62,8 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 						<MessageUsername
 							data-username={user.username}
 							data-qa-type='username'
-							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 							style={{ cursor: 'pointer' }}
+							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
 						>
 							@{user.username}
 						</MessageUsername>
