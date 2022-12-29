@@ -66,7 +66,7 @@
     "@rocket.chat/ui-kit": "next",
     "@rocket.chat/ui-video-conf": "workspace:^",
     "@storybook/addon-essentials": "~6.5.14",
-    "@storybook/addons": "~6.5.14",
+    "@storybook/addons": "~6.5.15",
     "@storybook/builder-webpack5": "~6.5.14",
     "@storybook/manager-webpack5": "~6.5.14",
     "@storybook/react": "~6.5.14",
