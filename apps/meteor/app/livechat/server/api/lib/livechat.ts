@@ -147,7 +147,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,
-			videoCall: initSettings.Omnichannel_call_provider === 'Jitsi',
+			videoCall: initSettings.Omnichannel_call_provider === 'default-provider',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
