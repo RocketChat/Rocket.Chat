@@ -10,7 +10,6 @@ import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 import { AppEvents, Apps } from '../../apps/server/orchestrator';
-import { normalizeMessagesForUser } from '/app/utils/server/lib/normalizeMessagesForUser';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
@@ -22,8 +21,6 @@ const removeUserReaction = (message, reaction, username) => {
 
 async function setReaction(room, user, message, reaction, shouldReact) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
-
-	console.log(message.reactions);
 
 	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
