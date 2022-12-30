@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
+import { settings } from '../../settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
@@ -13,6 +14,7 @@ export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotify
 			return;
 		}
 
+		const workspaceUrl = settings.get<string>('Site_Url');
 		const token = Promise.await(getWorkspaceAccessToken());
 		const baseUrl = Apps.getMarketplaceUrl();
 		if (!baseUrl) {
@@ -36,7 +38,7 @@ export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotify
 			const appName = app.getName();
 
 			const usersNotified = Promise.await<(string | Error)[]>(
-				appRequestNotififyForUsers(baseUrl, appId, appName)
+				appRequestNotififyForUsers(baseUrl, workspaceUrl, appId, appName)
 					.then((response) => {
 						// Mark all app requests as sent
 						HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options);

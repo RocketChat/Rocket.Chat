@@ -13,7 +13,7 @@ const notifyBatchOfUsersError = (error: Error) => {
 	return new Error(`could not notify the batch of users. Error ${error}`);
 };
 
-const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): Promise<string[]> => {
+const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequests: AppRequest[]): Promise<string[]> => {
 	const batchRequesters = appRequests.reduce((acc: string[], appRequest: AppRequest) => {
 		// Prevent duplicate requesters
 		if (!acc.includes(appRequest.requester.id)) {
@@ -25,7 +25,7 @@ const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): P
 
 	const msgFn = (user: IUser): string => {
 		const defaultLang = user.language || 'en';
-		const msg = `${TAPi18n.__('App_request_enduser_message', { appname: appName, lng: defaultLang })}`;
+		const msg = `${TAPi18n.__('App_request_enduser_message', { appname: appName, learnmore: learnMoreUrl, lng: defaultLang })}`;
 
 		return msg;
 	};
@@ -39,6 +39,7 @@ const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): P
 
 export const appRequestNotififyForUsers = async (
 	marketplaceBaseUrl: string,
+	workspaceUrl: string,
 	appId: string,
 	appName: string,
 ): Promise<(string | Error)[]> => {
@@ -67,11 +68,12 @@ export const appRequestNotififyForUsers = async (
 		// Calculate the number of loops - 1 because the first request was already made
 		const loops = Math.ceil(total / pagination.limit) - 1;
 		const requestsCollection = [];
+		const learnMore = `${workspaceUrl}admin/marketplace/all/info/${appId}`;
 
 		// Notify first batch
 		requestsCollection.push(
 			Promise.resolve(appRequests.body.data.data.data)
-				.then((response) => notifyBatchOfUsers(appName, response))
+				.then((response) => notifyBatchOfUsers(appName, learnMore, response))
 				.catch(notifyBatchOfUsersError),
 		);
 
@@ -84,7 +86,7 @@ export const appRequestNotififyForUsers = async (
 				{ headers },
 			);
 
-			requestsCollection.push(notifyBatchOfUsers(appName, request.data.data));
+			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, request.data.data));
 		}
 
 		const finalResult = await Promise.all(requestsCollection);
