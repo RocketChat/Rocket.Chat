@@ -128,13 +128,18 @@ export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotify
 			const appId = app.getID();
 			const appName = app.getName();
 
-			Promise.await(
+			const usersNotified = Promise.await(
 				appRequestNotififyForUsers(baseUrl, appId, appName)
 					.then(() => HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options))
 					.catch((err) => {
 						Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
 					}),
 			);
+
+			const errors = usersNotified.filter((batch) => batch instanceof Error);
+			if (errors.length > 0) {
+				Apps.debugLog(`Some batches of users could not be notified for app ${appId}. Errors: ${errors}`);
+			}
 		});
 	} catch (err) {
 		Apps.debugLog(err);

@@ -10,7 +10,7 @@ const ROCKET_CAT_USERID = 'rocket.cat';
 const DEFAULT_LIMIT = 100;
 
 const notifyBatchOfUsersError = (error: unknown) => {
-	throw error;
+	return new Error(`could not notify the batch of users`, { cause: error });
 };
 
 const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): Promise<string[]> => {
@@ -37,7 +37,11 @@ const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): P
 	}
 };
 
-export const appRequestNotififyForUsers = async (marketplaceBaseUrl: string, appId: string, appName: string): Promise<string[]> => {
+export const appRequestNotififyForUsers = async (
+	marketplaceBaseUrl: string,
+	appId: string,
+	appName: string,
+): Promise<(string | Error)[]> => {
 	try {
 		const token = await getWorkspaceAccessToken();
 		const headers = {
