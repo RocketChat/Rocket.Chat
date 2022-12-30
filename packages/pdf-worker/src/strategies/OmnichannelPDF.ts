@@ -15,7 +15,9 @@ export class OmnichannelPDF implements IStrategy {
 			header: {
 				visitor: data.visitor,
 				agent: data.agent,
-				closedAt: data.closedAt,
+				site_name: data.site_name,
+				date: data.date,
+				time: data.time,
 				timezone: data.timezone,
 			},
 			body: Array.isArray(data.messages) ? data.messages : [],

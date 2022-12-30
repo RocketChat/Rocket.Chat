@@ -1,10 +1,11 @@
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { Templates } from '@rocket.chat/pdf-worker';
-import type { IMessage, IUser, IRoom, IUpload, IOmnichannelRoom, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService, Settings } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import moment from 'moment';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -24,7 +25,8 @@ type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({
 type WorkerData = {
 	visitor: ILivechatVisitor | null;
 	agent: ILivechatAgent | undefined;
-	closedAt: IOmnichannelRoom['closedAt'];
+	date: string;
+	time: string;
 	messages: MessageWithFiles[];
 	timezone: string;
 };
@@ -179,7 +181,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const data = {
 				visitor,
 				agent,
-				closedAt: room.closedAt,
+				date: moment(room.closedAt).format('MMM D, YYYY'),
+				time: moment(room.closedAt).format('H:mm:ss'),
+				site_name: await this.settingsService.get('Site_Name'),
 				messages: await this.getFiles(details.userId, messages),
 				timezone: await this.getTimezone(agent),
 			};
