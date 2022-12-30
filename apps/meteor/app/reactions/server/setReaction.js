@@ -85,6 +85,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username);
+
 		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setReactionsInLastMessage(room._id, message);

@@ -247,7 +247,9 @@ export interface IMessageReactionsNormalized extends IMessage {
 }
 
 export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
-	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
+	Boolean(
+		'reactions' in message && message.reactions && Object.keys(message.reactions)[0] && 'names' in Object.values(message.reactions)[0],
+	);
 
 export interface IOmnichannelSystemMessage extends IMessage {
 	navigation?: {
