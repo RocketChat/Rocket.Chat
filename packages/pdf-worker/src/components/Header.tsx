@@ -9,6 +9,19 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.n100,
 		color: colors.n900,
 	},
+	headerText: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		borderBottomColor: colors.n200,
+		borderBottomWidth: '2px',
+		marginBottom: '16px',
+		paddingBottom: '16px',
+	},
+	pagination: {
+		fontSize: fontScales.c1.fontSize,
+		color: colors.n700,
+	},
 	title: {
 		fontSize: fontScales.h4.fontSize,
 		fontWeight: fontScales.h4.fontWeight,
@@ -16,11 +29,6 @@ const styles = StyleSheet.create({
 	subtitle: {
 		fontSize: fontScales.p2m.fontSize,
 		fontWeight: fontScales.p2m.fontWeight,
-	},
-	row: {
-		borderBottomColor: colors.n200,
-		borderBottomWidth: '2px',
-		margin: '16px 0 16px',
 	},
 	container: {
 		fontSize: fontScales.c1.fontSize,
@@ -39,8 +47,10 @@ const styles = StyleSheet.create({
 
 export const Header = ({ title, subtitle, values }: { title: string; subtitle: string; values: { key: string; value: string }[] }) => (
 	<View style={styles.header} fixed>
-		<Text style={styles.title}>{title}</Text>
-		<View style={styles.row} />
+		<View style={styles.headerText}>
+			<Text style={styles.title}>{title}</Text>
+			<Text style={styles.pagination} render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`} />
+		</View>
 		<Text style={styles.subtitle}>{subtitle}</Text>
 		<View style={styles.container}>
 			{values.map((value, index) => (

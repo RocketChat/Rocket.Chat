@@ -82,7 +82,7 @@ const OmnichannelTranscript = ({ header, body }: OmnichannelData) => (
 					*/}
 				<View style={styles.messagesContainer}>
 					{body.map((message, index) => (
-						<View style={styles.message} id={`${index}`}>
+						<View style={styles.message} key={index}>
 							<View style={{ flexDirection: 'row' }}>
 								<Text style={{ fontWeight: 'bold' }}>{message.u.name}</Text>
 								{/* closedAt date will come as an actual date, and reactpdf doesnt like it so remember to parse it before passing to Text*/}
