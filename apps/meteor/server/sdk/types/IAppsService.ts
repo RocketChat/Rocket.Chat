@@ -20,6 +20,6 @@ export interface IAppsService {
 	getProvidedComponents: () => IExternalComponent[];
 	rocketChatLoggerWarn<T>(obj: T, args: any[]): void;
 	rocketChatLoggerError<T>(obj: T, args: any[]): void;
-	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem> | undefined;
+	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null>;
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
 }
