@@ -76,7 +76,7 @@
 		"stylelint": "^14.9.1",
 		"stylelint-order": "^5.0.0",
 		"svg-loader": "^0.0.2",
-		"typescript": "4.6.4",
+		"typescript": "~4.6.4",
 		"url-loader": "^4.1.1",
 		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12",
