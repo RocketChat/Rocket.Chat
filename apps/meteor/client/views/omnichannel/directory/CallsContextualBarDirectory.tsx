@@ -32,7 +32,7 @@ const CallsContextualBarDirectory: FC = () => {
 		[id, token],
 	);
 
-	const { value: data, phase: state, error } = useEndpointData(`/v1/voip/room`, query);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/voip/room`, { params: query });
 
 	if (bar === 'view' && id) {
 		return <Call rid={id} />;
