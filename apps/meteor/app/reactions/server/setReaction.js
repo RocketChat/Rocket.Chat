@@ -10,10 +10,10 @@ import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 import { AppEvents, Apps } from '../../apps/server/orchestrator';
+import { normalizeMessagesForUser } from '/app/utils/server/lib/normalizeMessagesForUser';
 
-const removeUserReaction = (message, reaction, username, name) => {
+const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
-	message.reactions[reaction].names.splice(message.reactions[reaction].names.indexOf(name), 1);
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
@@ -22,6 +22,8 @@ const removeUserReaction = (message, reaction, username, name) => {
 
 async function setReaction(room, user, message, reaction, shouldReact) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
+
+	console.log(message.reactions);
 
 	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
@@ -59,7 +61,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 
 	if (userAlreadyReacted) {
 		const oldMessage = JSON.parse(JSON.stringify(message));
-		removeUserReaction(message, reaction, user.username, user.name);
+		removeUserReaction(message, reaction, user.username);
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
@@ -83,11 +85,9 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		if (!message.reactions[reaction]) {
 			message.reactions[reaction] = {
 				usernames: [],
-				names: [],
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username);
-		message.reactions[reaction].names.push(user.name);
 
 		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {

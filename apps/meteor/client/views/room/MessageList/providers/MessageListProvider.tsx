@@ -26,7 +26,7 @@ export const MessageListProvider: FC<{
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
-	const displayName = user?.name;
+	const realName = user?.name;
 	const subscription = useUserSubscription(rid, fields);
 
 	const { isMobile } = useLayout();
@@ -68,7 +68,7 @@ export const MessageListProvider: FC<{
 								return message.reactions[reaction].names;
 							}
 
-							return message.reactions[reaction].names.filter((user) => user !== displayName);
+							return message.reactions[reaction].names.filter((user) => user !== realName);
 					  };
 			},
 			useUserHasReacted: username
@@ -146,21 +146,22 @@ export const MessageListProvider: FC<{
 				: () => (): void => undefined,
 		}),
 		[
+			showColors,
 			username,
 			uid,
+			autoTranslateLanguage,
 			autoTranslateEnabled,
 			hasSubscription,
-			autoTranslateLanguage,
+			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
 			katexEnabled,
 			katexDollarSyntaxEnabled,
 			katexParenthesisSyntaxEnabled,
 			highlights,
+			realName,
 			reactToMessage,
-			showColors,
 		],
 	);
 
