@@ -128,20 +128,23 @@ export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotify
 			const appId = app.getID();
 			const appName = app.getName();
 
-			appRequestNotififyForUsers(baseUrl, appId, appName)
-				.then(() => HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options))
-				.catch((err) => {
-					Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
-				});
+			Promise.await(
+				appRequestNotififyForUsers(baseUrl, appId, appName)
+					.then(() => HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options))
+					.catch((err) => {
+						Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
+					}),
+			);
 		});
 	} catch (err) {
 		Apps.debugLog(err);
 	}
 });
 
+// Scheduling as every 24 hours to avoid multiple instances hiting the marketplace at the same time
 SyncedCron.add({
-	name: 'Apps-Request:check',
-	schedule: (parser) => parser.text('at 6:00 am'),
+	name: 'Apps-Request-End-Users:notify',
+	schedule: (parser) => parser.text('every 24 hours'),
 	job() {
 		appsNotifyAppRequests();
 	},
