@@ -57,11 +57,11 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		500,
 	);
 
-	const getUsers = useEndpoint('GET', '/v1/users.list')
+	const getUsers = useEndpoint('GET', '/v1/users.list');
 	const { data, isLoading, error, isSuccess, refetch } = useQuery(['users.list', query], async () => {
-		const users = await getUsers(query)
-		return users
-	})
+		const users = await getUsers(query);
+		return users;
+	});
 
 	useEffect(() => {
 		reload.current = refetch;
