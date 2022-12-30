@@ -97,7 +97,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 		> blockquote {
 			padding-inline: 8px;
 			border-radius: 2px;
-			border-width: 2px;
+			border-width: 1px;
 			border-style: solid;
 			background-color: ${Palette.surface['surface-tint']};
 			border-color: ${Palette.stroke['stroke-extra-light']};
