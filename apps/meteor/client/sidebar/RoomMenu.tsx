@@ -195,7 +195,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			!isError &&
 			SidebarRoomAction.actions
 				.getCurrentValue()
-				.filter((action) => applyButtonFilters(action, data.room))
+				.filter((action) => applyButtonFilters(action, data?.room))
 				.reduce((result, item) => {
 					result[item.actionId] = item.sidebarActionButton;
 					return result;
