@@ -9,8 +9,8 @@ import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessa
 const ROCKET_CAT_USERID = 'rocket.cat';
 const DEFAULT_LIMIT = 100;
 
-const notifyBatchOfUsersError = (error: unknown) => {
-	return new Error(`could not notify the batch of users`, { cause: error });
+const notifyBatchOfUsersError = (error: Error) => {
+	return new Error(`could not notify the batch of users. Error ${error}`);
 };
 
 const notifyBatchOfUsers = async (appName: string, appRequests: AppRequest[]): Promise<string[]> => {
