@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
+import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import ChatProvider from '../../providers/ChatProvider';
@@ -92,8 +93,9 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 					overflow='hidden'
 					zIndex={100}
 					insetBlock={0}
+					border='none'
 				>
-					<VerticalBar.Header>
+					<VerticalBarHeader expanded={expanded}>
 						<VerticalBar.Action name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
 						{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 							(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
@@ -114,7 +116,7 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 							/>
 							<VerticalBar.Close onClick={handleClose} />
 						</VerticalBar.Actions>
-					</VerticalBar.Header>
+					</VerticalBarHeader>
 
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (

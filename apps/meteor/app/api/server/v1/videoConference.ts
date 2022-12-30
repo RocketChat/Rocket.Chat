@@ -6,11 +6,11 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
+import { VideoConf } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { VideoConf } from '../../../../server/sdk';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { availabilityErrors } from '../../../../lib/videoConference/constants';
 

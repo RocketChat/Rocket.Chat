@@ -57,8 +57,8 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 	}
 
 	return (
-		<VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
+		<VerticalBar>
+			<VerticalBar.Header expanded>
 				{bar === 'info' && (
 					<>
 						<VerticalBar.Icon name='info-circled' />
