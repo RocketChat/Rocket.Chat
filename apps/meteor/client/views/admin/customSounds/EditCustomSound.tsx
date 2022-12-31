@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditSound from './EditSound';
 
 type EditCustomSoundProps = {
@@ -15,9 +15,14 @@ type EditCustomSoundProps = {
 function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement {
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-sounds.list', { params: query });
+	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
-	if (state === AsyncStatePhase.LOADING) {
+	const { data, isLoading, error, refetch } = useQuery(['custom-sounds.list', query], async () => {
+		const sound = await getSounds(query);
+		return sound;
+	});
+
+	if (isLoading) {
 		return (
 			<Box pb='x20'>
 				<Skeleton mbs='x8' />
@@ -51,7 +56,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 
 	const handleChange: () => void = () => {
 		onChange?.();
-		reload?.();
+		refetch?.();
 	};
 
 	return <EditSound data={data.sounds[0]} onChange={handleChange} {...props} />;
