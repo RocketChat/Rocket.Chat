@@ -1,6 +1,6 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
-import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
@@ -10,7 +10,21 @@ const CustomHomePageContent = (): ReactElement | null => {
 	const body = String(useSetting('Layout_Home_Body'));
 	const { data } = useIsEnterprise();
 	const isAdmin = usePermission('view-user-administration');
-	const [isCustomContentVisible, setIsCustomContentVisible] = useState(useSetting('Layout_Home_Custom_Block_Visible'));
+	const [isCustomContentVisible, setIsContentVisibile] = useState(useSetting('Layout_Home_Custom_Block_Visible'));
+	const customContentVisible = useEndpoint('POST', '/v1/settings/Layout_Home_Custom_Block_Visible') as unknown as ({
+		value,
+	}: {
+		value: boolean;
+	}) => void;
+
+	const handleChangeCustomContentVisibility = async () => {
+		try {
+			setIsContentVisibile(!isCustomContentVisible);
+			await customContentVisible({ value: Boolean(!isCustomContentVisible) });
+		} catch (error: unknown) {
+			console.error(error);
+		}
+	};
 
 	const isEnterprise = data?.isEnterprise;
 
@@ -33,9 +47,7 @@ const CustomHomePageContent = (): ReactElement | null => {
 						</Button>
 						<Button
 							title={!isCustomContentVisible ? `Now it's available only for admins` : `Now it's available for everyone`}
-							onClick={(): void => {
-								setIsCustomContentVisible(!isCustomContentVisible);
-							}}
+							onClick={handleChangeCustomContentVisibility}
 						>
 							<Icon name='eye-off' size='x16' />
 							Show to workspace
@@ -49,7 +61,11 @@ const CustomHomePageContent = (): ReactElement | null => {
 		);
 	}
 
-	return <Box withRichContent dangerouslySetInnerHTML={{ __html: body }} />;
+	if (isCustomContentVisible) {
+		return <Box withRichContent dangerouslySetInnerHTML={{ __html: body }} />;
+	}
+
+	return <></>;
 };
 
 export default CustomHomePageContent;

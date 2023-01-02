@@ -22,7 +22,7 @@ const DefaultHomePage = (): ReactElement => {
 	const canAddUsers = usePermission('view-user-administration');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
-	const displayCustomBody = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
+	const displayCustomBody = Boolean(useSetting('Layout_Home_Body'));
 
 	return (
 		<Page color='default' is='main' data-qa='page-home' data-qa-type='default' background='tint'>
