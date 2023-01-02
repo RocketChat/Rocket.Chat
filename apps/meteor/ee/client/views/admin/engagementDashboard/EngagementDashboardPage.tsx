@@ -1,8 +1,9 @@
 import { Box, Select, Tabs } from '@rocket.chat/fuselage';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import Page from '../../../../../client/components/Page';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import ChannelsTab from './channels/ChannelsTab';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
@@ -32,18 +33,18 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 	);
 
 	return (
-		<Page>
+		<Page background='tint'>
 			<Page.Header title={t('Engagement_Dashboard')}>
 				<Select options={timezoneOptions} value={timezoneId} onChange={handleTimezoneChange} />
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+				<Tabs.Item data-qa-id='EngagementDashboardPage-usersTab' selected={tab === 'users'} onClick={handleTabClick('users')}>
 					{t('Users')}
 				</Tabs.Item>
-				<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>
+				<Tabs.Item data-qa-id='EngagementDashboardPage-messagesTab' selected={tab === 'messages'} onClick={handleTabClick('messages')}>
 					{t('Messages')}
 				</Tabs.Item>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+				<Tabs.Item data-qa-id='EngagementDashboardPage-channelsTab' selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
 				</Tabs.Item>
 			</Tabs>

@@ -7,6 +7,7 @@ import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
@@ -35,11 +36,8 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 	}
 
 	const options = {
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Name: settings.get<string>('Site_Name'),
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_URL: settings.get<string>('Site_Url'),
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
 		...(data.name
 			? {
@@ -60,9 +58,7 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 	const siteUrl = settings.get<string>('Site_Url');
 
 	return replace(str, {
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Name: siteName ? escapeHTML(siteName) : undefined,
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
 		...Object.entries(data).reduce<{ [key: string]: string }>((ret, [key, value]) => {
 			if (value !== undefined && value !== null) {
@@ -149,7 +145,7 @@ export const sendNoWrap = ({
 	text,
 	headers,
 }: {
-	to: string;
+	to: string | string[];
 	from: string;
 	replyTo?: string;
 	subject: string;
@@ -169,6 +165,8 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
+	Settings.incrementValueById('Triggered_Emails_Count');
+
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = Promise.await(Apps.triggerEvent('IPreEmailSent', { email }));
@@ -186,7 +184,7 @@ export const send = ({
 	data,
 	headers,
 }: {
-	to: string;
+	to: string | string[];
 	from: string;
 	replyTo?: string;
 	subject: string;
@@ -205,7 +203,9 @@ export const send = ({
 		headers,
 	});
 
-export const checkAddressFormatAndThrow = (from: string, func: Function): asserts from => {
+// Needed because of https://github.com/microsoft/TypeScript/issues/36931
+type Assert = (input: string, func: string) => asserts input;
+export const checkAddressFormatAndThrow: Assert = (from: string, func: string): asserts from => {
 	if (checkAddressFormat(from)) {
 		return;
 	}

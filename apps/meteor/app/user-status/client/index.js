@@ -1,5 +1,3 @@
-import './admin/startup';
-
 import './notifications/deleteCustomUserStatus';
 import './notifications/updateCustomUserStatus';
 

@@ -1,10 +1,7 @@
-import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSetModal, useToastMessageDispatch, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
-import { useSetModal } from '../../../../../../../client/contexts/ModalContext';
-import { useEndpoint } from '../../../../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../../../../client/hooks/useForm';
 import CreateCannedResponseModal from './CreateCannedResponseModal';
 
@@ -13,7 +10,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	const closeModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
+	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
@@ -95,7 +92,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 			});
 			closeModal(null);
 			reloadCannedList?.();
-		} catch (error) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [values, saveCannedResponse, dispatchToastMessage, t, closeModal, reloadCannedList]);

@@ -1,10 +1,10 @@
+import { useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useUserId } from '../../contexts/UserContext';
 import { useRoom } from './contexts/RoomContext';
+import { useTab, useTabBarClose, useTabContext } from './contexts/ToolboxContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
-import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvider';
 
 const getUid = (room, ownUserId) => {
 	if (room.uids?.length === 1) {

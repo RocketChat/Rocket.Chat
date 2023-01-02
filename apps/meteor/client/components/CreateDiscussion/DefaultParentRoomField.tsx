@@ -1,7 +1,8 @@
 import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
-import React, { useMemo, ReactElement } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -9,7 +10,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
 	const t = useTranslation();
 	const { value, phase } = useEndpointData(
-		'rooms.info',
+		'/v1/rooms.info',
 		useMemo(
 			() => ({
 				roomId: defaultParentRoom,

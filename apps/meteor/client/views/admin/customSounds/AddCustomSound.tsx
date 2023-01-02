@@ -1,11 +1,11 @@
 import { Field, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React, { useState, useCallback, ReactElement, FormEvent } from 'react';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, FormEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
+import type { soundDataType } from './lib';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
@@ -14,7 +14,7 @@ type AddCustomSoundProps = {
 	onChange: () => void;
 };
 
-const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -33,7 +33,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
-			const soundData = createSoundData(soundFile, name) as { extension: string; _id?: string; name: string; newFile?: true };
+			const soundData: soundDataType = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((error) => {
@@ -81,7 +81,7 @@ const AddCustomSound = function AddCustomSound({ goToNew, close, onChange, ...pr
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			onChange();
 		} catch (error) {
-			(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
 

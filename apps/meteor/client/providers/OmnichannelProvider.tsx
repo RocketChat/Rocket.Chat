@@ -1,17 +1,15 @@
-import type { IOmnichannelAgent, IRoom } from '@rocket.chat/core-typings';
-import { OmichannelRoutingConfig } from '@rocket.chat/core-typings';
+import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } from 'react';
+import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { Notifications } from '../../app/notifications/client';
 import { ClientLogger } from '../../lib/ClientLogger';
-import { usePermission } from '../contexts/AuthorizationContext';
-import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
-import { useMethod } from '../contexts/ServerContext';
-import { useSetting } from '../contexts/SettingsContext';
-import { useUser } from '../contexts/UserContext';
+import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
+import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {

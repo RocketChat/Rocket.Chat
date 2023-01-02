@@ -1,14 +1,13 @@
 import { Box, Field, TextInput, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 	const t = useTranslation();
 
-	const { id, field, label, scope, visibility, regexp } = values;
+	const { id, field, label, scope, visibility, searchable, regexp } = values;
 
-	const { handleField, handleLabel, handleScope, handleVisibility, handleRegexp } = handlers;
+	const { handleField, handleLabel, handleScope, handleVisibility, handleSearchable, handleRegexp } = handlers;
 
 	const scopeOptions = useMemo(
 		() => [
@@ -43,6 +42,14 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 					<Field.Label htmlFor='visible'>{t('Visible')}</Field.Label>
 					<Field.Row>
 						<ToggleSwitch id='visible' checked={visibility} onChange={handleVisibility} />
+					</Field.Row>
+				</Box>
+			</Field>
+			<Field className={className}>
+				<Box display='flex' flexDirection='row'>
+					<Field.Label htmlFor='searchable'>{t('Searchable')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch id='searchable' checked={searchable} onChange={handleSearchable} />
 					</Field.Row>
 				</Box>
 			</Field>

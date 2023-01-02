@@ -1,8 +1,10 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
 	useShowTranslated: ({ message }: { message: IMessage }) => boolean;
+	useTranslateProvider: ({ message }: { message: IMessage }) => string | boolean;
+	useTranslateAttachments: ({ message }: { message: IMessage }) => MessageAttachment[];
 	useShowStarred: ({ message }: { message: IMessage }) => boolean;
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
@@ -10,20 +12,28 @@ export type MessageListContextValue = {
 	useReactToMessage: (message: IMessage) => (reaction: string) => void;
 	useReactionsFilter: (message: IMessage) => (reaction: string) => string[];
 	useOpenEmojiPicker: (message: IMessage) => (event: React.MouseEvent) => void;
+	showReadReceipt: boolean;
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
-	showReadReceipt: boolean;
 	highlights?:
 		| {
 				highlight: string;
 				regex: RegExp;
 				urlRegex: RegExp;
 		  }[];
+	katex?: {
+		dollarSyntaxEnabled: boolean;
+		parenthesisSyntaxEnabled: boolean;
+	};
+	autoTranslateLanguage?: string;
+	showColors: boolean;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
 	useShowTranslated: () => false,
+	useTranslateProvider: () => false,
+	useTranslateAttachments: () => [],
 	useShowStarred: () => false,
 	useShowFollowing: () => false,
 	useUserHasReacted: () => (): boolean => false,
@@ -37,26 +47,32 @@ export const MessageListContext = createContext<MessageListContextValue>({
 		(message) =>
 		(reaction: string): string[] =>
 			message.reactions ? message.reactions[reaction]?.usernames || [] : [],
+	showReadReceipt: false,
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
-	showReadReceipt: false,
+	showColors: false,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
 	useContext(MessageListContext).useShowTranslated(...args);
+export const useTranslateProvider: MessageListContextValue['useTranslateProvider'] = (...args) =>
+	useContext(MessageListContext).useTranslateProvider(...args);
+export const useTranslateAttachments: MessageListContextValue['useTranslateAttachments'] = (...args) =>
+	useContext(MessageListContext).useTranslateAttachments(...args);
 export const useShowStarred: MessageListContextValue['useShowStarred'] = (...args) =>
 	useContext(MessageListContext).useShowStarred(...args);
 export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (...args) =>
 	useContext(MessageListContext).useShowFollowing(...args);
 export const useMessageDateFormatter: MessageListContextValue['useMessageDateFormatter'] = (...args) =>
 	useContext(MessageListContext).useMessageDateFormatter(...args);
+export const useMessageListShowReadReceipt = (): MessageListContextValue['showReadReceipt'] =>
+	useContext(MessageListContext).showReadReceipt;
 export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] => useContext(MessageListContext).showRoles;
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
-export const useMessageListShowReadReceipt = (): MessageListContextValue['showReadReceipt'] =>
-	useContext(MessageListContext).showReadReceipt;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
+export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);
@@ -66,3 +82,5 @@ export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] =
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 export const useReactionsFilter: MessageListContextValue['useReactionsFilter'] = (message: IMessage) =>
 	useContext(MessageListContext).useReactionsFilter(message);
+
+export const useMessageListContext = (): MessageListContextValue => useContext(MessageListContext);

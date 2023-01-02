@@ -1,24 +1,22 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
+import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
-		'canned-responses': {
-			GET: (params: {
-				shortcut?: string;
-				text?: string;
-				scope?: string;
-				createdBy?: IUser['username'];
-				tags?: any;
-				departmentId?: ILivechatDepartment['_id'];
-				offset?: number;
-				count?: number;
-			}) => {
+		'/v1/canned-responses': {
+			GET: (
+				params: PaginatedRequest<{
+					shortcut?: string;
+					text?: string;
+					scope?: string;
+					createdBy?: IUser['username'];
+					tags?: any;
+					departmentId?: ILivechatDepartment['_id'];
+				}>,
+			) => PaginatedResult<{
 				cannedResponses: IOmnichannelCannedResponse[];
-				count?: number;
-				offset?: number;
-				total: number;
-			};
+			}>;
 			POST: (params: {
 				_id?: IOmnichannelCannedResponse['_id'];
 				shortcut: string;
@@ -29,7 +27,7 @@ declare module '@rocket.chat/rest-typings' {
 			}) => void;
 			DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 		};
-		'canned-responses/:_id': {
+		'/v1/canned-responses/:_id': {
 			GET: () => {
 				cannedResponse: IOmnichannelCannedResponse;
 			};

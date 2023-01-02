@@ -1,17 +1,17 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
 
 import { AppEvents, Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions } from '../../../models/server';
-import { Team } from '../../../../server/sdk';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
 export const addUserToRoom = function (
 	rid: string,
-	user: Pick<IUser, '_id' | 'username'>,
+	user: Pick<IUser, '_id' | 'username'> | string,
 	inviter?: Pick<IUser, '_id' | 'username'>,
 	silenced?: boolean,
 ): boolean | unknown {
@@ -26,14 +26,22 @@ export const addUserToRoom = function (
 		return;
 	}
 
+	try {
+		callbacks.run('federation.beforeAddUserAToRoom', { user, inviter }, room);
+	} catch (error) {
+		throw new Meteor.Error((error as any)?.message);
+	}
+
+	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
+
 	// Check if user is already in room
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
 	if (subscription) {
 		return;
 	}
 
 	try {
-		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter));
+		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter));
 	} catch (error) {
 		if (error instanceof AppsEngineException) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -44,14 +52,14 @@ export const addUserToRoom = function (
 
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
-		callbacks.run('beforeAddedToRoom', { user, inviter }, room);
+		callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
 
 		// Keep the current event
-		callbacks.run('beforeJoinRoom', user, room);
+		callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
 	Promise.await(
-		Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter).catch((error) => {
+		Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter).catch((error) => {
 			if (error instanceof AppsEngineException) {
 				throw new Meteor.Error('error-app-prevented', error.message);
 			}
@@ -60,7 +68,7 @@ export const addUserToRoom = function (
 		}),
 	);
 
-	Subscriptions.createWithRoomAndUser(room, user, {
+	Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 		ts: now,
 		open: true,
 		alert: true,
@@ -79,34 +87,34 @@ export const addUserToRoom = function (
 				},
 			};
 			if (room.teamMain) {
-				Messages.createUserAddedToTeamWithRoomIdAndUser(rid, user, extraData);
+				Messages.createUserAddedToTeamWithRoomIdAndUser(rid, userToBeAdded, extraData);
 			} else {
-				Messages.createUserAddedWithRoomIdAndUser(rid, user, extraData);
+				Messages.createUserAddedWithRoomIdAndUser(rid, userToBeAdded, extraData);
 			}
 		} else if (room.prid) {
-			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
+			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, userToBeAdded, { ts: now });
 		} else if (room.teamMain) {
-			Messages.createUserJoinTeamWithRoomIdAndUser(rid, user, { ts: now });
+			Messages.createUserJoinTeamWithRoomIdAndUser(rid, userToBeAdded, { ts: now });
 		} else {
-			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+			Messages.createUserJoinWithRoomIdAndUser(rid, userToBeAdded, { ts: now });
 		}
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
 		Meteor.defer(function () {
 			// Add a new event, with an optional inviter
-			callbacks.run('afterAddedToRoom', { user, inviter }, room);
+			callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
 
 			// Keep the current event
-			callbacks.run('afterJoinRoom', user, room);
+			callbacks.run('afterJoinRoom', userToBeAdded, room);
 
-			Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, user, inviter);
+			Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
 		});
 	}
 
-	if (room.teamMain && room.teamId && inviter) {
+	if (room.teamMain && room.teamId) {
 		// if user is joining to main team channel, create a membership
-		Promise.await(Team.addMember(inviter, user._id, room.teamId));
+		Promise.await(Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId));
 	}
 
 	return true;

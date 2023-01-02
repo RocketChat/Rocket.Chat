@@ -80,6 +80,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getThreadMessages',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -99,6 +101,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getThreadMessages',
 						params: [{ tmid: firstMessage._id }],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -188,6 +192,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getMessages',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -207,6 +213,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getMessages',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -231,6 +239,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getMessages',
 						params: [[firstMessage._id]],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -254,6 +264,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getMessages',
 						params: [[firstMessage._id, lastMessage._id]],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -343,6 +355,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadHistory',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -362,6 +376,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadHistory',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -384,6 +400,8 @@ describe('Meteor.methods', function () {
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
+						id: 'id',
+						msg: 'method',
 						method: 'loadHistory',
 						params: [rid],
 					}),
@@ -410,6 +428,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadHistory',
 						params: [rid, postMessageDate],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -434,6 +454,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadHistory',
 						params: [rid, { $date: new Date().getTime() }, 1],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -458,6 +480,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadHistory',
 						params: [rid, null, 20, lastMessage],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -547,6 +571,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadNextMessages',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -566,6 +592,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadNextMessages',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -590,6 +618,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadNextMessages',
 						params: [rid],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -614,6 +644,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadNextMessages',
 						params: [rid, postMessageDate],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -638,6 +670,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadNextMessages',
 						params: [rid, startDate, 1],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -715,6 +749,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getUsersOfRoom',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -734,6 +770,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getUsersOfRoom',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -757,6 +795,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getUsersOfRoom',
 						params: [rid],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -781,6 +821,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getUserRoles',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -800,6 +842,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getUserRoles',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -823,6 +867,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'listCustomUserStatus',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -842,6 +888,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'listCustomUserStatus',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -869,6 +917,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'permissions/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -888,6 +938,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'permissions/get',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -911,6 +963,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'permissions/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1000,6 +1054,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
 						params: [rid, date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1019,6 +1075,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
 						params: ['', date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1038,6 +1096,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
 						params: [rid],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1057,6 +1117,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
 						params: [rid, { $date: new Date().getTime() }],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1080,6 +1142,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
 						params: [rid, date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1103,6 +1167,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
 						params: [rid, postMessageDate],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1131,6 +1197,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'public-settings/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1150,6 +1218,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'public-settings/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1177,6 +1247,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'private-settings/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1200,6 +1272,8 @@ describe('Meteor.methods', function () {
 							message: JSON.stringify({
 								method: 'private-settings/get',
 								params: [date],
+								id: 'id',
+								msg: 'method',
 							}),
 						})
 						.expect('Content-Type', 'application/json')
@@ -1225,6 +1299,8 @@ describe('Meteor.methods', function () {
 						message: JSON.stringify({
 							method: 'private-settings/get',
 							params: [date],
+							id: 'id',
+							msg: 'method',
 						}),
 					})
 					.expect('Content-Type', 'application/json')
@@ -1254,6 +1330,8 @@ describe('Meteor.methods', function () {
 							message: JSON.stringify({
 								method: 'private-settings/get',
 								params: [date],
+								id: 'id',
+								msg: 'method',
 							}),
 						})
 						.expect('Content-Type', 'application/json')
@@ -1284,6 +1362,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'subscriptions/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1303,6 +1383,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'subscriptions/get',
 						params: [],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1326,6 +1408,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'subscriptions/get',
 						params: [date],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1376,6 +1460,7 @@ describe('Meteor.methods', function () {
 						method: 'sendMessage',
 						params: [{ _id: `${Date.now() + Math.random()}`, rid, msg: 'test message' }],
 						id: 1000,
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1405,6 +1490,8 @@ describe('Meteor.methods', function () {
 								msg: 'test message with https://github.com',
 							},
 						],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1463,6 +1550,8 @@ describe('Meteor.methods', function () {
 								msg: 'test message with https://github.com',
 							},
 						],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1494,6 +1583,8 @@ describe('Meteor.methods', function () {
 								msg: 'test message with ```https://github.com```',
 							},
 						],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1517,6 +1608,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'updateMessage',
 						params: [{ _id: messageId, rid, msg: 'https://github.com updated' }],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1544,6 +1637,8 @@ describe('Meteor.methods', function () {
 								msg: 'test message with ```https://github.com``` updated',
 							},
 						],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.expect('Content-Type', 'application/json')
@@ -1629,6 +1724,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'createDirectMessage',
 						params: [testUser.username],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1649,6 +1746,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'createDirectMessage',
 						params: [testUser2.username],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1669,6 +1768,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'setUserActiveStatus',
 						params: [testUser._id, false, false],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1687,6 +1788,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'setUserActiveStatus',
 						params: [testUser2._id, false, false],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1705,6 +1808,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getRoomByTypeAndName',
 						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1723,6 +1828,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'setUserActiveStatus',
 						params: [testUser._id, true, false],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1741,6 +1848,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getRoomByTypeAndName',
 						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1772,6 +1881,8 @@ describe('Meteor.methods', function () {
 							message: JSON.stringify({
 								method: 'getRoomByTypeAndName',
 								params: ['d', dmTestId],
+								id: 'id',
+								msg: 'method',
 							}),
 						})
 						.end((err, res) => {
@@ -1792,6 +1903,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'setUserActiveStatus',
 						params: [testUser2._id, true, false],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1810,6 +1923,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getRoomByTypeAndName',
 						params: ['d', dmTestId],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {
@@ -1828,6 +1943,8 @@ describe('Meteor.methods', function () {
 					message: JSON.stringify({
 						method: 'getRoomByTypeAndName',
 						params: ['d', dmTestId],
+						id: 'id',
+						msg: 'method',
 					}),
 				})
 				.end((err, res) => {

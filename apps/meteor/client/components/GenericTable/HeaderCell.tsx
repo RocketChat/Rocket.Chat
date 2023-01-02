@@ -1,5 +1,6 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC, useCallback } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React, { useCallback } from 'react';
 
 import SortIcon from './SortIcon';
 
@@ -7,8 +8,9 @@ type HeaderCellProps = {
 	active?: boolean;
 	direction?: 'asc' | 'desc';
 	sort?: string;
+	clickable?: boolean;
 	onClick?: (sort: string) => void;
-} & ComponentProps<typeof Box>;
+} & Omit<ComponentProps<typeof Box>, 'onClick'>;
 
 const HeaderCell: FC<HeaderCellProps> = ({ children, active, direction, sort, onClick, ...props }) => {
 	const fn = useCallback(() => onClick && sort && onClick(sort), [sort, onClick]);

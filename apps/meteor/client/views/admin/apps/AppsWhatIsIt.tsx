@@ -1,12 +1,11 @@
 import { Button, Box, Throbber } from '@rocket.chat/fuselage';
-import React, { FC, useState } from 'react';
+import { ExternalLink } from '@rocket.chat/ui-client';
+import { useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client';
-import ExternalLink from '../../../components/ExternalLink';
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const readMeUrl = 'https://go.rocket.chat/i/developing-an-app';
 
@@ -28,8 +27,8 @@ const AppsWhatIsIt: FC = () => {
 				await Apps.load(true);
 			}
 			appsRouter.push();
-		} catch (error) {
-			setError(error);
+		} catch (e) {
+			setError(e instanceof Error ? e : new Error(String(e)));
 		}
 	};
 

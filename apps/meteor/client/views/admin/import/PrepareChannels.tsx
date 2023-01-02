@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { CheckBox, Table, Tag, Pagination } from '@rocket.chat/fuselage';
-import React, { useState, useCallback, FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 type ChannelDescriptor = {
 	channel_id: string;

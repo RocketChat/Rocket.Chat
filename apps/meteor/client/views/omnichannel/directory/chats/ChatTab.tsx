@@ -1,6 +1,7 @@
-import React, { ReactElement, SetStateAction, Dispatch } from 'react';
+import { usePermission } from '@rocket.chat/ui-contexts';
+import type { ReactElement, SetStateAction, Dispatch } from 'react';
+import React from 'react';
 
-import { usePermission } from '../../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import ChatTable from './ChatTable';
 

@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useEndpoint } from '../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../lib/lists/RecordList';
@@ -16,9 +16,9 @@ type MembersListOptions = {
 };
 
 const endpointsByRoomType = {
-	d: 'im.members',
-	p: 'groups.members',
-	c: 'channels.members',
+	d: '/v1/im.members',
+	p: '/v1/groups.members',
+	c: '/v1/channels.members',
 } as const;
 
 export const useMembersList = (

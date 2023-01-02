@@ -1,8 +1,10 @@
-import { Box, Icon, TextInput, Select, SelectOption } from '@rocket.chat/fuselage';
-import React, { FC, FormEvent, memo, useCallback } from 'react';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, FormEvent } from 'react';
+import React, { memo, useCallback } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 type CannedResponsesFilterProps = {
 	sharingValue: string;

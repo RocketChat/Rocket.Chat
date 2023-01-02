@@ -1,12 +1,17 @@
-import React, { Suspense, ReactElement, useEffect } from 'react';
+import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { useUpgradeTabParams } from '../hooks/useUpgradeTabParams';
 import AdministrationLayout from './AdministrationLayout';
 
-const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement }): ReactElement => {
+type AdministrationRouterProps = {
+	children?: ReactNode;
+};
+
+const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactElement => {
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('admin-info');
@@ -28,7 +33,7 @@ const AdministrationRouter = ({ renderRoute }: { renderRoute: () => ReactElement
 	return (
 		<AdministrationLayout>
 			<SettingsProvider privileged>
-				{renderRoute ? <Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense> : <PageSkeleton />}
+				{children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />}
 			</SettingsProvider>
 		</AdministrationLayout>
 	);

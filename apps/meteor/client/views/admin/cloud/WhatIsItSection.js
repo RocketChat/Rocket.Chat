@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Subtitle from '../../../components/Subtitle';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function WhatIsItSection(props) {
 	const t = useTranslation();
@@ -11,7 +11,7 @@ function WhatIsItSection(props) {
 		<Box is='section' {...props}>
 			<Subtitle>{t('Cloud_what_is_it')}</Subtitle>
 
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>{t('Cloud_what_is_it_description')}</p>
 
 				<details>

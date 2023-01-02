@@ -1,17 +1,16 @@
 import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
-import { useRoute } from '../../contexts/RouterContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomTags from './RoomTags';
-import { useQuery } from './hooks';
+import { useDirectoryQuery } from './hooks/useDirectoryQuery';
 
 const style = {
 	whiteSpace: 'nowrap',
@@ -68,9 +67,9 @@ function TeamsTable() {
 	const channelsRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const query = useQuery(params, sort, 'teams');
+	const query = useDirectoryQuery(params, sort, 'teams');
 
-	const { value: data = {} } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {

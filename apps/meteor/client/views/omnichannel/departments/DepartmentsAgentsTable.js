@@ -1,8 +1,8 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
@@ -16,7 +16,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, set
 
 	return (
 		<>
-			<AddAgent agentList={agentList} setAgentList={setAgentList} setAgentsAdded={setAgentsAdded} />
+			<AddAgent agentList={agentList} data-qa='DepartmentSelect-AgentsTable' setAgentList={setAgentList} setAgentsAdded={setAgentsAdded} />
 			<GenericTable
 				header={
 					<>

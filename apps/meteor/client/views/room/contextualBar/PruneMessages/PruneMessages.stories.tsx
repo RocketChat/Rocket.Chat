@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -20,6 +20,6 @@ export const Default = Template.bind({});
 
 export const WithCallout = Template.bind({});
 WithCallout.args = {
-	pinned: true,
+	values: { pinned: true },
 	callOutText: 'This is a callout',
 };

@@ -1,8 +1,9 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
-import React, { useCallback, useState, ReactElement, ChangeEvent } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
 
@@ -28,7 +29,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		[setEmojiFile],
 	);
 
-	const saveAction = useEndpointUpload('emoji-custom.create', {}, t('Custom_Emoji_Added_Successfully'));
+	const saveAction = useEndpointUpload('/v1/emoji-custom.create', t('Custom_Emoji_Added_Successfully'));
 
 	const handleSave = useCallback(async () => {
 		if (!name) {

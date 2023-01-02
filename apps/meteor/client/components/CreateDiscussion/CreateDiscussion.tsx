@@ -1,9 +1,10 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
@@ -43,13 +44,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
-	const createDiscussion = useEndpointActionExperimental('POST', 'rooms.createDiscussion');
+	const createDiscussion = useEndpointActionExperimental('POST', '/v1/rooms.createDiscussion');
 
 	const create = useMutableCallback(async (): Promise<void> => {
 		try {
 			const result = await createDiscussion({
 				prid: defaultParentRoom || parentRoom,
-				// eslint-disable-next-line @typescript-eslint/camelcase
 				t_name: name,
 				users: usernames,
 				reply: encrypted ? undefined : firstMessage,
@@ -94,7 +94,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									value={parentRoom}
 									onChange={handleParentRoom}
 									placeholder={t('Discussion_target_channel_description')}
-									disabled={defaultParentRoom}
+									disabled={Boolean(defaultParentRoom)}
 								/>
 							)}
 						</Field.Row>
@@ -138,12 +138,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!canCreate} onClick={create}>
 						{t('Create')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

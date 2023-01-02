@@ -1,16 +1,12 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
-
-import { useEndpoint } from '../contexts/ServerContext';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
 export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
 	path: TPath,
-	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>> = {} as Serialized<
-		OperationParams<TMethod, MatchPathPattern<TPath>>
-	>,
+	params?: OperationParams<TMethod, MatchPathPattern<TPath>>,
 	successMessage?: string,
 ): (() => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>) => {
 	const sendData = useEndpoint(method, path);
@@ -18,7 +14,7 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 
 	return useCallback(async () => {
 		try {
-			const data = await sendData(params);
+			const data = await sendData(params as any);
 
 			if (successMessage) {
 				dispatchToastMessage({ type: 'success', message: successMessage });
@@ -26,7 +22,7 @@ export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<
 
 			return data;
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: String(error) });
+			dispatchToastMessage({ type: 'error', message: error });
 			throw error;
 		}
 	}, [dispatchToastMessage, params, sendData, successMessage]);

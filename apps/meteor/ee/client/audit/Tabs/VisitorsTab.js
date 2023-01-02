@@ -1,8 +1,8 @@
 import { Field, Margins } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VisitorAutoComplete from '../VisitorAutoComplete';
 
 const VisitorsTab = ({ errors, visitor, handleVisitor, agent, handleAgent }) => {

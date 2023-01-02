@@ -1,15 +1,14 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement } from 'react';
+import { TextSeparator, Card } from '@rocket.chat/ui-client';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
-import Card from '../../../components/Card';
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { UserStatus } from '../../../components/UserStatus';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
-import TextSeparator from './TextSeparator';
 
 type UsageCardProps = {
 	statistics: IStats;
@@ -26,10 +25,10 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 		router.push();
 	});
 
-	const canViewEngagement = useHasLicense('engagement-dashboard');
+	const canViewEngagement = useHasLicenseModule('engagement-dashboard');
 
 	return (
-		<Card>
+		<Card data-qa-id='usage-card'>
 			<Card.Title>{t('Usage')}</Card.Title>
 			<Card.Body flexDirection={vertical ? 'column' : 'row'}>
 				<Card.Col>
@@ -105,7 +104,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 				<Card.Divider />
 				<Card.Col>
 					<Card.Col.Section>
-						<Card.Col.Title>{t('Rooms')}</Card.Col.Title>
+						<Card.Col.Title>{t('Total_rooms')}</Card.Col.Title>
 						<TextSeparator
 							label={
 								<>
@@ -156,7 +155,7 @@ const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 						/>
 					</Card.Col.Section>
 					<Card.Col.Section>
-						<Card.Col.Title>{t('Messages')}</Card.Col.Title>
+						<Card.Col.Title>{t('Total_messages')}</Card.Col.Title>
 						<TextSeparator label={t('Stats_Total_Messages')} value={statistics.totalMessages} />
 						<TextSeparator label={t('Total_Threads')} value={statistics.totalThreads} />
 						<TextSeparator label={t('Stats_Total_Messages_Channel')} value={statistics.totalChannelMessages} />

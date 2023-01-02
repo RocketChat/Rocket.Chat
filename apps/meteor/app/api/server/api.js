@@ -11,9 +11,10 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission, hasAllPermission } from '../../authorization/server';
+import { hasPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
+import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 
 const logger = new Logger('API');
 
@@ -318,14 +319,7 @@ export class APIClass extends Restivus {
 			options = {};
 		}
 
-		let shouldVerifyPermissions;
-
-		if (!_.isArray(options.permissionsRequired)) {
-			options.permissionsRequired = undefined;
-			shouldVerifyPermissions = false;
-		} else {
-			shouldVerifyPermissions = !!options.permissionsRequired.length;
-		}
+		const shouldVerifyPermissions = checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
 		if (!_.isArray(routes)) {
@@ -379,6 +373,34 @@ export class APIClass extends Restivus {
 						...getRestPayload(this.request.body),
 					});
 
+					// If the endpoint requires authentication only if anonymous read is disabled, load the user info if it was provided
+					if (!options.authRequired && options.authOrAnonRequired) {
+						const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
+						if (userId && userToken) {
+							this.user = Meteor.users.findOne(
+								{
+									'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+									'_id': userId,
+								},
+								{
+									fields: getDefaultUserFields(),
+								},
+							);
+
+							this.userId = this.user?._id;
+						}
+
+						if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
+							return {
+								statusCode: 401,
+								body: {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								},
+							};
+						}
+					}
+
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
 						route: `${this.request.route}${this.request.method.toLowerCase()}`,
@@ -397,7 +419,20 @@ export class APIClass extends Restivus {
 					try {
 						api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
-						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
+						if (_options.validateParams) {
+							const requestMethod = this.request.method;
+							const validatorFunc =
+								typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
+
+							if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
+								throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error) => error.message).join('\n '));
+							}
+						}
+						if (
+							shouldVerifyPermissions &&
+							(!this.userId ||
+								!Promise.await(checkPermissionsForInvocation(this.userId, _options.permissionsRequired, this.request.method)))
+						) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
 							});
@@ -421,6 +456,9 @@ export class APIClass extends Restivus {
 							options: _options,
 							connection,
 						});
+
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 

@@ -1,6 +1,7 @@
-import React, { ReactElement } from 'react';
+import { usePermission } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import InvitesPage from './InvitesPage';
 

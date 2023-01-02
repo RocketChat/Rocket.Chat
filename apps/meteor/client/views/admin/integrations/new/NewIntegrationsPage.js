@@ -1,9 +1,8 @@
 import { Tabs, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import Page from '../../../../components/Page';
-import { useRouteParameter, useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import NewIncomingWebhook from './NewIncomingWebhook';
 import NewOutgoingWebhook from './NewOutgoingWebhook';
 

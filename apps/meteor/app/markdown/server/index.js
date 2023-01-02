@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../lib/markdown';
 import './settings';
 

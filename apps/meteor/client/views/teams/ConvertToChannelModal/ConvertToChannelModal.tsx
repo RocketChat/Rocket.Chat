@@ -1,10 +1,10 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
-import React, { FC, useMemo } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import BaseConvertToChannelModal from './BaseConvertToChannelModal';
@@ -21,7 +21,7 @@ const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({ onClose, onCanc
 	const t = useTranslation();
 
 	const { value, phase } = useEndpointData(
-		'teams.listRoomsOfUser',
+		'/v1/teams.listRoomsOfUser',
 		useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
 	);
 

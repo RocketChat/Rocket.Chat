@@ -1,5 +1,6 @@
 import { Box, Tile, Button, Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, FC } from 'react';
+import type { ComponentProps, FC } from 'react';
+import React from 'react';
 
 type NoResultsProps = {
 	icon: ComponentProps<typeof Icon>['name'];
@@ -28,7 +29,7 @@ const NoResults: FC<NoResultsProps> = ({ icon, title, description, buttonTitle, 
 		<Box is='h2' fontScale='h2' flexGrow={1}>
 			{title}
 		</Box>
-		<Tile paddingBlockStart='x5' fontScale='p2' elevation='0' color='info' textAlign='center'>
+		<Tile paddingBlockStart='x5' fontScale='p2' elevation='0' color='hint' textAlign='center'>
 			<Box margin='auto' maxWidth='400px'>
 				{description}
 			</Box>

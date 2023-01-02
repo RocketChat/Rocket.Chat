@@ -1,10 +1,12 @@
+import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, MouseEvent } from 'react';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, MouseEvent } from 'react';
+import React from 'react';
 
+import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
-import { useSetModal } from '../../../contexts/ModalContext';
 import AnnouncementComponent from './AnnouncementComponent';
-import AnnouncementModal from './AnnouncementModal';
 
 type AnnouncementParams = {
 	announcement: string;
@@ -12,6 +14,7 @@ type AnnouncementParams = {
 };
 
 const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
 	const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
@@ -23,12 +26,20 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 			return;
 		}
 
-		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
+		announcementDetails
+			? announcementDetails()
+			: setModal(
+					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
+						<Box>
+							<MarkdownText content={announcement} parseEmoji />
+						</Box>
+					</GenericModal>,
+			  );
 	};
 
 	return announcement ? (
 		<AnnouncementComponent onClickOpen={(e: MouseEvent<HTMLAnchorElement>): void => handleClick(e)}>
-			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText />
+			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
 		</AnnouncementComponent>
 	) : null;
 };

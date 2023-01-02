@@ -1,7 +1,7 @@
 import type { ILivechatTagRecord } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useEndpoint } from '../../../client/contexts/ServerContext';
 import { useScrollableRecordList } from '../../../client/hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../client/hooks/useComponentDidUpdate';
 import { RecordList } from '../../../client/lib/lists/RecordList';
@@ -21,7 +21,7 @@ export const useTagsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatTagRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatTagRecord>()), []);
 
-	const getTags = useEndpoint('GET', 'livechat/tags.list');
+	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 
 	useComponentDidUpdate(() => {
 		options && reload();

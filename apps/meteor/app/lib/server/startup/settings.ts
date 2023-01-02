@@ -9,6 +9,11 @@ settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
+settingsRegistry.add('Initial_Channel_Created', false, {
+	type: 'boolean',
+	hidden: true,
+});
+
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
@@ -173,6 +178,26 @@ settingsRegistry.addGroup('Accounts', function () {
 		});
 		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
 			type: 'string',
+			hidden: true,
+		});
+		this.add('Manual_Entry_User_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('CSV_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Hipchat_Enterprise_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+		this.add('Slack_Users_Importer_Count', 0, {
+			type: 'int',
 			hidden: true,
 		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
@@ -401,10 +426,24 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Sort_By',
 		});
 
-		this.add('Accounts_Default_User_Preferences_showMessageInMainThread', false, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
+			type: 'select',
+			values: [
+				{
+					key: 'default',
+					i18nLabel: 'Selected_first_reply_unselected_following_replies',
+				},
+				{
+					key: 'always',
+					i18nLabel: 'Selected_by_default',
+				},
+				{
+					key: 'never',
+					i18nLabel: 'Unselected_by_default',
+				},
+			],
 			public: true,
-			i18nLabel: 'Show_Message_In_Main_Thread',
+			i18nLabel: 'Also_send_thread_message_to_channel_behavior',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -432,6 +471,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
+
 		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
 			type: 'select',
 			values: [
@@ -509,11 +549,11 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_enableLegacyMessages', false, {
+		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable_legacy_messages',
-			alert: 'Enable_legacy_messages_alert',
+			i18nLabel: 'Use_Legacy_Message_Template',
+			alert: 'This_is_a_deprecated_feature_alert',
 		});
 	});
 
@@ -804,7 +844,6 @@ settingsRegistry.addGroup('General', function () {
 		],
 	});
 
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	this.add(
 		'Site_Url',
 		typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null
@@ -843,6 +882,11 @@ settingsRegistry.addGroup('General', function () {
 
 	this.add('Enable_CSP', true, {
 		type: 'boolean',
+	});
+
+	this.add('Extra_CSP_Domains', '', {
+		type: 'string',
+		multiline: true,
 	});
 
 	this.add('Iframe_Restrict_Access', true, {
@@ -1105,6 +1149,7 @@ settingsRegistry.addGroup('Message', function () {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
+			alert: 'This_is_a_deprecated_feature_alert',
 		});
 
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
@@ -1184,6 +1229,7 @@ settingsRegistry.addGroup('Message', function () {
 	this.add('Message_ShowEditedStatus', true, {
 		type: 'boolean',
 		public: true,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
@@ -1217,9 +1263,13 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
+	/**
+	 * @deprecated
+	 */
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		public: true,
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
@@ -1252,6 +1302,7 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'string',
 		public: true,
 		i18nDescription: 'API_EmbedDisabledFor_Description',
+		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
@@ -1517,16 +1568,19 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add(
-			'Layout_Home_Body',
-			'<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>',
-			{
-				type: 'code',
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_description',
+			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
+			public: true,
+		});
+		this.add('Layout_Home_Body', '', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
@@ -1675,6 +1729,11 @@ settingsRegistry.addGroup('Logs', function () {
 			_id: 'Log_Trace_Subscriptions',
 			value: true,
 		},
+	});
+
+	this.add('Uncaught_Exceptions_Count', 0, {
+		hidden: true,
+		type: 'int',
 	});
 
 	this.section('Prometheus', function () {
@@ -2886,6 +2945,10 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 		this.add('Organization_Email', '', {
 			type: 'string',
 		});
+		this.add('Triggered_Emails_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
 	});
 
 	this.section('Cloud_Info', function () {
@@ -3158,44 +3221,32 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 });
 
 settingsRegistry.addGroup('Call_Center', function () {
+	// TODO: Check with the backend team if an i18nPlaceholder is possible
 	this.with({ tab: 'Settings' }, function () {
-		this.add('VoIP_Enabled', false, {
-			type: 'boolean',
-			public: true,
-			alert: 'Experimental_Feature_Alert',
-			enableQuery: {
-				_id: 'Livechat_enabled',
-				value: true,
-			},
-		});
-		this.add('VoIP_JWT_Secret', '', {
-			type: 'password',
-			i18nDescription: 'VoIP_JWT_Secret_description',
-			enableQuery: {
-				_id: 'VoIP_Enabled',
-				value: true,
-			},
-		});
-		this.section('Server_Configuration', function () {
-			this.add('VoIP_Server_Host', '', {
-				type: 'string',
+		this.section('General_Settings', function () {
+			this.add('VoIP_Enabled', false, {
+				type: 'boolean',
 				public: true,
+				i18nDescription: 'VoIP_Enabled_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_JWT_Secret', '', {
+				type: 'password',
+				i18nDescription: 'VoIP_JWT_Secret_description',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
 				},
 			});
-			this.add('VoIP_Server_Websocket_Port', 0, {
-				type: 'int',
-				public: true,
-				enableQuery: {
-					_id: 'VoIP_Enabled',
-					value: true,
-				},
-			});
+		});
+		this.section('Voip_Server_Configuration', function () {
 			this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'WebSocket Server',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3204,8 +3255,28 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'wss://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Retry_Count', -1, {
+				type: 'int',
+				public: true,
+				i18nDescription: 'VoIP_Retry_Count_Description',
+				placeholder: '1',
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_Enable_Keep_Alive_For_Unstable_Networks', true, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
 					value: true,
 				},
 			});
@@ -3215,6 +3286,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Host', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'https://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3224,6 +3296,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Port', 0, {
 				type: 'int',
 				public: true,
+				placeholder: '8080',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3233,6 +3306,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Server Name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3242,6 +3316,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Username', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Username',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,

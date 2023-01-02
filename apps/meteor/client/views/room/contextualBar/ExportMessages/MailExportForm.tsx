@@ -1,18 +1,17 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect, useContext, FC, MouseEventHandler } from 'react';
+import { useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, MouseEventHandler } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
-import { useUserRoom } from '../../hooks/useUserRoom';
+import { useMessages } from '../../MessageList/hooks/useMessages';
 
 type MailExportFormValues = {
 	dateFrom: string;
@@ -35,11 +34,12 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const room = useUserRoom(rid);
 	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
 
-	const [selectedMessages, setSelected] = useState([]);
 	const [errorMessage, setErrorMessage] = useState<string>();
 
-	const messages = selectedMessageStore ? selectedMessageStore.getSelectedMessages() : selectedMessages;
+	const messages = selectedMessageStore.getSelectedMessages();
 	const count = useCountSelected();
+
+	const messageList = useMessages({ rid });
 
 	const { values, handlers } = useForm({
 		dateFrom: '',
@@ -54,7 +54,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const { toUsers, additionalEmails, subject } = values as MailExportFormValues;
 
 	const clearSelection = useMutableCallback(() => {
-		setSelected([]);
 		selectedMessageStore.clearStore();
 	});
 
@@ -65,10 +64,28 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		};
 	}, [selectedMessageStore]);
 
+	// TODO: chapter day frontend -  after 5.0 remove
+	useEffect(() => {
+		const $root = $(`#chat-window-${rid}`);
+
+		$('.messages-box', $root).addClass('selectable');
+
+		const handler = function (this: any): void {
+			selectedMessageStore.toggle(this.id);
+			this.classList.toggle('selected');
+		};
+
+		$('.messages-box .message', $root).on('click', handler);
+
+		return (): void => {
+			$('.messages-box', $root).removeClass('selectable');
+			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
+		};
+	}, [rid, messageList, selectedMessageStore]);
+
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
-		console.log(value, action);
 		if (!action) {
 			if (toUsers.includes(value)) {
 				return;
@@ -78,7 +95,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		handleToUsers(toUsers.filter((current) => current !== value));
 	});
 
-	const roomsExport = useEndpoint('POST', 'rooms.export');
+	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
 		if (toUsers.length === 0 && additionalEmails === '') {
@@ -112,7 +129,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error as string | Error,
+				message: error,
 			});
 		}
 	};

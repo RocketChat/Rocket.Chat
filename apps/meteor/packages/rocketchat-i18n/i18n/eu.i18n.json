@@ -1,5 +1,4 @@
 {
-  "403": "Debekatuta",
   "500": "Zerbitzariaren Barne Errorea",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is no longer __role__ by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ was set __role__ by __user_by__",
@@ -79,6 +78,7 @@
   "Channels": "Kanalak",
   "Channels_list": "Kanal publikoen zerrenda",
   "Chatpal_Users": "Erabiltzaileak",
+  "Close_menu": "Menua itxi",
   "create-c": "Kanal Publikoak Sortu",
   "create-p": "Kanal Pribatuak Sortu",
   "Direct_Messages": "Mezu Zuzenak",
@@ -102,7 +102,7 @@
   "Private_Groups": "Talde Pribatuak",
   "Private_Groups_list": "Talde Pribatuen Zerrenda",
   "RetentionPolicy_Enabled": "Gaituta",
-  "Room_name_changed": "<em>__user_by__</em>(e)k mintzagelaren izena <em>__room_name__</em>ra aldatu du",
+  "Room_name_changed": "__user_by__(e)k mintzagelaren izena __room_name__ra aldatu du",
   "Search_Channels": "Bilatu Kanalak",
   "Send": "Bidali",
   "Skip": "Saltatu",

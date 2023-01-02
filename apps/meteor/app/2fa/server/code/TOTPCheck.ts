@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { TOTP } from '../lib/totp';
 import { settings } from '../../../settings/server';
-import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {
 	public readonly name = 'totp';
@@ -17,6 +17,10 @@ export class TOTPCheck implements ICodeCheck {
 
 	public verify(user: IUser, code: string): boolean {
 		if (!this.isEnabled(user)) {
+			return false;
+		}
+
+		if (!user.services?.totp?.secret) {
 			return false;
 		}
 

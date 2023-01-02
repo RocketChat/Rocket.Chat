@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { lazy, useMemo } from 'react';
 
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 const BusinessHoursPage = () => {
 	const t = useTranslation();

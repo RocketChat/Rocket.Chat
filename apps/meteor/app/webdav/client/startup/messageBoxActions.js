@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { t } from '../../../utils';
-import { settings } from '../../../settings';
-import { messageBox, modal } from '../../../ui-utils';
+import { settings } from '../../../settings/client';
+import { messageBox } from '../../../ui-utils/client';
 import { WebdavAccounts } from '../../../models/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import { getWebdavServerName } from '../../../../client/lib/getWebdavServerName';
 import AddWebdavAccountModal from '../../../../client/views/room/webdav/AddWebdavAccountModal';
+import WebdavFilePickerModal from '../../../../client/views/room/webdav/WebdavFilePickerModal';
 
 messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
@@ -29,29 +30,23 @@ Meteor.startup(function () {
 		}
 
 		accounts.forEach((account) => {
-			const name = account.name || `${account.username}@${account.serverURL.replace(/^https?\:\/\//i, '')}`;
-			const title = t('Upload_From', {
-				name,
-			});
+			const name = getWebdavServerName({ name: account.name, serverURL: account.serverURL, username: account.username });
+
 			messageBox.actions.add('WebDAV', name, {
 				id: `webdav-upload-${account._id.toLowerCase()}`,
 				icon: 'cloud-plus',
 				condition: () => settings.get('Webdav_Integration_Enabled'),
-				action() {
-					modal.open({
-						data: {
-							name,
-							accountId: account._id,
+				action({ chat }) {
+					imperativeModal.open({
+						component: WebdavFilePickerModal,
+						props: {
+							onUpload: async (file, description) =>
+								chat.uploads.send(file, {
+									description,
+								}),
+							onClose: imperativeModal.close,
+							account,
 						},
-						title,
-						modifier: 'modal',
-						content: 'webdavFilePicker',
-						showCancelButton: false,
-						showFooter: false,
-						showConfirmButton: false,
-						closeOnCancel: true,
-						html: true,
-						confirmOnEnter: false,
 					});
 				},
 			});

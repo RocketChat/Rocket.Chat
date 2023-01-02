@@ -1,8 +1,9 @@
 import { Callout } from '@rocket.chat/fuselage';
-import React, { useMemo, FC } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import UnitEdit from './UnitEdit';
@@ -12,17 +13,19 @@ const UnitEditWithData: FC<{
 	title: string;
 	reload: () => void;
 }> = function UnitEditWithData({ unitId, reload, title }) {
-	const query = useMemo(() => ({ unitId }), [unitId]);
+	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/units/${unitId}`);
 
-	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
-
-	const { value: unitMonitors, phase: unitMonitorsState, error: unitMonitorsError } = useEndpointData('livechat/unitMonitors.list', query);
+	const {
+		value: unitMonitors,
+		phase: unitMonitorsState,
+		error: unitMonitorsError,
+	} = useEndpointData(`/v1/livechat/units/${unitId}/monitors`);
 
 	const {
 		value: unitDepartments,
 		phase: unitDepartmentsState,
 		error: unitDepartmentsError,
-	} = useEndpointData(`livechat/departments.by-unit/${unitId}`);
+	} = useEndpointData(`/v1/livechat/units/${unitId}/departments`);
 
 	const t = useTranslation();
 

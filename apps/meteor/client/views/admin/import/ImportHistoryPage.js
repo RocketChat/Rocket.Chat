@@ -1,13 +1,10 @@
 import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
 import { useMediaQuery, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import ImportOperationSummary from './ImportOperationSummary';
 
 function ImportHistoryPage() {
@@ -18,10 +15,10 @@ function ImportHistoryPage() {
 	const [currentOperation, setCurrentOperation] = useSafely(useState());
 	const [latestOperations, setLatestOperations] = useSafely(useState([]));
 
-	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
-	const getLatestImportOperations = useEndpoint('GET', 'getLatestImportOperations');
-	const downloadPendingFiles = useEndpoint('POST', 'downloadPendingFiles');
-	const downloadPendingAvatars = useEndpoint('POST', 'downloadPendingAvatars');
+	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
+	const getLatestImportOperations = useEndpoint('GET', '/v1/getLatestImportOperations');
+	const downloadPendingFiles = useEndpoint('POST', '/v1/downloadPendingFiles');
+	const downloadPendingAvatars = useEndpoint('POST', '/v1/downloadPendingAvatars');
 
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');
@@ -118,7 +115,7 @@ function ImportHistoryPage() {
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
-				<Table fixed>
+				<Table fixed data-qa-id='ImportTable'>
 					<Table.Head>
 						<Table.Row>
 							<Table.Cell is='th' rowSpan={2} width='x140'>

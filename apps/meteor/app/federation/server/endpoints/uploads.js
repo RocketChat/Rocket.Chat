@@ -1,5 +1,6 @@
+import { Uploads } from '@rocket.chat/models';
+
 import { API } from '../../../api/server';
-import { Uploads } from '../../../models/server/raw';
 import { FileUpload } from '../../../file-upload/server';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 

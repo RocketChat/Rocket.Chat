@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import IntSettingInput from './IntSettingInput';
@@ -36,7 +36,7 @@ export const WithValue = Template.bind({});
 WithValue.args = {
 	_id: 'setting_id',
 	label: 'Label',
-	value: 12345,
+	value: '12345',
 	placeholder: 'Placeholder',
 };
 

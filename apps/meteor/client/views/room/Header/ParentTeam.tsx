@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import React, { ReactElement, useMemo } from 'react';
+import { Header } from '@rocket.chat/ui-client';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import Header from '../../../components/Header';
-import { useUserId } from '../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
@@ -25,12 +26,12 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 	}
 
 	const { value, phase } = useEndpointData(
-		'teams.info',
+		'/v1/teams.info',
 		useMemo(() => ({ teamId }), [teamId]),
 	);
 
 	const { value: userTeams, phase: userTeamsPhase } = useEndpointData(
-		'users.listTeams',
+		'/v1/users.listTeams',
 		useMemo(() => ({ userId }), [userId]),
 	);
 
@@ -56,8 +57,17 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 
 	return (
 		<Header.Tag>
-			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{isTeamPublic || belongsToTeam ? <Header.Link onClick={teamMainRoomHref}>{value.teamInfo.name}</Header.Link> : value.teamInfo.name}
+			{isTeamPublic || belongsToTeam ? (
+				<Header.Link onClick={teamMainRoomHref}>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{value.teamInfo.name}
+				</Header.Link>
+			) : (
+				<>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{value.teamInfo.name}
+				</>
+			)}
 		</Header.Tag>
 	);
 };

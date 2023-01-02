@@ -263,6 +263,23 @@ describe('[EmojiCustom]', function () {
 				})
 				.end(done);
 		});
+		it('should return emojis even requested with count and offset params', (done) => {
+			request
+				.get(api('emoji-custom.all'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('emojis').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/emoji-custom.delete]', () => {

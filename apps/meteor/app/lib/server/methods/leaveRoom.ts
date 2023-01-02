@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Roles } from '@rocket.chat/models';
 
 import { hasPermission, hasRole } from '../../../authorization/server';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
-import { Roles } from '../../../models/server/raw';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -40,7 +40,7 @@ Meteor.methods({
 		// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
 		if (hasRole(user._id, 'owner', room._id)) {
 			const cursor = await Roles.findUsersInRole('owner', room._id);
-			const numOwners = Promise.await(cursor.count());
+			const numOwners = await cursor.count();
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
 					method: 'leaveRoom',

@@ -1,15 +1,16 @@
-import { ITypingDescriptor, MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
-import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
+import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ISubscription } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
 
 import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function

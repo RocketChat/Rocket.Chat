@@ -1,10 +1,10 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Field, Select, ButtonGroup, Button, FieldGroup, SelectOption, InputBox } from '@rocket.chat/fuselage';
-import React, { FC, MouseEventHandler, useMemo } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Field, Select, ButtonGroup, Button, FieldGroup, InputBox } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, MouseEventHandler } from 'react';
+import React, { useMemo } from 'react';
 
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 
 type MailExportFormValues = {
@@ -36,7 +36,7 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 		[t],
 	);
 
-	const roomsExport = useEndpoint('POST', 'rooms.export');
+	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -57,7 +57,7 @@ const FileExport: FC<FileExportProps> = ({ onCancel, rid }) => {
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
-				message: error as string | Error,
+				message: error,
 			});
 		}
 	};

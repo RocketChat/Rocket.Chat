@@ -1,10 +1,12 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
-import React, { useState, useMemo, FC } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Field, Select, FieldGroup } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
@@ -28,7 +30,8 @@ const ExportMessages: FC<ExportMessagesProps> = ({ rid }) => {
 	return (
 		<>
 			<VerticalBar.Header>
-				{t('Export_Messages')}
+				<VerticalBar.Icon name='mail' />
+				<VerticalBar.Text>{t('Export_Messages')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={close} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>

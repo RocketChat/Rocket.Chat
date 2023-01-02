@@ -1,22 +1,28 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useToastMessageDispatch,
+	useSessionDispatch,
+	useLoginWithPassword,
+	useSettingSetValue,
+	useSettingsDispatch,
+	useRole,
+	useMethod,
+	useEndpoint,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
+import type { ReactElement, ContextType } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
-import { useRole } from '../../../contexts/AuthorizationContext';
-import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
-import { useSessionDispatch } from '../../../contexts/SessionContext';
-import { useSettingSetValue, useSettingsDispatch } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useLoginWithPassword } from '../../../contexts/UserContext';
+import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
 
 const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
-	adminData: { fullname: '', username: '', companyEmail: '', password: '' },
+	adminData: { fullname: '', username: '', email: '', password: '' },
 	organizationData: {
 		organizationName: '',
 		organizationType: '',
@@ -30,7 +36,6 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 		registerType: 'registered',
 		updates: false,
 	},
-	// eslint-disable-next-line @typescript-eslint/camelcase
 	registrationData: { cloudEmail: '', device_code: '', user_code: '' },
 };
 
@@ -50,7 +55,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const defineUsername = useMethod('setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
-	const createRegistrationIntent = useEndpoint('POST', 'cloud.createRegistrationIntent');
+	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
@@ -69,13 +74,13 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const registerAdminUser = useCallback(async (): Promise<void> => {
 		const {
-			adminData: { fullname, username, companyEmail, password },
+			adminData: { fullname, username, email, password },
 		} = setupWizardData;
-		await registerUser({ name: fullname, username, email: companyEmail, pass: password });
+		await registerUser({ name: fullname, username, email, pass: password });
 		callbacks.run('userRegistered', {});
 
 		try {
-			await loginWithPassword(companyEmail, password);
+			await loginWithPassword(email, password);
 		} catch (error) {
 			if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
 				dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
@@ -90,7 +95,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		setForceLogin(false);
 
 		await defineUsername(username);
-		await dispatchSettings([{ _id: 'Organization_Email', value: companyEmail }]);
+		await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 		callbacks.run('usernameSet', {});
 	}, [defineUsername, dispatchToastMessage, loginWithPassword, registerUser, setForceLogin, dispatchSettings, setupWizardData, t]);
 
@@ -168,6 +173,8 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		try {
 			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
+			queryClient.invalidateQueries(['licenses']);
+			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({
 				...prevState,

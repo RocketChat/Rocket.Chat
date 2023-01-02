@@ -48,13 +48,15 @@ export const UiTextContext = {
 export interface IRoomTypeConfig {
 	identifier: string;
 	order: number;
-	icon?: string;
+	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
 	header?: string;
 	label?: string;
 	route?: IRoomTypeRouteConfig;
 	customTemplate?: string;
-	notSubscribedTpl?: string;
-	readOnlyTpl?: string;
+	/** @deprecated */
+	notSubscribedTpl?: 'livechatNotSubscribed';
+	/** @deprecated */
+	readOnlyTpl?: 'ComposerNotAvailablePhoneCalls' | 'livechatReadOnly';
 }
 
 export interface IRoomTypeClientDirectives {
@@ -64,13 +66,12 @@ export interface IRoomTypeClientDirectives {
 	allowMemberAction: (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>) => boolean;
 	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
-	openCustomProfileTab: (instance: any, room: IRoom, username: string) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
 	condition: () => boolean;
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon: (room: Partial<IRoom>) => string | undefined;
+	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
 	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;

@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { Session } from 'meteor/session';
 
 import { hasPermission } from '../../../../app/authorization/client';
@@ -31,16 +31,6 @@ roomCoordinator.add(LivechatRoomType, {
 		return room.name || room.fname || (room as any).label;
 	},
 
-	openCustomProfileTab(instance, room, username) {
-		const omniRoom = room as IOmnichannelRoom;
-		if (!omniRoom?.v || (omniRoom.v as any).username !== username) {
-			return false;
-		}
-
-		instance.tabBar.openUserInfo();
-		return true;
-	},
-
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
@@ -63,7 +53,7 @@ roomCoordinator.add(LivechatRoomType, {
 	getUserStatus(rid) {
 		const room = Session.get(`roomData${rid}`);
 		if (room) {
-			return room.v && room.v.status;
+			return room.v?.status;
 		}
 		const inquiry = LivechatInquiry.findOne({ rid });
 		return inquiry?.v?.status;

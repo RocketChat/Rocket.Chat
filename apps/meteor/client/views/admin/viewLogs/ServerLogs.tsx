@@ -1,10 +1,9 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
-import React, { useEffect, useRef, useState, useCallback, ReactElement } from 'react';
+import { useToastMessageDispatch, useEndpoint, useStream, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import { useEndpoint, useStream } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { ansispan } from './ansispan';
 
 type StdOutLogEntry = {
@@ -25,7 +24,7 @@ const ServerLogs = (): ReactElement => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const getStdoutQueue = useEndpoint('GET', 'stdout.queue');
+	const getStdoutQueue = useEndpoint('GET', '/v1/stdout.queue');
 	const subscribeToStdout = useStream('stdout');
 
 	useEffect(() => {
@@ -33,7 +32,7 @@ const ServerLogs = (): ReactElement => {
 			try {
 				const { queue } = await getStdoutQueue(undefined);
 				setEntries(queue.map(unserializeEntry).sort(compareEntries));
-			} catch (error) {
+			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};

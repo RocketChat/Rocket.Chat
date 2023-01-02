@@ -1,9 +1,12 @@
 declare module 'meteor/kadira:flow-router' {
-	import { Subscription } from 'meteor/meteor';
+	import type { Subscription } from 'meteor/meteor';
 
 	type Context = {
 		params: Record<string, string>;
 		queryParams: Record<string, string>;
+		pathname: string;
+		oldRoute?: Route;
+		route: Route;
 	};
 
 	export type RouteOptions = {
@@ -29,7 +32,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		clearSubscriptions(): void;
 
-		register(name: string, sub: Subscription, options?: {}): void;
+		register(name: string, sub: Subscription, options?: never): void; // `options` is unused in FlowRouter code
 
 		getSubscription(name: string): Subscription;
 
@@ -116,9 +119,9 @@ declare module 'meteor/kadira:flow-router' {
 
 		subsReady(): boolean;
 
-		withReplaceState(fn: Function): Router;
+		withReplaceState(fn: () => void): Router;
 
-		withTrailingSlash(fn: Function): Router;
+		withTrailingSlash(fn: () => void): Router;
 
 		initialize(options?: RouterOptions): void;
 

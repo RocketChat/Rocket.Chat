@@ -1,8 +1,9 @@
-import { Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import { Modal, Button, Box } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import ExternalLink from '../../../../../client/components/ExternalLink';
-import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import MemberCapUsage from './SeatsCapUsage';
 
 type CloseToSeatsCapModalProps = {
@@ -29,12 +30,12 @@ const CloseToSeatsCapModal = ({ members, limit, title, onConfirm, onClose, reque
 				<MemberCapUsage members={members} limit={limit} />
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button onClick={onConfirm} primary>
 						{t('Continue')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

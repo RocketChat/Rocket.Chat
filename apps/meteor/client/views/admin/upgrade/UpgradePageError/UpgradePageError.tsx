@@ -1,7 +1,7 @@
 import { States, StatesIcon, StatesSubtitle, StatesTitle, StatesActions, Button, Icon, Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
-
-import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 const UpgradePageError = (): ReactElement => {
 	const t = useTranslation();

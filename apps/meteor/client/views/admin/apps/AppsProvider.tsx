@@ -1,13 +1,15 @@
-import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, FC, useReducer, Reducer, useCallback } from 'react';
+import type { FC, Reducer } from 'react';
+import React, { useEffect, useReducer, useCallback } from 'react';
 
 import { AppEvents } from '../../../../app/apps/client/communication';
 import { Apps } from '../../../../app/apps/client/orchestrator';
-import { AsyncState, AsyncStatePhase } from '../../../lib/asyncState';
+import type { AsyncState } from '../../../lib/asyncState';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import { AppsContext } from './AppsContext';
 import { handleAPIError } from './helpers';
-import { App } from './types';
+import type { App } from './types';
 
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
@@ -162,11 +164,11 @@ const AppsProvider: FC = ({ children }) => {
 		let installedAppsError = false;
 
 		try {
-			marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
+			marketplaceApps = (await Apps.getAppsFromMarketplace()) as unknown as App[];
 		} catch (e) {
 			dispatchMarketplaceApps({
 				type: 'failure',
-				error: e,
+				error: e instanceof Error ? e : new Error(String(e)),
 				reload: fetch,
 			});
 			marketplaceError = true;
@@ -183,7 +185,7 @@ const AppsProvider: FC = ({ children }) => {
 		} catch (e) {
 			dispatchInstalledApps({
 				type: 'failure',
-				error: e,
+				error: e instanceof Error ? e : new Error(String(e)),
 				reload: fetch,
 			});
 			installedAppsError = true;
@@ -247,31 +249,32 @@ const AppsProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
-			let marketplaceApp: App | undefined;
+			let marketplaceApp: { app: App; success: boolean } | undefined;
 			let installedApp: App;
 
 			try {
 				installedApp = await Apps.getApp(appId);
-			} catch (error) {
+			} catch (error: any) {
 				handleAPIError(error);
 				throw error;
 			}
 
 			try {
 				marketplaceApp = await Apps.getAppFromMarketplace(appId, installedApp.version);
-			} catch (error) {
+			} catch (error: any) {
 				handleAPIError(error);
 			}
 
 			if (marketplaceApp !== undefined) {
 				const { status, version, licenseValidation } = installedApp;
 				const record = {
-					...marketplaceApp,
+					...marketplaceApp.app,
+					success: marketplaceApp.success,
 					installed: true,
 					status,
 					version,
 					licenseValidation,
-					marketplaceVersion: marketplaceApp.version,
+					marketplaceVersion: marketplaceApp.app.version,
 				};
 
 				const [, installedApps] = getCurrentData();

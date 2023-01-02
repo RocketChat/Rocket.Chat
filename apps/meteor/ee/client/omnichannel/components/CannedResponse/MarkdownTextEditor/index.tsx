@@ -1,10 +1,10 @@
 import { Box, Divider, PositionAnimated, Tile } from '@rocket.chat/fuselage';
-import React, { FC, memo, useCallback, useRef, useState } from 'react';
+import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
 
 import { EmojiPicker } from '../../../../../../app/emoji/client';
 import { Backdrop } from '../../../../../../client/components/Backdrop';
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useUserPreference } from '../../../../../../client/contexts/UserContext';
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 

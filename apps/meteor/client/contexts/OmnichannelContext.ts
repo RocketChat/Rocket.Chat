@@ -1,5 +1,5 @@
-import { OmichannelRoutingConfig, Inquiries } from '@rocket.chat/core-typings';
-import { createContext, useContext } from 'react';
+import type { OmichannelRoutingConfig, Inquiries } from '@rocket.chat/core-typings';
+import { createContext } from 'react';
 
 export type OmnichannelContextValue = {
 	inquiries: Inquiries;
@@ -15,10 +15,3 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
 });
-
-export const useOmnichannel = (): OmnichannelContextValue => useContext(OmnichannelContext);
-export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showOmnichannelQueueLink;
-export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined => useOmnichannel().routeConfig;
-export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
-export const useQueuedInquiries = (): Inquiries => useOmnichannel().inquiries;
-export const useOmnichannelEnabled = (): boolean => useOmnichannel().enabled;

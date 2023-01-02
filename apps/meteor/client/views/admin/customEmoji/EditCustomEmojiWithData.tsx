@@ -1,7 +1,8 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
-import React, { useMemo, FC } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditCustomEmoji from './EditCustomEmoji';
@@ -25,7 +26,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 		phase: state,
 		error,
 		reload,
-	} = useEndpointData('emoji-custom.list', query);
+	} = useEndpointData('/v1/emoji-custom.list', query);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
@@ -43,7 +44,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button primary danger disabled>
+					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>

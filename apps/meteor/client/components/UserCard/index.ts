@@ -1,14 +1,14 @@
-import Action from './Action';
-import Info from './Info';
-import Role from './Role';
-import Roles from './Roles';
 import UserCard from './UserCard';
-import Username from './Username';
+import UserCardAction from './UserCardAction';
+import UserCardInfo from './UserCardInfo';
+import UserCardRole from './UserCardRole';
+import UserCardRoles from './UserCardRoles';
+import UserCardUsername from './UserCardUsername';
 
 export default Object.assign(UserCard, {
-	Action,
-	Role,
-	Roles,
-	Info,
-	Username,
+	Action: UserCardAction,
+	Role: UserCardRole,
+	Roles: UserCardRoles,
+	Info: UserCardInfo,
+	Username: UserCardUsername,
 });

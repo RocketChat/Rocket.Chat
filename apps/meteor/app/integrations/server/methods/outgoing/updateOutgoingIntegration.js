@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { Integrations } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization/server';
 import { Users } from '../../../../models/server';
-import { Integrations } from '../../../../models/server/raw';
-import { integrations } from '../../../lib/rocketchat';
+import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
 Meteor.methods({
 	async updateOutgoingIntegration(integrationId, integration) {
-		integration = integrations.validateOutgoing(integration, this.userId);
+		integration = validateOutgoingIntegration(integration, this.userId);
 
 		if (!integration.token || integration.token.trim() === '') {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', {

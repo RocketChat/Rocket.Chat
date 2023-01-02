@@ -1,9 +1,9 @@
 import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
@@ -95,7 +95,7 @@ const AnalyticsPage = () => {
 							alignSelf='stretch'
 						/>
 						<Box display='flex' w='33%' flexDirection='row' justifyContent='stretch' p='x10' mis='x4'>
-							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department} />
+							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department?.value} />
 						</Box>
 					</Box>
 				</Margins>

@@ -1,14 +1,17 @@
-import { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
-import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
+import {
+	useToastMessageDispatch,
+	useSessionDispatch,
+	useRoute,
+	useRouteParameter,
+	useUserId,
+	useSetting,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { APIClient } from '../../../app/utils/client';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import { useSessionDispatch } from '../../contexts/SessionContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useUserId } from '../../contexts/UserContext';
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 
@@ -32,11 +35,7 @@ const InvitePage = (): ReactElement => {
 			}
 
 			try {
-				const { valid } = await APIClient.v1.post<
-					OperationParams<'POST', '/v1/validateInviteToken'>,
-					never,
-					OperationResult<'POST', '/v1/validateInviteToken'>
-				>('validateInviteToken', { token });
+				const { valid } = await APIClient.post('/v1/validateInviteToken', { token });
 
 				return valid;
 			} catch (error) {
@@ -61,12 +60,9 @@ const InvitePage = (): ReactElement => {
 				}
 
 				try {
-					const result = await APIClient.v1.post<
-						OperationParams<'POST', '/v1/useInviteToken'>,
-						never,
-						OperationResult<'POST', '/v1/useInviteToken'>
-					>('useInviteToken', { token });
-					if (!result?.room.name) {
+					const result = await APIClient.post('/v1/useInviteToken', { token });
+
+					if (!result.room.name) {
 						dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 						homeRoute.push();
 						return;

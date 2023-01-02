@@ -1,6 +1,7 @@
-import React, { FC } from 'react';
+import { useRole } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React from 'react';
 
-import { useRole } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import FederationDashboardPage from './FederationDashboardPage';
 

@@ -1,12 +1,11 @@
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import Row from './Row';
 import { withData } from './withData';
@@ -38,9 +37,9 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 					display='flex'
 					flexDirection='row'
 					p='x24'
-					borderBlockEndWidth='x2'
+					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
-					borderBlockEndColor='neutral-200'
+					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
 					<TextInput
@@ -65,7 +64,7 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 				)}
 
 				{!loading && total === 0 && (
-					<Box width='full' textAlign='center' p='x24' color='neutral-600'>
+					<Box width='full' textAlign='center' p='x24' color='annotation'>
 						{t('No_Discussions_found')}
 					</Box>
 				)}

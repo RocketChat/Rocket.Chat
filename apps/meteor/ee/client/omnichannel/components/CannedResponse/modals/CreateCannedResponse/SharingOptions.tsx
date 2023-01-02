@@ -1,7 +1,7 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
-
-import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 const SharingOptions: FC<{
 	isMonitor: boolean;

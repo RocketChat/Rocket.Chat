@@ -1,19 +1,18 @@
 import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebar/header/CreateChannelWithData';
+import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
+import { useTabBarClose } from '../../../room/contexts/ToolboxContext';
 import RoomInfo from '../../../room/contextualBar/Info';
-import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
 import AddExistingModal from './AddExistingModal';
 import BaseTeamsChannels from './BaseTeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 
-const useReactModal = (Component, props) => {
+const useReactModal = (Component, teamId, reload) => {
 	const setModal = useSetModal();
 
 	return useMutableCallback((e) => {
@@ -21,9 +20,10 @@ const useReactModal = (Component, props) => {
 
 		const handleClose = () => {
 			setModal(null);
+			reload();
 		};
 
-		setModal(() => <Component onClose={handleClose} {...props} />);
+		setModal(() => <Component onClose={handleClose} teamId={teamId} />);
 	});
 };
 
@@ -47,8 +47,8 @@ const TeamsChannels = ({ teamId, rid }) => {
 	}, []);
 
 	const canAddExistingTeam = usePermission('add-team-channel', rid);
-	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
-	const createNew = useReactModal(CreateChannelWithData, { teamId, reload });
+	const addExisting = useReactModal(AddExistingModal, teamId, reload);
+	const createNew = useReactModal(CreateChannelWithData, teamId, reload);
 
 	const goToRoom = useCallback((room) => roomCoordinator.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, FormEvent } from 'react';
-
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, FormEvent } from 'react';
+import React from 'react';
 
 type AppearanceFormProps = {
 	values: {

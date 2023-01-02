@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-own={{isOwnMessageAndNotSystem}} data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}" data-qa-type="message">
+	<li data-qa-id="UserMessage" id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-own={{isOwnMessageAndNotSystem}} data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}" data-qa-type="message">
 		{{#if isThreadReply}}
 			{{> messageThread parentMessage=parentMessage msg=msg tmid=msg.tmid class=bodyClass following=msg.following}}
 			<div class="thread-replied js-open-thread">
@@ -74,6 +74,9 @@
 					{{#if showStar}}
 						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
 					{{/if}}
+					{{#if showOtrAck}}
+						<span title="{{_ "OTR_message"}}">{{> icon icon="stopwatch" }}</span>
+					{{/if}}
 					{{#if following }}
 						{{#unless msg.tcount}}
 							<span title="{{_ "Following"}}" class="following"><i class="icon-bell"></i></span>
@@ -94,7 +97,7 @@
 						<span class="toggle-hidden icon-right-dir" data-message="{{msg._id}}"> {{_ "Message_Ignored"}} </span>
 					{{/if}}
 				</div>
-				<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+				<div class="body {{bodyClass}}" data-qa-type="message-body" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 					{{#if isSnippet}}
 						<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 					{{/if}}
@@ -129,7 +132,7 @@
 				{{/each}}
 			{{/if}}
 			{{#if hasAttachments}}
-				{{> reactAttachments attachments=msg.attachments file=msg.file }}
+				{{> reactAttachments attachments=msg.attachments file=msg.file messageContext=messageContext chatContext=chatContext }}
 			{{/if}}
 
 
@@ -140,15 +143,14 @@
 			{{/with}}
 			{{#unless hideMessageActions}}
 				<div class="message-actions">
-
 					<div class="message-actions__buttons">
-						{{#each action in messageActions 'message'}}
-							<button class="message-actions__button"  data-message-action="{{action.id}}" title="{{_ action.label}}">
+						{{#each action in messageActions}}
+							<button class="message-actions__button" data-qa-type="message-action-menu"  data-message-action="{{action.id}}" title="{{_ action.label}}">
 									{{> icon block="message-actions__button-icon" icon=action.icon}}
 							</button>
 						{{/each}}
 					</div>
-					<div class="message-actions__menu" aria-haspopup="true" title="{{_ "More_options"}}">
+					<div class="message-actions__menu" data-qa-id="menu" data-qa-type="message-action-menu" aria-haspopup="true" title="{{_ "More_options"}}">
 						{{> icon block="message-actions__menu-icon" icon="menu"}}
 					</div>
 				</div>

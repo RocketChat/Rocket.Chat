@@ -1,11 +1,11 @@
 import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement } from 'react';
+import { Card } from '@rocket.chat/ui-client';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
-import Card from '../../../components/Card';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';
 
@@ -29,7 +29,7 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 	});
 
 	return (
-		<Card>
+		<Card data-qa-id='deployment-card'>
 			<Card.Title>{t('Deployment')}</Card.Title>
 			<Card.Body>
 				<Card.Col>
@@ -57,9 +57,9 @@ const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): R
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('MongoDB')}</Card.Col.Title>
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} (oplog ${
-							statistics.oplogEnabled ? t('Enabled') : t('Disabled')
-						})`}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
+							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
+						}`}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Commit_details')}</Card.Col.Title>

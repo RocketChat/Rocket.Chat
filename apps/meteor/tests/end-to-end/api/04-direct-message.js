@@ -5,13 +5,14 @@ import { password, adminUsername } from '../../data/user.js';
 import { deleteRoom } from '../../data/rooms.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
+import { testFileUploads } from '../../data/uploads.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	it('/chat.postMessage', (done) => {
+	before('/chat.postMessage', (done) => {
 		request
 			.post(api('chat.postMessage'))
 			.set(credentials)
@@ -170,7 +171,6 @@ describe('[Direct Messages]', function () {
 			.set(credentials)
 			.query({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -189,8 +189,18 @@ describe('[Direct Messages]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('count', 1);
+				expect(res.body).to.have.property('total', 1);
+				expect(res.body).to.have.property('ims').and.to.be.an('array');
+				const im = res.body.ims[0];
+				expect(im).to.have.property('_id');
+				expect(im).to.have.property('t').and.to.be.eq('d');
+				expect(im).to.have.property('msgs').and.to.be.a('number');
+				expect(im).to.have.property('usernames').and.to.be.an('array');
+				expect(im).to.have.property('lm');
+				expect(im).to.have.property('_updatedAt');
+				expect(im).to.have.property('ts');
+				expect(im).to.have.property('lastMessage');
 			})
 			.end(done);
 	});
@@ -203,10 +213,85 @@ describe('[Direct Messages]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('count', 1);
+				expect(res.body).to.have.property('total', 1);
+				expect(res.body).to.have.property('ims').and.to.be.an('array');
+				const im = res.body.ims[0];
+				expect(im).to.have.property('_id');
+				expect(im).to.have.property('t').and.to.be.eq('d');
+				expect(im).to.have.property('msgs').and.to.be.a('number');
+				expect(im).to.have.property('usernames').and.to.be.an('array');
+				expect(im).to.have.property('ro');
+				expect(im).to.have.property('sysMes');
+				expect(im).to.have.property('_updatedAt');
+				expect(im).to.have.property('ts');
+				expect(im).to.have.property('lastMessage');
 			})
 			.end(done);
+	});
+
+	context("Setting: 'Use Real Name': true", () => {
+		before(async () => updateSetting('UI_Use_Real_Name', true));
+		after(async () => updateSetting('UI_Use_Real_Name', false));
+
+		it('/im.list', (done) => {
+			request
+				.get(api('im.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('ims').and.to.be.an('array');
+
+					const im = res.body.ims[0];
+
+					expect(im).to.have.property('_id');
+					expect(im).to.have.property('t').and.to.be.eq('d');
+					expect(im).to.have.property('msgs').and.to.be.a('number');
+					expect(im).to.have.property('usernames').and.to.be.an('array');
+					expect(im).to.have.property('lm');
+					expect(im).to.have.property('_updatedAt');
+					expect(im).to.have.property('ts');
+					expect(im).to.have.property('lastMessage');
+
+					const { lastMessage } = im;
+
+					expect(lastMessage).to.have.nested.property('u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
+		});
+
+		it('/im.list.everyone', (done) => {
+			request
+				.get(api('im.list.everyone'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('ims').and.to.be.an('array');
+					const im = res.body.ims[0];
+					expect(im).to.have.property('_id');
+					expect(im).to.have.property('t').and.to.be.eq('d');
+					expect(im).to.have.property('msgs').and.to.be.a('number');
+					expect(im).to.have.property('usernames').and.to.be.an('array');
+					expect(im).to.have.property('ro');
+					expect(im).to.have.property('sysMes');
+					expect(im).to.have.property('_updatedAt');
+					expect(im).to.have.property('ts');
+					expect(im).to.have.property('lastMessage');
+
+					const { lastMessage } = im;
+
+					expect(lastMessage).to.have.nested.property('u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
+		});
 	});
 
 	it('/im.open', (done) => {
@@ -246,23 +331,8 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
-	it('/im.files', (done) => {
-		request
-			.get(api('im.files'))
-			.set(credentials)
-			.query({
-				roomId: directMessage._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('files');
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('offset');
-				expect(res.body).to.have.property('total');
-			})
-			.end(done);
+	describe('[/im.files]', async function () {
+		await testFileUploads('im.files', directMessage, 'invalid-channel');
 	});
 
 	describe('/im.messages.others', () => {
@@ -618,6 +688,8 @@ describe('[Direct Messages]', function () {
 					.set(userCredentials)
 					.send({
 						message: JSON.stringify({
+							id: 'id',
+							msg: 'method',
 							method: 'saveUserPreferences',
 							params: [{ emailNotificationMode: 'nothing' }],
 						}),
@@ -733,11 +805,11 @@ describe('[Direct Messages]', function () {
 				.send({
 					roomId: testDM._id,
 				})
-				.expect(400)
+				.expect(403)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-channel');
+					expect(res.body).to.have.property('error', 'unauthorized');
 				})
 				.end(done);
 		});
@@ -778,7 +850,7 @@ describe('[Direct Messages]', function () {
 					.send({
 						roomId: testDM._id,
 					})
-					.expect(403)
+					.expect(400)
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);

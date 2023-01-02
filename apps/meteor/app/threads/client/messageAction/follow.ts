@@ -18,8 +18,12 @@ Meteor.startup(function () {
 			id: 'follow-message',
 			icon: 'bell',
 			label: 'Follow_message',
-			context: ['message', 'message-mobile', 'threads'],
+			context: ['message', 'message-mobile', 'threads', 'federated'],
 			async action(_, { message }) {
+				if (!message) {
+					return;
+				}
+
 				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({
 						type: 'success',
@@ -38,7 +42,7 @@ Meteor.startup(function () {
 				if (isLivechatRoom) {
 					return false;
 				}
-				return !replies.includes(user._id);
+				return user?._id ? !replies.includes(user._id) : false;
 			},
 			order: 2,
 			group: 'menu',

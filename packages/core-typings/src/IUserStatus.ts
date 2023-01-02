@@ -1,3 +1,5 @@
 export interface IUserStatus {
-	[x: string]: any;
+	_id: string;
+	name: string;
+	statusType: string;
 }

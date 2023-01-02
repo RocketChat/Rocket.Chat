@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import AssetSettingInput from './AssetSettingInput';
@@ -30,7 +30,7 @@ export const WithValue = Template.bind({});
 WithValue.args = {
 	_id: 'setting_id',
 	label: 'Label',
-	value: { src: 'https://rocket.chat/images/logo.svg' },
+	value: { url: 'https://rocket.chat/images/logo.svg' },
 };
 
 export const WithFileConstraints = Template.bind({});

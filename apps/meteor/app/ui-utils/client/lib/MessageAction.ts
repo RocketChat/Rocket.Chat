@@ -1,26 +1,27 @@
-import { ComponentProps, MouseEvent } from 'react';
+import type { ComponentProps, ContextType } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Icon } from '@rocket.chat/fuselage';
-import { IMessage, IUser, ISubscription, IRoom, SettingValue } from '@rocket.chat/core-typings';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized } from '@rocket.chat/core-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
-import { TranslationKey } from '../../../../client/contexts/TranslationContext';
+import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
+import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
+import { APIClient } from '../../../utils/client';
 
-const call = (method: string, ...args: any[]): Promise<any> =>
-	new Promise((resolve, reject) => {
-		Meteor.call(method, ...args, function (err: any, data: any) {
-			if (err) {
-				return reject(err);
-			}
-			resolve(data);
-		});
-	});
+const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
+	try {
+		const { message } = await APIClient.get('/v1/chat.getMessage', { msgId });
+		return message;
+	} catch {
+		return null;
+	}
+};
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -32,15 +33,25 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 type MessageActionGroup = 'message' | 'menu';
-type MessageActionContext = 'message' | 'threads' | 'message-mobile' | 'pinned' | 'direct' | 'starred' | 'mentions';
+export type MessageActionContext =
+	| 'message'
+	| 'threads'
+	| 'message-mobile'
+	| 'pinned'
+	| 'direct'
+	| 'starred'
+	| 'mentions'
+	| 'federated'
+	| 'videoconf';
 
 type MessageActionConditionProps = {
 	message: IMessage;
-	user: IUser;
+	user: IUser | undefined;
 	room: IRoom;
 	subscription?: ISubscription;
 	context?: MessageActionContext;
 	settings: { [key: string]: SettingValue };
+	chat: ContextType<typeof ChatContext>;
 };
 
 export type MessageActionConfig = {
@@ -53,11 +64,16 @@ export type MessageActionConfig = {
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: <E extends HTMLOrSVGElement>(
-		e: MouseEvent<E>,
-		{ message, tabbar, room }: { message: IMessage; tabbar: ToolboxContextValue; room: IRoom },
+	action: (
+		e: Pick<Event, 'preventDefault' | 'stopPropagation'>,
+		{
+			message,
+			tabbar,
+			room,
+			chat,
+		}: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom; chat: ContextType<typeof ChatContext> },
 	) => any;
-	condition?: (props: MessageActionConditionProps) => boolean;
+	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
 };
 
 type MessageActionConfigList = MessageActionConfig[];
@@ -123,11 +139,19 @@ export const MessageAction = new (class {
 
 	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 });
 
-	getButtonsByCondition(
+	async getButtonsByCondition(
 		prop: MessageActionConditionProps,
 		arr: MessageActionConfigList = MessageAction._getButtons(),
-	): MessageActionConfigList {
-		return arr.filter((button) => !button.condition || button.condition(prop));
+	): Promise<MessageActionConfigList> {
+		return (
+			await Promise.all(
+				arr.map(async (button) => {
+					return [button, !button.condition || (await button.condition(prop))] as const;
+				}),
+			)
+		)
+			.filter(([, condition]) => condition)
+			.map(([button]) => button);
 	}
 
 	getButtonsByGroup = mem(
@@ -141,7 +165,11 @@ export const MessageAction = new (class {
 		return !context ? arr : arr.filter((button) => !button.context || button.context.includes(context));
 	}
 
-	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
+	async getButtons(
+		props: MessageActionConditionProps,
+		context: MessageActionContext,
+		group: MessageActionGroup,
+	): Promise<MessageActionConfigList> {
 		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
 
 		if (props.message) {
@@ -161,7 +189,7 @@ export const MessageAction = new (class {
 			throw new Error('invalid-parameter');
 		}
 
-		const msg = Messages.findOne(msgId) || (await call('getSingleMessage', msgId));
+		const msg = Messages.findOne(msgId) || (await getMessage(msgId));
 		if (!msg) {
 			throw new Error('message-not-found');
 		}

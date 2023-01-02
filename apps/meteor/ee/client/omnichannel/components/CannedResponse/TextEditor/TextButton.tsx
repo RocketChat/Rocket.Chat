@@ -1,7 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, memo } from 'react';
-
-import { TranslationKey, useTranslation } from '../../../../../../client/contexts/TranslationContext';
 
 type TextButtonProps = {
 	text: TranslationKey;
@@ -13,7 +13,6 @@ const TextButton = forwardRef<HTMLElement, TextButtonProps>(function TextButton(
 
 	return (
 		<Button
-			nude
 			small
 			display='flex'
 			justifyContent='center'

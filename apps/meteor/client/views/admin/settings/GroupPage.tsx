@@ -1,14 +1,22 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, memo, FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import {
+	useToastMessageDispatch,
+	useUser,
+	useSettingsDispatch,
+	useSettings,
+	useTranslation,
+	useLoadLanguage,
+	useRoute,
+} from '@rocket.chat/ui-contexts';
+import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import Page from '../../../components/Page';
-import { useEditableSettingsDispatch, useEditableSettings, IEditableSetting } from '../../../contexts/EditableSettingsContext';
-import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation, useLoadLanguage, TranslationKey } from '../../../contexts/TranslationContext';
-import { useUser } from '../../../contexts/UserContext';
+import type { EditableSetting } from '../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings } from '../EditableSettingsContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 type GroupPageProps = {
@@ -30,6 +38,13 @@ const GroupPage: FC<GroupPageProps> = ({
 	tabs = undefined,
 	isCustom = false,
 }) => {
+	const t = useTranslation();
+	const user = useUser();
+	const router = useRoute('admin-settings');
+	const dispatch = useSettingsDispatch();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const loadLanguage = useLoadLanguage();
+
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -48,13 +63,6 @@ const GroupPage: FC<GroupPageProps> = ({
 			[changedEditableSettings],
 		),
 	);
-
-	const dispatch = useSettingsDispatch();
-
-	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-	const loadLanguage = useLoadLanguage();
-	const user = useUser();
 
 	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
 
@@ -93,7 +101,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as string });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
@@ -123,13 +131,15 @@ const GroupPage: FC<GroupPageProps> = ({
 				};
 			})
 			.filter(Boolean);
-		dispatchToEditing(settingsToDispatch as Partial<IEditableSetting>[]);
+		dispatchToEditing(settingsToDispatch as Partial<EditableSetting>[]);
 	});
 
 	const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
 		save();
 	};
+
+	const handleBack = useMutableCallback(() => router.push({}));
 
 	const handleCancelClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
@@ -150,10 +160,10 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<Page.Header title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<Page.Header onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>
 					{changedEditableSettings.length > 0 && (
-						<Button danger primary type='reset' onClick={handleCancelClick}>
+						<Button primary type='reset' onClick={handleCancelClick}>
 							{t('Cancel')}
 						</Button>
 					)}

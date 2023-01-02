@@ -1,11 +1,9 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
-import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
-import React, { memo, FC, useCallback } from 'react';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
+import { Button, Field, Modal } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { memo, useCallback } from 'react';
 
-import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../hooks/useForm';
 import RoomsInput from './RoomsInput';
 
@@ -24,7 +22,7 @@ type AddExistingModalProps = {
 
 const useAddExistingModalState = (onClose: () => void, teamId: string, reload: () => void): AddExistingModalState => {
 	const t = useTranslation();
-	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
+	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
@@ -59,7 +57,7 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
 			onClose();
 			reload();
-		} catch (error) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
@@ -86,12 +84,12 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!isAddButtonEnabled} onClick={onAdd} primary>
 						{t('Add')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

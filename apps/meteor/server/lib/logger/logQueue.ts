@@ -1,5 +1,7 @@
 import EventEmitter from 'events';
 
+const { MOLECULER_LOG_LEVEL, STDOUT_VIEWER_DISABLED = 'false' } = process.env;
+
 type LogQueue = {
 	id: string;
 	data: string;
@@ -56,6 +58,6 @@ function queueWrite(...args: any): boolean {
 	return true;
 }
 
-if (String(process.env.MOLECULER_LOG_LEVEL).toLowerCase() !== 'debug') {
+if (String(MOLECULER_LOG_LEVEL).toLowerCase() !== 'debug' && STDOUT_VIEWER_DISABLED === 'false') {
 	process.stdout.write = queueWrite;
 }

@@ -2,17 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { messageProperties } from '../../../ui-utils';
 import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
@@ -77,19 +77,19 @@ export function executeSendMessage(uid, message) {
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
-	} catch (error) {
-		SystemLogger.error('Error sending message:', error);
+	} catch (err) {
+		SystemLogger.error({ msg: 'Error sending message:', err });
 
-		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
+		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
 		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 
-		if (typeof error === 'string') {
-			throw new Error(error);
+		if (typeof err === 'string') {
+			throw new Error(err);
 		}
 
-		throw error;
+		throw err;
 	}
 }
 

@@ -1,7 +1,7 @@
 import { Field } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import RoomAutoComplete from '../RoomAutoComplete';
 
 const ChannelTab = ({ errors, rid, handleRid }) => {

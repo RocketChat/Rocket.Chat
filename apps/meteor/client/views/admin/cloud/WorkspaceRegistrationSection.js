@@ -1,10 +1,7 @@
 import { Box, Button, ButtonGroup, Field, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
-
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 
 function WorkspaceRegistrationSection({ token: initialToken, workspaceId, uniqueId, onRegisterStatusChange, ...props }) {
 	const t = useTranslation();
@@ -50,7 +47,7 @@ function WorkspaceRegistrationSection({ token: initialToken, workspaceId, unique
 	return (
 		<Box marginBlock='neg-x24' {...props}>
 			<Margins block='x24'>
-				<Box withRichContent color='neutral-800'>
+				<Box withRichContent color='default'>
 					<p>{t('Cloud_token_instructions')}</p>
 				</Box>
 

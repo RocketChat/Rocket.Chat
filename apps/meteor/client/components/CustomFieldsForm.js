@@ -1,9 +1,8 @@
 import { TextInput, Select, Field } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
 
-import { useSetting } from '../contexts/SettingsContext';
-import { useTranslation } from '../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 import { useForm } from '../hooks/useForm';
 
@@ -124,7 +123,7 @@ export default function CustomFieldsForm({ jsonCustomFields, customFieldsData, s
 		}
 	});
 
-	const hasCustomFields = Boolean(Object.values(customFields).length);
+	const hasCustomFields = useMemo(() => Object.values(customFields).length > 0, [customFields]);
 	const defaultFields = useMemo(
 		() =>
 			Object.entries(customFields).reduce((data, [key, value]) => {
@@ -137,11 +136,14 @@ export default function CustomFieldsForm({ jsonCustomFields, customFieldsData, s
 	const { values, handlers } = useForm({ ...defaultFields, ...customFieldsData });
 
 	useEffect(() => {
-		onLoadFields(hasCustomFields);
+		onLoadFields?.(hasCustomFields);
+	}, [onLoadFields, hasCustomFields]);
+
+	useEffect(() => {
 		if (hasCustomFields) {
 			setCustomFieldsData(values);
 		}
-	}, [hasCustomFields, onLoadFields, setCustomFieldsData, values]);
+	}, [hasCustomFields, setCustomFieldsData, values]);
 
 	if (!hasCustomFields) {
 		return null;

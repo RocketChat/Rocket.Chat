@@ -1,11 +1,9 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomFieldsPage from './CustomFieldsPage';
@@ -18,7 +16,6 @@ const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 	useMemo(
 		() => ({
-			fields: JSON.stringify({ label: 1 }),
 			text,
 			sort: JSON.stringify({ [column]: sortDir(direction) }),
 			...(itemsPerPage && { count: itemsPerPage }),
@@ -59,7 +56,7 @@ const CustomFieldsRoute = () => {
 			}),
 	);
 
-	const { value: data, reload } = useEndpointData('livechat/custom-fields', query);
+	const { value: data, reload } = useEndpointData('/v1/livechat/custom-fields', query);
 
 	const header = useMemo(
 		() =>

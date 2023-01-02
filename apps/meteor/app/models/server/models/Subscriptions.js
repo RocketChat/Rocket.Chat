@@ -227,6 +227,27 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	updateHideMentionStatusById(_id, hideMentionStatus) {
+		const query = {
+			_id,
+		};
+
+		const update =
+			hideMentionStatus === true
+				? {
+						$set: {
+							hideMentionStatus,
+						},
+				  }
+				: {
+						$unset: {
+							hideMentionStatus: 1,
+						},
+				  };
+
+		return this.update(query, update);
+	}
+
 	updateMuteGroupMentions(_id, muteGroupMentions) {
 		const query = {
 			_id,
@@ -641,26 +662,6 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				open: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setAsReadByRoomIdAndUserId(roomId, userId) {
-		const query = {
-			'rid': roomId,
-			'u._id': userId,
-		};
-
-		const update = {
-			$set: {
-				open: true,
-				alert: false,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				ls: new Date(),
 			},
 		};
 
@@ -1319,23 +1320,6 @@ export class Subscriptions extends Base {
 		);
 	}
 
-	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
-		const query = {
-			rid,
-			'u._id': userId,
-		};
-
-		const update = {
-			$unset: {
-				tunread: 1,
-				tunreadUser: 1,
-				tunreadGroup: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	removeUnreadThreadsByRoomId(rid, tunread) {
 		const query = {
 			rid,
@@ -1351,14 +1335,6 @@ export class Subscriptions extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
-	}
-
-	setOnHold(roomId) {
-		return this.update({ rid: roomId }, { $set: { onHold: true } }, { multi: true });
-	}
-
-	unsetOnHold(roomId) {
-		return this.update({ rid: roomId }, { $unset: { onHold: 1 } }, { multi: true });
 	}
 }
 

@@ -1,11 +1,9 @@
 import { Box, Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import Subtitle from '../../../components/Subtitle';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { statusPageUrl } from './constants';
 
 function TroubleshootingSection({ onRegisterStatusChange, ...props }) {
@@ -39,7 +37,7 @@ function TroubleshootingSection({ onRegisterStatusChange, ...props }) {
 		<Box is='section' {...props}>
 			<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
 
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>{t('Cloud_workspace_support')}</p>
 			</Box>
 
@@ -49,7 +47,7 @@ function TroubleshootingSection({ onRegisterStatusChange, ...props }) {
 				</Button>
 			</ButtonGroup>
 
-			<Box withRichContent color='neutral-800'>
+			<Box withRichContent color='default'>
 				<p>
 					{t('Cloud_status_page_description')}:{' '}
 					<a href={statusPageUrl} target='_blank' rel='noopener noreferrer'>

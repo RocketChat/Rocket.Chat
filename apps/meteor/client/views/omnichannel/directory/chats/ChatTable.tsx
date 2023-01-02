@@ -1,13 +1,13 @@
 import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useState, useMemo, useCallback, useEffect, FC, ReactElement, Dispatch, SetStateAction } from 'react';
+import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericTable from '../../../../components/GenericTable';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 
 const useQuery = (
@@ -74,7 +74,7 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 		}),
 	);
 
-	const { value: data, reload } = useEndpointData('livechat/rooms', query as any); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
+	const { value: data, reload } = useEndpointData('/v1/livechat/rooms', query as any); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
 
 	useEffect(() => {
 		setChatReload?.(() => reload);

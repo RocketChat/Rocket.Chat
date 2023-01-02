@@ -1,9 +1,10 @@
 import s from 'underscore.string';
 import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Settings from './Settings';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 export class LivechatRooms extends Base {
 	constructor(...args) {
@@ -22,11 +23,18 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
 		this.tryEnsureIndex({ source: 1 }, { sparse: true });
-	}
-
-	findLivechat(filter = {}, offset = 0, limit = 20) {
-		const query = Object.assign(filter, { t: 'l' });
-		return this.find(query, { sort: { ts: -1 }, offset, limit });
+		this.tryEnsureIndex({ departmentAncestors: 1 }, { sparse: true });
+		this.tryEnsureIndex(
+			{ 't': 1, 'open': 1, 'source.type': 1, 'v.status': 1 },
+			{
+				partialFilterExpression: {
+					't': { $eq: 'l' },
+					'open': { $eq: true },
+					'source.type': { $eq: 'widget' },
+				},
+			},
+		);
+		this.tryEnsureIndex({ 'livechatData.$**': 1 });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -192,7 +200,7 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
@@ -202,7 +210,10 @@ export class LivechatRooms extends Base {
 		const query = {
 			't': 'l',
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'$or': [
+				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
+				{ 'email.thread': new RegExp(emailThread.map((t) => `"${t}"`).join('|')) },
+			],
 			...(departmentId && { departmentId }),
 		};
 
@@ -214,10 +225,20 @@ export class LivechatRooms extends Base {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
-			'email.thread': emailThread,
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
 		};
 
 		return this.findOne(query, options);
+	}
+
+	updateEmailThreadByRoomId(roomId, threadIds) {
+		const query = {
+			$addToSet: {
+				'email.thread': threadIds,
+			},
+		};
+
+		return this.update({ _id: roomId }, query);
 	}
 
 	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
@@ -247,7 +268,7 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	updateRoomCount = function () {
+	updateRoomCount = async function () {
 		const query = {
 			_id: 'Livechat_Room_Count',
 		};
@@ -258,9 +279,8 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		const livechatCount = Settings.findAndModify(query, null, update);
-
-		return livechatCount.value.value;
+		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		return livechatCount.value;
 	};
 
 	findOpenByVisitorToken(visitorToken, options) {
@@ -283,13 +303,16 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource(visitorToken, departmentId, source, options) {
 		const query = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
 			departmentId,
 		};
+		if (source) {
+			query['source.type'] = source;
+		}
 
 		return this.findOne(query, options);
 	}
@@ -322,15 +345,6 @@ export class LivechatRooms extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	findByVisitorId(visitorId) {
-		const query = {
-			't': 'l',
-			'v._id': visitorId,
-		};
-
-		return this.find(query);
 	}
 
 	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
@@ -481,152 +495,158 @@ export class LivechatRooms extends Base {
 	}
 
 	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
-		return this.model.rawCollection().aggregate([
-			{
-				$match: {
-					t,
-					ts: {
-						$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-						$lt: new Date(date.lt), // ISODate, ts < date.lt
+		return this.model.rawCollection().aggregate(
+			[
+				{
+					$match: {
+						t,
+						ts: {
+							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+							$lt: new Date(date.lt), // ISODate, ts < date.lt
+						},
+						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 					},
-					...(departmentId && departmentId !== 'undefined' && { departmentId }),
 				},
-			},
-			{ $addFields: { roomId: '$_id' } },
-			{
-				$lookup: {
-					from: 'rocketchat_message',
-					// mongo doesn't like _id as variable name here :(
-					let: { roomId: '$roomId' },
-					pipeline: [
-						{
-							$match: {
-								$expr: {
-									$and: [
-										{
-											$eq: ['$$roomId', '$rid'],
-										},
-										{
-											// this is similar to do { $exists: false }
-											$lte: ['$t', null],
-										},
-										...(extraQuery ? [extraQuery] : []),
-									],
+				{ $addFields: { roomId: '$_id' } },
+				{
+					$lookup: {
+						from: 'rocketchat_message',
+						// mongo doesn't like _id as variable name here :(
+						let: { roomId: '$roomId' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{
+												$eq: ['$$roomId', '$rid'],
+											},
+											{
+												// this is similar to do { $exists: false }
+												$lte: ['$t', null],
+											},
+											...(extraQuery ? [extraQuery] : []),
+										],
+									},
 								},
 							},
+						],
+						as: 'messages',
+					},
+				},
+				{
+					$unwind: {
+						path: '$messages',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							_id: '$_id',
+							ts: '$ts',
+							departmentId: '$departmentId',
+							open: '$open',
+							servedBy: '$servedBy',
+							metrics: '$metrics',
 						},
-					],
-					as: 'messages',
-				},
-			},
-			{
-				$unwind: {
-					path: '$messages',
-					preserveNullAndEmptyArrays: true,
-				},
-			},
-			{
-				$group: {
-					_id: {
-						_id: '$_id',
-						ts: '$ts',
-						departmentId: '$departmentId',
-						open: '$open',
-						servedBy: '$servedBy',
-						metrics: '$metrics',
-					},
-					messagesCount: {
-						$sum: 1,
+						messagesCount: {
+							$sum: 1,
+						},
 					},
 				},
-			},
-			{
-				$project: {
-					_id: '$_id._id',
-					ts: '$_id.ts',
-					departmentId: '$_id.departmentId',
-					open: '$_id.open',
-					servedBy: '$_id.servedBy',
-					metrics: '$_id.metrics',
-					msgs: '$messagesCount',
+				{
+					$project: {
+						_id: '$_id._id',
+						ts: '$_id.ts',
+						departmentId: '$_id.departmentId',
+						open: '$_id.open',
+						servedBy: '$_id.servedBy',
+						metrics: '$_id.metrics',
+						msgs: '$messagesCount',
+					},
 				},
-			},
-		]);
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 
 	getAnalyticsBetweenDate(date, { departmentId } = {}) {
-		return this.model.rawCollection().aggregate([
-			{
-				$match: {
-					t: 'l',
-					ts: {
-						$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-						$lt: new Date(date.lt), // ISODate, ts < date.lt
+		return this.model.rawCollection().aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+							$lt: new Date(date.lt), // ISODate, ts < date.lt
+						},
+						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 					},
-					...(departmentId && departmentId !== 'undefined' && { departmentId }),
 				},
-			},
-			{ $addFields: { roomId: '$_id' } },
-			{
-				$lookup: {
-					from: 'rocketchat_message',
-					// mongo doesn't like _id as variable name here :(
-					let: { roomId: '$roomId' },
-					pipeline: [
-						{
-							$match: {
-								$expr: {
-									$and: [
-										{
-											$eq: ['$$roomId', '$rid'],
-										},
-										{
-											// this is similar to do { $exists: false }
-											$lte: ['$t', null],
-										},
-									],
+				{ $addFields: { roomId: '$_id' } },
+				{
+					$lookup: {
+						from: 'rocketchat_message',
+						// mongo doesn't like _id as variable name here :(
+						let: { roomId: '$roomId' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{
+												$eq: ['$$roomId', '$rid'],
+											},
+											{
+												// this is similar to do { $exists: false }
+												$lte: ['$t', null],
+											},
+										],
+									},
 								},
 							},
+						],
+						as: 'messages',
+					},
+				},
+				{
+					$unwind: {
+						path: '$messages',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							_id: '$_id',
+							ts: '$ts',
+							departmentId: '$departmentId',
+							open: '$open',
+							servedBy: '$servedBy',
+							metrics: '$metrics',
+							onHold: '$onHold',
 						},
-					],
-					as: 'messages',
-				},
-			},
-			{
-				$unwind: {
-					path: '$messages',
-					preserveNullAndEmptyArrays: true,
-				},
-			},
-			{
-				$group: {
-					_id: {
-						_id: '$_id',
-						ts: '$ts',
-						departmentId: '$departmentId',
-						open: '$open',
-						servedBy: '$servedBy',
-						metrics: '$metrics',
-						onHold: '$onHold',
-					},
-					messagesCount: {
-						$sum: 1,
+						messagesCount: {
+							$sum: 1,
+						},
 					},
 				},
-			},
-			{
-				$project: {
-					_id: '$_id._id',
-					ts: '$_id.ts',
-					departmentId: '$_id.departmentId',
-					open: '$_id.open',
-					servedBy: '$_id.servedBy',
-					metrics: '$_id.metrics',
-					msgs: '$messagesCount',
-					onHold: '$_id.onHold',
+				{
+					$project: {
+						_id: '$_id._id',
+						ts: '$_id.ts',
+						departmentId: '$_id.departmentId',
+						open: '$_id.open',
+						servedBy: '$_id.servedBy',
+						metrics: '$_id.metrics',
+						msgs: '$messagesCount',
+						onHold: '$_id.onHold',
+					},
 				},
-			},
-		]);
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 
 	closeByRoomId(roomId, closeInfo) {
@@ -816,45 +836,6 @@ export class LivechatRooms extends Base {
 		const update = {
 			$set: {
 				'metrics.visitorInactivity': visitorInactivity,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setAutoTransferredAtById(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				autoTransferredAt: new Date(),
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setAutoTransferOngoingById(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				autoTransferOngoing: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	unsetAutoTransferOngoingById(roomId) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$unset: {
-				autoTransferOngoing: 1,
 			},
 		};
 

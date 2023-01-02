@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface VoIPUserConfiguration {
 	/**
 	 * Authorization username.
@@ -35,6 +35,16 @@ export interface VoIPUserConfiguration {
 	 * @defaultValue undefined
 	 */
 	iceServers: Array<object>;
+	/**
+	 * Voip Retry count
+	 * @defaultValue undefined
+	 */
+	connectionRetryCount: number;
+	/**
+	 * Enable Keep Alive for unstable networks
+	 * @defaultValue undefined
+	 */
+	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
 }
 
 export interface IMediaStreamRenderer {

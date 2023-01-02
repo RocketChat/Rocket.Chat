@@ -1,13 +1,13 @@
 import { EJSON } from 'meteor/ejson';
+import { FederationServers } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
 import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
-import { FederationServers } from '../../../models/server/raw';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
-import { api } from '../../../../server/sdk/api';
 import { FileUpload } from '../../../file-upload';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { decryptIfNeeded } from '../lib/crypt';
@@ -273,7 +273,7 @@ const eventHandlers = {
 					processThreads(denormalizedMessage, room);
 
 					// Notify users
-					notifyUsersOnMessage(denormalizedMessage, room);
+					await notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
 				} catch (err) {
 					serverLogger.debug(`Error on creating message: ${message._id}`);

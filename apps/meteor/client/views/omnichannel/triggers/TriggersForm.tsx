@@ -1,8 +1,10 @@
-import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, FC, FormEvent, useMemo, useState } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps, FC, FormEvent } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 
 type TriggerConditions = {

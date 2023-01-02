@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState } from 'react';
 
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useForm } from '../../../client/hooks/useForm';
 import { AuditPageBase } from './AuditPageBase';
 

@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Media } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {
 	findAdminRooms,
@@ -11,9 +13,8 @@ import {
 	findRoomsAvailableForTeams,
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
-import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
-import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
@@ -80,36 +81,41 @@ API.v1.addRoute(
 	'rooms.upload/:rid',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!canAccessRoomId(this.urlParams.rid, this.userId)) {
 				return API.v1.unauthorized();
 			}
 
-			const { file, ...fields } = Promise.await(
-				getUploadFormData({
+			const file = await getUploadFormData(
+				{
 					request: this.request,
-				}),
+				},
+				{ field: 'file', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-field');
 			}
 
+			const { fields } = file;
+			let { fileBuffer } = file;
+
 			const details = {
 				name: file.filename,
-				size: file.fileBuffer.length,
+				size: fileBuffer.length,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
 			};
 
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			const fileStore = FileUpload.getStore('Uploads');
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				file.fileBuffer = Promise.await(Media.stripExifFromBuffer(file.fileBuffer));
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
 			}
-			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
+
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
 			uploadedFile.description = fields.description;
 
@@ -177,8 +183,8 @@ API.v1.addRoute(
 	'rooms.cleanHistory',
 	{ authRequired: true },
 	{
-		post() {
-			const findResult = findRoomByIdOrName({ params: this.bodyParams });
+		async post() {
+			const { _id } = findRoomByIdOrName({ params: this.bodyParams });
 
 			const {
 				latest,
@@ -200,22 +206,20 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('cleanRoomHistory', {
-					roomId: findResult._id,
-					latest: new Date(latest),
-					oldest: new Date(oldest),
-					inclusive,
-					limit,
-					excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
-					filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
-					ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
-					ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
-					fromUsers: users,
-				}),
-			);
+			const count = await Meteor.call('cleanRoomHistory', {
+				roomId: _id,
+				latest: new Date(latest),
+				oldest: new Date(oldest),
+				inclusive,
+				limit,
+				excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
+				filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
+				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
+				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
+				fromUsers: users,
+			});
 
-			return API.v1.success({ count });
+			return API.v1.success({ _id, count });
 		},
 	},
 );
@@ -292,7 +296,7 @@ API.v1.addRoute(
 	'rooms.getDiscussions',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const room = findRoomByIdOrName({ params: this.requestParams() });
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -303,18 +307,20 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign(query, { prid: room._id });
 
-			const discussions = Rooms.find(ourQuery, {
+			const { cursor, totalCount } = RoomsRaw.findPaginated(ourQuery, {
 				sort: sort || { fname: 1 },
 				skip: offset,
 				limit: count,
-				fields,
-			}).fetch();
+				projection: fields,
+			});
+
+			const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				discussions,
 				count: discussions.length,
 				offset,
-				total: Rooms.find(ourQuery).count(),
+				total,
 			});
 		},
 	},
@@ -536,7 +542,11 @@ API.v1.addRoute(
 				dateTo = new Date(dateTo);
 				dateTo.setDate(dateTo.getDate() + 1);
 
-				sendFile(
+				if (dateFrom > dateTo) {
+					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
+				}
+
+				dataExport.sendFile(
 					{
 						rid,
 						format,
@@ -559,7 +569,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = sendViaEmail(
+				const result = dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers,

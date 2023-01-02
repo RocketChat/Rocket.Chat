@@ -1,18 +1,25 @@
-import React, { FC, useMemo } from 'react';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
+import { useLayout, useCurrentRoute } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import BurgerMenu from '../../../../components/BurgerMenu';
-import TemplateHeader from '../../../../components/Header';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useCurrentRoute } from '../../../../contexts/RouterContext';
-import { ToolboxActionConfig } from '../../lib/Toolbox';
-import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
+import { ToolboxContext, useToolboxContext } from '../../contexts/ToolboxContext';
+import type { ToolboxActionConfig } from '../../lib/Toolbox';
+import type { RoomHeaderProps } from '../RoomHeader';
+import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
 
-const VoipRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot, room }) => {
+export type VoipRoomHeaderProps = {
+	room: IVoipRoom;
+} & Omit<RoomHeaderProps, 'room'>;
+
+const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) => {
 	const [name] = useCurrentRoute();
 	const { isMobile } = useLayout();
-	const context = useToolboxContext();
+	const toolbox = useToolboxContext();
 
 	const slots = useMemo(
 		() => ({
@@ -30,13 +37,13 @@ const VoipRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot, room }) => {
 		<ToolboxContext.Provider
 			value={useMemo(
 				() => ({
-					...context,
-					actions: new Map([...(Array.from(context.actions.entries()) as [string, ToolboxActionConfig][])]),
+					...toolbox,
+					actions: new Map([...(Array.from(toolbox.actions.entries()) as [string, ToolboxActionConfig][])]),
 				}),
-				[context],
+				[toolbox],
 			)}
 		>
-			<RoomHeader slots={slots} room={room} />
+			<RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />
 		</ToolboxContext.Provider>
 	);
 };

@@ -1,10 +1,11 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { QueueListPage } from './QueueListPage';
 import { useQuery } from './hooks/useQuery';
@@ -87,7 +88,13 @@ const QueueList = (): ReactElement => {
 		[mediaQuery, t],
 	);
 
-	const [params, setParams] = useState({
+	const [params, setParams] = useState<{
+		servedBy: string;
+		status: string;
+		departmentId: string;
+		itemsPerPage: 25 | 50 | 100;
+		current: number;
+	}>({
 		servedBy: '',
 		status: '',
 		departmentId: '',
@@ -97,7 +104,7 @@ const QueueList = (): ReactElement => {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const { value: data } = useEndpointData('livechat/queue', query);
+	const { value: data } = useEndpointData('/v1/livechat/queue', query);
 
 	return (
 		<QueueListPage title={t('Livechat_Queue')} header={header} data={data} renderRow={renderRow} params={params} setParams={setParams} />

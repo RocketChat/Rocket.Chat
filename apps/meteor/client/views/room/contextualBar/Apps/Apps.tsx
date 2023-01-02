@@ -1,6 +1,7 @@
-import { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitSurface } from '@rocket.chat/apps-engine/definition/uikit';
 import { ButtonGroup, Button, Box, Avatar } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal } from '@rocket.chat/fuselage-ui-kit';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import React from 'react';
 
 import { getURL } from '../../../../../app/utils/lib/getURL';
@@ -12,19 +13,19 @@ type AppsProps = {
 	onSubmit: (e: any) => void;
 	onCancel: (e: any) => Promise<void>;
 	onClose: (e: any) => Promise<void>;
-	appInfo: { name: string; id: string };
+	appId: string;
 };
 
-const Apps = ({ view, onSubmit, onClose, onCancel, appInfo }: AppsProps): JSX.Element => (
+const Apps = ({ view, onSubmit, onClose, onCancel, appId }: AppsProps): JSX.Element => (
 	<>
 		<VerticalBar.Header>
-			<Avatar url={getURL(`/api/apps/${appInfo.id}/icon`)} />
+			<Avatar url={getURL(`/api/apps/${appId}/icon`)} />
 			<VerticalBar.Text>{modalParser.text(view.title)}</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose} />}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
 			<Box is='form' method='post' action='#' onSubmit={onSubmit}>
-				<UiKitComponent render={UiKitModal} blocks={view.blocks} />
+				<UiKitComponent render={UiKitModal} blocks={view.blocks as LayoutBlock[]} />
 			</Box>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>

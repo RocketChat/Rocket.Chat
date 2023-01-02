@@ -1,10 +1,9 @@
 import { Callout } from '@rocket.chat/fuselage';
+import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -19,7 +18,7 @@ const reduceSettings = (settings) =>
 const WebhooksPageContainer = () => {
 	const t = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData('livechat/integrations.settings');
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/integrations.settings');
 
 	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');
 

@@ -1,8 +1,6 @@
-import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { IUser } from '@rocket.chat/core-typings';
 import {
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
@@ -13,12 +11,13 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { Users } from '../../../models/server';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Team } from '../../../../server/sdk';
+import { Rooms, Users } from '../../../models/server';
+import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -115,13 +114,12 @@ const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string
 
 API.v1.addRoute(
 	'teams.convertToChannel',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsConvertToChannelProps,
+	},
 	{
 		async post() {
-			if (!isTeamsConvertToChannelProps(this.bodyParams)) {
-				return API.v1.failure('invalid-body-params', isTeamsConvertToChannelProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { roomsToRemove = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -142,11 +140,9 @@ API.v1.addRoute(
 				});
 			}
 
-			await Promise.all([
-				Team.unsetTeamIdOfRooms(this.userId, team._id),
-				Team.removeAllMembersFromTeam(team._id),
-				Team.deleteById(team._id),
-			]);
+			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
+
+			await Team.deleteById(team._id);
 
 			return API.v1.success();
 		},
@@ -197,13 +193,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.removeRoom',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsRemoveRoomProps,
+	},
 	{
 		async post() {
-			if (!isTeamsRemoveRoomProps(this.bodyParams)) {
-				return API.v1.failure('body-params-invalid', isTeamsRemoveRoomProps.errors?.map((error) => error.message).join('\n '));
-			}
-
 			const team = await getTeamByIdOrName(this.bodyParams);
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
@@ -415,7 +410,7 @@ API.v1.addRoute(
 				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
 				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
 				status: status ? { $in: status } : undefined,
-			} as FilterQuery<IUser>;
+			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
 
@@ -431,13 +426,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.addMembers',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsAddMembersProps,
+	},
 	{
 		async post() {
-			if (!isTeamsAddMembersProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params');
-			}
-
 			const { bodyParams } = this;
 			const { members } = bodyParams;
 
@@ -459,13 +453,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.updateMember',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsUpdateMemberProps,
+	},
 	{
 		async post() {
-			if (!isTeamsUpdateMemberProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsUpdateMemberProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { bodyParams } = this;
 			const { member } = bodyParams;
 
@@ -487,13 +480,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.removeMember',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsRemoveMemberProps,
+	},
 	{
 		async post() {
-			if (!isTeamsRemoveMemberProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsRemoveMemberProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { bodyParams } = this;
 			const { userId, rooms } = bodyParams;
 
@@ -533,13 +525,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.leave',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsLeaveProps,
+	},
 	{
 		async post() {
-			if (!isTeamsLeaveProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsLeaveProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { rooms = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -585,6 +576,18 @@ API.v1.addRoute(
 				return API.v1.failure('Team not found');
 			}
 
+			const room = Rooms.findOneById(teamInfo.roomId);
+
+			if (!room) {
+				return API.v1.failure('Room not found');
+			}
+
+			const canViewInfo = canAccessRoom(room, { _id: this.userId }) || hasPermission(this.userId, 'view-all-teams');
+
+			if (!canViewInfo) {
+				return API.v1.unauthorized();
+			}
+
 			return API.v1.success({ teamInfo });
 		},
 	},
@@ -592,14 +595,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.delete',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsDeleteProps,
+	},
 	{
 		async post() {
 			const { roomsToRemove = [] } = this.bodyParams;
-
-			if (!isTeamsDeleteProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsDeleteProps.errors?.map((e) => e.message).join('\n '));
-			}
 
 			const team = await getTeamByIdOrName(this.bodyParams);
 			if (!team) {
@@ -659,13 +661,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.update',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isTeamsUpdateProps,
+	},
 	{
 		async post() {
-			if (!isTeamsUpdateProps(this.bodyParams)) {
-				return API.v1.failure('invalid-params', isTeamsUpdateProps.errors?.map((e) => e.message).join('\n '));
-			}
-
 			const { data } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);

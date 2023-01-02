@@ -1,12 +1,12 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
 
 import NoResults from '../../../../components/GenericTable/NoResults';
 import Page from '../../../../components/Page';
-import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useTranslation, TranslationKey } from '../../../../contexts/TranslationContext';
+import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 import VoipExtensionsPage from './voip/VoipExtensionsPage';

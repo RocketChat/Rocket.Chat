@@ -1,19 +1,20 @@
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 import mem from 'mem';
-import {
-	ServerType,
-	isICallServerConfigData,
+import { ServerType, isICallServerConfigData, isIExtensionDetails } from '@rocket.chat/core-typings';
+import type {
+	IVoipConnectorResult,
+	IQueueDetails,
+	IQueueSummary,
+	IManagementServerConnectionStatus,
 	IVoipCallServerConfig,
 	IVoipManagementServerConfig,
 	IQueueMembershipDetails,
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
-	isIExtensionDetails,
 } from '@rocket.chat/core-typings';
-import type { IVoipConnectorResult, IQueueDetails, IQueueSummary, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
+import type { IVoipService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
@@ -26,6 +27,8 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	private logger: Logger;
 
 	commandHandler: CommandHandler;
+
+	private active = false;
 
 	constructor(db: Db) {
 		super();
@@ -43,8 +46,15 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async init(): Promise<void> {
 		this.logger.info('Starting VoIP service');
+		if (this.active) {
+			this.logger.warn({ msg: 'VoIP service already started' });
+			return;
+		}
+
 		try {
 			await this.commandHandler.initConnection(CommandType.AMI);
+			this.active = true;
+			api.broadcast('connector.statuschanged', true);
 			this.logger.info('VoIP service started');
 		} catch (err) {
 			this.logger.error({ msg: 'Error initializing VOIP service', err });
@@ -53,8 +63,15 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async stop(): Promise<void> {
 		this.logger.info('Stopping VoIP service');
+		if (!this.active) {
+			this.logger.warn({ msg: 'VoIP service already stopped' });
+			return;
+		}
+
 		try {
 			this.commandHandler.stop();
+			this.active = false;
+			api.broadcast('connector.statuschanged', false);
 			this.logger.info('VoIP service stopped');
 		} catch (err) {
 			this.logger.error({ msg: 'Error stopping VoIP service', err });
@@ -63,16 +80,18 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	async refresh(): Promise<void> {
 		this.logger.info('Restarting VoIP service due to settings changes');
-		await this.stop();
-		await this.init();
+		try {
+			// Disable voip service
+			await this.stop();
+			// To then restart it
+			await this.init();
+		} catch (err) {
+			this.logger.error({ msg: 'Error refreshing VoIP service', err });
+		}
 	}
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
 		return getServerConfigDataFromSettings(type);
-	}
-
-	getConnector(): CommandHandler {
-		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
@@ -207,7 +226,6 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		}
 
 		const result = {
-			host: config.host,
 			callServerConfig: config.configData,
 			extensionDetails: endpointDetails.result,
 		};

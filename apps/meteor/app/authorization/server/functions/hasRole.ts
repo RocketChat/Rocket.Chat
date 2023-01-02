@@ -1,6 +1,5 @@
 import type { IRole, IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
-
-import { Roles } from '../../../models/server/raw';
+import { Roles } from '@rocket.chat/models';
 
 export const hasAnyRoleAsync = async (
 	userId: IUser['_id'],
@@ -30,4 +29,4 @@ export const hasRole = (...args: Parameters<typeof hasRoleAsync>): boolean => Pr
 
 export const hasAnyRole = (...args: Parameters<typeof hasAnyRoleAsync>): boolean => Promise.await(hasAnyRoleAsync(...args));
 
-export const subscriptionHasRole = (sub: ISubscription, role: IRole['_id']): boolean | undefined => sub.roles && sub.roles.includes(role);
+export const subscriptionHasRole = (sub: ISubscription, role: IRole['_id']): boolean | undefined => sub.roles?.includes(role);

@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { FederationKeys } from '@rocket.chat/models';
 
 import { settingsRegistry, settings } from '../../../settings/server';
 import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
@@ -7,18 +7,15 @@ import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMetho
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
-import { FederationKeys } from '../../../models/server/raw';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
-Meteor.startup(async function () {
-	const federationPublicKey = await FederationKeys.getPublicKeyString();
-
-	settingsRegistry.addGroup('Federation', function () {
+settingsRegistry.addGroup('Federation', function () {
+	this.section('Rocket.Chat Federation', async function () {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 			i18nDescription: 'FEDERATION_Enabled',
-			alert: 'FEDERATION_Enabled_Alert',
+			alert: 'This_is_a_deprecated_feature_alert',
 			public: true,
 		});
 
@@ -35,6 +32,8 @@ Meteor.startup(async function () {
 			alert: 'FEDERATION_Domain_Alert',
 			// disableReset: true,
 		});
+
+		const federationPublicKey = await FederationKeys.getPublicKeyString();
 
 		this.add('FEDERATION_Public_Key', federationPublicKey || '', {
 			readonly: true,
@@ -71,7 +70,7 @@ Meteor.startup(async function () {
 const updateSettings = async function (): Promise<void> {
 	// Get the key pair
 
-	if (getFederationDiscoveryMethod() === 'hub' && !Promise.await(isRegisteringOrEnabled())) {
+	if (getFederationDiscoveryMethod() === 'hub' && !(await isRegisteringOrEnabled())) {
 		// Register with hub
 		try {
 			await updateStatus(STATUS_REGISTERING);
@@ -91,20 +90,18 @@ const updateSettings = async function (): Promise<void> {
 };
 
 // Add settings listeners
-settings.watch('FEDERATION_Enabled', function enableOrDisable(value) {
+settings.watch('FEDERATION_Enabled', async function enableOrDisable(value) {
 	setupLogger.info(`Federation is ${value ? 'enabled' : 'disabled'}`);
 
 	if (value) {
-		Promise.await(updateSettings());
+		await updateSettings();
 
 		enableCallbacks();
 	} else {
-		Promise.await(updateStatus(STATUS_DISABLED));
+		await updateStatus(STATUS_DISABLED);
 
 		disableCallbacks();
 	}
-
-	value && updateSettings();
 });
 
 settings.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], updateSettings);

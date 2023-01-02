@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import InformationPage from './InformationPage';
@@ -103,18 +103,8 @@ export default {
 			userLanguages: {},
 			teams: {
 				totalTeams: 0,
-				teamStats: [
-					{
-						teamId: '',
-						mainRoom: '',
-						totalRooms: 0,
-						totalMessages: 0,
-						totalPublicRooms: 0,
-						totalPrivateRooms: 0,
-						totalDefaultRooms: 0,
-						totalMembers: 0,
-					},
-				],
+				totalRoomsInsideTeams: 0,
+				totalDefaultRoomsInsideTeams: 0,
 			},
 			totalLivechatVisitors: 0,
 			totalLivechatAgents: 0,
@@ -165,6 +155,7 @@ export default {
 				lockedAt: '',
 			},
 			instanceCount: 0,
+			msEnabled: false,
 			oplogEnabled: false,
 			mongoVersion: '',
 			mongoStorageEngine: '',
@@ -202,13 +193,14 @@ export default {
 			uniqueOSOfLastWeek: { data: [], day: 0, month: 0, year: 0 },
 			uniqueOSOfLastMonth: { data: [], day: 0, month: 0, year: 0 },
 			apps: {
-				engineVersion: 0,
+				engineVersion: 'x.y.z',
 				enabled: false,
 				totalInstalled: 0,
 				totalActive: 0,
 				totalFailed: 0,
 			},
 			services: {},
+			importer: {},
 			settings: {},
 			integrations: {
 				totalIntegrations: 0,
@@ -229,8 +221,12 @@ export default {
 			},
 			createdAt: new Date(),
 			showHomeButton: false,
-			homeTitle: '',
-			homeBody: '',
+			homeTitleChanged: false,
+			homeBodyChanged: false,
+			customCSSChanged: false,
+			onLogoutCustomScriptChanged: false,
+			loggedOutCustomScriptChanged: false,
+			loggedInCustomScriptChanged: false,
 			logoChange: false,
 			customCSS: 0,
 			customScript: 0,
@@ -258,6 +254,43 @@ export default {
 			messageAuditLoad: 0,
 			dashboardCount: 0,
 			joinJitsiButton: 0,
+			totalBroadcastRooms: 0,
+			totalRoomsWithActiveLivestream: 0,
+			totalTriggeredEmails: 0,
+			totalLinkInvitation: 0,
+			roomsInsideTeams: 0,
+			totalEncryptedMessages: 0,
+			totalLinkInvitationUses: 0,
+			totalManuallyAddedUsers: 0,
+			videoConf: {
+				videoConference: {
+					started: 0,
+					ended: 0,
+				},
+				direct: {
+					calling: 0,
+					started: 0,
+					ended: 0,
+				},
+				livechat: {
+					started: 0,
+					ended: 0,
+				},
+				settings: {
+					provider: '',
+					dms: false,
+					channels: false,
+					groups: false,
+					teams: false,
+				},
+			},
+			totalSubscriptionRoles: 0,
+			totalUserRoles: 0,
+			totalWebRTCCalls: 0,
+			uncaughtExceptionsCount: 0,
+			matrixFederation: {
+				enabled: false,
+			},
 		},
 		instances: [],
 	},

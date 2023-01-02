@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -21,6 +21,7 @@ Default.args = {
 		turnOn: true,
 		muteGroupMentions: false,
 		showCounter: true,
+		showMentions: true,
 		desktopAlert: 'default',
 		desktopSound: 'chime',
 		mobileAlert: 'mentions',
@@ -29,6 +30,7 @@ Default.args = {
 	formHandlers: {
 		handleTurnOn: action('formHandlers.handleTurnOn'),
 		handleMuteGroupMentions: action('formHandlers.handleMuteGroupMentions'),
+		handleShowMentions: action('formHandlers.handleShowMentions'),
 		handleShowCounter: action('formHandlers.handleShowCounter'),
 		handleDesktopAlert: action('formHandlers.handleDesktopAlert'),
 		handleDesktopSound: action('formHandlers.handleDesktopSound'),

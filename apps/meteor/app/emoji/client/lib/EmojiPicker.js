@@ -70,8 +70,12 @@ export const EmojiPicker = {
 		const windowHeight = window.innerHeight;
 		const windowWidth = window.innerWidth;
 		const windowBorder = 10;
-		const sourcePos = $(this.source).offset();
-		const { left, top } = sourcePos;
+
+		// get the position of the source element
+		let { left, top } = this.source.getBoundingClientRect();
+		left += window.scrollX;
+		top += window.scrollY;
+
 		const cssProperties = { top, left };
 		const isLargerThanWindow = this.width + windowBorder > windowWidth;
 
@@ -118,10 +122,9 @@ export const EmojiPicker = {
 		this.source.focus();
 	},
 	pickEmoji(emoji) {
-		this.pickCallback(emoji);
-
 		this.close();
 		this.addRecent(emoji);
+		this.pickCallback(emoji);
 	},
 	addRecent(_emoji) {
 		const pos = this.recent.indexOf(_emoji);

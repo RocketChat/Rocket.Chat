@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import limax from 'limax';
+import { EmojiCustom } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
-import { EmojiCustom } from '../../../models/server/raw';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	async insertOrUpdateEmoji(emojiData) {

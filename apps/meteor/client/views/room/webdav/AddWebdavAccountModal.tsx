@@ -1,11 +1,10 @@
 import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, TextInput, PasswordInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import React, { useState, ReactElement } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { Modal, Field, FieldGroup, TextInput, PasswordInput, Button } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 type AddWebdavAccountModalPayload = IWebdavAccountPayload;
 
@@ -32,7 +31,6 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 			await handleAddWebdavAccount(data);
 			return dispatchToastMessage({ type: 'success', message: t('webdav-account-saved') });
 		} catch (error) {
-			console.error(error);
 			return dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			onConfirm();
@@ -78,14 +76,14 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
-					<Button ghost onClick={onClose}>
+				<Modal.FooterControllers>
+					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary type='submit' disabled={isLoading}>
 						{isLoading ? t('Please_wait') : t('Webdav_add_new_account')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

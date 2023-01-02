@@ -1,6 +1,6 @@
 import type { IRole } from '@rocket.chat/core-typings';
+import { Roles, Users, Subscriptions } from '@rocket.chat/models';
 
-import { Roles, Users, Subscriptions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
@@ -24,15 +24,11 @@ addMigration({
 					},
 				};
 
-				const options = {
-					multi: true,
-				};
-
 				if (scope === 'Subscriptions') {
-					return Subscriptions.update(query, update, options);
+					return Subscriptions.updateMany(query, update);
 				}
 
-				return Users.update(query, update, options);
+				return Users.updateMany(query, update);
 			}),
 		);
 
@@ -49,15 +45,11 @@ addMigration({
 					},
 				};
 
-				const options = {
-					multi: true,
-				};
-
 				if (scope === 'Subscriptions') {
-					return Subscriptions.update(query, update, options);
+					return Subscriptions.updateMany(query, update);
 				}
 
-				return Users.update(query, update, options);
+				return Users.updateMany(query, update);
 			}),
 		);
 	},

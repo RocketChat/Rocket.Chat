@@ -4,7 +4,7 @@ import https from 'https';
 import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import '../../ufs/GoogleStorage/server.js';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
@@ -69,6 +69,7 @@ const GoogleCloudStorageUserDataFiles = new FileUploadClass({
 
 const configure = _.debounce(function () {
 	const bucket = settings.get('FileUpload_GoogleStorage_Bucket');
+	const projectId = settings.get('FileUpload_GoogleStorage_ProjectId');
 	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');
 	const secret = settings.get('FileUpload_GoogleStorage_Secret');
 	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan');
@@ -82,6 +83,7 @@ const configure = _.debounce(function () {
 			credentials: {
 				client_email: accessId,
 				private_key: secret,
+				projectId,
 			},
 		},
 		bucket,

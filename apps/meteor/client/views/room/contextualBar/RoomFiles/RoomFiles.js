@@ -1,11 +1,11 @@
 import { Box, Icon, TextInput, Select, Throbber, Margins } from '@rocket.chat/fuselage';
 import { useUniqueId, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import Row from './Row';
 
 function RoomFiles({
@@ -78,7 +78,7 @@ function RoomFiles({
 				)}
 
 				{!loading && filesItems.length <= 0 && (
-					<Box textAlign='center' p='x12' color='neutral-600'>
+					<Box textAlign='center' p='x12' color='annotation'>
 						{t('No_files_found')}
 					</Box>
 				)}

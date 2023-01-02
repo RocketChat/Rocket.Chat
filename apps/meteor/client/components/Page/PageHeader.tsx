@@ -1,30 +1,38 @@
-import { Box } from '@rocket.chat/fuselage';
-import React, { useContext, FC, ReactNode } from 'react';
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Header as TemplateHeader } from '@rocket.chat/ui-client';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC, ComponentProps, ReactNode } from 'react';
+import React, { useContext } from 'react';
 
-import { useLayout } from '../../contexts/LayoutContext';
 import BurgerMenu from '../BurgerMenu';
-import TemplateHeader from '../Header';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
 	title: ReactNode;
-};
+	onClickBack?: () => void;
+	borderBlockEndColor?: string;
+} & Omit<ComponentProps<typeof Box>, 'title'>;
 
-const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props }) => {
+const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
+	const t = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
 
 	return (
-		<Box borderBlockEndWidth='x2' borderBlockEndColor={border ? 'neutral-200' : 'transparent'}>
+		<Box
+			borderBlockEndWidth='default'
+			minHeight='x64'
+			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
+			{...props}
+		>
 			<Box
-				marginBlock='x16'
+				marginBlock='x8'
 				marginInline='x24'
-				minHeight='x40'
 				display='flex'
 				flexDirection='row'
 				flexWrap='nowrap'
 				alignItems='center'
-				color='neutral-800'
+				color='default'
 				{...props}
 			>
 				{isMobile && (
@@ -32,7 +40,8 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props
 						<BurgerMenu />
 					</TemplateHeader.ToolBox>
 				)}
-				<Box is='h2' fontScale='h2' flexGrow={1}>
+				{onClickBack && <IconButton small mie='x8' icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				<Box is='h1' fontScale='h2' flexGrow={1} id='PageHeader-title' data-qa-type='PageHeader-title'>
 					{title}
 				</Box>
 				{children}

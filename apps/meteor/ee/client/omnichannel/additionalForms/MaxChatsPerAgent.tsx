@@ -1,7 +1,7 @@
 import { NumberInput, Field } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
-
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React from 'react';
 
 const MaxChatsPerAgent: FC<{
 	values: { maxNumberSimultaneousChat: number };

@@ -1,5 +1,4 @@
 {
-  "403": "प्रतिबंधित",
   "500": "आंतरिक सर्वर त्रुटि",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is no longer __role__ by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ was set __role__ by __user_by__",
@@ -169,6 +168,7 @@
   "Cancel_message_input": "रद्द करना",
   "CAS_enabled": "सक्रिय",
   "Client_Secret": "क्लाइंट Secret",
+  "Close_menu": "मेनू बंद करें",
   "Custom": "कस्टम",
   "Desktop_Notifications_Default_Alert": "डेस्कटॉप सूचनाएं डिफ़ॉल्ट चेतावनी",
   "Disabled": "उपयोग करने की अनुमति नहीं है",

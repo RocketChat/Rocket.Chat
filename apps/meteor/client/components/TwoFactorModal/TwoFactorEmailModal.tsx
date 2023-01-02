@@ -1,12 +1,12 @@
-import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, useState, ChangeEvent } from 'react';
+import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 
-import { useEndpoint } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
-import { Method, OnConfirm } from './TwoFactorModal';
+import type { OnConfirm } from './TwoFactorModal';
+import { Method } from './TwoFactorModal';
 
 type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
@@ -20,7 +20,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const sendEmailCode = useEndpoint('POST', 'users.2fa.sendEmailCode');
+	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
 
 	const onClickResendCode = async (): Promise<void> => {
 		try {
@@ -50,7 +50,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 			title={t('Two-factor_authentication_email')}
 			onClose={onClose}
 			variant='warning'
-			icon={<Icon size='x20' name='info' color='default' />}
+			icon='info'
 			confirmDisabled={!code}
 		>
 			<Box mbe='x16'>{t('Verify_your_email_for_the_code_we_sent')}</Box>

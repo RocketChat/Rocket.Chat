@@ -1,10 +1,10 @@
-import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
+import { isVoipRoomProps, isVoipRoomsProps, isVoipRoomCloseProps } from '@rocket.chat/rest-typings';
+import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { VoipRoom, LivechatVisitors, Users } from '../../../../models/server/raw';
-import { LivechatVoip } from '../../../../../server/sdk';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 
@@ -24,6 +24,7 @@ const validateDateParams = (property: string, date: DateParam = {}): DateParam =
 const parseAndValidate = (property: string, date?: string): DateParam => {
 	return validateDateParams(property, parseDateParams(date));
 };
+
 /**
  * @openapi
  *  /voip/server/api/v1/voip/room
@@ -80,19 +81,38 @@ const parseAndValidate = (property: string, date?: string): DateParam => {
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 
+const isRoomSearchProps = (props: any): props is { rid: string; token: string } => {
+	return 'rid' in props && 'token' in props;
+};
+
+const isRoomCreationProps = (props: any): props is { agentId: string; direction: IVoipRoom['direction'] } => {
+	return 'agentId' in props && 'direction' in props;
+};
+
 API.v1.addRoute(
 	'voip/room',
-	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 } },
+	{
+		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		permissionsRequired: ['inbound-voip-calls'],
+		validateParams: isVoipRoomProps,
+	},
 	{
 		async get() {
-			const defaultCheckParams = {
-				token: String,
-				agentId: Match.Maybe(String),
-				rid: Match.Maybe(String),
-			};
-			check(this.queryParams, defaultCheckParams);
+			const { token } = this.queryParams;
+			let agentId: string | undefined = undefined;
+			let direction: IVoipRoom['direction'] = 'inbound';
+			let rid: string | undefined = undefined;
 
-			const { token, rid, agentId } = this.queryParams;
+			if (isRoomCreationProps(this.queryParams)) {
+				agentId = this.queryParams.agentId;
+				direction = this.queryParams.direction;
+			}
+
+			if (isRoomSearchProps(this.queryParams)) {
+				rid = this.queryParams.rid;
+			}
+
 			const guest = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!guest) {
 				return API.v1.failure('invalid-token');
@@ -102,6 +122,9 @@ API.v1.addRoute(
 				const room = await VoipRoom.findOneOpenByVisitorToken(token, { projection: API.v1.defaultFieldsToExclude });
 				if (room) {
 					return API.v1.success({ room, newRoom: false });
+				}
+				if (!agentId) {
+					return API.v1.failure('agent-not-found');
 				}
 
 				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
@@ -115,7 +138,11 @@ API.v1.addRoute(
 				const agent = { agentId: _id, username };
 				const rid = Random.id();
 
-				return API.v1.success(await LivechatVoip.getNewRoom(guest, agent, rid, { projection: API.v1.defaultFieldsToExclude }));
+				return API.v1.success(
+					await LivechatVoip.getNewRoom(guest, agent, rid, direction, {
+						projection: API.v1.defaultFieldsToExclude,
+					}),
+				);
 			}
 
 			const room = await VoipRoom.findOneByIdAndVisitorToken(rid, token, { projection: API.v1.defaultFieldsToExclude });
@@ -129,19 +156,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip/rooms',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isVoipRoomsProps },
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
-			const { agents, open, tags, queue, visitorId } = this.requestParams();
-			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
 
-			check(agents, Match.Maybe([String]));
-			check(open, Match.Maybe(String));
-			check(tags, Match.Maybe([String]));
-			check(queue, Match.Maybe(String));
-			check(visitorId, Match.Maybe(String));
+			const { sort, fields } = this.parseJsonQuery();
+			const { agents, open, tags, queue, visitorId, direction, roomName } = this.requestParams();
+			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
 
 			// Reusing same L room permissions for simplicity
 			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
@@ -162,6 +184,8 @@ API.v1.addRoute(
 					visitorId,
 					createdAt,
 					closedAt,
+					direction,
+					roomName,
 					options: { sort, offset, count, fields },
 				}),
 			);
@@ -212,16 +236,10 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'voip/room.close',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isVoipRoomCloseProps, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async post() {
-			check(this.bodyParams, {
-				rid: String,
-				token: String,
-				comment: Match.Maybe(String),
-				tags: Match.Maybe([String]),
-			});
-			const { rid, token, comment, tags } = this.bodyParams;
+			const { rid, token, options } = this.bodyParams;
 
 			const visitor = await LivechatVisitors.getVisitorByToken(token, {});
 			if (!visitor) {
@@ -234,7 +252,7 @@ API.v1.addRoute(
 			if (!room.open) {
 				return API.v1.failure('room-closed');
 			}
-			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, comment, tags);
+			const closeResult = await LivechatVoip.closeRoom(visitor, room, this.user, 'voip-call-wrapup', options);
 			if (!closeResult) {
 				return API.v1.failure();
 			}

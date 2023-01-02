@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Avatars } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
-import { Avatars } from '../../../models/server/raw';
-import { api } from '../../../../server/sdk/api';
 
-export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<unknown> {
+export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	const fileStore = FileUpload.getStore('Avatars');
 
 	const current = await Avatars.findOneByRoomId(rid);
@@ -31,15 +31,16 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		uid: user._id,
 	};
 
+	if (current) {
+		fileStore.deleteById(current._id);
+	}
+
 	fileStore.insert(file, buffer, (err: unknown, result: { etag: string }) => {
 		if (err) {
 			throw err;
 		}
 
 		Meteor.setTimeout(function () {
-			if (current) {
-				fileStore.deleteById(current._id);
-			}
 			Rooms.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
 			api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });

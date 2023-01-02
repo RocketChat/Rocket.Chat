@@ -184,7 +184,7 @@ Meteor.startup(() =>
 		try {
 			const {
 				emojis: { update: emojis },
-			} = await APIClient.v1.get('emoji-custom.list');
+			} = await APIClient.get('/v1/emoji-custom.list');
 
 			emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
 			for (const currentEmoji of emojis) {

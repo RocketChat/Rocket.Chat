@@ -1,5 +1,6 @@
 import { useToggle, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import { RefObject, useCallback } from 'react';
+import type { RefObject } from 'react';
+import { useCallback } from 'react';
 
 /**
  * useDropdownVisibility

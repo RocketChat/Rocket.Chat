@@ -1,6 +1,5 @@
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-
-import { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '../../contexts/ServerContext';
 
 export const call = <M extends ServerMethodName>(method: M, ...params: ServerMethodParameters<M>): Promise<ServerMethodReturn<M>> =>
 	new Promise((resolve, reject) => {

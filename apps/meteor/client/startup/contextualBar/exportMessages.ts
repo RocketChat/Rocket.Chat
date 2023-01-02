@@ -1,6 +1,7 @@
-import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
+import { usePermission } from '@rocket.chat/ui-contexts';
+import type { LazyExoticComponent, FC } from 'react';
+import { useMemo, lazy } from 'react';
 
-import { usePermission } from '../../contexts/AuthorizationContext';
 import { addAction } from '../../views/room/lib/Toolbox';
 
 addAction('export-messages', ({ room }) => {

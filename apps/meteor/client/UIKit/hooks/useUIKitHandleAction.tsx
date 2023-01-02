@@ -3,11 +3,11 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 // import { Banner, Icon } from '@rocket.chat/fuselage';
 // import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
 // import React, { Context, FC, useMemo } from 'react';
-import { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
+import type { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 // import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 
-// import { useEndpoint } from '../../contexts/ServerContext';
+// import { useEndpoint } from '@rocket.chat/ui-contexts';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
 const useUIKitHandleAction = <S extends UiKitPayload>(state: S): ((event: UIKitActionEvent) => Promise<void>) =>

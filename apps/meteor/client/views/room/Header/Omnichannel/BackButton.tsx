@@ -1,9 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement } from 'react';
-
-import Header from '../../../../components/Header';
-import { useCurrentRoute, useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
+import { Header } from '@rocket.chat/ui-client';
+import { useCurrentRoute, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 export const BackButton = ({ routeName }: { routeName?: string }): ReactElement => {
 	const t = useTranslation();
@@ -21,5 +20,5 @@ export const BackButton = ({ routeName }: { routeName?: string }): ReactElement 
 		}
 	});
 
-	return <Header.ToolBoxAction title={t('Back')} icon='back' onClick={back} />;
+	return <Header.ToolBox.Action title={t('Back')} icon='back' onClick={back} />;
 };

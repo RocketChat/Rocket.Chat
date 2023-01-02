@@ -1,24 +1,25 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useSetModal,
+	useToastMessageDispatch,
+	useRoute,
+	useUserId,
+	useSetting,
+	usePermission,
+	useMethod,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
-import MarkdownText from '../../../../components/MarkdownText';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
+import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
-import LeaveTeamModal from './Leave';
+import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 
 const retentionPolicyMaxAge = {
@@ -39,10 +40,6 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const t = useTranslation();
 	const userId = useUserId();
 
-	room.type = room.t;
-	room.rid = room._id;
-	const { /* type, fname, */ broadcast, archived /* , joined = true */ } = room; // TODO implement joined
-
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
 		retentionPolicyEnabled,
@@ -58,9 +55,9 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointActionExperimental('POST', 'teams.delete');
-	const leaveTeam = useEndpointActionExperimental('POST', 'teams.leave');
-	const convertTeamToChannel = useEndpointActionExperimental('POST', 'teams.convertToChannel');
+	const deleteTeam = useEndpointActionExperimental('POST', '/v1/teams.delete');
+	const leaveTeam = useEndpointActionExperimental('POST', '/v1/teams.leave');
+	const convertTeamToChannel = useEndpointActionExperimental('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 
@@ -91,6 +88,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
+			roomsLeft = Object.keys(roomsLeft);
 			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : [];
 
 			try {
@@ -107,7 +105,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			}
 		};
 
-		setModal(<LeaveTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
+		setModal(<LeaveTeam onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
 	});
 
 	const handleHide = useMutableCallback(async () => {
@@ -171,10 +169,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	return (
 		<TeamsInfo
-			{...room}
-			archived={archived}
-			broadcast={broadcast}
-			icon={'team'}
+			room={room}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
 			onClickClose={onClickClose}
@@ -183,9 +178,6 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
 			onClickConvertToChannel={canEdit && onClickConvertToChannel}
-			announcement={room.announcement && <MarkdownText variant='inline' content={room.announcement} />}
-			description={room.description && <MarkdownText variant='inline' content={room.description} />}
-			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
 		/>
 	);
 };
