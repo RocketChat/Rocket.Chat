@@ -44,7 +44,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 				<AttachmentDetails
 					is='blockquote'
 					borderRadius='x2'
-					borderWidth='x2'
+					borderWidth='default'
 					borderStyle='solid'
 					borderColor='extra-light'
 					borderInlineStartColor='light'

@@ -70,7 +70,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 				&:focus {
 					background: ${Palette.surface['surface-hover']};
 				}
-				border-bottom: 2px solid ${Palette.stroke['stroke-extra-light']} !important;
+				border-bottom: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
 			`}
 			tabIndex={0}
 			_id={thread._id}
