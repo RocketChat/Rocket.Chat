@@ -1,5 +1,4 @@
 {
-  "403": "Larangan",
   "500": "Ralat Pelayan Dalaman",
   "__username__was_set__role__by__user_by_": null,
   "@username": "@pengguna",
@@ -2042,6 +2041,7 @@
   "Reactions": "reaksi",
   "Read_by": "Baca oleh",
   "Read_only": "Baca sahaja",
+  "This_room_is_read_only": "Bilik ini dibaca sahaja",
   "Read_only_changed_successfully": "Baca sahaja berjaya berubah",
   "Read_only_channel": "Baca Saluran Sahaja",
   "Read_only_group": "Baca Hanya Kumpulan",
@@ -2804,6 +2804,7 @@
   "registration.page.login.forgot": "Lupa kata laluan anda",
   "registration.page.resetPassword.sent": "Jika e-mel ini didaftarkan, kami akan menghantar arahan mengenai cara untuk menetapkan semula kata laluan anda. Jika anda tidak menerima e-mel tidak lama lagi, sila kembali dan cuba lagi.",
   "registration.component.login": "Log masuk",
+  "registration.component.login.userNotFound": "Pengguna tidak dijumpai",
   "registration.component.resetPassword": "Menetapkan semula kata laluan",
   "registration.component.form.emailOrUsername": "E-mel atau nama pengguna",
   "registration.component.form.email": "e-mel",

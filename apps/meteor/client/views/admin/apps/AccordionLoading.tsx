@@ -1,5 +1,6 @@
 import { Box, Skeleton, Margins } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 const AccordionLoading: FC = () => (
 	<Box w='full' alignSelf='center'>

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { EmojiCustom } from '@rocket.chat/models';
+import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findEmojisCustom } from '../lib/emoji-custom';
-import { Media } from '../../../../server/sdk';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 

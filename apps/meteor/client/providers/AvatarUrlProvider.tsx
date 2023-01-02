@@ -1,5 +1,6 @@
 import { AvatarUrlContext, useSetting } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { getURL } from '../../app/utils/lib/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';

@@ -1,4 +1,4 @@
-import { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { useCallback } from 'react';
 

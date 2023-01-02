@@ -1,5 +1,4 @@
 {
-  "403": "Забаронена",
   "500": "Унутраная памылка сервера",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ более не __role__ па рашэнні __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ быў усталяваны __role__ па рашэнні __user_by__",
@@ -2052,6 +2051,7 @@
   "Reactions": "рэакцыі",
   "Read_by": "чытаюць",
   "Read_only": "толькі для чытання",
+  "This_room_is_read_only": "Нумар прызначаны толькі для чытання",
   "Read_only_changed_successfully": "Толькі для чытання паспяхова зменены",
   "Read_only_channel": "Толькі для чытання канала",
   "Read_only_group": "Толькі чытанне Групы",
@@ -2817,6 +2817,7 @@
   "registration.page.login.forgot": "Забыліся свой пароль",
   "registration.page.resetPassword.sent": "Калі гэты ліст зарэгістравана, мы адправім інструкцыі па аднаўленні пароля. Калі вы не атрымаеце па электроннай пошце ў бліжэйшы час, калі ласка, вярніцеся і паспрабуйце ізноў.",
   "registration.component.login": "Увайсці",
+  "registration.component.login.userNotFound": "Карыстальнік не знойдзены",
   "registration.component.resetPassword": "Скід пароля",
   "registration.component.form.emailOrUsername": "Email або імя карыстальніка",
   "registration.component.form.email": "E-mail",

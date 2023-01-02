@@ -1,5 +1,4 @@
 {
-  "403": "Terlarang",
   "500": "Kesalahan server dari dalam",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ tidak lagi __role__ oleh __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ditetapkan __role__ oleh __user_by__",
@@ -2043,6 +2042,7 @@
   "Reactions": "reaksi",
   "Read_by": "Dibaca oleh",
   "Read_only": "Baca saja",
+  "This_room_is_read_only": "Ruangan ini hanya bisa dibaca",
   "Read_only_changed_successfully": "Baca hanya berhasil diubah",
   "Read_only_channel": "Baca Hanya Saluran",
   "Read_only_group": "Baca Hanya Grup",
@@ -2808,6 +2808,7 @@
   "registration.page.login.forgot": "Lupa kata sandi anda",
   "registration.page.resetPassword.sent": "Jika email ini terdaftar, kami akan mengirimkan instruksi tentang cara mereset kata sandi Anda. Jika Anda tidak segera menerima email, kembalilah dan coba lagi.",
   "registration.component.login": "Login",
+  "registration.component.login.userNotFound": "Pengguna tidak ditemukan",
   "registration.component.resetPassword": "Ubah kata sandi",
   "registration.component.form.emailOrUsername": "Email atau username",
   "registration.component.form.email": "E-mail",

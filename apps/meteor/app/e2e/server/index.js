@@ -1,5 +1,6 @@
+import { api } from '@rocket.chat/core-services';
+
 import { callbacks } from '../../../lib/callbacks';
-import { api } from '../../../server/sdk/api';
 
 import './settings';
 import './beforeCreateRoom';

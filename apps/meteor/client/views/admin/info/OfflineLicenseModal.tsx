@@ -1,7 +1,8 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
+import type { ComponentProps, FormEvent, ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import { queryClient } from '../../../lib/queryClient';
 

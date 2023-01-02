@@ -1,5 +1,4 @@
 {
-  "403": "ممنوع",
   "500": "خطای داخلی سرور",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ دیگر توسط __user_by__ __role__ نمی شود",
   "__username__was_set__role__by__user_by_": "__username__ توسط __user_by__ به عنوان __role__ تعیین شد",
@@ -2342,6 +2341,7 @@
   "Reactions": "واکنش",
   "Read_by": "خوانده شده توسط",
   "Read_only": "فقط خواندنی",
+  "This_room_is_read_only": "این اتاق فقط خواندنی است",
   "Read_only_changed_successfully": "فقط خواندنی با موفقیت تغییر کرد",
   "Read_only_channel": "کانال فقط خواندنی",
   "Read_only_group": "فقط گروه را بخوان",
@@ -3143,6 +3143,7 @@
   "registration.page.login.forgot": "فراموشی رمز عبور",
   "registration.page.resetPassword.sent": "اگر این ایمیل ثبت شده باشد، دستورالعمل هایی در مورد نحوه بازنشانی گذرواژه شما ارسال خواهیم کرد. اگر مدت کوتاهی ایمیل دریافت نکنید، لطفا بیایید و دوباره امتحان کنید.",
   "registration.component.login": "ورود",
+  "registration.component.login.userNotFound": "کاربر یافت نشد",
   "registration.component.resetPassword": "تنظیم مجدد رمز عبور",
   "registration.component.form.emailOrUsername": "ایمیل یا نام کاربری",
   "registration.component.form.email": "ایمیل",

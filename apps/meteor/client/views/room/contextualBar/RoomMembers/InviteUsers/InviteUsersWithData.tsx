@@ -1,7 +1,8 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';

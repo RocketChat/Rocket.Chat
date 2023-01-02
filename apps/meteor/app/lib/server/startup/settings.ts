@@ -884,6 +884,11 @@ settingsRegistry.addGroup('General', function () {
 		type: 'boolean',
 	});
 
+	this.add('Extra_CSP_Domains', '', {
+		type: 'string',
+		multiline: true,
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
@@ -1258,6 +1263,9 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
+	/**
+	 * @deprecated
+	 */
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		public: true,

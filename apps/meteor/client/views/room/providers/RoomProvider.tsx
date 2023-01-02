@@ -1,6 +1,7 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
+import type { ReactNode, ContextType, ReactElement } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client';
@@ -88,7 +89,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 		UserAction.addStream(rid);
 		return (): void => {
-			UserAction.cancel(rid);
+			try {
+				UserAction.cancel(rid);
+			} catch (error) {
+				// Do nothing
+			}
 		};
 	}, [rid, subscriptionQuery.data]);
 

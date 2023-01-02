@@ -1,4 +1,4 @@
-import type Url from 'url';
+import type { UrlWithStringQuery } from 'url';
 
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
@@ -19,7 +19,7 @@ type MessageUrl = {
 	meta: Record<string, string>;
 	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 	ignoreParse?: boolean;
-	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
+	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
 type VoipMessageTypesValues =
@@ -48,13 +48,12 @@ type LivechatMessageTypes =
 	| 'livechat_transfer_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
-	| 'livechat_webrtc_video_call';
-
-type OmnichannelTypesValues =
 	| 'livechat_transfer_history_fallback'
 	| 'livechat-close'
-	| 'omnichannel_placed_chat_on_hold'
-	| 'omnichannel_on_hold_chat_resumed';
+	| 'livechat_webrtc_video_call'
+	| 'livechat-started';
+
+type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_on_hold_chat_resumed';
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
@@ -329,5 +328,10 @@ export type IOTRMessage = IMessage & {
 	t: 'otr' | 'otr-ack';
 };
 
+export type IVideoConfMessage = IMessage & {
+	t: 'videoconf';
+};
+
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
+export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';

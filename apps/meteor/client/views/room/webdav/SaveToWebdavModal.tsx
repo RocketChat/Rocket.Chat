@@ -1,8 +1,10 @@
-import { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
-import { Modal, Box, Button, FieldGroup, Field, Select, SelectOption, Throbber } from '@rocket.chat/fuselage';
+import type { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Box, Button, FieldGroup, Field, Select, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo, useEffect, useRef } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEndpointData } from '../../../hooks/useEndpointData';
