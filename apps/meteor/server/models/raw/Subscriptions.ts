@@ -259,14 +259,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	/**
-	 * @param {IUser['_id']} userId
+	 * @param {IRoom['_id']} roomId
 	 * @param {IRole['_id'][]} roles
 	 * @param {any} options
 	 */
-	findByUserIdAndRoles(userId: string, roles: IRole['_id'][], options: FindOptions<ISubscription>): FindCursor<ISubscription> {
+	findByRoomIdAndRoles(roomId: string, roles: IRole['_id'][], options: FindOptions<ISubscription>): FindCursor<ISubscription> {
 		const query = {
-			'u._id': userId,
-			'roles': { $in: roles },
+			rid: roomId,
+			roles: { $in: [...roles] },
 		};
 
 		return this.find(query, options);
