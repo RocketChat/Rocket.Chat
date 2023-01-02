@@ -130,6 +130,14 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
 	}
 
+	get btnSendTranscriptToEmail(): Locator {
+		return this.page.locator('li.rcx-option', { hasText: 'Send via email' });
+	}
+
+	get btnSendTranscriptAsPDF(): Locator {
+		return this.page.locator('li.rcx-option', { hasText: 'Export as PDF' });
+	}
+
 	get btnCannedResponses(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
 	}

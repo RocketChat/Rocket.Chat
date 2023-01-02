@@ -4324,6 +4324,8 @@
   "Send_Test_Email": "Send test email",
   "Send_via_email": "Send via email",
   "Send_via_Email_as_attachment": "Send via Email as attachment",
+	"Export_as_PDF": "Export as PDF",
+	"Export_enabled_at_the_end_of_the_conversation": "Export enabled at the end of the conversation",
   "Send_Visitor_navigation_history_as_a_message": "Send Visitor Navigation History as a Message",
   "Send_visitor_navigation_history_on_request": "Send Visitor Navigation History on Request",
   "Send_welcome_email": "Send welcome email",
