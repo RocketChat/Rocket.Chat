@@ -3,8 +3,7 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { SettingValue } from '@rocket.chat/core-typings';
-
-import type { AppsPersistenceModel } from '../../../app/models/server';
+import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
 export interface IAppsService {
 	triggerEvent: (event: string, ...payload: any) => Promise<any>;
@@ -15,7 +14,7 @@ export interface IAppsService {
 	isLoaded: () => boolean;
 	isEnabled: () => SettingValue;
 	isInitialized: () => boolean;
-	getPersistenceModel: () => AppsPersistenceModel;
+	getPersistenceModel: () => IAppsPersistenceModel;
 	getMarketplaceUrl: () => string;
 	getProvidedComponents: () => IExternalComponent[];
 	rocketChatLoggerWarn<T>(obj: T, args: any[]): void;

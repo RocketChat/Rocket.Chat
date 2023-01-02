@@ -58,6 +58,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
+	findByUserIdAndRoles(userId: string, roles: IRole['_id'][], options: FindOptions<ISubscription>): FindCursor<ISubscription>;
+
 	findByRoomIdWhenUserIdExists(roomId: IRoom['_id'], options: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	findByRoomIdWhenUsernameExists(roomId: IRoom['_id'], options: FindOptions<ISubscription>): FindCursor<ISubscription>;
