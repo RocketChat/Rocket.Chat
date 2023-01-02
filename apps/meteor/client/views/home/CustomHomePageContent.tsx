@@ -11,7 +11,13 @@ const CustomHomePageContent = (): ReactElement | null => {
 	const { data } = useIsEnterprise();
 	const isAdmin = usePermission('view-user-administration');
 	const [isCustomContentVisible, setIsContentVisibile] = useState(useSetting('Layout_Home_Custom_Block_Visible'));
+	const isCustomContentOnly = useSetting('Layout_Custom_Body_Only');
 	const customContentVisible = useEndpoint('POST', '/v1/settings/Layout_Home_Custom_Block_Visible') as unknown as ({
+		value,
+	}: {
+		value: boolean;
+	}) => void;
+	const customContentOnly = useEndpoint('POST', '/v1/settings/Layout_Custom_Body_Only') as unknown as ({
 		value,
 	}: {
 		value: boolean;
@@ -21,6 +27,14 @@ const CustomHomePageContent = (): ReactElement | null => {
 		try {
 			setIsContentVisibile(!isCustomContentVisible);
 			await customContentVisible({ value: Boolean(!isCustomContentVisible) });
+		} catch (error: unknown) {
+			console.error(error);
+		}
+	};
+
+	const handleOnlyShowCustomContent = async () => {
+		try {
+			await customContentOnly({ value: Boolean(!isCustomContentOnly) });
 		} catch (error: unknown) {
 			console.error(error);
 		}
@@ -52,7 +66,11 @@ const CustomHomePageContent = (): ReactElement | null => {
 							<Icon name='eye-off' size='x16' />
 							Show to workspace
 						</Button>
-						<Button disabled={!isEnterprise} title='It will hide all other white blocks in the homepage (Enterprise only)'>
+						<Button
+							disabled={!isEnterprise}
+							title='It will hide all other white blocks in the homepage (Enterprise only)'
+							onClick={handleOnlyShowCustomContent}
+						>
 							<Icon name='lightning' size='x16' /> Show only this content
 						</Button>
 					</Card.Footer>
