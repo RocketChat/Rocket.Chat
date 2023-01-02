@@ -57,7 +57,7 @@
 
 		padding: 6px 0;
 
-		border-width: 0 0 2px;
+		border-width: 0 0 1px;
 		border-style: solid;
 		flex-grow: 1;
 		justify-content: center;
@@ -204,9 +204,7 @@
 
 			opacity: 0;
 			border-radius: 4px;
-			box-shadow:
-				0 1px 1px 0 rgba(0, 0, 0, 0.2),
-				0 2px 10px 0 rgba(0, 0, 0, 0.16);
+			box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 
 			&.show {
 				display: block;
