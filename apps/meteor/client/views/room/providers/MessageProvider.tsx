@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactNode, MouseEvent, UIEvent } from 'react';
+import type { MouseEvent, ReactNode, UIEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
@@ -36,8 +36,8 @@ const MessageProvider = memo(function MessageProvider({
 	const dateAndTime = useFormatDateAndTime();
 	const context = useMemo(() => {
 		const openThread =
-			(tmid: string, jump?: string): ((e: MouseEvent) => void) =>
-			(e: MouseEvent): void => {
+			(tmid: string, jump?: string): ((e: UIEvent) => void) =>
+			(e: UIEvent): void => {
 				e.stopPropagation();
 
 				router.replace(
