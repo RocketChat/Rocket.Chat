@@ -14,6 +14,9 @@ import {
 	getLivechatRoomInfo,
 } from '../../../data/livechat/rooms';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { IS_EE } from '../../../e2e/config/constants';
+import { createUser } from '../../../data/users.helper';
+import { createMonitor, createUnit } from '../../../data/livechat/units';
 
 describe('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
@@ -213,6 +216,33 @@ describe('LIVECHAT - Departments', function () {
 
 			const latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom.departmentId).to.be.undefined;
+		});
+
+		(IS_EE ? it : it.skip)('it should remove the department and disassociate the rooms from it which have its units', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+			const newVisitor = await createVisitor(department._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const monitor = await createUser();
+			await createMonitor(monitor.username);
+			const unit = await createUnit(monitor._id, monitor.username, department._id);
+
+			// except the room to have the unit
+			let latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom.departmentId).to.be.equal(department._id);
+			expect(latestRoom.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(resp.body).to.have.property('success', true);
+
+			latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom.departmentId).to.be.undefined;
+			expect(latestRoom.departmentAncestors).to.be.an('array').that.does.not.include(unit._id);
 		});
 	});
 
