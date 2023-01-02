@@ -44,3 +44,10 @@ if (process.env.NODE_ENV !== 'development') {
 		return send.call(this, { stream, ...options });
 	};
 }
+
+// Just print to logs if in TEST_MODE due to a bug in Meteor 2.5: TypeError: Cannot read property '_syncSendMail' of null
+if (process.env.TEST_MODE === 'true') {
+	Email.send = function _send(options) {
+		console.log('Email.send', options);
+	};
+}
