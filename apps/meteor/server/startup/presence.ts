@@ -1,8 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-
-import { Presence } from '../sdk';
+import { Presence } from '@rocket.chat/core-services';
 
 Meteor.startup(function () {
 	const nodeId = InstanceStatus.id();
