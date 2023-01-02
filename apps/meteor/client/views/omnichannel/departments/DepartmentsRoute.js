@@ -7,6 +7,7 @@ import GenericTable from '../../../components/GenericTable';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
+import EditDepartment from './EditDepartment';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import RemoveDepartmentButton from './RemoveDepartmentButton';
 
@@ -131,8 +132,12 @@ function DepartmentsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	if (context === 'edit' || context === 'new') {
-		return <EditDepartmentWithData reload={reload} id={id} title={context === 'edit' ? t('Edit_Department') : t('New_Department')} />;
+	if (context === 'new') {
+		return <EditDepartment id={id} data={{ agents: [] }} reload={reload} title={t('New_Department')} />;
+	}
+
+	if (context === 'edit') {
+		return <EditDepartmentWithData reload={reload} id={id} title={t('Edit_Department')} />;
 	}
 
 	return (
