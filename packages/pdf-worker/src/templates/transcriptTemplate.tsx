@@ -42,6 +42,7 @@ Font.register({
 const styles = StyleSheet.create({
 	page: {
 		fontFamily: 'Inter',
+		lineHeight: 1.25,
 	},
 	messagesContainer: {
 		backgroundColor: '#fff',
