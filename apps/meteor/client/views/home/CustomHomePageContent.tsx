@@ -10,7 +10,7 @@ const CustomHomePageContent = (): ReactElement | null => {
 	const body = String(useSetting('Layout_Home_Body'));
 	const { data } = useIsEnterprise();
 	const isAdmin = usePermission('view-user-administration');
-	const [isCustomContentVisible, setIsContentVisibile] = useState(useSetting('Layout_Home_Custom_Block_Visible'));
+	const [isCustomContentVisible, setIsCustomContentVisible] = useState(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = useSetting('Layout_Custom_Body_Only');
 	const customContentVisible = useEndpoint('POST', '/v1/settings/Layout_Home_Custom_Block_Visible') as unknown as ({
 		value,
@@ -25,7 +25,7 @@ const CustomHomePageContent = (): ReactElement | null => {
 
 	const handleChangeCustomContentVisibility = async () => {
 		try {
-			setIsContentVisibile(!isCustomContentVisible);
+			setIsCustomContentVisible(!isCustomContentVisible);
 			await customContentVisible({ value: Boolean(!isCustomContentVisible) });
 		} catch (error: unknown) {
 			console.error(error);
