@@ -8,6 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';
 import VerticalBar from '../../../../../components/VerticalBar';
+import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../components/body/DropTargetOverlay';
 import ComposerContainer from '../../../components/body/composer/ComposerContainer';
 import { useFileUploadDropTarget } from '../../../components/body/useFileUploadDropTarget';
@@ -15,6 +16,7 @@ import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import LegacyThreadMessageList from './LegacyThreadMessageList';
+import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
@@ -109,12 +111,13 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps): ReactElement => {
 		<VerticalBar.Content flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DropTargetOverlay {...fileUploadOverlayProps} />
 			<section className='contextual-bar__content flex-tab threads'>
-				{useLegacyMessageTemplate ? (
-					<LegacyThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
-				) : (
-					// TODO: create new thread message list
-					<LegacyThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
-				)}
+				<MessageListErrorBoundary>
+					{useLegacyMessageTemplate ? (
+						<LegacyThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
+					) : (
+						<ThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
+					)}
+				</MessageListErrorBoundary>
 
 				<ComposerContainer
 					rid={mainMessage.rid}
