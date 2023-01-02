@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
-import type { IAppsListenerService } from '../../sdk/types/IAppsListenerService';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
+import type { IAppsListenerService } from '../../../server/sdk/types/IAppsListenerService';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 

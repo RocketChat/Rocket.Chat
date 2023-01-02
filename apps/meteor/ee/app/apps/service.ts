@@ -6,9 +6,9 @@ import type { Db } from 'mongodb';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
-import type { IAppsService } from '../../sdk/types/IAppsService';
+import type { IAppsService } from '../../../server/sdk/types/IAppsService';
 import { settings } from '../../../app/settings/server';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 

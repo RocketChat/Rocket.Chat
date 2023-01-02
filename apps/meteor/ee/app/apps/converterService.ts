@@ -1,7 +1,7 @@
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
-import type { IAppsConverterService } from '../../sdk/types/IAppsConverterService';
+import type { IAppsConverterService } from '../../../server/sdk/types/IAppsConverterService';
 
 export class AppsConverterService extends ServiceClass implements IAppsConverterService {
 	protected name = 'apps';
