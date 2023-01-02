@@ -14,13 +14,12 @@ import ListItem from '../Sidebar/ListItem';
 type AdministrationModelListProps = {
 	accountBoxItems: AccountBoxItem[];
 	showWorkspace: boolean;
-	showAdmin: boolean;
-	closeList: () => void;
+	onDismiss: () => void;
 };
 
 const INFO_PERMISSIONS = ['view-statistics'];
 
-const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showWorkspace, showAdmin, closeList }) => {
+const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showWorkspace, onDismiss }) => {
 	const t = useTranslation();
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
@@ -36,39 +35,35 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 		<>
 			<OptionTitle>{t('Administration')}</OptionTitle>
 			<ul>
-				{showAdmin && (
-					<>
-						{showUpgradeItem && (
-							<ListItem
-								icon='arrow-stack-up'
-								text={
-									<>
-										{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
-									</>
-								}
-								action={(): void => {
-									upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
-									closeList();
-								}}
-							/>
-						)}
-						{showWorkspace && (
-							<ListItem
-								icon='cog'
-								text={t('Workspace')}
-								action={(): void => {
-									if (hasInfoPermission) {
-										infoRoute.push();
-										closeList();
-										return;
-									}
+				{showUpgradeItem && (
+					<ListItem
+						icon='arrow-stack-up'
+						text={
+							<>
+								{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
+							</>
+						}
+						action={(): void => {
+							upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
+							onDismiss();
+						}}
+					/>
+				)}
+				{showWorkspace && (
+					<ListItem
+						icon='cog'
+						text={t('Workspace')}
+						action={(): void => {
+							if (hasInfoPermission) {
+								infoRoute.push();
+								onDismiss();
+								return;
+							}
 
-									adminRoute.push({ context: '/' });
-									closeList();
-								}}
-							/>
-						)}
-					</>
+							adminRoute.push({ context: '/' });
+							onDismiss();
+						}}
+					/>
 				)}
 				{accountBoxItems.length > 0 && (
 					<>
@@ -77,7 +72,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 								if (item.href) {
 									FlowRouter.go(item.href);
 								}
-								closeList();
+								onDismiss();
 							};
 
 							return <ListItem text={t(item.name)} icon={item.icon} action={action} key={item.name + key} />;
