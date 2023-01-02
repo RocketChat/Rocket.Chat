@@ -133,7 +133,7 @@ function DepartmentsRoute() {
 	}
 
 	if (context === 'new') {
-		return <EditDepartment id={id} data={{ agents: [] }} reload={reload} title={t('New_Department')} />;
+		return <EditDepartment id={id} reload={reload} title={t('New_Department')} />;
 	}
 
 	if (context === 'edit') {
