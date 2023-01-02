@@ -107,7 +107,7 @@ type ChainedCallbackSignatures = {
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
 	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
-	'livechat.afterRemoveDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => {
+	'livechat.afterRemoveDepartment': (params: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
 		departmentId: ILivechatDepartmentRecord['_id'];
 		agentsId: ILivechatAgent['_id'][];
 	};

@@ -9,7 +9,7 @@ class DepartmentHelperClass {
 	async removeDepartment(departmentId: string) {
 		this.logger.debug(`Removing department: ${departmentId}`);
 
-		const department = await LivechatDepartment.findOneById(departmentId, { projection: { _id: 1 } });
+		const department = await LivechatDepartment.findOneById(departmentId);
 		if (!department) {
 			this.logger.debug(`Department not found: ${departmentId}`);
 			throw new Error('error-department-not-found');
@@ -24,7 +24,9 @@ class DepartmentHelperClass {
 		}
 		this.logger.debug(`Department record removed: ${_id}`);
 
-		const agentsIds = LivechatDepartmentAgents.findAgentsByDepartmentId(department._id).cursor.map((agent) => agent.agentId);
+		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId(department._id)
+			.cursor.map((agent) => agent.agentId)
+			.toArray();
 
 		this.logger.debug(
 			`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
