@@ -35,7 +35,7 @@ const AdministrationList: FC<AdministrationListProps> = ({
 
 	const list = [
 		showAdmin && <AdministrationModelList showWorkspace={showWorkspace} accountBoxItems={adminBoxItems} onDismiss={onDismiss} />,
-		showManageApps && <AppsModelList appBoxItems={appBoxItems} onDismiss={onDismiss} />,
+		showManageApps && <AppsModelList appBoxItems={appBoxItems} appsManagementAllowed={hasManageApps} onDismiss={onDismiss} />,
 		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} onDismiss={onDismiss} />,
 	];
 

@@ -9,10 +9,11 @@ import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
+	appsManagementAllowed: boolean;
 	onDismiss: () => void;
 };
 
-const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('admin-marketplace');
 	const page = 'list';
@@ -21,22 +22,26 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
-				<ListItem
-					icon='store'
-					text={t('Marketplace')}
-					action={(): void => {
-						marketplaceRoute.push({ context: 'all', page });
-						onDismiss();
-					}}
-				/>
-				<ListItem
-					icon='cube'
-					text={t('Installed')}
-					action={(): void => {
-						marketplaceRoute.push({ context: 'installed', page });
-						onDismiss();
-					}}
-				/>
+				{appsManagementAllowed && (
+					<>
+						<ListItem
+							icon='store'
+							text={t('Marketplace')}
+							action={(): void => {
+								marketplaceRoute.push({ context: 'all', page });
+								onDismiss();
+							}}
+						/>
+						<ListItem
+							icon='cube'
+							text={t('Installed')}
+							action={(): void => {
+								marketplaceRoute.push({ context: 'installed', page });
+								onDismiss();
+							}}
+						/>
+					</>
+				)}
 				{appBoxItems.length > 0 && (
 					<>
 						{appBoxItems.map((item, key) => {
