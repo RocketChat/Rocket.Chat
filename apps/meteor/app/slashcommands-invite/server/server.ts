@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { Subscriptions } from '../../models/server';
-import { api } from '../../../server/sdk/api';
 
 /*
  * Invite is a named function that will replace /invite commands

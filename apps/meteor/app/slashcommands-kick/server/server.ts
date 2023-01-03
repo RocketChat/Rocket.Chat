@@ -1,11 +1,11 @@
 // Kick is a named function that will replace /kick commands
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 
 slashCommands.add({
 	command: 'kick',
