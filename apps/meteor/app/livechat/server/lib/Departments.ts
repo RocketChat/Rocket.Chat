@@ -35,7 +35,7 @@ class DepartmentHelperClass {
 		const promiseResponses = await Promise.allSettled([
 			LivechatDepartmentAgents.removeByDepartmentId(_id),
 			LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
-			LivechatRooms.bulkRemoveDepartmentFromRooms(_id),
+			LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
 		]);
 		promiseResponses.forEach((response, index) => {
 			if (response.status === 'rejected') {

@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document } from 'mongodb';
+import type { FindCursor, UpdateResult } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -20,27 +20,10 @@ declare module '@rocket.chat/model-typings' {
 		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetPriorityByIdFromAllOpenRooms(priorityId: string): Promise<void>;
 		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
-		bulkRemoveUnitAssociationFromRooms(unit: string): Promise<Document | UpdateResult>;
 	}
 }
 
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
-	async bulkRemoveUnitAssociationFromRooms(unit: string): Promise<Document | UpdateResult> {
-		const query = {
-			departmentAncestors: unit,
-		};
-
-		const update = {
-			$pull: {
-				departmentAncestors: unit,
-			},
-		};
-
-		queriesLogger.debug('bulkRemoveUnitAssociationFromRooms', { query, update });
-
-		return this.updateMany(query, update);
-	}
-
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		return this.updateMany(
 			{
