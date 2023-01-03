@@ -1,11 +1,13 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import createLess from 'less/browser';
+import createLess from 'less/lib/less-browser';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../app/settings/client';
 
-const variables = new Map();
+const less = createLess(window, {});
+
+const variables = new Map<string, string>();
 const lessExpressions = new Map([
 	['default-action-color', 'darken(@secondary-background-color, 15%)'],
 	['default-action-contrast', 'contrast(@default-action-color, #444444)'],
@@ -28,8 +30,6 @@ const lessExpressions = new Map([
 	['transparent-lighter', 'rgba(255, 255, 255, 0.3)'],
 	['transparent-lightest', 'rgba(255, 255, 255, 0.6)'],
 ]);
-
-const less = createLess(window, {});
 
 const compileLess = async (): Promise<string> => {
 	if (lessExpressions.size === 0) {
