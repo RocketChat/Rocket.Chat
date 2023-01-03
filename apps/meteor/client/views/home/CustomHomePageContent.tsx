@@ -50,7 +50,7 @@ const CustomHomePageContent = (): ReactElement | null => {
 				<Card.Title>
 					<Tag>
 						<Icon mie='x4' name={!isCustomContentVisible ? 'eye-off' : 'eye'} size='x12' />
-						{!isCustomContentVisible ? 'Not visible to workspace' : 'Visible to workspace'}
+						{!isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
 				<Card.Body>
@@ -58,22 +58,22 @@ const CustomHomePageContent = (): ReactElement | null => {
 				</Card.Body>
 				<Card.FooterWrapper>
 					<Card.Footer>
-						<Button is='a' href='/admin/settings/Layout' title='Layout / Home page content'>
-							Customize content
+						<Button is='a' href='/admin/settings/Layout' title={t('Layout_Home_Page_Content')}>
+							{t('Customize_Content')}
 						</Button>
 						<Button
-							title={!isCustomContentVisible ? `Now it's available only for admins` : `Now it's available for everyone`}
+							title={!isCustomContentVisible ? t('Now_Its_Available_Only_For_Admins') : t('Now_Its_Available_For_Everyone')}
 							onClick={handleChangeCustomContentVisibility}
 						>
 							<Icon name='eye-off' size='x16' />
-							Show to workspace
+							{t('Show_To_Workspace')}
 						</Button>
 						<Button
-							disabled={!isEnterprise}
-							title='It will hide all other white blocks in the homepage (Enterprise only)'
+							disabled={Boolean(!isCustomContentVisible) || !isEnterprise}
+							title={t('It_Will_Hide_All_Other_White_Blockes_In_The_Homepage')}
 							onClick={handleOnlyShowCustomContent}
 						>
-							<Icon name='lightning' size='x16' /> Show only this content
+							<Icon name='lightning' size='x16' /> {t('Show_Only_This_Content')}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>
