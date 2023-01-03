@@ -80,8 +80,8 @@ const MessageProvider = memo(function MessageProvider({
 			  };
 		return {
 			oembedEnabled,
-			oembedMaxWidth: isMobile ? ('100%' as const) : ('368px' as `${number}px`),
-			oembedMaxHeight: '368px' as `${number}px`,
+			oembedMaxWidth: isMobile ? ('100%' as const) : 368,
+			oembedMaxHeight: 368,
 			broadcast: Boolean(broadcast),
 			actions: {
 				runActionLink,
