@@ -225,7 +225,7 @@ describe('LIVECHAT - Departments', function () {
 
 			const monitor = await createUser();
 			await createMonitor(monitor.username);
-			const unit = await createUnit(monitor._id, monitor.username, department._id);
+			const unit = await createUnit(monitor._id, monitor.username, [department._id]);
 
 			// except the room to have the unit
 			let latestRoom = await getLivechatRoomInfo(newRoom._id);
@@ -242,8 +242,49 @@ describe('LIVECHAT - Departments', function () {
 
 			latestRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(latestRoom.departmentId).to.be.undefined;
-			expect(latestRoom.departmentAncestors).to.be.an('array').that.does.not.include(unit._id);
+			expect(latestRoom.departmentAncestors).to.be.undefined;
 		});
+
+		(IS_EE ? it : it.skip)(
+			'contd from above test case: if a unit has more than 1 dept, then it should not disassociate rooms from other dept when any one dept is removed',
+			async () => {
+				const { department: department1 } = await createDepartmentWithAnOnlineAgent();
+				const newVisitor1 = await createVisitor(department1._id);
+				const newRoom1 = await createLivechatRoom(newVisitor1.token);
+
+				const { department: department2 } = await createDepartmentWithAnOnlineAgent();
+				const newVisitor2 = await createVisitor(department2._id);
+				const newRoom2 = await createLivechatRoom(newVisitor2.token);
+
+				const monitor = await createUser();
+				await createMonitor(monitor.username);
+				const unit = await createUnit(monitor._id, monitor.username, [department1._id, department2._id]);
+
+				// except the room to have the unit
+				let latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
+				let latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
+				expect(latestRoom1.departmentId).to.be.equal(department1._id);
+				expect(latestRoom1.departmentAncestors).to.be.an('array').that.includes(unit._id);
+				expect(latestRoom2.departmentId).to.be.equal(department2._id);
+				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+				const resp: Response = await request
+					.delete(api(`livechat/department/${department1._id}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(resp.body).to.have.property('success', true);
+
+				latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
+				expect(latestRoom1.departmentId).to.be.undefined;
+				expect(latestRoom1.departmentAncestors).to.be.undefined;
+
+				latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
+				expect(latestRoom2.departmentId).to.be.equal(department2._id);
+				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+			},
+		);
 	});
 
 	describe('GET livechat/department.autocomplete', () => {

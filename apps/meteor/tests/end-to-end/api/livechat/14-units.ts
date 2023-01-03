@@ -40,7 +40,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request.get(api('livechat/units')).set(credentials).expect(200);
 			expect(body.units).to.be.an('array').with.lengthOf.greaterThan(0);
@@ -104,7 +104,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}`))
@@ -128,7 +128,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.post(api(`livechat/units/${unit._id}`))
@@ -159,7 +159,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.delete(api(`livechat/units/${unit._id}`))
@@ -180,7 +180,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/departments`))
@@ -204,7 +204,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/departments/available`))
@@ -229,7 +229,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
-			const unit = await createUnit(user._id, user.username, department._id);
+			const unit = await createUnit(user._id, user.username, [department._id]);
 
 			const { body } = await request
 				.get(api(`livechat/units/${unit._id}/monitors`))
