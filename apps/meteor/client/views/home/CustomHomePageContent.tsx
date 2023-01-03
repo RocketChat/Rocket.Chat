@@ -25,8 +25,8 @@ const CustomHomePageContent = (): ReactElement | null => {
 
 	const handleChangeCustomContentVisibility = async () => {
 		try {
-			setIsCustomContentVisible(!isCustomContentVisible);
 			await customContentVisible({ value: Boolean(!isCustomContentVisible) });
+			setIsCustomContentVisible(!isCustomContentVisible);
 		} catch (error: unknown) {
 			console.error(error);
 		}
