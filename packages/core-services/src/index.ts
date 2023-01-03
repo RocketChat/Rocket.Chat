@@ -72,6 +72,7 @@ export {
 	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
+	IReadsService,
 	IRoomService,
 	ISAUMonitorService,
 	ISubscriptionExtraData,
