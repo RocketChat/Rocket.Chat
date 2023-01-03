@@ -10,7 +10,8 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 
-export type MessageWithMdEnforced = WithRequiredProperty<IMessage & Partial<ITranslatedMessage>, 'md'>;
+export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
+	WithRequiredProperty<TMessage, 'md'>;
 /*
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
@@ -22,8 +23,10 @@ export type MessageWithMdEnforced = WithRequiredProperty<IMessage & Partial<ITra
  * @returns message normalized.
  */
 
-export const parseMessageTextToAstMarkdown = (
-	message: IMessage,
+export const parseMessageTextToAstMarkdown = <
+	TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>,
+>(
+	message: TMessage,
 	parseOptions: Options,
 	autoTranslateOptions: AutoTranslateOptions,
 ): MessageWithMdEnforced => {
@@ -98,7 +101,7 @@ const isNotNullOrUndefined = (value: unknown): boolean => value !== null && valu
 // In a previous version of the app, some values were being set to null.
 // This is a workaround to remove those null values.
 // A migration script should be created to remove this code.
-export const removePossibleNullMessageValues = ({
+export const removePossibleNullMessageValues = <TMessage extends IMessage = IMessage>({
 	editedBy,
 	editedAt,
 	emoji,
@@ -109,7 +112,7 @@ export const removePossibleNullMessageValues = ({
 	attachments,
 	reactions,
 	...message
-}: any): IMessage => ({
+}: any): TMessage => ({
 	...message,
 	...(isNotNullOrUndefined(editedBy) && { editedBy }),
 	...(isNotNullOrUndefined(editedAt) && { editedAt }),

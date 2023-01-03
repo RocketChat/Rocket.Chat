@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useRoom } from '../../../contexts/RoomContext';
 
+// TODO: its core should be moved to the ChatContext
+
 type UseToggleFollowingThreadMutationVariables = {
 	tmid: IMessage['_id'];
 	follow: boolean;
