@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import type { Data } from '../types/Data';
 import type { IStrategy } from '../types/IStrategy';
 import exportTranscript, { isOmnichannelData } from '../templates/transcriptTemplate';
@@ -16,8 +18,8 @@ export class OmnichannelPDF implements IStrategy {
 				visitor: data.visitor,
 				agent: data.agent,
 				site_name: data.site_name,
-				date: data.date,
-				time: data.time,
+				date: moment(String(data.closedAt)).format('MMM D, YYYY'),
+				time: moment(String(data.closedAt)).format('H:mm:ss'),
 				timezone: data.timezone,
 			},
 			body: Array.isArray(data.messages) ? data.messages : [],

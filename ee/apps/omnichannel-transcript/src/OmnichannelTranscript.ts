@@ -5,7 +5,6 @@ import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent 
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService, Settings } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
-import moment from 'moment';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -25,8 +24,7 @@ type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({
 type WorkerData = {
 	visitor: ILivechatVisitor | null;
 	agent: ILivechatAgent | undefined;
-	date: string;
-	time: string;
+	closedAt?: Date;
 	messages: MessageWithFiles[];
 	timezone: string;
 };
@@ -181,8 +179,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const data = {
 				visitor,
 				agent,
-				date: moment(room.closedAt).format('MMM D, YYYY'),
-				time: moment(room.closedAt).format('H:mm:ss'),
+				closedAt: room.closedAt,
 				site_name: await this.settingsService.get('Site_Name'),
 				messages: await this.getFiles(details.userId, messages),
 				timezone: await this.getTimezone(agent),
