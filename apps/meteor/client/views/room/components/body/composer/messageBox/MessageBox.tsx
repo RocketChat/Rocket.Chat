@@ -30,6 +30,7 @@ import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-mes
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
+import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
@@ -249,7 +250,11 @@ export const MessageBox = ({
 
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
+	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+
+	const canSend = useReactiveValue(
+		useCallback(() => roomCoordinator.verifyCanSendMessage(rid, federationModuleEnabled), [rid, federationModuleEnabled]),
+	);
 
 	const sizes = useContentBoxSize(textareaRef);
 
