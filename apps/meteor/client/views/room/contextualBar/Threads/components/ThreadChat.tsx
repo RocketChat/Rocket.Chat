@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Box, CheckBox } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Field } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useMethod, useQueryStringParameter, useRoute, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { VFC } from 'react';
@@ -130,14 +130,14 @@ const ThreadChat: VFC<ThreadChatProps> = ({ mainMessage }) => {
 					onUploadFiles={handleUploadFiles}
 					tshow={sendToChannel}
 				>
-					<div className='thread-footer__row'>
-						<div style={{ display: 'flex', alignItems: 'center' }}>
+					<Field>
+						<Field.Row marginBlock={8}>
 							<CheckBox id={sendToChannelID} checked={sendToChannel} onChange={() => setSendToChannel((checked) => !checked)} />
-							<label htmlFor={sendToChannelID} className='thread-footer__text' style={{ display: 'flex', alignItems: 'center' }}>
+							<Field.Label htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 								{t('Also_send_to_channel')}
-							</label>
-						</div>
-					</div>
+							</Field.Label>
+						</Field.Row>
+					</Field>
 				</ComposerContainer>
 			</Box>
 		</VerticalBarContent>
