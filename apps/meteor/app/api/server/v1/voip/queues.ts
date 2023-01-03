@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
+import { Voip } from '@rocket.chat/core-services';
 
-import { Voip } from '../../../../../server/sdk';
 import { API } from '../../api';
 
 API.v1.addRoute(

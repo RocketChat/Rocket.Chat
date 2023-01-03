@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
+import { LDAP } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../lib/callbacks';
-import { LDAP } from '../sdk';
 import { settings } from '../../app/settings/server';
 
 // Register ldap login handler
