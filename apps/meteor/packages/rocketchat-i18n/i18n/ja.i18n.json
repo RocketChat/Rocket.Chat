@@ -3488,6 +3488,7 @@
   "Reactions": "応答",
   "Read_by": "読者",
   "Read_only": "読み取り専用",
+  "This_room_is_read_only": "このルームは読み込み専用です",
   "Read_only_changed_successfully": "読み取り専用が正常に変更されました",
   "Read_only_channel": "読み取り専用Channel",
   "Read_only_group": "読み取り専用グループ",

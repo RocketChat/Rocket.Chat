@@ -30,16 +30,15 @@ import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
-import { api } from '../../sdk/api';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';

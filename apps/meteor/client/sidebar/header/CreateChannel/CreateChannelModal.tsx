@@ -159,7 +159,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	);
 
 	return (
-		<Modal data-qa='create-channel-modal'>
+		<Modal data-qa='create-channel-modal' aria-label={t('Create_channel')}>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
@@ -252,14 +252,23 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
-								<Field.Label>{t('Encrypted')}</Field.Label>
-								<Field.Description>{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
+								<Field.Label id='Encrypted_channel_Label'>{t('Encrypted')}</Field.Label>
+								<Field.Description id='Encrypted_channel_Description'>
+									{isPrivate ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
+								</Field.Description>
 							</Box>
 							<Controller
 								control={control}
 								name='encrypted'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch ref={ref} checked={value} disabled={e2eDisabled || federated} onChange={onChange} />
+									<ToggleSwitch
+										ref={ref}
+										checked={value}
+										disabled={e2eDisabled || federated}
+										onChange={onChange}
+										aria-describedby='Encrypted_channel_Description'
+										aria-labelledby='Encrypted_channel_Label'
+									/>
 								)}
 							/>
 						</Box>

@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-
-import { Authorization } from '../../../../server/sdk';
+import { Authorization } from '@rocket.chat/core-services';
 
 Meteor.methods({
 	async getUserRoles() {
