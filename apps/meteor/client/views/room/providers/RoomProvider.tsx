@@ -90,7 +90,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 		UserAction.addStream(rid);
 		return (): void => {
-			UserAction.cancel(rid);
+			try {
+				UserAction.cancel(rid);
+			} catch (error) {
+				// Do nothing
+			}
 		};
 	}, [rid, subscriptionQuery.data]);
 

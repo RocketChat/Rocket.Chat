@@ -7,7 +7,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { MutableRefObject } from 'react';
 
-import { waitUntilWrapperExists } from './waitUntilWrapperExists';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { readMessage } from './readMessages';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
@@ -179,7 +179,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitUntilWrapperExists();
+		const wrapper = await waitForElement('.messages-box .wrapper');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -294,7 +294,7 @@ class RoomHistoryManagerClass extends Emitter {
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			await waitForElement(`[data-id='${message._id}']`);
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`[data-id='${message._id}']`, wrapper);
 
@@ -332,7 +332,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
-		if (!result || !result.messages) {
+		if (!result) {
 			return;
 		}
 
@@ -341,7 +341,7 @@ class RoomHistoryManagerClass extends Emitter {
 		readMessage.refreshUnreadMark(message.rid);
 
 		Tracker.afterFlush(async () => {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			await waitForElement(`[data-id='${message._id}']`);
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`[data-id=${message._id}]`, wrapper);
 

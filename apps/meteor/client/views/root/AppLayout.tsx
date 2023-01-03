@@ -8,13 +8,9 @@ import { appLayout } from '../../lib/appLayout';
 import { blazePortals } from '../../lib/portals/blazePortals';
 import { useExperimentalTheme } from '../hooks/useExperimentalTheme';
 import PageLoading from './PageLoading';
-import { useTooltipHandling } from './useTooltipHandling';
 
 const AppLayout: FC = () => {
-	useTooltipHandling();
-
 	const theme = useExperimentalTheme();
-
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 	const portals = useSyncExternalStore(blazePortals.subscribe, blazePortals.getSnapshot);
 

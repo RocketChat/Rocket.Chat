@@ -28,27 +28,27 @@ const baseMessage = {
 	_updatedAt: date,
 	urls: [],
 };
-const COMPONENT_PATH = '../../../../../../client/views/room/MessageList/components/ThreadMessagePreview';
+const COMPONENT_PATH = '../../../../../../client/components/message/variants/ThreadMessagePreview.tsx';
 const defaultConfig = {
-	'../../contexts/MessageContext': {
+	'../../../views/room/contexts/MessageContext': {
 		useMessageActions: () => ({
 			actions: {
 				openThread: () => () => '',
 			},
 		}),
 	},
-	'../hooks/useParentMessage': {
+	'../../../views/room/MessageList/hooks/useParentMessage': {
 		useParentMessage: () => '',
 	},
-	'../hooks/useMessageBody': {
+	'../../../views/room/MessageList/hooks/useMessageBody': {
 		useMessageBody: () => <p>Parent Message</p>,
 	},
-	'../../../../../app/ui-utils/client': {
+	'../../../../app/ui-utils/client': {
 		MessageTypes: {
 			getType: () => false,
 		},
 	},
-	'./ThreadMessagePreviewBody': ({ message }: { message: any }) => <span>{message.msg}</span>,
+	'./threadPreview/ThreadMessagePreviewBody': ({ message }: { message: any }) => <span>{message.msg}</span>,
 };
 
 describe('ThreadMessagePreview', () => {
@@ -72,7 +72,7 @@ describe('ThreadMessagePreview', () => {
 	it('should render parent message', () => {
 		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, {
 			...defaultConfig,
-			'../hooks/useParentMessage': {
+			'../../../views/room/MessageList/hooks/useParentMessage': {
 				useParentMessage: () => ({
 					isSuccess: true,
 				}),
@@ -87,12 +87,12 @@ describe('ThreadMessagePreview', () => {
 	it('should render parent system message', () => {
 		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, {
 			...defaultConfig,
-			'../hooks/useParentMessage': {
+			'../../../views/room/MessageList/hooks/useParentMessage': {
 				useParentMessage: () => ({
 					isSuccess: true,
 				}),
 			},
-			'../../../../../app/ui-utils/client': {
+			'../../../../app/ui-utils/client': {
 				MessageTypes: {
 					getType: () => ({
 						message: 'System Message',

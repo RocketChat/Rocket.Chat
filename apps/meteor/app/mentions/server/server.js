@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { Users, Subscriptions, Rooms } from '../../models/server';
-import { api } from '../../../server/sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
