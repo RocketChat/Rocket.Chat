@@ -6,9 +6,9 @@ import React, { useEffect, useCallback } from 'react';
 import Page from '../../components/Page';
 import ChannelsTab from './ChannelsTab';
 import TeamsTab from './TeamsTab';
-import UserTab from './UserTab';
+import UsersTab from './UsersTab';
 
-function DirectoryPage(): ReactElement {
+const DirectoryPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const defaultTab = String(useSetting('Accounts_Directory_DefaultView'));
@@ -49,15 +49,13 @@ function DirectoryPage(): ReactElement {
 				)}
 			</Tabs>
 			<Page.Content>
-				{tab === 'users' && <UserTab />}
+				{tab === 'users' && <UsersTab />}
 				{tab === 'channels' && <ChannelsTab />}
 				{tab === 'teams' && <TeamsTab />}
-				{federationEnabled && tab === 'external' && <UserTab workspace='external' />}
+				{federationEnabled && tab === 'external' && <UsersTab workspace='external' />}
 			</Page.Content>
 		</Page>
 	);
-}
-
-DirectoryPage.displayName = 'DirectoryPage';
+};
 
 export default DirectoryPage;

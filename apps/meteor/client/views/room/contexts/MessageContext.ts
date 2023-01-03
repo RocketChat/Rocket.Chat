@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { MouseEvent, UIEvent } from 'react';
+import type { UIEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 const openUserCard =
@@ -25,7 +25,7 @@ export type MessageContextValue = {
 	actions: {
 		openUserCard: (username: string) => (e: UIEvent) => void;
 		openRoom: (id: string) => (event: UIEvent) => void;
-		openThread: (tmid: string, jump?: string) => (e: MouseEvent) => void;
+		openThread: (tmid: string, jump?: string) => (e: UIEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;
 	};
