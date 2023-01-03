@@ -118,13 +118,13 @@ const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return (
-						<MessageBlock width={oembedWidth} key={index}>
+						<MessageBlock width='100%' maxWidth={oembedWidth} key={index}>
 							<OEmbedResolver meta={data} />
 						</MessageBlock>
 					);
 				}
 				return (
-					<MessageBlock width={oembedWidth} key={index}>
+					<MessageBlock width='100%' maxWidth={oembedWidth} key={index}>
 						<UrlPreview {...data} />
 					</MessageBlock>
 				);
