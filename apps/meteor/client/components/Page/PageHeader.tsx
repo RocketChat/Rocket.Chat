@@ -20,7 +20,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 
 	return (
 		<Box
-			borderBlockEndWidth='x2'
+			borderBlockEndWidth='default'
 			minHeight='x64'
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
