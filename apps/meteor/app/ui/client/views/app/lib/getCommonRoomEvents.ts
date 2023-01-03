@@ -186,7 +186,7 @@ function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: Commo
 	}
 }
 
-function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+async function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
 	const { rid, tabBar } = template.data;
 	const messageElement = event.target.closest('.message') as HTMLElement;
 	const dataContext = Blaze.getData(messageElement);
@@ -196,7 +196,9 @@ function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: Common
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	// @ts-ignore
 	const context = ctx || message.context || message.actionContext || federationContext || 'message';
-	const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
+	const allItems = (
+		await MessageAction.getButtons({ ...messageContext, message, user, chat: template.data.chatContext }, context, 'menu')
+	).map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',

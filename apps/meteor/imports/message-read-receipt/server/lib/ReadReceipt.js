@@ -78,12 +78,12 @@ export const ReadReceipt = {
 
 		const message = Messages.findOneById(tmid, { fields: { tlm: 1, rid: 1 } });
 
-		// if users last seen is greater than thread's last message, it means the user already have this thread marked as read
+		// if users last seen is greater than thread's last message, it means the user has already marked this thread as read
 		if (!message || userLastSeen > message.tlm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findUnreadThreadMessagesByDate(tmid, userLastSeen), message.rid, userId);
+		this.storeReadReceipts(Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {

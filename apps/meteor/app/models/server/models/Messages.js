@@ -1166,11 +1166,12 @@ export class Messages extends Base {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid, after) {
+	findUnreadThreadMessagesByDate(tmid, userId, after) {
 		const query = {
-			unread: true,
+			'u._id': { $ne: userId },
+			'unread': true,
 			tmid,
-			tshow: { $exists: false },
+			'tshow': { $exists: false },
 		};
 
 		if (after) {

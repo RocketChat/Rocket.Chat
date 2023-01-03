@@ -1,6 +1,7 @@
+import { Reads } from '@rocket.chat/core-services';
+
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
-import { Reads } from '../../../server/sdk';
 import { settings } from '../../settings/server';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
@@ -22,14 +23,8 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
 	const replies = Messages.getThreadFollowsByThreadId(tmid);
-	console.log('replies', replies);
-
-	if (replies && replies.length === 1) {
-		console.log('Readng thread')
-	}
 
 	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
-	console.log('repliesFiltered', repliesFiltered);
 
 	if (toAll || toHere) {
 		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid, {

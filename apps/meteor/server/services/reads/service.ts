@@ -1,8 +1,9 @@
 import { Reads } from '@rocket.chat/models';
+import type { ISubscription } from '@rocket.chat/core-typings';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IReadsService } from '@rocket.chat/core-services';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { IReadsService } from '../../sdk/types/IReadsService';
-import { Messages } from '../../../app/models/server';
+import { Messages, Subscriptions } from '../../../app/models/server';
 import { ReadReceipt } from '../../../imports/message-read-receipt/server/lib/ReadReceipt';
 
 export class ReadsService extends ServiceClassInternal implements IReadsService {
@@ -10,44 +11,28 @@ export class ReadsService extends ServiceClassInternal implements IReadsService 
 
 	async readThread(userId: string, tmid: string): Promise<void> {
 		const read = await Reads.findOneByUserIdAndThreadId(userId, tmid);
-		console.log('read', read);
 
-		const now = new Date();
-		console.log('now', now);
+		await Reads.updateReadTimestampByUserIdAndThreadId(userId, tmid);
 
-		await Reads.updateOne(
-			{
-				userId,
-				tmid,
-			},
-			{
-				$set: {
-					ls: now,
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
-
-		const threadMessage = Messages.findOneById(tmid, { projection: { ts: 1, tlm: 1, replies: 1 } });
-		console.log('threadMessage', threadMessage);
+		const threadMessage = Messages.findOneById(tmid, { projection: { ts: 1, tlm: 1, rid: 1 } });
 		if (!threadMessage || !threadMessage.tlm) {
 			return;
 		}
 
 		ReadReceipt.storeThreadMessagesReadReceipts(tmid, userId, read?.ls || threadMessage.ts);
 
-		// doesn't mark as read if not all followers have read the thread
-		const totalReads = await Reads.col.countDocuments({ tmid, userId: { $in: threadMessage.replies } });
-		console.log('totalReads ->', totalReads);
-		console.log('threadMessage.replies.length ->', threadMessage.replies.length);
-		if (totalReads < threadMessage.replies.length) {
+		// doesn't mark as read if not all room members have read the thread
+		const subscriptions = await Subscriptions.findByRoomId(threadMessage.rid, {
+			fields: { 'u._id': 1 },
+		});
+		const members = subscriptions.map((s: ISubscription) => s.u?._id);
+
+		const totalReads = await Reads.col.countDocuments({ tmid, userId: { $in: members } });
+		if (totalReads < members.length) {
 			return;
 		}
 
 		const firstRead = await Reads.getMinimumLastSeenByThreadId(tmid);
-		console.log('firstRead', firstRead);
 		if (firstRead && firstRead.ls) {
 			Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
 		}

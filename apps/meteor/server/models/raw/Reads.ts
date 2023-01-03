@@ -1,6 +1,6 @@
-import type { Reads, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { Reads, IUser, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IReadsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,11 +13,11 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { tmid: 1 } }];
 	}
 
-	findOneByUserIdAndThreadId(userId: string, tmid: string): Promise<Reads | null> {
+	async findOneByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<Reads | null> {
 		return this.findOne({ userId, tmid });
 	}
 
-	getMinimumLastSeenByThreadId(tmid: string): Promise<Reads | null> {
+	getMinimumLastSeenByThreadId(tmid: IMessage['_id']): Promise<Reads | null> {
 		return this.findOne(
 			{
 				tmid,
@@ -28,5 +28,20 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 				},
 			},
 		);
+	}
+
+	updateReadTimestampByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<UpdateResult> {
+		const query = {
+			userId,
+			tmid,
+		};
+
+		const update = {
+			$set: {
+				ls: new Date(),
+			},
+		};
+
+		return this.updateOne(query, update, { upsert: true });
 	}
 }
