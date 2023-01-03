@@ -1,12 +1,14 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
-import { useEndpoint, usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 
 const CustomHomePageContent = (): ReactElement | null => {
+	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const body = String(useSetting('Layout_Home_Body'));
 	const { data } = useIsEnterprise();
 	const isAdmin = usePermission('view-user-administration');
@@ -27,16 +29,16 @@ const CustomHomePageContent = (): ReactElement | null => {
 		try {
 			await customContentVisible({ value: Boolean(!isCustomContentVisible) });
 			setIsCustomContentVisible(!isCustomContentVisible);
-		} catch (error: unknown) {
-			console.error(error);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('Invalid_password') });
 		}
 	};
 
 	const handleOnlyShowCustomContent = async () => {
 		try {
 			await customContentOnly({ value: Boolean(!isCustomContentOnly) });
-		} catch (error: unknown) {
-			console.error(error);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: t('Invalid_password') });
 		}
 	};
 
