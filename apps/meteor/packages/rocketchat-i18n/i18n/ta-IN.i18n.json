@@ -1,5 +1,4 @@
 {
-  "403": "விலக்கப்பட்டவர்கள்",
   "500": "உள்ளக சர்வர் பிழை",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ __user_by__ மூலம், __role__ இனி ஆகிறது",
   "__username__was_set__role__by__user_by_": "__username__ __user_by__ மூலம் __role__ அமைக்கப்பட்டது",
@@ -2035,6 +2034,7 @@
   "Reactions": "எதிர்வினைகள்",
   "Read_by": "படிக்கவும்",
   "Read_only": "படிக்க மட்டும்",
+  "This_room_is_read_only": "இந்த அறை மட்டுமே படிக்கப்படுகிறது",
   "Read_only_changed_successfully": "படிக்க மட்டுமே வெற்றிகரமாக மாற்றப்பட்டது",
   "Read_only_channel": "சேனலை மட்டும் படிக்கவும்",
   "Read_only_group": "குழு மட்டும் படிக்கவும்",
@@ -2798,6 +2798,7 @@
   "registration.page.login.forgot": "உங்கள் கடவுச்சொல்லை மறந்து விட்டீர்களா",
   "registration.page.resetPassword.sent": "இந்த மின்னஞ்சலைப் பதிவு செய்தால், உங்கள் கடவுச்சொல்லை எவ்வாறு மீட்டமைப்பது என்பதைப் பற்றிய அறிவுரைகளை அனுப்புவோம். விரைவில் மின்னஞ்சலை நீங்கள் பெறாவிட்டால், மீண்டும் திரும்பி, மீண்டும் முயற்சிக்கவும்.",
   "registration.component.login": "உள் நுழை",
+  "registration.component.login.userNotFound": "பயனர் கிடைக்கவில்லை",
   "registration.component.resetPassword": "கடவுச்சொல்லை மீட்டமைக்க",
   "registration.component.form.emailOrUsername": "மின்னஞ்சல் அல்லது பயனர் பெயர்",
   "registration.component.form.email": "மின்னஞ்சல்",

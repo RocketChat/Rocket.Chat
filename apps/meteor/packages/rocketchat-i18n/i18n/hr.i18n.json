@@ -1,5 +1,4 @@
 {
-  "403": "Zabranjen",
   "500": "Interna pogreška poslužitelja",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ je uklonio __username__ iz __role__ grupe",
   "__username__was_set__role__by__user_by_": "__user_by__ je postavio __username__ u __role__ grupu ",
@@ -2168,6 +2167,7 @@
   "Reactions": "Reakcije",
   "Read_by": "Pročitajte",
   "Read_only": "Samo za čitanje",
+  "This_room_is_read_only": "Ova soba je samo za čitanje",
   "Read_only_changed_successfully": "Postavka Samo za čitanje uspješno promjenjena",
   "Read_only_channel": "Samo za čitanje Soba",
   "Read_only_group": "Samo za čitanje Grupa",
@@ -2935,6 +2935,7 @@
   "registration.page.login.forgot": "Zaboravih lozinku",
   "registration.page.resetPassword.sent": "Ako je ova e-poruka registrirana, poslat ćemo vam upute o tome kako poništiti zaporku. Ako uskoro ne primite e-poruku, vratite se i pokušajte ponovo.",
   "registration.component.login": "Prijava",
+  "registration.component.login.userNotFound": "Korisnik nije pronađen",
   "registration.component.resetPassword": "Resetiraj lozinku",
   "registration.component.form.emailOrUsername": "Email or username",
   "registration.component.form.email": "Email",

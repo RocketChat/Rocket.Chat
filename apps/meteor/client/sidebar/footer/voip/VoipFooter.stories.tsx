@@ -1,6 +1,6 @@
-import { VoIpCallerInfo } from '@rocket.chat/core-typings';
+import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { ComponentStory } from '@storybook/react';
+import type { ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
 
 import { VoipFooter } from './VoipFooter';

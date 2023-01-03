@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, FieldGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, Dispatch } from 'react';
+import type { FC, Dispatch } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import PageToggleAssembler from './PageToggleAssembler';

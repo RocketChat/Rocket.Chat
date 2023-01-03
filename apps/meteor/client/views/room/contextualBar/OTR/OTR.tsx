@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
+import React from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import VerticalBar from '../../../../components/VerticalBar';
@@ -78,7 +79,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
-			<VerticalBar.ScrollableContent p='x24'>
+			<VerticalBar.ScrollableContent p='x24' color='default'>
 				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 				{isOnline ? renderOTRState() : <Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>}
 			</VerticalBar.ScrollableContent>

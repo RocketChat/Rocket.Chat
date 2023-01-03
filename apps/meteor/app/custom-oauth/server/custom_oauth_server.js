@@ -389,12 +389,6 @@ export class CustomOAuth {
 				user.name = user.services[this.name].name;
 			}
 
-			callbacks.run('afterValidateNewOAuthUser', {
-				identity: user.services[this.name],
-				serviceName: this.name,
-				user,
-			});
-
 			return true;
 		});
 	}
@@ -440,5 +434,15 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 		hook.apply(this, args);
 	}
 
-	return updateOrCreateUserFromExternalService.apply(this, args);
+	const [serviceName, serviceData] = args;
+
+	const user = updateOrCreateUserFromExternalService.apply(this, args);
+
+	callbacks.run('afterValidateNewOAuthUser', {
+		identity: serviceData,
+		serviceName,
+		user: Users.findOneById(user.userId),
+	});
+
+	return user;
 };

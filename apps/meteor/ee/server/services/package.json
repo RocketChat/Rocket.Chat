@@ -19,6 +19,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@rocket.chat/apps-engine": "^1.32.0",
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/message-parser": "next",
@@ -40,7 +41,7 @@
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.21",
-		"mongodb": "^4.3.1",
+		"mongodb": "^4.12.1",
 		"nats": "^2.6.1",
 		"pino": "^7.11.0",
 		"sodium-native": "^3.3.0",

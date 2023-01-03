@@ -14,14 +14,12 @@ import type {
 import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
+import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
 
-import type { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
-import { Voip } from '../../sdk';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import type { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
-import { api } from '../../sdk/api';
+import type { IOmniRoomClosingMessage } from './internalTypes';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';

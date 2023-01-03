@@ -1,5 +1,6 @@
 import { CustomSoundContext } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
 

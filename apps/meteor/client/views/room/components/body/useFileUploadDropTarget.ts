@@ -1,17 +1,16 @@
-import { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
+import type React from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { Users } from '../../../../../app/models/client';
-import { ChatMessages, fileUpload } from '../../../../../app/ui/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useChat } from '../../contexts/ChatContext';
+import { useRoom } from '../../contexts/RoomContext';
 import { useDropTarget } from './useDropTarget';
 
-export const useFileUploadDropTarget = (
-	room: IRoom,
-): readonly [
+export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
 		onDragEnter: (event: React.DragEvent<Element>) => void;
 	},
@@ -22,33 +21,28 @@ export const useFileUploadDropTarget = (
 		reason?: ReactNode;
 	},
 ] => {
+	const room = useRoom();
 	const { triggerProps, overlayProps } = useDropTarget();
 
 	const t = useTranslation();
 
 	const fileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
+	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
-		useCallback(
-			() => !roomCoordinator.readOnly(room._id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } })),
-			[room._id],
-		),
+		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
 	);
 
-	const onFileDrop = useMutableCallback(async (files: File[]) => {
-		const input = ChatMessages.get({ rid: room._id })?.input;
-		if (!input) return;
+	const chat = useChat();
 
+	const onFileDrop = useMutableCallback(async (files: File[]) => {
 		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
 
 		const uploads = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
-			return {
-				file,
-				name: file.name,
-			};
+			return file;
 		});
 
-		fileUpload(uploads, input, { rid: room._id });
+		chat?.flows.uploadFiles(uploads);
 	});
 
 	const allOverlayProps = useMemo(() => {
