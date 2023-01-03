@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper.js';
+import { updatePermission, updateSetting } from '../../data/permissions.helper.js';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
@@ -1623,6 +1623,40 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
+		it('should update a message when bypass time limits permission is enabled', (done) => {
+			updatePermission('bypass-time-limit-edit-and-delete', ['admin'])
+				.then(() => updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01))
+				.then(() => {
+					request
+						.post(methodCall('updateMessage'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'updateMessage',
+								params: [{ _id: messageId, rid, msg: 'https://github.com updated with bypass' }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
+							request
+								.get(api(`chat.getMessage?msgId=${messageId}`))
+								.set(credentials)
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.property('message').that.is.an('object');
+									expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
+								});
+						})
+						.end(done);
+				});
+		});
+
 		it('should not parse URLs inside markdown on update', (done) => {
 			request
 				.post(methodCall('updateMessage'))
@@ -1661,6 +1695,114 @@ describe('Meteor.methods', function () {
 							expect(res.body.message.msg).to.equal('test message with ```https://github.com``` updated');
 							expect(res.body.message).to.have.property('urls');
 							expect(res.body.message.urls.length).to.be.equal(0);
+						})
+						.end(done);
+				});
+		});
+	});
+
+	describe('[@deleteMessage]', () => {
+		let rid = false;
+		let messageId;
+
+		before('create room', (done) => {
+			const channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		beforeEach('send message with URL', (done) => {
+			request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [
+							{
+								_id: `${Date.now() + Math.random()}`,
+								rid,
+								msg: 'test message with https://github.com',
+							},
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('urls').that.is.an('array');
+					expect(data.result.urls[0].url).to.equal('https://github.com');
+					messageId = data.result._id;
+				})
+				.end(done);
+		});
+
+		it('should delete a message', (done) => {
+			request
+				.post(methodCall('deleteMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'deleteMessage',
+						params: [{ _id: messageId, rid }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+				})
+				.end(done);
+		});
+
+		it('should delete a message when bypass time limits permission is enabled', (done) => {
+			updatePermission('bypass-time-limit-edit-and-delete', ['admin'])
+				.then(() => updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01))
+				.then(() => {
+					request
+						.post(methodCall('deleteMessage'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'deleteMessage',
+								params: [{ _id: messageId, rid }],
+								id: 'id',
+								msg: 'method',
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							console.log('🚀 ~ file: 24-methods.js:1805 ~ .expect ~ res', res.body);
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
 						})
 						.end(done);
 				});
