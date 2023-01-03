@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
@@ -20,16 +20,26 @@ export class FederationHooksEE {
 
 	public static onUsersAddedToARoom(callback: (room: IRoom, inviter: IUser, addedUsers: IUser[] | string[]) => Promise<void>): void {
 		callbacks.add(
-			'federation.afterAddUsersToARoom',
-			(params: { invitees: IUser[] | string[]; inviter: IUser }, room: IRoom): void => {
-				console.log({ params });
+			'federation.onAddUsersToARoom',
+			(params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom): void => {
 				if (!room || !isRoomFederated(room)) {
 					return;
 				}
 				Promise.await(callback(room, params.inviter, params.invitees));
 			},
 			callbacks.priority.HIGH,
-			'federation-v2-after-add-users-to-a-room',
+			'federation-v2-on-add-users-to-a-room',
+		);
+		callbacks.add(
+			'afterAddedToRoom',
+			(params: { user: IUser; inviter: IUser }, room: IRoom): void => {
+				if (!room || !isRoomFederated(room)) {
+					return;
+				}
+				Promise.await(callback(room, params.inviter, [params.user]));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-add-user-to-a-room',
 		);
 	}
 
@@ -91,7 +101,8 @@ export class FederationHooksEE {
 	public static removeAll(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
-		callbacks.remove('federation.afterAddUsersToARoom', 'federation-v2-after-add-users-to-a-room');
+		callbacks.remove('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room');
+		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room');
 		callbacks.remove('afterRoomNameChange', 'federation-v2-after-room-name-changed');
