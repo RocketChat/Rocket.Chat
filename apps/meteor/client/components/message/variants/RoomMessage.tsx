@@ -57,6 +57,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
 			data-qa-type='message'
+			data-username={message.u.username}
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && (
