@@ -4,19 +4,20 @@ import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 
 const styles = StyleSheet.create({
 	header: {
-		padding: '32px',
-		borderRadius: '4px',
+		padding: 32,
+		borderRadius: 4,
 		backgroundColor: colors.n100,
 		color: colors.n900,
+		marginBottom: 16,
 	},
 	headerText: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		borderBottomColor: colors.n200,
-		borderBottomWidth: '2px',
-		marginBottom: '16px',
-		paddingBottom: '16px',
+		borderBottomWidth: 2,
+		marginBottom: 16,
+		paddingBottom: 16,
 	},
 	pagination: {
 		fontSize: fontScales.c1.fontSize,
@@ -36,7 +37,8 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 	},
 	item: {
-		padding: '8px 10px 0 0',
+		paddingTop: 8,
+		paddingRight: 10,
 		flexGrow: 1,
 		flexShrink: 1,
 	},

@@ -22,11 +22,13 @@ type WorkDetailsWithSource = WorkDetails & {
 type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({ name?: string; buffer: Buffer | null } | undefined)[] };
 
 type WorkerData = {
+	siteName: string;
 	visitor: ILivechatVisitor | null;
 	agent: ILivechatAgent | undefined;
 	closedAt?: Date;
 	messages: MessageWithFiles[];
 	timezone: string;
+	dateFormat: string;
 };
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -180,8 +182,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				visitor,
 				agent,
 				closedAt: room.closedAt,
-				site_name: await this.settingsService.get('Site_Name'),
+				siteName: await this.settingsService.get<string>('Site_Name'),
 				messages: await this.getFiles(details.userId, messages),
+				dateFormat: await this.settingsService.get<string>('Message_DateFormat'),
 				timezone: await this.getTimezone(agent),
 			};
 
