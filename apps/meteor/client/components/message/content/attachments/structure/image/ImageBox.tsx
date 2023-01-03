@@ -11,7 +11,7 @@ const ImageBox: FC<ComponentProps<typeof Box>> = (props) => (
 		alignItems='center'
 		alignContent='center'
 		borderRadius={2}
-		borderWidth={2}
+		borderWidth='default'
 		borderStyle='solid'
 		borderColor='extra-light'
 		{...props}

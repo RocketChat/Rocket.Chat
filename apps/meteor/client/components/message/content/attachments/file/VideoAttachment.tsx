@@ -17,7 +17,7 @@ import AttachmentSize from '../structure/AttachmentSize';
 import AttachmentTitle from '../structure/AttachmentTitle';
 
 const videoAttachmentCss = css`
-	border: 2px solid ${Palette.stroke['stroke-extra-light']} !important;
+	border: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
 	border-radius: 2px;
 	display: flex;
 	flex-direction: column;
