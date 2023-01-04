@@ -1,3 +1,5 @@
+import { SettingEditor } from '@rocket.chat/core-typings';
+
 import { theme } from './server';
 import { settingsRegistry } from '../../settings/server';
 // TODO: Define registers/getters/setters for packages to work with established
@@ -10,15 +12,14 @@ import { settingsRegistry } from '../../settings/server';
 // Major colors form the core of the scheme
 // Names changed to reflect usage, comments show pre-refactor names
 
-const variablesContent = Assets.getText('client/imports/general/variables.css');
+const variablesContent = Assets.getText('client/imports/general/variables.css') ?? '';
 
 const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/((.|\s)*?)\/\*\s*#endregion\s*\*\//gim;
 
 for (let matches = regionRegex.exec(variablesContent); matches; matches = regionRegex.exec(variablesContent)) {
 	const [, type, section, content] = matches;
-	[...content.match(/--(.*?):\s*(.*?);/gim)].forEach((entry) => {
-		const matches = /--(.*?):\s*(.*?);/im.exec(entry);
-		const [, name, value] = matches;
+	[...(content.match(/--(.*?):\s*(.*?);/gim) ?? [])].forEach((entry) => {
+		const [, name, value] = /--(.*?):\s*(.*?);/im.exec(entry) ?? [];
 
 		if (type === 'fonts') {
 			theme.addVariable('font', name, value, 'Fonts', true);
@@ -27,23 +28,23 @@ for (let matches = regionRegex.exec(variablesContent); matches; matches = region
 
 		if (type === 'colors') {
 			if (/var/.test(value)) {
-				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, variableName, section, true, 'expression');
+				const [, variableName] = value.match(/var\(--(.*?)\)/i) ?? [];
+				theme.addVariable('color', name, variableName, section, true, SettingEditor.EXPRESSION);
 				return;
 			}
 
-			theme.addVariable('color', name, value, section, true, 'color');
+			theme.addVariable('color', name, value, section, true, SettingEditor.COLOR);
 			return;
 		}
 
 		if (type === 'less-colors') {
 			if (/var/.test(value)) {
-				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, `@${variableName}`, section, true, 'expression');
+				const [, variableName] = value.match(/var\(--(.*?)\)/i) ?? [];
+				theme.addVariable('color', name, `@${variableName}`, section, true, SettingEditor.EXPRESSION);
 				return;
 			}
 
-			theme.addVariable('color', name, value, section, true, 'color');
+			theme.addVariable('color', name, value, section, true, SettingEditor.COLOR);
 		}
 	});
 }

@@ -123,6 +123,6 @@ export class Theme {
 	}
 
 	public getCss() {
-		return settings.get('css') || '';
+		return String(settings.get('css') || '');
 	}
 }

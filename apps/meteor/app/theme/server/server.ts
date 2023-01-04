@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 import { addStyle } from '../../ui-master/server/inject';
 import { Theme } from './Theme';
 
@@ -16,11 +16,13 @@ settings.watch('css', () => {
 	process.emit('message', { refresh: 'client' });
 });
 
-WebApp.rawConnectHandlers.use(function (req, res, next) {
-	const path = req.url.split('?')[0];
+WebApp.rawConnectHandlers.use((req, res, next) => {
+	const path = req.url?.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+
 	if (path !== `${prefix}/theme.css`) {
-		return next();
+		next();
+		return;
 	}
 
 	const data = theme.getCss();
