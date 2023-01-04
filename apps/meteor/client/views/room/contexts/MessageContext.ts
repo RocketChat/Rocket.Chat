@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { MouseEvent, UIEvent } from 'react';
+import type { CSSProperties, UIEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 const openUserCard =
@@ -19,13 +19,13 @@ const runActionLink = () => () => (): void => {
 
 export type MessageContextValue = {
 	broadcast: boolean;
-	oembedMaxWidth: `${number}px` | '100%';
-	oembedMaxHeight: `${number}px`;
+	oembedMaxWidth: number | '100%';
+	oembedMaxHeight: number;
 	oembedEnabled: boolean;
 	actions: {
 		openUserCard: (username: string) => (e: UIEvent) => void;
 		openRoom: (id: string) => (event: UIEvent) => void;
-		openThread: (tmid: string, jump?: string) => (e: MouseEvent) => void;
+		openThread: (tmid: string, jump?: string) => (e: UIEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
 		replyBroadcast: (message: IMessage) => void;
 	};
@@ -37,8 +37,8 @@ export type MessageContextValue = {
 
 export const MessageContext = createContext<MessageContextValue>({
 	oembedEnabled: false,
-	oembedMaxWidth: '368px',
-	oembedMaxHeight: '368px',
+	oembedMaxWidth: 368,
+	oembedMaxHeight: 368,
 	broadcast: false,
 	actions: {
 		openUserCard,
@@ -71,12 +71,12 @@ export const useMessageOembedIsEnabled = (): boolean => {
 	return context.oembedEnabled;
 };
 
-export const useMessageOembedMaxWidth = (): string => {
+export const useMessageOembedMaxWidth = (): CSSProperties['width'] => {
 	const context = useMessageActions();
 	return context.oembedMaxWidth;
 };
 
-export const useMessageOembedMaxHeight = (): string => {
+export const useMessageOembedMaxHeight = (): CSSProperties['height'] => {
 	const context = useMessageActions();
 	return context.oembedMaxHeight;
 };

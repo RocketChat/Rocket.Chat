@@ -50,7 +50,7 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (typeof icon === 'string') {
-		return <Modal.Icon color={variant} name={icon} />;
+		return <Modal.Icon name={icon} />;
 	}
 
 	return icon;
