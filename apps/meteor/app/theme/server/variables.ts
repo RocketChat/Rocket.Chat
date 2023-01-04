@@ -14,7 +14,7 @@ import { settingsRegistry } from '../../settings/server';
 
 const variablesContent = Assets.getText('client/imports/general/variables.css') ?? '';
 
-const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/((.|\s)*?)\/\*\s*#endregion\s*\*\//gim;
+const regionRegex = /\/\*\s*#region\s+([^ ]*?)\s+(.*?)\s*\*\/([^]*?)\/\*\s*#endregion\s*\*\//gim;
 
 for (let matches = regionRegex.exec(variablesContent); matches; matches = regionRegex.exec(variablesContent)) {
 	const [, type, section, content] = matches;
