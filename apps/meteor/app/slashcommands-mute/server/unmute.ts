@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { Users, Subscriptions } from '../../models/server';
 import { settings } from '../../settings/server';
-import { api } from '../../../server/sdk/api';
 
 /*
  * Unmute is a named function that will replace /unmute commands

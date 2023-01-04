@@ -34,9 +34,9 @@ import {
 	PbxEvents,
 	Permissions,
 } from '@rocket.chat/models';
+import type { EventSignatures } from '@rocket.chat/core-services';
 
 import { subscriptionFields, roomFields } from './publishFields';
-import type { EventSignatures } from '../../sdk/lib/Events';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;

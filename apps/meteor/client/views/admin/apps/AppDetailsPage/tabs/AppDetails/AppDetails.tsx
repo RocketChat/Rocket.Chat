@@ -24,7 +24,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
 
 	return (
-		<Box maxWidth='x640' w='full' marginInline='auto'>
+		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
@@ -41,12 +41,12 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 				</>
 			)}
 
-			<Box display='flex' flexDirection='column'>
+			<Box display='flex' flexDirection='column' color='default'>
 				<Margins block='x17'>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='default'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box
@@ -57,7 +57,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='default'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Categories')}
 						</Box>
 						<ButtonGroup medium flexWrap='wrap'>
