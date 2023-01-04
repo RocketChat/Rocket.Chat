@@ -28,22 +28,22 @@ for (let matches = regionRegex.exec(variablesContent); matches; matches = region
 		if (type === 'colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, variableName, section, true, 'expression', ['color', 'expression']);
+				theme.addVariable('color', name, variableName, section, true, 'expression');
 				return;
 			}
 
-			theme.addVariable('color', name, value, section, true, 'color', ['color', 'expression']);
+			theme.addVariable('color', name, value, section, true, 'color');
 			return;
 		}
 
 		if (type === 'less-colors') {
 			if (/var/.test(value)) {
 				const [, variableName] = value.match(/var\(--(.*?)\)/i);
-				theme.addVariable('color', name, `@${variableName}`, section, true, 'expression', ['color', 'expression']);
+				theme.addVariable('color', name, `@${variableName}`, section, true, 'expression');
 				return;
 			}
 
-			theme.addVariable('color', name, value, section, true, 'color', ['color', 'expression']);
+			theme.addVariable('color', name, value, section, true, 'color');
 		}
 	});
 }
