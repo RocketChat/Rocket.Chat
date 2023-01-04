@@ -373,13 +373,13 @@ export class Rooms extends Base {
 						$and: [
 							{
 								$or: [
-									{ federated: { $exists: false }, name },
+									{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] },
 									{ federated: true, fname: name },
 								],
 							},
 						],
 				  }
-				: { federated: { $exists: false }, name }),
+				: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }),
 		};
 
 		return this.findOne(query, options);
@@ -530,13 +530,13 @@ export class Rooms extends Base {
 						$and: [
 							{
 								$or: [
-									{ federated: { $exists: false }, name },
+									{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] },
 									{ federated: true, fname: name },
 								],
 							},
 						],
 				  }
-				: { federated: { $exists: false }, name }),
+				: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }),
 		};
 
 		// do not use cache
@@ -577,13 +577,13 @@ export class Rooms extends Base {
 						$and: [
 							{
 								$or: [
-									{ federated: { $exists: false }, name },
+									{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] },
 									{ federated: true, fname: name },
 								],
 							},
 						],
 				  }
-				: { federated: { $exists: false }, name }),
+				: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }),
 		};
 
 		// do not use cache

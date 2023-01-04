@@ -33,7 +33,7 @@ export class MentionQueries {
 				$and: [
 					{
 						$or: [
-							{ federated: { $exists: false }, name: { $in: [...new Set(channels)] } },
+							{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: { $in: [...new Set(channels)] } }] },
 							{ federated: true, fname: { $in: [...new Set(channels)] } },
 						],
 					},

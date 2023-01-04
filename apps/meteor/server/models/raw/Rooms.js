@@ -84,10 +84,7 @@ export class RoomsRaw extends BaseRaw {
 				{
 					$and: [
 						{
-							$or: [
-								{ federated: { $exists: false }, name },
-								{ federated: true, fname: name },
-							],
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
 						},
 					],
 				},
@@ -143,10 +140,7 @@ export class RoomsRaw extends BaseRaw {
 				{
 					$and: [
 						{
-							$or: [
-								{ federated: { $exists: false }, name },
-								{ federated: true, fname: name },
-							],
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
 						},
 					],
 				},
@@ -276,7 +270,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
-			federated: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.find(query, options);
@@ -309,7 +303,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
-			federated: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.findPaginated(query, options);
@@ -329,7 +323,7 @@ export class RoomsRaw extends BaseRaw {
 				$in: groupsToAccept,
 			},
 			name: nameRegex,
-			federated: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 		return this.find(query, options);
 	}

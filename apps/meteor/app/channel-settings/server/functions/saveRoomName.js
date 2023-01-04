@@ -8,10 +8,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-const updateRoomName = (rid, displayName, isDiscussion, isAFederatedRoom) => {
-	if (isDiscussion || isAFederatedRoom) {
-		return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
-	}
+const updateFName = (rid, displayName) => {
+	return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
+};
+
+const updateRoomName = (rid, displayName) => {
 	const slugifiedRoomName = getValidRoomName(displayName, rid);
 
 	// Check if the username is available
@@ -38,7 +39,14 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 		return;
 	}
 	const isDiscussion = Boolean(room && room.prid);
-	const update = updateRoomName(rid, displayName, isDiscussion, isRoomFederated(room));
+	let update;
+
+	if (isDiscussion || isRoomFederated(room)) {
+		update = updateFName(rid, displayName);
+	} else {
+		update = updateRoomName(rid, displayName);
+	}
+
 	if (!update) {
 		return;
 	}
