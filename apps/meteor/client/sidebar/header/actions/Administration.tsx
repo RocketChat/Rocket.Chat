@@ -58,7 +58,7 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 					<Dropdown reference={reference} ref={target}>
 						<AdministrationList
 							accountBoxItems={accountBoxItems}
-							closeList={(): void => toggle(false)}
+							onDismiss={(): void => toggle(false)}
 							hasAdminPermission={hasAdminPermission}
 							hasAuditLicense={hasAuditLicense}
 							hasAuditPermission={hasAuditPermission}
