@@ -1,6 +1,7 @@
 import { performance } from 'perf_hooks';
 
 import { Meteor } from 'meteor/meteor';
+import less from 'less';
 import AutoPrefixerLessPlugin from 'less-plugin-autoprefixer';
 import { Settings } from '@rocket.chat/models';
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
@@ -18,8 +19,6 @@ export class Theme {
 			editor?: ISettingColor['editor'];
 		}
 	> = {};
-
-	private packageCallbacks: (() => string)[] = [];
 
 	private customCSS = '';
 
@@ -51,8 +50,6 @@ export class Theme {
 	}
 
 	private compile() {
-		const content = [...this.packageCallbacks.map((name) => name()), this.customCSS].join('\n');
-
 		const options: Less.Options = {
 			compress: true,
 			plugins: [new AutoPrefixerLessPlugin()],
@@ -60,7 +57,7 @@ export class Theme {
 
 		const start = performance.now();
 
-		return less.render(content, options, (err, data) => {
+		less.render(this.customCSS, options, (err, data) => {
 			this.logger.info({ stop_rendering: performance.now() - start });
 
 			if (err) {
