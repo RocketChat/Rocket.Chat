@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ContextType, ReactElement } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client';
@@ -11,7 +11,7 @@ import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
-	children?: ReactElement;
+	children?: ReactNode;
 	subscription?: ISubscription;
 	readOnly?: boolean;
 	tshow?: boolean;
