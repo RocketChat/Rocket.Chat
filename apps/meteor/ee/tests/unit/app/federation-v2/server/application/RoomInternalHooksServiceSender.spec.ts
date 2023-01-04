@@ -611,7 +611,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			expect(bridge.createUser.called).to.be.false;
 		});
 
-		it('should NOT invite the user to the room if the user is auto-joining the room', async () => {
+		it('should auto-join the user to the room if the user is auto-joining the room', async () => {
 			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
 				name: 'normalizedInviteeId',
 				username: 'normalizedInviteeId',
@@ -628,6 +628,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 				...invitees[0],
 			} as any);
 
+			expect(bridge.joinRoom.calledWith(room.getExternalId(), invitee.getExternalId())).to.be.true;
 			expect(bridge.inviteToRoom.called).to.be.false;
 		});
 

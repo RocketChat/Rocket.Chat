@@ -1,5 +1,4 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 
@@ -7,7 +6,6 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorizati
 import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
-import { APIClient } from '../../../app/utils/client';
 import { getRandomId } from '../../../lib/random';
 import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { call } from '../utils/call';
@@ -249,17 +247,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const isSubscribedToRoom = async (): Promise<boolean> => !!subscriptionsCollection.findOne({ rid }, { reactive: false });
 
-	const joinRoom = async (): Promise<void> => {
-		const room = await findRoom();
-		if (!room) {
-			throw new Error('Room not found');
-		}
-		if (isRoomFederated(room)) {
-			await APIClient.post('/v1/federation/joinInternalPublicRoom', { internalRoomId: rid });
-			return;
-		}
-		await call('joinRoom', rid);
-	};
+	const joinRoom = async (): Promise<void> => call('joinRoom', rid);
 
 	const markRoomAsRead = async (): Promise<void> => {
 		readMessage.readNow(rid);

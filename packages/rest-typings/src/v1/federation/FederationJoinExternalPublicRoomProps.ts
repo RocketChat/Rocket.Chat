@@ -5,7 +5,7 @@ const ajv = new Ajv({
 });
 
 export type FederationJoinExternalPublicRoomProps = {
-	externalRoomId: string;
+	externalRoomId: `!${string}:${string}`;
 };
 ajv.addFormat('matrix-room-id', (externalRoomId) => Boolean(externalRoomId?.charAt(0) === '!' && externalRoomId?.includes(':')));
 

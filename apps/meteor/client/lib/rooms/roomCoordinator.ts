@@ -183,13 +183,13 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		if (!room?.t) {
 			return false;
 		}
-		if (!isRoomFederated(room)) {
-			return Boolean(this.getRoomDirectives(room.t)?.canSendMessage(rid));
+		if (!this.getRoomDirectives(room.t)?.canSendMessage(rid)) {
+			return false;
 		}
-
-		return (
-			Boolean(this.getRoomDirectives(room.t)?.canSendMessage(rid)) && isFederationModuleEnabled && settings.get('Federation_Matrix_enabled')
-		);
+		if (isRoomFederated(room)) {
+			return isFederationModuleEnabled && settings.get('Federation_Matrix_enabled');
+		}
+		return true;
 	}
 
 	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {

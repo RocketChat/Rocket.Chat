@@ -27,10 +27,10 @@ export class RocketChatUserAdapterEE extends RocketChatUserAdapter {
 	}
 
 	public async addServerNameToSearchedServerNamesListByUserId(internalUserId: string, serverName: string): Promise<void> {
-		return Users.addServerNameToSearchedServerNamesList(internalUserId, serverName);
+		await Users.addServerNameToSearchedServerNamesList(internalUserId, serverName);
 	}
 
 	public async removeServerNameFromSearchedServerNamesListByUserId(internalUserId: string, serverName: string): Promise<void> {
-		return Users.removeServerNameFromSearchedServerNamesList(internalUserId, serverName);
+		await Users.removeServerNameFromSearchedServerNamesList(internalUserId, serverName);
 	}
 }

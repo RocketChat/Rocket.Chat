@@ -190,7 +190,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findSearchedServerNamesByUserId(userId: string): Promise<string[]>;
 
-	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<void>;
+	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 
-	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<void>;
+	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 }
