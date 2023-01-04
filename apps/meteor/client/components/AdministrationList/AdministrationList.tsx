@@ -10,7 +10,7 @@ import AuditModelList from './AuditModelList';
 
 type AdministrationListProps = {
 	accountBoxItems: (IAppAccountBoxItem | AccountBoxItem)[];
-	closeList: () => void;
+	onDismiss: () => void;
 	hasAdminPermission: boolean;
 	hasAuditLicense: boolean;
 	hasAuditPermission: boolean;
@@ -24,18 +24,19 @@ const AdministrationList: FC<AdministrationListProps> = ({
 	hasAuditLogPermission,
 	hasManageApps,
 	hasAdminPermission,
-	closeList,
+	onDismiss,
 }) => {
 	const appBoxItems = accountBoxItems.filter((item): item is IAppAccountBoxItem => isAppAccountBoxItem(item));
 	const adminBoxItems = accountBoxItems.filter((item): item is AccountBoxItem => !isAppAccountBoxItem(item));
 	const showAudit = hasAuditPermission || hasAuditLogPermission;
 	const showManageApps = hasManageApps || !!appBoxItems.length;
 	const showAdmin = hasAdminPermission || !!adminBoxItems.length;
+	const showWorkspace = hasAdminPermission;
 
 	const list = [
-		showAdmin && <AdministrationModelList showAdmin={showAdmin} accountBoxItems={adminBoxItems} closeList={closeList} />,
-		showManageApps && <AppsModelList appBoxItems={appBoxItems} closeList={closeList} showManageApps={showManageApps} />,
-		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} closeList={closeList} />,
+		showAdmin && <AdministrationModelList showWorkspace={showWorkspace} accountBoxItems={adminBoxItems} onDismiss={onDismiss} />,
+		showManageApps && <AppsModelList appBoxItems={appBoxItems} appsManagementAllowed={hasManageApps} onDismiss={onDismiss} />,
+		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} onDismiss={onDismiss} />,
 	];
 
 	return (
