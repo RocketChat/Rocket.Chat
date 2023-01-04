@@ -6,6 +6,7 @@ import React from 'react';
 
 import { isTruthy } from '../../../../../../lib/isTruthy';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
+import { useLegacyMessageEvents } from '../../../hooks/useLegacyMessageEvents';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessageRef } from '../hooks/useLegacyThreadMessageRef';
@@ -20,7 +21,13 @@ type LegacyThreadMessageListProps = {
 const LegacyThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: LegacyThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const messageRef = useLegacyThreadMessageRef();
-	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
+	const {
+		listWrapperRef: listWrapperScrollRef,
+		listRef: listScrollRef,
+		onScroll: handleScroll,
+		requestScrollToBottom: sendToBottomIfNecessary,
+	} = useLegacyThreadMessageListScrolling();
+	useLegacyMessageEvents({ messageListRef: listScrollRef, onRequestScrollToBottom: sendToBottomIfNecessary });
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump(jumpTo, { enabled: !loading, onJumpTo });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
