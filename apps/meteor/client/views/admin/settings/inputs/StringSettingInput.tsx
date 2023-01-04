@@ -11,6 +11,7 @@ type StringSettingInputProps = {
 	multiline?: boolean;
 	placeholder?: string;
 	readonly?: boolean;
+	error?: string;
 	autocomplete?: boolean;
 	disabled?: boolean;
 	hasResetButton?: boolean;
@@ -25,6 +26,7 @@ function StringSettingInput({
 	multiline,
 	placeholder,
 	readonly,
+	error,
 	autocomplete,
 	value,
 	hasResetButton,
@@ -55,6 +57,7 @@ function StringSettingInput({
 						placeholder={placeholder}
 						disabled={disabled}
 						readOnly={readonly}
+						error={error}
 						autoComplete={autocomplete === false ? 'off' : undefined}
 						onChange={handleChange}
 					/>
@@ -67,6 +70,7 @@ function StringSettingInput({
 						disabled={disabled}
 						readOnly={readonly}
 						autoComplete={autocomplete === false ? 'off' : undefined}
+						error={error}
 						onChange={handleChange}
 					/>
 				)}
