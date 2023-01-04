@@ -36,6 +36,10 @@ test.describe.serial('homepage', () => {
 			}
 		});
 
+		test('expect custom content block', async () => {
+			await expect(adminPage.locator('[data-qa-id="homepage-custom-content"]')).toBeVisible();
+		});
+
 		test.afterAll(async () => {
 			await adminPage.close();
 		});
