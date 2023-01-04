@@ -8,7 +8,7 @@ import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
 describe('components/AdministrationList/AuditModelList', () => {
 	it('should render audit', async () => {
-		render(<AuditModelList showAudit={true} showAuditLog={true} closeList={() => null} />);
+		render(<AuditModelList showAudit={true} showAuditLog={true} onDismiss={() => null} />);
 
 		expect(screen.getByText('Audit')).to.exist;
 		expect(screen.getByText('Messages')).to.exist;
@@ -16,7 +16,7 @@ describe('components/AdministrationList/AuditModelList', () => {
 	});
 
 	it('should not render messages and log when does not have permission', async () => {
-		render(<AuditModelList showAudit={false} showAuditLog={false} closeList={() => null} />);
+		render(<AuditModelList showAudit={false} showAuditLog={false} onDismiss={() => null} />);
 
 		expect(screen.getByText('Audit')).to.exist;
 		expect(screen.queryByText('Messages')).to.not.exist;
@@ -26,32 +26,32 @@ describe('components/AdministrationList/AuditModelList', () => {
 	context('when clicked', () => {
 		it('should go to audit home', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
+			const handleDismiss = spy();
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AuditModelList showAudit={true} showAuditLog={false} closeList={closeList} />
+					<AuditModelList showAudit={true} showAuditLog={false} onDismiss={handleDismiss} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Messages');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('audit-home'));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should go to audit log', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
+			const handleDismiss = spy();
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AuditModelList showAudit={false} showAuditLog={true} closeList={closeList} />
+					<AuditModelList showAudit={false} showAuditLog={true} onDismiss={handleDismiss} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Logs');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('audit-log'));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 	});
 });
