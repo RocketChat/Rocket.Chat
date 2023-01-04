@@ -20,8 +20,6 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 		await updateSetting('Message_KeepHistory', false);
 	});
 
-	console.log('filesEndpoint', filesEndpoint, room);
-
 	const createVoipRoom = async function () {
 		const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
 		const testUserCredentials = await login(testUser.username, password);
