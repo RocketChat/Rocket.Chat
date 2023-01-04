@@ -19,7 +19,7 @@ const AttachmentProvider: FC = ({ children }) => {
 			collapsedByDefault,
 			autoLoadEmbedMedias: !reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
 			dimensions: {
-				width: 368,
+				width: 480,
 				height: 368,
 			},
 		}),

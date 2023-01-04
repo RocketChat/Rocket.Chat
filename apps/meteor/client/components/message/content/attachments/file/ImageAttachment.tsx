@@ -17,8 +17,8 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	image_preview: imagePreview,
 	image_size: size,
 	image_dimensions: imageDimensions = {
-		height: 360,
-		width: 480,
+		width: 368,
+		height: 368,
 	},
 	description,
 	descriptionMd,

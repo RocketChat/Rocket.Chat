@@ -21,11 +21,11 @@ const getDimensions = (
 	originalHeight: Dimensions['height'],
 	limits: { width: number; height: number },
 ): { width: number; height: number } => {
-	const widthRatio = originalWidth / (limits.width - 4);
+	const widthRatio = originalWidth / limits.width;
 	const heightRatio = originalHeight / limits.height;
 
 	if (widthRatio > heightRatio) {
-		const width = Math.min(originalWidth, limits.width - 4);
+		const width = Math.min(originalWidth, limits.width);
 		return { width, height: (width / originalWidth) * originalHeight };
 	}
 

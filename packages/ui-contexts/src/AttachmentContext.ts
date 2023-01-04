@@ -13,7 +13,7 @@ export type AttachmentContextValue = {
 export const AttachmentContext = createContext<AttachmentContextValue>({
 	getURL: (url: string) => url,
 	dimensions: {
-		width: 368,
+		width: 480,
 		height: 368,
 	},
 	collapsedByDefault: false,
