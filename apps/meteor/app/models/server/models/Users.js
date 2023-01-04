@@ -1006,7 +1006,6 @@ export class Users extends Base {
 			{
 				active: true,
 				federated: true,
-				username: { $regex: /.*:.*/ },
 			},
 			options,
 		);
