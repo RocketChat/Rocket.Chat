@@ -10,7 +10,7 @@ import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoleForm from './RoleForm';
 
-const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
+const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -20,7 +20,6 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 	const createRole = useEndpoint('POST', '/v1/roles.create');
 	const updateRole = useEndpoint('POST', '/v1/roles.update');
 	const deleteRole = useEndpoint('POST', '/v1/roles.delete');
-	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
 
 	const methods = useForm({
 		defaultValues: {
@@ -74,8 +73,6 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 				setModal();
 			}
 		};
-
-		const { isEnterprise } = await isEnterpriseEdition();
 
 		const deleteRoleMessage = isEnterprise ? t('Delete_Role_Warning') : t('Delete_Role_Warning_Community_Edition');
 
