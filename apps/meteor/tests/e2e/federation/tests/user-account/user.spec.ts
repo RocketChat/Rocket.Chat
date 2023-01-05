@@ -95,7 +95,6 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 
 		await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 		await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-		await page.waitForTimeout(2000);
 
 		await poFederationChannelServer2.tabs.btnTabMembers.click();
 		await poFederationChannelServer2.tabs.members.showAllUsers();
@@ -119,7 +118,6 @@ test.describe.parallel('Federation - User Account Pannel', () => {
 
 		await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 		await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-		await page.waitForTimeout(2000);
 
 		await poFederationChannelServer1.tabs.btnTabMembers.click();
 		await poFederationChannelServer1.tabs.members.showAllUsers();

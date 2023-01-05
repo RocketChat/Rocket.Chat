@@ -48,7 +48,7 @@ export class FederationSidenav {
 	async inviteUserToChannel(username: string) {
 		await this.autocompleteUser.click();
 		await this.autocompleteUser.type(username);
-		await this.page.waitForTimeout(2000);
+		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
 	}
 
@@ -66,9 +66,8 @@ export class FederationSidenav {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
 		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
-		await this.page.waitForTimeout(2000);
+		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().waitFor();
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
-		await this.page.waitForTimeout(2000);
 	}
 
 	async countFilteredChannelsOnDirectory(name: string): Promise<number> {
@@ -105,7 +104,6 @@ export class FederationSidenav {
 		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
 		await this.page.waitForTimeout(2000);
 		await this.page.locator('[data-qa="sidebar-item-title"]').nth(1).click();
-		await this.page.waitForTimeout(2000);
 	}
 
 	async createPublicChannel(name: string) {
@@ -118,7 +116,7 @@ export class FederationSidenav {
 	async inviteUserToDM(username: string) {
 		await this.autocompleteUserDM.click();
 		await this.autocompleteUserDM.type(username);
-		await this.page.waitForTimeout(2000);
+		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
 	}
 }

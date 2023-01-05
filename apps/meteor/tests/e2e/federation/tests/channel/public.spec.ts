@@ -1138,7 +1138,6 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await poFederationChannelServer1.tabs.room.btnEdit.click();
 				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdChannelName}`);
 				await poFederationChannelServer1.tabs.room.btnSave.click();
-				await page.waitForTimeout(5000);
 
 				await poFederationChannelServer2.sidenav.openChat(`NAME-EDITED-${createdChannelName}`);
 

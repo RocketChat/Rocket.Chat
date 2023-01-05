@@ -29,9 +29,7 @@ export class FederationHomeContent {
 
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
-		await this.page
-			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
-			.click();
+		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
 	async sendMessageUsingEnter(text: string): Promise<void> {
@@ -54,6 +52,7 @@ export class FederationHomeContent {
 
 	async starLastMessage(): Promise<void> {
 		await this.openLastMessageMenu();
+		await this.btnOptionStarMessage.waitFor();
 		await this.btnOptionStarMessage.click();
 	}
 
@@ -84,11 +83,8 @@ export class FederationHomeContent {
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
-		await this.page.waitForTimeout(2000);
-		await this.page
-			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
-			.click();
-		await this.page.waitForTimeout(3000);
+		await this.page.locator('button[aria-label="Send"]').waitFor();
+		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
 	get btnModalCancel(): Locator {
@@ -218,6 +214,7 @@ export class FederationHomeContent {
 	}
 
 	async unreactLastMessage(): Promise<void> {
+		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).waitFor();
 		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).click();
 	}
 
