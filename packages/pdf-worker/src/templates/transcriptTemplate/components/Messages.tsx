@@ -1,5 +1,4 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
 
 import type { OmnichannelData } from '..';
 import { Divider } from './Divider';
@@ -12,21 +11,6 @@ const styles = StyleSheet.create({
 		wordWrap: 'break-word',
 		fontSize: '12',
 		textAlign: 'justify',
-	},
-	lineWrapper: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		paddingVertical: 12,
-	},
-	line: {
-		flex: 1,
-		height: 2,
-		backgroundColor: colors.n200,
-	},
-	divider: {
-		fontSize: 12,
-		fontWeight: 700,
-		paddingHorizontal: 8,
 	},
 });
 
