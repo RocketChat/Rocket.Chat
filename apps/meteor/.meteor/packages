@@ -75,7 +75,6 @@ autoupdate@1.8.0
 babel-compiler@7.10.1
 google-oauth@1.4.3
 htmljs
-less
 matb33:collection-hooks
 meteorhacks:inject-initial
 oauth@2.1.3
