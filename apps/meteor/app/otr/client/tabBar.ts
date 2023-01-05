@@ -36,6 +36,6 @@ addAction('otr', (options) => {
 						}),
 				  }
 				: null,
-		[shouldAddAction],
+		[shouldAddAction, federated],
 	);
 });

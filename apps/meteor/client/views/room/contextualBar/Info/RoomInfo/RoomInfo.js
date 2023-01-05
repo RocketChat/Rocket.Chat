@@ -83,7 +83,7 @@ const RoomInfo = ({
 				},
 			}),
 		}),
-		[onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom],
+		[onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom, isFederated],
 	);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
