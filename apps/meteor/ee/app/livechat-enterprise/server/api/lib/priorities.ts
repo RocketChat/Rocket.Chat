@@ -98,10 +98,5 @@ export const removePriorityFromRoom = async (rid: string): Promise<void> => {
 		throw new Error('error-room-does-not-exist');
 	}
 
-	if (!room.priorityId || !room.priorityWeight) {
-		logger.debug(`Room ${rid} does not have a priority set. Skipping.`);
-		return;
-	}
-
 	await Promise.all([LivechatRooms.unsetPriorityByRoomId(rid), LivechatInquiry.unsetPriorityForRoom(rid)]);
 };
