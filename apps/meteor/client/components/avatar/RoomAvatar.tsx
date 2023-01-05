@@ -1,5 +1,6 @@
 import { useRoomAvatarPath } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import BaseAvatar from './BaseAvatar';
 
@@ -14,7 +15,7 @@ type RoomAvatarProps = {
 	room: {
 		_id: string;
 		type?: string;
-		t: string;
+		t?: string;
 		avatarETag?: string;
 	};
 };

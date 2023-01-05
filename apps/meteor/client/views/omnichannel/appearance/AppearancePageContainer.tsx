@@ -1,6 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -12,7 +13,7 @@ import AppearancePage from './AppearancePage';
 const AppearancePageContainer: FC = () => {
 	const t = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData('livechat/appearance');
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/appearance');
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 

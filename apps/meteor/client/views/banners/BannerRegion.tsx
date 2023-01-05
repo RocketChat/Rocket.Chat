@@ -1,12 +1,13 @@
-import React, { FC } from 'react';
-import { useSubscription } from 'use-subscription';
+import type { FC } from 'react';
+import React from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import * as banners from '../../lib/banners';
 import LegacyBanner from './LegacyBanner';
 import UiKitBanner from './UiKitBanner';
 
 const BannerRegion: FC = () => {
-	const payload = useSubscription(banners.firstSubscription);
+	const payload = useSyncExternalStore(...banners.firstSubscription);
 
 	if (!payload) {
 		return null;

@@ -3,14 +3,15 @@ import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import CounterSet from '../../../../../../client/components/data/CounterSet';
-import Section from '../Section';
-import DownloadDataButton from '../data/DownloadDataButton';
-import PeriodSelector from '../data/PeriodSelector';
-import { usePeriodLabel } from '../data/usePeriodLabel';
-import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
+import CounterSet from '../../../../../../client/components/dataView/CounterSet';
+import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
+import DownloadDataButton from '../dataView/DownloadDataButton';
+import PeriodSelector from '../dataView/PeriodSelector';
+import { usePeriodLabel } from '../dataView/usePeriodLabel';
+import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
@@ -42,20 +43,17 @@ const MessagesSentSection = (): ReactElement => {
 	}, [data]);
 
 	return (
-		<Section
-			title={t('Messages_sent')}
-			filter={
-				<>
-					<PeriodSelector {...periodSelectorProps} />
-					<DownloadDataButton
-						attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
-						headers={['Date', 'Messages']}
-						dataAvailable={!!data}
-						dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}
-					/>
-				</>
-			}
-		>
+		<>
+			<EngagementDashboardCardFilter>
+				<PeriodSelector {...periodSelectorProps} />
+				<DownloadDataButton
+					attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
+					headers={['Date', 'Messages']}
+					dataAvailable={!!data}
+					dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}
+				/>
+			</EngagementDashboardCardFilter>
+
 			<CounterSet
 				counters={[
 					{
@@ -94,7 +92,7 @@ const MessagesSentSection = (): ReactElement => {
 										}}
 										colors={[
 											// TODO: Get it from theme
-											colors.b500,
+											colors.p500,
 										]}
 										enableLabel={false}
 										enableGridY={false}
@@ -153,7 +151,7 @@ const MessagesSentSection = (): ReactElement => {
 					<Skeleton variant='rect' height={240} />
 				)}
 			</Flex.Container>
-		</Section>
+		</>
 	);
 };
 

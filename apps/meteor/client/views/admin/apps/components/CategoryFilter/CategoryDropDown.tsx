@@ -1,7 +1,8 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React, { useRef, FC, useCallback } from 'react';
+import type { FC } from 'react';
+import React, { useRef, useCallback } from 'react';
 
-import { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
+import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
 import DropDownListWrapper from '../DropDownListWrapper';
@@ -24,8 +25,6 @@ const CategoryDropDown: FC<{
 			}
 
 			onMouseEventPreventSideEffects(e);
-
-			return false;
 		},
 		[toggleCollapsed],
 	);

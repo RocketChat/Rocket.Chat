@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
-
-import { Banner } from '../../../../server/sdk';
+import type { IBanner } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Banner } from '@rocket.chat/core-services';
 
 const WARNING_BANNER_ID = 'closeToSeatsLimit';
 const DANGER_BANNER_ID = 'reachedSeatsLimit';

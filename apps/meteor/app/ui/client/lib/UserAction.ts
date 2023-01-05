@@ -15,13 +15,16 @@ export const USER_ACTIVITIES = {
 	USER_RECORDING: 'user-recording',
 	USER_TYPING: 'user-typing',
 	USER_UPLOADING: 'user-uploading',
+	USER_PLAYING: 'user-playing',
 };
+
+export type USER_ACTIVITIES_TYPES = 'user-recording' | 'user-typing' | 'user-uploading' | 'user-playing';
 
 const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
-const rooms = new Map<string, Function>();
+const rooms = new Map<string, (username: string, activityType: string[], extras?: object | undefined) => void>();
 
 const performingUsers = new ReactiveDict<IActionsObject>();
 

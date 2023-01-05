@@ -8,8 +8,8 @@ import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger';
-import { Users } from '../../models';
-import { isURL } from '../../utils/lib/isURL';
+import { Users } from '../../models/server';
+import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
 
@@ -349,7 +349,8 @@ export class CustomOAuth {
 					user.services &&
 					user.services[serviceName] &&
 					user.services[serviceName].id === serviceData.id &&
-					user.name === serviceData.name
+					user.name === serviceData.name &&
+					(this.keyField === 'email' || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
 					return;
 				}
@@ -362,6 +363,7 @@ export class CustomOAuth {
 				const update = {
 					$set: {
 						name: serviceData.name,
+						...(this.keyField === 'username' && serviceData.email && { emails: [{ address: serviceData.email, verified: true }] }),
 						[serviceIdKey]: serviceData.id,
 					},
 				};
@@ -386,12 +388,6 @@ export class CustomOAuth {
 			if (this.nameField) {
 				user.name = user.services[this.name].name;
 			}
-
-			callbacks.run('afterValidateNewOAuthUser', {
-				identity: user.services[this.name],
-				serviceName: this.name,
-				user,
-			});
 
 			return true;
 		});
@@ -438,5 +434,15 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 		hook.apply(this, args);
 	}
 
-	return updateOrCreateUserFromExternalService.apply(this, args);
+	const [serviceName, serviceData] = args;
+
+	const user = updateOrCreateUserFromExternalService.apply(this, args);
+
+	callbacks.run('afterValidateNewOAuthUser', {
+		identity: serviceData,
+		serviceName,
+		user: Users.findOneById(user.userId),
+	});
+
+	return user;
 };

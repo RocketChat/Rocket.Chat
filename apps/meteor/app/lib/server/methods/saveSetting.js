@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Settings } from '@rocket.chat/models';
 
 import { hasPermission, hasAllPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
-import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
 	saveSetting: twoFactorRequired(async function (_id, value, editor) {

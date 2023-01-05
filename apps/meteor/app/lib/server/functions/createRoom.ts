@@ -2,8 +2,9 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
-import type { IUser } from '@rocket.chat/core-typings';
-import { IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
+import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
@@ -11,8 +12,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
-import { Team } from '../../../../server/sdk';
-import { ICreateRoomParams, ISubscriptionExtraData } from '../../../../server/sdk/types/IRoomService';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && s.trim(name).length > 0;
@@ -26,12 +25,12 @@ export const createRoom = function <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): unknown {
+): ICreatedRoom {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, options);
+		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}
 
 	if (!isValidName(name)) {
@@ -59,7 +58,7 @@ export const createRoom = function <T extends RoomType>(
 
 	const now = new Date();
 
-	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'jitsiTimeout' | 'autoTranslateLanguage'> = {
+	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'autoTranslateLanguage'> = {
 		fname: name,
 		...extraData,
 		name: getValidRoomName(name.trim(), undefined, {
@@ -114,28 +113,46 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
 	const room = Rooms.createWithFullRoomData(roomProps);
-
-	for (const username of [...new Set(members as string[])]) {
-		const member = Users.findOneByUsername(username, {
-			fields: { 'username': 1, 'settings.preferences': 1 },
-		});
-		if (!member) {
-			continue;
-		}
-
+	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
+	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
 		extra.open = true;
+		extra.ls = now;
 
 		if (room.prid) {
 			extra.prid = room.prid;
 		}
 
-		if (username === owner.username) {
-			extra.ls = now;
-		}
+		Subscriptions.createWithRoomAndUser(room, owner, extra);
+	} else {
+		for (const username of [...new Set(members as string[])]) {
+			const member = Users.findOneByUsername(username, {
+				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+			});
+			if (!member) {
+				continue;
+			}
 
-		Subscriptions.createWithRoomAndUser(room, member, extra);
+			try {
+				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+			} catch (error) {
+				continue;
+			}
+
+			const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
+
+			extra.open = true;
+
+			if (room.prid) {
+				extra.prid = room.prid;
+			}
+
+			if (username === owner.username) {
+				extra.ls = now;
+			}
+
+			Subscriptions.createWithRoomAndUser(room, member, extra);
+		}
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
@@ -150,6 +167,9 @@ export const createRoom = function <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+	if (shouldBeHandledByFederation) {
+		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);
 

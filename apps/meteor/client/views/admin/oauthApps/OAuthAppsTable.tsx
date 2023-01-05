@@ -1,6 +1,7 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -10,7 +11,7 @@ const OAuthAppsTable = (): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const { value: data } = useEndpointData('oauth-apps.list');
+	const { value: data } = useEndpointData('/v1/oauth-apps.list');
 
 	const router = useRoute('admin-oauth-apps');
 

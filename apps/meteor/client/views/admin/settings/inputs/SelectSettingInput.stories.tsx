@@ -1,7 +1,8 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
+import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
 import SelectSettingInput from './SelectSettingInput';
 
 export default {
@@ -23,9 +24,9 @@ Default.args = {
 	label: 'Label',
 	placeholder: 'Placeholder',
 	values: [
-		{ key: '1', i18nLabel: '1' },
-		{ key: '2', i18nLabel: '2' },
-		{ key: '3', i18nLabel: '3' },
+		{ key: '1', i18nLabel: '1' as keyof typeof keys },
+		{ key: '2', i18nLabel: '2' as keyof typeof keys },
+		{ key: '3', i18nLabel: '3' as keyof typeof keys },
 	],
 };
 
@@ -35,9 +36,9 @@ Disabled.args = {
 	label: 'Label',
 	placeholder: 'Placeholder',
 	values: [
-		{ key: '1', i18nLabel: '1' },
-		{ key: '2', i18nLabel: '2' },
-		{ key: '3', i18nLabel: '3' },
+		{ key: '1', i18nLabel: '1' as keyof typeof keys },
+		{ key: '2', i18nLabel: '2' as keyof typeof keys },
+		{ key: '3', i18nLabel: '3' as keyof typeof keys },
 	],
 	disabled: true,
 };
@@ -49,9 +50,9 @@ WithValue.args = {
 	placeholder: 'Placeholder',
 	value: '2',
 	values: [
-		{ key: '1', i18nLabel: '1' },
-		{ key: '2', i18nLabel: '2' },
-		{ key: '3', i18nLabel: '3' },
+		{ key: '1', i18nLabel: '1' as keyof typeof keys },
+		{ key: '2', i18nLabel: '2' as keyof typeof keys },
+		{ key: '3', i18nLabel: '3' as keyof typeof keys },
 	],
 };
 
@@ -61,9 +62,9 @@ WithResetButton.args = {
 	label: 'Label',
 	placeholder: 'Placeholder',
 	values: [
-		{ key: '1', i18nLabel: '1' },
-		{ key: '2', i18nLabel: '2' },
-		{ key: '3', i18nLabel: '3' },
+		{ key: '1', i18nLabel: '1' as keyof typeof keys },
+		{ key: '2', i18nLabel: '2' as keyof typeof keys },
+		{ key: '3', i18nLabel: '3' as keyof typeof keys },
 	],
 	hasResetButton: true,
 };

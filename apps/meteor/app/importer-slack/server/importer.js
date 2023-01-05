@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Messages, ImportData } from '../../models/server';
@@ -155,6 +156,7 @@ export class SlackImporter extends Base {
 			}
 
 			this.converter.addUser(newUser);
+			Promise.await(Settings.incrementValueById('Slack_Importer_Count'));
 		}
 	}
 

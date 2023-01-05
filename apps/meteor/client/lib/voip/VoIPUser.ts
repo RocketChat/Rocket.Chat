@@ -4,42 +4,34 @@
  * This class encapsulates all the details of sip.js and exposes
  * a very simple functions and callback handlers to the outside world.
  * This class thus abstracts user from Browser specific media details as well as
- * SIP specific protol details.
+ * SIP specific protocol details.
  */
-import {
+import type {
 	CallStates,
 	ConnectionState,
 	ICallerInfo,
 	IQueueMembershipSubscription,
-	Operation,
 	SignalingSocketEvents,
 	SocketEventKeys,
-	UserState,
 	IMediaStreamRenderer,
 	VoIPUserConfiguration,
 	VoIpCallerInfo,
 	IState,
 	VoipEvents,
-	WorkflowTypes,
 } from '@rocket.chat/core-typings';
+import { Operation, UserState, WorkflowTypes } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import {
-	UserAgent,
-	UserAgentOptions,
-	Invitation,
-	InvitationAcceptOptions,
-	Session,
-	SessionState,
-	Registerer,
-	SessionInviteOptions,
-	RequestPendingError,
-} from 'sip.js';
-import { OutgoingByeRequest, URI } from 'sip.js/lib/core';
-import { SessionDescriptionHandler, SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
+import type { UserAgentOptions, InvitationAcceptOptions, Session, SessionInviteOptions } from 'sip.js';
+import { UserAgent, Invitation, SessionState, Registerer, RequestPendingError, Inviter } from 'sip.js';
+import type { OutgoingByeRequest, OutgoingRequestDelegate } from 'sip.js/lib/core';
+import { URI } from 'sip.js/lib/core';
+import type { SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
+import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
 import { toggleMediaStreamTracks } from './Helper';
+import LocalStream from './LocalStream';
 import { QueueAggregator } from './QueueAggregator';
-import Stream from './Stream';
+import RemoteStream from './RemoteStream';
 
 export class VoIPUser extends Emitter<VoipEvents> {
 	state: IState = {
@@ -47,9 +39,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		enableVideo: false,
 	};
 
-	private session: Session | undefined;
-
-	private remoteStream: Stream | undefined;
+	private remoteStream: RemoteStream | undefined;
 
 	userAgentOptions: UserAgentOptions = {};
 
@@ -58,12 +48,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	registerer: Registerer | undefined;
 
 	mediaStreamRendered?: IMediaStreamRenderer;
-
-	private _callState: CallStates = 'INITIAL';
-
-	private _callerInfo: ICallerInfo | undefined;
-
-	private _userState: UserState = UserState.IDLE;
 
 	private _connectionState: ConnectionState = 'INITIAL';
 
@@ -83,12 +67,37 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	private onlineNetworkHandler: () => void;
 
+	private optionsKeepaliveInterval = 5;
+
+	private optionsKeepAliveDebounceTimeInSec = 5;
+
+	private attemptRegistration = false;
+
+	protected session: Session | undefined;
+
+	protected _callState: CallStates = 'INITIAL';
+
+	protected _callerInfo: ICallerInfo | undefined;
+
+	protected _userState: UserState = UserState.IDLE;
+
+	protected _opInProgress: Operation = Operation.OP_NONE;
+
+	get operationInProgress(): Operation {
+		return this._opInProgress;
+	}
+
+	get userState(): UserState | undefined {
+		return this._userState;
+	}
+
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 		this.connectionRetryCount = this.config.connectionRetryCount;
 		this.stop = false;
+
 		this.onlineNetworkHandler = this.onNetworkRestored.bind(this);
 		this.offlineNetworkHandler = this.onNetworkLost.bind(this);
 	}
@@ -109,7 +118,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			server: this.config.webSocketURI,
 			connectionTimeout: 100, // Replace this with config
 			keepAliveInterval: 20,
-			// traceSip: true
+			// traceSip: true,
 		};
 		const sdpFactoryOptions = {
 			iceGatheringTimeout: 10,
@@ -137,11 +146,15 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		this._opInProgress = Operation.OP_CONNECT;
 		try {
 			this.registerer = new Registerer(this.userAgent);
+
 			this.userAgent.transport.onConnect = this.onConnected.bind(this);
 			this.userAgent.transport.onDisconnect = this.onDisconnected.bind(this);
 			window.addEventListener('online', this.onlineNetworkHandler);
 			window.addEventListener('offline', this.offlineNetworkHandler);
 			await this.userAgent.start();
+			if (this.config.enableKeepAliveUsingOptionsForUnstableNetworks) {
+				this.startOptionsPingForUnstableNetworks();
+			}
 		} catch (error) {
 			this._connectionState = 'ERROR';
 			throw error;
@@ -156,10 +169,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		/**
 		 * Re-registration post network recovery should be attempted
 		 * if it was previously registered or incall/onhold
-		 * */
+		 */
 
 		if (this.registerer && this.callState !== 'INITIAL') {
-			this.attemptRegistrationPostRecovery();
+			this.attemptRegistration = true;
 		}
 	}
 
@@ -176,8 +189,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * In case of remote side disconnection, if config.connectionRetryCount is -1,
 			 * attemptReconnection attempts continuously. Else stops after |config.connectionRetryCount|
 			 *
-			 * */
-			this.attemptReconnection();
+			 */
+			// this.attemptReconnection();
+			this.attemptReconnection(0, false);
 		}
 	}
 
@@ -191,15 +205,22 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			 * because after the network recovery and after reconnecting to the server,
 			 * the transport layer of SIPUA does not call onConnected. So by passing |checkRegistration = true |
 			 * the code will check if the endpoint was previously registered before the disconnection.
-			 * If such is the case, it will first unregister and then reregister.
+			 * If such is the case, it will first unregister and then re-register.
 			 * */
-			this.attemptReconnection(1, true);
+			this.attemptReconnection();
+			if (this.registerer && this.callState !== 'INITIAL') {
+				this.attemptRegistration = true;
+			}
 		}
 	}
 
 	onNetworkLost(): void {
 		this.networkEmitter.emit('localnetworkoffline');
 		this._connectionState = 'WAITING_FOR_NETWORK';
+	}
+
+	get userConfig(): VoIPUserConfiguration {
+		return this.config;
 	}
 
 	get callState(): CallStates {
@@ -211,7 +232,12 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	}
 
 	get callerInfo(): VoIpCallerInfo {
-		if (this.callState === 'IN_CALL' || this.callState === 'OFFER_RECEIVED' || this.callState === 'ON_HOLD') {
+		if (
+			this.callState === 'IN_CALL' ||
+			this.callState === 'OFFER_RECEIVED' ||
+			this.callState === 'ON_HOLD' ||
+			this.callState === 'OFFER_SENT'
+		) {
 			if (!this._callerInfo) {
 				throw new Error('[VoIPUser callerInfo] invalid state');
 			}
@@ -225,16 +251,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			state: this.callState,
 			userState: this._userState,
 		};
-	}
-
-	private _opInProgress: Operation = Operation.OP_NONE;
-
-	get operationInProgress(): Operation {
-		return this._opInProgress;
-	}
-
-	get userState(): UserState | undefined {
-		return this._userState;
 	}
 
 	/* Media Stream functions begin */
@@ -307,7 +323,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * This class handles such session state changes and takes necessary actions.
 	 */
 
-	private setupSessionEventHandlers(session: Session): void {
+	protected setupSessionEventHandlers(session: Session): void {
 		this.session?.stateChange.addListener((state: SessionState) => {
 			if (this.session !== session) {
 				return; // if our session has changed, just return
@@ -316,12 +332,32 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				case SessionState.Initial:
 					break;
 				case SessionState.Establishing:
+					this.emit('ringing', { userState: this._userState, callInfo: this._callerInfo });
 					break;
 				case SessionState.Established:
+					if (this._userState === UserState.UAC) {
+						/**
+						 * We need to decide about user-state ANSWER-RECEIVED for outbound.
+						 * This state is there for the symmetry of ANSWER-SENT.
+						 * ANSWER-SENT occurs when there is incoming invite. So then the UA
+						 * accepts a call, it sends the answer and state becomes ANSWER-SENT.
+						 * The call gets established only when the remote party sends ACK.
+						 *
+						 * But in case of UAC where the invite is sent out, there is no intermediate
+						 * state where the UA can be in ANSWER-RECEIVED. As soon this UA receives the answer,
+						 * it sends ack and changes the SessionState to established.
+						 *
+						 * So we do not have an actual state transitions from ANSWER-RECEIVED to IN-CALL.
+						 *
+						 * Nevertheless, this state is just added to maintain the symmetry. This can be safely removed.
+						 *
+						 * */
+						this._callState = 'ANSWER_RECEIVED';
+					}
 					this._opInProgress = Operation.OP_NONE;
-					this._callState = 'IN_CALL';
 					this.setupRemoteMedia();
-					this.emit('callestablished');
+					this._callState = 'IN_CALL';
+					this.emit('callestablished', { userState: this._userState, callInfo: this._callerInfo });
 					this.emit('stateChanged');
 					break;
 				case SessionState.Terminating:
@@ -370,10 +406,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 		const remoteStream = sdh.remoteMediaStream;
 		if (!remoteStream) {
-			throw new Error('Remote media stream undefiend.');
+			throw new Error('Remote media stream is undefined.');
 		}
 
-		this.remoteStream = new Stream(remoteStream);
+		this.remoteStream = new RemoteStream(remoteStream);
 		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);
@@ -528,11 +564,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * there is a UA using this socket. This is implemented below
 	 */
 
-	sendOptions(): void {
+	sendOptions(outgoingRequestDelegate?: OutgoingRequestDelegate): void {
 		const uri = new URI('sip', this.config.authUserName, this.config.sipRegistrarHostnameOrIP);
 		const outgoingMessage = this.userAgent?.userAgentCore.makeOutgoingRequestMessage('OPTIONS', uri, uri, uri, {});
 		if (outgoingMessage) {
-			this.userAgent?.userAgentCore.request(outgoingMessage);
+			this.userAgent?.userAgentCore.request(outgoingMessage, outgoingRequestDelegate);
 		}
 	}
 	/**
@@ -577,7 +613,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		// Call state must be in offer_received.
 		if (this._callState === 'OFFER_RECEIVED' && this._opInProgress === Operation.OP_PROCESS_INVITE) {
 			this._callState = 'ANSWER_SENT';
-			// Somethingis wrong, this session is not an instance of INVITE
+			// Something is wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
 				throw new Error('Session not instance of Invitation.');
 			}
@@ -615,8 +651,20 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 			return this.session.accept(invitationAcceptOptions);
 		}
-		throw new Error('Something went wront');
+		throw new Error('Something went wrong');
 	}
+
+	/* Helper routines for checking call actions BEGIN */
+
+	private canRejectCall(): boolean {
+		return ['OFFER_RECEIVED', 'OFFER_SENT'].includes(this._callState);
+	}
+
+	private canEndOrHoldCall(): boolean {
+		return ['ANSWER_SENT', 'ANSWER_RECEIVED', 'IN_CALL', 'ON_HOLD', 'OFFER_SENT'].includes(this._callState);
+	}
+
+	/* Helper routines for checking call actions END */
 
 	/**
 	 * Public method called from outside to reject a call.
@@ -626,7 +674,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'OFFER_RECEIVED') {
+		if (!this.canRejectCall()) {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		if (!(this.session instanceof Invitation)) {
@@ -643,7 +691,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
+		if (!this.canEndOrHoldCall()) {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 
@@ -658,6 +706,9 @@ export class VoIPUser extends Emitter<VoipEvents> {
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
+				}
+				if (this.session instanceof Inviter) {
+					return this.session.cancel();
 				}
 				throw new Error('Session not instance of Invitation.');
 			case SessionState.Established:
@@ -693,7 +744,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		if (!this.session) {
 			throw new Error('Session does not exist.');
 		}
-		if (this._callState !== 'ANSWER_SENT' && this._callState !== 'IN_CALL' && this._callState !== 'ON_HOLD') {
+		if (!this.canEndOrHoldCall()) {
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		this.handleHoldUnhold(holdState);
@@ -771,19 +822,19 @@ export class VoIPUser extends Emitter<VoipEvents> {
 
 	/**
 	 * Connection is lost in 3 ways
-	 * 1. When local network is lost (Router is disconeected, switching networks, devtools->network->offline)
+	 * 1. When local network is lost (Router is disconnected, switching networks, devtools->network->offline)
 	 * In this case, the SIP.js's transport layer does not detect the disconnection. Hence, it does not
 	 * call |onDisconnect|. To detect this kind of disconnection, window event listeners have been added.
 	 * These event listeners would be get called when the browser detects that network is offline or online.
 	 * When the network is restored, the code tries to reconnect. The useragent.transport "does not" generate the
 	 * onconnected event in this case as well. so onlineNetworkHandler calls attemptReconnection.
-	 * Which calls attemptRegistrationPostRecovery based on correct state. attemptRegistrationPostRecovery firts tries to
-	 * unregister and then reregister.
+	 * Which calls attemptRegistrationPostRecovery based on correct state. attemptRegistrationPostRecovery first tries to
+	 * unregister and then re-register.
 	 * Important note : We use the event listeners using bind function object offlineNetworkHandler and onlineNetworkHandler
 	 * It is done so because the same event handlers need to be used for removeEventListener, which becomes impossible
 	 * if done inline.
 	 *
-	 * 2. Computer goes to sleep. In this case onDisconnect is triggerred. The code tries to reconnect but cant go ahead
+	 * 2. Computer goes to sleep. In this case onDisconnect is triggered. The code tries to reconnect but cant go ahead
 	 * as it goes to sleep. On waking up, The attemptReconnection gets executed, connection is completed.
 	 * In this case, it generates onConnected event. In this onConnected event it calls attemptRegistrationPostRecovery
 	 *
@@ -792,7 +843,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 *
 	 * Retry count :
 	 * connectionRetryCount is the parameter called |Retry Count| in
-	 * Adminstration -> Call Center -> Server configuration -> Retry count.
+	 * Administration -> Call Center -> Server configuration -> Retry count.
 	 * The retry is implemented with backoff, maxbackoff = 8 seconds.
 	 * For continuous retries (In case Asterisk restart happens) Set this parameter to -1.
 	 *
@@ -804,7 +855,8 @@ export class VoIPUser extends Emitter<VoipEvents> {
 	 * In case of computer waking from sleep or asterisk getting restored, connect and disconnect events are generated.
 	 * In this case, re-registration should be triggered (by calling) only when onConnected gets called and not otherwise.
 	 */
-	attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): void {
+
+	async attemptReconnection(reconnectionAttempt = 0, checkRegistration = false): Promise<void> {
 		const reconnectionAttempts = this.connectionRetryCount;
 		this._connectionState = 'SERVER_RECONNECTING';
 		if (!this.userAgent) {
@@ -820,6 +872,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}
 
 		const reconnectionDelay = Math.pow(2, reconnectionAttempt % 4);
+
 		console.error(`Attempting to reconnect with backoff due to network loss. Backoff time [${reconnectionDelay}]`);
 		setTimeout(() => {
 			if (this.stop) {
@@ -832,10 +885,6 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				?.reconnect()
 				.then(() => {
 					this._connectionState = 'SERVER_CONNECTED';
-					if (!checkRegistration || !this.registerer || this.callState === 'INITIAL') {
-						return;
-					}
-					this.attemptRegistrationPostRecovery();
 				})
 				.catch(() => {
 					this.attemptReconnection(++reconnectionAttempt, checkRegistration);
@@ -843,7 +892,7 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		}, reconnectionDelay * 1000);
 	}
 
-	async attemptRegistrationPostRecovery(): Promise<void> {
+	async attemptPostRecoveryRoutine(): Promise<void> {
 		/**
 		 * It might happen that the whole network loss can happen
 		 * while there is ongoing call. In that case, we want to maintain
@@ -851,7 +900,78 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		 *
 		 * So after re-registration, it should remain in the same state.
 		 * */
+		this.sendOptions({
+			onAccept: (): void => {
+				this.attemptPostRecoveryRegistrationRoutine();
+			},
+			onReject: (error: unknown): void => {
+				console.error(`[${error}] Failed to do options in attemptPostRecoveryRoutine()`);
+			},
+		});
+	}
 
+	async sendKeepAliveAndWaitForResponse(withDebounce = false): Promise<boolean> {
+		const promise = new Promise<boolean>((resolve, reject) => {
+			let keepAliveAccepted = false;
+			let responseWaitTime = this.optionsKeepaliveInterval / 2;
+			if (withDebounce) {
+				responseWaitTime += this.optionsKeepAliveDebounceTimeInSec;
+			}
+
+			this.sendOptions({
+				onAccept: (): void => {
+					keepAliveAccepted = true;
+				},
+				onReject: (_error: unknown): void => {
+					console.error('Failed to do options.');
+				},
+			});
+			setTimeout(async () => {
+				if (!keepAliveAccepted) {
+					reject(false);
+				} else {
+					if (this.attemptRegistration) {
+						this.attemptPostRecoveryRoutine();
+						this.attemptRegistration = false;
+					}
+					resolve(true);
+				}
+			}, responseWaitTime * 1000);
+		});
+		return promise;
+	}
+
+	async startOptionsPingForUnstableNetworks(): Promise<void> {
+		setTimeout(async () => {
+			if (!this.userAgent || this.stop) {
+				return;
+			}
+			if (this._connectionState !== 'SERVER_RECONNECTING') {
+				let isConnected = false;
+				try {
+					await this.sendKeepAliveAndWaitForResponse();
+					isConnected = true;
+				} catch (e) {
+					console.error(`[${e}] Failed to do options ping.`);
+				} finally {
+					// Send event only if it's a "change" on the status (avoid unnecessary event flooding)
+					!isConnected && this.networkEmitter.emit('disconnected');
+					isConnected && this.networkEmitter.emit('connected');
+				}
+			}
+			// Each seconds check if the network can reach asterisk. If not, try to reconnect
+			this.startOptionsPingForUnstableNetworks();
+		}, this.optionsKeepaliveInterval * 1000);
+	}
+
+	async attemptPostRecoveryRegistrationRoutine(): Promise<void> {
+		/**
+		 * It might happen that the whole network loss can happen
+		 * while there is ongoing call. In that case, we want to maintain
+		 * the call.
+		 *
+		 * So after re-registration, it should remain in the same state.
+		 * */
 		const promise = new Promise<void>((_resolve, _reject) => {
 			this.registerer?.unregister({
 				all: true,
@@ -867,7 +987,11 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				},
 			});
 		});
-		await promise;
+		try {
+			await promise;
+		} catch (error) {
+			console.error(`[${error}] While waiting for unregister promise`);
+		}
 		this.registerer?.register({
 			requestDelegate: {
 				onReject: (error): void => {
@@ -877,5 +1001,58 @@ export class VoIPUser extends Emitter<VoipEvents> {
 				},
 			},
 		});
+	}
+
+	async changeAudioInputDevice(constraints: MediaStreamConstraints): Promise<boolean> {
+		if (!this.session) {
+			console.warn('changeAudioInputDevice() : No session. Returning');
+			return false;
+		}
+		const newStream = await LocalStream.requestNewStream(constraints, this.session);
+		if (!newStream) {
+			console.warn('changeAudioInputDevice() : Unable to get local stream. Returning');
+			return false;
+		}
+		const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+		if (!peerConnection) {
+			console.warn('changeAudioInputDevice() : No peer connection. Returning');
+			return false;
+		}
+		LocalStream.replaceTrack(peerConnection, newStream, 'audio');
+		return true;
+	}
+
+	// Commenting this as Video Configuration is not part of the scope for now
+	// async changeVideoInputDevice(selectedVideoDevices: IDevice): Promise<boolean> {
+	// 	if (!this.session) {
+	// 		console.warn('changeVideoInputDevice() : No session. Returning');
+	// 		return false;
+	// 	}
+	// 	if (!this.config.enableVideo || this.deviceManager.hasVideoInputDevice()) {
+	// 		console.warn('changeVideoInputDevice() : Unable change video device. Returning');
+	// 		return false;
+	// 	}
+	// 	this.deviceManager.changeVideoInputDevice(selectedVideoDevices);
+	// 	const newStream = await LocalStream.requestNewStream(this.deviceManager.getConstraints('video'), this.session);
+	// 	if (!newStream) {
+	// 		console.warn('changeVideoInputDevice() : Unable to get local stream. Returning');
+	// 		return false;
+	// 	}
+	// 	const { peerConnection } = this.session?.sessionDescriptionHandler as SessionDescriptionHandler;
+	// 	if (!peerConnection) {
+	// 		console.warn('changeVideoInputDevice() : No peer connection. Returning');
+	// 		return false;
+	// 	}
+	// 	LocalStream.replaceTrack(peerConnection, newStream, 'video');
+	// 	return true;
+	// }
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+	async makeCallURI(_callee: string, _mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		throw new Error('Not implemented');
+	}
+
+	async makeCall(_calleeNumber: string): Promise<void> {
+		throw new Error('Not implemented');
 	}
 }

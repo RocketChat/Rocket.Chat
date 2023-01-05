@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import {
@@ -20,7 +21,7 @@ const InvitesPage = (): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const { phase, value, reload } = useEndpointData('listInvites');
+	const { phase, value, reload } = useEndpointData('/v1/listInvites');
 
 	const onRemove = (removeInvite: () => void): void => {
 		const confirmRemove = async (): Promise<void> => {

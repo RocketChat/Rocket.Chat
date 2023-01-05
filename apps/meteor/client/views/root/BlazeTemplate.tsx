@@ -1,8 +1,9 @@
 import { Blaze } from 'meteor/blaze';
-import { EJSONable } from 'meteor/ejson';
+import type { EJSONable } from 'meteor/ejson';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
-import React, { FC, useEffect, useRef } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 type BlazeTemplateProps = {
 	template: keyof typeof Template;

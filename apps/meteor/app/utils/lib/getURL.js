@@ -1,7 +1,7 @@
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { isURL } from './isURL';
+import { isURL } from '../../../lib/utils/isURL';
 import { settings } from '../../settings';
 
 function getCloudUrl(path, _site_url, cloudRoute, cloudParams = {}) {

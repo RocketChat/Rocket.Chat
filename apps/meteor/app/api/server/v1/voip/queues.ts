@@ -1,12 +1,12 @@
 import { Match, check } from 'meteor/check';
 import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
+import { Voip } from '@rocket.chat/core-services';
 
-import { Voip } from '../../../../../server/sdk';
 import { API } from '../../api';
 
 API.v1.addRoute(
 	'voip/queues.getSummary',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async get() {
 			const queueSummary = await Voip.getQueueSummary();
@@ -17,7 +17,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip/queues.getQueuedCallsForThisExtension',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async get() {
 			check(
@@ -34,7 +34,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip/queues.getMembershipSubscription',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async get() {
 			check(

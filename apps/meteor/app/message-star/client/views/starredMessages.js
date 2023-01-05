@@ -61,7 +61,10 @@ Template.starredMessages.onCreated(function () {
 
 	this.autorun(async () => {
 		const limit = this.limit.get();
-		const { messages, total } = await APIClient.v1.get(`chat.getStarredMessages?roomId=${this.rid}&count=${limit}`);
+		const { messages, total } = await APIClient.get('/v1/chat.getStarredMessages', {
+			roomId: this.rid,
+			count: limit,
+		});
 
 		upsertMessageBulk({ msgs: messages }, this.messages);
 

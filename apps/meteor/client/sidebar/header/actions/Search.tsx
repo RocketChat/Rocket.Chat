@@ -1,13 +1,12 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect, useRef, ReactElement, ComponentProps } from 'react';
+import type { VFC, HTMLAttributes } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import tinykeys from 'tinykeys';
 
 import SearchList from '../../search/SearchList';
 
-type SearchProps = Omit<ComponentProps<typeof Sidebar.TopBar.Action>, 'icon'>;
-
-const Search = (props: SearchProps): ReactElement => {
+const Search: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const [searchOpen, setSearchOpen] = useState(false);
 
 	const ref = useRef<HTMLElement>(null);

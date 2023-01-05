@@ -1,4 +1,4 @@
-import { Base } from '../../../../../app/models';
+import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Unit Monitors model
  */
@@ -38,6 +38,10 @@ export class LivechatUnitMonitors extends Base {
 
 	removeByUnitId(unitId) {
 		this.remove({ unitId });
+	}
+
+	removeByMonitorId(monitorId) {
+		this.remove({ monitorId });
 	}
 }
 

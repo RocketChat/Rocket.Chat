@@ -1,7 +1,8 @@
 import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { FC, useEffect, useState } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
@@ -227,7 +228,7 @@ const CallPage: FC<CallPageProps> = ({
 							<Icon name='arrow-expand' size={iconSize} color='white' />
 						</Button>
 					)}
-					<Button square primary danger data-title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
+					<Button square danger data-title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
 						<Icon name='phone-off' size={iconSize} color='white' />
 					</Button>
 				</ButtonGroup>

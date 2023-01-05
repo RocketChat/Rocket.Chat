@@ -1,6 +1,7 @@
 import { useContext, useMemo } from 'react';
 
-import { QueryStringParameters, RouteParameters, RouterContext } from '../RouterContext';
+import type { QueryStringParameters, RouteParameters } from '../RouterContext';
+import { RouterContext } from '../RouterContext';
 
 type Route = {
 	getPath: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
@@ -14,10 +15,9 @@ export const useRoute = (name: string): Route => {
 
 	return useMemo<Route>(
 		() => ({
-			getPath: (parameters, queryStringParameters): string | undefined =>
-				queryRoutePath(name, parameters, queryStringParameters).getCurrentValue(),
+			getPath: (parameters, queryStringParameters): string | undefined => queryRoutePath(name, parameters, queryStringParameters)[1](),
 			getUrl: (parameters, queryStringParameters): ReturnType<Route['getUrl']> =>
-				queryRouteUrl(name, parameters, queryStringParameters).getCurrentValue(),
+				queryRouteUrl(name, parameters, queryStringParameters)[1](),
 			push: (parameters, queryStringParameters): ReturnType<Route['push']> => pushRoute(name, parameters, queryStringParameters),
 			replace: (parameters, queryStringParameters): ReturnType<Route['replace']> => replaceRoute(name, parameters, queryStringParameters),
 		}),

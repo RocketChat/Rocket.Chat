@@ -1,8 +1,9 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Button, Chevron, Flex, Margins, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
 
@@ -43,9 +44,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 		<>
 			<Flex.Container alignItems='center' justifyContent='center'>
 				<Box>
-					<Button ghost square small onClick={onPreviousDateClick}>
-						<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
-					</Button>
+					<IconButton icon='chevron-down' small onClick={onPreviousDateClick} style={{ verticalAlign: 'middle' }} />
 					<Flex.Item basis='50%'>
 						<Margins inline='x8'>
 							<Box is='span' style={{ textAlign: 'center' }}>
@@ -53,9 +52,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 							</Box>
 						</Margins>
 					</Flex.Item>
-					<Button ghost square small disabled={displacement === 0} onClick={onNextDateClick}>
-						<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
-					</Button>
+					<IconButton icon='chevron-down' small disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
 			</Flex.Container>
 			<Flex.Container>
@@ -82,7 +79,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 										}}
 										colors={[
 											// TODO: Get it from theme
-											colors.b500,
+											colors.p500,
 										]}
 										enableLabel={false}
 										enableGridY={false}

@@ -6,10 +6,6 @@ import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOption
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import {
-	getDirectMessageByIdWithOptionToJoin,
-	getDirectMessageByNameOrIdWithOptionToJoin,
-} from './getDirectMessageByNameOrIdWithOptionToJoin';
 
 export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
@@ -30,9 +26,10 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 				});
 				break;
 			case '@':
-				room = getDirectMessageByNameOrIdWithOptionToJoin({
+				room = getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
+					type: 'd',
 				});
 				break;
 			default:
@@ -50,9 +47,11 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 				}
 
 				// We didn't get a room, let's try finding direct messages
-				room = getDirectMessageByIdWithOptionToJoin({
+				room = getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
+					tryDirectByUserIdOnly: true,
+					type: 'd',
 				});
 				if (room) {
 					break;

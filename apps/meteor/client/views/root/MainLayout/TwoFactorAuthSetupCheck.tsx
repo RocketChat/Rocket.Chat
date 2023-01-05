@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useSetting } from '@rocket.chat/ui-contexts';
-import React, { lazy, ReactElement, ReactNode, useCallback } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { lazy, useCallback } from 'react';
 
 import { Roles } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
@@ -19,7 +20,7 @@ const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactEl
 				return false;
 			}
 
-			const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+			const mandatoryRole = Roles.findOne({ _id: { $in: user.roles ?? [] }, mandatory2fa: true });
 			return mandatoryRole !== undefined && tfaEnabled;
 		}, [tfaEnabled, user]),
 	);

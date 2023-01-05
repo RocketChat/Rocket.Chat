@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -17,5 +17,5 @@ export default {
 export const Default: ComponentStory<typeof AddUsers> = (args) => <AddUsers {...args} />;
 Default.storyName = 'AddUsers';
 Default.args = {
-	value: 'rocket.cat',
+	users: ['rocket.cat'],
 };

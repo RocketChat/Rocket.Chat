@@ -5,7 +5,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import '../../theme/client/imports/components/emojiPicker.css';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
@@ -152,7 +151,7 @@ Template.emojiPicker.events({
 	'click .add-custom'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		FlowRouter.go('/admin/emoji-custom');
+		FlowRouter.go('/admin/emoji-custom/new');
 		EmojiPicker.close();
 	},
 	'click .category-link'(event) {

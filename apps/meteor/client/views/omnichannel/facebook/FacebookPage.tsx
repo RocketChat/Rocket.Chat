@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, FieldGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, Dispatch } from 'react';
+import type { FC, Dispatch } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import PageToggleAssembler from './PageToggleAssembler';
@@ -64,7 +65,7 @@ const FacebookPage: FC<FacebookPageProps> = ({ pages, enabled, hasToken, onToggl
 							</Box>
 							<ButtonGroup stretch vertical>
 								<Button onClick={onRefresh}>{t('Reload_Pages')}</Button>
-								<Button danger onClick={onDisable}>
+								<Button secondary danger onClick={onDisable}>
 									{t('Disable')}
 								</Button>
 							</ButtonGroup>

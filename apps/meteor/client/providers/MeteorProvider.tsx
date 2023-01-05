@@ -1,11 +1,13 @@
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
-import AttachmentProvider from '../components/Message/Attachments/providers/AttachmentProvider';
+import AttachmentProvider from './AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
+import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
@@ -17,38 +19,43 @@ import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
+import VideoConfProvider from './VideoConfProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
 		<ServerProvider>
 			<RouterProvider>
-				<TranslationProvider>
-					<SessionProvider>
-						<TooltipProvider>
-							<ToastMessagesProvider>
-								<SettingsProvider>
+				<SettingsProvider>
+					<TranslationProvider>
+						<SessionProvider>
+							<TooltipProvider>
+								<ToastMessagesProvider>
 									<LayoutProvider>
 										<AvatarUrlProvider>
 											<CustomSoundProvider>
 												<UserProvider>
-													<AuthorizationProvider>
-														<CallProvider>
-															<OmnichannelProvider>
-																<ModalProvider>
-																	<AttachmentProvider>{children}</AttachmentProvider>
-																</ModalProvider>
-															</OmnichannelProvider>
-														</CallProvider>
-													</AuthorizationProvider>
+													<DeviceProvider>
+														<ModalProvider>
+															<AuthorizationProvider>
+																<VideoConfProvider>
+																	<CallProvider>
+																		<OmnichannelProvider>
+																			<AttachmentProvider>{children}</AttachmentProvider>
+																		</OmnichannelProvider>
+																	</CallProvider>
+																</VideoConfProvider>
+															</AuthorizationProvider>
+														</ModalProvider>
+													</DeviceProvider>
 												</UserProvider>
 											</CustomSoundProvider>
 										</AvatarUrlProvider>
 									</LayoutProvider>
-								</SettingsProvider>
-							</ToastMessagesProvider>
-						</TooltipProvider>
-					</SessionProvider>
-				</TranslationProvider>
+								</ToastMessagesProvider>
+							</TooltipProvider>
+						</SessionProvider>
+					</TranslationProvider>
+				</SettingsProvider>
 			</RouterProvider>
 		</ServerProvider>
 	</ConnectionStatusProvider>

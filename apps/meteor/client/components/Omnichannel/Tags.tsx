@@ -1,16 +1,16 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, ReactElement, useState } from 'react';
-import { useSubscription } from 'use-subscription';
+import type { ChangeEvent, ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { formsSubscription } from '../../views/omnichannel/additionalForms';
+import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
 const Tags = ({
-	tags,
+	tags = [],
 	handler,
 	error,
 	tagRequired,
@@ -21,12 +21,14 @@ const Tags = ({
 	tagRequired?: boolean;
 }): ReactElement => {
 	const t = useTranslation();
-	const forms = useSubscription<any>(formsSubscription);
+	const forms = useFormsSubscription() as any;
 
-	const { value: tagsResult, phase: stateTags } = useEndpointData('livechat/tags.list');
+	const { value: tagsResult, phase: stateTags } = useEndpointData('/v1/livechat/tags');
 
+	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
 	const { useCurrentChatTags } = forms;
-	const EETagsComponent = useCurrentChatTags();
+	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
+	const EETagsComponent = useCurrentChatTags?.();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

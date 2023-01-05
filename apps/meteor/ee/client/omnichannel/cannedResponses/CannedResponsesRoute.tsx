@@ -1,7 +1,8 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
@@ -44,7 +45,7 @@ const CannedResponsesRoute: FC = () => {
 	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
 	const { handleSharing, handleCreatedBy, handleText } = handlers;
 
-	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+	const [params, setParams] = useState<{ current: number; itemsPerPage: 25 | 50 | 100 }>({
 		current: 0,
 		itemsPerPage: 25,
 	});
@@ -103,8 +104,8 @@ const CannedResponsesRoute: FC = () => {
 		[t],
 	);
 
-	const { value: data, reload } = useEndpointData('canned-responses', query);
-	const { value: totalData, phase: totalDataPhase, reload: totalDataReload } = useEndpointData('canned-responses');
+	const { value: data, reload } = useEndpointData('/v1/canned-responses', query);
+	const { value: totalData, phase: totalDataPhase, reload: totalDataReload } = useEndpointData('/v1/canned-responses');
 
 	const getTime = useFormatDateAndTime();
 
@@ -120,7 +121,7 @@ const CannedResponsesRoute: FC = () => {
 				>
 					{t('Shortcut')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'sharing'} direction={sort[1]} active={sort[0] === 'sharing'} onClick={onHeaderClick} sort='sharing'>
+				<GenericTable.HeaderCell key={'sharing'} direction={sort[1]} active={sort[0] === 'scope'} onClick={onHeaderClick} sort='scope'>
 					{t('Sharing')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
@@ -135,9 +136,9 @@ const CannedResponsesRoute: FC = () => {
 				<GenericTable.HeaderCell
 					key={'createdAt'}
 					direction={sort[1]}
-					active={sort[0] === 'createdAt'}
+					active={sort[0] === '_createdAt'}
 					onClick={onHeaderClick}
-					sort='createdAt'
+					sort='_createdAt'
 				>
 					{t('Created_at')}
 				</GenericTable.HeaderCell>,

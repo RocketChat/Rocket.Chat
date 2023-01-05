@@ -1,11 +1,12 @@
-import { isErrorType, UIKitUserInteractionResult, UiKitPayload } from '@rocket.chat/core-typings';
+import type { UIKitUserInteractionResult, UiKitPayload } from '@rocket.chat/core-typings';
+import { isErrorType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
 const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
-	const [state, setState] = useSafely(useState<S>(initialState));
+	const [state, setState] = useSafely(useState(initialState));
 
 	const { viewId } = state;
 

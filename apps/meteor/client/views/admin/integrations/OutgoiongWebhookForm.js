@@ -2,12 +2,10 @@ import { Field, TextInput, Box, ToggleSwitch, Icon, TextAreaInput, FieldGroup, M
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback } from 'react';
 
-import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
+import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
 import Page from '../../../components/Page';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
-import { useExampleData } from './exampleIncomingData';
-
-const { outgoingEvents } = eventList;
+import { useExampleData } from './useExampleIncomingData';
 
 export default function OutgoingWebhookForm({ formValues, formHandlers, append, ...props }) {
 	const t = useTranslation();
@@ -23,7 +21,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		username,
 		name,
 		alias,
-		avatar: avatarUrl,
+		avatar,
 		emoji,
 		token,
 		scriptEnabled,
@@ -77,9 +75,9 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 		() => ({
 			...(alias && { alias }),
 			...(emoji && { emoji }),
-			...(avatarUrl && { avatar: avatarUrl }),
+			...(avatar && { avatar }),
 		}),
-		[alias, avatarUrl, emoji],
+		[alias, avatar, emoji],
 	);
 
 	const [exampleData] = useExampleData({
@@ -241,7 +239,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Row>
 										<TextInput
 											flexGrow={1}
-											value={avatarUrl}
+											value={avatar}
 											onChange={handleAvatar}
 											addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
 										/>
@@ -250,7 +248,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Hint>{t('Should_be_a_URL_of_an_image')}</Field.Hint>
 								</Field>
 							),
-							[avatarUrl, handleAvatar, t],
+							[avatar, handleAvatar, t],
 						)}
 						{useMemo(
 							() => (

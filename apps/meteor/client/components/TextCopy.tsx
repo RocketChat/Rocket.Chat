@@ -1,6 +1,7 @@
 import { Box, Icon, Button, Scrollable } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 const defaultWrapperRenderer = (text: string): ReactElement => (
 	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie='x4' flexGrow={1} maxHeight='x108'>
@@ -39,7 +40,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			{...props}
 		>
 			<Scrollable vertical>{wrapper(text)}</Scrollable>
-			<Button ghost square small flexShrink={0} onClick={onClick} title={t('Copy')}>
+			<Button secondary square small flexShrink={0} onClick={onClick} title={t('Copy')}>
 				<Icon name='copy' size='x20' />
 			</Button>
 		</Box>

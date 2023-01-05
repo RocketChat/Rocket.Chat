@@ -6,6 +6,8 @@ import { oembedCron } from '../cron/oembed';
 import { statsCron } from '../cron/statistics';
 import { npsCron } from '../cron/nps';
 import { federationCron } from '../cron/federation';
+import { videoConferencesCron } from '../cron/videoConferences';
+import { userDataDownloadsCron } from '../cron/userDataDownloads';
 
 const logger = new Logger('SyncedCron');
 
@@ -21,6 +23,8 @@ Meteor.defer(function () {
 	statsCron(SyncedCron, logger);
 	npsCron(SyncedCron);
 	federationCron(SyncedCron);
+	videoConferencesCron(SyncedCron);
+	userDataDownloadsCron(SyncedCron);
 
 	SyncedCron.start();
 });

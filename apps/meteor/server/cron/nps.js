@@ -1,5 +1,6 @@
-import { settings } from '../../app/settings';
-import { NPS } from '../sdk';
+import { NPS } from '@rocket.chat/core-services';
+
+import { settings } from '../../app/settings/server';
 
 function runNPS() {
 	// if NPS is disabled close any pending scheduled survey

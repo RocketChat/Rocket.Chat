@@ -1,3 +1,4 @@
+import mitt from 'mitt';
 import { route } from 'preact-router';
 
 import { Livechat } from '../api';
@@ -20,7 +21,12 @@ const getAgent = (triggerAction) => {
 
 		if (params.sender === 'queue') {
 			const { state } = store;
-			const { defaultAgent, iframe: { guest: { department } } } = state;
+			const {
+				defaultAgent,
+				iframe: {
+					guest: { department },
+				},
+			} = state;
 			if (defaultAgent && defaultAgent.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
 				return resolve(defaultAgent); // cache valid for 1
 			}
@@ -32,7 +38,7 @@ const getAgent = (triggerAction) => {
 				return reject(error);
 			}
 
-			store.setState({ defaultAgent: { ...agent, ts: Date.now() } });
+			store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
 			resolve(agent);
 		} else if (params.sender === 'custom') {
 			resolve({
@@ -59,6 +65,7 @@ class Triggers {
 			this._triggers = [];
 			this._enabled = true;
 			Triggers.instance = this;
+			this.callbacks = mitt();
 		}
 
 		return Triggers.instance;
@@ -69,7 +76,11 @@ class Triggers {
 			return;
 		}
 
-		const { token, firedTriggers = [], config: { triggers } } = store.state;
+		const {
+			token,
+			firedTriggers = [],
+			config: { triggers },
+		} = store.state;
 		Livechat.credentials.token = token;
 
 		if (!(triggers && triggers.length > 0)) {
@@ -89,8 +100,8 @@ class Triggers {
 	}
 
 	async fire(trigger) {
-		const { token, firedTriggers = [] } = store.state;
-		if (!this._enabled) {
+		const { token, firedTriggers = [], user } = store.state;
+		if (!this._enabled || user) {
 			return;
 		}
 		const { actions } = trigger;
@@ -112,7 +123,12 @@ class Triggers {
 
 					await store.setState({
 						triggered: true,
-						messages: upsert(store.state.messages, message, ({ _id }) => _id === message._id, ({ ts }) => ts),
+						messages: upsert(
+							store.state.messages,
+							message,
+							({ _id }) => _id === message._id,
+							({ ts }) => ts,
+						),
 					});
 					await processUnread();
 
@@ -121,7 +137,10 @@ class Triggers {
 						parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
 					}
 
-					route('/trigger-messages');
+					const foundCondition = trigger.conditions.find((c) => c.name === 'chat-opened-by-visitor');
+					if (!foundCondition) {
+						route('/trigger-messages');
+					}
 					store.setState({ minimized: false });
 				});
 			}
@@ -136,11 +155,6 @@ class Triggers {
 
 	processRequest(request) {
 		this._requests.push(request);
-		if (!this._started) {
-			return;
-		}
-
-		this.processTriggers();
 	}
 
 	processTriggers() {
@@ -163,13 +177,10 @@ class Triggers {
 						break;
 					case 'chat-opened-by-visitor':
 						const openFunc = () => {
-							const { user } = store.state;
-							if (user) {
-								store.off('change', openFunc);
-								this.fire(trigger);
-							}
+							this.fire(trigger);
+							this.callbacks.off('chat-opened-by-visitor', openFunc);
 						};
-						store.on('change', openFunc);
+						this.callbacks.on('chat-opened-by-visitor', openFunc);
 						break;
 				}
 			});

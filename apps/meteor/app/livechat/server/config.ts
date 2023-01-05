@@ -226,6 +226,7 @@ Meteor.startup(function () {
 			type: 'boolean',
 			group: 'Omnichannel',
 			i18nLabel: 'Accept_new_livechats_when_agent_is_idle',
+			public: true,
 			enableQuery: omnichannelEnabledQuery,
 		});
 
@@ -471,15 +472,6 @@ Meteor.startup(function () {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		this.add('Livechat_RDStation_Token', '', {
-			type: 'string',
-			group: 'Omnichannel',
-			public: false,
-			section: 'RD Station',
-			i18nLabel: 'RDStation_Token',
-			enableQuery: omnichannelEnabledQuery,
-		});
-
 		this.add('Livechat_Routing_Method', 'Auto_Selection', {
 			type: 'select',
 			group: 'Omnichannel',
@@ -631,13 +623,10 @@ Meteor.startup(function () {
 			section: 'Video_and_Audio_Call',
 			values: [
 				{ key: 'none', i18nLabel: 'None' },
-				{ key: 'Jitsi', i18nLabel: 'Jitsi' },
-				{ key: 'WebRTC', i18nLabel: 'WebRTC' },
+				{ key: 'default-provider', i18nLabel: 'Default Provider' },
 			],
 			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
 			i18nLabel: 'Call_provider',
-			alert:
-				'The WebRTC provider is currently in alpha!<br/>We recommend using Firefox Browser for this feature since there are some known bugs within other browsers that still need to be fixed.<br/>Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});

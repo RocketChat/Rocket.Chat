@@ -3,25 +3,28 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/apps-engine": "^1.31.0",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/icons": "^0.31.9",
-		"@rocket.chat/message-parser": "^0.31.6",
-		"@rocket.chat/ui-kit": "^0.31.6",
-		"@types/mongodb": "^3.6.10",
-		"eslint": "^8.12.0",
-		"prettier": "^2.6.2",
-		"typescript": "~4.3.5"
+		"eslint": "^8.29.0",
+		"mongodb": "^4.12.1",
+		"prettier": "^2.7.1",
+		"typescript": "~4.5.5"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
 		"build": "rm -rf dist && tsc -p tsconfig.json"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"@rocket.chat/apps-engine": "^1.32.0",
+		"@rocket.chat/icons": "next",
+		"@rocket.chat/message-parser": "next",
+		"@rocket.chat/ui-kit": "next"
+	}
 }

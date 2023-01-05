@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-own={{isOwnMessageAndNotSystem}} data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}" data-qa-type="message">
+	<li data-qa-id="UserMessage" id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-own={{isOwnMessageAndNotSystem}} data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}" data-qa-type="message">
 		{{#if isThreadReply}}
 			{{> messageThread parentMessage=parentMessage msg=msg tmid=msg.tmid class=bodyClass following=msg.following}}
 			<div class="thread-replied js-open-thread">
@@ -132,7 +132,7 @@
 				{{/each}}
 			{{/if}}
 			{{#if hasAttachments}}
-				{{> reactAttachments attachments=msg.attachments file=msg.file }}
+				{{> reactAttachments attachments=msg.attachments file=msg.file messageContext=messageContext chatContext=chatContext }}
 			{{/if}}
 
 
@@ -143,9 +143,8 @@
 			{{/with}}
 			{{#unless hideMessageActions}}
 				<div class="message-actions">
-
 					<div class="message-actions__buttons">
-						{{#each action in messageActions 'message'}}
+						{{#each action in messageActions}}
 							<button class="message-actions__button" data-qa-type="message-action-menu"  data-message-action="{{action.id}}" title="{{_ action.label}}">
 									{{> icon block="message-actions__button-icon" icon=action.icon}}
 							</button>

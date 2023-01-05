@@ -1,14 +1,15 @@
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
-type Action = {
-	label: string;
-	icon: string;
-	action: () => any;
+export type Action = {
+	label: ReactNode;
+	icon?: string;
+	action: () => void;
 };
 
 type MenuOption = {
-	label: { label: string; icon: string };
-	action: Function;
+	label: { label: ReactNode; icon?: string };
+	action: () => void;
 };
 
 const mapOptions = ([key, { action, label, icon }]: [string, Action]): [string, MenuOption] => [
@@ -20,7 +21,9 @@ const mapOptions = ([key, { action, label, icon }]: [string, Action]): [string, 
 ];
 
 export const useActionSpread = (
-	actions: Action[],
+	actions: {
+		[key: string]: Action;
+	},
 	size = 2,
 ): { actions: [string, Action][]; menu: { [id: string]: MenuOption } | undefined } =>
 	useMemo(() => {

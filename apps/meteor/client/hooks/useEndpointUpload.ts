@@ -1,9 +1,9 @@
-import { useToastMessageDispatch, UploadResult, useUpload } from '@rocket.chat/ui-contexts';
+import type { UploadResult } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useUpload } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 export const useEndpointUpload = (
-	endpoint: string,
-	params = {},
+	endpoint: Parameters<typeof useUpload>[0],
 	successMessage: string,
 ): ((formData: FormData) => Promise<{ success: boolean }>) => {
 	const sendData = useUpload(endpoint);
@@ -12,7 +12,7 @@ export const useEndpointUpload = (
 	return useCallback(
 		async (formData: FormData) => {
 			try {
-				const data = sendData(params, formData);
+				const data = sendData(formData);
 
 				const promise = data instanceof Promise ? data : data.promise;
 
@@ -26,10 +26,10 @@ export const useEndpointUpload = (
 
 				return result as any;
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 				return { success: false };
 			}
 		},
-		[dispatchToastMessage, params, sendData, successMessage],
+		[dispatchToastMessage, sendData, successMessage],
 	);
 };

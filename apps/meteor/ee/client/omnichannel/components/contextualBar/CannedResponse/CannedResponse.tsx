@@ -1,7 +1,8 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEventHandler } from 'react';
+import type { FC, MouseEventHandler } from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
@@ -34,7 +35,7 @@ const CannedResponse: FC<{
 						<Box fontScale='p2m' mbe='8px'>
 							{t('Shortcut')}:
 						</Box>
-						<Box fontScale='c1' color='info'>
+						<Box fontScale='c1' color='hint'>
 							!{shortcut}
 						</Box>
 					</Box>
@@ -42,7 +43,7 @@ const CannedResponse: FC<{
 						<Box fontScale='p2m' mbe='8px'>
 							{t('Content')}:
 						</Box>
-						<Box fontScale='c1' color='info'>
+						<Box fontScale='c1' color='hint'>
 							"{text}"
 						</Box>
 					</Box>
@@ -50,7 +51,7 @@ const CannedResponse: FC<{
 						<Box fontScale='p2m' mbe='8px'>
 							{t('Sharing')}:
 						</Box>
-						<Box fontScale='c1' color='info'>
+						<Box fontScale='c1' color='hint'>
 							{scope}
 						</Box>
 					</Box>

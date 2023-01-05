@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { LivechatVisitors, ReadReceipts } from '@rocket.chat/models';
 
-import { Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models/server';
-import { ReadReceipts } from '../../../../app/models/server/raw';
+import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -89,8 +89,8 @@ export const ReadReceipt = {
 
 			try {
 				await ReadReceipts.insertMany(receipts);
-			} catch (e) {
-				SystemLogger.error('Error inserting read receipts per user');
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error inserting read receipts per user', err });
 			}
 		}
 	},
@@ -98,11 +98,13 @@ export const ReadReceipt = {
 	async getReceipts(message) {
 		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
 
-		return receipts.map((receipt) => ({
-			...receipt,
-			user: receipt.token
-				? LivechatVisitors.getVisitorByToken(receipt.token, { fields: { username: 1, name: 1 } })
-				: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
-		}));
+		return Promise.all(
+			receipts.map(async (receipt) => ({
+				...receipt,
+				user: receipt.token
+					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
+					: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+			})),
+		);
 	},
 };

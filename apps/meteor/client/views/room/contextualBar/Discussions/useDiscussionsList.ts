@@ -4,7 +4,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { DiscussionsList, DiscussionsListOptions } from '../../../../lib/lists/DiscussionsList';
+import type { DiscussionsListOptions } from '../../../../lib/lists/DiscussionsList';
+import { DiscussionsList } from '../../../../lib/lists/DiscussionsList';
 import { getConfig } from '../../../../lib/utils/getConfig';
 
 export const useDiscussionsList = (
@@ -17,7 +18,7 @@ export const useDiscussionsList = (
 } => {
 	const discussionsList = useMemo(() => new DiscussionsList(options), [options]);
 
-	const getDiscussions = useEndpoint('GET', 'chat.getDiscussions');
+	const getDiscussions = useEndpoint('GET', '/v1/chat.getDiscussions');
 
 	const fetchMessages = useCallback(
 		async (start, end) => {

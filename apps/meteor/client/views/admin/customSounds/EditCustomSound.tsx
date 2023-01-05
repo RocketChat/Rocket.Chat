@@ -1,5 +1,6 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -14,7 +15,7 @@ type EditCustomSoundProps = {
 function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement {
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('custom-sounds.list', query);
+	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-sounds.list', query);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (
@@ -32,7 +33,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button primary danger disabled>
+					<Button danger disabled>
 						<Throbber inheritColor />
 					</Button>
 				</ButtonGroup>

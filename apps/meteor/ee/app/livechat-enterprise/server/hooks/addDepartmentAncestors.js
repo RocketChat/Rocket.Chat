@@ -1,5 +1,6 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 
 callbacks.add(
@@ -17,7 +18,7 @@ callbacks.add(
 		}
 
 		const { ancestors } = department;
-		LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
+		Promise.await(LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors));
 
 		return room;
 	},

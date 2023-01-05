@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
@@ -6,7 +6,7 @@ export type TeamsDeleteProps = ({ teamId: string } | { teamName: string }) & {
 	roomsToRemove?: string[];
 };
 
-const teamsDeletePropsSchema: JSONSchemaType<TeamsDeleteProps> = {
+const teamsDeletePropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -49,4 +49,4 @@ const teamsDeletePropsSchema: JSONSchemaType<TeamsDeleteProps> = {
 	],
 };
 
-export const isTeamsDeleteProps = ajv.compile(teamsDeletePropsSchema);
+export const isTeamsDeleteProps = ajv.compile<TeamsDeleteProps>(teamsDeletePropsSchema);

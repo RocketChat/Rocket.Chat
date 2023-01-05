@@ -1,11 +1,12 @@
-import React, { ReactElement, ContextType, useMemo, ReactNode } from 'react';
-import { useSubscription } from 'use-subscription';
+import type { ReactElement, ContextType, ReactNode } from 'react';
+import React, { useMemo } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import MessageHighlightContext from '../contexts/MessageHighlightContext';
-import { messageHighlightSubscription } from './messageHighlightSubscription';
+import * as messageHighlightSubscription from './messageHighlightSubscription';
 
 const MessageHighlightProvider = ({ children }: { children: ReactNode }): ReactElement => {
-	const highlightMessageId = useSubscription(messageHighlightSubscription);
+	const highlightMessageId = useSyncExternalStore(messageHighlightSubscription.subscribe, messageHighlightSubscription.getSnapshot);
 
 	const contextValue = useMemo<ContextType<typeof MessageHighlightContext>>(
 		() => ({

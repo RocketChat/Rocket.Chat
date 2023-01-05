@@ -43,7 +43,7 @@ export const AuditPageBase = ({
 			handleType(type);
 		});
 
-	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
 		params: [{ eventName: 'updateCounter', settingsId: 'Message_Auditing_Apply_Count', timestamp: Date.now() }],
 	});
 

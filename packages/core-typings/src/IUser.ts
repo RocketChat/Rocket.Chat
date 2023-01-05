@@ -16,7 +16,7 @@ export interface IPersonalAccessToken extends ILoginToken {
 	type: 'personalAccessToken';
 	createdAt: Date;
 	lastTokenPart: string;
-	name?: string;
+	name: string;
 	bypassTwoFactor?: boolean;
 }
 
@@ -54,9 +54,17 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
+	cloud?: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: Date;
+	};
 	google?: any;
 	facebook?: any;
 	github?: any;
+	linkedin?: any;
+	twitter?: any;
+	gitlab?: any;
 	totp?: {
 		enabled: boolean;
 		hashedBackup: string[];
@@ -109,14 +117,17 @@ export interface IUser extends IRocketChatRecord {
 	type: string;
 	active: boolean;
 	username?: string;
+	nickname?: string;
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
 	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
+	bio?: string;
 	avatarOrigin?: string;
 	avatarETag?: string;
+	avatarUrl?: string;
 	utcOffset?: number;
 	language?: string;
 	statusDefault?: UserStatus;
@@ -125,7 +136,6 @@ export interface IUser extends IRocketChatRecord {
 		authorizedClients: string[];
 	};
 	_updatedAt: Date;
-	statusLivechat?: string;
 	e2e?: {
 		private_key: string;
 		public_key: string;
@@ -139,13 +149,22 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
+	federated?: boolean;
+	canViewAllInfo?: boolean;
+	phone?: string;
+	reason?: string;
+	federation?: {
+		avatarUrl?: string;
+	};
 }
 
 export interface IRegisterUser extends IUser {
 	username: string;
 	name: string;
 }
+
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+export const isUserFederated = (user: Partial<IUser>): user is IUser => 'federated' in user && user.federated === true;
 
 export type IUserDataEvent = {
 	id: unknown;
@@ -167,3 +186,17 @@ export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
+
+export type AvatarUrlObj = {
+	avatarUrl: string;
+};
+
+export type AvatarReset = 'reset';
+
+export type AvatarServiceObject = {
+	blob: Blob;
+	contentType: string;
+	service: string;
+};
+
+export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;

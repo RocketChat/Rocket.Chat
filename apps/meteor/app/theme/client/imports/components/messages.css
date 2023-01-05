@@ -18,7 +18,7 @@
 
 	color: var(--color-darkest);
 
-	border: 2px solid #f2f3f7;
+	border: 1px solid #f2f3f7;
 	border-radius: 4px;
 
 	background: var(rcx-surface, #ffffff);
@@ -309,4 +309,11 @@
 			}
 		}
 	}
+}
+
+.message-popup .rcx-message-attachment {
+	overflow-y: auto !important;
+
+	max-width: 100% !important;
+	max-height: 200px !important;
 }

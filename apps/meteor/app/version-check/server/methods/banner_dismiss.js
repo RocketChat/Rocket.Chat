@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 
 Meteor.methods({
 	'banner/dismiss'({ id }) {

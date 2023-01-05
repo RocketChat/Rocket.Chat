@@ -1,5 +1,7 @@
+import type Url from 'url';
+
 import { Meteor } from 'meteor/meteor';
-import { FilterQuery } from 'mongodb';
+import type { FilterOperators } from 'mongodb';
 import type {
 	IMessage,
 	IRoom,
@@ -9,12 +11,17 @@ import type {
 	OmnichannelAgentStatus,
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
+	VideoConference,
+	ParsedUrl,
+	OEmbedMeta,
+	OEmbedUrlContent,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import { getRandomId } from './random';
-import { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
+import { compareByRanking } from './utils/comparisons';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -48,14 +55,25 @@ type EventLikeCallbackSignatures = {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
-	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
+	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
-	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[] }) => void;
+	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
 	'onValidateLogin': (login: ILoginAttempt) => void;
+	'federation.afterCreateFederatedRoom': (room: IRoom, second: { owner: IUser; originalMemberList: string[] }) => void;
+	'beforeCreateDirectRoom': (members: IUser[]) => void;
+	'federation.beforeCreateDirectMessage': (members: IUser[]) => void;
+	'afterSetReaction': (message: IMessage, { user, reaction }: { user: IUser; reaction: string; shouldReact: boolean }) => void;
+	'afterUnsetReaction': (
+		message: IMessage,
+		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
+	) => void;
+	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
+	'usernameSet': () => void;
 };
 
 /**
@@ -95,16 +113,36 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
 	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent;
+	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
 	'livechat.applyDepartmentRestrictions': (
-		query: FilterQuery<ILivechatDepartmentRecord>,
+		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
-	) => FilterQuery<ILivechatDepartmentRecord>;
+	) => FilterOperators<ILivechatDepartmentRecord>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
+	'oembed:beforeGetUrlContent': (data: {
+		urlObj: Omit<Url.UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
+		parsedUrl: ParsedUrl;
+	}) => {
+		urlObj: Url.UrlWithParsedQuery;
+		parsedUrl: ParsedUrl;
+	};
+	'oembed:afterParseContent': (data: {
+		url: string;
+		meta: OEmbedMeta;
+		headers: { [k: string]: string };
+		parsedUrl: ParsedUrl;
+		content: OEmbedUrlContent;
+	}) => {
+		url: string;
+		meta: OEmbedMeta;
+		headers: { [k: string]: string };
+		parsedUrl: ParsedUrl;
+		content: OEmbedUrlContent;
+	};
 };
 
 type Hook =
@@ -117,6 +155,7 @@ type Hook =
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
 	| 'afterRoomNameChange'
+	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
 	| 'afterValidateNewOAuthUser'
@@ -138,6 +177,12 @@ type Hook =
 	| 'cachedCollection-received-subscriptions'
 	| 'cachedCollection-sync-rooms'
 	| 'cachedCollection-sync-subscriptions'
+	| 'cachedCollection-after-loadFromServer-rooms'
+	| 'cachedCollection-after-loadFromServer-subscriptions'
+	| 'cachedCollection-after-received-rooms'
+	| 'cachedCollection-after-received-subscriptions'
+	| 'cachedCollection-after-sync-rooms'
+	| 'cachedCollection-after-sync-subscriptions'
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
@@ -158,8 +203,6 @@ type Hook =
 	| 'livechat.saveInfo'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
-	| 'oembed:afterParseContent'
-	| 'oembed:beforeGetUrlContent'
 	| 'onCreateUser'
 	| 'onLDAPLogin'
 	| 'onValidateLogin'
@@ -328,8 +371,7 @@ class Callbacks {
 				stack: new Error().stack,
 			}),
 		);
-		const rank = (callback: Callback): number => callback.priority ?? this.priority.MEDIUM;
-		callbacks.sort((a, b) => rank(a) - rank(b));
+		callbacks.sort(compareByRanking((callback: Callback): number => callback.priority ?? this.priority.MEDIUM));
 
 		this.setCallbacks(hook, callbacks);
 	}

@@ -1,18 +1,21 @@
-import { useQuery } from 'react-query';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
-import { getFromRestApi } from '../../../../lib/getFromRestApi';
-import { getPeriodRange, Period } from '../data/periods';
+import type { Period } from '../dataView/periods';
+import { getPeriodRange } from '../dataView/periods';
 
 type UseMessageOriginsOptions = { period: Period['key'] };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) =>
-	useQuery(
+export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
+	const getMessageOrigins = useEndpoint('GET', '/v1/engagement-dashboard/messages/origin');
+
+	return useQuery(
 		['admin/engagement-dashboard/messages/origins', { period }],
 		async () => {
 			const { start, end } = getPeriodRange(period);
 
-			const response = await getFromRestApi('/v1/engagement-dashboard/messages/origin')({
+			const response = await getMessageOrigins({
 				start: start.toISOString(),
 				end: end.toISOString(),
 			});
@@ -27,5 +30,7 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) =>
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
+};

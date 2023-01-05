@@ -1,6 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import { ReactiveUserStatus } from '../components/UserStatus';
 
@@ -14,6 +16,10 @@ export const colors = {
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
 ): ReactElement | ComponentProps<typeof Icon> | null => {
+	if (isRoomFederated(room)) {
+		return { name: 'globe' };
+	}
+
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
@@ -22,7 +28,7 @@ export const useRoomIcon = (
 		return { name: room.t === 'p' ? 'team-lock' : 'team' };
 	}
 
-	if (room.t === 'd') {
+	if (isDirectMessageRoom(room)) {
 		if (room.uids && room.uids.length > 2) {
 			return { name: 'balloon' };
 		}

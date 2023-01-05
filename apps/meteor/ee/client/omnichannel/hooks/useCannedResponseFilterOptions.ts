@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 export const useCannedResponseFilterOptions = (): string[][] => {
 	const t = useTranslation();
-	const getDepartments = useEndpoint('GET', 'livechat/department');
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
 	const defaultOptions = useMemo(
 		() => [

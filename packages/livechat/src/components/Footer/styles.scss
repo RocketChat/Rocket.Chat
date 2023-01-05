@@ -73,24 +73,20 @@
 	align-self: flex-end;
 
 	.powered-by__logo {
+		display: inline-flex;
+
+		height: 10px;
 		margin: 0 5px;
 
 		vertical-align: middle;
+		align-items: center;
 
-		:global(.text) {
+		svg {
 			fill: #{$color-text-grey};
-		}
 
-		&:hover :global(.text) {
-			fill: #2f343d;
-		}
-
-		:global(.rocket) {
-			fill: #{$color-text-grey};
-		}
-
-		&:hover :global(.rocket) {
-			fill: #db2323;
+			&:hover {
+				fill: #db2323;
+			}
 		}
 	}
 }

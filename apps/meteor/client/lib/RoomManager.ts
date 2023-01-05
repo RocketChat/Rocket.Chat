@@ -1,12 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useUserId, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo } from 'react';
-import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
+import { useCallback, useEffect } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { useAsyncState } from '../hooks/useAsyncState';
-import { AsyncState } from './asyncState';
+import type { AsyncState } from './asyncState';
 import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
@@ -129,19 +129,15 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 	}
 })();
 
-const subscribeVisitedRooms: Subscription<IRoom['_id'][]> = {
-	getCurrentValue: () => RoomManager.visitedRooms(),
-	subscribe(callback) {
-		return RoomManager.on('changed', callback);
-	},
-};
+const subscribeVisitedRooms = [
+	(callback: () => void): (() => void) => RoomManager.on('changed', callback),
+	(): IRoom['_id'][] => RoomManager.visitedRooms(),
+] as const;
 
-const subscribeOpenedRoom: Subscription<IRoom['_id'] | undefined> = {
-	getCurrentValue: () => RoomManager.opened,
-	subscribe(callback) {
-		return RoomManager.on('opened', callback);
-	},
-};
+const subscribeOpenedRoom = [
+	(callback: () => void): (() => void) => RoomManager.on('opened', callback),
+	(): IRoom['_id'] | undefined => RoomManager.opened,
+] as const;
 
 const fields = {};
 
@@ -165,25 +161,19 @@ export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T>
 	return state;
 };
 
-export const useVisitedRooms = (): IRoom['_id'][] => useSubscription(subscribeVisitedRooms);
+export const useVisitedRooms = (): IRoom['_id'][] => useSyncExternalStore(...subscribeVisitedRooms);
 
-export const useOpenedRoom = (): IRoom['_id'] | undefined => useSubscription(subscribeOpenedRoom);
+export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedRoom);
 
 export const useRoomStore = (rid: IRoom['_id']): RoomStore => {
-	const subscribeStore: Subscription<RoomStore | undefined> = useMemo(
-		() => ({
-			getCurrentValue: (): RoomStore | undefined => RoomManager.getStore(rid),
-			subscribe(callback): Unsubscribe {
-				return RoomManager.on('changed', callback);
-			},
-		}),
-		[rid],
-	);
+	const subscribe = useCallback((callback: () => void): (() => void) => RoomManager.on('changed', callback), []);
+	const getSnapshot = (): RoomStore | undefined => RoomManager.getStore(rid);
 
-	const store = useSubscription(subscribeStore);
+	const store = useSyncExternalStore(subscribe, getSnapshot);
 
 	if (!store) {
 		throw new Error('Something wrong');
 	}
+
 	return store;
 };

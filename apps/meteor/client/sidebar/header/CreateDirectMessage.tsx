@@ -1,14 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, memo } from 'react';
+import type { FC } from 'react';
+import React, { useState, memo } from 'react';
 
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-type Username = IUser['username'];
+type Username = Exclude<IUser['username'], undefined>;
 
 type CreateDirectMessageProps = {
 	onClose: () => void;
@@ -18,17 +19,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 
-	const createDirect = useEndpointActionExperimental('POST', 'dm.create');
-
-	const onChangeUsers = useMutableCallback((value: Username, action: string) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return setUsers([...users, value]);
-		}
-		setUsers(users.filter((current) => current !== value));
-	});
+	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
 
 	const onCreate = useMutableCallback(async () => {
 		try {
@@ -44,7 +35,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	});
 
 	return (
-		<Modal>
+		<Modal data-qa='create-direct-modal'>
 			<Modal.Header>
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -52,16 +43,16 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 			<Modal.Content>
 				<Box>{t('Direct_message_creation_description')}</Box>
 				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
-					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} />
+					<UserAutoCompleteMultipleFederated value={users} onChange={setUsers} />
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={users.length < 1} onClick={onCreate} primary>
 						{t('Create')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

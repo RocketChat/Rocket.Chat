@@ -2,10 +2,10 @@ import './popover.html';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 
-import { messageBox } from './messageBox';
-import { MessageAction } from './MessageAction';
-import { isRtl } from '../../../utils/client';
+import { messageBox } from './messageBox.ts';
+import { isRTLScriptLanguage } from '../../../../client/lib/utils/isRTLScriptLanguage';
 
 export const popover = {
 	renderedPopover: null,
@@ -55,7 +55,7 @@ Template.popover.onRendered(function () {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
-		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rtlDirection = isRTLScriptLanguage(Meteor._localStorage.getItem('userLanguage')) ^ /inverted/.test(direction) ? 'left' : 'right';
 		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
 		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
 
@@ -158,7 +158,7 @@ Template.popover.onDestroyed(function () {
 Template.popover.events({
 	'click .js-action'(e, instance) {
 		e.stopPropagation();
-		!this.action || this.action.call(this, e, instance.data.data);
+		!this.action || this.action.call(this, { event: e, ...instance.data.data });
 		popover.close();
 	},
 	'click .js-close'() {
@@ -176,17 +176,6 @@ Template.popover.events({
 				});
 			});
 		popover.close();
-	},
-	'click [data-qa-type="message-action"]'(e, t) {
-		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);
-		if ((button != null ? button.action : undefined) != null) {
-			e.stopPropagation();
-			e.preventDefault();
-			const { tabBar, rid } = t.data.instance;
-			button.action.call(t.data.data, e, { tabBar, rid });
-			popover.close();
-			return false;
-		}
 	},
 });
 

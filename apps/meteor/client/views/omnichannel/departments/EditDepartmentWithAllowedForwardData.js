@@ -15,7 +15,7 @@ function EditDepartmentWithAllowedForwardData({ data, ...props }) {
 		phase: allowedToForwardState,
 		error: allowedToForwardError,
 	} = useEndpointData(
-		'livechat/department.listByIds',
+		'/v1/livechat/department.listByIds',
 		useMemo(
 			() => ({
 				ids: data && data.department && data.department.departmentsAllowedToForward ? data.department.departmentsAllowedToForward : [],

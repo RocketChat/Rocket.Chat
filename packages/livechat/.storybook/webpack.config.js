@@ -1,8 +1,10 @@
 module.exports = ({ config }) => {
 	config.resolve.alias = {
 		...config.resolve.alias,
-		react: require.resolve('preact/compat'),
-		'react-dom': require.resolve('preact/compat'),
+		'react': 'preact/compat',
+		'react-dom/test-utils': 'preact/test-utils',
+		'react-dom': 'preact/compat',
+		'react/jsx-runtime': 'preact/jsx-runtime',
 		[require.resolve('../src/lib/uiKit')]: require.resolve('./mocks/uiKit'),
 	};
 
@@ -32,13 +34,8 @@ module.exports = ({ config }) => {
 
 	config.module.rules.push({
 		test: /\.svg$/,
-		exclude: [
-			__dirname,
-		],
-		use: [
-			'desvg-loader/preact',
-			'svg-loader',
-		],
+		exclude: [__dirname],
+		use: ['desvg-loader/preact', 'svg-loader'],
 	});
 
 	return config;

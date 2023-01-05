@@ -1,7 +1,9 @@
 import { Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useIsSettingsContextLoading, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import Page from '../../../components/Page';
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
@@ -17,7 +19,7 @@ const SettingsPage = (): ReactElement => {
 	const isLoadingGroups = useIsSettingsContextLoading();
 
 	return (
-		<Page backgroundColor='neutral-100'>
+		<Page background='tint'>
 			<Page.Header title={t('Settings')} borderBlockEndColor='' />
 
 			<PageBlockWithBorder>
@@ -26,7 +28,7 @@ const SettingsPage = (): ReactElement => {
 
 			<Page.ScrollableContentWithShadow p='0'>
 				{isLoadingGroups && <Skeleton />}
-				<Grid mi='x16'>
+				<Grid mi='x16' mbe='x18'>
 					{!isLoadingGroups &&
 						!!groups.length &&
 						groups.map((group) => (

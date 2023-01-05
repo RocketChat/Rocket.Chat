@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 
 import { Livechat } from '../api';
 import { CallStatus, isCallOngoing } from '../components/Calls/CallStatus';
-import { setCookies, upsert, canRenderMessage, parse } from '../components/helpers';
+import { setCookies, upsert, canRenderMessage } from '../components/helpers';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
@@ -34,19 +34,51 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 	route('/chat-finished');
 };
 
+const getVideoConfMessageData = (message) =>
+	message.blocks
+		?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+
+const isVideoCallMessage = (message) => {
+	if (message.t === constants.webRTCCallStartedMessageType) {
+		return true;
+	}
+
+	if (getVideoConfMessageData(message)) {
+		return true;
+	}
+
+	return false;
+};
+
+const findCallData = (message) => {
+	const videoConfJoinBlock = getVideoConfMessageData(message);
+	if (videoConfJoinBlock) {
+		return {
+			callId: videoConfJoinBlock.blockId,
+			url: videoConfJoinBlock.url,
+			callProvider: 'video-conference',
+		};
+	}
+
+	return { callId: message._id, url: '', callProvider: message.t };
+};
+
 // TODO: use a separate event to listen to call start event. Listening on the message type isn't a good solution
 export const processIncomingCallMessage = async (message) => {
 	const { alerts } = store.state;
 	try {
+		const { callId, url, callProvider } = findCallData(message);
+
 		await store.setState({
 			incomingCallAlert: {
 				show: true,
-				callProvider: message.t,
+				callProvider,
 				callerUsername: message.u.username,
 				rid: message.rid,
 				time: message.ts,
-				callId: message._id,
-				url: message.t === constants.jitsiCallStartedMessageType ? message.customFields.jitsiCallUrl : '',
+				callId,
+				url,
 			},
 			ongoingCall: {
 				callStatus: CallStatus.RINGING,
@@ -67,7 +99,7 @@ const processMessage = async (message) => {
 		commands[message.msg] && commands[message.msg]();
 	} else if (message.webRtcCallEndTs) {
 		await store.setState({ ongoingCall: { callStatus: CallStatus.ENDED, time: message.ts }, incomingCallAlert: null });
-	} else if (message.t === constants.webRTCCallStartedMessageType || message.t === constants.jitsiCallStartedMessageType) {
+	} else if (isVideoCallMessage(message)) {
 		await processIncomingCallMessage(message);
 	}
 };
@@ -92,7 +124,12 @@ export const initRoom = async () => {
 
 	Livechat.unsubscribeAll();
 
-	const { token, agent, queueInfo, room: { _id: rid, servedBy } } = state;
+	const {
+		token,
+		agent,
+		queueInfo,
+		room: { _id: rid, servedBy },
+	} = state;
 	Livechat.subscribeRoom(rid);
 
 	let roomAgent = agent;
@@ -175,10 +212,13 @@ Livechat.onMessage(async (message) => {
 
 	message = transformAgentInformationOnMessage(message);
 
-	message.msg = parse(message.msg);
-
 	await store.setState({
-		messages: upsert(store.state.messages, message, ({ _id }) => _id === message._id, ({ ts }) => ts),
+		messages: upsert(
+			store.state.messages,
+			message,
+			({ _id }) => _id === message._id,
+			({ ts }) => ts,
+		),
 	});
 
 	await processMessage(message);
@@ -196,16 +236,17 @@ Livechat.onMessage(async (message) => {
 });
 
 export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
-export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => msg.t === constants.webRTCCallStartedMessageType || msg.t === constants.jitsiCallStartedMessageType).pop();
+export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
-	const { ongoingCall } = store.state;
+	const { ongoingCall, messages: storedMessages, room } = store.state;
 
-	const { messages: storedMessages, room: { _id: rid, callStatus } = {} } = store.state;
-	const previousMessages = getGreetingMessages(storedMessages);
-	if (!rid) {
+	if (!room?._id) {
 		return;
 	}
+
+	const { _id: rid, callStatus } = room;
+	const previousMessages = getGreetingMessages(storedMessages);
 
 	await store.setState({ loading: true });
 	const rawMessages = (await Livechat.loadMessages(rid)).concat(previousMessages);
@@ -213,11 +254,6 @@ export const loadMessages = async () => {
 
 	await initRoom();
 	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
-
-	if (messages && messages.length) {
-		const lastMessage = messages[messages.length - 1];
-		await store.setState({ lastReadMessageId: lastMessage && lastMessage._id });
-	}
 
 	if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
 		return;
@@ -227,7 +263,8 @@ export const loadMessages = async () => {
 	if (!latestCallMessage) {
 		return;
 	}
-	if (latestCallMessage.t === constants.jitsiCallStartedMessageType) {
+	const videoConfJoinBlock = getVideoConfMessageData(latestCallMessage);
+	if (videoConfJoinBlock) {
 		await store.setState({
 			ongoingCall: {
 				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
@@ -235,9 +272,8 @@ export const loadMessages = async () => {
 			},
 			incomingCallAlert: {
 				show: false,
-				callProvider:
-				latestCallMessage.t,
-				url: latestCallMessage.customFields.jitsiCallUrl,
+				callProvider: latestCallMessage.t,
+				url: videoConfJoinBlock.url,
 			},
 		});
 		return;
@@ -263,7 +299,8 @@ export const loadMessages = async () => {
 };
 
 export const loadMoreMessages = async () => {
-	const { room: { _id: rid } = {}, messages = [], noMoreMessages = false } = store.state;
+	const { room, messages = [], noMoreMessages = false } = store.state;
+	const { _id: rid } = room || {};
 
 	if (!rid || noMoreMessages) {
 		return;

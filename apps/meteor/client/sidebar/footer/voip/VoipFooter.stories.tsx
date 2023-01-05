@@ -1,12 +1,9 @@
-import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, useState } from 'react';
+import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
+import { Box, Icon } from '@rocket.chat/fuselage';
+import type { ComponentStory } from '@storybook/react';
+import React, { useState } from 'react';
 
 import { VoipFooter } from './VoipFooter';
-
-export default {
-	title: 'Sidebar/Footer/VoipFooter',
-	component: VoipFooter,
-};
 
 const callActions = {
 	mute: () => ({}),
@@ -18,81 +15,116 @@ const callActions = {
 	reject: () => ({}),
 };
 
-const tooltips = {
-	mute: 'Mute',
-	holdCall: 'Hold Call',
-	acceptCall: 'Accept Call',
-	endCall: 'End Call',
+const callerDefault = {
+	callerName: '',
+	callerId: '+5551999999999',
+	host: '',
 };
 
-export const IncomingCall = (): ReactElement => {
+export default {
+	title: 'Sidebar/Footer/VoipFooter',
+	component: VoipFooter,
+	parameters: {
+		controls: { expanded: true },
+	},
+	args: {
+		isEnterprise: true,
+	},
+	argTypes: {
+		caller: { control: false },
+		callerState: { control: false },
+		callActions: { control: false },
+		title: { control: false },
+		subtitle: { control: false },
+		muted: { control: false },
+		paused: { control: false },
+		toggleMic: { control: false },
+		togglePause: { control: false },
+		tooltips: { control: false },
+		createRoom: { control: false },
+		openRoom: { control: false },
+		callsInQueue: { control: false },
+		dispatchEvent: { control: false },
+		openedRoomInfo: { control: false },
+		anonymousText: { control: false },
+		options: { control: false },
+	},
+};
+
+const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
 
-	return (
-		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-			<VoipFooter
-				caller={{
-					callerName: 'Tiago',
-					callerId: 'guest-1',
-					host: '',
-				}}
-				callerState='OFFER_RECEIVED'
-				callActions={callActions}
-				title='Sales Department'
-				subtitle='Calling'
-				muted={muted}
-				paused={paused}
-				toggleMic={toggleMic}
-				togglePause={togglePause}
-				tooltips={tooltips}
-				createRoom={() => ''}
-				openRoom={() => ''}
-				callsInQueue='2 Calls In Queue'
-				openWrapUpCallModal={() => null}
-				dispatchEvent={() => null}
-				openedRoomInfo={{ v: { token: '' }, rid: '' }}
-				anonymousText={'Anonymous'}
-			/>
-		</Box>
-	);
-};
+	const getSubtitle = (state: VoIpCallerInfo['state']): string => {
+		const subtitles: Record<string, string> = {
+			IN_CALL: 'In Progress',
+			OFFER_RECEIVED: 'Ringing',
+			OFFER_SENT: 'Calling',
+			ON_HOLD: 'On Hold',
+		};
 
-export const InCall = (): ReactElement => {
-	const [muted, toggleMic] = useState(false);
-	const [paused, togglePause] = useState(false);
-	const getSubtitle = () => {
-		if (paused) {
-			return 'On Hold';
-		}
-		return 'In Progress';
+		return subtitles[state] || '';
 	};
 
 	return (
 		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
 			<VoipFooter
-				caller={{
-					callerName: 'Tiago',
-					callerId: 'guest-1',
-					host: '',
-				}}
-				callerState='IN_CALL'
+				{...args}
 				callActions={callActions}
-				title='Sales Department'
-				subtitle={getSubtitle()}
+				subtitle={getSubtitle(args.callerState)}
 				muted={muted}
 				paused={paused}
 				toggleMic={toggleMic}
 				togglePause={togglePause}
-				tooltips={tooltips}
-				createRoom={() => ''}
+				createRoom={async () => ''}
 				openRoom={() => ''}
 				callsInQueue='2 Calls In Queue'
-				openWrapUpCallModal={() => null}
 				dispatchEvent={() => null}
 				openedRoomInfo={{ v: { token: '' }, rid: '' }}
-				anonymousText={'Anonymous'}
+				options={{
+					deviceSettings: {
+						label: (
+							<Box alignItems='center' display='flex'>
+								<Icon mie='x4' name='customize' size='x16' />
+								Device Settings
+							</Box>
+						),
+					},
+				}}
 			/>
 		</Box>
 	);
+};
+
+export const IncomingCall = VoipFooterTemplate.bind({});
+IncomingCall.args = {
+	title: 'Sales Department',
+	callerState: 'OFFER_RECEIVED',
+	caller: callerDefault,
+};
+
+export const OutboundCall = VoipFooterTemplate.bind({});
+OutboundCall.args = {
+	title: 'Phone Call',
+	callerState: 'OFFER_SENT',
+	caller: {
+		callerName: '',
+		callerId: '+5551999999999',
+		host: '',
+	},
+};
+
+export const InCall = VoipFooterTemplate.bind({});
+InCall.args = {
+	title: 'Sales Department',
+	callerState: 'IN_CALL',
+	caller: callerDefault,
+};
+
+export const NoEnterpriseLicence = VoipFooterTemplate.bind({});
+NoEnterpriseLicence.args = {
+	title: 'Sales Department',
+	callerState: 'IN_CALL',
+	isEnterprise: false,
+	caller: callerDefault,
 };

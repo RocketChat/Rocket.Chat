@@ -1,25 +1,25 @@
-import { Db } from 'mongodb';
+import type { Db } from 'mongodb';
 import mem from 'mem';
-import {
-	ServerType,
-	isICallServerConfigData,
+import { ServerType, isICallServerConfigData, isIExtensionDetails } from '@rocket.chat/core-typings';
+import type {
+	IVoipConnectorResult,
+	IQueueDetails,
+	IQueueSummary,
+	IManagementServerConnectionStatus,
 	IVoipCallServerConfig,
 	IVoipManagementServerConfig,
 	IQueueMembershipDetails,
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
-	isIExtensionDetails,
 } from '@rocket.chat/core-typings';
-import type { IVoipConnectorResult, IQueueDetails, IQueueSummary, IManagementServerConnectionStatus } from '@rocket.chat/core-typings';
+import type { IVoipService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
-import { api } from '../../sdk/api';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
@@ -92,10 +92,6 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
 		return getServerConfigDataFromSettings(type);
-	}
-
-	getConnector(): CommandHandler {
-		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {
@@ -230,7 +226,6 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		}
 
 		const result = {
-			host: config.host,
 			callServerConfig: config.configData,
 			extensionDetails: endpointDetails.result,
 		};

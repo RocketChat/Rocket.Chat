@@ -1,11 +1,18 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-export type ToastMessagePayload = {
-	type: 'success' | 'info' | 'warning' | 'error';
-	message: string | Error;
-	title?: string;
-	options?: object;
-};
+export type ToastMessagePayload =
+	| {
+			type: 'success' | 'info' | 'warning';
+			message: string;
+			title?: string;
+			options?: object;
+	  }
+	| {
+			type: 'error';
+			message: unknown;
+			title?: string;
+			options?: object;
+	  };
 
 const emitter = new Emitter<{
 	notify: ToastMessagePayload;

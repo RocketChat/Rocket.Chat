@@ -2,9 +2,9 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@ro
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
-		'canned-responses': {
+		'/v1/canned-responses': {
 			GET: (
 				params: PaginatedRequest<{
 					shortcut?: string;
@@ -27,7 +27,7 @@ declare module '@rocket.chat/rest-typings' {
 			}) => void;
 			DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 		};
-		'canned-responses/:_id': {
+		'/v1/canned-responses/:_id': {
 			GET: () => {
 				cannedResponse: IOmnichannelCannedResponse;
 			};

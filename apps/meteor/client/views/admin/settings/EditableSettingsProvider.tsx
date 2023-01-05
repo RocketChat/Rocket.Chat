@@ -1,13 +1,17 @@
-import { SettingId, GroupId, ISetting, TabId } from '@rocket.chat/core-typings';
+import type { SettingId, GroupId, ISetting, TabId } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettings, SettingsContextQuery } from '@rocket.chat/ui-contexts';
+import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
+import { useSettings } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { FilterQuery } from 'mongodb';
-import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
+import type { FilterOperators } from 'mongodb';
+import type { FunctionComponent, MutableRefObject } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
-import { createReactiveSubscriptionFactory } from '../../../providers/createReactiveSubscriptionFactory';
-import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
+import type { EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
+import { EditableSettingsContext } from '../EditableSettingsContext';
 
 const defaultQuery: SettingsContextQuery = {};
 
@@ -16,7 +20,7 @@ type EditableSettingsProviderProps = {
 };
 
 const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps> = ({ children, query = defaultQuery }) => {
-	const settingsCollectionRef = useRef<Mongo.Collection<IEditableSetting>>(null) as MutableRefObject<Mongo.Collection<IEditableSetting>>;
+	const settingsCollectionRef = useRef<Mongo.Collection<EditableSetting>>(null) as MutableRefObject<Mongo.Collection<EditableSetting>>;
 	const persistedSettings = useSettings(query);
 
 	const getSettingsCollection = useMutableCallback(() => {
@@ -25,7 +29,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		}
 
 		return settingsCollectionRef.current;
-	}) as () => Mongo.Collection<IEditableSetting>;
+	}) as () => Mongo.Collection<EditableSetting>;
 
 	useEffect(() => {
 		const settingsCollection = getSettingsCollection();
@@ -38,8 +42,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 
 	const queryEditableSetting = useMemo(() => {
 		const validateSettingQueries = (
-			query: undefined | string | FilterQuery<ISetting> | FilterQuery<ISetting>[],
-			settingsCollection: Mongo.Collection<IEditableSetting>,
+			query: undefined | string | FilterOperators<ISetting> | FilterOperators<ISetting>[],
+			settingsCollection: Mongo.Collection<EditableSetting>,
 		): boolean => {
 			if (!query) {
 				return true;
@@ -49,7 +53,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 			return queries.every((query) => settingsCollection.find(query).count() > 0);
 		};
 
-		return createReactiveSubscriptionFactory((_id: SettingId): IEditableSetting | undefined => {
+		return createReactiveSubscriptionFactory((_id: SettingId): EditableSetting | undefined => {
 			const settingsCollection = getSettingsCollection();
 			const editableSetting = settingsCollection.findOne(_id);
 
@@ -169,7 +173,7 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		[getSettingsCollection],
 	);
 
-	const dispatch = useMutableCallback((changes: Partial<IEditableSetting>[]): void => {
+	const dispatch = useMutableCallback((changes: Partial<EditableSetting>[]): void => {
 		for (const { _id, ...data } of changes) {
 			if (!_id) {
 				continue;
@@ -180,6 +184,10 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		Tracker.flush();
 	});
 
+	const { data } = useIsEnterprise();
+
+	const isEnterprise = data?.isEnterprise ?? false;
+
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({
 			queryEditableSetting,
@@ -187,8 +195,9 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 			queryGroupSections,
 			queryGroupTabs,
 			dispatch,
+			isEnterprise,
 		}),
-		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch],
+		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch, isEnterprise],
 	);
 
 	return <EditableSettingsContext.Provider children={children} value={contextValue} />;

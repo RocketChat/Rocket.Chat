@@ -8,7 +8,13 @@ import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/ser
 import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
+import {
+	AppMessagesConverter,
+	AppRoomsConverter,
+	AppSettingsConverter,
+	AppUsersConverter,
+	AppVideoConferencesConverter,
+} from './converters';
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
@@ -54,6 +60,7 @@ export class AppServerOrchestrator {
 		this._converters.set('visitors', new AppVisitorsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
+		this._converters.set('videoConferences', new AppVideoConferencesConverter());
 
 		this._bridges = new RealAppBridges(this);
 

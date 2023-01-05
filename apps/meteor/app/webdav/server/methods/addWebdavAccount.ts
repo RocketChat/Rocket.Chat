@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { WebdavAccounts } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
-import { WebdavAccounts } from '../../../models/server/raw';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
-import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
@@ -87,7 +87,11 @@ Meteor.methods({
 			data,
 			Match.ObjectIncluding({
 				serverURL: String,
-				token: String,
+				token: Match.ObjectIncluding({
+					access_token: String,
+					token_type: String,
+					refresh_token: Match.Optional(String),
+				}),
 				name: Match.Maybe(String),
 			}),
 		);

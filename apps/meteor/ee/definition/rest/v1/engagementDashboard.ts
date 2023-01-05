@@ -1,10 +1,10 @@
 import type { IDirectMessageRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/engagement-dashboard/channels/list': {
-			GET: (params: { start: Date; end: Date; offset: number; count: number }) => {
+			GET: (params: { start: string; end: string; offset: number; count: number }) => {
 				channels: {
 					room: {
 						_id: IRoom['_id'];
@@ -24,7 +24,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/messages/origin': {
-			GET: (params: { start: Date; end: Date }) => {
+			GET: (params: { start: string; end: string }) => {
 				origins: {
 					t: IRoom['t'];
 					messages: number;
@@ -32,7 +32,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/messages/top-five-popular-channels': {
-			GET: (params: { start: Date; end: Date }) => {
+			GET: (params: { start: string; end: string }) => {
 				channels: {
 					t: IRoom['t'];
 					messages: number;
@@ -42,7 +42,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/messages/messages-sent': {
-			GET: (params: { start: Date; end: Date }) => {
+			GET: (params: { start: string; end: string }) => {
 				days: { day: Date; messages: number }[];
 				period: {
 					count: number;
@@ -55,7 +55,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/users/active-users': {
-			GET: (params: { start: Date; end: Date }) => {
+			GET: (params: { start: string; end: string }) => {
 				month: {
 					day: number;
 					month: number;
@@ -66,7 +66,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/users/chat-busier/weekly-data': {
-			GET: (params: { start: Date }) => {
+			GET: (params: { start: string }) => {
 				month: {
 					users: number;
 					day: number;
@@ -76,7 +76,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/users/chat-busier/hourly-data': {
-			GET: (params: { start: Date }) => {
+			GET: (params: { start: string }) => {
 				hours: {
 					users: number;
 					hour: number;
@@ -84,7 +84,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week': {
-			GET: (params: { start: Date; end: Date }) => {
+			GET: (params: { start: string; end: string }) => {
 				week: {
 					users: number;
 					hour: number;
@@ -95,7 +95,7 @@ declare module '@rocket.chat/rest-typings' {
 			};
 		};
 		'/v1/engagement-dashboard/users/new-users': {
-			GET: (params: { start: Date; end: Date }) => {
+			GET: (params: { start: string; end: string }) => {
 				days: { day: Date; users: number }[];
 				period: {
 					count: number;

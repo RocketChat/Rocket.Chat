@@ -2,7 +2,8 @@ import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import type { Placements } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps, useRef, useCallback, useState, useMemo, useEffect } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
 
 import { UserStatus } from './UserStatus';
 
@@ -42,7 +43,7 @@ const UserStatusMenu = ({
 		];
 
 		if (allowInvisibleStatus) {
-			statuses.push([UserStatusType.OFFLINE, renderOption(UserStatusType.OFFLINE, t('Invisible'))]);
+			statuses.push([UserStatusType.OFFLINE, renderOption(UserStatusType.OFFLINE, t('Offline'))]);
 		}
 
 		return statuses;
@@ -77,7 +78,17 @@ const UserStatusMenu = ({
 
 	return (
 		<>
-			<Button ref={ref} small square ghost onClick={onClick} onBlur={hide} onKeyUp={handleKeyUp} onKeyDown={handleKeyDown} margin={margin}>
+			<Button
+				ref={ref}
+				small
+				square
+				secondary
+				onClick={onClick}
+				onBlur={hide}
+				onKeyUp={handleKeyUp}
+				onKeyDown={handleKeyDown}
+				margin={margin}
+			>
 				<UserStatus status={status} />
 			</Button>
 			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>

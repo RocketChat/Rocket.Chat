@@ -1,4 +1,4 @@
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -86,7 +86,7 @@ settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {
 
 	callbacks.add(
 		'livechat.afterTakeInquiry',
-		handleAfterTakeInquiryCallback,
+		(inquiry) => Promise.await(handleAfterTakeInquiryCallback(inquiry)),
 		callbacks.priority.MEDIUM,
 		'livechat-auto-transfer-job-inquiry',
 	);

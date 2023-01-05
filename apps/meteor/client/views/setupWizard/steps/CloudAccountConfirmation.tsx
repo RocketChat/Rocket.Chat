@@ -1,6 +1,7 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
 import { useToastMessageDispatch, useSettingSetValue, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -14,7 +15,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 		saveWorkspaceData,
 	} = useSetupWizardContext();
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
-	const cloudConfirmationPoll = useEndpoint('GET', 'cloud.confirmationPoll');
+	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -29,7 +30,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 				dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 				return setShowSetupWizard('completed');
 			}
-		} catch (error) {
+		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	}, [cloudConfirmationPoll, registrationData.device_code, setShowSetupWizard, saveWorkspaceData, dispatchToastMessage, t]);

@@ -1,4 +1,4 @@
-import { Modal, AnimatedVisibility, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -143,14 +143,14 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 					</Box>
 				</Modal.Content>
 				<Modal.Footer>
-					<ButtonGroup align='end'>
+					<Modal.FooterControllers>
 						{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
 						{view.submit && (
 							<Button primary onClick={onSubmit}>
 								{modalParser.text(view.submit.text)}
 							</Button>
 						)}
-					</ButtonGroup>
+					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Modal>
 		</AnimatedVisibility>

@@ -4,14 +4,14 @@ import React, { useMemo, useCallback } from 'react';
 
 import Page from '../../../components/Page';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
-import { useExampleData } from './exampleIncomingData';
+import { useExampleData } from './useExampleIncomingData';
 
 export default function IncomingWebhookForm({ formValues, formHandlers, extraData = {}, append, ...props }) {
 	const t = useTranslation();
 
 	const absoluteUrl = useAbsoluteUrl();
 
-	const { enabled, channel, username, name, alias, avatarUrl, emoji, scriptEnabled, script } = formValues;
+	const { enabled, channel, username, name, alias, avatar, emoji, scriptEnabled, script } = formValues;
 
 	const {
 		handleEnabled,
@@ -19,7 +19,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 		handleUsername,
 		handleName,
 		handleAlias,
-		handleAvatarUrl,
+		handleAvatar,
 		handleEmoji,
 		handleScriptEnabled,
 		handleScript,
@@ -31,9 +31,9 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 		() => ({
 			...(alias && { alias }),
 			...(emoji && { emoji }),
-			...(avatarUrl && { avatar: avatarUrl }),
+			...(avatar && { avatar }),
 		}),
-		[alias, avatarUrl, emoji],
+		[alias, avatar, emoji],
 	);
 
 	const [exampleData, curlData] = useExampleData({
@@ -126,8 +126,8 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 								<Field.Row>
 									<TextInput
 										flexGrow={1}
-										value={avatarUrl}
-										onChange={handleAvatarUrl}
+										value={avatar}
+										onChange={handleAvatar}
 										addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
 									/>
 								</Field.Row>
@@ -135,7 +135,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 								<Field.Hint>{t('Should_be_a_URL_of_an_image')}</Field.Hint>
 							</Field>
 						),
-						[avatarUrl, handleAvatarUrl, t],
+						[avatar, handleAvatar, t],
 					)}
 					{useMemo(
 						() => (

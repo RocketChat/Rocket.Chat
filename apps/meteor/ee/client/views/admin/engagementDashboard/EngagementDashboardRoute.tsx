@@ -1,5 +1,6 @@
 import { useCurrentRoute, useRoute, usePermission } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect } from 'react';
 
 import { useEndpointAction } from '../../../../../client/hooks/useEndpointAction';
 import NotAuthorizedPage from '../../../../../client/views/notAuthorized/NotAuthorizedPage';
@@ -24,7 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
-	const eventStats = useEndpointAction('POST', 'statistics.telemetry', {
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
 		params: [{ eventName: 'updateCounter', settingsId: 'Engagement_Dashboard_Load_Count' }],
 	});
 
