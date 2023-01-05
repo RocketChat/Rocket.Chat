@@ -10,6 +10,7 @@ import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
+import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
@@ -25,20 +26,6 @@ export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	format,
 }) => {
 	const getURL = useMediaUrl();
-
-	const getFileExtension = (fileName?: string): string => {
-		if (!fileName) {
-			return 'file';
-		}
-
-		const arr = fileName.split('.');
-
-		if (arr.length < 2 || (arr[0] === '' && arr.length === 2)) {
-			return 'file';
-		}
-
-		return arr.pop()?.toLocaleUpperCase() || 'file';
-	};
 
 	return (
 		<>

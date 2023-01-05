@@ -9,6 +9,7 @@ import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { omit } from '../../../../lib/utils/omit';
+import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
@@ -18,16 +19,6 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 		}
 	});
 }
-
-const getFileExtension = (fileName: string): string => {
-	const arr = fileName.split('.');
-
-	if (arr.length < 2 || (arr[0] === '' && arr.length === 2)) {
-		return 'file';
-	}
-
-	return arr.pop()?.toLocaleUpperCase() || 'file';
-};
 
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
