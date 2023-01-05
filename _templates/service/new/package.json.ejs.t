@@ -1,8 +1,11 @@
+---
+to: ee/apps/<%= name %>/package.json
+---
 {
-	"name": "@rocket.chat/stream-hub-service",
+	"name": "@rocket.chat/<%= name.toLowerCase() %>",
 	"private": true,
 	"version": "0.1.0",
-	"description": "Rocket.Chat Stream Hub service",
+	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
@@ -16,10 +19,11 @@
 	"author": "Rocket.Chat",
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
+		"@rocket.chat/emitter": "0.31.22",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"@rocket.chat/string-helpers": "next",
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/string-helpers": "0.31.22",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
@@ -33,16 +37,15 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/bcrypt": "^5.0.0",
 		"@types/eslint": "^8.4.10",
 		"@types/polka": "^0.5.4",
 		"eslint": "^8.29.0",
 		"ts-node": "^10.9.1",
 		"typescript": "~4.5.5"
 	},
-	"main": "./dist/ee/apps/stream-hub-service/src/service.js",
+	"main": "./dist/ee/apps/<%= name %>/src/service.js",
 	"files": [
 		"/dist"
 	]
 }
+
