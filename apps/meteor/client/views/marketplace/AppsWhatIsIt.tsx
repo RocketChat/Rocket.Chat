@@ -14,7 +14,7 @@ const AppsWhatIsIt: FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<false | Error>(false);
 
-	const appsRouter = useRoute('marketplace-explore');
+	const appsRouter = useRoute('marketplace');
 	const enableAppsEngine = useMethod('apps/go-enable');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 

@@ -7,7 +7,7 @@ import PageSkeleton from '../../components/PageSkeleton';
 
 const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {
 	const currentContext = useRouteParameter('context');
-	const marketplaceRoute = useRoute('marketplace-explore');
+	const marketplaceRoute = useRoute('marketplace');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 
 	useEffect(() => {

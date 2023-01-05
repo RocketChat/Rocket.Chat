@@ -14,7 +14,7 @@ const AppsRoute = (): ReactElement => {
 	const canManageApps = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 	const appsWhatIsItRoute = useRoute('marketplace-disabled');
-	const marketplaceRoute = useRoute('marketplace-explore');
+	const marketplaceRoute = useRoute('marketplace');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');

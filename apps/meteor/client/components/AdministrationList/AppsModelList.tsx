@@ -15,7 +15,7 @@ type AppsModelListProps = {
 
 const AppsModelList = ({ appBoxItems, showManageApps, closeList }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
-	const marketplaceRoute = useRoute('marketplace-explore');
+	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
 
 	return (
