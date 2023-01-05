@@ -20,7 +20,7 @@ const AppsRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
 
-	const isMarketplace = !context;
+	const isMarketplace = context === 'explore';
 
 	useEffect(() => {
 		let mounted = true;
