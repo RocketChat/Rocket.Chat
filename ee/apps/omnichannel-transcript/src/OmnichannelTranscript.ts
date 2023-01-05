@@ -29,6 +29,7 @@ type WorkerData = {
 	messages: MessageWithFiles[];
 	timezone: string;
 	dateFormat: string;
+	timeAndDateFormat: string;
 };
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -185,6 +186,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				siteName: await this.settingsService.get<string>('Site_Name'),
 				messages: await this.getFiles(details.userId, messages),
 				dateFormat: await this.settingsService.get<string>('Message_DateFormat'),
+				timeAndDateFormat: await this.settingsService.get<string>('Message_TimeAndDateFormat'),
 				timezone: await this.getTimezone(agent),
 			};
 
