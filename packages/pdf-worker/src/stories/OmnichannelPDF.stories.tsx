@@ -21,6 +21,7 @@ export const OmnichannelPDF: ComponentStory<typeof OmnichannelTranscript> = () =
 					u: { name: 'Christian Castro', username: 'christian.castro', _id: '1' },
 					ts: 'Nov 21, 2022 11:00 AM',
 					msg: 'Hello, how can I help you?',
+					divider: 'Nov 21, 2022',
 				},
 				{
 					u: { name: 'Juanito Verdulero De Ponce', username: 'juanito.verdulero', _id: '2' },

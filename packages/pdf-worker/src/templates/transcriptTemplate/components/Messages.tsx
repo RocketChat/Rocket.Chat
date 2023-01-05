@@ -2,6 +2,7 @@ import { Text, View, StyleSheet } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 
 import type { OmnichannelData } from '..';
+import { Divider } from './Divider';
 
 const styles = StyleSheet.create({
 	wrapper: {
@@ -33,13 +34,7 @@ export const Messages = ({ body }: Pick<OmnichannelData, 'body'>) => (
 	<View style={styles.wrapper}>
 		{body.map((message, index) => (
 			<View key={index}>
-				{message.divider && (
-					<View style={styles.lineWrapper} wrap={false}>
-						<View style={styles.line} />
-						<Text style={styles.divider}>{message.divider}</Text>
-						<View style={styles.line} />
-					</View>
-				)}
+				{message.divider && <Divider divider={message.divider} />}
 				{message.msg && (
 					<View style={styles.message}>
 						<View style={{ flexDirection: 'row' }}>
