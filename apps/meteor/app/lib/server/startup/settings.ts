@@ -1569,7 +1569,7 @@ settingsRegistry.addGroup('Layout', function () {
 			public: true,
 		});
 		this.add('Layout_Home_Body', '<p>Admins may insert content html to be rendered in this white space.</p>', {
-			description: 'Layout_Custom_Content_Description',
+			i18nDescription: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
 			multiline: true,

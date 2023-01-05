@@ -12,7 +12,6 @@ type CodeSettingInputProps = {
 	label: string;
 	value?: string;
 	code: string;
-	description?: string;
 	placeholder?: string;
 	readonly: boolean;
 	autocomplete: boolean;
@@ -27,7 +26,6 @@ function CodeSettingInput({
 	label,
 	value = '',
 	code,
-	description,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -47,15 +45,10 @@ function CodeSettingInput({
 	return (
 		<>
 			<Flex.Container>
-				<Box justifyContent='space-between'>
-					<Box display='flex' flexDirection='column'>
-						<Field.Label htmlFor={_id} title={_id}>
-							{label}
-						</Field.Label>
-						<Field.Description htmlFor={_id} title={description}>
-							{description}
-						</Field.Description>
-					</Box>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>

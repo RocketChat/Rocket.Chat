@@ -79,7 +79,6 @@ export interface ISettingBase {
 		step: number;
 		order: number;
 	} | null;
-	description?: string;
 	persistent?: boolean; // todo: remove
 	readonly?: boolean; // todo: remove
 	alert?: string; // todo: check if this is still used

@@ -2720,7 +2720,7 @@
   "Layout_Login_Terms": "Login Terms",
   "Layout_Privacy_Policy": "Privacy Policy",
   "Layout_Show_Home_Button": "Show home page button on sidebar header",
-  "Layout_Custom_Content_Description": "Here goes your custom content. It may be placed inside a white block or may take the all space alailable in the homepage, if you’re on Enterprise.",
+  "Layout_Custom_Content_Description": "Here goes your custom content. It may be placed inside a white block or may take the all space available in the homepage, if you’re on Enterprise.",
   "Layout_Home_Custom_Block_Visible": "Show custom content to homepage",
   "Layout_Custom_Body_Only": "Show custom content only",
   "Layout_Custom_Body_Only_Description": "It will hide all other white blocks in the homepage.",
