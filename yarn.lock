@@ -5365,14 +5365,14 @@ __metadata:
   linkType: hard
 
 "@react-stately/data@npm:^3.6.1":
-  version: 3.8.1
-  resolution: "@react-stately/data@npm:3.8.1"
+  version: 3.6.1
+  resolution: "@react-stately/data@npm:3.6.1"
   dependencies:
-    "@react-types/shared": ^3.16.0
-    "@swc/helpers": ^0.4.14
+    "@babel/runtime": ^7.6.2
+    "@react-types/shared": ^3.14.1
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: a7af28db364daf23508549d520aaa0b2842109f05495b7612a185237453c79afdbff47c3ac11a2b15f2a8c4359a8f6f96193188592ffb10559944c9d80e6e351
+  checksum: 79c9eae2ff674453010ed9b37fc23de687fe9dd5413c2931cadd2b7d85bcd567ed45078c0234d1c5117677321ad3eaf34952af6113546033643a7e78dde23242
   languageName: node
   linkType: hard
 
@@ -6009,15 +6009,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 117fe230f5a26b7fcaf535c1cfb7c4d42416b0f49d0e0b3436fef2a5851234967908c4e884fc5f2a99a04bee2543543348346a04e1f3f45aaa14c42b6f08491a
-  languageName: node
-  linkType: hard
-
-"@react-types/shared@npm:^3.16.0":
-  version: 3.16.0
-  resolution: "@react-types/shared@npm:3.16.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-  checksum: 3bb3aa77f4938fcd7788c5c5abf24f8f3d3c034d555962e44202d09673844cbb31d7b280edc9ac432bdd06847bc253527f8946f2604b9c88d5fcb96fdc56fbd1
   languageName: node
   linkType: hard
 
@@ -34571,13 +34562,6 @@ __metadata:
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.4.0":
-  version: 2.4.1
-  resolution: "tslib@npm:2.4.1"
-  checksum: 19480d6e0313292bd6505d4efe096a6b31c70e21cf08b5febf4da62e95c265c8f571f7b36fcc3d1a17e068032f59c269fab3459d6cd3ed6949eafecf64315fca
   languageName: node
   linkType: hard
 
