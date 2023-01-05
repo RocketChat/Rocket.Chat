@@ -106,6 +106,15 @@ export class AppRoomBridge extends RoomBridge {
 		return this.orch.getConverters()?.get('rooms').convertRoom(room);
 	}
 
+	protected async getDirectByUserIds(userIds: Array<string>, appId: string): Promise<IRoom | undefined> {
+		this.orch.debugLog(`The App ${appId} is getting direct room by user ids: "${userIds}"`);
+		const room = await Rooms.findOneDirectRoomContainingAllUserIDs(userIds, {});
+		if (!room) {
+			return undefined;
+		}
+		return this.orch.getConverters()?.get('rooms').convertRoom(room);
+	}
+
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
