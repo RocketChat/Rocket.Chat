@@ -1,11 +1,10 @@
+import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import { ServiceClass } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
-import type { IPresence } from '../../../apps/meteor/server/sdk/types/IPresence';
-import type { IBrokerNode } from '../../../apps/meteor/server/sdk/types/IBroker';
-import { ServiceClass } from '../../../apps/meteor/server/sdk/types/ServiceClass';
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
@@ -96,7 +95,7 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.map(({ _id }) => _id);
 		}
 
-		const nodes = await this.api.nodeList();
+		const nodes = (await this.api?.nodeList()) || [];
 
 		const ids = nodes.filter((node) => node.available).map(({ id }) => id);
 		if (ids.length === 0) {
@@ -181,7 +180,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		this.api.broadcast('presence.status', {
+		this.api?.broadcast('presence.status', {
 			user,
 			previousStatus,
 		});

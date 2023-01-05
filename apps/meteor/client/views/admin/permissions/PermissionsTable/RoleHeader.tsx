@@ -34,9 +34,9 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps): ReactElement =
 				pi='x12'
 				mi='neg-x2'
 				borderStyle='solid'
-				borderWidth='x2'
+				borderWidth='default'
 				borderRadius='x2'
-				borderColor='neutral-300'
+				borderColor='light'
 				onClick={handleEditRole}
 			>
 				<Margins inline='x2'>

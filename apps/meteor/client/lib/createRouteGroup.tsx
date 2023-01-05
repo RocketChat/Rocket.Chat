@@ -1,4 +1,4 @@
-import type { Group, RouteOptions } from 'meteor/kadira:flow-router';
+import type { Context, Current, Group, RouteOptions } from 'meteor/kadira:flow-router';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
@@ -7,6 +7,8 @@ import React from 'react';
 
 import MainLayout from '../views/root/MainLayout';
 import { appLayout } from './appLayout';
+
+let oldRoute: Current;
 
 const registerLazyComponentRoute = (
 	routeGroup: Group,
@@ -28,7 +30,7 @@ const registerLazyComponentRoute = (
 	const enabled = new ReactiveVar(ready ? true : undefined);
 	let computation: Tracker.Computation | undefined;
 
-	const handleEnter = (_context: unknown, _redirect: (pathDef: string) => void, stop: () => void): void => {
+	const handleEnter = (_context: Context, _redirect: (pathDef: string) => void, stop: () => void): void => {
 		const _enabled = Tracker.nonreactive(() => enabled.get());
 		if (_enabled === false) {
 			stop();
@@ -44,8 +46,13 @@ const registerLazyComponentRoute = (
 		});
 	};
 
-	const handleExit = (): void => {
+	const handleExit = (context: Context): void => {
 		computation?.stop();
+		if (context.route.group?.name === context.oldRoute?.group?.name) {
+			return;
+		}
+
+		oldRoute?.route?.name && FlowRouter.go(oldRoute.route.name, oldRoute.params, oldRoute.queryParams);
 	};
 
 	routeGroup.route(path, {
@@ -127,3 +134,15 @@ export const createRouteGroup = (
 
 	return registerRoute;
 };
+
+Tracker.autorun(
+	(() => {
+		let oldName: string;
+		return () => {
+			const name = FlowRouter.getRouteName();
+			if (oldName !== name) {
+				oldRoute = FlowRouter.current();
+			}
+		};
+	})(),
+);

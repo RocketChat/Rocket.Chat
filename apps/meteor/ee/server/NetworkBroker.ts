@@ -1,9 +1,6 @@
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
-
-import { asyncLocalStorage } from '../../server/sdk';
-import type { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import type { IServiceClass } from '../../server/sdk/types/ServiceClass';
-import type { EventSignatures } from '../../server/sdk/lib/Events';
+import { asyncLocalStorage } from '@rocket.chat/core-services';
+import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -72,7 +69,11 @@ export class NetworkBroker implements IBroker {
 	}
 
 	destroyService(instance: IServiceClass): void {
-		this.broker.destroyService(instance.getName());
+		const name = instance.getName();
+		if (!name) {
+			return;
+		}
+		this.broker.destroyService(name);
 	}
 
 	createService(instance: IServiceClass): void {
@@ -85,6 +86,9 @@ export class NetworkBroker implements IBroker {
 		const serviceInstance = instance as any;
 
 		const name = instance.getName();
+		if (!name) {
+			return;
+		}
 
 		if (!instance.isInternal()) {
 			instance.onEvent('shutdown', async (services) => {

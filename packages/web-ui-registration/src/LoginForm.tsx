@@ -45,6 +45,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const login = useLoginWithPassword();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
+	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
+	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
+
 	const loginMutation: UseMutationResult<
 		void,
 		Error,
@@ -110,7 +113,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 												clearErrors(['username', 'password']);
 											},
 										})}
-										placeholder={t('registration.component.form.emailPlaceholder')}
+										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={
 											errors.username?.message ||
 											(errors.username?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
@@ -134,6 +137,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 												clearErrors(['username', 'password']);
 											},
 										})}
+										placeholder={passwordPlaceholder}
 										error={
 											errors.password?.message ||
 											(errors.password?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
