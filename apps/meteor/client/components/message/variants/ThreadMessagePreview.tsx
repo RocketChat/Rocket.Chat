@@ -12,7 +12,6 @@ import {
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -35,15 +34,15 @@ import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
 	sequential: boolean;
-	_subscription: ISubscription | undefined;
+	subscription: ISubscription | undefined;
 };
 
-const ThreadMessagePreview = ({ message, sequential, _subscription, ...props }: ThreadMessagePreviewProps): ReactElement => {
+const ThreadMessagePreview = ({ message, sequential, subscription, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const {
 		actions: { openThread },
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
-	const messageBody = useMessageBody(parentMessage, _subscription);
+	const messageBody = useMessageBody(parentMessage, subscription);
 	const translated = useShowTranslated(message);
 	const t = useTranslation();
 
@@ -75,7 +74,7 @@ const ThreadMessagePreview = ({ message, sequential, _subscription, ...props }: 
 									{translated && (
 										<>
 											{' '}
-											<MessageStatusIndicatorItem name='language' color={colors.p500} title={t('Translated')} />
+											<MessageStatusIndicatorItem name='language' color='font-on-info' title={t('Translated')} />
 										</>
 									)}
 								</>

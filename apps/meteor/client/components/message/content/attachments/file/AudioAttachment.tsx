@@ -30,7 +30,6 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	return (
 		<Attachment>
 			<AttachmentDescription>
-				<MarkdownText parseEmoji variant='inline' content={description} />
 				{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 			</AttachmentDescription>
 			<AttachmentRow>

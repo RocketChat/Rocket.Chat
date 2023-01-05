@@ -22,7 +22,7 @@ import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
-	subscription: ISubscription | undefined;
+	subscription?: ISubscription;
 	unread: boolean;
 	sequential: boolean;
 };

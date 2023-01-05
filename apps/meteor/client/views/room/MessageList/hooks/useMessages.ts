@@ -38,15 +38,7 @@ export const useMessages = ({ rid, subscription }: { rid: IRoom['_id']; subscrip
 		};
 		return (message: IMessage): MessageWithMdEnforced =>
 			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		autoTranslateOptions.autoTranslateEnabled,
-		autoTranslateOptions.autoTranslateLanguage,
-		katexParenthesisSyntaxEnabled,
-		katexEnabled,
-		katexDollarSyntaxEnabled,
-		showColors,
-	]);
+	}, [katexParenthesisSyntaxEnabled, katexEnabled, katexDollarSyntaxEnabled, showColors, autoTranslateOptions]);
 
 	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({
