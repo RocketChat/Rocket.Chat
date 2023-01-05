@@ -29,9 +29,7 @@ export class FederationHomeContent {
 
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
-		await this.page
-			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
-			.click();
+		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
 	async sendMessageUsingEnter(text: string): Promise<void> {
@@ -85,9 +83,7 @@ export class FederationHomeContent {
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.waitForTimeout(2000);
-		await this.page
-			.locator('//*[contains(@class, "rc-message-box__icon") and contains(@class, "rc-message-box__send") and contains(@class, "js-send")]')
-			.click();
+		await this.page.locator('button[aria-label="Send"]').click();
 		await this.page.waitForTimeout(3000);
 	}
 
