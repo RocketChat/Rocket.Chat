@@ -168,11 +168,13 @@ export interface ServerMethods {
 	'loadSurroundingMessages': (
 		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 		limit?: number,
-	) => {
-		messages: IMessage[];
-		moreBefore: boolean;
-		moreAfter: boolean;
-	};
+	) =>
+		| {
+				messages: IMessage[];
+				moreBefore: boolean;
+				moreAfter: boolean;
+		  }
+		| false;
 	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
@@ -182,6 +184,7 @@ export interface ServerMethods {
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
+	'readThreads': (tmid: IMessage['_id']) => void;
 	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
