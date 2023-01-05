@@ -7,7 +7,7 @@ import { Rooms } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 
-export const mountPopover = (event: JQuery.TriggeredEvent, template: CommonRoomTemplateInstance, outerContext: unknown) => {
+export const mountPopover = async (event: JQuery.TriggeredEvent, template: CommonRoomTemplateInstance, outerContext: unknown) => {
 	let context = $(event.target).parents('.message').data('context');
 	if (!context) {
 		context = 'message';
@@ -19,21 +19,27 @@ export const mountPopover = (event: JQuery.TriggeredEvent, template: CommonRoomT
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	context = federationContext || context;
 
-	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg, user: messageContext.u }, context, 'menu').map(
-		(item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}),
-	);
+	let menuItems = (
+		await MessageAction.getButtons(
+			{ ...messageContext, message: messageContext.msg, user: messageContext.u, chat: template.data.chatContext },
+			context,
+			'menu',
+		)
+	).map((item) => ({
+		icon: item.icon,
+		name: t(item.label),
+		type: 'message-action',
+		id: item.id,
+		modifier: item.color,
+	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(
-			{ ...messageContext, message: messageContext.msg, user: messageContext.u },
-			context,
-			'message',
+		const messageItems = (
+			await MessageAction.getButtons(
+				{ ...messageContext, message: messageContext.msg, user: messageContext.u, chat: template.data.chatContext },
+				context,
+				'message',
+			)
 		).map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
