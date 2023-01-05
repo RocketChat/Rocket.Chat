@@ -90,7 +90,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A');
@@ -103,7 +102,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
@@ -139,7 +137,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 					await poFederationChannelServer2.sidenav.openChat(createdChannel);
-					await page.waitForTimeout(2000);
 
 					await poFederationChannelServer1.content.sendMessage('hello world from server A (creator)');
 
@@ -150,7 +147,7 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await page2.close();
 				});
 
-				test('expect to send a message from Server A (user 2) to Server B', async ({ browser, page }) => {
+				test('expect to send a message from Server A (user 2) to Server B', async ({ browser }) => {
 					const page2 = await browser.newPage();
 					const poFederationChannel1ForUser2 = new FederationChannel(page2);
 
@@ -170,12 +167,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
 					await poFederationChannelServer2.sidenav.openChat(createdChannel);
-					await page.waitForTimeout(2000);
 
 					await expect(page2).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
-					await page2.waitForTimeout(2000);
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
 					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
@@ -211,7 +206,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await poFederationChannelServer1.sidenav.openChat(createdChannel);
 					await poFederationChannelServer2.sidenav.openChat(createdChannel);
 					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
-					await page.waitForTimeout(2000);
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
@@ -233,7 +227,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessage('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
 
@@ -251,7 +244,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessage('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
 
@@ -269,7 +261,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendAudioRecordedMessage();
 
@@ -286,8 +277,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
-
 				await poFederationChannelServer2.content.sendAudioRecordedMessage();
 
 				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('Audio record.mp3');
@@ -303,7 +292,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendVideoRecordedMessage();
 
@@ -320,7 +308,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendVideoRecordedMessage();
 
@@ -337,7 +324,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -355,8 +341,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
-
 				await poFederationChannelServer2.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
 
@@ -373,7 +357,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -391,7 +374,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -409,7 +391,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendFileMessage('test_pdf_file.pdf');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
@@ -424,7 +405,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendFileMessage('test_pdf_file.pdf');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
@@ -439,7 +419,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`);
 
@@ -453,7 +432,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessage(
 					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A`,
@@ -473,7 +451,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`);
 
@@ -487,7 +464,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessage(
 					`hello @${adminUsernameWithDomainFromServer1}, here's @${userFromServer2UsernameOnly} from Server B`,
@@ -507,7 +483,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-				await page.waitForTimeout(2000);
 				await poFederationChannelServer1.content.sendMessage(
 					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A, @all, @${usernameWithDomainFromServer2}`,
 				);
@@ -531,7 +506,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				const message = `Message for quote - ${Date.now()}`;
 
@@ -551,7 +525,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				const message = `Message for quote - ${Date.now()}`;
 
@@ -571,7 +544,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
@@ -582,7 +554,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
 					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
-				await page.waitForTimeout(2000);
 				const reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				const reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
@@ -600,7 +571,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer2.content.reactToMessage('slight_smile');
@@ -632,7 +602,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer1.content.reactToMessage('slight_smile');
 				await poFederationChannelServer1.content.reactToMessage('grin');
-				await page.waitForTimeout(2000);
 
 				let reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
 				let reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
@@ -659,8 +628,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.unreactLastMessage();
 				await pageForServer2.reload();
-				await page.waitForTimeout(2000);
-				await pageForServer2.waitForTimeout(2000);
 
 				reactionsServer1 = await poFederationChannelServer1.content.getAllReactions();
 				reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
@@ -704,7 +671,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 				await poFederationChannelServer2.content.reactToMessage('slight_smile');
 				await poFederationChannelServer2.content.reactToMessage('grin');
-				await pageForServer2.waitForTimeout(2000);
 
 				let reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				let reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
@@ -731,7 +697,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.unreactLastMessage();
 				await pageForServer2.reload();
-				await pageForServer2.waitForTimeout(2000);
 
 				reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
@@ -771,7 +736,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -793,7 +757,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server B');
 
@@ -815,7 +778,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -838,7 +800,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -861,7 +822,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				const message = 'message from Server B';
 				await poFederationChannelServer2.content.sendMessageUsingEnter(message);
@@ -886,7 +846,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				const message = 'message from Server A';
 				await poFederationChannelServer1.content.sendMessageUsingEnter(message);
@@ -911,7 +870,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -919,7 +877,9 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.starLastMessage();
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await expect(
+					poFederationChannelServer1.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
+				).toBeVisible();
 
 				await expect(poFederationChannelServer1.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 			});
@@ -933,7 +893,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -941,7 +900,9 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.starLastMessage();
-				await expect(poFederationChannelServer2.toastSuccess).toBeVisible();
+				await expect(
+					poFederationChannelServer2.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
+				).toBeVisible();
 
 				await expect(poFederationChannelServer2.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
 			});
@@ -955,7 +916,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -975,7 +935,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -995,7 +954,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
@@ -1015,7 +973,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1035,7 +992,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
@@ -1055,7 +1011,6 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(channelName);
 				await poFederationChannelServer2.sidenav.openChat(channelName);
-				await page.waitForTimeout(2000);
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
