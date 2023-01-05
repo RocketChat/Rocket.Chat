@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
@@ -18,6 +18,7 @@ type PrioritiesPageProps = {
 
 export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): ReactElement => {
 	const t = useTranslation();
+	const queryClient = useQueryClient();
 	const prioritiesRoute = useRoute('omnichannel-priorities');
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -67,6 +68,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 
 	const onSavePriority = async ({ reset, ...payload }: PriorityFormData): Promise<void> => {
 		await savePriority(reset ? { reset } : payload);
+		await queryClient.invalidateQueries(['/v1/livechat/priorities']);
 
 		dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
 		refetch();

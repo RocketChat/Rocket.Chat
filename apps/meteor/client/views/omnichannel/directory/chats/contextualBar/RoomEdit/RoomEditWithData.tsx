@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { FormSkeleton } from '../../../components';
-import { useOmnichannelRoomInfo } from '../../../hooks/useRoomInfo';
+import { useOmnichannelRoomInfo } from '../../../hooks/useOmnichannelRoomInfo';
 import { useVisitorInfo } from '../../../hooks/useVisitorInfo';
 import RoomEdit from './RoomEdit';
 

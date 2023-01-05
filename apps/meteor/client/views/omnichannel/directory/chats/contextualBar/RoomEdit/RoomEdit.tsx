@@ -2,6 +2,7 @@ import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.cha
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
@@ -45,7 +46,7 @@ export const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>) => {
 function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
+	const queryClient = useQueryClient();
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
@@ -97,12 +98,14 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 			topic,
 			tags: tags.sort(),
 			livechatData,
-			slaId,
 			priorityId,
+			...(slaId && { slaId }),
 		};
 
 		try {
 			await saveRoom({ guestData, roomData });
+			await queryClient.invalidateQueries(['/v1/rooms.info', room._id]);
+
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload?.();
 			reloadInfo?.();
