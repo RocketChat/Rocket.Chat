@@ -13,7 +13,6 @@ type ThreadMessagePreviewBodyProps = {
 
 const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): ReactElement | null => {
 	const t = useTranslation();
-
 	const isEncryptedMessage = isE2EEMessage(message);
 
 	const parsedMessage = parseMessageTextToAstMarkdown(
