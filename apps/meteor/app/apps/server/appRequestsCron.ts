@@ -60,10 +60,10 @@ export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotify
 	}
 });
 
-// Scheduling as every 24 hours to avoid multiple instances hiting the marketplace at the same time
+// Scheduling as every 12 hours to avoid multiple instances hiting the marketplace at the same time
 SyncedCron.add({
 	name: 'Apps-Request-End-Users:notify',
-	schedule: (parser) => parser.text('every 24 hours'),
+	schedule: (parser) => parser.text('every 12 hours'),
 	job() {
 		appsNotifyAppRequests();
 	},
