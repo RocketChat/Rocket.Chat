@@ -6,7 +6,7 @@ import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
 
 const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {
-	const currentContext = useRouteParameter('context');
+	const currentContext = useRouteParameter('context') || 'all';
 	const marketplaceRoute = useRoute('marketplace');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 
@@ -15,7 +15,7 @@ const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement
 			// The currentContext === 'all' verification is for users who bookmarked
 			// the old marketplace
 			// TODO: Remove the all verification in the future;
-			if ((await isAppsEngineEnabled()) && (!currentContext || currentContext === 'all')) {
+			if ((await isAppsEngineEnabled()) && currentContext === 'all') {
 				marketplaceRoute.replace({ context: 'explore', page: 'list' });
 			}
 		};
