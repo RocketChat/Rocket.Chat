@@ -5,7 +5,7 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 export const useGoToThreadList = (): (() => void) => {
 	const room = useRoom();
-	const [routeName] = useCurrentRoute();
+	const [routeName, { context, ...params } = { context: '' }] = useCurrentRoute();
 
 	if (!routeName) {
 		throw new Error('Route name is not defined');
@@ -13,6 +13,6 @@ export const useGoToThreadList = (): (() => void) => {
 
 	const roomRoute = useRoute(routeName);
 	return useCallback(() => {
-		roomRoute.replace({ rid: room._id, ...(room.name && { name: room.name }), tab: 'thread' });
-	}, [room._id, room.name, roomRoute]);
+		roomRoute.replace({ rid: room._id, ...params, tab: 'thread' });
+	}, [room._id, roomRoute, params]);
 };
