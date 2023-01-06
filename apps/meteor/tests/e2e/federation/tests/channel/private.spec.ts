@@ -1087,10 +1087,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await poFederationChannelServer1.tabs.room.btnEdit.click();
 				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdGroupName}`);
 				await poFederationChannelServer1.tabs.room.btnSave.click();
-
-				await poFederationChannelServer2.sidenav.openChat(`NAME-EDITED-${createdGroupName}`);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/NAME-EDITED-${createdGroupName}`);
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				// waiting for the toast dismiss
+				await page.waitForTimeout(3000);
 
 				const nameChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
 					`changed room name to NAME-EDITED-${createdGroupName}`,

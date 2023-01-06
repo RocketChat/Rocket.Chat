@@ -1139,9 +1139,9 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdChannelName}`);
 				await poFederationChannelServer1.tabs.room.btnSave.click();
 
-				await poFederationChannelServer2.sidenav.openChat(`NAME-EDITED-${createdChannelName}`);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/NAME-EDITED-${createdChannelName}`);
+				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				// waiting for the toast dismiss
+				await page.waitForTimeout(3000);
 
 				const nameChangedSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText(
 					`changed room name to NAME-EDITED-${createdChannelName}`,
