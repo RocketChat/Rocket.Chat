@@ -4,6 +4,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
+import { dispatchToastMessage } from '../../../../../lib/toast';
 import { useRoom, useUserIsSubscribed } from '../../../contexts/RoomContext';
 
 export const ComposerReadOnly = (): ReactElement => {
@@ -11,22 +12,22 @@ export const ComposerReadOnly = (): ReactElement => {
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
 	const calloutRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
-	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
+	const joinChannel = useEndpoint('POST', '/v1/channels.join');
 
 	useEffect(() => {
+		if (!calloutRef.current) {
+			return;
+		}
 		calloutRef.current.style.flex = !isSubscribed ? '4' : 'none';
 	}, [isSubscribed]);
 
-	const join = useCallback(
-		async (_e) => {
-			try {
-				await joinEndpoint({ roomId: room._id });
-			} catch (error: any) {
-				console.log(error);
-			}
-		},
-		[joinEndpoint, room._id],
-	);
+	const join = useCallback(async () => {
+		try {
+			await joinChannel({ roomId: room._id });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [joinChannel, room._id]);
 
 	return (
 		<footer className='rc-message-box footer'>
