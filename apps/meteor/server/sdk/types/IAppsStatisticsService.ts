@@ -1,5 +1,5 @@
-import type { AppStatistcs } from '../../services/apps/statisticsService';
+import type { AppStatistics } from '../../../ee/app/apps/statisticsService';
 
 export interface IAppsStatisticsService {
-	getStatistics: () => AppStatistcs;
+	getStatistics: () => AppStatistics;
 }

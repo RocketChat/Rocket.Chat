@@ -5,7 +5,7 @@ import type { IAppsStatisticsService } from '../../../server/sdk/types/IAppsStat
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
-export type AppStatistcs = {
+export type AppStatistics = {
 	totalInstalled: number | false;
 	totalActive: number | false;
 	totalFailed: number | false;
@@ -22,7 +22,7 @@ export class AppsStatisticsService extends ServiceClass implements IAppsStatisti
 		this.apps = OrchestratorFactory.getOrchestrator();
 	}
 
-	getStatistics(): AppStatistcs {
+	getStatistics(): AppStatistics {
 		const isInitialized = this.apps.isInitialized();
 		const manager = this.apps.getManager();
 
