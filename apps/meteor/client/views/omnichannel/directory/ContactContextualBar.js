@@ -22,8 +22,8 @@ const ContactContextualBar = ({ contactReload }) => {
 	};
 
 	return (
-		<VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
+		<VerticalBar>
+			<VerticalBar.Header expanded>
 				{bar === 'new' && (
 					<>
 						<VerticalBar.Icon name='user' />

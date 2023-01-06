@@ -301,6 +301,7 @@ export const MessageBox = ({
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
+			<BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
 			{readOnly && (
 				<Box mbe='x4'>
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
@@ -318,7 +319,6 @@ export const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 					onPaste={handlePaste}
-					is='textarea'
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
