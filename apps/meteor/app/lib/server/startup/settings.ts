@@ -1263,6 +1263,9 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
+	/**
+	 * @deprecated
+	 */
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		public: true,

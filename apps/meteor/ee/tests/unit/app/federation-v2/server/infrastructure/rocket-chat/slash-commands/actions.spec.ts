@@ -2,7 +2,7 @@
 import proxyquire from 'proxyquire';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 const { executeSlashCommand } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands/action', {
 	'@rocket.chat/models': {

@@ -1,11 +1,10 @@
 import { EventEmitter } from 'events';
 
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Account, Presence, MeteorService, MeteorError } from '@rocket.chat/core-services';
 
 import { DDP_EVENTS, WS_ERRORS } from './constants';
-import { Account, Presence, MeteorService } from '../../../../apps/meteor/server/sdk';
 import { Server } from './Server';
-import { MeteorError } from '../../../../apps/meteor/server/sdk/errors';
 import { Autoupdate } from './lib/Autoupdate';
 
 export const server = new Server();

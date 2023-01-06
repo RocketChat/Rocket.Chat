@@ -6,75 +6,76 @@ import React from 'react';
 
 import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
-const COMPONENT_PATH = '../../../../../client/components/AdministrationList/AdministrationModelList';
-const defaultConfig = {
-	'../../../app/ui-utils/client': {
-		'SideNav': {},
-		'@noCallThru': true,
-	},
-	'meteor/kadira:flow-router': {
-		'FlowRouter': {},
-		'@noCallThru': true,
-	},
-	'../../views/hooks/useUpgradeTabParams': {
-		'useUpgradeTabParams': () => ({
-			isLoading: false,
-			tabType: 'Upgrade',
-			trialEndDate: '2020-01-01',
-		}),
-		'@noCallThru': true,
-	},
-	'../../../lib/upgradeTab': {
-		getUpgradeTabLabel: () => 'Upgrade',
-		isFullyFeature: () => true,
-	},
-	'../../../app/authorization/client': {
-		'userHasAllPermission': () => true,
-		'@noCallThru': true,
-	},
+const mockAdministrationModelListModule = (stubs = {}) => {
+	return proxyquire.load('../../../../../client/components/AdministrationList/AdministrationModelList', {
+		'../../../app/ui-utils/client': {
+			'@noCallThru': true,
+		},
+		'meteor/kadira:flow-router': {
+			'FlowRouter': {},
+			'@noCallThru': true,
+		},
+		'../../views/hooks/useUpgradeTabParams': {
+			'useUpgradeTabParams': () => ({
+				isLoading: false,
+				tabType: 'Upgrade',
+				trialEndDate: '2020-01-01',
+			}),
+			'@noCallThru': true,
+		},
+		'../../../lib/upgradeTab': {
+			getUpgradeTabLabel: () => 'Upgrade',
+			isFullyFeature: () => true,
+		},
+		'../../../app/authorization/client': {
+			'userHasAllPermission': () => true,
+			'@noCallThru': true,
+		},
+		...stubs,
+		// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+	}) as typeof import('../../../../../client/components/AdministrationList/AdministrationModelList');
 };
 
 describe('components/AdministrationList/AdministrationModelList', () => {
 	it('should render administration', async () => {
-		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={true} />);
+		const AdministrationModelList = mockAdministrationModelListModule().default;
+		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={() => null} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.getByText('Workspace')).to.exist;
 		expect(screen.getByText('Upgrade')).to.exist;
 	});
 
-	it('should not render workspace and upgrade when does not have permission', async () => {
-		const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AdministrationModelList closeList={() => null} accountBoxItems={[]} showAdmin={false} />);
+	it('should not render workspace', async () => {
+		const AdministrationModelList = mockAdministrationModelListModule().default;
+		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={() => null} />);
 
 		expect(screen.getByText('Administration')).to.exist;
 		expect(screen.queryByText('Workspace')).to.not.exist;
-		expect(screen.queryByText('Upgrade')).to.not.exist;
+		expect(screen.getByText('Upgrade')).to.exist;
 	});
 
 	context('when clicked', () => {
 		it('should go to admin info', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
-			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+			const handleDismiss = spy();
+			const AdministrationModelList = mockAdministrationModelListModule().default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
+					<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Workspace');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-info'));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should go to admin index if no permission', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
-			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
-				...defaultConfig,
+			const handleDismiss = spy();
+			const AdministrationModelList = mockAdministrationModelListModule({
 				'../../../app/authorization/client': {
 					'userHasAllPermission': () => false,
 					'@noCallThru': true,
@@ -82,23 +83,23 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
+					<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Workspace');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-index'));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should call upgrade route', async () => {
-			const closeList = spy();
+			const handleDismiss = spy();
 			const pushRoute = spy();
-			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+			const AdministrationModelList = mockAdministrationModelListModule().default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList closeList={closeList} accountBoxItems={[]} showAdmin={true} />
+					<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={handleDismiss} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Upgrade');
@@ -106,14 +107,13 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			userEvent.click(button);
 
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('upgrade', { type: 'Upgrade' }, { trialEndDate: '2020-01-01' }));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should render admin box and call router', async () => {
 			const router = spy();
-			const closeList = spy();
-			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
-				...defaultConfig,
+			const handleDismiss = spy();
+			const AdministrationModelList = mockAdministrationModelListModule({
 				'meteor/kadira:flow-router': {
 					'FlowRouter': {
 						go: router,
@@ -123,39 +123,34 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			}).default;
 
 			render(
-				<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', href: 'admin-item' }]} showAdmin={true} />,
+				<AdministrationModelList
+					accountBoxItems={[{ name: 'Admin Item', href: 'admin-item' } as any]}
+					showWorkspace={false}
+					onDismiss={handleDismiss}
+				/>,
 			);
 
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);
 			await waitFor(() => expect(router).to.have.been.called.with('admin-item'));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should render admin box and call sidenav', async () => {
-			const closeList = spy();
-			const setFlex = spy();
-			const openFlex = spy();
-			const AdministrationModelList = proxyquire.load(COMPONENT_PATH, {
-				...defaultConfig,
-				'../../../app/ui-utils/client': {
-					'SideNav': {
-						setFlex,
-						openFlex,
-					},
-					'@noCallThru': true,
-				},
-			}).default;
+			const handleDismiss = spy();
+			const AdministrationModelList = mockAdministrationModelListModule().default;
 			render(
-				<AdministrationModelList closeList={closeList} accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' }]} showAdmin={true} />,
+				<AdministrationModelList
+					accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' } as any]}
+					showWorkspace={false}
+					onDismiss={handleDismiss}
+				/>,
 			);
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);
-			await waitFor(() => expect(setFlex).to.have.been.called.with('admin'));
-			await waitFor(() => expect(openFlex).to.have.been.called());
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 	});
 });
