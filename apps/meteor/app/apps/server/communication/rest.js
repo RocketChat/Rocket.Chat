@@ -892,7 +892,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
-					const { appId, q, sort, limit, offset } = this.queryParams;
+					const { appId, q: '', sort: '', limit: 25, offset: 0 } = this.queryParams;
 					const headers = getDefaultHeaders();
 
 					const token = await getWorkspaceAccessToken();
