@@ -11,7 +11,7 @@ import {
 	useShowTranslated,
 	useShowFollowing,
 	useTranslateProvider,
-} from '../../views/room/MessageList/contexts/MessageListContext';
+} from './list/MessageListContext';
 
 type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;

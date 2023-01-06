@@ -24,8 +24,8 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
+import { useMessageContext } from '../MessageContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
 type ThreadMessagePreviewProps = {
@@ -36,7 +36,7 @@ type ThreadMessagePreviewProps = {
 const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const {
 		actions: { openThread },
-	} = useMessageActions();
+	} = useMessageContext();
 	const parentMessage = useParentMessage(message.tmid);
 	const body = useMessageBody(parentMessage.data);
 	const t = useTranslation();

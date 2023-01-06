@@ -3,7 +3,7 @@ import { PreviewMarkup } from '@rocket.chat/gazzodown';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { parseMessageTextToAstMarkdown } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
 
 type ThreadMessagePreviewBodyProps = {
 	message: IMessage;

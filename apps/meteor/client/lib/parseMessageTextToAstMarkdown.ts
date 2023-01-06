@@ -3,14 +3,15 @@ import { isE2EEMessage, isOTRMessage, isQuoteAttachment, isTranslatedMessage } f
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
-import { isParsedMessage } from './isParsedMessage';
+import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 
 export type MessageWithMdEnforced<TMessage extends IMessage = IMessage> = WithRequiredProperty<TMessage, 'md'>;
-/*
+
+/**
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
  * if has `attachments` property, but attachment is missing `md` property, it will be added.
@@ -21,7 +22,6 @@ export type MessageWithMdEnforced<TMessage extends IMessage = IMessage> = WithRe
  * @param showTranslatedMessage function that evaluates if message should be translated.
  * @returns message normalized.
  */
-
 export const parseMessageTextToAstMarkdown = <TMessage extends IMessage = IMessage>(
 	message: TMessage,
 	parseOptions: Options,

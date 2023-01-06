@@ -9,10 +9,10 @@ import type { ReactElement, UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../app/emoji/client';
+import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
-import { useMessageListHighlights } from '../../views/room/MessageList/contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../views/room/contexts/MessageContext';
+import { useMessageContext } from './MessageContext';
+import { useMessageListHighlights } from './list/MessageListContext';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
@@ -59,7 +59,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 
 	const {
 		actions: { openRoom, openUserCard },
-	} = useMessageActions();
+	} = useMessageContext();
 
 	const onUserMentionClick = useCallback(
 		({ username }: UserMention) => {

@@ -5,18 +5,15 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
+import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
-import {
-	parseMessageTextToAstMarkdown,
-	removePossibleNullMessageValues,
-} from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
+import { useMessageContext } from '../MessageContext';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
 import ToolboxHolder from '../ToolboxHolder';
+import { useMessageListContext } from '../list/MessageListContext';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
@@ -32,7 +29,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
 	const {
 		actions: { openUserCard },
-	} = useMessageActions();
+	} = useMessageContext();
 
 	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
 

@@ -35,15 +35,13 @@ const RoomMessageContent = proxyquire.noCallThru().load('../../../../../../clien
 		UserPresence: () => '',
 	},
 	'../../../../views/room/contexts/MessageContext': {
-		useMessageActions: () => ({
+		useMessageContext: () => ({
 			actions: {
 				openRoom: () => '',
 				openThread: () => () => '',
 				replyBroadcast: () => '',
 			},
 		}),
-		useMessageOembedIsEnabled: () => '',
-		useMessageRunActionLink: () => '',
 	},
 
 	'../../../../views/room/MessageList/contexts/MessageListContext': {

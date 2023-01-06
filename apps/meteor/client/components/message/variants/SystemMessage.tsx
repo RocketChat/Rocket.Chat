@@ -17,20 +17,22 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../../hooks/useFormatTime';
 import { useUserData } from '../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../lib/presence';
-import { useMessageListShowRealName, useMessageListShowUsername } from '../../../views/room/MessageList/contexts/MessageListContext';
 import {
 	useIsSelecting,
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useMessageActions, useMessageRunActionLink } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
+import { useMessageContext } from '../MessageContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
+import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
 
 type SystemMessageProps = {
 	message: IMessage;
@@ -38,11 +40,12 @@ type SystemMessageProps = {
 
 const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
+	const formatTime = useFormatTime();
+	const formatDateAndTime = useFormatDateAndTime();
 	const {
-		actions: { openUserCard },
-		formatters,
-	} = useMessageActions();
-	const runActionLink = useMessageRunActionLink();
+		actions: { openUserCard, runActionLink },
+	} = useMessageContext();
+
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
@@ -99,7 +102,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 							}}
 						/>
 					)}
-					<MessageSystemTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageSystemTimestamp>
+					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>

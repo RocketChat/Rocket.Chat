@@ -4,10 +4,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import type { RefCallback } from 'react';
 import { useEffect, useMemo, useState, useContext, useCallback, useRef } from 'react';
 
+import { MessageContext } from '../../../../../components/message/MessageContext';
 import MessageHighlightContext from '../../../MessageList/contexts/MessageHighlightContext';
 import { useRoomMessageContext } from '../../../components/body/useRoomMessageContext';
 import { ChatContext } from '../../../contexts/ChatContext';
-import { MessageContext } from '../../../contexts/MessageContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useLegacyThreadMessageRef = () => {

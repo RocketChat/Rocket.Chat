@@ -5,10 +5,10 @@ import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
+import { useMessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useMessageListContext } from '../contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
-import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../lib/parseMessageTextToAstMarkdown';
+import type { MessageWithMdEnforced } from '../../../../lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../../lib/parseMessageTextToAstMarkdown';
 
 const options = {
 	sort: {

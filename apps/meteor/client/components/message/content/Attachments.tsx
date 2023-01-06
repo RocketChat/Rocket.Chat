@@ -3,7 +3,7 @@ import type { ContextType, ReactElement } from 'react';
 import React, { useContext } from 'react';
 
 import { ChatContext } from '../../../views/room/contexts/ChatContext';
-import { MessageContext } from '../../../views/room/contexts/MessageContext';
+import { MessageContext } from '../MessageContext';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import AttachmentsItem from './attachments/AttachmentsItem';
 

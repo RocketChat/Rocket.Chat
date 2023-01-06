@@ -3,12 +3,7 @@ import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import {
-	useOpenEmojiPicker,
-	useReactionsFilter,
-	useReactToMessage,
-	useUserHasReacted,
-} from '../../../views/room/MessageList/contexts/MessageListContext';
+import { useOpenEmojiPicker, useReactionsFilter, useReactToMessage, useUserHasReacted } from '../list/MessageListContext';
 import Reaction from './reactions/Reaction';
 
 type ReactionsProps = {

@@ -6,11 +6,11 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
+import type { MessageWithMdEnforced } from '../../../../lib/parseMessageTextToAstMarkdown';
 import type { UserPresence } from '../../../../lib/presence';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
+import { useRoomSubscription } from '../../../../views/room/contexts/RoomContext';
 import MessageContentBody from '../../MessageContentBody';
+import { useMessageContext } from '../../MessageContext';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
@@ -21,6 +21,8 @@ import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
+import { useOembedLayout } from '../../hooks/useOembedLayout';
+import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../list/MessageListContext';
 
 type RoomMessageContentProps = {
 	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
@@ -32,15 +34,14 @@ type RoomMessageContentProps = {
 const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
 	const uid = useUserId();
 	const {
-		broadcast,
-		actions: { openRoom, openThread, replyBroadcast },
-	} = useMessageActions();
+		actions: { openRoom, openThread, replyBroadcast, runActionLink },
+	} = useMessageContext();
+
+	const { enabled: oembedEnabled } = useOembedLayout();
+	const broadcast = useRoomSubscription()?.broadcast ?? false;
 
 	const t = useTranslation();
 
-	const runActionLink = useMessageRunActionLink();
-
-	const oembedIsEnabled = useMessageOembedIsEnabled();
 	const shouldShowReadReceipt = useMessageListShowReadReceipt();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 
@@ -67,7 +68,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
 
-			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
+			{oembedEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions

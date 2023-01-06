@@ -31,7 +31,7 @@ const baseMessage = {
 const COMPONENT_PATH = '../../../../../../client/components/message/variants/ThreadMessagePreview.tsx';
 const defaultConfig = {
 	'../../../views/room/contexts/MessageContext': {
-		useMessageActions: () => ({
+		useMessageContext: () => ({
 			actions: {
 				openThread: () => () => '',
 			},
