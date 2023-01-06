@@ -14,7 +14,7 @@ createTemplateForComponent('messageLocation', () => import('./components/message
 
 createTemplateForComponent('MessageActions', () => import('./components/message/content/MessageActions'));
 
-createTemplateForComponent('reactAttachments', () => import('./components/message/content/Attachments'));
+createTemplateForComponent('Attachments', () => import('./components/message/content/Attachments'));
 
 createTemplateForComponent('ThreadMetrics', () => import('./components/message/content/ThreadMetrics'), {
 	renderContainerView: () =>
