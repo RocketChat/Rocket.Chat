@@ -16,18 +16,18 @@ createTemplateForComponent('MessageActions', () => import('./components/message/
 
 createTemplateForComponent('reactAttachments', () => import('./components/message/content/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/message/content/ThreadMetrics'), {
+createTemplateForComponent('ThreadMetrics', () => import('./components/message/content/ThreadMetrics'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
 		}),
 });
 
-createTemplateForComponent('DiscussionMetric', () => import('./components/message/content/DicussionMetrics'), {
+createTemplateForComponent('DiscussionMetrics', () => import('./components/message/content/DiscussionMetrics'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
 		}),
 });
 
-createTemplateForComponent('BroadCastMetric', () => import('./components/message/content/BroadcastMetrics'));
+createTemplateForComponent('BroadcastMetrics', () => import('./components/message/content/BroadcastMetrics'));
