@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { isTruthy } from '../../../../../../lib/isTruthy';
+import { useBlazePortals } from '../../../../../lib/portals/blazePortals';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
 import { useLegacyMessageEvents } from '../../../hooks/useLegacyMessageEvents';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
@@ -20,7 +21,8 @@ type LegacyThreadMessageListProps = {
 
 const LegacyThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: LegacyThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
-	const messageRef = useLegacyThreadMessageRef();
+	const [portals, portalsSubscription] = useBlazePortals();
+	const messageRef = useLegacyThreadMessageRef(portalsSubscription);
 	const {
 		listWrapperRef: listWrapperScrollRef,
 		listRef: listScrollRef,
@@ -47,6 +49,7 @@ const LegacyThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: LegacyThread
 					</li>
 				) : (
 					<>
+						{portals}
 						<li key={mainMessage._id} ref={messageRef(mainMessage, -1)} />
 						{messages.map((message, index) => (
 							<li key={message._id} ref={messageRef(message, index)} />
