@@ -1,7 +1,7 @@
 import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
-import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
@@ -10,7 +10,7 @@ import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/M
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useChat } from '../../../views/room/contexts/ChatContext';
-import { useRoom } from '../../../views/room/contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../../views/room/contexts/RoomContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
@@ -35,8 +35,8 @@ const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const room = useRoom();
+	const subscription = useRoomSubscription();
 
-	const subscription = useUserSubscription(message.rid);
 	const settings = useSettings();
 	const user = useUser() as IUser;
 
