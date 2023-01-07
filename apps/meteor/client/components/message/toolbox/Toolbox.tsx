@@ -1,4 +1,4 @@
-import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -38,7 +38,7 @@ const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 	const subscription = useRoomSubscription();
 
 	const settings = useSettings();
-	const user = useUser() as IUser;
+	const user = useUser();
 
 	const context = getMessageContext(message, room);
 
@@ -48,11 +48,15 @@ const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const messageActions = await MessageAction.getButtons(
-			{ message, room, user, subscription, settings: mapSettings, chat },
+			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },
 			context,
 			'message',
 		);
-		const menuActions = await MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings, chat }, context, 'menu');
+		const menuActions = await MessageAction.getButtons(
+			{ message, room, user: user ?? undefined, subscription, settings: mapSettings, chat },
+			context,
+			'menu',
+		);
 
 		return { message: messageActions, menu: menuActions };
 	});
