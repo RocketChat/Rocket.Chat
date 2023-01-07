@@ -7,7 +7,7 @@ export const {
 	subscribeToSidebarItems: subscribeToMarketplaceSidebarItems,
 } = createSidebarItems([
 	{
-		href: 'marketplace/all/list',
+		href: 'marketplace/explore/list',
 		icon: 'cube',
 		i18nLabel: 'Explore',
 	},
