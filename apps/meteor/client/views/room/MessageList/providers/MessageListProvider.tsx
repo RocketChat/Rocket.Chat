@@ -18,11 +18,16 @@ type MessageListProviderProps = {
 };
 
 const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
+	const room = useRoom();
+
+	if (!room) {
+		throw new Error('Room not found');
+	}
+
 	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
-	const room = useRoom();
 	const subscription = useRoomSubscription();
 
 	const { isMobile } = useLayout();

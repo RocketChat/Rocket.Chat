@@ -5,12 +5,13 @@ import type { RefCallback } from 'react';
 import { useEffect, useMemo, useState, useContext, useCallback, useRef } from 'react';
 
 import { MessageContext } from '../../../../../components/message/MessageContext';
+import type { BlazePortalsSubscription } from '../../../../../lib/portals/blazePortals';
 import MessageHighlightContext from '../../../MessageList/contexts/MessageHighlightContext';
 import { useRoomMessageContext } from '../../../components/body/useRoomMessageContext';
 import { ChatContext } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
-export const useLegacyThreadMessageRef = () => {
+export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubscription) => {
 	const messageContext = useContext(MessageContext);
 	const chatContext = useContext(ChatContext);
 	const messageHighlightContext = useContext(MessageHighlightContext);
@@ -76,6 +77,7 @@ export const useLegacyThreadMessageRef = () => {
 								subscription: reactiveThreadMessageContext.get().subscription,
 								settings: reactiveThreadMessageContext.get().settings,
 								u: reactiveThreadMessageContext.get().u,
+								actions: reactiveThreadMessageContext.get().actions,
 								chatContext: reactiveThreadMessageContext.get().chatContext,
 								messageContext: reactiveThreadMessageContext.get().messageContext,
 								hideRoles: true,
@@ -91,6 +93,7 @@ export const useLegacyThreadMessageRef = () => {
 											customClass: editing ? 'editing' : '',
 											context: 'threads',
 									  }),
+								portalsSubscription: () => portalsSubscription,
 							};
 						},
 						node.parentElement,
@@ -107,6 +110,6 @@ export const useLegacyThreadMessageRef = () => {
 
 			return callback;
 		},
-		[reactiveThreadMessageContext],
+		[portalsSubscription, reactiveThreadMessageContext],
 	);
 };

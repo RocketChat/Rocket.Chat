@@ -14,7 +14,7 @@ import { useMessageContext } from '../../MessageContext';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
-import DicussionMetrics from '../../content/DicussionMetrics';
+import DiscussionMetrics from '../../content/DiscussionMetrics';
 import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
@@ -100,7 +100,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 			)}
 
 			{isDiscussionMessage(message) && (
-				<DicussionMetrics
+				<DiscussionMetrics
 					count={message.dcount}
 					drid={message.drid}
 					lm={message.dlm}

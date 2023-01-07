@@ -12,9 +12,12 @@ import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useRoom } from '../contexts/RoomContext';
 import { useTabBarOpen } from '../contexts/ToolboxContext';
 
-type MessageProviderProps = { children: ReactNode };
+type MessageProviderProps = {
+	children: ReactNode;
+};
 
 const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
+	const room = useRoom();
 	const tabBarOpen = useTabBarOpen();
 	const [routeName, params, queryStringParams] = useCurrentRoute();
 	const { isEmbedded } = useLayout();
@@ -23,7 +26,6 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 	}
 
 	const router = useRoute(routeName);
-	const room = useRoom();
 
 	const context = useMemo((): ContextType<typeof MessageContext> => {
 		const openThread =
@@ -99,7 +101,7 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 				},
 			},
 		};
-	}, [isEmbedded, router, params, room._id, routeName, tabBarOpen, queryStringParams]);
+	}, [isEmbedded, router, params, routeName, tabBarOpen, room._id, queryStringParams]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 };
