@@ -1,4 +1,4 @@
-import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { Mongo } from 'meteor/mongo';
@@ -18,9 +18,7 @@ const options = {
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforced[] => {
 	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
-	const hideSysMes = useSetting('Hide_System_Messages');
-
-	const hideSysMessagesStable = useStableArray(Array.isArray(hideSysMes) ? hideSysMes : []);
+	const hideSysMessages = useStableArray(useSetting<MessageTypesValues[]>('Hide_System_Messages', []));
 
 	const normalizeMessage = useMemo(() => {
 		const parseOptions = {
@@ -41,10 +39,10 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforc
 		() => ({
 			rid,
 			_hidden: { $ne: true },
-			t: { $nin: hideSysMessagesStable },
+			t: { $nin: hideSysMessages },
 			$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
 		}),
-		[rid, hideSysMessagesStable],
+		[rid, hideSysMessages],
 	);
 
 	return useReactiveValue<MessageWithMdEnforced[]>(
