@@ -58,7 +58,7 @@ export const toInternalMessageFormat = ({
 }): string => replaceAllMentionsInTheirProperPosition(rawMessage, getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain));
 
 const replaceAllMentionsInTheirProperPosition = (message: string, allMentionsWithRealNames: IInternalMention[]): string =>
-	allMentionsWithRealNames.reduce((acc, { mention, realName }) => acc.replace(realName, mention), message);
+	allMentionsWithRealNames.reduce((acc, { mention, realName }) => acc.replace(realName, mention), message).trim();
 
 export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain,

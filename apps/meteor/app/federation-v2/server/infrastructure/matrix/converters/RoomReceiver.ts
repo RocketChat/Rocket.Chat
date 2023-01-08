@@ -153,14 +153,22 @@ export class MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toEditRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomEditExternalMessageDto {
-		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+	public static toEditRoomMessageDto(
+		externalEvent: MatrixEventRoomMessageSent,
+		homeServerDomain: string,
+	): FederationRoomEditExternalMessageDto {
 		return new FederationRoomEditExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
+			newMessageTextFormattedToInternalFormat: toInternalMessageFormat({
+				rawMessage: externalEvent.content['m.new_content']?.body as string,
+				formattedMessage: (externalEvent.content['m.new_content']?.formatted_body ||
+					externalEvent.content['m.new_content']?.body) as string,
+				homeServerDomain,
+			}),
 			externalFormattedText: externalEvent.content['m.new_content']?.formatted_body || '',
 			rawMessage: externalEvent.content['m.new_content']?.body as string,
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,

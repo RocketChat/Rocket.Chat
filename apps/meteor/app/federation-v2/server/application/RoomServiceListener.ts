@@ -266,7 +266,8 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalMessageEditedReceived(roomEditExternalMessageInput: FederationRoomEditExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, editsEvent, externalFormattedText, rawMessage } = roomEditExternalMessageInput;
+		const { externalRoomId, externalSenderId, editsEvent, externalFormattedText, rawMessage, newMessageTextFormattedToInternalFormat } =
+			roomEditExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -283,7 +284,7 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 		// TODO: create an entity to abstract all the message logic
-		if (!FederatedRoom.shouldUpdateMessage(rawMessage, message)) {
+		if (!FederatedRoom.shouldUpdateMessage(newMessageTextFormattedToInternalFormat, message)) {
 			return;
 		}
 
