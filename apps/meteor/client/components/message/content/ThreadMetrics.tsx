@@ -59,8 +59,11 @@ const ThreadMetrics = ({
 				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={openThread}>
 					{t('Reply')}
 				</MessageMetricsReply>
+				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={openThread}>
+					{t('Open')}
+				</MessageMetricsReply>
 				<MessageMetricsItem title={t('Replies')}>
-					<MessageMetricsItem.Icon name='thread' />
+					<MessageMetricsItem.Icon name='thread' onClick={openThread} />
 					<MessageMetricsItem.Label>{counter}</MessageMetricsItem.Label>
 				</MessageMetricsItem>
 				{!!participants && (
