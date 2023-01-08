@@ -36,7 +36,7 @@ You can follow these instructions to setup a dev environment:
 ### Starting Rocket.Chat
 
 ```
-yarn dsv
+yarn dev
 ```
 
 After initialized, you can access the server at http://localhost:3000
