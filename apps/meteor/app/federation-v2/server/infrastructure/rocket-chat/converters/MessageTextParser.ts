@@ -2,59 +2,87 @@ import sanitizeHtml from 'sanitize-html';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 
-const replaceExternalWithInternalMentions = (message: string, homeServerDomain: string): string =>
+interface IInternalMention {
+	mention: string;
+	realName: string;
+}
+
+const getAllMentionsWithTheirRealNames = (message: string, homeServerDomain: string): IInternalMention[] => {
+	const mentions: IInternalMention[] = [];
 	sanitizeHtml(message, {
-		transformTags: {
-			a: (_, { href }): { tagName: string; text: string; attribs: Record<string, any> } => {
-				const isUsernameMention = href.includes('@');
-				if (isUsernameMention) {
-					const [, username] = href.split('@');
-					const [, serverDomain] = username.split(':');
+		allowedTags: ['a'],
+		exclusiveFilter: (frame): boolean => {
+			const {
+				attribs: { href = '' },
+				tag,
+				text,
+			} = frame;
+			if (tag !== 'a' || !href || !text) {
+				return false;
+			}
+			const isUsernameMention = href.includes('https://matrix.to/#/') && href.includes('@');
+			if (isUsernameMention) {
+				const [, username] = href.split('@');
+				const [, serverDomain] = username.split(':');
 
-					const withoutServerIdentification = `@${username.split(':').shift()}`;
-					const fullUsername = `@${username}`;
+				const withoutServerIdentification = `@${username.split(':').shift()}`;
+				const fullUsername = `@${username}`;
 
-					return {
-						tagName: '',
-						text: FederatedUser.isOriginalFromTheProxyServer(serverDomain, homeServerDomain) ? withoutServerIdentification : fullUsername,
-						attribs: {},
-					};
-				}
-
-				return {
-					tagName: '',
-					text: '@all',
-					attribs: {},
-				};
-			},
+				mentions.push({
+					mention: FederatedUser.isOriginalFromTheProxyServer(serverDomain, homeServerDomain) ? withoutServerIdentification : fullUsername,
+					realName: text,
+				});
+			}
+			const isAllMention = href.includes('https://matrix.to/#/') && !href.includes('@');
+			if (isAllMention) {
+				mentions.push({
+					mention: '@all',
+					realName: text,
+				});
+			}
+			return false;
 		},
 	});
 
+	return mentions;
+};
+
 export const toInternalMessageFormat = ({
-	message,
+	rawMessage,
+	formattedMessage,
 	homeServerDomain,
-	isAReplyToAMessage = false,
 }: {
-	message: string;
+	rawMessage: string;
+	formattedMessage: string;
 	homeServerDomain: string;
-	isAReplyToAMessage?: boolean;
-}): string => (isAReplyToAMessage ? message : replaceExternalWithInternalMentions(message, homeServerDomain));
+}): string => replaceAllMentionsInTheirProperPosition(rawMessage, getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain));
+
+const replaceAllMentionsInTheirProperPosition = (message: string, allMentionsWithRealNames: IInternalMention[]): string =>
+	allMentionsWithRealNames.reduce((acc, { mention, realName }) => acc.replace(realName, mention), message);
 
 export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain,
-	message,
+	formattedMessage,
 	messageToReplyToUrl,
 }: {
 	messageToReplyToUrl: string;
-	message: string;
+	formattedMessage: string;
+	rawMessage: string;
 	homeServerDomain: string;
 }): Promise<string> => {
-	const sanitizedMessage = sanitizeHtml(message, {
+	const withMentionsOnly = sanitizeHtml(formattedMessage, {
 		allowedTags: ['a'],
 		allowedAttributes: {
 			a: ['href'],
 		},
 		nonTextTags: ['mx-reply', 'blockquote'],
 	});
-	return `[ ](${messageToReplyToUrl}) ${replaceExternalWithInternalMentions(sanitizedMessage, homeServerDomain)}`;
+	const withNoHtmlAtAll = sanitizeHtml(withMentionsOnly, {
+		allowedTags: [],
+		allowedAttributes: {},
+	});
+	return `[ ](${messageToReplyToUrl}) ${replaceAllMentionsInTheirProperPosition(
+		withNoHtmlAtAll,
+		getAllMentionsWithTheirRealNames(withMentionsOnly, homeServerDomain),
+	)}`;
 };

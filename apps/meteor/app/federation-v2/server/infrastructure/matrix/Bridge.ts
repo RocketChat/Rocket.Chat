@@ -5,7 +5,7 @@ import { fetch } from '../../../../../server/lib/http/fetch';
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/MessageTextParser';
-import { convertEmojisRCFormatToMatrixFormat } from './converters/MessageReceiver';
+import { convertEmojisFromRCFormatToMatrixFormat } from './converters/MessageReceiver';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import { MatrixEventType } from './definitions/MatrixEventType';
@@ -13,7 +13,7 @@ import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
-
+require('util').inspect.defaultOptions.depth = null;
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
@@ -215,7 +215,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	private escapeEmojis(text: string): string {
-		return convertEmojisRCFormatToMatrixFormat(text);
+		return convertEmojisFromRCFormatToMatrixFormat(text);
 	}
 
 	public async getReadStreamForFileFromUrl(externalUserId: string, fileUrl: string): Promise<ReadableStream> {
@@ -281,7 +281,7 @@ export class MatrixBridge implements IFederationBridge {
 			.matrixClient.sendEvent(externalRoomId, MatrixEventType.MESSAGE_REACTED, {
 				'm.relates_to': {
 					event_id: externalEventId,
-					key: convertEmojisRCFormatToMatrixFormat(reaction),
+					key: convertEmojisFromRCFormatToMatrixFormat(reaction),
 					rel_type: 'm.annotation',
 				},
 			});
@@ -435,6 +435,7 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {

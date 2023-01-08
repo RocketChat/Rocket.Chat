@@ -222,8 +222,8 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageText, externalEventId, replyToEventId } = roomReceiveExternalMessageInput;
-
+		const { externalRoomId, externalSenderId, rawMessage, externalFormattedText, externalEventId, replyToEventId } =
+			roomReceiveExternalMessageInput;
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
 			return;
@@ -246,7 +246,8 @@ export class FederationRoomServiceListener extends FederationService {
 			await this.internalMessageAdapter.sendQuoteMessage(
 				senderUser,
 				federatedRoom,
-				messageText,
+				externalFormattedText,
+				rawMessage,
 				externalEventId,
 				messageToReplyTo,
 				this.internalHomeServerDomain,
@@ -254,11 +255,18 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 
-		await this.internalMessageAdapter.sendMessage(senderUser, federatedRoom, messageText, externalEventId);
+		await this.internalMessageAdapter.sendMessage(
+			senderUser,
+			federatedRoom,
+			rawMessage,
+			externalFormattedText,
+			externalEventId,
+			this.internalHomeServerDomain,
+		);
 	}
 
 	public async onExternalMessageEditedReceived(roomEditExternalMessageInput: FederationRoomEditExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, editsEvent, newMessageText } = roomEditExternalMessageInput;
+		const { externalRoomId, externalSenderId, editsEvent, externalFormattedText, rawMessage } = roomEditExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -275,11 +283,11 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 		// TODO: create an entity to abstract all the message logic
-		if (!FederatedRoom.shouldUpdateMessage(newMessageText, message)) {
+		if (!FederatedRoom.shouldUpdateMessage(rawMessage, message)) {
 			return;
 		}
 
-		await this.internalMessageAdapter.editMessage(senderUser, newMessageText, message);
+		await this.internalMessageAdapter.editMessage(senderUser, rawMessage, externalFormattedText, message, this.internalHomeServerDomain);
 	}
 
 	public async onExternalFileMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto): Promise<void> {

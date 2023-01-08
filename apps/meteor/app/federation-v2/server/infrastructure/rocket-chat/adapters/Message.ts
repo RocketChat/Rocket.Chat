@@ -8,19 +8,38 @@ import type { FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { roomCoordinator } from '../../../../../../server/lib/rooms/roomCoordinator';
 import { getURL } from '../../../../../utils/server';
-import { toInternalQuoteMessageFormat } from '../converters/MessageTextParser';
+import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/MessageTextParser';
 
 const DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST = ':grey_question:';
 
 export class RocketChatMessageAdapter {
-	public async sendMessage(user: FederatedUser, room: FederatedRoom, messageText: string, externalEventId: string): Promise<void> {
-		sendMessage(user.getInternalReference(), { federation: { eventId: externalEventId }, msg: messageText }, room.getInternalReference());
+	public async sendMessage(
+		user: FederatedUser,
+		room: FederatedRoom,
+		rawMessage: string,
+		externalFormattedMessage: string,
+		externalEventId: string,
+		homeServerDomain: string,
+	): Promise<void> {
+		sendMessage(
+			user.getInternalReference(),
+			{
+				federation: { eventId: externalEventId },
+				msg: toInternalMessageFormat({
+					rawMessage,
+					formattedMessage: externalFormattedMessage,
+					homeServerDomain,
+				}),
+			},
+			room.getInternalReference(),
+		);
 	}
 
 	public async sendQuoteMessage(
 		user: FederatedUser,
 		federatedRoom: FederatedRoom,
-		messageText: string,
+		externalFormattedText: string,
+		rawMessage: string,
 		externalEventId: string,
 		messageToReplyTo: IMessage,
 		homeServerDomain: string,
@@ -36,7 +55,8 @@ export class RocketChatMessageAdapter {
 				federation: { eventId: externalEventId },
 				msg: await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
-					message: messageText,
+					formattedMessage: externalFormattedText,
+					rawMessage,
 					homeServerDomain,
 				}),
 			},
@@ -44,8 +64,20 @@ export class RocketChatMessageAdapter {
 		);
 	}
 
-	public async editMessage(user: FederatedUser, newMessageText: string, originalMessage: IMessage): Promise<void> {
-		const updatedMessage = Object.assign({}, originalMessage, { msg: newMessageText });
+	public async editMessage(
+		user: FederatedUser,
+		newRawMessageText: string,
+		newExternalFormattedMessage: string,
+		originalMessage: IMessage,
+		homeServerDomain: string,
+	): Promise<void> {
+		const updatedMessage = Object.assign({}, originalMessage, {
+			msg: toInternalMessageFormat({
+				rawMessage: newRawMessageText,
+				formattedMessage: newExternalFormattedMessage,
+				homeServerDomain,
+			}),
+		});
 		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
 	}
 
@@ -96,7 +128,8 @@ export class RocketChatMessageAdapter {
 				attachments,
 				msg: await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
-					message: '',
+					formattedMessage: '',
+					rawMessage: '',
 					homeServerDomain,
 				}),
 			},

@@ -6928,7 +6928,7 @@ __metadata:
     "@types/lodash.debounce": ^4.0.7
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
-    "@types/marked": ^4.0.3
+    "@types/marked": ^4.0.8
     "@types/meteor": 2.7.1
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
@@ -7059,7 +7059,7 @@ __metadata:
     lodash.debounce: ^4.0.8
     lodash.get: ^4.4.2
     mailparser: ^3.4.0
-    marked: ^4.0.17
+    marked: ^4.2.5
     mem: ^8.1.1
     meteor-node-stubs: ^1.2.3
     mime-db: ^1.52.0
@@ -9969,10 +9969,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/marked@npm:^4.0.3":
-  version: 4.0.3
-  resolution: "@types/marked@npm:4.0.3"
-  checksum: 2fc409a6291cb770688731a444f54e7eab6257c9b565dea4e9d2f3b6654b606e9dd8ea4a924e306b2d2f581dedcb7a27f10f2ca7aed828b11642ab85955341f1
+"@types/marked@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "@types/marked@npm:4.0.8"
+  checksum: 68278fa7acaa5d920cdc239d675b5daf842e0ad4779e4848cd617d9baf2ac1afccb5a264c331e37d80031d647e1640cb983cd31e73d45b28552670b4853fad8e
   languageName: node
   linkType: hard
 
@@ -25006,12 +25006,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.0.17":
-  version: 4.0.17
-  resolution: "marked@npm:4.0.17"
+"marked@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "marked@npm:4.2.5"
   bin:
     marked: bin/marked.js
-  checksum: 33a3c43a20b47bddaf045a59bfc7c3d41cc321931cc663ed231ca3b5b3b195fb2ac2973e687c2afd65b79539c14619baa07d19793f70130160f0af80c06d9b3a
+  checksum: dd7da20a3983c66b516463fad5dc8d15dc70e137d20b6dc491e134f671e84bd2ed5f859e2c35f21e56830a122e4356b9e574bcde49b72b7ad6bc121a215a1a98
   languageName: node
   linkType: hard
 

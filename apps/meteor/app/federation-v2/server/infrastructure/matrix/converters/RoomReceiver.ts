@@ -140,30 +140,20 @@ export class MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toSendRoomMessageDto(
-		externalEvent: MatrixEventRoomMessageSent,
-		homeServerDomain: string,
-	): FederationRoomReceiveExternalMessageDto {
-		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
 		return new FederationRoomReceiveExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: toInternalMessageFormat({
-				message: externalEvent.content.formatted_body || externalEvent.content.body,
-				homeServerDomain,
-				isAReplyToAMessage,
-			}),
+			externalFormattedText: externalEvent.content.formatted_body || '',
+			rawMessage: externalEvent.content.body,
 			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 
-	public static toEditRoomMessageDto(
-		externalEvent: MatrixEventRoomMessageSent,
-		homeServerDomain: string,
-	): FederationRoomEditExternalMessageDto {
+	public static toEditRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomEditExternalMessageDto {
 		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
 		return new FederationRoomEditExternalMessageDto({
 			externalEventId: externalEvent.event_id,
@@ -171,11 +161,8 @@ export class MatrixRoomReceiverConverter {
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			newMessageText: toInternalMessageFormat({
-				message: (externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
-				homeServerDomain,
-				isAReplyToAMessage,
-			}),
+			externalFormattedText: externalEvent.content['m.new_content']?.formatted_body || '',
+			rawMessage: externalEvent.content['m.new_content']?.body as string,
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
 		});
 	}

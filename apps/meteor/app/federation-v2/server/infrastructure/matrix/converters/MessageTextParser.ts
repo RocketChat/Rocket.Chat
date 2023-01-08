@@ -1,4 +1,5 @@
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
+import { marked } from 'marked';
 
 const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)`, 'gm'); // @username:server.com
 const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = new RegExp(`@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)$`, 'gm'); // @username, @username.name
@@ -63,7 +64,7 @@ const replaceInternalWithExternalMentions = async (message: string, externalRoom
 		),
 	);
 
-const removeMarkdownFromMessage = (message: string): string => message.replace(/\[(.*?)\]\(.*?\)/g, '').trim();
+const convertMarkdownToHTML = (message: string): string => marked.parse(message);
 
 export const toExternalMessageFormat = async ({
 	externalRoomId,
@@ -73,7 +74,7 @@ export const toExternalMessageFormat = async ({
 	message: string;
 	externalRoomId: string;
 	homeServerDomain: string;
-}): Promise<string> => replaceInternalWithExternalMentions(removeMarkdownFromMessage(message), externalRoomId, homeServerDomain);
+}): Promise<string> => replaceInternalWithExternalMentions(convertMarkdownToHTML(message), externalRoomId, homeServerDomain);
 
 export const toExternalQuoteMessageFormat = async ({
 	message,
@@ -90,7 +91,7 @@ export const toExternalQuoteMessageFormat = async ({
 }): Promise<{ message: string; formattedMessage: string }> => {
 	const { RichReply } = await import('@rocket.chat/forked-matrix-bot-sdk');
 
-	const formattedMessage = removeMarkdownFromMessage(message);
+	const formattedMessage = convertMarkdownToHTML(message);
 
 	const { body, formatted_body: formattedBody } = RichReply.createFor(
 		externalRoomId,
