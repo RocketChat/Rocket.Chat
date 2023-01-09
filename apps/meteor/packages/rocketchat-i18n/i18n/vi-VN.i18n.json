@@ -1,5 +1,4 @@
 {
-  "403": "Bị cấm",
   "500": "Lỗi máy chủ",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ phòng trống sẽ được gỡ bỏ tự động.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ phòng trống sẽ được gỡ bỏ tự động: <br/> __rooms__.",
@@ -2896,6 +2895,7 @@
   "registration.page.registration.waitActivationWarning": "Trước khi bạn có thể đăng nhập, tài khoản của bạn phải được quản trị viên kích hoạt theo cách thủ công.",
   "registration.page.resetPassword.sent": "Nếu email này đã được đăng ký, chúng tôi sẽ gửi hướng dẫn về cách đặt lại mật khẩu của bạn. Nếu bạn không nhận được email sớm, vui lòng quay lại và thử lại.",
   "registration.component.login": "Đăng nhập",
+  "registration.component.login.userNotFound": "Người dùng không tìm thấy",
   "registration.component.resetPassword": "Đặt lại mật khẩu",
   "registration.component.form.email": "E-mail",
   "registration.component.form.password": "Mật khẩu",

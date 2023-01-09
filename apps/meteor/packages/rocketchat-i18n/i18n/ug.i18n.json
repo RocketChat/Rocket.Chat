@@ -1,5 +1,4 @@
 {
-  "403": "چەكلەندى",
   "500": "ئىچكى مۇلازىمتېردا خاتالىق بار",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ ئەمدى __username__ نىڭ __role__ رولىغا_ئېنىقلىما_بەرمەيدۇ",
   "__username__was_set__role__by__user_by_": "__user_by__ بۇ __username__ غا __role__ رولىنى_بەردە",
@@ -1244,6 +1243,7 @@
   "registration.page.registration.waitActivationWarning": "سىزنىڭ ئاكونتىڭىز چوقۇم باشقۇرغۇچى قولى بىلەن قوزغاتقاندىن كېيىن ئاندىن كىرگىلى بولىدۇ.",
   "registration.page.login.forgot": "پارولنى ئۇنتۇپ قېلىش",
   "registration.component.login": "كىرىش",
+  "registration.component.login.userNotFound": "ئەزا يوق",
   "registration.component.resetPassword": "پارولنى قايتا بېكىتىش",
   "registration.component.form.emailOrUsername": "ئىلخەت ياكى ئەزا نامى",
   "registration.component.form.email": "ئىلخەت",

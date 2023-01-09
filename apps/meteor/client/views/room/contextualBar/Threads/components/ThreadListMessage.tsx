@@ -1,12 +1,15 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, memo, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import * as NotificationStatus from '../../../../../components/message/NotificationStatus';
 import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
+import AllMentionNotification from '../../../../../components/message/notification/AllMentionNotification';
+import MeMentionNotification from '../../../../../components/message/notification/MeMentionNotification';
+import UnreadMessagesNotification from '../../../../../components/message/notification/UnreadMessagesNotification';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
 type ThreadListMessageProps = {
@@ -16,17 +19,16 @@ type ThreadListMessageProps = {
 	username: IMessage['u']['username'];
 	name?: IMessage['u']['name'];
 	ts: IMessage['ts'];
-	replies: IMessage['replies'];
+	replies: ReactNode;
 	participants: ReactNode;
 	handleFollowButton: MouseEventHandler;
 	unread: boolean;
-	mention: number;
+	mention: boolean;
 	all: boolean;
-	tlm: number;
-	className?: string | string[];
-} & Omit<ComponentProps<typeof Message>, 'className' | 'is'>;
+	tlm: Date | undefined;
+} & Omit<ComponentProps<typeof Box>, 'is'>;
 
-function ThreadListMessage({
+const ThreadListMessage = ({
 	_id,
 	msg,
 	following,
@@ -42,7 +44,7 @@ function ThreadListMessage({
 	tlm,
 	className = [],
 	...props
-}: ThreadListMessageProps): ReactElement {
+}: ThreadListMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
@@ -50,7 +52,7 @@ function ThreadListMessage({
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
 		<Box className={[className, !following && followStyle].flat()}>
-			<Box pbs='x16' is={Message} {...props}>
+			<Box pbs={16} is={Message} {...props}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>
@@ -72,10 +74,12 @@ function ThreadListMessage({
 								<Message.Metrics.Item.Icon name='user' />
 								<Message.Metrics.Item.Label>{participants}</Message.Metrics.Item.Label>
 							</Message.Metrics.Item>
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Icon name='clock' />
-								<Message.Metrics.Item.Label>{formatDate(tlm)}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							{tlm && (
+								<Message.Metrics.Item>
+									<Message.Metrics.Item.Icon name='clock' />
+									<Message.Metrics.Item.Label>{formatDate(tlm)}</Message.Metrics.Item.Label>
+								</Message.Metrics.Item>
+							)}
 						</Message.Metrics>
 					</Message.Block>
 				</Message.Container>
@@ -92,12 +96,12 @@ function ThreadListMessage({
 						aria-label={actionLabel}
 					/>
 					<Box mb={24}>
-						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
+						{(mention && <MeMentionNotification />) || (all && <AllMentionNotification />) || (unread && <UnreadMessagesNotification />)}
 					</Box>
 				</Message.ContainerFixed>
 			</Box>
 		</Box>
 	);
-}
+};
 
 export default memo(ThreadListMessage);

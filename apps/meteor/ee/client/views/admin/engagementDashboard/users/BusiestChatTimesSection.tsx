@@ -1,6 +1,7 @@
 import { Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import ContentForDays from './ContentForDays';

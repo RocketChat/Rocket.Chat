@@ -1,5 +1,4 @@
 {
-  "403": "Proibido",
   "500": "Erro Interno do Servidor",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ salas vazias serão removidas automáticamente.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ salas vazias serão removidas automáticamente:<br/> __rooms__.",
@@ -2366,6 +2365,7 @@
   "Reactions": "Reacções",
   "Read_by": "Leia por",
   "Read_only": "Somente leitura",
+  "This_room_is_read_only": "Esta sala é apenas para leitura",
   "Read_only_changed_successfully": "Somente o texto foi alterado com sucesso",
   "Read_only_channel": "Canal Somente Leitura",
   "Read_only_group": "Apenas ler em Grupo",
@@ -3220,6 +3220,7 @@
   "registration.page.login.forgot": "Esqueceu a sua senha ?",
   "registration.page.resetPassword.sent": "Se este e-mail estiver cadastrado, vamos enviar instruções de como pode redefinir a sua senha. Se não receber um e-mail em breve, volte e tente novamente.",
   "registration.component.login": "Entrar",
+  "registration.component.login.userNotFound": "Utilizador não encontrado",
   "registration.component.resetPassword": "Redefinir senha",
   "registration.component.form.emailOrUsername": "Email ou nome de utilizador",
   "registration.component.form.email": "Email",

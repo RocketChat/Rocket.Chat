@@ -1,7 +1,18 @@
 // TODO: Lib imports should not exists inside the raw models
 import type { IUpload, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IUploadsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, DeleteResult, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	DeleteResult,
+	IndexDescription,
+	InsertOneResult,
+	UpdateResult,
+	WithId,
+	Filter,
+	FindOptions,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
@@ -20,7 +31,7 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { rid: 1 } }, { key: { uploadedAt: 1 } }, { key: { typeGroup: 1 } }];
+		return [{ key: { uploadedAt: -1 } }, { key: { rid: 1, _hidden: 1, typeGroup: 1 } }];
 	}
 
 	findNotHiddenFilesOfRoom(roomId: string, searchText: string, fileType: string, limit: number): FindCursor<IUpload> {
@@ -98,5 +109,16 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 
 	async deleteFile(fileId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId });
+	}
+
+	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
+		return this.findPaginated(
+			{
+				...query,
+				_hidden: { $ne: true },
+				typeGroup: { $ne: 'thumb' },
+			},
+			options,
+		);
 	}
 }

@@ -1,5 +1,4 @@
 {
-  "403": "Qedexekirî",
   "500": "Xeletiya Pêşkêşkara Herêmî",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ e êdî __role__, ji aliyê __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ __role__ destê __user_by__ hat avakirin",
@@ -2791,6 +2790,7 @@
   "registration.page.registration.waitActivationWarning": "Berî ku hun nikarim têkevim, hesabê xwe divê bi destan an administrator aktîfkirin.",
   "registration.page.resetPassword.sent": "Heke ev e-nameya qeydkirî ye, em ê li ser şîfreya we çawa şîfreya xwe bistînin. Heke hûn bi nameyek zûtirîn bistînin, kerema xwe dîsa vegerin û dîsa biceribînin.",
   "registration.component.login": "چوونەژوور",
+  "registration.component.login.userNotFound": "Bikarhêner nehat dîtin",
   "registration.component.resetPassword": "تێپەڕەوشە دابنێرەوە",
   "registration.component.form.password": "Şîfre",
   "registration.component.form.divider": "an",

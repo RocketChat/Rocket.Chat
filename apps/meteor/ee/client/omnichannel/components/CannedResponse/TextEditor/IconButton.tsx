@@ -1,5 +1,6 @@
 import { IconButton as Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, memo, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 type IconButtonProps = {
 	name: ComponentProps<typeof Icon>['icon'];

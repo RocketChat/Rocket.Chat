@@ -1,13 +1,7 @@
-import {
-	IMessage,
-	isE2EEMessage,
-	isOTRMessage,
-	isQuoteAttachment,
-	isTranslatedMessage,
-	MessageAttachment,
-	MessageQuoteAttachment,
-} from '@rocket.chat/core-typings';
-import { Options, parse, Root } from '@rocket.chat/message-parser';
+import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isOTRMessage, isQuoteAttachment, isTranslatedMessage } from '@rocket.chat/core-typings';
+import type { Options, Root } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 
 import { isParsedMessage } from './isParsedMessage';
 
@@ -15,7 +9,7 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 
-export type MessageWithMdEnforced = WithRequiredProperty<IMessage, 'md'>;
+export type MessageWithMdEnforced<TMessage extends IMessage = IMessage> = WithRequiredProperty<TMessage, 'md'>;
 /*
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
@@ -28,12 +22,12 @@ export type MessageWithMdEnforced = WithRequiredProperty<IMessage, 'md'>;
  * @returns message normalized.
  */
 
-export const parseMessageTextToAstMarkdown = (
-	message: IMessage,
+export const parseMessageTextToAstMarkdown = <TMessage extends IMessage = IMessage>(
+	message: TMessage,
 	parseOptions: Options,
 	autoTranslateLanguage?: string,
 	showTranslated?: ({ message }: { message: IMessage }) => boolean,
-): MessageWithMdEnforced => {
+): MessageWithMdEnforced<TMessage> => {
 	const msg = removePossibleNullMessageValues(message);
 	const translations = autoTranslateLanguage && showTranslated && isTranslatedMessage(msg) && msg.translations;
 	const translated = autoTranslateLanguage && showTranslated?.({ message });
@@ -47,7 +41,7 @@ export const parseMessageTextToAstMarkdown = (
 				? textToMessageToken(text, parseOptions)
 				: msg.md ?? textToMessageToken(text, parseOptions),
 		...(msg.attachments && { attachments: parseMessageAttachments(msg.attachments, parseOptions) }),
-	};
+	} as MessageWithMdEnforced<TMessage>;
 };
 
 const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(quote: T, parseOptions: Options): T => {
@@ -84,7 +78,7 @@ const isNotNullOrUndefined = (value: unknown): boolean => value !== null && valu
 // In a previous version of the app, some values were being set to null.
 // This is a workaround to remove those null values.
 // A migration script should be created to remove this code.
-export const removePossibleNullMessageValues = ({
+export const removePossibleNullMessageValues = <TMessage extends IMessage = IMessage>({
 	editedBy,
 	editedAt,
 	emoji,
@@ -95,7 +89,7 @@ export const removePossibleNullMessageValues = ({
 	attachments,
 	reactions,
 	...message
-}: any): IMessage => ({
+}: any): TMessage => ({
 	...message,
 	...(isNotNullOrUndefined(editedBy) && { editedBy }),
 	...(isNotNullOrUndefined(editedAt) && { editedAt }),

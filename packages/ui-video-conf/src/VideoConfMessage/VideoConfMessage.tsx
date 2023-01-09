@@ -1,13 +1,14 @@
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 
 const VideoConfMessage = ({ ...props }): ReactElement => (
 	<Box
 		mbs='x4'
+		color='default'
 		maxWidth='345px'
-		backgroundColor={Palette.surface['surface-light'].toString()}
-		borderWidth={2}
-		borderColor='neutral-200'
+		backgroundColor='surface-light'
+		borderWidth={1}
+		borderColor='extra-light'
 		borderRadius='x4'
 		{...props}
 	/>

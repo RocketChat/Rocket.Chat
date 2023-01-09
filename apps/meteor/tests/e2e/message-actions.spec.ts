@@ -63,7 +63,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[name="msg"]').fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
 	test('expect star the message', async ({ page }) => {

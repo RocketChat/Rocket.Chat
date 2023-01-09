@@ -1,19 +1,20 @@
-import { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useRef } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 
-import { ChatMessage } from '../../../../../app/models/client';
+import { Messages } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useMessageContext } from './useMessageContext';
+import { useRoomMessageContext } from './useRoomMessageContext';
 
 type LegacyMessageTemplateListProps = {
 	room: IRoom;
 };
 
 const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): ReactElement => {
-	const messageContext = useMessageContext(room);
+	const roomMessageContext = useRoomMessageContext(room);
 
 	const hideSystemMessages = useSetting('Hide_System_Messages') as MessageTypesValues[];
 
@@ -42,7 +43,7 @@ const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): Re
 				},
 			};
 
-			return ChatMessage.find(query, options).fetch();
+			return Messages.find(query, options).fetch();
 		}, [hideSystemMessages, room._id, room.sysMes]),
 	);
 
@@ -58,7 +59,7 @@ const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): Re
 						index,
 						shouldCollapseReplies: false,
 						msg: message,
-						...messageContext,
+						...roomMessageContext,
 					}),
 					node.parentElement,
 					node,
@@ -75,7 +76,7 @@ const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): Re
 				viewsRef.current.delete(message._id);
 			}
 		},
-		[messageContext],
+		[roomMessageContext],
 	);
 
 	return (

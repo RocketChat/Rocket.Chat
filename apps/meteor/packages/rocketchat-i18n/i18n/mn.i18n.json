@@ -1,5 +1,4 @@
 {
-  "403": "Хориотой",
   "500": "Дотоод серверийн алдаа",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ тооны хоосон өрөөнүүд автоматаар устгагдах болно",
   "__username__was_set__role__by__user_by_": null,
@@ -2030,6 +2029,7 @@
   "Reactions": "Урвал",
   "Read_by": "Уншсан",
   "Read_only": "Зөвхөн унших",
+  "This_room_is_read_only": "Энэ өрөөнд зөвхөн уншигддаг",
   "Read_only_changed_successfully": "Зөвхөн амжилттай уншина уу",
   "Read_only_channel": "Зөвхөн суваг унших боломжтой",
   "Read_only_group": "Зөвхөн бүлэг унш",
@@ -2788,6 +2788,7 @@
   "registration.page.login.forgot": "Нууц үгээ мартсан",
   "registration.page.resetPassword.sent": "Хэрэв энэ имэйл бүртгэгдсэн бол бид таны нууц үгийг шинэчлэх талаар зааварчилгааг илгээх болно. Хэрэв та имэйлээ удахгүй хүлээж авахгүй бол эргэж ороод дахин оролдоно уу.",
   "registration.component.login": "Нэвтрэх",
+  "registration.component.login.userNotFound": "Хэрэглэгч олдсонгүй",
   "registration.component.resetPassword": "Нууц үгээ анхны байдалд нь оруулж",
   "registration.component.form.emailOrUsername": "И-мэйл эсвэл Хэрэглэгчийн нэр",
   "registration.component.form.email": "И-мэйл хаяг",

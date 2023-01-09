@@ -5,13 +5,15 @@ import {
 	MessageGenericPreviewContent,
 	MessageGenericPreviewDescription,
 	MessageGenericPreviewTitle,
+	MessageSystemBody,
 } from '@rocket.chat/fuselage';
-import { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { Dispatch, memo, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { memo } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { clickableItem } from '../../../lib/clickableItem';
 
 type ContactHistoryItemProps = {
@@ -21,8 +23,9 @@ type ContactHistoryItemProps = {
 
 function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItemProps): ReactElement {
 	const t = useTranslation();
-	const formatDate = useTimeAgo();
+	const formatDate = useFormatDateAndTime();
 	const username = history.servedBy?.username;
+	const hasClosingMessage = !!history.closingMessage?.msg?.trim();
 	const onClick = (): void => {
 		setChatId(history._id);
 	};
@@ -38,14 +41,17 @@ function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItem
 					{history.closingMessage?.ts && <Message.Timestamp>{formatDate(history.closingMessage?.ts)}</Message.Timestamp>}
 				</Message.Header>
 				<Message.Body>
-					<MessageGenericPreview>
-						<MessageGenericPreviewContent>
-							<MessageGenericPreviewTitle>{t('Closing_chat_message')}:</MessageGenericPreviewTitle>
-							<MessageGenericPreviewDescription clamp>
-								<Box title={history.closingMessage?.msg}>{history.closingMessage?.msg}</Box>
-							</MessageGenericPreviewDescription>
-						</MessageGenericPreviewContent>
-					</MessageGenericPreview>
+					<MessageSystemBody title={t('Conversation_closed_without_comment')}>{t('Conversation_closed_without_comment')}</MessageSystemBody>
+					{hasClosingMessage && (
+						<MessageGenericPreview>
+							<MessageGenericPreviewContent>
+								<MessageGenericPreviewTitle>{t('Closing_chat_message')}:</MessageGenericPreviewTitle>
+								<MessageGenericPreviewDescription clamp>
+									<Box title={history.closingMessage?.msg}>{history.closingMessage?.msg}</Box>
+								</MessageGenericPreviewDescription>
+							</MessageGenericPreviewContent>
+						</MessageGenericPreview>
+					)}
 				</Message.Body>
 				<Message.Metrics>
 					<Message.Metrics.Item>
