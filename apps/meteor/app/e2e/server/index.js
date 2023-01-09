@@ -11,8 +11,6 @@ import './methods/setRoomKeyID';
 import './methods/fetchMyKeys';
 import './methods/resetOwnE2EKey';
 import './methods/requestSubscriptionKeys';
-import './methods/acceptSuggestedGroupKey';
-import './methods/rejectSuggestedGroupKey';
 
 callbacks.add(
 	'afterJoinRoom',
