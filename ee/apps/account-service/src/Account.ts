@@ -1,7 +1,7 @@
 import { Settings } from '@rocket.chat/models';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { IAccount, ILoginResult } from '@rocket.chat/core-services';
 
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
-import type { IAccount, ILoginResult } from '../../../../apps/meteor/server/sdk/types/IAccount';
 import { removeSession } from './lib/removeSession';
 import { loginViaResume } from './lib/loginViaResume';
 import { loginViaUsername } from './lib/loginViaUsername';

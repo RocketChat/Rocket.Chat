@@ -25,7 +25,7 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	};
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
+		<VerticalBar.ScrollableContent {...props} color='default'>
 			<Box is='h2' fontScale='h2' mb='x8'>
 				{t('Send_invitation_email')}
 			</Box>

@@ -17,11 +17,7 @@ type LegacyThreadMessageListProps = {
 	onJumpTo?: (mid: IMessage['_id']) => void;
 };
 
-const LegacyThreadMessageList = function LegacyThreadChatList({
-	mainMessage,
-	jumpTo,
-	onJumpTo,
-}: LegacyThreadMessageListProps): ReactElement {
+const LegacyThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: LegacyThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const messageRef = useLegacyThreadMessageRef();
 	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
