@@ -48,7 +48,7 @@ const registerLazyComponentRoute = (
 
 	const handleExit = (context: Context): void => {
 		computation?.stop();
-		if (context.route.name === context.oldRoute?.name) {
+		if (context.route.group?.name === context.oldRoute?.group?.name) {
 			return;
 		}
 

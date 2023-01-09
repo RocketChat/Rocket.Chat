@@ -41,7 +41,7 @@ export class AccountProfile {
 	}
 
 	get btnClose(): Locator {
-		return this.page.locator('aside[role="navigation"] button >> i.rcx-icon--name-cross.rcx-icon');
+		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
 
 	get inputToken(): Locator {
