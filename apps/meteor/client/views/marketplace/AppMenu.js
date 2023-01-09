@@ -30,7 +30,7 @@ const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	}
 };
 
-function AppMenu({ app, isAppDetailsPage, ...props }) {
+function AppMenu({ app, isAppDetailsPage, installed, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -413,8 +413,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		button?.label,
 		handleAcquireApp,
 		context,
-		handleViewLogs,
 		isAdminUser,
+		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
 		handleUpdate,
@@ -424,7 +424,15 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUninstall,
 	]);
 
-	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
+	if (loading) {
+		return <Throbber disabled />;
+	}
+
+	if (!isAdminUser && installed) {
+		return null;
+	}
+
+	return <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
 }
 
 export default AppMenu;
