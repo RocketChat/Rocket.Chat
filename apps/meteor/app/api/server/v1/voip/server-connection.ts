@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
+import { Voip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { Voip } from '../../../../../server/sdk';
 
 API.v1.addRoute(
 	'voip/managementServer/checkConnection',
