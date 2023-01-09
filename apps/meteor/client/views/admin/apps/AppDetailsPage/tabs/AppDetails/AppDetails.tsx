@@ -1,10 +1,12 @@
 import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
-import { AppInfo } from '../../../definitions/AppInfo';
+import type { AppInfo } from '../../../definitions/AppInfo';
 import AppDetailsAPIs from './AppDetailsAPIs';
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
@@ -22,7 +24,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
 
 	return (
-		<Box maxWidth='x640' w='full' marginInline='auto'>
+		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
@@ -39,19 +41,19 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 				</>
 			)}
 
-			<Box display='flex' flexDirection='column'>
+			<Box display='flex' flexDirection='column' color='default'>
 				<Margins block='x17'>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Categories')}
 						</Box>
 						<ButtonGroup medium flexWrap='wrap'>

@@ -1,18 +1,19 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
-import { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
-	showManageApps: boolean;
-	closeList: () => void;
+	appsManagementAllowed: boolean;
+	onDismiss: () => void;
 };
 
-const AppsModelList = ({ appBoxItems, showManageApps, closeList }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('admin-marketplace');
 	const page = 'list';
@@ -21,14 +22,14 @@ const AppsModelList = ({ appBoxItems, showManageApps, closeList }: AppsModelList
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
-				{showManageApps && (
+				{appsManagementAllowed && (
 					<>
 						<ListItem
 							icon='store'
 							text={t('Marketplace')}
 							action={(): void => {
 								marketplaceRoute.push({ context: 'all', page });
-								closeList();
+								onDismiss();
 							}}
 						/>
 						<ListItem
@@ -36,7 +37,7 @@ const AppsModelList = ({ appBoxItems, showManageApps, closeList }: AppsModelList
 							text={t('Installed')}
 							action={(): void => {
 								marketplaceRoute.push({ context: 'installed', page });
-								closeList();
+								onDismiss();
 							}}
 						/>
 					</>
@@ -52,7 +53,7 @@ const AppsModelList = ({ appBoxItems, showManageApps, closeList }: AppsModelList
 									appId: item.appId,
 									payload: { context: item.context },
 								});
-								closeList();
+								onDismiss();
 							};
 							return <ListItem text={(t.has(item.name) && t(item.name)) || item.name} action={action} key={item.actionId + key} />;
 						})}

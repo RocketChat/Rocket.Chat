@@ -1,5 +1,4 @@
 {
-  "403": "Malpermesita",
   "500": "Interna Servila Eraro",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ne plu estas __role__ per __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ estis difinita __role__ per __user_by__",
@@ -2035,6 +2034,7 @@
   "Reactions": "Reagoj",
   "Read_by": "Legu per",
   "Read_only": "Nurlegebla",
+  "This_room_is_read_only": "Ĉi tiu ĉambro estas nur legata",
   "Read_only_changed_successfully": "Legado nur ŝanĝis sukcese",
   "Read_only_channel": "Legi nur Kanalon",
   "Read_only_group": "Legu Nur Grupo",
@@ -2800,6 +2800,7 @@
   "registration.page.login.forgot": "Ĉu vi forgesis vian pasvorton",
   "registration.page.resetPassword.sent": "Se ĉi tiu retpoŝto estas registrita, ni sendos instrukciojn pri kiel restarigi vian pasvorton. Se vi ne ricevos retpoŝton baldaŭ, bonvolu reveni kaj provu denove.",
   "registration.component.login": "Ensaluti",
+  "registration.component.login.userNotFound": "Uzanto ne trovita",
   "registration.component.resetPassword": "Restarigu pasvorton",
   "registration.component.form.emailOrUsername": "Retpoŝtadreso aŭ uzantnomo",
   "registration.component.form.email": "Retpoŝto",

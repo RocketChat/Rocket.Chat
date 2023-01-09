@@ -1,5 +1,4 @@
 {
-  "403": "verbode",
   "500": "Interne bedienerfout",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is nie meer __role__ deur __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ is ingestel __role__ deur __user_by__",
@@ -2035,6 +2034,7 @@
   "Reactions": "reaksies",
   "Read_by": "Lees deur",
   "Read_only": "Lees net",
+  "This_room_is_read_only": "Hierdie kamer is slegs gelees",
   "Read_only_changed_successfully": "Lees slegs suksesvol verander",
   "Read_only_channel": "Lees net kanaal",
   "Read_only_group": "Lees slegs groep",
@@ -2799,6 +2799,7 @@
   "registration.page.login.forgot": "Het jy jou wagwoord vergeet",
   "registration.page.resetPassword.sent": "As hierdie e-pos geregistreer is, stuur ons instruksies oor hoe om u wagwoord terug te stel. As jy nie binnekort 'n e-pos ontvang nie, kom asseblief terug en probeer weer.",
   "registration.component.login": "Teken aan",
+  "registration.component.login.userNotFound": "Gebruiker nie gevind nie",
   "registration.component.resetPassword": "Herstel wagwoord",
   "registration.component.form.emailOrUsername": "E-pos of gebruikersnaam",
   "registration.component.form.email": "e-pos",

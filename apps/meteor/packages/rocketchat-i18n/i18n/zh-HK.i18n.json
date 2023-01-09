@@ -1,5 +1,4 @@
 {
-  "403": "被禁止",
   "500": "內部伺服器錯誤",
   "__username__is_no_longer__role__defined_by__user_by_": " __user_by__  已把 __username__ 從 __role__ 中移除",
   "__username__was_set__role__by__user_by_": " __user_by__  已把 __username__ 加進 __role__ 中",
@@ -2815,6 +2814,7 @@
   "registration.page.registration.waitActivationWarning": "您的帐户必须由管理员手工启动后才能登录。",
   "registration.page.resetPassword.sent": "如果此电子邮件已注册，我们将发送有关如何重置密码的说明。如果您很短时间内没有收到电子邮件，请返回并重试。",
   "registration.component.login": "登录",
+  "registration.component.login.userNotFound": "未找到用户",
   "registration.component.resetPassword": "重设密码",
   "registration.component.form.email": "电子邮件",
   "registration.component.form.password": "密码",

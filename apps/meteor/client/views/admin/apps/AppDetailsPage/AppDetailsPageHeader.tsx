@@ -2,7 +2,8 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import AppAvatar from '../../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
@@ -26,7 +27,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
+		<Box color='default' display='flex' flexDirection='row' mbe='x20' w='full'>
 			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x8'>

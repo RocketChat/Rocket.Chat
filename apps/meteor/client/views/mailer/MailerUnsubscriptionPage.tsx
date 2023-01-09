@@ -1,8 +1,10 @@
 import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useRouteParameter, useAbsoluteUrl, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useEffect } from 'react';
+import type { FC } from 'react';
+import React, { useEffect } from 'react';
 
-import { AsyncState, AsyncStatePhase, useAsyncState } from '../../hooks/useAsyncState';
+import type { AsyncState } from '../../hooks/useAsyncState';
+import { AsyncStatePhase, useAsyncState } from '../../hooks/useAsyncState';
 
 const useMailerUnsubscriptionState = (): AsyncState<boolean> => {
 	const { resolve, reject, ...unsubscribedState } = useAsyncState<boolean>();

@@ -1,5 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -11,10 +12,7 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		phase: state,
 		error,
 		reload,
-	} = useEndpointData(
-		'/v1/rooms.adminRooms.getRoom',
-		useMemo(() => ({ rid }), [rid]),
-	);
+	} = useEndpointData('/v1/rooms.adminRooms.getRoom', { params: useMemo(() => ({ rid }), [rid]) });
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (

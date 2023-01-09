@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { createContext, FormEvent, UIEvent } from 'react';
 
-export type UserMention = Pick<IUser, '_id' | 'username' | 'name'>;
+export type UserMention = Pick<IUser, '_id' | 'username' | 'name' | 'type'>;
 export type ChannelMention = Pick<IRoom, '_id' | 'name'>;
 
 type MarkupInteractionContextValue = {

@@ -1,7 +1,8 @@
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import UserAutoComplete from '../../../components/UserAutoComplete';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -14,13 +15,13 @@ const AddAgent = ({ reload }: AddAgentProps): ReactElement => {
 	const t = useTranslation();
 	const [username, setUsername] = useState('');
 
-	const saveAction = useEndpointAction('POST', '/v1/livechat/users/agent', { username });
+	const saveAction = useEndpointAction('POST', '/v1/livechat/users/agent');
 
 	const handleSave = useMutableCallback(async () => {
 		if (!username) {
 			return;
 		}
-		const result = await saveAction();
+		const result = await saveAction({ username });
 		if (!result.success) {
 			return;
 		}

@@ -1,5 +1,6 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
-import React, { memo, useMemo, useState, ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import RoomAvatar from '../avatar/RoomAvatar';
@@ -19,10 +20,7 @@ type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value
 /* @deprecated */
 const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
 	const [filter, setFilter] = useState('');
-	const { value: data } = useEndpointData(
-		'/v1/rooms.autocomplete.channelAndPrivate',
-		useMemo(() => query(filter), [filter]),
-	);
+	const { value: data } = useEndpointData('/v1/rooms.autocomplete.channelAndPrivate', { params: useMemo(() => query(filter), [filter]) });
 	const options = useMemo(
 		() =>
 			data?.items.map(({ name, _id, avatarETag, t }) => ({
