@@ -1,6 +1,5 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import VideoConferenceBlock from '../blocks/VideoConferenceBlock/VideoConferenceBlock';
 import { FuselageSurfaceRenderer } from './FuselageSurfaceRenderer';
