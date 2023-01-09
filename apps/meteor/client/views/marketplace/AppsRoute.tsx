@@ -14,20 +14,16 @@ const AppsRoute = (): ReactElement => {
 	const canManageApps = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 	const appsWhatIsItRoute = useRoute('marketplace-disabled');
-	const marketplaceRoute = useRoute('marketplace-all');
+	const marketplaceRoute = useRoute('marketplace');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
 
-	const isMarketplace = !context;
+	const isMarketplace = context === 'explore';
 
 	useEffect(() => {
 		let mounted = true;
-
-		if (!context) {
-			marketplaceRoute.replace({ context: 'all', page: 'list' });
-		}
 
 		const initialize = async (): Promise<void> => {
 			if (!canManageApps) {

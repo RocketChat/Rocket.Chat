@@ -14,6 +14,6 @@ registerMarketplaceRoute('/what-is-it', {
 });
 
 registerMarketplaceRoute('/:context?/:page?/:id?/:version?/:tab?', {
-	name: 'marketplace-all',
+	name: 'marketplace',
 	component: lazy(() => import('./AppsRoute')),
 });
