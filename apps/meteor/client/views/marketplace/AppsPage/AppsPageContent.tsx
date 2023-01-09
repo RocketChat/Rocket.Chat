@@ -34,7 +34,7 @@ const AppsPageContent = (): ReactElement => {
 	const router = useRoute(currentRouteName);
 
 	const context = useRouteParameter('context');
-	const isMarketplace = context === 'all';
+	const isMarketplace = context === 'explore';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -94,7 +94,7 @@ const AppsPageContent = (): ReactElement => {
 		selectedCategories.length > 0;
 
 	const handleReturn = (): void => {
-		router.push({ context: 'all', page: 'list' });
+		router.push({ context: 'explore', page: 'list' });
 	};
 
 	return (
@@ -118,7 +118,7 @@ const AppsPageContent = (): ReactElement => {
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<Box display='flex' flexDirection='column' height='100%' overflow='hidden'>
-						<Box overflowY='scroll'>
+						<Box height='100%' overflowY='scroll'>
 							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
 						</Box>

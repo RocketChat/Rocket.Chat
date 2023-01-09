@@ -146,8 +146,8 @@ const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents
 };
 
 const stop = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
+	emitter.off(uid, handler);
 	setTimeout(() => {
-		emitter.off(uid, handler);
 		emitter.emit('remove', uid);
 	}, 5000);
 };

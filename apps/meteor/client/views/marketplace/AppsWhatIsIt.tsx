@@ -14,7 +14,7 @@ const AppsWhatIsIt: FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<false | Error>(false);
 
-	const appsRouter = useRoute('marketplace-all');
+	const appsRouter = useRoute('marketplace');
 	const enableAppsEngine = useMethod('apps/go-enable');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 
@@ -26,7 +26,7 @@ const AppsWhatIsIt: FC = () => {
 				await Apps.getAppClientManager().initialize();
 				await Apps.load(true);
 			}
-			appsRouter.push();
+			appsRouter.push({ context: 'explore', page: 'list' });
 		} catch (e) {
 			setError(e instanceof Error ? e : new Error(String(e)));
 		}

@@ -1,9 +1,9 @@
 import { Match, check } from 'meteor/check';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { VoipRoom } from '@rocket.chat/models';
+import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { LivechatVoip } from '../../../../../server/sdk';
 import { canAccessRoom } from '../../../../authorization/server';
 
 API.v1.addRoute(
