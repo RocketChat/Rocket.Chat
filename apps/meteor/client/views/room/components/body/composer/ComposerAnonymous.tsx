@@ -3,14 +3,14 @@ import { useSessionDispatch, useSetting, useTranslation, useLoginWithToken } fro
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useAnonymousUser } from '../../../../../hooks/useAnonymousUser';
+import { useRegisterAnonymousUserM../../../../../hooks/useRegisterAnonymousUserMutationuseRegisterAnonymousUserMutation';
 
 export const ComposerAnonymous = (): ReactElement => {
 	const isAnonymousWriteEnabled = useSetting('Accounts_AllowAnonymousWrite');
 
 	const loginWithToken = useLoginWithToken();
 
-	const registerAnonymous = useAnonymousUser();
+	const registerAnonymous = useRegisterAnonymousUserMutation();
 
 	const joinAnonymous = async () => {
 		await registerAnonymous.mutate(
