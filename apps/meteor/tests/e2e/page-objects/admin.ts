@@ -129,6 +129,10 @@ export class Admin {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
 	}
 
+	get btnCreateRole(): Locator {
+		return this.page.locator('role=button[text="New role"]');
+	}
+
 	get inputAssetsLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
 	}

@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { test, expect } from './utils/test';
 import { Admin } from './page-objects';
+import { IS_EE } from './config/constants';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -55,6 +56,18 @@ test.describe.parallel('administration', () => {
 		test('expect find "general" channel', async ({ page }) => {
 			await poAdmin.inputSearchRooms.type('general');
 			await page.waitForSelector('[qa-room-id="GENERAL"]');
+		});
+	});
+
+	test.describe('Permissions', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/permissions');
+		});
+
+		test('expect open upsell modal if not enterprise', async ({ page }) => {
+			test.skip(!IS_EE);
+			await poAdmin.btnCreateRole.click();
+			await page.waitForSelector('role=dialog[id="custom-roles"]');
 		});
 	});
 

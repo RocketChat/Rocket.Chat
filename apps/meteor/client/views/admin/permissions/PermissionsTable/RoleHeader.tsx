@@ -1,6 +1,5 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Margins, Box, Icon } from '@rocket.chat/fuselage';
+import { Margins, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -26,24 +25,12 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps): ReactElement =
 
 	return (
 		<GenericTable.HeaderCell clickable pi='x4' p='x8'>
-			<Box
-				className={css`
-					white-space: nowrap;
-				`}
-				pb='x8'
-				pi='x12'
-				mi='neg-x2'
-				borderStyle='solid'
-				borderWidth='default'
-				borderRadius='x2'
-				borderColor='light'
-				onClick={handleEditRole}
-			>
+			<Button secondary onClick={handleEditRole}>
 				<Margins inline='x2'>
 					<span>{description || name}</span>
 					<Icon name='edit' size='x16' />
 				</Margins>
-			</Box>
+			</Button>
 		</GenericTable.HeaderCell>
 	);
 };
