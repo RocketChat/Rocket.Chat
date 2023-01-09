@@ -118,7 +118,7 @@ const AppsPageContent = (): ReactElement => {
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
 					<Box display='flex' flexDirection='column' height='100%' overflow='hidden'>
-						<Box overflowY='scroll'>
+						<Box height='100%' overflowY='scroll'>
 							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
 						</Box>

@@ -72,7 +72,6 @@ const AppRow = (props: AppRowProps): ReactElement => {
 			flexDirection='row'
 			justifyContent='space-between'
 			alignItems='center'
-			bg='surface'
 			mbe='x8'
 			pb='x8'
 			pi='x16'
