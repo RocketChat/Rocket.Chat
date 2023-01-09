@@ -9,13 +9,13 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
 import { hasRole } from '../../../authorization/server';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { settings } from '../../../settings/server/index';
-import { api } from '../../../../server/sdk/api';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

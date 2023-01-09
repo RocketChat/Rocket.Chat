@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
-import { ILivechatPriority } from '@rocket.chat/core-typings';
+import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import { credentials, methodCall, request } from '../api-data';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 
 export const savePriority = (): Promise<ILivechatPriority> => {
     return new Promise((resolve, reject) => {

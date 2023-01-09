@@ -15,7 +15,7 @@ import {
   VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler, ReactElement } from 'react';
-import React, { useContext, memo } from 'react';
+import { useContext, memo } from 'react';
 
 import { useSurfaceType } from '../../contexts/SurfaceContext';
 import type { BlockProps } from '../../utils/BlockProps';

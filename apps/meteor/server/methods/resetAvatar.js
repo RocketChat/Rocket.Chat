@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../app/file-upload';
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { hasPermission } from '../../app/authorization/server';
-import { api } from '../sdk/api';
 
 Meteor.methods({
 	resetAvatar(userId) {
