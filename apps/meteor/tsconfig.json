@@ -41,6 +41,7 @@
 		// "./ee/server/services/**"
 	],
 	"ts-node": {
-		"files": true
+		"files": false,
+		"swc": true
 	}
 }
