@@ -61,8 +61,6 @@ const AppsRoute = (): ReactElement => {
 		return <PageSkeleton />;
 	}
 
-	console.log('Page: ', page);
-
 	return (
 		<AppsProvider>
 			{(page === 'list' && <AppsPage isMarketplace={isMarketplace} />) ||

@@ -81,12 +81,15 @@ const AppsPageContent = (): ReactElement => {
 		context,
 	});
 
-	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
+	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.totalAppsLength === 0;
 
 	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
 
 	const noInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
+		appsResult.phase === AsyncStatePhase.RESOLVED &&
+		!isMarketplace &&
+		appsResult.value.totalAppsLength !== 0 &&
+		appsResult.value.count === 0;
 
 	const isFiltered =
 		Boolean(text.length) ||
