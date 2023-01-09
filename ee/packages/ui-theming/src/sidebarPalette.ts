@@ -12,8 +12,8 @@ export const palette = [
 		category: 'Font',
 		description: 'These should be applied according to surfaces',
 		list: [
-			{ name: 'font-primary', token: 'N200', color: '#FFF' },
-			{ name: 'font-secondary', token: 'N600', color: '#9EA2A8' },
+			{ name: 'font-secondary-info', token: '', color: '#9EA2A8' },
+			{ name: 'font-default', token: '', color: '#FFF' },
 		],
 	},
 	{
