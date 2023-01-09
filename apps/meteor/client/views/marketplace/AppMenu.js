@@ -30,7 +30,7 @@ const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	}
 };
 
-function AppMenu({ app, isAppDetailsPage, installed, ...props }) {
+function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -424,7 +424,7 @@ function AppMenu({ app, isAppDetailsPage, installed, ...props }) {
 		return <Throbber disabled />;
 	}
 
-	if (!isAdminUser && installed) {
+	if (!isAdminUser && app?.installed) {
 		return null;
 	}
 
