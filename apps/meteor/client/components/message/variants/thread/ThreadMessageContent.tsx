@@ -1,7 +1,7 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -20,46 +20,40 @@ import Reactions from '../../content/Reactions';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useMessageListShowReadReceipt, useTranslateAttachments } from '../../list/MessageListContext';
+import { useTranslateAttachments } from '../../list/MessageListContext';
 
 type ThreadMessageContentProps = {
 	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
 };
 
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
-	const uid = useUserId();
+	const encrypted = isE2EEMessage(message);
+	const attachments = useTranslateAttachments({ message });
 	const {
 		actions: { replyBroadcast, runActionLink },
 	} = useMessageContext();
-
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const broadcast = useRoomSubscription()?.broadcast ?? false;
+	const uid = useUserId();
+	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 
 	const t = useTranslation();
-
-	const shouldShowReadReceipt = useMessageListShowReadReceipt();
-	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
-
-	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
-
-	const isEncryptedMessage = isE2EEMessage(message);
-
-	const messageAttachments = useTranslateAttachments({ message });
 
 	return (
 		<>
 			{!message.blocks?.length && !!message.md?.length && (
 				<>
-					{(!isEncryptedMessage || message.e2e === 'done') && (
+					{(!encrypted || message.e2e === 'done') && (
 						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 					)}
-					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+					{encrypted && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</>
 			)}
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
+			{attachments && <Attachments attachments={attachments} file={message.file} />}
 
 			{oembedEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
@@ -75,15 +69,15 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				/>
 			)}
 
-			{shouldShowReactionList && <Reactions message={message} />}
+			{message.reactions && Object.keys(message.reactions).length && <Reactions message={message} />}
 
 			{message.location && <Location location={message.location} />}
 
-			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+			{broadcast && !!messageUser.username && message.u._id !== uid && (
+				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={messageUser.username} />
 			)}
 
-			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator unread={message.unread} />}
 		</>
 	);
 };

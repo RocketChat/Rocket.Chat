@@ -4,10 +4,10 @@ import { Template } from 'meteor/templating';
 import type { RefCallback } from 'react';
 import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 
+import { MessageContext } from '../../../../components/message/MessageContext';
 import type { BlazePortalsSubscription } from '../../../../lib/portals/blazePortals';
 import MessageHighlightContext from '../../MessageList/contexts/MessageHighlightContext';
 import { ChatContext } from '../../contexts/ChatContext';
-import { MessageContext } from '../../contexts/MessageContext';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomMessageContext } from './useRoomMessageContext';
 

@@ -33,7 +33,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 	const { isMobile } = useLayout();
 
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
-	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
 	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
@@ -116,7 +115,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
@@ -133,11 +131,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 					regex: getRegexHighlight(highlight),
 					urlRegex: getRegexHighlightUrl(highlight),
 				})),
-			useReactToMessage: uid
-				? (message) =>
-						(reaction): void =>
-							reactToMessage({ messageId: message._id, reaction }) as unknown as void
-				: () => (): void => undefined,
 
 			useOpenEmojiPicker: uid
 				? (message) =>
@@ -159,7 +152,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
 			katexEnabled,
 			katexDollarSyntaxEnabled,
 			katexParenthesisSyntaxEnabled,
