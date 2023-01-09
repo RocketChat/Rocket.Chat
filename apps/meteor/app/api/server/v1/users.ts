@@ -439,7 +439,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
-			const actualSort = sort?.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+            const actualSort = sort || { username: 1 };
+
+                if (sort?.status) {
+                    actualSort.active = sort.status;
+                }
+
+                if (sort?.name) {
+                    actualSort.nameInsensitive = sort.name;
+                }
 
 			const limit =
 				count !== 0
