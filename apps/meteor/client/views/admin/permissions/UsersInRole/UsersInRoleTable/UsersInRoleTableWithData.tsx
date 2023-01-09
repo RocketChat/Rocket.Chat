@@ -1,10 +1,10 @@
 import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import UsersInRoleTable from './UsersInRoleTable';
 
 type UsersInRoleTableWithDataProps = {
@@ -34,17 +34,22 @@ const UsersInRoleTableWithData = ({
 		[itemsPerPage, current, rid, roleId],
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/roles.getUsersInRole', { params: query });
+	const getUsersInRole = useEndpoint('GET', '/v1/roles.getUsersInRole');
+
+	const { refetch, ...result } = useQuery(['usersInRole', query], async () => {
+		const users = await getUsersInRole(query);
+		return users;
+	});
 
 	useEffect(() => {
-		reloadRef.current = reload;
-	}, [reload, reloadRef]);
+		reloadRef.current = refetch;
+	}, [refetch, reloadRef]);
 
-	if (result.phase === AsyncStatePhase.LOADING || result.phase === AsyncStatePhase.REJECTED) {
+	if (result.isLoading || result.error) {
 		return null;
 	}
 
-	const users: IUserInRole[] = result.value?.users.map((user) => ({
+	const users: IUserInRole[] = result.data!.users.map((user) => ({
 		...user,
 		createdAt: new Date(user.createdAt),
 		_updatedAt: new Date(user._updatedAt),
@@ -53,8 +58,8 @@ const UsersInRoleTableWithData = ({
 	return (
 		<UsersInRoleTable
 			users={users}
-			total={result.value.total}
-			reload={reload}
+			total={result.data!.total}
+			reload={refetch}
 			roleName={roleName}
 			roleId={roleId}
 			description={description}
