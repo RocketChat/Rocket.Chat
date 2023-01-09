@@ -327,6 +327,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
+				isAdminUser &&
 				app.installed && {
 					viewLogs: {
 						label: (
