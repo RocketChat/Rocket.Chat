@@ -92,6 +92,20 @@ export const useQuickActions = (
 		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
 	);
 
+	const sendTranscriptPDF = useEndpoint('POST', `/v1/omnichannel/${rid}/request-transcript`);
+
+	const handleSendTranscriptPDF = useCallback(async () => {
+		try {
+			await sendTranscriptPDF();
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Livechat_transcript_has_been_requested'),
+			});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [dispatchToastMessage, sendTranscriptPDF, t]);
+
 	const sendTranscript = useMethod('livechat:sendTranscript');
 
 	const handleSendTranscript = useCallback(
@@ -213,6 +227,9 @@ export const useQuickActions = (
 						}}
 					/>,
 				);
+				break;
+			case QuickActionsEnum.TranscriptPDF:
+				handleSendTranscriptPDF();
 				break;
 			case QuickActionsEnum.TranscriptEmail:
 				const visitorEmail = await getVisitorEmail();
