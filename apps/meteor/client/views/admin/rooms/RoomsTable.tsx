@@ -1,14 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
@@ -23,7 +22,7 @@ const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', o
 
 export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
-const useQuery = (
+const useQueryLc = (
 	{
 		text,
 		types,
@@ -74,14 +73,14 @@ const getRoomDisplayName = (room: IRoom): string | undefined =>
 
 const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[] =>
 	useMemo(() => {
-		const { value = {}, phase } = asyncState;
+		const { data = {}, isLoading } = asyncState;
 
-		if (phase === AsyncStatePhase.LOADING) {
+		if (isLoading) {
 			return null;
 		}
 
-		if (sort[0] === 'name' && value.rooms) {
-			return value.rooms.sort((a: IRoom, b: IRoom) => {
+		if (sort[0] === 'name' && data.rooms) {
+			return data.rooms.sort((a: IRoom, b: IRoom) => {
 				const aName = getRoomDisplayName(a) || '';
 				const bName = getRoomDisplayName(b) || '';
 				if (aName === bName) {
@@ -91,7 +90,7 @@ const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[
 				return sort[1] === 'asc' ? result : result * -1;
 			});
 		}
-		return value.rooms;
+		return data.rooms;
 	}, [asyncState, sort]);
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
@@ -111,15 +110,20 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useQueryLc(debouncedParams, debouncedSort);
 
-	const endpointData = useEndpointData('/v1/rooms.adminRooms', { params: query });
+	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { value: data, reload: reloadEndPoint } = endpointData;
+	const endpointData = useQuery(['adminRooms', query], async () => {
+		const adminRooms = await getAdminRooms(params);
+		return adminRooms;
+	});
+
+	const { data, refetch } = endpointData;
 
 	useEffect(() => {
-		reload.current = reloadEndPoint;
-	}, [reload, reloadEndPoint]);
+		reload.current = refetch;
+	}, [reload, refetch]);
 
 	const router = useRoute(routeName);
 
