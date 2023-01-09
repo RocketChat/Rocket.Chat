@@ -36,8 +36,20 @@ test.describe.serial('homepage', () => {
 			}
 		});
 
-		test('expect custom content block', async () => {
-			await expect(adminPage.locator('[data-qa-id="homepage-custom-content"]')).toBeVisible();
+		test.describe('custom body', () => {
+			test.beforeAll(async ({ api }) => {
+				expect(
+					(await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello admin</span>' })).status(),
+				).toBe(200);
+			});
+
+			test('expect custom content block', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-content"]')).toBeVisible();
+			});
+
+			test('expect custom body to be visible', async () => {
+				await expect(adminPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello admin');
+			});
 		});
 
 		test.afterAll(async () => {
