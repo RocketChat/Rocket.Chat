@@ -3,7 +3,7 @@ export const palette = [
 		category: 'Surface',
 		description: 'Use as a container on top of the background',
 		list: [
-			{ name: 'surface-default', token: '', color: '#2f343d' },
+			{ name: 'surface-tint', token: '', color: '#2f343d' },
 			{ name: 'surface-hover', token: '', color: '#1f2329' },
 			{ name: 'surface-selected', token: '', color: 'rgba(108,114,122, 0.3)' },
 		],
@@ -40,9 +40,9 @@ export const palette = [
 		category: 'Stroke',
 		description: "Use as component's outline, stroke, dividers",
 		list: [
-			{ name: 'stroke-default', token: '', color: '#cbced1' },
-			{ name: 'stroke-focus', token: '', color: '#EBECEF' },
-			{ name: 'stroke-extra-light', token: '', color: '#1F2329' },
+			{ name: 'stroke-light', token: '', color: '#cbced1' },
+			{ name: 'stroke-medium', token: '', color: '#EBECEF' },
+
 		],
 	},
 	{
