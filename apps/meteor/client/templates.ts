@@ -23,10 +23,6 @@ createTemplateForComponent('ThreadMetric', () => import('./components/message/co
 		}),
 });
 
-createTemplateForComponent('marketplaceFlex', () => import('./views/marketplace/MarketplaceSidebar'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
-});
-
 createTemplateForComponent('DiscussionMetric', () => import('./components/message/content/DicussionMetrics'), {
 	renderContainerView: () =>
 		HTML.DIV({
