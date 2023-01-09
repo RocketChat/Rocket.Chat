@@ -1,12 +1,13 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath, useTooltipOpen } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, memo, MouseEventHandler, useRef } from 'react';
+import type { ReactElement, MouseEventHandler } from 'react';
+import React, { memo, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
-import { QuoteAttachment } from '../../../../components/message/Attachments/QuoteAttachment';
+import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 
 type ShareMessageProps = {
@@ -24,16 +25,18 @@ type roomType = {
 
 const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): ReactElement => {
 	const t = useTranslation();
-	const getUserAvatarPath = useUserAvatarPath();
-	const { copy } = useClipboard(permalink);
-	const dispatchToastMessage = useToastMessageDispatch();
 	const ref = useRef<HTMLElement>(null);
 	const openTooltip = useTooltipOpen();
+	const getUserAvatarPath = useUserAvatarPath();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { copy } = useClipboard(permalink);
+
 	const { control, watch } = useForm({
 		defaultValues: {
 			rooms: [],
 		},
 	});
+
 	const rooms = watch('rooms');
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
 
@@ -48,7 +51,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 	const handleShareMessage: MouseEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		const optionalMessage = '';
-		const curMsg = await prependReplies(optionalMessage, [message], false);
+		const curMsg = await prependReplies(optionalMessage, [message]);
 
 		try {
 			rooms.map(async (room: roomType) => {
