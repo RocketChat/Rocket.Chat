@@ -15,7 +15,7 @@ import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnony
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 
-const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
+const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
 
 	const mustJoinWithCode = !props.subscription && room.joinCodeRequired;
@@ -70,7 +70,12 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 		);
 	}
 
-	return <ComposerMessage {...props} />;
+	return (
+		<footer className='rc-message-box footer'>
+			{children}
+			<ComposerMessage readOnly={room.ro} {...props} />
+		</footer>
+	);
 };
 
 export default memo(ComposerContainer);

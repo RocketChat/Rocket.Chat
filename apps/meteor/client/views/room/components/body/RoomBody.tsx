@@ -80,7 +80,7 @@ const RoomBody = (): ReactElement => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
 		const wrapper = wrapperRef.current;
@@ -160,7 +160,7 @@ const RoomBody = (): ReactElement => {
 
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles, users }) => {
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles }) => {
 		const leaderRoomRole = roomRoles.findOne({
 			'rid': room._id,
 			'roles': 'leader',
@@ -171,13 +171,9 @@ const RoomBody = (): ReactElement => {
 			return null;
 		}
 
-		const leaderUser = users.findOne({ _id: leaderRoomRole.u._id }, { fields: { status: 1, statusText: 1 } });
-
 		return {
 			...leaderRoomRole.u,
 			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
-			status: leaderUser?.status,
-			statusText: leaderUser?.statusText,
 		};
 	});
 
@@ -614,10 +610,9 @@ const RoomBody = (): ReactElement => {
 								) : null}
 								{roomLeader ? (
 									<LeaderBar
-										name={roomLeader.name}
+										_id={roomLeader._id}
 										username={roomLeader.username}
-										status={roomLeader.status}
-										statusText={roomLeader.statusText}
+										name={roomLeader.name}
 										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCardButtonClick}
 									/>

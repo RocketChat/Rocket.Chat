@@ -327,6 +327,8 @@ export const FileUpload = {
 			name: `thumb-${file.name}`,
 			size: buffer.length,
 			type: file.type,
+			originalFileId: file._id,
+			typeGroup: 'thumb',
 			rid,
 			userId,
 		};

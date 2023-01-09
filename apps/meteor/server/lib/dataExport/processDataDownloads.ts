@@ -1,5 +1,4 @@
 import { createWriteStream } from 'fs';
-import { promisify } from 'util';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -72,26 +71,31 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
-	const stream = createWriteStream(fileName, { encoding: 'utf8' });
+	return new Promise((resolve, reject) => {
+		const stream = createWriteStream(fileName, { encoding: 'utf8' });
 
-	stream.write('<!DOCTYPE html>\n');
-	stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
-	for (const [key, value] of Object.entries(dataToSave)) {
-		stream.write(`<p><strong>${key}</strong>:`);
-		if (typeof value === 'string') {
-			stream.write(value);
-		} else if (Array.isArray(value)) {
-			stream.write('<br/>');
+		stream.on('finish', resolve);
+		stream.on('error', reject);
 
-			for (const item of value) {
-				stream.write(`${item}<br/>`);
+		stream.write('<!DOCTYPE html>\n');
+		stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
+		for (const [key, value] of Object.entries(dataToSave)) {
+			stream.write(`<p><strong>${key}</strong>:`);
+			if (typeof value === 'string') {
+				stream.write(value);
+			} else if (Array.isArray(value)) {
+				stream.write('<br/>');
+
+				for (const item of value) {
+					stream.write(`${item}<br/>`);
+				}
 			}
+
+			stream.write('</p>\n');
 		}
 
-		stream.write('</p>\n');
-	}
-
-	await promisify(stream.close)();
+		stream.end();
+	});
 };
 
 const generateUserAvatarFile = async (exportOperation: IExportOperation, userData?: IUser) => {

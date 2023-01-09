@@ -2070,6 +2070,7 @@
   "Reactions": "ຕິກິລິຍາ",
   "Read_by": "ອ່ານໂດຍ",
   "Read_only": "ອ່ານ​ຢ່າງ​ດຽວ",
+  "This_room_is_read_only": "ຫ້ອງນີ້ຖືກອ່ານເທົ່ານັ້ນ",
   "Read_only_changed_successfully": "ອ່ານພຽງແຕ່ມີການປ່ຽນແປງຢ່າງສໍາເລັດຜົນ",
   "Read_only_channel": "ອ່ານເສພາະຊ່ອງ",
   "Read_only_group": "ອ່ານພຽງແຕ່ກຸ່ມ",
