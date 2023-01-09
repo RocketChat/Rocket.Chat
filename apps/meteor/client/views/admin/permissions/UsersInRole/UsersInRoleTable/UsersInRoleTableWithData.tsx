@@ -34,7 +34,7 @@ const UsersInRoleTableWithData = ({
 		[itemsPerPage, current, rid, roleId],
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/roles.getUsersInRole', query);
+	const { reload, ...result } = useEndpointData('/v1/roles.getUsersInRole', { params: query });
 
 	useEffect(() => {
 		reloadRef.current = reload;
