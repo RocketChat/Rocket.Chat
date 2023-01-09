@@ -1,6 +1,8 @@
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useRoute, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 type NotFoundProps = {
 	title: TranslationKey;
