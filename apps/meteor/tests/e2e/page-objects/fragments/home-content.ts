@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
-	private readonly page: Page;
+	protected readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -23,6 +23,10 @@ export class HomeContent {
 
 	get lastUserMessageNotSequential(): Locator {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
+	}
+
+	get encryptedRoomHeaderIcon(): Locator {
+		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
 	}
 
 	async sendMessage(text: string): Promise<void> {
@@ -66,8 +70,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
-	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-box--with-inline-elements');
+	get lastMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+	}
+
+	get lastThreadMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -106,14 +114,6 @@ export class HomeContent {
 		return this.page.locator('[data-qa="UserCard"] a');
 	}
 
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
-	}
-
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
-	}
-
 	get btnContactInformation(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
 	}
@@ -147,7 +147,7 @@ export class HomeContent {
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
-		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
 	}
@@ -164,11 +164,9 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.page.dispatchEvent(
-			'div.dropzone-overlay.dropzone-overlay--enabled.background-transparent-darkest.color-content-background-color',
-			'drop',
-			{ dataTransfer },
-		);
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -177,7 +175,33 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
 	}
 
+	async openLastThreadMessageMenu(): Promise<void> {
+		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.waitFor();
+		await this.page
+			.locator('//main//aside >> [data-qa-type="message"]')
+			.last()
+			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
+			.click();
+	}
+
 	get takeOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rc-button >> text=Take it!');
+		return this.page.locator('role=button[name="Take it!"]');
+	}
+
+	get lastSystemMessageBody(): Locator {
+		return this.page.locator('[data-qa-type="system-message-body"]').last();
+	}
+
+	get resumeOnHoldOmnichannelChatButton(): Locator {
+		return this.page.locator('button.rcx-button--primary >> text=Resume');
+	}
+
+	get btnOnHold(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 }

@@ -5,10 +5,6 @@ import { hasPermissionAsync } from '../../../../../app/authorization/server/func
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 
 export async function findAllCannedResponses({ userId }) {
-	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
 	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		return CannedResponse.find({
@@ -41,7 +37,7 @@ export async function findAllCannedResponses({ userId }) {
 			agentId: userId,
 		},
 		{
-			fields: {
+			projection: {
 				departmentId: 1,
 			},
 		},
@@ -73,10 +69,6 @@ export async function findAllCannedResponses({ userId }) {
 }
 
 export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
-	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	let extraFilter = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!(await hasPermissionAsync(userId, 'view-all-canned-responses'))) {
@@ -168,10 +160,6 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 }
 
 export async function findOneCannedResponse({ userId, _id }) {
-	if (!(await hasPermissionAsync(userId, 'view-canned-responses'))) {
-		throw new Error('error-not-authorized');
-	}
-
 	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		return CannedResponse.findOneById(_id);
 	}

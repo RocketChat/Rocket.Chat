@@ -139,6 +139,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		me: IUser,
 	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
 	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
+	isWidget(): boolean;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

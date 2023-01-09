@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Blaze } from 'meteor/blaze';
 import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { MutableRefObject } from 'react';
 
-import { waitUntilWrapperExists } from './waitUntilWrapperExists';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { readMessage } from './readMessages';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
@@ -17,7 +17,6 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import type { RoomTemplateInstance } from '../../../ui/client/views/app/lib/RoomTemplateInstance';
 import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
 
 export async function upsertMessage(
@@ -170,7 +169,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, false);
 
 		this.unqueue();
 
@@ -180,7 +179,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitUntilWrapperExists();
+		const wrapper = await waitForElement('.messages-box .wrapper');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -219,15 +218,14 @@ class RoomHistoryManagerClass extends Emitter {
 		});
 	}
 
-	public async getMoreNext(rid: IRoom['_id'], limit = defaultLimit) {
+	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
 		const room = this.getRoom(rid);
 		if (Tracker.nonreactive(() => room.hasMoreNext.get()) !== true) {
 			return;
 		}
 
 		await this.queue();
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance() as RoomTemplateInstance;
-		instance.atBottom = false;
+		atBottomRef.current = false;
 
 		room.isLoading.set(true);
 
@@ -237,7 +235,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
-			const result = await callWithErrorHandling('loadNextMessages', rid, ts, limit);
+			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
 			upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
@@ -249,7 +247,7 @@ class RoomHistoryManagerClass extends Emitter {
 			}
 
 			room.loaded += result.messages.length;
-			if (result.messages.length < limit) {
+			if (result.messages.length < defaultLimit) {
 				room.hasMoreNext.set(false);
 			}
 		}
@@ -288,19 +286,15 @@ class RoomHistoryManagerClass extends Emitter {
 		room.loaded = undefined;
 	}
 
-	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, limit = defaultLimit) {
+	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, atBottomRef?: MutableRefObject<boolean>) {
 		if (!message || !message.rid) {
 			return;
 		}
 
-		const w = (await waitUntilWrapperExists()) as HTMLElement;
-
-		const instance = Blaze.getView(w).templateInstance() as RoomTemplateInstance;
-
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			await waitForElement(`[data-id='${message._id}']`);
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`[data-id='${message._id}']`, wrapper);
 
@@ -336,9 +330,9 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const subscription = ChatSubscription.findOne({ rid: message.rid });
 
-		const result = await callWithErrorHandling('loadSurroundingMessages', message, limit);
+		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
-		if (!result || !result.messages) {
+		if (!result) {
 			return;
 		}
 
@@ -347,7 +341,7 @@ class RoomHistoryManagerClass extends Emitter {
 		readMessage.refreshUnreadMark(message.rid);
 
 		Tracker.afterFlush(async () => {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			await waitForElement(`[data-id='${message._id}']`);
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`[data-id=${message._id}]`, wrapper);
 
@@ -368,7 +362,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			room.isLoading.set(false);
 			const messages = wrapper[0];
-			instance.atBottom = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
+			if (atBottomRef) atBottomRef.current = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
 
 			setTimeout(() => {
 				msgElement.removeClass('highlight');

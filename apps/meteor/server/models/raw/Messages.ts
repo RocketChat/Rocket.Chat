@@ -1,15 +1,30 @@
 import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import type { AggregationCursor, Collection, CountDocumentsOptions, AggregateOptions, FindCursor, Db, Filter, FindOptions } from 'mongodb';
+import type {
+	AggregationCursor,
+	Collection,
+	CountDocumentsOptions,
+	AggregateOptions,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	IndexDescription,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
-// @ts-ignore Circular reference on field 'attachments'
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { 'federation.eventId': 1 }, sparse: true }];
 	}
 
 	findVisibleByMentionAndRoomId(
@@ -137,7 +152,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const params = [...firstParams, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
+			return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 		}
 		if (options.offset) {
 			params.push({ $skip: options.offset });
@@ -145,7 +160,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true });
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() });
 	}
 
 	getTotalOfMessagesSentByDate({ start, end, options = {} }: { start: Date; end: Date; options?: PaginatedRequest }): Promise<any[]> {
@@ -203,14 +218,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
-	findLivechatClosedMessages(rid: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		return this.findPaginated(
 			{
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+				...(searchTerm && { msg: new RegExp(escapeRegExp(searchTerm), 'ig') }),
 			},
 			options,
 		);
@@ -229,20 +245,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne({ _id }, { $addToSet: { blocks: { $each: blocks } } });
-	}
-
-	async removeVideoConfJoinButton(_id: IMessage['_id']): Promise<void> {
-		await this.updateOne(
-			{ _id },
-			{
-				$pull: {
-					blocks: {
-						appId: 'videoconf-core',
-						type: 'actions',
-					} as Required<IMessage>['blocks'][number],
-				},
-			},
-		);
 	}
 
 	async countRoomsWithStarredMessages(options: AggregateOptions): Promise<number> {
@@ -337,5 +339,79 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	async setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
+				} as any,
+			},
+		);
+	}
+
+	async unsetFederationReactionEventId(federationEventId: string, _id: string, reaction: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$unset: {
+					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: 1,
+				},
+			},
+		);
+	}
+
+	async findOneByFederationId(federationEventId: string): Promise<IMessage | null> {
+		return this.findOne({ 'federation.eventId': federationEventId });
+	}
+
+	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
+		await this.updateOne(
+			{ _id },
+			{
+				$set: {
+					'federation.eventId': federationEventId,
+				},
+			},
+		);
+	}
+
+	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
+		return (
+			await this.col
+				.aggregate(
+					[
+						{
+							$match: {
+								t: { $ne: 'rm' },
+							},
+						},
+						{
+							$project: {
+								document: '$$ROOT',
+								reactions: { $objectToArray: '$reactions' },
+							},
+						},
+						{
+							$unwind: {
+								path: '$reactions',
+							},
+						},
+						{
+							$match: {
+								$and: [
+									{ 'reactions.v.usernames': { $in: [username] } },
+									{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
+								],
+							},
+						},
+						{ $replaceRoot: { newRoot: '$document' } },
+					],
+					{ readPreference: readSecondaryPreferred() },
+				)
+				.toArray()
+		)[0] as IMessage;
 	}
 }

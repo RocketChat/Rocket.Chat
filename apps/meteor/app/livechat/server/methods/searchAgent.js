@@ -3,9 +3,12 @@ import _ from 'underscore';
 
 import { hasPermission } from '../../../authorization';
 import { Users } from '../../../models/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	'livechat:searchAgent'(username) {
+		methodDeprecationLogger.warn('livechat:searchAgent will be deprecated in future versions of Rocket.Chat');
+
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:searchAgent',

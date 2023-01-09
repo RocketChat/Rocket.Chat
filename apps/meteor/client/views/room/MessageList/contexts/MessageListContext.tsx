@@ -1,4 +1,4 @@
-import { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
@@ -26,6 +26,8 @@ export type MessageListContextValue = {
 		dollarSyntaxEnabled: boolean;
 		parenthesisSyntaxEnabled: boolean;
 	};
+	autoTranslateLanguage?: string;
+	showColors: boolean;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -49,6 +51,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showRoles: false,
 	showRealName: false,
 	showUsername: false,
+	showColors: false,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -79,3 +82,5 @@ export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] =
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 export const useReactionsFilter: MessageListContextValue['useReactionsFilter'] = (message: IMessage) =>
 	useContext(MessageListContext).useReactionsFilter(message);
+
+export const useMessageListContext = (): MessageListContextValue => useContext(MessageListContext);

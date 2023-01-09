@@ -9,4 +9,7 @@ export enum MatrixEventType {
 	// SET_ROOM_HISTORY_VISIBILITY = 'm.room.history_visibility',
 	// SET_ROOM_GUEST_ACCESS = 'm.room.guest_access',
 	ROOM_TOPIC_CHANGED = 'm.room.topic',
+	ROOM_EVENT_REDACTED = 'm.room.redaction',
+	MESSAGE_REACTED = 'm.reaction',
+	USER_TYPING_STATUS_CHANGED = 'm.typing',
 }

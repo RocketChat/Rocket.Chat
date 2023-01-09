@@ -6,13 +6,13 @@ import {
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
 } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { memoizeDebounce } from './debounceByParams';
 import { Users, LivechatInquiry, LivechatRooms, Messages } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import notifications from '../../../../../app/notifications/server/lib/Notifications';
 import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 
@@ -81,7 +81,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		notifications.streamLivechatRoom.emit(inquiry.rid, {
+		api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
@@ -164,12 +164,12 @@ export const setPredictedVisitorAbandonmentTime = async (room) => {
 	}
 
 	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
-	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
+	await LivechatRoomsRaw.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 };
 
 export const updatePredictedVisitorAbandonment = async () => {
 	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
-		LivechatRooms.unsetPredictedVisitorAbandonment();
+		await LivechatRoomsRaw.unsetAllPredictedVisitorAbandonment();
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
 		const promisesArray = [];
@@ -234,12 +234,19 @@ export const updateInquiryQueuePriority = (roomId, priority) => {
 	});
 };
 
-export const removePriorityFromRooms = (priorityId) => {
-	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
-		updateInquiryQueuePriority(room._id);
-	});
+export const removePriorityFromRooms = async (priorityId) => {
+	const result = await Promise.allSettled(
+		LivechatRoomsRaw.findOpenRoomsByPriorityId(priorityId).forEach((room) => {
+			updateInquiryQueuePriority(room._id);
+		}),
+	);
+	const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+	if (rejected.length) {
+		logger.error({ msg: `Error while removing priority from ${rejected.length} rooms`, reason: rejected[0] });
+		logger.debug({ msg: 'Rejection results', rejected });
+	}
 
-	LivechatRooms.unsetPriorityById(priorityId);
+	await LivechatRoomsRaw.unsetPriorityByIdFromAllOpenRooms(priorityId);
 };
 
 export const updatePriorityInquiries = (priority) => {

@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { isEqual } from 'underscore';
-import type { ISetting, ISettingGroup, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
 
@@ -157,23 +157,24 @@ export class SettingsRegistry {
 			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-			await this.model.updateOne(
-				{ _id },
-				{
-					$set: { ...settingOverwrittenProps },
-					...(removedKeys.length && {
-						$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
-					}),
-				},
-				{ upsert: true },
-			);
+			const updatedProps = (() => {
+				return {
+					...settingOverwrittenProps,
+					...(settingStoredOverwritten &&
+						settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
+				};
+			})();
 
+			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
 			return;
 		}
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingFromCodeOverwritten.value) {
-				await this.model.updateOne({ _id }, settingProps, { upsert: true });
+				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
+				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
+
+				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
 			}
 			return;
 		}
@@ -199,7 +200,7 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting group
 	 */
-	async addGroup(_id: string, cb: addGroupCallback): Promise<void>;
+	async addGroup(_id: string, cb?: addGroupCallback): Promise<void>;
 
 	// eslint-disable-next-line no-dupe-class-members
 	async addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): Promise<void> {
@@ -262,5 +263,22 @@ export class SettingsRegistry {
 			};
 
 		return groupSetWith({ group: _id })({}, callback);
+	}
+
+	private async saveUpdatedSetting(
+		_id: string,
+		settingProps: Omit<Optional<ISetting, 'value'>, '_id'>,
+		removedKeys?: string[],
+	): Promise<void> {
+		await this.model.updateOne(
+			{ _id },
+			{
+				$set: settingProps,
+				...(removedKeys?.length && {
+					$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
+				}),
+			},
+			{ upsert: true },
+		);
 	}
 }

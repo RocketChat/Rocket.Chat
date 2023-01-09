@@ -3,6 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
 
 import { hasRole } from '../../../authorization';
 import {
@@ -21,7 +22,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../apps/server';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
@@ -268,7 +268,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	notifications.streamLivechatRoom.emit(rid, {
+	api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
 		data: agent,
 	});

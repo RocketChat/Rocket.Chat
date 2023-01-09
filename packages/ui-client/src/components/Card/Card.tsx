@@ -7,12 +7,12 @@ type CardProps = {
 
 const Card: FC<CardProps> = ({ variant, ...props }: CardProps) => (
 	<Box
-		borderRadius='x4'
+		borderRadius='x8'
 		p='x20'
 		height='full'
 		display='flex'
 		flexDirection='column'
-		backgroundColor={variant === 'light' ? 'white' : 'neutral-100'}
+		backgroundColor={variant === 'light' ? 'light' : 'tint'}
 		{...props}
 	/>
 );

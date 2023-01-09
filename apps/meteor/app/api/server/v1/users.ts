@@ -11,6 +11,8 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
+	isUsersCheckUsernameAvailabilityParamsGET,
+	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -18,6 +20,8 @@ import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
+import type { Filter } from 'mongodb';
+import { Team, api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
@@ -37,9 +41,7 @@ import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonE
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
-import { Team } from '../../../../server/sdk';
 import { isValidQuery } from '../lib/isValidQuery';
-import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
@@ -57,6 +59,20 @@ API.v1.addRoute(
 				statusCode: 307,
 				body: url,
 			};
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.getAvatarSuggestion',
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			const suggestions = Meteor.call('getAvatarSuggestion');
+
+			return API.v1.success({ suggestions });
 		},
 	},
 );
@@ -151,7 +167,7 @@ API.v1.addRoute(
 							language: user.language,
 						},
 					},
-				},
+				} as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
 	},
@@ -188,18 +204,18 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const [image, fields] = await getUploadFormData(
+			const image = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{
-					field: 'image',
-				},
+				{ field: 'image', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
 			}
+
+			const { fields, fileBuffer, mimetype } = image;
 
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
@@ -219,7 +235,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
+			setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},
@@ -415,6 +431,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
 						inclusiveFieldsKeys.includes('type') && 'type.*',
+						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)
@@ -500,8 +517,12 @@ API.v1.addRoute(
 				return API.v1.failure('Username is already in use');
 			}
 
+			const { secret: secretURL, ...params } = this.bodyParams;
 			// Register the user
-			const userId = Meteor.call('registerUser', this.bodyParams);
+			const userId = Meteor.call('registerUser', {
+				...params,
+				...(secretURL && { secretURL }),
+			});
 
 			// Now set their username
 			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
@@ -587,6 +608,22 @@ API.v1.addRoute(
 	{
 		get() {
 			const result = Meteor.call('getUsernameSuggestion');
+
+			return API.v1.success({ result });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.checkUsernameAvailability',
+	{
+		authRequired: true,
+		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
+	},
+	{
+		get() {
+			const { username } = this.queryParams;
+			const result = Meteor.call('checkUsernameAvailability', username);
 
 			return API.v1.success({ result });
 		},
@@ -716,6 +753,24 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 });
 
 API.v1.addRoute(
+	'users.sendConfirmationEmail',
+	{
+		authRequired: true,
+		validateParams: isUsersSendConfirmationEmailParamsPOST,
+	},
+	{
+		post() {
+			const { email } = this.bodyParams;
+
+			if (Meteor.call('sendConfirmationEmail', email)) {
+				return API.v1.success();
+			}
+			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
 	'users.presence',
 	{ authRequired: true },
 	{
@@ -815,11 +870,22 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersAutocompleteProps },
 	{
 		async get() {
-			const { selector } = this.queryParams;
+			const { selector: selectorRaw } = this.queryParams;
+
+			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
+
+			try {
+				if (selector?.conditions && !isValidQuery(selector.conditions, ['*'], ['$or', '$and'])) {
+					throw new Error('error-invalid-query');
+				}
+			} catch (e) {
+				return API.v1.failure(e);
+			}
+
 			return API.v1.success(
 				await findUsersToAutocomplete({
 					uid: this.userId,
-					selector: JSON.parse(selector),
+					selector,
 				}),
 			);
 		},
@@ -1031,7 +1097,11 @@ API.v1.addRoute(
 							},
 						});
 
-						setUserStatus(user, status);
+						const { _id, username, statusText, roles, name } = user;
+						api.broadcast('presence.status', {
+							user: { status, _id, username, statusText, roles, name },
+							previousStatus: user.status,
+						});
 					} else {
 						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 							method: 'users.setStatus',

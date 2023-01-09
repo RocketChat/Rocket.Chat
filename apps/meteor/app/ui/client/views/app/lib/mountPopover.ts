@@ -1,14 +1,14 @@
 import Clipboard from 'clipboard';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import type { Blaze } from 'meteor/blaze';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
+import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
 
-export const mountPopover = (e: JQuery.TriggeredEvent, i: Blaze.TemplateInstance, outerContext: unknown) => {
-	let context = $(e.target).parents('.message').data('context');
+export const mountPopover = async (event: JQuery.TriggeredEvent, template: CommonRoomTemplateInstance, outerContext: unknown) => {
+	let context = $(event.target).parents('.message').data('context');
 	if (!context) {
 		context = 'message';
 	}
@@ -19,21 +19,27 @@ export const mountPopover = (e: JQuery.TriggeredEvent, i: Blaze.TemplateInstance
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	context = federationContext || context;
 
-	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg, user: messageContext.u }, context, 'menu').map(
-		(item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}),
-	);
+	let menuItems = (
+		await MessageAction.getButtons(
+			{ ...messageContext, message: messageContext.msg, user: messageContext.u, chat: template.data.chatContext },
+			context,
+			'menu',
+		)
+	).map((item) => ({
+		icon: item.icon,
+		name: t(item.label),
+		type: 'message-action',
+		id: item.id,
+		modifier: item.color,
+	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(
-			{ ...messageContext, message: messageContext.msg, user: messageContext.u },
-			context,
-			'message',
+		const messageItems = (
+			await MessageAction.getButtons(
+				{ ...messageContext, message: messageContext.msg, user: messageContext.u, chat: template.data.chatContext },
+				context,
+				'message',
+			)
 		).map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
@@ -64,10 +70,10 @@ export const mountPopover = (e: JQuery.TriggeredEvent, i: Blaze.TemplateInstance
 				groups,
 			},
 		],
-		instance: i,
-		currentTarget: e.currentTarget,
+		instance: template,
+		currentTarget: event.currentTarget,
 		data: outerContext,
-		activeElement: $(e.currentTarget).parents('.message')[0],
+		activeElement: $(event.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 

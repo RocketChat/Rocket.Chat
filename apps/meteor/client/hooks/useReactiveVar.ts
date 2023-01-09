@@ -1,23 +1,7 @@
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
-import { useEffect, useState } from 'react';
+import type { ReactiveVar } from 'meteor/reactive-var';
+import { useCallback } from 'react';
+
+import { useReactiveValue } from './useReactiveValue';
 
 /** @deprecated */
-export const useReactiveVar = <T>(variable: ReactiveVar<T>): T => {
-	const [value, setValue] = useState(() => Tracker.nonreactive(() => variable.get()));
-
-	useEffect(() => {
-		const computation = Tracker.nonreactive(() =>
-			Tracker.autorun(() => {
-				const value = variable.get();
-				setValue(() => value);
-			}),
-		);
-
-		return (): void => {
-			computation?.stop();
-		};
-	}, [variable]);
-
-	return value;
-};
+export const useReactiveVar = <T>(variable: ReactiveVar<T>): T => useReactiveValue(useCallback(() => variable.get(), [variable]));

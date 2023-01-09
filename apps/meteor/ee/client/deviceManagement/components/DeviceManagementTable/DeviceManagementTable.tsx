@@ -1,8 +1,9 @@
-import { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
+import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import {
 	GenericTable,
@@ -46,7 +47,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 				<States>
 					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 					<StatesSubtitle>{error?.message}</StatesSubtitle>
 					<StatesActions>

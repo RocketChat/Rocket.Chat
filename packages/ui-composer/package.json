@@ -1,0 +1,46 @@
+{
+  "name": "@rocket.chat/ui-composer",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "@babel/core": "~7.20.5",
+    "@rocket.chat/eslint-config": "workspace:^",
+    "@rocket.chat/fuselage": "next",
+    "@rocket.chat/icons": "next",
+    "@storybook/addon-actions": "~6.5.14",
+    "@storybook/addon-docs": "~6.5.14",
+    "@storybook/addon-essentials": "~6.5.14",
+    "@storybook/builder-webpack4": "~6.5.14",
+    "@storybook/manager-webpack4": "~6.5.14",
+    "@storybook/react": "~6.5.14",
+    "@storybook/testing-library": "~0.0.13",
+    "@types/babel__core": "^7.1.20",
+    "@types/jest": "^27.4.1",
+    "eslint": "^8.29.0",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-storybook": "^0.6.7",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
+    "typescript": "~4.5.5"
+  },
+  "peerDependencies": {
+    "@rocket.chat/fuselage": "*",
+    "@rocket.chat/icons": "*",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "scripts": {
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+    "jest": "jest",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "storybook": "start-storybook -p 6006"
+  },
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ]
+}

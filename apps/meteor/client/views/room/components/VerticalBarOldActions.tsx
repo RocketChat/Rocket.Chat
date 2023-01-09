@@ -1,11 +1,13 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { ToolboxContextValue } from '../lib/Toolbox/ToolboxContext';
-import { useTabBarClose } from '../providers/ToolboxProvider';
+import type { ToolboxContextValue } from '../contexts/ToolboxContext';
+import { useTabBarClose } from '../contexts/ToolboxContext';
 import BlazeTemplate from './BlazeTemplate';
 
 type VerticalBarOldActionsProps = {

@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { EmojiCustom } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { Messages, Rooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
-import { api } from '../../../server/sdk/api';
 import { AppEvents, Apps } from '../../apps/server/orchestrator';
 
 const removeUserReaction = (message, reaction, username) => {
@@ -57,6 +57,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	let isReacted;
 
 	if (userAlreadyReacted) {
+		const oldMessage = JSON.parse(JSON.stringify(message));
 		removeUserReaction(message, reaction, user.username);
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
@@ -71,7 +72,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 			}
 		}
 		callbacks.run('unsetReaction', message._id, reaction);
-		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
+		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact, oldMessage });
 
 		isReacted = false;
 	} else {
