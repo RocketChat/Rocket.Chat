@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import ConfirmationModal from './ConfirmationModal';
 
@@ -30,13 +30,11 @@ const RoomActions = ({ room, reload }) => {
 	const canEditTeamChannel = usePermission('edit-team-channel', rid);
 	const canRemoveTeamChannel = usePermission('remove-team-channel', rid);
 
-	const updateRoomEndpoint = useEndpointActionExperimental('POST', '/v1/teams.updateRoom');
-	const removeRoomEndpoint = useEndpointActionExperimental('POST', '/v1/teams.removeRoom', t('Room_has_been_removed'));
-	const deleteRoomEndpoint = useEndpointActionExperimental(
-		'POST',
-		room.t === 'c' ? '/v1/channels.delete' : '/v1/groups.delete',
-		t('Room_has_been_deleted'),
-	);
+	const updateRoomEndpoint = useEndpointAction('POST', '/v1/teams.updateRoom');
+	const removeRoomEndpoint = useEndpointAction('POST', '/v1/teams.removeRoom', { successMessage: t('Room_has_been_removed') });
+	const deleteRoomEndpoint = useEndpointAction('POST', room.t === 'c' ? '/v1/channels.delete' : '/v1/groups.delete', {
+		successMessage: t('Room_has_been_deleted'),
+	});
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: async () => {
