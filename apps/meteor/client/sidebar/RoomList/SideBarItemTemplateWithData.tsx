@@ -148,7 +148,9 @@ function SideBarItemTemplateWithData({
 			unread={highlighted}
 			selected={selected}
 			href={href}
-			onClick={(): void => !selected && sidebar.toggle()}
+			onClick={(): void => {
+				!selected && sidebar.toggle();
+			}}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}
