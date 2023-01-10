@@ -12,6 +12,7 @@ import type {
 	ILivechatCustomField,
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
 import faker from '@faker-js/faker';
 
@@ -1552,7 +1553,7 @@ describe('LIVECHAT - rooms', function () {
 		it('should return the room with the new priority', async () => {
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom).to.not.have.property('priorityId');
-			expect(updatedRoom).to.not.have.property('priorityWeight');
+			expect(updatedRoom).to.have.property('priorityWeight', LivechatPriorityWeight.NOT_SPECIFIED);
 		});
 		it('should fail to return the priorities if lacking permissions', async () => {
 			await updatePermission('manage-livechat-priorities', []);
