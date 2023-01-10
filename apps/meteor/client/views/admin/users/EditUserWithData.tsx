@@ -1,13 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditUser from './EditUser';
 
 type EditUserWithDataProps = {
@@ -17,10 +16,32 @@ type EditUserWithDataProps = {
 
 const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('/v1/roles.list');
-	const { value: data, phase: state, error } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid }), [uid]) });
 
-	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
+	const getRoles = useEndpoint('GET', '/v1/roles.list');
+
+	const query = useMemo(() => ({ userId: uid }), [uid]);
+
+	const {
+		data: roleData,
+		isLoading: roleState,
+		error: roleError,
+	} = useQuery(['roles.list'], async () => {
+		const roles = await getRoles();
+		return roles;
+	});
+
+	const getUsersInfo = useEndpoint('GET', '/v1/users.info');
+
+	const {
+		data,
+		isLoading: state,
+		error,
+	} = useQuery(['users.info', query], async () => {
+		const usersInfo = await getUsersInfo(query);
+		return usersInfo;
+	});
+
+	if (state || roleState) {
 		return (
 			<Box p='x24'>
 				<FormSkeleton />
