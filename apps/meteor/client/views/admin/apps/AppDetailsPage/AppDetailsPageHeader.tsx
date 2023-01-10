@@ -60,23 +60,19 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage mis='x8' />}
 				</Box>
-				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>
-					<Box fontScale='c1' mie='x16'>
-						{author?.name}
-					</Box>
-					<Box fontScale='c1' color='stroke-light'>
+				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
+					{author?.name}
+					<Box mi='x16' color='disabled'>
 						|
 					</Box>
-					<Box fontScale='c1' mi='x16'>
-						{t('Version_version', { version })}
-					</Box>
+					{t('Version_version', { version })}
 
 					{lastUpdated && (
 						<>
-							<Box fontScale='c1' color='stroke-light'>
+							<Box mi='x16' color='disabled'>
 								|
 							</Box>
-							<Box fontScale='c1' mis='x16'>
+							<Box>
 								{t('Marketplace_app_last_updated', {
 									lastUpdated,
 								})}
@@ -84,14 +80,14 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 						</>
 					)}
 
-					<Box is='span'> | </Box>
-
-					<Box mi='x16' marginInlineEnd='x4'>
-						{t('Version_version', { version: versioni18nKey(app) })}
+					<Box mi='x16' color='disabled'>
+						|
 					</Box>
 
+					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
+
 					{versionIncompatible && (
-						<Box is='span' marginInlineEnd='x16' marginBlockStart='x4'>
+						<Box mi='x16'>
 							<Tag
 								title={incompatibleStatus?.tooltipText}
 								variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
