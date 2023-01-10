@@ -8,26 +8,26 @@ createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedM
 
 // TODO: Remove those after threads Message/Pinned/Starred/Audit are migrated to React
 
-createTemplateForComponent('Blocks', () => import('./views/blocks/MessageBlock'));
+createTemplateForComponent('Blocks', () => import('./components/message/content/UiKitSurface'));
 
-createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
+createTemplateForComponent('messageLocation', () => import('./components/message/content/Location'));
 
-createTemplateForComponent('MessageActions', () => import('./components/message/MessageActions'));
+createTemplateForComponent('MessageActions', () => import('./components/message/content/MessageActions'));
 
-createTemplateForComponent('reactAttachments', () => import('./components/message/Attachments'));
+createTemplateForComponent('Attachments', () => import('./components/message/content/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/message/Metrics/Thread'), {
+createTemplateForComponent('ThreadMetrics', () => import('./components/message/content/ThreadMetrics'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
 		}),
 });
 
-createTemplateForComponent('DiscussionMetric', () => import('./components/message/Metrics/Discussion'), {
+createTemplateForComponent('DiscussionMetrics', () => import('./components/message/content/DiscussionMetrics'), {
 	renderContainerView: () =>
 		HTML.DIV({
 			style: 'min-height: 36px;',
 		}),
 });
 
-createTemplateForComponent('BroadCastMetric', () => import('./components/message/Metrics/Broadcast'));
+createTemplateForComponent('BroadcastMetrics', () => import('./components/message/content/BroadcastMetrics'));

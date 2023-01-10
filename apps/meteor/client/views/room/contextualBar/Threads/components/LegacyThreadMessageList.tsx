@@ -5,7 +5,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { isTruthy } from '../../../../../../lib/isTruthy';
+import { useBlazePortals } from '../../../../../lib/portals/blazePortals';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
+import { useLegacyMessageEvents } from '../../../hooks/useLegacyMessageEvents';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessageRef } from '../hooks/useLegacyThreadMessageRef';
@@ -17,14 +19,17 @@ type LegacyThreadMessageListProps = {
 	onJumpTo?: (mid: IMessage['_id']) => void;
 };
 
-const LegacyThreadMessageList = function LegacyThreadChatList({
-	mainMessage,
-	jumpTo,
-	onJumpTo,
-}: LegacyThreadMessageListProps): ReactElement {
+const LegacyThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: LegacyThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
-	const messageRef = useLegacyThreadMessageRef();
-	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
+	const [portals, portalsSubscription] = useBlazePortals();
+	const messageRef = useLegacyThreadMessageRef(portalsSubscription);
+	const {
+		listWrapperRef: listWrapperScrollRef,
+		listRef: listScrollRef,
+		onScroll: handleScroll,
+		requestScrollToBottom: sendToBottomIfNecessary,
+	} = useLegacyThreadMessageListScrolling();
+	useLegacyMessageEvents({ messageListRef: listScrollRef, onRequestScrollToBottom: sendToBottomIfNecessary });
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump(jumpTo, { enabled: !loading, onJumpTo });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
@@ -44,6 +49,7 @@ const LegacyThreadMessageList = function LegacyThreadChatList({
 					</li>
 				) : (
 					<>
+						{portals}
 						<li key={mainMessage._id} ref={messageRef(mainMessage, -1)} />
 						{messages.map((message, index) => (
 							<li key={message._id} ref={messageRef(message, index)} />

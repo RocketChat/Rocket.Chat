@@ -7,7 +7,7 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 
 const RemoveAgentButton: FC<{ username: string; reload: () => void }> = ({ username, reload }) => {
-	const removeAgent = useEndpoint('DELETE', `/v1/omnichannel/agent/extension/${username}`);
+	const removeAgent = useEndpoint('DELETE', '/v1/omnichannel/agent/extension/:username', { username });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
