@@ -41,7 +41,7 @@ export class AppsRestApi {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
-				await AppsConverter.rocketChatLoggerWarn(message, e.message);
+				await Apps.rocketChatLoggerWarn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 

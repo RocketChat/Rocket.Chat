@@ -61,7 +61,7 @@ router.use((req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
-		req.body.visitor = AppsConverter.convertVistitorByToken(visitorToken as string);
+		req.body.visitor = Promise.await(AppsConverter.convertVistitorByToken(visitorToken as string));
 	}
 
 	if (!req.user && !req.body.visitor) {
@@ -188,9 +188,9 @@ const appsRoutes =
 				const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
 				const { visitor } = req.body;
-				const room = AppsConverter.convertRoomById(rid);
-				const user = AppsConverter.convertUserToApp(req.user);
-				const message = AppsConverter.convertMessageById(mid);
+				const room = Promise.await(AppsConverter.convertRoomById(rid));
+				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
+				const message = Promise.await(AppsConverter.convertMessageById(mid));
 
 				const action = {
 					type,
@@ -224,7 +224,7 @@ const appsRoutes =
 					payload: { view, isCleared },
 				} = req.body;
 
-				const user = AppsConverter.convertUserToApp(req.user);
+				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
 
 				const action = {
 					type,
@@ -250,7 +250,7 @@ const appsRoutes =
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const { type, actionId, triggerId, payload } = req.body;
 
-				const user = AppsConverter.convertUserToApp(req.user);
+				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
 
 				const action = {
 					type,
@@ -281,9 +281,9 @@ const appsRoutes =
 					payload: { context },
 				} = req.body;
 
-				const room = AppsConverter.convertRoomById(rid);
-				const user = AppsConverter.convertUserToApp(req.user);
-				const message = AppsConverter.convertMessageById(mid);
+				const room = Promise.await(AppsConverter.convertRoomById(rid));
+				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
+				const message = Promise.await(AppsConverter.convertMessageById(mid));
 				const action = {
 					type,
 					appId,
