@@ -3,7 +3,6 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import EditIncomingWebhook from './EditIncomingWebhook';
 
 function EditIncomingWebhookWithData({ integrationId, ...props }) {

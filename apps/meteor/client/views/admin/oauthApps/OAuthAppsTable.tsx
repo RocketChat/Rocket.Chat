@@ -1,6 +1,5 @@
 import { Table } from '@rocket.chat/fuselage';
-import { useUserId } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
@@ -12,11 +11,11 @@ const OAuthAppsTable = (): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const uid = useUserId() || '';
+	const uid = { uid: useUserId() || '' };
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.list');
 	const { data } = useQuery(['oauth-apps'], async () => {
-		const oauthApps = await getOauthApps({ uid: uid });
+		const oauthApps = await getOauthApps(uid);
 		return oauthApps;
 	});
 
