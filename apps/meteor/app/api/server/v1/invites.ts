@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import type { IInvite } from '@rocket.chat/core-typings';
-import { isFindOrCreateInviteParams, isUseInviteTokenProps, isValidateInviteTokenProps } from '@rocket.chat/rest-typings';
+import {
+	isFindOrCreateInviteParams,
+	isUseInviteTokenProps,
+	isValidateInviteTokenProps,
+	isSendInvitationEmailParams,
+} from '@rocket.chat/rest-typings';
+import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -78,6 +84,24 @@ API.v1.addRoute(
 				return API.v1.success({ valid: Boolean(await validateInviteToken(token)) });
 			} catch (_) {
 				return API.v1.success({ valid: false });
+			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'sendInvitationEmail',
+	{
+		authRequired: true,
+		validateParams: isSendInvitationEmailParams,
+	},
+	{
+		async post() {
+			const { emails } = this.bodyParams;
+			try {
+				return API.v1.success({ success: Boolean(await Meteor.call('sendInvitationEmail', emails)) });
+			} catch (e: any) {
+				return API.v1.failure({ error: e.message });
 			}
 		},
 	},

@@ -60,6 +60,26 @@ const FindOrCreateInviteParamsSchema = {
 
 export const isFindOrCreateInviteParams = ajv.compile<FindOrCreateInviteParams>(FindOrCreateInviteParamsSchema);
 
+type SendInvitationEmailParams = {
+	emails: string[];
+};
+
+const SendInvitationEmailParamsSchema = {
+	type: 'object',
+	properties: {
+		emails: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	required: ['emails'],
+	additionalProperties: false,
+};
+
+export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
+
 export type InvitesEndpoints = {
 	'/v1/listInvites': {
 		GET: () => Array<IInvite>;
@@ -83,5 +103,8 @@ export type InvitesEndpoints = {
 	};
 	'/v1/findOrCreateInvite': {
 		POST: (params: FindOrCreateInviteParams) => IInvite;
+	};
+	'/v1/sendInvitationEmail': {
+		POST: (params: SendInvitationEmailParams) => { success: boolean };
 	};
 };
