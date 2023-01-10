@@ -58,7 +58,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
-					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage mis='x8' />}
+					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
 					{author?.name}

@@ -6,7 +6,7 @@ import React from 'react';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 
-type DicussionMetricsProps = {
+type DiscussionMetricsProps = {
 	drid: string;
 	rid: string;
 	openDiscussion: (event: UIEvent) => void;
@@ -14,7 +14,7 @@ type DicussionMetricsProps = {
 	lm?: Date;
 };
 
-const DicussionMetrics = ({ lm, count, rid, drid, openDiscussion }: DicussionMetricsProps): ReactElement => {
+const DiscussionMetrics = ({ lm, count, rid, drid, openDiscussion }: DiscussionMetricsProps): ReactElement => {
 	const t = useTranslation();
 	const format = useTimeAgo();
 	const { className, ref } = useBlockRendered<HTMLDivElement>();
@@ -35,4 +35,4 @@ const DicussionMetrics = ({ lm, count, rid, drid, openDiscussion }: DicussionMet
 	);
 };
 
-export default DicussionMetrics;
+export default DiscussionMetrics;
