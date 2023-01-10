@@ -3,9 +3,9 @@ export const palette = [
 		category: 'Surface',
 		description: 'Use as a container on top of the background',
 		list: [
-			{ name: 'surface-tint', token: '', color: '#2f343d' },
-			{ name: 'surface-hover', token: '', color: '#1f2329' },
-			{ name: 'surface-selected', token: '', color: 'rgba(108,114,122, 0.3)' },
+			{ name: 'surface-tint', token: '', color: '#262931' },
+			{ name: 'surface-hover', token: '', color: '#000000' },
+			{ name: 'surface-selected', token: 'N900', color: '#31363F' },
 		],
 	},
 	{
@@ -13,7 +13,7 @@ export const palette = [
 		description: 'These should be applied according to surfaces',
 		list: [
 			{ name: 'font-secondary-info', token: '', color: '#9EA2A8' },
-			{ name: 'font-default', token: '', color: '#FFF' },
+			{ name: 'font-default', token: '', color: '#E4E7EA' },
 		],
 	},
 	{
@@ -30,9 +30,9 @@ export const palette = [
 		category: 'Badge',
 		description: 'Badge Background',
 		list: [
-			{ name: 'badge-background-level-1', token: '', color: '#6C727A' },
-			{ name: 'badge-background-level-2', token: '', color: '#3976D1' },
-			{ name: 'badge-background-level-3', token: '', color: '#C0830C' },
+			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
+			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
+			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
 			{ name: 'badge-background-level-4', token: '', color: '#BB3E4E' },
 		],
 	},
@@ -40,27 +40,26 @@ export const palette = [
 		category: 'Stroke',
 		description: "Use as component's outline, stroke, dividers",
 		list: [
-			{ name: 'stroke-light', token: '', color: '#cbced1' },
-			{ name: 'stroke-medium', token: '', color: '#EBECEF' },
-
+			{ name: 'stroke-light', token: '', color: '#333842' },
+			{ name: 'stroke-medium', token: '', color: '#324677' },
 		],
 	},
 	{
 		category: 'Button',
 		description: 'Secondary Background',
 		list: [
-			{ name: 'button-background-secondary-default', token: '', color: '#2f343d' },
-			{ name: 'button-background-secondary-hover', token: '', color: '#1f2329' },
-			{ name: 'button-background-secondary-press', token: '', color: '#414852' },
-			{ name: 'button-background-secondary-focus', token: '', color: '#6c727a' },
-			{ name: 'button-background-secondary-keyfocus', token: '', color: '#6c727a' },
-			{ name: 'button-background-secondary-disabled', token: '', color: '#1f2329' },
+			{ name: 'button-background-secondary-default', token: '', color: '#0D0F11' },
+			{ name: 'button-background-secondary-hover', token: '', color: '#23282E' },
+			{ name: 'button-background-secondary-press', token: '', color: '#2C313A' },
+			{ name: 'button-background-secondary-focus', token: '', color: '#0D0F11' },
+			{ name: 'button-background-secondary-keyfocus', token: '', color: '#2F343D' },
+			{ name: 'button-background-secondary-disabled', token: '', color: '#2F343D' },
 		],
 	},
 	{
 		description: 'Font',
 		list: [
-			{ name: 'button-font-on-secondary', token: 'N400', color: '#9EA2A8' },
+			{ name: 'button-font-on-secondary', token: '', color: '#E4E7EA' },
 			{ name: 'button-font-on-secondary-disabled', token: '', color: '#6C727A' },
 			{ name: 'button-icon-disabled-color', token: '', color: '#6C727A' },
 		],
