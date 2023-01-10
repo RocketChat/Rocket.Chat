@@ -5,11 +5,11 @@ import React from 'react';
 
 import Page from '../../components/Page/Page';
 import PageScrollableContent from '../../components/Page/PageScrollableContent';
-import CustomHomePageContent from './CustomHomePageContent';
 import HomePageHeader from './HomePageHeader';
 import HomepageGridItem from './HomepageGridItem';
 import AddUsersCard from './cards/AddUsersCard';
 import CreateChannelsCard from './cards/CreateChannelsCard';
+import CustomCard from './cards/CustomCard';
 import DesktopAppsCard from './cards/DesktopAppsCard';
 import DocumentationCard from './cards/DocumentationCard';
 import JoinRoomsCard from './cards/JoinRoomsCard';
@@ -19,7 +19,7 @@ const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const DefaultHomePage = (): ReactElement => {
 	const t = useTranslation();
-	const canAddUsers = usePermission('view-user-administration');
+	const isAdmin = usePermission('view-user-administration');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
 	const displayCustomBody = Boolean(useSetting('Layout_Home_Body'));
@@ -35,7 +35,7 @@ const DefaultHomePage = (): ReactElement => {
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
 				<Grid margin='neg-x8'>
-					{canAddUsers && (
+					{isAdmin && (
 						<HomepageGridItem>
 							<AddUsersCard />
 						</HomepageGridItem>
@@ -57,12 +57,8 @@ const DefaultHomePage = (): ReactElement => {
 					<HomepageGridItem>
 						<DocumentationCard />
 					</HomepageGridItem>
+					<HomepageGridItem fullWidth>{(displayCustomBody || isAdmin) && <CustomCard isAdmin={isAdmin} />}</HomepageGridItem>
 				</Grid>
-				{displayCustomBody && (
-					<Box mbs='x32' mbe='x16'>
-						<CustomHomePageContent />
-					</Box>
-				)}
 			</PageScrollableContent>
 		</Page>
 	);
