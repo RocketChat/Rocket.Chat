@@ -20,11 +20,14 @@ export const palette = [
 		list: [
 			{ name: 'surface-light', token: 'white', color: '#FFFFFF' },
 			{ name: 'surface-tint', token: 'N100', color: '#F7F8FA' },
+			{ name: 'surface-room', token: 'white', color: '#FFFFFF' },
 			{ name: 'surface-neutral', token: 'N400', color: '#E4E7EA' },
 			{ name: 'surface-disabled', token: 'N100', color: '#F7F8FA' },
 			{ name: 'surface-hover', token: 'N200', color: '#F2F3F5' },
 			{ name: 'surface-selected', token: 'N400', color: '#E4E7EA' },
 			{ name: 'surface-dark', token: 'N900', color: '#1F2329' },
+			{ name: 'surface-featured', token: '', color: '#5F1477' },
+			{ name: 'surface-featured-hover', token: '', color: '#4A105D' },
 		],
 	},
 	{
