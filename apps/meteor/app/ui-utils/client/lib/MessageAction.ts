@@ -172,10 +172,16 @@ export const MessageAction = new (class {
 	): Promise<MessageActionConfigList> {
 		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
 
+		const buttons = await this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
+
+		// Checks if the message is on thread context, so the "Reply in thread" button
+		// won't be rendered
+		const filteredButtons = context === 'threads' ? buttons.filter((button) => button.label !== 'Reply_in_thread') : buttons;
+
 		if (props.message) {
-			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
+			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, filteredButtons));
 		}
-		return allButtons;
+		return filteredButtons;
 	}
 
 	resetButtons(): void {

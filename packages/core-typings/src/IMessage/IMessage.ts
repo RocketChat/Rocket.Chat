@@ -134,6 +134,7 @@ export interface IMessage extends IRocketChatRecord {
 		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
+	renderedOnThread?: boolean | undefined;
 	pinned?: boolean;
 	unread?: boolean;
 	temp?: boolean;

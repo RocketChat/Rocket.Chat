@@ -53,6 +53,8 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 
 	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
 
+	message.renderedOnThread = true;
+
 	return (
 		<Message
 			id={message._id}
