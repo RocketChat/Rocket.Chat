@@ -15,7 +15,7 @@ export default function TeamsInfoWithRooms({ rid }) {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ roomId: rid }), [rid]);
-	const { phase, value, error } = useEndpointData('/v1/rooms.info', params);
+	const { phase, value, error } = useEndpointData('/v1/rooms.info', { params });
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return <VerticalBar.Skeleton />;

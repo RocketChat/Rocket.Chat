@@ -3,11 +3,15 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Modal, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { VFC } from 'react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
+import VerticalBarAction from '../../../../components/VerticalBar/VerticalBarAction';
+import VerticalBarActions from '../../../../components/VerticalBar/VerticalBarActions';
+import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
 import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
+import VerticalBarInnerContent from '../../../../components/VerticalBar/VerticalBarInnerContent';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import ChatProvider from '../../providers/ChatProvider';
@@ -23,7 +27,7 @@ type ThreadProps = {
 	tmid: IMessage['_id'];
 };
 
-const Thread = ({ tmid }: ThreadProps): ReactElement => {
+const Thread: VFC<ThreadProps> = ({ tmid }) => {
 	const goToThreadList = useGoToThreadList();
 	const closeTabBar = useTabBarClose();
 
@@ -71,7 +75,7 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 	};
 
 	return (
-		<VerticalBar.InnerContent>
+		<VerticalBarInnerContent>
 			{canExpand && expanded && <Modal.Backdrop onClick={handleBackdropClick} />}
 			<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 				<VerticalBar
@@ -96,26 +100,26 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 					border='none'
 				>
 					<VerticalBarHeader expanded={expanded}>
-						<VerticalBar.Action name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
+						<VerticalBarAction name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
 						{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 							(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
 							null}
-						<VerticalBar.Actions>
+						<VerticalBarActions>
 							{canExpand && (
-								<VerticalBar.Action
+								<VerticalBarAction
 									name={expanded ? 'arrow-collapse' : 'arrow-expand'}
 									title={expanded ? t('Collapse') : t('Expand')}
 									onClick={handleToggleExpand}
 								/>
 							)}
-							<VerticalBar.Action
+							<VerticalBarAction
 								name={following ? 'bell' : 'bell-off'}
 								title={following ? t('Following') : t('Not_Following')}
 								disabled={!mainMessageQueryResult.isSuccess || toggleFollowingMutation.isLoading}
 								onClick={handleToggleFollowing}
 							/>
-							<VerticalBar.Close onClick={handleClose} />
-						</VerticalBar.Actions>
+							<VerticalBarClose onClick={handleClose} />
+						</VerticalBarActions>
 					</VerticalBarHeader>
 
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
@@ -129,7 +133,7 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 						null}
 				</VerticalBar>
 			</Box>
-		</VerticalBar.InnerContent>
+		</VerticalBarInnerContent>
 	);
 };
 
