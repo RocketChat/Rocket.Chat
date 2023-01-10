@@ -10,7 +10,7 @@ import AppReleasesItem from './AppReleasesItem';
 
 // TODO: replace useEndpointData
 const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
-	const result = useEndpointData(`/apps/${id}/versions`);
+	const result = useEndpointData('/apps/:id/versions', { keys: { id } });
 
 	return (
 		<>

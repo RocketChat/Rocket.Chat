@@ -24,12 +24,10 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 
 	const [appData, setAppData] = useState<AppInfo>();
 
-	const getSettings = useEndpoint('GET', `/apps/${appId}/settings`);
-	const getScreenshots = useEndpoint('GET', `/apps/${appId}/screenshots`);
-	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
-
-	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
-	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as any;
+	const getSettings = useEndpoint('GET', '/apps/:id/settings', { id: appId });
+	const getScreenshots = useEndpoint('GET', '/apps/:id/screenshots', { id: appId });
+	const getApis = useEndpoint('GET', '/apps/:id/apis', { id: appId });
+	const getBundledIn = useEndpoint('GET', '/apps/:id', { id: appId });
 
 	useEffect(() => {
 		const apps: App[] = [];
