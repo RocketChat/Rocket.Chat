@@ -22,7 +22,7 @@ const InvitesPage = (): ReactElement => {
 	const setModal = useSetModal();
 
 	const getInvitesList = useEndpoint('GET', '/v1/listInvites');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['getInvitesList'], () => getInvitesList());
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['invites'], () => getInvitesList());
 
 	const onRemove = (removeInvite: () => Promise<boolean>): void => {
 		const confirmRemove = async (): Promise<void> => {
