@@ -6,7 +6,7 @@ import type { FC } from 'react';
 import React, { useState, memo } from 'react';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
 type Username = Exclude<IUser['username'], undefined>;
@@ -19,7 +19,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 
-	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
+	const createDirect = useEndpointAction('POST', '/v1/dm.create');
 
 	const onCreate = useMutableCallback(async () => {
 		try {
