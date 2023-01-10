@@ -7,6 +7,7 @@ import GenericTable from '../../../components/GenericTable';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
+import EditDepartment from './EditDepartment';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import RemoveDepartmentButton from './RemoveDepartmentButton';
 
@@ -66,7 +67,7 @@ function DepartmentsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/department', query);
+	const { value: data = {}, reload } = useEndpointData('/v1/livechat/department', { params: query });
 
 	const header = useMemo(
 		() =>
@@ -131,8 +132,12 @@ function DepartmentsRoute() {
 		return <NotAuthorizedPage />;
 	}
 
-	if (context === 'edit' || context === 'new') {
-		return <EditDepartmentWithData reload={reload} id={id} title={context === 'edit' ? t('Edit_Department') : t('New_Department')} />;
+	if (context === 'new') {
+		return <EditDepartment id={id} reload={reload} title={t('New_Department')} />;
+	}
+
+	if (context === 'edit') {
+		return <EditDepartmentWithData reload={reload} id={id} title={t('Edit_Department')} />;
 	}
 
 	return (
