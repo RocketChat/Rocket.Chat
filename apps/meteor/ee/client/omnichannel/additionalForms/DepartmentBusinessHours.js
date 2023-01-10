@@ -6,10 +6,7 @@ import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 export const DepartmentBusinessHours = ({ bhId }) => {
 	const t = useTranslation();
-	const { value: data } = useEndpointData(
-		'/v1/livechat/business-hour',
-		useMemo(() => ({ _id: bhId, type: 'custom' }), [bhId]),
-	);
+	const { value: data } = useEndpointData('/v1/livechat/business-hour', { params: useMemo(() => ({ _id: bhId, type: 'custom' }), [bhId]) });
 
 	const name = data && data.businessHour && data.businessHour.name;
 

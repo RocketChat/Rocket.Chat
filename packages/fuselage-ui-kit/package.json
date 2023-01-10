@@ -85,7 +85,7 @@
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
-    "typescript": "~4.3.5",
+    "typescript": "~4.6.4",
     "webpack": "~5.68.0"
   },
   "dependencies": {

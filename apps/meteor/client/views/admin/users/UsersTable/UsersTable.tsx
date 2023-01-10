@@ -58,7 +58,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		500,
 	);
 
-	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', query);
+	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', { params: query });
 
 	useEffect(() => {
 		reload.current = reloadList;
