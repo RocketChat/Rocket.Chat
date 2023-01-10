@@ -39,7 +39,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			);
 			const button = screen.getByText('Marketplace');
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'all', page: 'list' }));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'explore', page: 'list' }));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
