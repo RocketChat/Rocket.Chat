@@ -46,7 +46,7 @@ const CustomSoundsRoute = (): ReactElement => {
 	);
 
 	const getCustomSoundsList = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, isSuccess, isLoading, isError, refetch } = useQuery(['getCustomSoundsList', query], () => getCustomSoundsList(query));
+	const { data, isSuccess, isLoading, isError, refetch } = useQuery(['custom-sounds', query], () => getCustomSoundsList(query));
 
 	const handleItemClick = useCallback(
 		(_id) => (): void => {
