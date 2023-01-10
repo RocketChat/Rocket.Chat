@@ -21,7 +21,7 @@ const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext
 	if (isRoomFederated(room)) {
 		return 'federated';
 	}
-	if (isThreadMessage(message)) {
+	if (isThreadMessage(message) || message.renderedOnThread) {
 		return 'threads';
 	}
 	return 'message';

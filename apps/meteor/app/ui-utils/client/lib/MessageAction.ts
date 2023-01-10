@@ -181,7 +181,7 @@ export const MessageAction = new (class {
 		if (props.message) {
 			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, filteredButtons));
 		}
-		return filteredButtons;
+		return allButtons;
 	}
 
 	resetButtons(): void {
