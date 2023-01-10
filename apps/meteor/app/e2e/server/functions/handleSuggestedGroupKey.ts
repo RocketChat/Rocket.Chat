@@ -1,7 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Subscriptions } from '@rocket.chat/models';
 
-export async function handleSuggestedGroupKey(handle: 'accept' | 'reject', rid: string, userId: string | null, method: string) {
+export async function handleSuggestedGroupKey(
+	handle: 'accept' | 'reject',
+	rid: string,
+	userId: string | null,
+	method: string,
+): Promise<void> {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method });
 	}
@@ -21,8 +26,4 @@ export async function handleSuggestedGroupKey(handle: 'accept' | 'reject', rid: 
 	}
 
 	await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
-
-	return {
-		success: true,
-	};
 }
