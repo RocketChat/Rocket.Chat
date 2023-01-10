@@ -14,12 +14,12 @@ const CustomHomePageContent = (): ReactElement | null => {
 	const isAdmin = usePermission('view-user-administration');
 	const [isCustomContentVisible, setIsCustomContentVisible] = useState(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = useSetting('Layout_Custom_Body_Only');
-	const customContentVisible = useEndpoint('POST', '/v1/settings/Layout_Home_Custom_Block_Visible') as unknown as ({
+	const customContentVisible = useEndpoint('POST', '/v1/settings/:_id', { _id: 'Layout_Home_Custom_Block_Visible' }) as unknown as ({
 		value,
 	}: {
 		value: boolean;
 	}) => void;
-	const customContentOnly = useEndpoint('POST', '/v1/settings/Layout_Custom_Body_Only') as unknown as ({
+	const customContentOnly = useEndpoint('POST', '/v1/settings/:_id', { _id: '/v1/settings/Layout_Custom_Body_Only' }) as unknown as ({
 		value,
 	}: {
 		value: boolean;
