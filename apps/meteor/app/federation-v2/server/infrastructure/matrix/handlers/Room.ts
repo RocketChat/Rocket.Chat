@@ -41,7 +41,7 @@ export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_MESSAGE_SENT;
 
-	constructor(private roomService: FederationRoomServiceListener, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
+	constructor(private roomService: FederationRoomServiceListener) {
 		super();
 	}
 
@@ -51,9 +51,7 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 			eventContent['m.relates_to'] &&
 			eventContent['m.relates_to'].rel_type === MatrixEnumRelatesToRelType.REPLACE;
 		return isAnEditionEvent
-			? this.roomService.onExternalMessageEditedReceived(
-					MatrixRoomReceiverConverter.toEditRoomMessageDto(externalEvent, this.rocketSettingsAdapter.getHomeServerDomain()),
-			  )
+			? this.roomService.onExternalMessageEditedReceived(MatrixRoomReceiverConverter.toEditRoomMessageDto(externalEvent))
 			: this.roomService.onExternalMessageReceived(MatrixRoomReceiverConverter.toSendRoomMessageDto(externalEvent));
 	}
 

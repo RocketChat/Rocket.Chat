@@ -23,7 +23,6 @@ import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameC
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
-import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '');

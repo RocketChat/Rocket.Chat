@@ -1,4 +1,5 @@
 import sanitizeHtml from 'sanitize-html';
+import type { IFrame } from 'sanitize-html';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 
@@ -7,20 +8,25 @@ interface IInternalMention {
 	realName: string;
 }
 
+const DEFAULT_LINK_FOR_MATRIX_MENTIONS = 'https://matrix.to/#/';
+const DEFAULT_TAGS_FOR_MATRIX_QUOTES = ['mx-reply', 'blockquote'];
+const DEFAULT_QUOTES_SYMBOLS_FOR_MATRIX_IN_RAW_TEXT = /^>.*/; // > text
+
 const getAllMentionsWithTheirRealNames = (message: string, homeServerDomain: string): IInternalMention[] => {
 	const mentions: IInternalMention[] = [];
 	sanitizeHtml(message, {
 		allowedTags: ['a'],
-		exclusiveFilter: (frame): boolean => {
+		exclusiveFilter: (frame: IFrame): boolean => {
 			const {
 				attribs: { href = '' },
 				tag,
 				text,
 			} = frame;
-			if (tag !== 'a' || !href || !text) {
+			const validATag = tag === 'a' && href && text;
+			if (!validATag) {
 				return false;
 			}
-			const isUsernameMention = href.includes('https://matrix.to/#/') && href.includes('@');
+			const isUsernameMention = href.includes(DEFAULT_LINK_FOR_MATRIX_MENTIONS) && href.includes('@');
 			if (isUsernameMention) {
 				const [, username] = href.split('@');
 				const [, serverDomain] = username.split(':');
@@ -33,8 +39,8 @@ const getAllMentionsWithTheirRealNames = (message: string, homeServerDomain: str
 					realName: text,
 				});
 			}
-			const isAllMention = href.includes('https://matrix.to/#/') && !href.includes('@');
-			if (isAllMention) {
+			const isMentioningAll = href.includes(DEFAULT_LINK_FOR_MATRIX_MENTIONS) && !href.includes('@');
+			if (isMentioningAll) {
 				mentions.push({
 					mention: '@all',
 					realName: text,
@@ -55,9 +61,9 @@ export const toInternalMessageFormat = ({
 	rawMessage: string;
 	formattedMessage: string;
 	homeServerDomain: string;
-}): string => replaceAllMentionsInTheirProperPosition(rawMessage, getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain));
+}): string => replaceAllMentionsOneByOneSequentially(rawMessage, getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain));
 
-const replaceAllMentionsInTheirProperPosition = (message: string, allMentionsWithRealNames: IInternalMention[]): string =>
+const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWithRealNames: IInternalMention[]): string =>
 	allMentionsWithRealNames.reduce((acc, { mention, realName }) => acc.replace(realName, mention), message).trim();
 
 export const toInternalQuoteMessageFormat = async ({
@@ -76,10 +82,10 @@ export const toInternalQuoteMessageFormat = async ({
 		allowedAttributes: {
 			a: ['href'],
 		},
-		nonTextTags: ['mx-reply', 'blockquote'],
+		nonTextTags: DEFAULT_TAGS_FOR_MATRIX_QUOTES,
 	});
-	const rawMessageWithoutMatrixQuotingFormatting = rawMessage.replace(/^>.*/, '');
-	return `[ ](${messageToReplyToUrl}) ${replaceAllMentionsInTheirProperPosition(
+	const rawMessageWithoutMatrixQuotingFormatting = rawMessage.replace(DEFAULT_QUOTES_SYMBOLS_FOR_MATRIX_IN_RAW_TEXT, '');
+	return `[ ](${messageToReplyToUrl}) ${replaceAllMentionsOneByOneSequentially(
 		rawMessageWithoutMatrixQuotingFormatting,
 		getAllMentionsWithTheirRealNames(withMentionsOnly, homeServerDomain),
 	)}`;

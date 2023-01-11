@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { IMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { deleteMessage, sendMessage, updateMessage } from '../../../../../lib/server';

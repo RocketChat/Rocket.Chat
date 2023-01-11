@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { isDirectMessageRoom, isMessageDiscussion, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';

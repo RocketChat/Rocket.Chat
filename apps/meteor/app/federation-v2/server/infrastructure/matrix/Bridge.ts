@@ -13,7 +13,7 @@ import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
-require('util').inspect.defaultOptions.depth = null;
+
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
@@ -435,7 +435,6 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: async (request): Promise<void> => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
-					console.log({ event });
 					this.eventHandler(event);
 				},
 				onLog: async (line, isError): Promise<void> => {
