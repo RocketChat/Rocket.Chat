@@ -2,14 +2,14 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import EditRoom from './EditRoom';
 
 const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	const { data, isLoading, error, refetch, isError } = useQuery(['rooms', useMemo(() => ({ rid }), [rid])], async () => {
+	const { data, isLoading, error, refetch, isError } = useQuery(['rooms', rid, 'admin'], async () => {
 		const rooms = await getAdminRooms({ rid });
 		return rooms;
 	});

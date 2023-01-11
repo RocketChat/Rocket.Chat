@@ -14,7 +14,7 @@ const OAuthAppsTable = (): ReactElement => {
 	const uid = { uid: useUserId() || '' };
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.list');
-	const { data } = useQuery(['oauth-apps'], async () => {
+	const { data } = useQuery(['oauth-apps', { uid }], async () => {
 		const oauthApps = await getOauthApps(uid);
 		return oauthApps;
 	});

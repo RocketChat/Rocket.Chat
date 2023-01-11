@@ -29,7 +29,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 
 	const query = useMemo(() => ({ userId: uid }), [uid]);
 
-	const { data, isLoading, error, refetch } = useQuery(['users.info', query], async () => {
+	const { data, isLoading, error, refetch } = useQuery(['users', query, 'admin'], async () => {
 		const usersInfo = await getUsersInfo(query);
 		return usersInfo;
 	});

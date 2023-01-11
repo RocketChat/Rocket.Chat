@@ -15,7 +15,7 @@ const AddUser = ({ onReload, ...props }) => {
 
 	const getRoleData = useEndpoint('GET', '/v1/roles.list');
 
-	const { data } = useQuery(['roles.list', ''], async () => {
+	const { data } = useQuery(['roles'], async () => {
 		const roles = await getRoleData();
 		return roles;
 	});

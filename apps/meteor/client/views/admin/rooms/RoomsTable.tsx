@@ -114,7 +114,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const endpointData = useQuery(['adminRooms', query], async () => {
+	const endpointData = useQuery(['rooms', query, 'admin'], async () => {
 		const adminRooms = await getAdminRooms(params);
 		return adminRooms;
 	});

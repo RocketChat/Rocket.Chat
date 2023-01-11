@@ -17,7 +17,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
-	const { data, isLoading, error, refetch } = useQuery(['custom-sounds.list', query], async () => {
+	const { data, isLoading, error, refetch } = useQuery(['custom-sounds', query], async () => {
 		const sound = await getSounds(query);
 		return sound;
 	});

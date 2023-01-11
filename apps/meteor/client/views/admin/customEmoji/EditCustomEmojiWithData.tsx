@@ -18,7 +18,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 
 	const getEmojis = useEndpoint('GET', '/v1/emoji-custom.list');
 
-	const { data, isLoading, error, refetch } = useQuery(['emojis.list', query], async () => {
+	const { data, isLoading, error, refetch } = useQuery(['custom-emojis', query], async () => {
 		const emoji = await getEmojis(query);
 		return emoji;
 	});

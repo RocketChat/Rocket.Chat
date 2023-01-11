@@ -12,7 +12,7 @@ function EditIncomingWebhookWithData({ integrationId, ...props }) {
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.get');
 
-	const { data, isLoading, error, refetch } = useQuery(['integrations.get', params], async () => {
+	const { data, isLoading, error, refetch } = useQuery(['integrations', params], async () => {
 		const integrations = await getIntegrations(params);
 		return integrations;
 	});

@@ -8,10 +8,11 @@ import React from 'react';
 import AccordionLoading from '../../../AccordionLoading';
 import AppReleasesItem from './AppReleasesItem';
 
+// TODO: replace useEndpointData
 const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
-	const getVersions = useEndpoint('GET', `/apps/${id}/versions`);
+	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
 
-	const { data, isLoading, isFetched } = useQuery(['versions'], async () => {
+	const { data, isLoading, isFetched } = useQuery(['apps', id, 'versions'], async () => {
 		const versions = await getVersions();
 		return versions;
 	});

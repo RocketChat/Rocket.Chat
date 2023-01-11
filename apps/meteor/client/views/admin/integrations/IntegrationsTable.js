@@ -38,7 +38,7 @@ function IntegrationsTable({ type }) {
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
 
-	const { data } = useQuery(['integrations.list', query], async () => {
+	const { data } = useQuery(['integrations', query], async () => {
 		const integrations = await getIntegrations(query);
 		return integrations;
 	});

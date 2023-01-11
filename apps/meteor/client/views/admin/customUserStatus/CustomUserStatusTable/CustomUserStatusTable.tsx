@@ -43,7 +43,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
-	const { data, isLoading, error, refetch, isFetched } = useQuery(['custom-user-status', query], async () => {
+	const { data, isLoading, error, refetch, isFetched } = useQuery(['custom-user-statuses', query], async () => {
 		const userStatus = await getCustomUserStatus(query);
 		return userStatus;
 	});

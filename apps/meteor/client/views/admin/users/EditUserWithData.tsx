@@ -25,7 +25,7 @@ const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): R
 		data: roleData,
 		isLoading: roleState,
 		error: roleError,
-	} = useQuery(['roles.list'], async () => {
+	} = useQuery(['roles'], async () => {
 		const roles = await getRoles();
 		return roles;
 	});
@@ -36,7 +36,7 @@ const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): R
 		data,
 		isLoading: state,
 		error,
-	} = useQuery(['users.info', query], async () => {
+	} = useQuery(['users', query, 'admin'], async () => {
 		const usersInfo = await getUsersInfo(query);
 		return usersInfo;
 	});

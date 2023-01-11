@@ -36,7 +36,7 @@ const UsersInRoleTableWithData = ({
 
 	const getUsersInRole = useEndpoint('GET', '/v1/roles.getUsersInRole');
 
-	const { refetch, ...result } = useQuery(['usersInRole', query], async () => {
+	const { refetch, ...result } = useQuery(['roles', roleId, 'users', query], async () => {
 		const users = await getUsersInRole(query);
 		return users;
 	});

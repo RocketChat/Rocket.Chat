@@ -19,7 +19,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
-	const { data, isLoading, error, refetch } = useQuery(['custom-user-status.list', query], async () => {
+	const { data, isLoading, error, refetch } = useQuery(['custom-user-statuses', query], async () => {
 		const customUserStatus = await getCustomUserStatus(query);
 		return customUserStatus;
 	});
