@@ -65,12 +65,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const confirmAction = useCallback(
-		(permissionsGranted) => {
+		async (permissionsGranted) => {
 			setModal(null);
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(async () => {
-				setLoading(false);
-			});
+			await marketplaceActions[action]({ ...app, permissionsGranted });
+
+			setLoading(false);
 		},
 		[setModal, action, app, setLoading],
 	);
