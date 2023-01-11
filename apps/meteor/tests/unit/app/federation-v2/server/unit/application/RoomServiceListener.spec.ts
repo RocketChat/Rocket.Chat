@@ -1205,7 +1205,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				} as any);
 
 				expect(messageAdapter.editMessage.called).to.be.false;
-				expect(messageAdapter.editQuotedMessage.calledWith(user, 'newRawMessage', 'newExternalFormattedText', message, 'localDomain')).to.be.true;
+				expect(messageAdapter.editQuotedMessage.calledWith(user, 'newRawMessage', 'newExternalFormattedText', message, 'localDomain')).to.be
+					.true;
 			});
 		});
 	});

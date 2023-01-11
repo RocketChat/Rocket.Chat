@@ -14,7 +14,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					externalRoomId: 'externalRoomId',
 					homeServerDomain: 'localDomain',
 				}),
-			).to.be.equal('hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>');
+			).to.be.equal('<p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a></p>');
 		});
 
 		it('should parse the @all mention correctly', async () => {
@@ -24,7 +24,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					externalRoomId: 'externalRoomId',
 					homeServerDomain: 'localDomain',
 				}),
-			).to.be.equal('hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>');
+			).to.be.equal('<p>hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a></p>');
 		});
 
 		it('should parse the @here mention correctly', async () => {
@@ -34,7 +34,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					externalRoomId: 'externalRoomId',
 					homeServerDomain: 'localDomain',
 				}),
-			).to.be.equal('hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>');
+			).to.be.equal('<p>hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a></p>');
 		});
 
 		it('should parse the user local mentions appending the local domain server in the mention', async () => {
@@ -44,7 +44,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					externalRoomId: 'externalRoomId',
 					homeServerDomain: 'localDomain.com',
 				}),
-			).to.be.equal('hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>');
+			).to.be.equal('<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>');
 		});
 
 		it('should parse multiple and different mentions in the same message correctly', async () => {
@@ -55,7 +55,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					homeServerDomain: 'localDomain.com',
 				}),
 			).to.be.equal(
-				'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>',
+				'<p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>',
 			);
 		});
 
@@ -67,7 +67,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					homeServerDomain: 'localDomain.com',
 				}),
 			).to.be.equal(
-				'hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>',
+				'<p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>',
 			);
 		});
 
@@ -78,7 +78,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 					externalRoomId: 'externalRoomId',
 					homeServerDomain: 'localDomain.com',
 				}),
-			).to.be.equal('hey people, how are you?');
+			).to.be.equal('<p>hey people, how are you?');
 		});
 	});
 
