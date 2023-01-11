@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
-import { parse } from '@rocket.chat/message-parser';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
@@ -46,7 +45,6 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			description: file?.description,
-			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,
@@ -86,7 +84,6 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			description: file.description,
-			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			audio_url: fileUrl,
@@ -99,7 +96,6 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			description: file.description,
-			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			video_url: fileUrl,
@@ -113,7 +109,6 @@ export const parseFileIntoMessageAttachments = async (
 			type: 'file',
 			format: getFileExtension(file.name),
 			description: file.description,
-			descriptionMd: file.description ? parse(file.description) : undefined,
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,

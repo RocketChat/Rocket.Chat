@@ -14,7 +14,10 @@ const MessageCollapsible = ({ children, title, hasDownload, link, size }: Messag
 	return (
 		<>
 			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center'>
-				{title} {size && <AttachmentSize size={size} />} {collapse}{' '}
+				<Box withTruncatedText title={title}>
+					{title}
+				</Box>
+				{size && <AttachmentSize size={size} />} {collapse}
 				{hasDownload && link && <AttachmentDownload title={title} href={link} />}
 			</Box>
 			{!collapsed && children}
