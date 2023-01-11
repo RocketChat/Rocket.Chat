@@ -16,10 +16,7 @@ describe('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentH
 		onExternalFileMessageReceived: fileMessageStub,
 		onExternalMessageEditedReceived: editedMessageStub,
 	};
-	const settingsAdapter = {
-		getHomeServerDomain: sinon.stub().returns('localDomain'),
-	};
-	const handler = new MatrixRoomMessageSentHandler(roomService as any, settingsAdapter as any);
+	const handler = new MatrixRoomMessageSentHandler(roomService as any);
 
 	describe('#handle()', () => {
 		const handlers: Record<string, any> = {

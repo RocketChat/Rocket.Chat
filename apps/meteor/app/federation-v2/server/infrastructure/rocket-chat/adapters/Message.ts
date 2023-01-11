@@ -106,7 +106,7 @@ export class RocketChatMessageAdapter {
 		newRawMessageText: string,
 		homeServerDomain: string,
 	): Promise<string> {
-		const quotedMessageUrl = editedMessage.attachments?.filter(isQuoteAttachment)[0].message_link;
+		const quotedMessageUrl = editedMessage.attachments?.filter(isQuoteAttachment)?.[0]?.message_link;
 
 		return toInternalQuoteMessageFormat({
 			messageToReplyToUrl: quotedMessageUrl || '',
