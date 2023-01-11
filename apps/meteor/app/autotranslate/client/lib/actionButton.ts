@@ -34,10 +34,10 @@ Meteor.startup(() => {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition({ message, subscription, user }) {
-					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
 					if (!user) {
 						return false;
 					}
+					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
 
 					return Boolean(
 						(message?.u &&

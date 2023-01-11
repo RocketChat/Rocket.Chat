@@ -12,7 +12,7 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 
 export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
 	WithRequiredProperty<TMessage, 'md'>;
-/*
+/**
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
  * if has `attachments` property, but attachment is missing `md` property, it will be added.
@@ -22,7 +22,6 @@ export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslate
  * @param autoTranslateOptions The auto translate options to be used in the parser.
  * @returns message normalized.
  */
-
 export const parseMessageTextToAstMarkdown = <
 	TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>,
 >(

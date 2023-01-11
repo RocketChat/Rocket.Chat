@@ -2,7 +2,7 @@ import type { MessageAttachment } from './MessageAttachment';
 import type { MessageAttachmentDefault } from './MessageAttachmentDefault';
 
 export interface ITranslatedMessageAttachment extends MessageAttachmentDefault {
-	translations: { [key: string]: string };
+	translations: { [language: string]: string };
 }
 
 export const isTranslatedAttachment = (attachment: MessageAttachment): attachment is ITranslatedMessageAttachment =>

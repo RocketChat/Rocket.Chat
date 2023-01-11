@@ -1,10 +1,10 @@
-import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
-import { Messages } from '../../../../../app/models/client';
+import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../lib/parseMessageTextToAstMarkdown';
@@ -17,8 +17,10 @@ const options = {
 	},
 };
 
-export const useMessages = ({ rid, subscription }: { rid: IRoom['_id']; subscription?: ISubscription }): MessageWithMdEnforced[] => {
+export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforced[] => {
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
+	const subscription = useUserSubscription(rid);
+
 	const autoTranslateOptions = useAutoTranslate(subscription);
 	const showColors = Boolean(useSetting('HexColorPreview_Enabled'));
 	const hideSysMes = useSetting('Hide_System_Messages');
@@ -38,7 +40,7 @@ export const useMessages = ({ rid, subscription }: { rid: IRoom['_id']; subscrip
 		};
 		return (message: IMessage): MessageWithMdEnforced =>
 			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [katexParenthesisSyntaxEnabled, katexEnabled, katexDollarSyntaxEnabled, showColors, autoTranslateOptions]);
+	}, [showColors, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, autoTranslateOptions]);
 
 	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({
@@ -51,6 +53,6 @@ export const useMessages = ({ rid, subscription }: { rid: IRoom['_id']; subscrip
 	);
 
 	return useReactiveValue<MessageWithMdEnforced[]>(
-		useCallback(() => Messages.find(query, options).fetch().map(normalizeMessage), [query, normalizeMessage]),
+		useCallback(() => ChatMessage.find(query, options).fetch().map(normalizeMessage), [query, normalizeMessage]),
 	);
 };

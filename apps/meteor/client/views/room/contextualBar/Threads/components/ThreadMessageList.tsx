@@ -99,12 +99,7 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 											{system ? (
 												<SystemMessage message={message} />
 											) : (
-												<ThreadMessage
-													message={message}
-													subscription={subscription}
-													sequential={shouldShowAsSequential}
-													unread={firstUnread}
-												/>
+												<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
 											)}
 										</li>
 									</Fragment>

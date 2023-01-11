@@ -1,20 +1,16 @@
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
-import type { UseQueryResult } from '@tanstack/react-query';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
 import { useAutoTranslate } from './useAutoTranslate';
 
-export const useMessageBody = (
-	parentMessage: UseQueryResult<IMessage, unknown>,
-	subscription: ISubscription | undefined,
-): string | Root => {
-	const { isSuccess, data: message } = parentMessage;
-
+export const useMessageBody = (message: IMessage | undefined, rid: string): string | Root => {
+	const subscription = useUserSubscription(rid);
 	const autoTranslateOptions = useAutoTranslate(subscription);
 	return useMemo(() => {
-		if (!isSuccess || !message) {
+		if (!message) {
 			return '';
 		}
 
@@ -45,5 +41,5 @@ export const useMessageBody = (
 		}
 
 		return '';
-	}, [parentMessage]);
+	}, [message, autoTranslateOptions]);
 };

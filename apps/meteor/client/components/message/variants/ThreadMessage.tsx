@@ -1,7 +1,7 @@
-import type { ISubscription, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
@@ -22,12 +22,11 @@ import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
-	subscription?: ISubscription;
 	unread: boolean;
 	sequential: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread, subscription }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
@@ -36,7 +35,7 @@ const ThreadMessage = ({ message, sequential, unread, subscription }: ThreadMess
 	} = useMessageActions();
 
 	const { katex, showColors } = useMessageListContext();
-
+	const subscription = useUserSubscription(message.rid);
 	const autoTranslateOptions = useAutoTranslate(subscription);
 
 	const normalizeMessage = useMemo(() => {

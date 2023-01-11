@@ -1,7 +1,7 @@
 import type { IRoom, IThreadMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment, memo } from 'react';
 
@@ -25,8 +25,7 @@ type MessageListProps = {
 
 export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const t = useTranslation();
-	const userSubscription = useUserSubscription(rid);
-	const messages = useMessages({ rid, subscription: userSubscription });
+	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const isBroadcast = Boolean(subscription?.broadcast);
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
@@ -74,7 +73,6 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 										data-sequential={sequential}
 										sequential={shouldShowAsSequential}
 										message={message as IThreadMessage}
-										subscription={userSubscription}
 									/>
 								)}
 

@@ -1,4 +1,4 @@
-import type { ISubscription, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage,
@@ -34,15 +34,14 @@ import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
 	sequential: boolean;
-	subscription: ISubscription | undefined;
 };
 
-const ThreadMessagePreview = ({ message, sequential, subscription, ...props }: ThreadMessagePreviewProps): ReactElement => {
+const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const {
 		actions: { openThread },
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
-	const messageBody = useMessageBody(parentMessage, subscription);
+
 	const translated = useShowTranslated(message);
 	const t = useTranslation();
 
@@ -52,6 +51,7 @@ const ThreadMessagePreview = ({ message, sequential, subscription, ...props }: T
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
+	const messageBody = useMessageBody(parentMessage.data, message.rid);
 
 	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
