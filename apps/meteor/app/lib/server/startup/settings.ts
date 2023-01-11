@@ -1559,7 +1559,7 @@ settingsRegistry.addGroup('Push', function () {
 });
 
 settingsRegistry.addGroup('Layout', function () {
-	this.section('Home page content', function () {
+	this.section('Layout_Home_Page_Content_Title', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
@@ -1568,7 +1568,7 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Home_Body', '<p>Admins may insert content html to be rendered in this white space.</p>', {
+		this.add('Layout_Home_Body', '', {
 			i18nDescription: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
@@ -1578,7 +1578,6 @@ settingsRegistry.addGroup('Layout', function () {
 		this.add('Layout_Home_Custom_Block_Visible', true, {
 			type: 'boolean',
 			invalidValue: false,
-			enterprise: true,
 			public: true,
 		});
 		this.add('Layout_Custom_Body_Only', false, {
@@ -1588,8 +1587,11 @@ settingsRegistry.addGroup('Layout', function () {
 			enterprise: true,
 			public: true,
 			enableQuery: {
-				_id: 'Layout_Home_Custom_Block_Visible',
-				value: true,
+				_id: 'Layout_Home_Body',
+				value: {
+					$exists: true,
+					$ne: '',
+				},
 			},
 		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {

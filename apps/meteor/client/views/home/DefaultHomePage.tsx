@@ -57,8 +57,10 @@ const DefaultHomePage = (): ReactElement => {
 					<HomepageGridItem>
 						<DocumentationCard />
 					</HomepageGridItem>
-					<HomepageGridItem fullWidth>{(displayCustomBody || isAdmin) && <CustomCard isAdmin={isAdmin} />}</HomepageGridItem>
 				</Grid>
+				<Box mbs='x32' mbe='x16'>
+					{(displayCustomBody || isAdmin) && <CustomCard isAdmin={isAdmin} />}
+				</Box>
 			</PageScrollableContent>
 		</Page>
 	);

@@ -12,6 +12,7 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { data } = useIsEnterprise();
+	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body') === '';
 	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
 
@@ -41,12 +42,12 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 			<Card variant='light' data-qa-id='homepage-custom-content'>
 				<Card.Title>
 					<Tag>
-						<Icon mie='x4' name={!isCustomContentVisible ? 'eye-off' : 'eye'} size='x12' />
+						<Icon mie='x4' name={!isCustomContentVisible ? 'eye-off' : 'eye'} size='x16' />
 						{!isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
 				<Card.Body>
-					<CustomHomepageContent />
+					{isCustomContentBodyEmpty ? 'Admins may insert content html to be rendered in this white space.' : <CustomHomepageContent />}
 				</Card.Body>
 				<Card.FooterWrapper>
 					<Card.Footer>
@@ -54,18 +55,19 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 							{t('Customize_Content')}
 						</Button>
 						<Button
+							disabled={isCustomContentBodyEmpty}
 							title={!isCustomContentVisible ? t('Now_Its_Available_Only_For_Admins') : t('Now_Its_Available_For_Everyone')}
 							onClick={handleChangeCustomContentVisibility}
 						>
-							<Icon name='eye-off' size='x16' />
+							<Icon mie='x4' name='eye-off' size='x16' />
 							{t('Show_To_Workspace')}
 						</Button>
 						<Button
-							disabled={!isCustomContentVisible || !isEnterprise}
-							title={t('It_Will_Hide_All_Other_White_Blockes_In_The_Homepage')}
+							disabled={isCustomContentBodyEmpty || !isEnterprise}
+							title={t('It_Will_Hide_All_Other_White_Blocks_In_The_Homepage')}
 							onClick={handleOnlyShowCustomContent}
 						>
-							<Icon name='lightning' size='x16' /> {t('Show_Only_This_Content')}
+							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : 'Show other blocks'}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>
@@ -73,13 +75,11 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 		);
 	}
 
-	return (
-		<Card variant='light' data-qa-id='homepage-custom-content'>
-			<Card.Body>
-				<CustomHomepageContent />
-			</Card.Body>
-		</Card>
-	);
+	if (isCustomContentVisible) {
+		return <CustomHomepageContent />;
+	}
+
+	return <></>;
 };
 
 export default CustomCard;
