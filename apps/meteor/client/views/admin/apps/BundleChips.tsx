@@ -1,7 +1,7 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment } from 'react';
 
 import type { App } from './types';
 
@@ -15,12 +15,12 @@ type BundleChipsProps = {
 
 const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
 	const t = useTranslation();
-	const bundleRef = useRef<Element>();
+
 	return (
 		<>
 			{bundledIn.map((bundle) => (
 				<Fragment key={bundle.bundleId}>
-					<Box ref={bundleRef}>
+					<Box>
 						<Tag
 							variant='featured'
 							title={t('this_app_is_included_with_subscription', {
