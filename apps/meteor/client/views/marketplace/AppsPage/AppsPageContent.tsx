@@ -34,6 +34,8 @@ const AppsPageContent = (): ReactElement => {
 	const router = useRoute(currentRouteName);
 
 	const context = useRouteParameter('context');
+
+	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
@@ -69,7 +71,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
-		appsData: isMarketplace ? marketplaceApps : installedApps,
+		appsData: isMarketplace || isEnterprise ? marketplaceApps : installedApps,
 		text,
 		current,
 		itemsPerPage,
@@ -77,14 +79,18 @@ const AppsPageContent = (): ReactElement => {
 		purchaseType: useMemo(() => freePaidFilterStructure.items.find(({ checked }) => checked)?.id, [freePaidFilterStructure]),
 		sortingMethod: useMemo(() => sortFilterStructure.items.find(({ checked }) => checked)?.id, [sortFilterStructure]),
 		status: useMemo(() => statusFilterStructure.items.find(({ checked }) => checked)?.id, [statusFilterStructure]),
+		context,
 	});
 
-	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total === 0;
+	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.totalAppsLength === 0;
 
 	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
 
 	const noInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.total !== 0 && appsResult.value.count === 0;
+		appsResult.phase === AsyncStatePhase.RESOLVED &&
+		!isMarketplace &&
+		appsResult.value.totalAppsLength !== 0 &&
+		appsResult.value.count === 0;
 
 	const isFiltered =
 		Boolean(text.length) ||
@@ -117,8 +123,8 @@ const AppsPageContent = (): ReactElement => {
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
-					<Box display='flex' flexDirection='column' height='100%' overflow='hidden'>
-						<Box height='100%' overflowY='scroll'>
+					<Box display='flex' flexDirection='column' overflow='hidden'>
+						<Box overflowY='scroll'>
 							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
 						</Box>
