@@ -24,6 +24,7 @@ import {
 	useRole,
 	useMethod,
 	useTranslation,
+	useRoute,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useRef } from 'react';
 
@@ -34,7 +35,7 @@ import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
@@ -45,7 +46,19 @@ const typeMap = {
 };
 
 const useInitialValues = (room, settings) => {
-	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention = {} } = room;
+	const {
+		t,
+		ro,
+		archived,
+		topic,
+		description,
+		announcement,
+		joinCodeRequired,
+		sysMes,
+		encrypted,
+		retention = {},
+		reactWhenReadOnly,
+	} = room;
 
 	const { retentionPolicyEnabled, maxAgeDefault } = settings;
 
@@ -58,7 +71,7 @@ const useInitialValues = (room, settings) => {
 			roomName: t === 'd' ? room.usernames.join(' x ') : roomCoordinator.getRoomName(t, { type: t, ...room }),
 			roomType: t,
 			readOnly: !!ro,
-			reactWhenReadOnly: false,
+			reactWhenReadOnly,
 			archived: !!archived,
 			roomTopic: topic ?? '',
 			roomDescription: description ?? '',
@@ -98,6 +111,7 @@ const useInitialValues = (room, settings) => {
 			t,
 			topic,
 			encrypted,
+			reactWhenReadOnly,
 		],
 	);
 };
@@ -114,6 +128,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
 	const saveData = useRef({});
+	const router = useRoute('home');
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
@@ -188,7 +203,6 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
-		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	] = useMemo(() => {
 		const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange || (() => {});
@@ -225,8 +239,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
-	const saveAction = useEndpointActionExperimental('POST', '/v1/rooms.saveRoomSettings', t('Room_updated_successfully'));
-	const archiveAction = useEndpointActionExperimental('POST', '/v1/rooms.changeArchivationState', t(archiveMessage));
+	const saveAction = useEndpointAction('POST', '/v1/rooms.saveRoomSettings', {
+		successMessage: t('Room_updated_successfully'),
+	});
+	const archiveAction = useEndpointAction('POST', '/v1/rooms.changeArchivationState', { successMessage: t(archiveMessage) });
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
@@ -255,6 +271,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
+			router.push({});
 		};
 
 		setModal(
@@ -276,7 +293,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		<>
 			<VerticalBar.Header>
 				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
+				<VerticalBar.Text>{room.teamId ? t('edit-team') : t('edit-room')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
@@ -336,7 +353,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
 					</Field>
 				)}
-				{canViewReactWhenReadOnly && (
+				{readOnly && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('React_when_read_only')}</Field.Label>

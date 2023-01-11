@@ -1,6 +1,7 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, FC } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
 type ConfirmationModalProps = {
 	onClose: () => void;

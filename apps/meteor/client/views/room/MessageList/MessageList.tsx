@@ -1,98 +1,87 @@
-import { isThreadMessage, IThreadMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
-import { useUserSubscription, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, Fragment, memo } from 'react';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import RoomMessage from '../../../components/message/variants/RoomMessage';
+import SystemMessage from '../../../components/message/variants/SystemMessage';
+import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useFormatDate } from '../../../hooks/useFormatDate';
-import { MessageProvider } from '../providers/MessageProvider';
+import { useRoomSubscription } from '../contexts/RoomContext';
+import MessageProvider from '../providers/MessageProvider';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import MessageListErrorBoundary from './MessageListErrorBoundary';
-import Message from './components/Message';
-import MessageSystem from './components/MessageSystem';
-import { ThreadMessagePreview } from './components/ThreadMessagePreview';
 import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
-import { isOwnUserMessage } from './lib/isOwnUserMessage';
-import MessageHighlightProvider from './providers/MessageHighlightProvider';
-import { MessageListProvider } from './providers/MessageListProvider';
+import MessageListProvider from './providers/MessageListProvider';
 
-export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
+type MessageListProps = {
+	rid: IRoom['_id'];
+};
+
+export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
-	const subscription = useUserSubscription(rid);
-	const isBroadcast = Boolean(subscription?.broadcast);
+	const subscription = useRoomSubscription();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
-	const format = useFormatDate();
+	const formatDate = useFormatDate();
 
 	return (
-		<MessageListErrorBoundary>
-			<MessageListProvider rid={rid}>
-				<MessageProvider rid={rid} broadcast={isBroadcast}>
-					<SelectedMessagesProvider>
-						<MessageHighlightProvider>
-							{messages.map((message, index, arr) => {
-								const previous = arr[index - 1];
+		<MessageListProvider>
+			<MessageProvider>
+				<SelectedMessagesProvider>
+					{messages.map((message, index, arr) => {
+						const previous = arr[index - 1];
 
-								const isSequential = isMessageSequential(message, previous, messageGroupingPeriod);
+						const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 
-								const isNewDay = isMessageNewDay(message, previous);
-								const isFirstUnread = isMessageFirstUnread(subscription, message, previous);
-								const isUserOwnMessage = isOwnUserMessage(message, subscription);
-								const shouldShowDivider = isNewDay || isFirstUnread;
+						const newDay = isMessageNewDay(message, previous);
+						const firstUnread = isMessageFirstUnread(subscription, message, previous);
+						const showDivider = newDay || firstUnread;
 
-								const shouldShowAsSequential = isSequential && !isNewDay;
+						const shouldShowAsSequential = sequential && !newDay;
 
-								const isSystemMessage = MessageTypes.isSystemMessage(message);
-								const shouldShowMessage = !isThreadMessage(message) && !isSystemMessage;
+						const system = MessageTypes.isSystemMessage(message);
+						const visible = !isThreadMessage(message) && !system;
 
-								return (
-									<Fragment key={message._id}>
-										{shouldShowDivider && (
-											<MessageDivider unreadLabel={isFirstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-												{isNewDay && format(message.ts)}
-											</MessageDivider>
-										)}
+						const unread = Boolean(subscription?.tunread?.includes(message._id));
+						const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
+						const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
 
-										{shouldShowMessage && (
-											<Message
-												id={message._id}
-												data-id={message._id}
-												data-system-message={Boolean(message.t)}
-												data-mid={message._id}
-												data-unread={isFirstUnread}
-												data-sequential={isSequential}
-												data-own={isUserOwnMessage}
-												data-qa-type='message'
-												sequential={shouldShowAsSequential}
-												message={message}
-												subscription={subscription}
-											/>
-										)}
+						return (
+							<Fragment key={message._id}>
+								{showDivider && (
+									<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+										{newDay && formatDate(message.ts)}
+									</MessageDivider>
+								)}
 
-										{isThreadMessage(message) && (
-											<ThreadMessagePreview
-												data-system-message={Boolean(message.t)}
-												data-mid={message._id}
-												data-tmid={message.tmid}
-												data-unread={isFirstUnread}
-												data-sequential={isSequential}
-												sequential={shouldShowAsSequential}
-												message={message as IThreadMessage}
-											/>
-										)}
+								{visible && (
+									<RoomMessage message={message} sequential={shouldShowAsSequential} unread={unread} mention={mention} all={all} />
+								)}
 
-										{isSystemMessage && <MessageSystem message={message} />}
-									</Fragment>
-								);
-							})}
-						</MessageHighlightProvider>
-					</SelectedMessagesProvider>
-				</MessageProvider>
-			</MessageListProvider>
-		</MessageListErrorBoundary>
+								{isThreadMessage(message) && (
+									<ThreadMessagePreview
+										data-mid={message._id}
+										data-tmid={message.tmid}
+										data-unread={firstUnread}
+										data-sequential={sequential}
+										sequential={shouldShowAsSequential}
+										message={message}
+									/>
+								)}
+
+								{system && <SystemMessage message={message} />}
+							</Fragment>
+						);
+					})}
+				</SelectedMessagesProvider>
+			</MessageProvider>
+		</MessageListProvider>
 	);
 };
 

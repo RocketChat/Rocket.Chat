@@ -1,9 +1,8 @@
 import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
+import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
 
-import { api } from '../../../server/sdk/api';
-import { isMeteorError, MeteorError } from '../../../server/sdk/errors';
 import { NetworkBroker } from '../NetworkBroker';
 
 const {
@@ -171,4 +170,4 @@ const network = new ServiceBroker({
 	},
 });
 
-api.setBroker(new NetworkBroker(network));
+export const broker = new NetworkBroker(network);

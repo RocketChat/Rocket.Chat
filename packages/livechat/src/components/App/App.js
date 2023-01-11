@@ -23,7 +23,7 @@ import { visibility, isActiveSession, setInitCookies } from '../helpers';
 
 function isRTL(s) {
 	const rtlChars = '\u0591-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC';
-	const rtlDirCheck = new RegExp(`^[^${ rtlChars }]*?[${ rtlChars }]`);
+	const rtlDirCheck = new RegExp(`^[^${rtlChars}]*?[${rtlChars}]`);
 
 	return rtlDirCheck.test(s);
 }
@@ -47,9 +47,7 @@ export class App extends Component {
 					online,
 					departments = [],
 				},
-				gdpr: {
-					accepted: gdprAccepted,
-				},
+				gdpr: { accepted: gdprAccepted },
 				triggered,
 				user,
 			} = this.props;
@@ -67,12 +65,11 @@ export class App extends Component {
 
 			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
 
-			const showRegistrationForm = (
-				registrationForm
-					&& (nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment)
-			)
-				&& !triggered
-				&& !(user && user.token);
+			const showRegistrationForm =
+				registrationForm &&
+				(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment) &&
+				!triggered &&
+				!(user && user.token);
 			if (showRegistrationForm) {
 				return route('/register');
 			}
@@ -80,7 +77,9 @@ export class App extends Component {
 	};
 
 	handleTriggers() {
-		const { config: { online, enabled } } = this.props;
+		const {
+			config: { online, enabled },
+		} = this.props;
 		if (online && enabled) {
 			Triggers.init();
 		}
@@ -143,7 +142,11 @@ export class App extends Component {
 	dismissNotification = () => !isActiveSession();
 
 	initWidget() {
-		const { minimized, iframe: { visible }, dispatch } = this.props;
+		const {
+			minimized,
+			iframe: { visible },
+			dispatch,
+		} = this.props;
 		parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
 		parentCall(visible ? 'showWidget' : 'hideWidget');
 
@@ -202,17 +205,13 @@ export class App extends Component {
 		}
 	}
 
-	render = ({
-		sound,
-		undocked,
-		minimized,
-		expanded,
-		alerts,
-		modal,
-	}, { initialized, poppedOut }) => {
+	render = ({ sound, undocked, minimized, expanded, alerts, modal, iframe }, { initialized, poppedOut }) => {
 		if (!initialized) {
 			return null;
 		}
+
+		const { department, name, email } = iframe.guest || {};
+
 		const screenProps = {
 			notificationsEnabled: sound && sound.enabled,
 			minimized: !poppedOut && (minimized || undocked),
@@ -221,6 +220,9 @@ export class App extends Component {
 			sound,
 			alerts,
 			modal,
+			nameDefault: name,
+			emailDefault: email,
+			departmentDefault: department,
 			onEnableNotifications: this.handleEnableNotifications,
 			onDisableNotifications: this.handleDisableNotifications,
 			onMinimize: this.handleMinimize,

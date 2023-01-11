@@ -1,4 +1,5 @@
-import { useMemo, lazy, LazyExoticComponent } from 'react';
+import type { LazyExoticComponent } from 'react';
+import { useMemo, lazy } from 'react';
 
 import type AutoCompleteDepartment from '../../../../client/components/AutoCompleteDepartment';
 import { registerForm } from '../../../../client/views/omnichannel/additionalForms';
@@ -18,6 +19,7 @@ import type MaxChatsPerAgentDisplay from './MaxChatsPerAgentDisplay';
 import type PrioritiesSelect from './PrioritiesSelect';
 
 declare module '../../../../client/views/omnichannel/additionalForms' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface EEFormHooks {
 		useCustomFieldsAdditionalForm: () => LazyExoticComponent<typeof CustomFieldsAdditionalFormContainer>;
 		useMaxChatsPerAgent?: () => LazyExoticComponent<typeof MaxChatsPerAgentContainer>;

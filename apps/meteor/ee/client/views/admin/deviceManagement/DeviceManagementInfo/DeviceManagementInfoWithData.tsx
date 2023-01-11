@@ -1,7 +1,8 @@
-import { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
@@ -25,10 +26,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 		value: data,
 		phase,
 		error,
-	} = useEndpointData(
-		'/v1/sessions/info.admin',
-		useMemo(() => ({ sessionId: deviceId }), [deviceId]),
-	);
+	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
@@ -49,7 +47,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 					<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 						<States>
 							<StatesIcon name='warning' variation='danger' />
-							<StatesTitle>{t('Something_Went_Wrong')}</StatesTitle>
+							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 							<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 							<StatesSubtitle>{error?.message}</StatesSubtitle>
 						</States>

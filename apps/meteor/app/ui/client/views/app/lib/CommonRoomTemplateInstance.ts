@@ -1,8 +1,12 @@
-import type { ToolboxContextValue } from '../../../../../../client/views/room/lib/Toolbox/ToolboxContext';
+import type { ContextType } from 'react';
 
-export type CommonRoomTemplateInstance = Blaze.TemplateInstance<{
-	rid: string;
-	tabBar: ToolboxContextValue;
-}> & {
-	tabBar: ToolboxContextValue;
+import type { ToolboxContextValue } from '../../../../../../client/views/room/contexts/ToolboxContext';
+import type { ChatContext } from '../../../../../../client/views/room/contexts/ChatContext';
+
+export type CommonRoomTemplateInstance = {
+	data: {
+		rid: string;
+		tabBar: ToolboxContextValue;
+		chatContext: ContextType<typeof ChatContext>;
+	};
 };

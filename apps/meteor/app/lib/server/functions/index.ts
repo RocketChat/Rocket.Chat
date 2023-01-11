@@ -26,7 +26,7 @@ export { saveUserIdentity } from './saveUserIdentity';
 export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
 export { setRealName, _setRealName } from './setRealName';
-export { setStatusText, _setStatusText, _setStatusTextPromise } from './setStatusText';
+export { setStatusText } from './setStatusText';
 export { getStatusText } from './getStatusText';
 export { setUserAvatar } from './setUserAvatar';
 export { _setUsername, setUsername } from './setUsername';

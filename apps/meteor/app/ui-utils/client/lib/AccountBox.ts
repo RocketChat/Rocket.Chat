@@ -2,8 +2,10 @@ import type { IUIActionButton, IUActionButtonWhen } from '@rocket.chat/apps-engi
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 
-import { SideNav } from './SideNav';
 import { applyDropdownActionButtonFilters } from '../../../ui-message/client/actionButtons/lib/applyButtonFilters';
 import { APIClient } from '../../../utils/client';
 
@@ -17,9 +19,9 @@ export interface IAppAccountBoxItem extends IUIActionButton {
 	when?: Omit<IUActionButtonWhen, 'roomTypes' | 'messageActionContext'>;
 }
 
-type AccountBoxItem = {
-	name: string;
-	icon: string;
+export type AccountBoxItem = {
+	name: TranslationKey;
+	icon: ComponentProps<typeof Icon>['name'];
 	href: string;
 	sideNav?: string;
 	condition: () => boolean;
@@ -30,33 +32,8 @@ export const isAppAccountBoxItem = (item: IAppAccountBoxItem | AccountBoxItem): 
 export class AccountBoxBase {
 	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
-	private status = 0;
-
 	public setStatus(status: UserStatus, statusText: string): any {
 		return APIClient.post('/v1/users.setStatus', { status, message: statusText });
-	}
-
-	public open(): void {
-		if (SideNav.flexStatus()) {
-			SideNav.closeFlex();
-			return;
-		}
-		this.status = 1;
-	}
-
-	public close(): void {
-		this.status = 0;
-	}
-
-	public toggle(): Window | null | void {
-		if (this.status) {
-			return this.close();
-		}
-		return this.open();
-	}
-
-	public openFlex(): void {
-		this.status = 0;
 	}
 
 	public async addItem(newItem: IAppAccountBoxItem): Promise<void> {

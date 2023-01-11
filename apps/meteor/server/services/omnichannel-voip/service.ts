@@ -14,14 +14,12 @@ import type {
 import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
+import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
 
-import type { IOmnichannelVoipService } from '../../sdk/types/IOmnichannelVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
-import { Voip } from '../../sdk';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import type { FindVoipRoomsParams, IOmniRoomClosingMessage } from './internalTypes';
-import { api } from '../../sdk/api';
+import type { IOmniRoomClosingMessage } from './internalTypes';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -115,9 +113,16 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		 */
 
 		// Use latest queue caller join event
+		const numericPhone = guest?.phone?.[0]?.phoneNumber.replace(/\D/g, '');
 		const callStartPbxEvent = await PbxEvents.findOne(
 			{
-				phone: guest?.phone?.[0]?.phoneNumber,
+				$or: [
+					{
+						phone: numericPhone, // Incoming calls will have phone number (connectedlinenum) without any symbol
+					},
+					{ phone: `*${numericPhone}` }, // Outgoing calls will have phone number (connectedlinenum) with * prefix
+					{ phone: `+${numericPhone}` }, // Just in case
+				],
 				event: {
 					$in: ['QueueCallerJoin', 'DialEnd', 'DialState'],
 				},
@@ -145,6 +150,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 				_id,
 				token: guest.token,
 				status,
+				username: guest.username,
 				phone: guest?.phone?.[0]?.phoneNumber,
 			},
 			servedBy: {

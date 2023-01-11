@@ -13,6 +13,7 @@ import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRes
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 
+const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
 	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
@@ -64,6 +65,22 @@ export class AppsRestApi {
 		};
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+
+		this.api.addRoute(
+			'incompatibleModal',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+					const { action, appId, appVersion } = this.queryParams;
+
+					return API.v1.success({
+						url: `${baseUrl}/apps/${appId}/incompatible/${appVersion}/${action}?workspaceId=${workspaceId}&rocketChatVersion=${rocketChatVersion}`,
+					});
+				},
+			},
+		);
 
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
@@ -130,7 +147,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
@@ -213,13 +230,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -348,7 +368,7 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			'featured',
+			'featured-apps',
 			{ authRequired: true },
 			{
 				async get() {
@@ -362,7 +382,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps/featured`, {
+						result = HTTP.get(`${baseUrl}/v1/featured-apps`, {
 							headers,
 						});
 					} catch (e) {
@@ -497,13 +517,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 						}
 
-						const [app, formData] = await getUploadFormData(
+						const app = await getUploadFormData(
 							{
 								request: this.request,
 							},
-							{ field: 'app' },
+							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 						);
-						buff = app?.fileBuffer;
+
+						const { fields: formData } = app;
+
+						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -859,6 +882,35 @@ export class AppsRestApi {
 					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
 
 					return API.v1.success({ status: result.getStatus() });
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const { appId, q = '', sort = '', limit = 25, offset = 0 } = this.queryParams;
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+							headers,
+						});
+
+						return API.v1.success({ data });
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
+
+						return API.v1.failure(e.message);
+					}
 				},
 			},
 		);

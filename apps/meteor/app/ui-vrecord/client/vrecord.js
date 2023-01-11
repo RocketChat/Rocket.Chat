@@ -4,7 +4,16 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui';
+import { VideoRecorder, UserAction, USER_ACTIVITIES } from '../../ui/client';
+
+/**
+ * @typedef {import('meteor/blaze').Blaze.TemplateInstance<{}> & {
+ * 	rid: ReactiveVar<string>,
+ * 	tmid: ReactiveVar<string | undefined>;
+ *  time: ReactiveVar<string>;
+ *	chat?: import('../../../client/lib/chats/ChatAPI').ChatAPI;
+ * }} VRecDialogTemplateInstance
+ */
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -73,11 +82,16 @@ Template.vrecDialog.events({
 			);
 		}
 	},
-
+	/**
+	 * @param {JQuery.ClickEvent} e
+	 * @param {VRecDialogTemplateInstance} instance
+	 */
 	'click .vrec-dialog .ok'(e, instance) {
-		const [rid, tmid, input] = [instance.rid.get(), instance.tmid.get(), instance.input.get()];
+		const [rid, tmid] = [instance.rid.get(), instance.tmid.get()];
 		const cb = (blob) => {
-			fileUpload([{ file: blob, type: 'video', name: `${TAPi18n.__('Video record')}.webm` }], input, { rid, tmid });
+			const fileName = `${TAPi18n.__('Video record')}.webm`;
+			const file = new File([blob], fileName, { type: 'video/webm' });
+			instance.chat?.flows.uploadFiles([file]);
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
@@ -92,12 +106,11 @@ Template.vrecDialog.onCreated(function () {
 
 	this.rid = new ReactiveVar();
 	this.tmid = new ReactiveVar();
-	this.input = new ReactiveVar();
 	this.time = new ReactiveVar('');
-	this.update = ({ rid, tmid, input }) => {
+	this.update = ({ rid, tmid, chat }) => {
 		this.rid.set(rid);
 		this.tmid.set(tmid);
-		this.input.set(input);
+		this.chat = chat;
 	};
 
 	this.setPosition = function (dialog, source, anchor = 'left') {

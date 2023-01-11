@@ -1,10 +1,13 @@
-import { SettingsContext, SettingsContextValue, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
+import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
-import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+import { queryClient } from '../lib/queryClient';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
-import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 type SettingsProviderProps = {
 	readonly privileged?: boolean;
@@ -80,9 +83,23 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, 
 		[cachedCollection],
 	);
 
+	const settingsChangeCallback = (changes: { _id: string }[]): void => {
+		changes.forEach((val) => {
+			switch (val._id) {
+				case 'Enterprise_License':
+					queryClient.invalidateQueries(['licenses']);
+					break;
+
+				default:
+					break;
+			}
+		});
+	};
+
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
 		async (changes) => {
+			await settingsChangeCallback(changes);
 			await saveSettings(changes);
 		},
 		[saveSettings],

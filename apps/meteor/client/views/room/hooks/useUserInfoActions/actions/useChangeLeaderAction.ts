@@ -1,12 +1,12 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
@@ -30,11 +30,9 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const changeLeaderMessage = isLeader
 		? 'User__username__removed_from__room_name__leaders'
 		: 'User__username__is_now_a_leader_of__room_name_';
-	const changeLeader = useEndpointActionExperimental(
-		'POST',
-		`${endpointPrefix}.${changeLeaderEndpoint}`,
-		t(changeLeaderMessage, { username: user.username, room_name: roomName }),
-	);
+	const changeLeader = useEndpointAction('POST', `${endpointPrefix}.${changeLeaderEndpoint}`, {
+		successMessage: t(changeLeaderMessage, { username: user.username, room_name: roomName }),
+	});
 	const changeLeaderAction = useMutableCallback(() => changeLeader({ roomId: rid, userId: uid }));
 	const changeLeaderOption = useMemo(
 		() =>

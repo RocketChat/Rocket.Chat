@@ -1,80 +1,75 @@
 import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Blaze } from 'meteor/blaze';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
-import { addMessageToList } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
-import { ChatMessage, Rooms, Messages } from '../../../../../models/client';
+import { Messages, Rooms, Subscriptions } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
-import { chatMessages } from '../../../lib/ChatMessages';
-import { EmojiEvents } from '../../../../../reactions/client/init';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
-import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 import { mountPopover } from './mountPopover';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
+import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+import { EmojiPicker } from '../../../../../emoji/client';
 
 const createMessageTouchEvents = () => {
-	let touchMoved = false;
-	let lastTouchX: number | undefined = undefined;
-	let lastTouchY: number | undefined = undefined;
-
-	let touchtime: ReturnType<typeof setTimeout> | undefined = undefined;
+	let moved = false;
+	let lastX: number | undefined = undefined;
+	let lastY: number | undefined = undefined;
+	let timer: ReturnType<typeof setTimeout> | undefined = undefined;
 
 	return {
-		...EmojiEvents,
 		'click .message img'(e: JQuery.ClickEvent) {
-			clearTimeout(touchtime);
-			if (touchMoved === true) {
+			clearTimeout(timer);
+			if (moved) {
 				e.preventDefault();
 				e.stopPropagation();
 			}
 		},
-
-		'touchstart .message'(e: JQuery.TouchStartEvent, t: CommonRoomTemplateInstance) {
-			const touches = e.originalEvent?.touches;
+		'touchstart .message'(event: JQuery.TouchStartEvent, template: CommonRoomTemplateInstance) {
+			const touches = event.originalEvent?.touches;
 			if (touches?.length) {
-				lastTouchX = touches[0].pageX;
-				lastTouchY = touches[0].pageY;
+				lastX = touches[0].pageX;
+				lastY = touches[0].pageY;
 			}
-			touchMoved = false;
+			moved = false;
 			if (touches?.length !== 1) {
 				return;
 			}
 
-			if ($(e.currentTarget).hasClass('system')) {
+			if ((event.originalEvent?.currentTarget as HTMLElement | null)?.classList.contains('system')) {
 				return;
 			}
 
-			if (e.target && e.target.nodeName === 'AUDIO') {
+			if (event.target && event.target.nodeName === 'AUDIO') {
 				return;
 			}
 
-			if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
-				e.preventDefault();
-				e.stopPropagation();
+			if (event.target && event.target.nodeName === 'A' && isURL(event.target.getAttribute('href'))) {
+				event.preventDefault();
+				event.stopPropagation();
 			}
 
 			const doLongTouch = () => {
-				mountPopover(e, t, this);
+				const data = Blaze.getData(event.currentTarget);
+				mountPopover(event, template, data);
 			};
 
-			clearTimeout(touchtime);
-			touchtime = setTimeout(doLongTouch, 500);
+			clearTimeout(timer);
+			timer = setTimeout(doLongTouch, 500);
 		},
 
 		'touchend .message'(e: JQuery.TouchEndEvent) {
-			clearTimeout(touchtime);
+			clearTimeout(timer);
 			if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
-				if (touchMoved === true) {
+				if (moved === true) {
 					e.preventDefault();
 					e.stopPropagation();
 					return;
@@ -86,49 +81,57 @@ const createMessageTouchEvents = () => {
 
 		'touchmove .message'(e: JQuery.TouchMoveEvent) {
 			const touches = e.originalEvent?.touches;
-			if (touches?.length && lastTouchX !== undefined && lastTouchY !== undefined) {
-				const deltaX = Math.abs(lastTouchX - touches[0].pageX);
-				const deltaY = Math.abs(lastTouchY - touches[0].pageY);
+			if (touches?.length && lastX !== undefined && lastY !== undefined) {
+				const deltaX = Math.abs(lastX - touches[0].pageX);
+				const deltaY = Math.abs(lastY - touches[0].pageY);
 				if (deltaX > 5 || deltaY > 5) {
-					touchMoved = true;
+					moved = true;
 				}
 			}
-			clearTimeout(touchtime);
+			clearTimeout(timer);
 		},
 
 		'touchcancel .message'() {
-			clearTimeout(touchtime);
+			clearTimeout(timer);
 		},
 	};
 };
 
-function handleMessageActionButtonClick(this: unknown, event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+function handleMessageActionButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { tabBar } = template.data;
 	const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
-	// @ ts-ignore
-	button?.action.call(this, event, { tabbar: template.tabBar });
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	button?.action.call(dataContext, event, { tabbar: tabBar, chat: template.data.chatContext });
 }
 
-function handleFollowThreadButtonClick(this: unknown, e: JQuery.ClickEvent) {
-	e.preventDefault();
-	e.stopPropagation();
-	const { msg } = messageArgs(this);
+function handleFollowThreadButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+	event.stopPropagation();
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	callWithErrorHandling('followMessage', { mid: msg._id });
 }
 
-function handleUnfollowThreadButtonClick(this: unknown, e: JQuery.ClickEvent) {
-	e.preventDefault();
-	e.stopPropagation();
-	const { msg } = messageArgs(this);
+function handleUnfollowThreadButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+	event.stopPropagation();
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	callWithErrorHandling('unfollowMessage', { mid: msg._id });
 }
 
-function handleOpenThreadButtonClick(this: unknown, event: JQuery.ClickEvent) {
+function handleOpenThreadButtonClick(event: JQuery.ClickEvent) {
 	event.preventDefault();
 	event.stopPropagation();
 
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
 	const {
 		msg: { rid, _id, tmid },
-	} = messageArgs(this);
+	} = messageArgs(dataContext);
 	const room = Rooms.findOne({ _id: rid });
 
 	FlowRouter.go(
@@ -147,17 +150,22 @@ function handleOpenThreadButtonClick(this: unknown, event: JQuery.ClickEvent) {
 	);
 }
 
-function handleDownloadImageButtonClick(this: unknown, event: JQuery.ClickEvent) {
-	const { msg } = messageArgs(this);
-	ChatMessage.update({ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-	ChatMessage.update(
-		{ '_id': msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
+function handleDownloadImageButtonClick(event: JQuery.ClickEvent) {
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
+	Messages.update({ '_id': msg._id, 'urls.url': event.currentTarget.dataset.url }, { $set: { 'urls.$.downloadImages': true } });
+	Messages.update(
+		{ '_id': msg._id, 'attachments.image_url': event.currentTarget.dataset.url },
 		{ $set: { 'attachments.$.downloadImages': true } },
 	);
 }
 
-function handleOpenUserCardButtonClick(this: unknown, e: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { msg } = messageArgs(this);
+function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid, tabBar } = template.data;
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const { msg } = messageArgs(dataContext);
 	if (!Meteor.userId()) {
 		return;
 	}
@@ -167,79 +175,35 @@ function handleOpenUserCardButtonClick(this: unknown, e: JQuery.ClickEvent, inst
 	if (username) {
 		openUserCard({
 			username,
-			rid: instance.data.rid,
-			target: e.currentTarget,
+			rid,
+			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				instance.data.tabBar.openUserInfo(username);
+				tabBar.openRoomInfo(username);
 			},
 		});
 	}
 }
 
-function handleRespondWithMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { rid } = instance.data;
-	const msg = event.currentTarget.value;
-	if (!msg) {
-		return;
-	}
-
-	const { input } = chatMessages[rid];
-	if (input) {
-		input.value = msg;
-		input.focus();
-	}
-}
-
-function handleRespondWithQuotedMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { rid } = instance.data;
-	const { id: msgId } = event.currentTarget;
-	const { $input } = chatMessages[rid];
-
-	if (!msgId) {
-		return;
-	}
-
-	const message = Messages.findOne({ _id: msgId });
-
-	let messages = $input?.data('reply') || [];
-	messages = addMessageToList(messages, message);
-
-	$input?.focus().data('mention-user', false).data('reply', messages).trigger('dataChange');
-}
-
-async function handleSendMessageActionButtonClick(event: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	const { rid } = instance.data;
-	const msg = event.currentTarget.value;
-	let msgObject = { _id: Random.id(), rid, msg } as IMessage;
-	if (!msg) {
-		return;
-	}
-
-	msgObject = (await onClientBeforeSendMessage(msgObject)) as IMessage;
-
-	const _chatMessages = chatMessages[rid];
-	if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
-		return;
-	}
-
-	await callWithErrorHandling('sendMessage', msgObject);
-}
-
-function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
-	const messageContext = messageArgs(this);
+async function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	const { rid, tabBar } = template.data;
+	const messageElement = event.target.closest('.message') as HTMLElement;
+	const dataContext = Blaze.getData(messageElement);
+	const messageContext = messageArgs(dataContext);
 	const { msg: message, u: user, context: ctx } = messageContext;
 	const room = Rooms.findOne({ _id: message.rid });
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	// @ts-ignore
 	const context = ctx || message.context || message.actionContext || federationContext || 'message';
-	const allItems = MessageAction.getButtons({ ...messageContext, message, user }, context, 'menu').map((item) => ({
+	const allItems = (
+		await MessageAction.getButtons({ ...messageContext, message, user, chat: template.data.chatContext }, context, 'menu')
+	).map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
 		id: item.id,
 		modifier: item.color,
-		action: () => item.action(e, { tabbar: template.tabBar, message, room }),
+		action: () => item.action(event, { tabbar: tabBar, message, room, chat: template.data.chatContext }),
 	}));
 
 	const itemsBelowDivider = ['delete-message', 'report-message'];
@@ -262,20 +226,20 @@ function handleMessageActionMenuClick(this: unknown, e: JQuery.ClickEvent, templ
 			},
 		],
 		instance: template,
-		rid: template.data.rid,
-		data: this,
+		rid,
+		data: dataContext,
 		type: 'message-action-menu-options',
-		currentTarget: e.currentTarget,
-		activeElement: $(e.currentTarget).parents('.message')[0],
+		currentTarget: event.currentTarget,
+		activeElement: messageElement,
 		onRendered: () => new Clipboard('.rc-popover__item'),
 	};
 
 	popover.open(config);
 }
 
-function handleMentionLinkClick(e: JQuery.ClickEvent, instance: CommonRoomTemplateInstance) {
-	e.stopPropagation();
-	e.preventDefault();
+function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTemplateInstance) {
+	event.stopPropagation();
+	event.preventDefault();
 
 	if (!Meteor.userId()) {
 		return;
@@ -285,7 +249,7 @@ function handleMentionLinkClick(e: JQuery.ClickEvent, instance: CommonRoomTempla
 		currentTarget: {
 			dataset: { channel, group, username },
 		},
-	} = e;
+	} = event;
 
 	if (channel) {
 		if (isLayoutEmbedded()) {
@@ -303,16 +267,58 @@ function handleMentionLinkClick(e: JQuery.ClickEvent, instance: CommonRoomTempla
 	}
 
 	if (username) {
+		const { rid, tabBar } = template.data;
 		openUserCard({
 			username,
-			rid: instance.data.rid,
-			target: e.currentTarget,
+			rid,
+			target: event.currentTarget,
 			open: (e: MouseEvent) => {
 				e.preventDefault();
-				instance.data.tabBar.openUserInfo(username);
+				tabBar.openRoomInfo(username);
 			},
 		});
 	}
+}
+
+function handleAddReactionButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+	event.stopPropagation();
+	const data = Blaze.getData(event.currentTarget);
+	const {
+		msg: { rid, _id: mid, private: isPrivate },
+	} = messageArgs(data);
+	const user = Meteor.user();
+	const room = Rooms.findOne({ _id: rid });
+
+	if (!user || !room) {
+		return false;
+	}
+
+	if (!Subscriptions.findOne({ rid })) {
+		return false;
+	}
+
+	if (isPrivate) {
+		return false;
+	}
+
+	if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
+		return false;
+	}
+
+	EmojiPicker.open(event.currentTarget, (emoji) => {
+		callWithErrorHandling('setReaction', `:${emoji}:`, mid);
+	});
+}
+
+function handleReactionButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+
+	const data = Blaze.getData(event.currentTarget);
+	const {
+		msg: { _id: mid },
+	} = messageArgs(data);
+	callWithErrorHandling('setReaction', event.currentTarget.dataset.emoji ?? '', mid);
 }
 
 export const getCommonRoomEvents = () => ({
@@ -323,9 +329,8 @@ export const getCommonRoomEvents = () => ({
 	'click .js-open-thread': handleOpenThreadButtonClick,
 	'click .image-to-download': handleDownloadImageButtonClick,
 	'click .user-card-message': handleOpenUserCardButtonClick,
-	'click .js-actionButton-respondWithMessage': handleRespondWithMessageActionButtonClick,
-	'click .js-actionButton-respondWithQuotedMessage': handleRespondWithQuotedMessageActionButtonClick,
-	'click .js-actionButton-sendMessage': handleSendMessageActionButtonClick,
 	'click .message-actions__menu': handleMessageActionMenuClick,
 	'click .mention-link': handleMentionLinkClick,
+	'click .add-reaction': handleAddReactionButtonClick,
+	'click .reactions > li:not(.add-reaction)': handleReactionButtonClick,
 });

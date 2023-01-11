@@ -1,13 +1,14 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../components/VerticalBar';
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
-import { initialValues } from './PruneMessagesWithData';
+import type { initialValues } from './PruneMessagesWithData';
 
 type PruneMessagesProps = {
 	callOutText?: string;

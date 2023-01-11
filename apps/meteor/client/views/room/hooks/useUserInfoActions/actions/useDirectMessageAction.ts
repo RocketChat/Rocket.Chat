@@ -1,9 +1,9 @@
-import { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 
 const getShouldOpenDirectMessage = (
 	currentSubscription?: ISubscription,

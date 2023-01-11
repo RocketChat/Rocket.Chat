@@ -30,6 +30,83 @@ describe('LIVECHAT - visitors', function () {
 		);
 	});
 
+	describe('livechat/visitor', () => {
+		it('should fail if no "visitor" key is passed as body parameter', async () => {
+			const { body } = await request.post(api('livechat/visitor')).send({});
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail if visitor.token is not present', async () => {
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: {} });
+			expect(body).to.have.property('success', false);
+		});
+		it('should create a visitor', async () => {
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token: 'test' } });
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', 'test');
+
+			// Ensure all new visitors are created as online :)
+			expect(body.visitor).to.have.property('status', 'online');
+		});
+		it('should create a visitor with provided extra information', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const phone = new Date().getTime().toString();
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token, phone } });
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.have.property('phone');
+			expect(body.visitor.phone[0].phoneNumber).to.equal(phone);
+		});
+		it('should save customFields when passed', async () => {
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			const token = `${new Date().getTime()}-test`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			} as unknown as ILivechatCustomField & { field: string });
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.have.property('livechatData');
+			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
+		});
+		it('should update a current visitor when phone is same', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const token2 = `${new Date().getTime()}-test2`;
+			const phone = new Date().getTime().toString();
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token, phone } });
+			expect(body).to.have.property('success', true);
+
+			const { body: body2 } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token: token2,
+					phone,
+				},
+			});
+
+			expect(body2).to.have.property('success', true);
+			expect(body2).to.have.property('visitor');
+
+			// Same visitor won't update the token
+			expect(body2.visitor).to.have.property('token', token);
+			expect(body2.visitor).to.have.property('phone');
+			expect(body2.visitor.phone[0].phoneNumber).to.equal(phone);
+		});
+	});
+
 	describe('livechat/visitors.info', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', [])
@@ -303,7 +380,13 @@ describe('LIVECHAT - visitors', function () {
 		it('should return an error when the user doesnt have the right permissions', (done) => {
 			updatePermission('view-l-room', [])
 				.then(() =>
-					request.get(api('livechat/visitors.autocomplete')).set(credentials).expect('Content-Type', 'application/json').expect(403),
+					request
+						.get(api('livechat/visitors.autocomplete'))
+						.set(credentials)
+						.query({ selector: 'invalid' })
+						.query({ selector: 'xxx' })
+						.expect('Content-Type', 'application/json')
+						.expect(403),
 				)
 				.then(() => done());
 		});
@@ -317,7 +400,7 @@ describe('LIVECHAT - visitors', function () {
 					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
+						expect(res.body.error).to.be.equal("must have required property 'selector' [invalid-params]");
 					})
 					.end(done);
 			});
@@ -456,6 +539,39 @@ describe('LIVECHAT - visitors', function () {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('history');
+							expect(res.body.history).to.be.an('array');
+							expect(res.body.history).to.have.length.of.at.least(1);
+							expect(res.body.history[0]).to.have.property('_id');
+							expect(res.body.history[0]).to.have.property('name');
+							expect(res.body.history[0]).to.have.property('createdAt');
+							expect(res.body.history[0]).to.have.property('endedAt');
+							expect(res.body.history[0]).to.have.property('status');
+							expect(res.body.history[0]).to.have.property('visitor');
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
+		it('should return a list of chats when filtered by ', (done) => {
+			updatePermission('view-l-room', ['admin', 'livechat-agent'])
+				.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
+				.then(() => createVisitor())
+				.then((createdVisitor: ILivechatVisitor) => Promise.all([createLivechatRoom(createdVisitor.token), createdVisitor]))
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor]) => Promise.all([createAgent(), room, visitor]))
+				.then(([agent, room, visitor]: [ILivechatAgent, IOmnichannelRoom, ILivechatVisitor]) => {
+					return Promise.all([room, visitor, takeInquiry(room._id, agent._id)]);
+				})
+				.then(([room, visitor]: [IOmnichannelRoom, ILivechatVisitor, any]) => {
+					request
+						.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?source=api`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							console.log(res.body);
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('history');
 							expect(res.body.history).to.be.an('array');
@@ -650,10 +766,107 @@ describe('LIVECHAT - visitors', function () {
 			expect(res.body.contact).to.be.null;
 		});
 	});
-});
+	// Check if this endpoint is still being used
+	describe('livechat/room.visitor', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send();
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if rid is not on body params', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send();
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if oldVisitorId is not on body params', async () => {
+			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send({ rid: 'GENERAL' });
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if newVisitorId is not on body params', async () => {
+			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send({ rid: 'GENERAL', oldVisitorId: 'GENERAL' });
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if oldVisitorId doesnt point to a valid visitor', async () => {
+			const res = await request
+				.put(api(`livechat/room.visitor`))
+				.set(credentials)
+				.send({ rid: 'GENERAL', oldVisitorId: 'GENERAL', newVisitorId: 'GENERAL' });
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if rid doesnt point to a valid room', async () => {
+			const visitor = await createVisitor();
+			const res = await request
+				.put(api(`livechat/room.visitor`))
+				.set(credentials)
+				.send({ rid: 'GENERAL', oldVisitorId: visitor._id, newVisitorId: visitor._id });
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if oldVisitorId is trying to change a room is not theirs', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const visitor2 = await createVisitor();
 
-// TODO: Missing tests for the following endpoints:
-// - /v1/livechat/visitor.status
-// - /v1/livechat/visitor.callStatus
-// - /v1/livechat/visitor/:token/room
-// - /v1/livechat/visitor
+			const res = await request
+				.put(api(`livechat/room.visitor`))
+				.set(credentials)
+				.send({ rid: room._id, oldVisitorId: visitor2._id, newVisitorId: visitor._id });
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should successfully change a room visitor with a new one', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const visitor2 = await createVisitor();
+
+			const res = await request
+				.put(api(`livechat/room.visitor`))
+				.set(credentials)
+				.send({ rid: room._id, oldVisitorId: visitor._id, newVisitorId: visitor2._id });
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.room).to.have.property('v');
+			expect(res.body.room.v._id).to.equal(visitor2._id);
+		});
+	});
+	describe('livechat/visitors.search', () => {
+		it('should fail if user doesnt have view-l-room permission', async () => {
+			await updatePermission('view-l-room', []);
+			const res = await request.get(api(`livechat/visitors.search?text=nel`)).set(credentials).send();
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should fail if term is not on query params', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			const res = await request.get(api(`livechat/visitors.search`)).set(credentials).send();
+			expect(res.body).to.have.property('success', false);
+		});
+		it('should not fail when term is an evil regex string', async () => {
+			const res = await request.get(api(`livechat/visitors.search?term=^((ab)*)+$`)).set(credentials).send();
+			expect(res.body).to.have.property('success', true);
+		});
+		it('should return a list of visitors when term is a valid string', async () => {
+			const visitor = await createVisitor();
+
+			const res = await request
+				.get(api(`livechat/visitors.search?term=${visitor.name}`))
+				.set(credentials)
+				.send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.visitors).to.be.an('array');
+			expect(res.body.visitors).to.have.lengthOf.greaterThan(0);
+			expect(res.body.visitors[0]).to.have.property('_id', visitor._id);
+			expect(res.body.visitors[0]).to.have.property('name', visitor.name);
+			expect(res.body.visitors[0]).to.have.property('username', visitor.username);
+			expect(res.body.visitors[0]).to.have.property('visitorEmails');
+			expect(res.body.visitors[0]).to.have.property('phone');
+		});
+		it('should return a list of visitors when term is an empty string', async () => {
+			const res = await request.get(api(`livechat/visitors.search?term=`)).set(credentials).send();
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.visitors).to.be.an('array');
+			expect(res.body.visitors).to.have.lengthOf.greaterThan(0);
+			expect(res.body.visitors[0]).to.have.property('_id');
+			expect(res.body.visitors[0]).to.have.property('username');
+			expect(res.body.visitors[0]).to.have.property('name');
+			expect(res.body.visitors[0]).to.have.property('phone');
+			expect(res.body.visitors[0]).to.have.property('visitorEmails');
+		});
+	});
+});

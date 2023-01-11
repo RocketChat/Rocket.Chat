@@ -153,8 +153,8 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				} else {
 					attachment.title_link_download = true;
 				}
-			} catch (e) {
-				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
+			} catch (err) {
+				Livechat.logger.error({ msg: 'Attachment upload failed', err });
 				attachment = {
 					fields: [
 						{
@@ -191,6 +191,9 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					}
 					if (sms.extra.fromCity) {
 						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+					}
+					if (sms.extra.toPhone) {
+						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
 					}
 				}
 			});

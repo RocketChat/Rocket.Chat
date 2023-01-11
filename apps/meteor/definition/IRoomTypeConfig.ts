@@ -53,8 +53,10 @@ export interface IRoomTypeConfig {
 	label?: string;
 	route?: IRoomTypeRouteConfig;
 	customTemplate?: string;
-	notSubscribedTpl?: string;
-	readOnlyTpl?: string;
+	/** @deprecated */
+	notSubscribedTpl?: 'livechatNotSubscribed';
+	/** @deprecated */
+	readOnlyTpl?: 'ComposerNotAvailablePhoneCalls' | 'livechatReadOnly';
 }
 
 export interface IRoomTypeClientDirectives {
@@ -64,7 +66,6 @@ export interface IRoomTypeClientDirectives {
 	allowMemberAction: (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>) => boolean;
 	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
-	openCustomProfileTab: (instance: any, room: IRoom, username: string) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
 	condition: () => boolean;
 	getAvatarPath: (
@@ -88,7 +89,7 @@ export interface IRoomTypeServerDirectives {
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
 	preventRenaming: () => boolean;
-	getDiscussionType: () => RoomType;
+	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => RoomType;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,

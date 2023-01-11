@@ -17,11 +17,11 @@ import React from 'react';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import WarningModal from '../../../../../components/WarningModal';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import WarningModal from '../../../../admin/apps/WarningModal';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
 import RoomInfo from './RoomInfo';
 
@@ -46,7 +46,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	room.type = room.t;
 	room.rid = rid;
 
-	const { type, fname, prid, joined = true } = room; // TODO implement joined
+	const { type, fname, name, prid, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -65,12 +65,10 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', '/v1/teams.addRooms', t('Rooms_added_successfully'));
-	const convertRoomToTeam = useEndpointActionExperimental(
-		'POST',
-		type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam',
-		t('Success'),
-	);
+	const moveChannelToTeam = useEndpointAction('POST', '/v1/teams.addRooms', { successMessage: t('Rooms_added_successfully') });
+	const convertRoomToTeam = useEndpointAction('POST', type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam', {
+		successMessage: t('Success'),
+	});
 
 	const isFederated = isRoomFederated(room);
 	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
@@ -117,7 +115,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 
 		setModal(
 			<WarningModal
-				text={t(warnText, fname)}
+				text={t(warnText, fname || name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
 				cancel={closeModal}
@@ -142,7 +140,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 
 		setModal(
 			<WarningModal
-				text={t(warnText, fname)}
+				text={t(warnText, fname || name)}
 				confirmText={t('Yes_hide_it')}
 				close={closeModal}
 				cancel={closeModal}

@@ -1,9 +1,6 @@
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
-
-import { asyncLocalStorage } from '../../server/sdk';
-import type { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import type { ServiceClass } from '../../server/sdk/types/ServiceClass';
-import type { EventSignatures } from '../../server/sdk/lib/Events';
+import { asyncLocalStorage } from '@rocket.chat/core-services';
+import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -34,8 +31,6 @@ export class NetworkBroker implements IBroker {
 		this.broker = broker;
 
 		this.metrics = broker.metrics;
-
-		this.started = this.broker.start();
 	}
 
 	async call(method: string, data: any): Promise<any> {
@@ -73,34 +68,42 @@ export class NetworkBroker implements IBroker {
 		return this.broker.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
-		this.broker.destroyService(instance.getName());
+	destroyService(instance: IServiceClass): void {
+		const name = instance.getName();
+		if (!name) {
+			return;
+		}
+		this.broker.destroyService(name);
 	}
 
-	createService(instance: ServiceClass): void {
+	createService(instance: IServiceClass): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
 		).filter((name) => name !== 'constructor');
 
-		if (!instance.getEvents() || !methods.length) {
-			return;
-		}
-
 		const serviceInstance = instance as any;
 
 		const name = instance.getName();
+		if (!name) {
+			return;
+		}
 
 		if (!instance.isInternal()) {
 			instance.onEvent('shutdown', async (services) => {
 				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.debug({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
+					this.broker.logger.info({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
 					return;
 				}
-				this.broker.logger.info({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
+				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
 				this.destroyService(instance);
 			});
+		}
+
+		const instanceEvents = instance.getEvents();
+		if (!instanceEvents && !methods.length) {
+			return;
 		}
 
 		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
@@ -109,7 +112,7 @@ export class NetworkBroker implements IBroker {
 			name,
 			actions: {},
 			...dependencies,
-			events: instance.getEvents().reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
+			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
 							// internal events params are not an array
@@ -182,5 +185,9 @@ export class NetworkBroker implements IBroker {
 
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
+	}
+
+	async start(): Promise<void> {
+		this.started = this.broker.start();
 	}
 }

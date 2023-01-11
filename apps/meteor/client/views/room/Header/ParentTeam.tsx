@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Header } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import Header from '../../../components/Header';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
@@ -24,15 +25,11 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 		throw new Error('invalid uid');
 	}
 
-	const { value, phase } = useEndpointData(
-		'/v1/teams.info',
-		useMemo(() => ({ teamId }), [teamId]),
-	);
+	const { value, phase } = useEndpointData('/v1/teams.info', { params: useMemo(() => ({ teamId }), [teamId]) });
 
-	const { value: userTeams, phase: userTeamsPhase } = useEndpointData(
-		'/v1/users.listTeams',
-		useMemo(() => ({ userId }), [userId]),
-	);
+	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('/v1/users.listTeams', {
+		params: useMemo(() => ({ userId }), [userId]),
+	});
 
 	const belongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
 	const isTeamPublic = value?.teamInfo.type === TEAM_TYPE.PUBLIC;
@@ -56,8 +53,17 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 
 	return (
 		<Header.Tag>
-			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{isTeamPublic || belongsToTeam ? <Header.Link onClick={teamMainRoomHref}>{value.teamInfo.name}</Header.Link> : value.teamInfo.name}
+			{isTeamPublic || belongsToTeam ? (
+				<Header.Link onClick={teamMainRoomHref}>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{value.teamInfo.name}
+				</Header.Link>
+			) : (
+				<>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{value.teamInfo.name}
+				</>
+			)}
 		</Header.Tag>
 	);
 };

@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { createContext, FormEvent, UIEvent } from 'react';
 
-export type UserMention = Pick<IUser, '_id' | 'username' | 'name'>;
+export type UserMention = Pick<IUser, '_id' | 'username' | 'name' | 'type'>;
 export type ChannelMention = Pick<IRoom, '_id' | 'name'>;
 
 type MarkupInteractionContextValue = {
@@ -13,6 +13,7 @@ type MarkupInteractionContextValue = {
 	onUserMentionClick?: (mentionedUser: UserMention) => ((e: UIEvent) => void) | undefined;
 	resolveChannelMention?: (mention: string) => ChannelMention | undefined;
 	onChannelMentionClick?: (mentionedChannel: ChannelMention) => ((e: UIEvent) => void) | undefined;
+	convertAsciiToEmoji?: boolean;
 };
 
 export const MarkupInteractionContext = createContext<MarkupInteractionContextValue>({});

@@ -1,7 +1,8 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo, MutableRefObject, useEffect } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import {
@@ -41,7 +42,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 		500,
 	);
 
-	const { value, reload: reloadEndpoint, phase } = useEndpointData('/v1/custom-user-status.list', query);
+	const { value, reload: reloadEndpoint, phase } = useEndpointData('/v1/custom-user-status.list', { params: query });
 
 	useEffect(() => {
 		reload.current = reloadEndpoint;

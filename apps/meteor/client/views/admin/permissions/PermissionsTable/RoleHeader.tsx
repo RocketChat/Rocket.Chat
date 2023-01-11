@@ -1,9 +1,10 @@
-import { IRole } from '@rocket.chat/core-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Margins, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
 
@@ -33,9 +34,9 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps): ReactElement =
 				pi='x12'
 				mi='neg-x2'
 				borderStyle='solid'
-				borderWidth='x2'
+				borderWidth='default'
 				borderRadius='x2'
-				borderColor='neutral-300'
+				borderColor='light'
 				onClick={handleEditRole}
 			>
 				<Margins inline='x2'>

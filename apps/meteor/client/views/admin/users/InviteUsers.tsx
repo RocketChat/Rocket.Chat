@@ -1,6 +1,7 @@
 import { Box, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, ReactElement, ChangeEvent, ComponentProps } from 'react';
+import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import VerticalBar from '../../../components/VerticalBar';
@@ -24,7 +25,7 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	};
 
 	return (
-		<VerticalBar.ScrollableContent {...props}>
+		<VerticalBar.ScrollableContent {...props} color='default'>
 			<Box is='h2' fontScale='h2' mb='x8'>
 				{t('Send_invitation_email')}
 			</Box>
