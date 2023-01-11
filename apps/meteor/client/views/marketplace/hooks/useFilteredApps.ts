@@ -26,6 +26,7 @@ export const useFilteredApps = ({
 	purchaseType,
 	sortingMethod,
 	status,
+	context,
 }: {
 	appsData: appsDataType;
 	text: string;
@@ -35,7 +36,10 @@ export const useFilteredApps = ({
 	purchaseType?: string;
 	sortingMethod?: string;
 	status?: string;
-}): AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] }> => {
+	context?: string;
+}): AsyncState<
+	{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
+> => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
 			return undefined;
@@ -54,6 +58,10 @@ export const useFilteredApps = ({
 			lru: () =>
 				filtered.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
 		};
+
+		if (context && context === 'enterprise') {
+			filtered = apps.filter(({ categories }) => categories.includes('Enterprise'));
+		}
 
 		if (sortingMethod) {
 			filtered = sortingMethods[sortingMethod]();
@@ -91,8 +99,16 @@ export const useFilteredApps = ({
 		const end = current + itemsPerPage;
 		const slice = filtered.slice(offset, end);
 
-		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText, allApps: filtered };
-	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
+		return {
+			items: slice,
+			offset,
+			total: filtered.length,
+			totalAppsLength: apps.length,
+			count: slice.length,
+			shouldShowSearchText,
+			allApps: filtered,
+		};
+	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, context, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {
