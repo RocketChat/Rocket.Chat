@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import type { IMessage } from '@rocket.chat/core-typings';
+import { IMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { deleteMessage, sendMessage, updateMessage } from '../../../../../lib/server';
@@ -45,20 +45,17 @@ export class RocketChatMessageAdapter {
 		homeServerDomain: string,
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
-		const messageToReplyToUrl = getURL(
-			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
-			{ full: true },
-		);
 		sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
-				msg: await toInternalQuoteMessageFormat({
-					messageToReplyToUrl,
-					formattedMessage: externalFormattedText,
+				msg: await this.getMessageToReplyToWhenQuoting(
+					federatedRoom,
+					messageToReplyTo,
+					externalFormattedText,
 					rawMessage,
 					homeServerDomain,
-				}),
+				),
 			},
 			room,
 		);
@@ -71,14 +68,65 @@ export class RocketChatMessageAdapter {
 		originalMessage: IMessage,
 		homeServerDomain: string,
 	): Promise<void> {
-		const updatedMessage = Object.assign({}, originalMessage, {
+		const updatedMessage = {
+			...originalMessage,
 			msg: toInternalMessageFormat({
 				rawMessage: newRawMessageText,
 				formattedMessage: newExternalFormattedMessage,
 				homeServerDomain,
 			}),
-		});
+		};
 		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
+	}
+
+	private async getMessageToReplyToWhenQuoting(
+		federatedRoom: FederatedRoom,
+		messageToReplyTo: IMessage,
+		externalFormattedMessage: string,
+		rawMessage: string,
+		homeServerDomain: string,
+	): Promise<string> {
+		const room = federatedRoom.getInternalReference();
+		const messageToReplyToUrl = getURL(
+			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
+			{ full: true },
+		);
+		return toInternalQuoteMessageFormat({
+			messageToReplyToUrl,
+			formattedMessage: externalFormattedMessage,
+			rawMessage,
+			homeServerDomain,
+		});
+	}
+
+	public async getMessageToEditWhenReplyAndQuote(
+		editedMessage: IMessage,
+		newExternalFormattedMessage: string,
+		newRawMessageText: string,
+		homeServerDomain: string,
+	): Promise<string> {
+		const quotedMessageUrl = editedMessage.attachments?.filter(isQuoteAttachment)[0].message_link;
+
+		return toInternalQuoteMessageFormat({
+			messageToReplyToUrl: quotedMessageUrl || '',
+			formattedMessage: newExternalFormattedMessage,
+			rawMessage: newRawMessageText,
+			homeServerDomain,
+		});
+	}
+
+	public async editQuotedMessage(
+		user: FederatedUser,
+		newRawMessageText: string,
+		newExternalFormattedMessage: string,
+		editedMessage: IMessage,
+		homeServerDomain: string,
+	): Promise<void> {
+		const updatedMessage = {
+			...editedMessage,
+			msg: await this.getMessageToEditWhenReplyAndQuote(editedMessage, newExternalFormattedMessage, newRawMessageText, homeServerDomain),
+		};
+		updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
 	}
 
 	public async sendFileMessage(
@@ -112,10 +160,6 @@ export class RocketChatMessageAdapter {
 		homeServerDomain: string,
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
-		const messageToReplyToUrl = getURL(
-			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
-			{ full: true },
-		);
 
 		sendMessage(
 			user.getInternalReference(),
@@ -126,12 +170,7 @@ export class RocketChatMessageAdapter {
 				file: (files || [])[0],
 				files,
 				attachments,
-				msg: await toInternalQuoteMessageFormat({
-					messageToReplyToUrl,
-					formattedMessage: '',
-					rawMessage: '',
-					homeServerDomain,
-				}),
+				msg: await this.getMessageToReplyToWhenQuoting(federatedRoom, messageToReplyTo, '', '', homeServerDomain),
 			},
 			room,
 		);

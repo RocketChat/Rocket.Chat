@@ -304,7 +304,7 @@ export class MatrixBridge implements IFederationBridge {
 			'format': 'org.matrix.custom.html',
 			'formatted_body': messageInExternalFormat,
 			'm.new_content': {
-				body: messageInExternalFormat,
+				body: newMessageText,
 				format: 'org.matrix.custom.html',
 				formatted_body: messageInExternalFormat,
 				msgtype: MatrixEnumSendMessageType.TEXT,

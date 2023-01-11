@@ -63,6 +63,7 @@ const replaceAllMentionsInTheirProperPosition = (message: string, allMentionsWit
 export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain,
 	formattedMessage,
+	rawMessage,
 	messageToReplyToUrl,
 }: {
 	messageToReplyToUrl: string;
@@ -77,12 +78,9 @@ export const toInternalQuoteMessageFormat = async ({
 		},
 		nonTextTags: ['mx-reply', 'blockquote'],
 	});
-	const withNoHtmlAtAll = sanitizeHtml(withMentionsOnly, {
-		allowedTags: [],
-		allowedAttributes: {},
-	});
+	const rawMessageWithoutMatrixQuotingFormatting = rawMessage.replace(/^>.*/, '');
 	return `[ ](${messageToReplyToUrl}) ${replaceAllMentionsInTheirProperPosition(
-		withNoHtmlAtAll,
+		rawMessageWithoutMatrixQuotingFormatting,
 		getAllMentionsWithTheirRealNames(withMentionsOnly, homeServerDomain),
 	)}`;
 };

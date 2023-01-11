@@ -226,23 +226,20 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 		normalizedRoomId,
 		externalSenderId,
 		normalizedSenderId,
-		rawMessage,
-		externalFormattedText,
-		newMessageTextFormattedToInternalFormat,
+		newRawMessage,
+		newExternalFormattedText,
 		editsEvent,
 		externalEventId,
 	}: IFederationSendInternalMessageBaseInputDto & {
-		newMessageTextFormattedToInternalFormat: string;
-		rawMessage: string;
-		externalFormattedText: string;
+		newRawMessage: string;
+		newExternalFormattedText: string;
 		editsEvent: string;
 	}) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
-		this.rawMessage = rawMessage;
-		this.externalFormattedText = externalFormattedText;
-		this.newMessageTextFormattedToInternalFormat = newMessageTextFormattedToInternalFormat;
+		this.newRawMessage = newRawMessage;
+		this.newExternalFormattedText = newExternalFormattedText;
 		this.editsEvent = editsEvent;
 	}
 
@@ -250,11 +247,9 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 
 	normalizedSenderId: string;
 
-	externalFormattedText: string;
+	newExternalFormattedText: string;
 
-	newMessageTextFormattedToInternalFormat: string;
-
-	rawMessage: string;
+	newRawMessage: string;
 
 	editsEvent: string;
 }
