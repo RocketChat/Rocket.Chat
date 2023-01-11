@@ -1,12 +1,6 @@
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 
-import type { OauthAppsGetParams, UpdateOAuthAppParams } from '..';
-
-export type OauthAppsAddParams = {
-	name: string;
-	active: boolean;
-	redirectUri: string;
-};
+import type { OauthAppsGetParams, UpdateOAuthAppParams, OauthAppsAddParams } from '..';
 
 export type OAuthAppsEndpoint = {
 	'/v1/oauth-apps.list': {
