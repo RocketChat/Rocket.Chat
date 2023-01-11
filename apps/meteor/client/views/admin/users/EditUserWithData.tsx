@@ -1,7 +1,9 @@
-import { isUserFederated, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -16,14 +18,7 @@ type EditUserWithDataProps = {
 const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('/v1/roles.list');
-	const {
-		value: data,
-		phase: state,
-		error,
-	} = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId: uid }), [uid]),
-	);
+	const { value: data, phase: state, error } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid }), [uid]) });
 
 	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
 		return (

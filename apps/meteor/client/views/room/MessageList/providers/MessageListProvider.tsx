@@ -1,32 +1,34 @@
-import {
-	IRoom,
-	IMessage,
-	isTranslatedMessage,
-	isMessageReactionsNormalized,
-	MessageAttachment,
-	isThreadMainMessage,
-} from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC, memo } from 'react';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isTranslatedMessage, isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
+import { useLayout, useUser, useUserPreference, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { VFC, ReactNode } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { useRoom } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
-import { MessageListContext, MessageListContextValue } from '../contexts/MessageListContext';
+import type { MessageListContextValue } from '../contexts/MessageListContext';
+import { MessageListContext } from '../contexts/MessageListContext';
 import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
 
-const fields = {};
+type MessageListProviderProps = {
+	children: ReactNode;
+};
 
-export const MessageListProvider: FC<{
-	rid: IRoom['_id'];
-}> = memo(function MessageListProvider({ rid, ...props }) {
+const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
+	const room = useRoom();
+
+	if (!room) {
+		throw new Error('Room not found');
+	}
+
 	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
-	const subscription = useUserSubscription(rid, fields);
+	const subscription = useRoomSubscription();
 
 	const { isMobile } = useLayout();
 
@@ -44,7 +46,7 @@ export const MessageListProvider: FC<{
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
-	const autoTranslateLanguage = useAutotranslateLanguage(rid);
+	const autoTranslateLanguage = useAutotranslateLanguage(room._id);
 
 	const hasSubscription = Boolean(subscription);
 
@@ -167,15 +169,11 @@ export const MessageListProvider: FC<{
 		],
 	);
 
-	const room = useRoom();
-
-	if (!room) {
-		throw new Error('Room not found');
-	}
-
 	return (
 		<ToolboxProvider room={room}>
-			<MessageListContext.Provider value={context} {...props} />
+			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
 		</ToolboxProvider>
 	);
-});
+};
+
+export default memo(MessageListProvider);

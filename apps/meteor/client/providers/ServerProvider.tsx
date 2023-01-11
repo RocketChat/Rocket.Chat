@@ -1,8 +1,11 @@
-import { Serialized } from '@rocket.chat/core-typings';
-import type { Method, PathFor, MatchPathPattern, OperationParams, OperationResult } from '@rocket.chat/rest-typings';
-import { ServerContext, ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import type { Serialized } from '@rocket.chat/core-typings';
+import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
+import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { FC } from 'react';
+import { compile } from 'path-to-regexp';
+import type { FC } from 'react';
+import React from 'react';
 
 import { Info as info, APIClient } from '../../app/utils/client';
 
@@ -11,35 +14,33 @@ const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
 const callMethod = <MethodName extends ServerMethodName>(
 	methodName: MethodName,
 	...args: ServerMethodParameters<MethodName>
-): Promise<ServerMethodReturn<MethodName>> =>
-	new Promise((resolve, reject) => {
-		Meteor.call(methodName, ...args, (error: Error, result: ServerMethodReturn<MethodName>) => {
-			if (error) {
-				reject(error);
-				return;
-			}
+): Promise<ServerMethodReturn<MethodName>> => Meteor.callAsync(methodName, ...args);
 
-			resolve(result);
-		});
-	});
+const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>({
+	method,
+	pathPattern,
+	keys,
+	params,
+}: {
+	method: TMethod;
+	pathPattern: TPathPattern;
+	keys: UrlParams<TPathPattern>;
+	params: OperationParams<TMethod, TPathPattern>;
+}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
+	const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys);
 
-const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
-	method: TMethod,
-	path: TPath,
-	params: OperationParams<TMethod, MatchPathPattern<TPath>>,
-): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> => {
 	switch (method) {
 		case 'GET':
-			return APIClient.get(path as any, params as any) as any;
+			return APIClient.get(compiledPath as any, params as any) as any;
 
 		case 'POST':
-			return APIClient.post(path as any, params as any) as any;
+			return APIClient.post(compiledPath as any, params as any) as any;
 
 		case 'PUT':
-			return APIClient.put(path as any, params as any) as any;
+			return APIClient.put(compiledPath as any, params as any) as any;
 
 		case 'DELETE':
-			return APIClient.delete(path as any, params as any) as any;
+			return APIClient.delete(compiledPath as any, params as any) as any;
 
 		default:
 			throw new Error('Invalid HTTP method');

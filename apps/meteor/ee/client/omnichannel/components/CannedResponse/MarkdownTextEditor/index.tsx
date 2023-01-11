@@ -1,6 +1,7 @@
 import { Box, Divider, PositionAnimated, Tile } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, useCallback, useRef, useState } from 'react';
+import type { FC } from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
 
 import { EmojiPicker } from '../../../../../../app/emoji/client';
 import { Backdrop } from '../../../../../../client/components/Backdrop';
@@ -70,6 +71,10 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 		if (EmojiPicker.isOpened()) {
 			EmojiPicker.close();
 			return;
+		}
+
+		if (!textAreaRef?.current) {
+			throw new Error('Missing textAreaRef');
 		}
 
 		EmojiPicker.open(textAreaRef.current, (emoji: string): void => {

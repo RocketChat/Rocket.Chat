@@ -5,11 +5,11 @@
 	"devDependencies": {
 		"@types/jest": "^27.4.1",
 		"@types/node-rsa": "^1.1.1",
-		"eslint": "^8.22.0",
+		"eslint": "^8.29.0",
 		"jest": "^27.5.1",
-		"mongodb": "^4.3.1",
+		"mongodb": "^4.12.1",
 		"ts-jest": "^27.1.5",
-		"typescript": "~4.5.5"
+		"typescript": "~4.6.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

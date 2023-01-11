@@ -1,6 +1,7 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 

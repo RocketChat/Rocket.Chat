@@ -2,10 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, memo } from 'react';
+import type { FC } from 'react';
+import React, { useState, memo } from 'react';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
 type Username = Exclude<IUser['username'], undefined>;
@@ -18,7 +19,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const [users, setUsers] = useState<Array<Username>>([]);
 
-	const createDirect = useEndpointActionExperimental('POST', '/v1/dm.create');
+	const createDirect = useEndpointAction('POST', '/v1/dm.create');
 
 	const onCreate = useMutableCallback(async () => {
 		try {

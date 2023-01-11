@@ -64,14 +64,9 @@ const ContactInfo = ({ id, rid, route }) => {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const {
-		value: data,
-		phase: state,
-		error,
-	} = useEndpointData(
-		'/v1/omnichannel/contact',
-		useMemo(() => ({ contactId: id }), [id]),
-	);
+	const query = useMemo(() => ({ contactId: id }), [id]);
+
+	const { value: data, phase: state, error } = useEndpointData('/v1/omnichannel/contact', { params: query });
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');

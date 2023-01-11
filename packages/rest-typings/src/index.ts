@@ -11,6 +11,7 @@ import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
+import type { DirectoryEndpoint } from './v1/directory';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
@@ -54,6 +55,7 @@ export interface Endpoints
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
+		DirectoryEndpoint,
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,

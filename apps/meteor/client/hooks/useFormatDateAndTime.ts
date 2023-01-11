@@ -1,5 +1,6 @@
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
-import moment, { MomentInput } from 'moment';
+import type { MomentInput } from 'moment';
+import moment from 'moment';
 import { useCallback } from 'react';
 
 type UseFormatDateAndTimeParams = {

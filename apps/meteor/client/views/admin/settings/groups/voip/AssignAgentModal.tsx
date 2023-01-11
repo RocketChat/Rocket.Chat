@@ -1,7 +1,8 @@
 import { Button, Modal, Select, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -33,7 +34,7 @@ const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, close
 	});
 	const handleAgentChange = useMutableCallback((e) => setAgent(e));
 
-	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', query);
+	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', { params: query });
 
 	return (
 		<Modal>

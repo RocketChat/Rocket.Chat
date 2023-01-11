@@ -1,7 +1,8 @@
-import { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
+import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
@@ -25,10 +26,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 		value: data,
 		phase,
 		error,
-	} = useEndpointData(
-		'/v1/sessions/info.admin',
-		useMemo(() => ({ sessionId: deviceId }), [deviceId]),
-	);
+	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (

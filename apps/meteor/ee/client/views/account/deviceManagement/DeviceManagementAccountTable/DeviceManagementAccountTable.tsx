@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
@@ -29,7 +30,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 		[itemsPerPage, current, sortBy, sortDirection],
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', { params: query });
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 

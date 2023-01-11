@@ -1,5 +1,4 @@
 {
-  "403": "Απαγορευμένο",
   "500": "Εσωτερικό Σφάλμα Διακομιστή",
   "__username__is_no_longer__role__defined_by__user_by_": "Ο __username__ δεν είναι πλέον __role__ από τον __user_by__",
   "__username__was_set__role__by__user_by_": "Ο __username__ ορίστηκε ως __role__ από τον __user_by__",
@@ -2043,6 +2042,7 @@
   "Reactions": "αντιδράσεις",
   "Read_by": "Διαβάστε από",
   "Read_only": "Μόνο για ανάγνωση",
+  "This_room_is_read_only": "Αυτό το δωμάτιο διαβάζεται μόνο",
   "Read_only_changed_successfully": "Η ανάγνωση μόνο έγινε με επιτυχία",
   "Read_only_channel": "Μόνο για κανάλια ανάγνωσης",
   "Read_only_group": "Ομάδα μόνο για ανάγνωση",
@@ -2807,6 +2807,7 @@
   "registration.page.login.forgot": "Ξέχασα τον κωδικό μου",
   "registration.page.resetPassword.sent": "Αν αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου είναι καταχωρημένο, θα στείλουμε οδηγίες σχετικά με τον τρόπο επαναφοράς του κωδικού πρόσβασής σας. Εάν δεν λάβετε σύντομα ένα μήνυμα ηλεκτρονικού ταχυδρομείου, επιστρέψτε και δοκιμάστε ξανά.",
   "registration.component.login": "Είσοδος",
+  "registration.component.login.userNotFound": "Ο χρήστης δεν βρέθηκε",
   "registration.component.resetPassword": "Επαναφορά κωδικού",
   "registration.component.form.emailOrUsername": "Email ή όνομα χρήστη",
   "registration.component.form.email": "Email",

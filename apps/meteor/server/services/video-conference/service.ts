@@ -30,16 +30,15 @@ import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { IVideoConfService, VideoConferenceJoinOptions } from '../../sdk/types/IVideoConfService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Apps } from '../../../app/apps/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
-import { api } from '../../sdk/api';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';
@@ -163,15 +162,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		return [
 			{
-				blockId: 'id',
-				type: 'context',
-				elements: [
-					{
-						type: 'plain_text',
-						text: `${TAPi18n.__('Video_Conference_Url')}: ${call.url}`,
-						emoji: false,
-					},
-				],
+				blockId: 'videoconf-info',
+				type: 'section',
+				text: {
+					type: 'mrkdwn',
+					text: `**${TAPi18n.__('Video_Conference_Url')}**: ${call.url}`,
+				},
 			} as IBlock,
 		];
 	}
@@ -479,6 +475,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
 		const record = {
+			t: 'videoconf',
 			msg: '',
 			groupable: false,
 			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
@@ -584,8 +581,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		{ _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>,
 		extraData?: Partial<IDirectVideoConference>,
 	): Promise<DirectCallInstructions> {
-		const callee = uids?.filter((uid) => uid !== user._id).pop();
-		if (!callee) {
+		const calleeId = uids?.filter((uid) => uid !== user._id).pop();
+		if (!calleeId) {
 			// Are you trying to call yourself?
 			throw new Error('invalid-call-target');
 		}
@@ -632,7 +629,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return {
 			type: 'direct',
 			callId,
-			callee,
+			calleeId,
 		};
 	}
 
