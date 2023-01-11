@@ -51,12 +51,12 @@ const FilterByText = ({
 	return (
 		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection={shouldFiltersStack ? 'column' : 'row'}>
 			<TextInput
+				name='marketplaceFilter'
 				placeholder={placeholder ?? t('Search')}
 				ref={inputRef}
 				addon={<Icon name='magnifier' size='x20' />}
 				onChange={handleInputChange}
 				value={text}
-				data-qa-id='AppsFilterFilterByText'
 				autoFocus={autoFocus}
 			/>
 			{isFilterByTextPropsWithButton(props) ? (
