@@ -49,7 +49,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 	if (error || !data || data.sounds.length < 1) {
 		return (
 			<Box fontScale='h2' pb='x20'>
-				{error}
+				{(error as Error).message}
 			</Box>
 		);
 	}
