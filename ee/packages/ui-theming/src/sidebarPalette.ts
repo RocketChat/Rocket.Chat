@@ -4,7 +4,7 @@ export const palette = [
 		description: 'Use as a container on top of the background',
 		list: [
 			{ name: 'surface-tint', token: '', color: '#262931' },
-			{ name: 'surface-hover', token: '', color: '#000000' },
+			{ name: 'surface-hover', token: '', color: '#1B1D22' },
 			{ name: 'surface-selected', token: 'N900', color: '#31363F' },
 		],
 	},
