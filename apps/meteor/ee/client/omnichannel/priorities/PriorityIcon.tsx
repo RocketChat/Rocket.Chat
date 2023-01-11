@@ -1,13 +1,14 @@
+import type { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { Icon, Palette } from '@rocket.chat/fuselage';
+import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
-	level: 1 | 2 | 3 | 4 | 5;
+	level: LivechatPriorityWeight;
 };
 
-const PRIORITIES = {
-	// TODO: Update colors to fuselage Palette
+const PRIORITIES: Record<number, { iconName: Keys; color: string }> = {
 	1: {
 		iconName: 'chevron-double-up',
 		color: Palette.badge['badge-background-level-4'].toString(),
@@ -28,7 +29,7 @@ const PRIORITIES = {
 		iconName: 'chevron-double-down',
 		color: Palette.badge['badge-background-level-2'].toString(),
 	},
-} as const;
+};
 
 export const PriorityIcon = ({ level, size = 20, ...props }: PriorityIconProps): ReactElement | null => {
 	const { iconName, color } = PRIORITIES[level] || {};
