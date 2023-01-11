@@ -204,4 +204,12 @@ export class HomeContent {
 	get btnOnHold(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
+
+	get btnAnonymousSignIn(): Locator {
+		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
+	}
+
+	get btnAnonymousTalk(): Locator {
+		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
 }

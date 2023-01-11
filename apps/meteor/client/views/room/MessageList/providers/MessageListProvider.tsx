@@ -1,28 +1,34 @@
-import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useUserSubscription, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import { useLayout, useUser, useUserPreference, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import { useRoom } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
 import type { MessageListContextValue } from '../contexts/MessageListContext';
 import { MessageListContext } from '../contexts/MessageListContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 
-const fields = {};
+type MessageListProviderProps = {
+	children: ReactNode;
+};
 
-export const MessageListProvider: FC<{
-	rid: IRoom['_id'];
-}> = memo(function MessageListProvider({ rid, ...props }) {
+const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
+	const room = useRoom();
+
+	if (!room) {
+		throw new Error('Room not found');
+	}
+
 	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 	const user = useUser();
 	const uid = user?._id;
 	const username = user?.username;
-	const subscription = useUserSubscription(rid, fields);
+	const subscription = useRoomSubscription();
 
 	const { isMobile } = useLayout();
 
@@ -137,15 +143,11 @@ export const MessageListProvider: FC<{
 		],
 	);
 
-	const room = useRoom();
-
-	if (!room) {
-		throw new Error('Room not found');
-	}
-
 	return (
 		<ToolboxProvider room={room}>
-			<MessageListContext.Provider value={context} {...props} />
+			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
 		</ToolboxProvider>
 	);
-});
+};
+
+export default memo(MessageListProvider);
