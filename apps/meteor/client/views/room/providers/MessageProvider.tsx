@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useLayout, useCurrentRoute, useRoute, useSetting } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactNode, UIEvent } from 'react';
+import type { MouseEvent, ReactNode, UIEvent, VFC } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { actionLinks } from '../../../../app/action-links/client';
@@ -11,17 +11,19 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { MessageContext } from '../contexts/MessageContext';
+import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 import { useTabBarOpen } from '../contexts/ToolboxContext';
 
-const MessageProvider = memo(function MessageProvider({
-	rid,
-	broadcast,
-	children,
-}: {
-	rid: string;
-	broadcast?: boolean;
+type MessageProviderProps = {
 	children: ReactNode;
-}) {
+};
+
+const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
+	const room = useRoom();
+	const subscription = useRoomSubscription();
+
+	const broadcast = subscription?.broadcast ?? false;
+
 	const tabBarOpen = useTabBarOpen();
 	const [routeName, params, queryStringParams] = useCurrentRoute();
 	const { isEmbedded, isMobile } = useLayout();
@@ -43,7 +45,7 @@ const MessageProvider = memo(function MessageProvider({
 				router.replace(
 					{
 						...params,
-						rid,
+						rid: room._id,
 						tab: 'thread',
 						context: tmid,
 					},
@@ -80,8 +82,8 @@ const MessageProvider = memo(function MessageProvider({
 			  };
 		return {
 			oembedEnabled,
-			oembedMaxWidth: isMobile ? ('100%' as const) : ('368px' as `${number}px`),
-			oembedMaxHeight: '368px' as `${number}px`,
+			oembedMaxWidth: isMobile ? ('100%' as const) : 368,
+			oembedMaxHeight: 368,
 			broadcast: Boolean(broadcast),
 			actions: {
 				runActionLink,
@@ -90,7 +92,7 @@ const MessageProvider = memo(function MessageProvider({
 					(e: UIEvent): void => {
 						openUserCard({
 							username,
-							rid,
+							rid: room._id,
 							target: e.currentTarget,
 							open: (e: MouseEvent<HTMLDivElement>) => {
 								e.preventDefault();
@@ -116,9 +118,22 @@ const MessageProvider = memo(function MessageProvider({
 				dateAndTime,
 			},
 		};
-	}, [isEmbedded, oembedEnabled, isMobile, broadcast, time, dateAndTime, router, params, rid, routeName, tabBarOpen, queryStringParams]);
+	}, [
+		isEmbedded,
+		oembedEnabled,
+		isMobile,
+		broadcast,
+		time,
+		dateAndTime,
+		router,
+		params,
+		routeName,
+		tabBarOpen,
+		room._id,
+		queryStringParams,
+	]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
-});
+};
 
-export default MessageProvider;
+export default memo(MessageProvider);

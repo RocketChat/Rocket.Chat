@@ -15,7 +15,7 @@ type EditCustomSoundProps = {
 function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement {
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-sounds.list', query);
+	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-sounds.list', { params: query });
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (

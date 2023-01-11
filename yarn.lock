@@ -6187,7 +6187,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -6207,7 +6207,7 @@ __metadata:
     moment-timezone: ~0.5.27
     mongodb: ^4.12.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6226,7 +6226,7 @@ __metadata:
     split-on-first: ^3.0.0
     strict-uri-encode: ^2.0.0
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6285,7 +6285,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6298,7 +6298,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6319,7 +6319,7 @@ __metadata:
     fibers: ^5.0.3
     mongodb: ^4.12.1
     prettier: ^2.7.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6335,7 +6335,7 @@ __metadata:
     eslint: ^8.29.0
     mongodb: ^4.12.1
     prettier: ^2.7.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6396,7 +6396,7 @@ __metadata:
     polka: ^0.5.2
     sharp: ^0.30.7
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
     underscore: ^1.13.4
     uuid: ^7.0.3
     ws: ^8.8.1
@@ -6433,7 +6433,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: ^8.29.0
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -6579,7 +6579,7 @@ __metadata:
     react-dom: ^17.0.2
     rimraf: ^3.0.2
     tslib: ^2.3.1
-    typescript: ~4.3.5
+    typescript: ~4.6.4
     webpack: ~5.68.0
   peerDependencies:
     "@rocket.chat/apps-engine": "*"
@@ -6669,7 +6669,7 @@ __metadata:
     react-dom: ~17.0.2
     react-error-boundary: ^3.1.4
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   peerDependencies:
     "@rocket.chat/core-typings": "*"
     "@rocket.chat/css-in-js": "*"
@@ -6774,7 +6774,7 @@ __metadata:
     stylelint: ^14.9.1
     stylelint-order: ^5.0.0
     svg-loader: ^0.0.2
-    typescript: ~4.5.5
+    typescript: ~4.6.4
     url-loader: ^4.1.1
     webpack: ^4.44.1
     webpack-cli: ^3.3.12
@@ -6885,6 +6885,7 @@ __metadata:
     "@storybook/addons": ~6.5.14
     "@storybook/react": ~6.5.14
     "@storybook/testing-library": 0.0.13
+    "@swc/core": ^1.3.24
     "@tanstack/react-query": ^4.16.1
     "@tanstack/react-query-devtools": ^4.19.1
     "@testing-library/react": ~12.1.5
@@ -6922,13 +6923,13 @@ __metadata:
     "@types/katex": ^0.14.0
     "@types/later": ^1.2.7
     "@types/ldapjs": ^2.2.2
-    "@types/less": ^3.0.3
+    "@types/less": ~3.0.3
     "@types/lodash": ^4.14.182
     "@types/lodash.debounce": ^4.0.7
     "@types/lodash.get": ^4.4.7
     "@types/mailparser": ^3.4.0
     "@types/marked": ^4.0.3
-    "@types/meteor": 2.7.1
+    "@types/meteor": 2.8.1
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
     "@types/moment-timezone": ^0.5.30
@@ -7050,7 +7051,7 @@ __metadata:
     katex: ^0.11.1
     ldap-escape: ^2.0.6
     ldapjs: ^2.3.3
-    less: "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6"
+    less: ~3.0.3
     less-plugin-autoprefixer: ^2.1.0
     limax: ^3.0.0
     localforage: ^1.10.0
@@ -7134,7 +7135,7 @@ __metadata:
     turndown: ^7.1.1
     twilio: ^3.76.1
     twit: ^2.2.11
-    typescript: ~4.5.5
+    typescript: ~4.6.4
     ua-parser-js: ^1.0.2
     underscore: ^1.13.4
     underscore.string: ^3.3.6
@@ -7164,7 +7165,7 @@ __metadata:
     jest: ^27.5.1
     mongodb: ^4.12.1
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7177,7 +7178,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7220,7 +7221,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7249,7 +7250,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7271,7 +7272,7 @@ __metadata:
     eslint: ^8.29.0
     jest: ^29.0.3
     mongodb: ^4.12.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7299,7 +7300,7 @@ __metadata:
     jest: ^27.5.1
     mongodb: ^4.12.1
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7343,7 +7344,7 @@ __metadata:
     pino: ^8.4.2
     polka: ^0.5.2
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -7418,7 +7419,7 @@ __metadata:
     postcss-url: ~10.1.3
     react: ~17.0.2
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -7452,7 +7453,7 @@ __metadata:
     eslint-plugin-storybook: ^0.6.7
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
@@ -7478,7 +7479,7 @@ __metadata:
     mongodb: ^4.12.1
     react: ~17.0.2
     ts-jest: ^27.1.5
-    typescript: ~4.5.5
+    typescript: ~4.6.4
     use-sync-external-store: ^1.2.0
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -7534,7 +7535,7 @@ __metadata:
     postcss-url: ~10.1.3
     react: ~17.0.2
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -7572,7 +7573,7 @@ __metadata:
     eslint-plugin-storybook: ^0.6.7
     jest: ^27.5.1
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -7598,7 +7599,7 @@ __metadata:
     jest: ^27.5.1
     react-hook-form: ^7.34.2
     ts-jest: ^27.1.4
-    typescript: ~4.5.5
+    typescript: ~4.6.4
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/ui-contexts": "*"
@@ -9076,6 +9077,117 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-darwin-arm64@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-darwin-arm64@npm:1.3.24"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-darwin-x64@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-darwin-x64@npm:1.3.24"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm-gnueabihf@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.24"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-gnu@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.24"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-musl@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.24"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-gnu@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.24"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-musl@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.24"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-arm64-msvc@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.24"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-ia32-msvc@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.24"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-x64-msvc@npm:1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.24"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core@npm:^1.3.24":
+  version: 1.3.24
+  resolution: "@swc/core@npm:1.3.24"
+  dependencies:
+    "@swc/core-darwin-arm64": 1.3.24
+    "@swc/core-darwin-x64": 1.3.24
+    "@swc/core-linux-arm-gnueabihf": 1.3.24
+    "@swc/core-linux-arm64-gnu": 1.3.24
+    "@swc/core-linux-arm64-musl": 1.3.24
+    "@swc/core-linux-x64-gnu": 1.3.24
+    "@swc/core-linux-x64-musl": 1.3.24
+    "@swc/core-win32-arm64-msvc": 1.3.24
+    "@swc/core-win32-ia32-msvc": 1.3.24
+    "@swc/core-win32-x64-msvc": 1.3.24
+  dependenciesMeta:
+    "@swc/core-darwin-arm64":
+      optional: true
+    "@swc/core-darwin-x64":
+      optional: true
+    "@swc/core-linux-arm-gnueabihf":
+      optional: true
+    "@swc/core-linux-arm64-gnu":
+      optional: true
+    "@swc/core-linux-arm64-musl":
+      optional: true
+    "@swc/core-linux-x64-gnu":
+      optional: true
+    "@swc/core-linux-x64-musl":
+      optional: true
+    "@swc/core-win32-arm64-msvc":
+      optional: true
+    "@swc/core-win32-ia32-msvc":
+      optional: true
+    "@swc/core-win32-x64-msvc":
+      optional: true
+  bin:
+    swcx: run_swcx.js
+  checksum: a27b842be129b83c116f804e63deaa51dbd5d9b77d6260888d549f6408df1dd05aeef20046ceacc9fd7458e6afda6723545249bd77f77086b98bd9bf84738c19
+  languageName: node
+  linkType: hard
+
 "@tanstack/match-sorter-utils@npm:^8.7.0":
   version: 8.7.2
   resolution: "@tanstack/match-sorter-utils@npm:8.7.2"
@@ -9815,7 +9927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/less@npm:^3.0.3":
+"@types/less@npm:~3.0.3":
   version: 3.0.3
   resolution: "@types/less@npm:3.0.3"
   checksum: 389ce4c843fb88484ffbe4e3b63da0db1cea3e594c57086a5e642431f031f569819b4a210ae4ca109207d2307daa7e48e0e00315892fa7582748e0f434e62881
@@ -9883,6 +9995,19 @@ __metadata:
     "@types/underscore": "*"
     mongodb: ^4.3.1
   checksum: a363cbcdec41e233997f3e05fd616e9ba1840bf7648b265144102769c0afdbeb614bf6d17e969343ed70883396a341ea876149d3f23fd2ea60a07c99f067f91e
+  languageName: node
+  linkType: hard
+
+"@types/meteor@npm:2.8.1":
+  version: 2.8.1
+  resolution: "@types/meteor@npm:2.8.1"
+  dependencies:
+    "@types/connect": "*"
+    "@types/jquery": "*"
+    "@types/react": "*"
+    "@types/underscore": "*"
+    mongodb: ^4.3.1
+  checksum: 00d29816a05db7dac92f27e22ced92f4db36b56a5778479f3c3aa4b00165944536ce1c37600f9b61c497dc85a77a91e1244f1ed346daea383af1c54f86013d72
   languageName: node
   linkType: hard
 
@@ -11392,13 +11517,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amdefine@npm:>=0.0.4":
-  version: 1.0.1
-  resolution: "amdefine@npm:1.0.1"
-  checksum: 9d4e15b94641643a9385b2841b4cb2bcf4e8e2f741ea4bd475c93ad7bab261ad4ed827a32e9c549b38b98759c4526c173ae4e6dde8caeb75ee5cebedc9863762
-  languageName: node
-  linkType: hard
-
 "amp-message@npm:~0.1.1":
   version: 0.1.2
   resolution: "amp-message@npm:0.1.2"
@@ -11953,17 +12071,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asap@npm:^2.0.0":
+"asap@npm:^2.0.0, asap@npm:~2.0.3":
   version: 2.0.6
   resolution: "asap@npm:2.0.6"
   checksum: b296c92c4b969e973260e47523207cd5769abd27c245a68c26dc7a0fe8053c55bb04360237cb51cab1df52be939da77150ace99ad331fb7fb13b3423ed73ff3d
-  languageName: node
-  linkType: hard
-
-"asap@npm:~1.0.0":
-  version: 1.0.0
-  resolution: "asap@npm:1.0.0"
-  checksum: 5e8fe70a867c0f76f77be6a856eb4bad52113db494c5c1e12ba258bd23dd125030849896b4750a8b0f81531407b74f9694905c535358179ae26ceecfb79aa9ed
   languageName: node
   linkType: hard
 
@@ -19809,15 +19920,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^3.0.5":
-  version: 3.0.12
-  resolution: "graceful-fs@npm:3.0.12"
-  dependencies:
-    natives: ^1.1.3
-  checksum: c7c6c333a174d07492823fc2ff9231fb9247eac182831dce795dfd624e74b1376649cd0682f8d21ada648bf7b4c72bb497c98b4028b410ae37e5ad289d762824
-  languageName: node
-  linkType: hard
-
 "graceful-fs@npm:^4.1.10, graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.3, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.1.9, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.2, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9":
   version: 4.2.10
   resolution: "graceful-fs@npm:4.2.10"
@@ -20876,12 +20978,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:~0.3.5":
-  version: 0.3.5
-  resolution: "image-size@npm:0.3.5"
+"image-size@npm:~0.5.0":
+  version: 0.5.5
+  resolution: "image-size@npm:0.5.5"
   bin:
-    image-size: ./bin/image-size
-  checksum: 885ce5a4062f8d46920e9b1dfbae826932b4c231846634e957e1c79a8cf245f46b660db87d12c8fc5f66c3ce31526d556672b851595e40c53e82fb1f3f37f34c
+    image-size: bin/image-size.js
+  checksum: 6709d5cb73e96d5097ae5e9aa746dd36d6a9c8cf645e7eecac72ea07dbd6f312a65183752762fa92e2f3b698d4ed8d85dd55bf5207b6367245996bd16576d8fe
   languageName: node
   linkType: hard
 
@@ -24037,18 +24139,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"less@https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6":
-  version: 2.5.0
-  resolution: "less@https://github.com/meteor/less.js.git#commit=8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6"
+"less@npm:~3.0.3":
+  version: 3.0.4
+  resolution: "less@npm:3.0.4"
   dependencies:
     errno: ^0.1.1
-    graceful-fs: ^3.0.5
-    image-size: ~0.3.5
-    mime: ^1.2.11
+    graceful-fs: ^4.1.2
+    image-size: ~0.5.0
+    mime: ^1.4.1
     mkdirp: ^0.5.0
-    promise: ^6.0.1
-    request: ^2.51.0
-    source-map: ^0.4.2
+    promise: ^7.1.1
+    request: ^2.83.0
+    source-map: ~0.6.0
   dependenciesMeta:
     errno:
       optional: true
@@ -24068,7 +24170,7 @@ __metadata:
       optional: true
   bin:
     lessc: ./bin/lessc
-  checksum: 61568b56b5289fdcfe3d51baf3c13e7db7140022c0a37ef0ae343169f0de927a4b4f4272bc10c20101796e8ee79e934e024051321bba93b3ae071f734309bd98
+  checksum: cc397bd3cd3d24f5d4be659fa25d2e7f38c664435b0d7ca1dcfbdd551444f594c1ab050852d961364c06e830da3c2103a17b0bfda66b2b96d11be4841a8435b5
   languageName: node
   linkType: hard
 
@@ -25427,7 +25529,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:1.6.0, mime@npm:^1.2.11, mime@npm:^1.3.4":
+"mime@npm:1.6.0, mime@npm:^1.3.4, mime@npm:^1.4.1":
   version: 1.6.0
   resolution: "mime@npm:1.6.0"
   bin:
@@ -26169,13 +26271,6 @@ __metadata:
   version: 1.0.2
   resolution: "napi-build-utils@npm:1.0.2"
   checksum: 06c14271ee966e108d55ae109f340976a9556c8603e888037145d6522726aebe89dd0c861b4b83947feaf6d39e79e08817559e8693deedc2c94e82c5cbd090c7
-  languageName: node
-  linkType: hard
-
-"natives@npm:^1.1.3":
-  version: 1.1.6
-  resolution: "natives@npm:1.1.6"
-  checksum: f9823dddba1eb71dc34f7e684d6d2bb39e709bdc54c42e89f27ec4a87966564644d88d2ea332ddfb91d00129a03d8e73abc35b09a0d985a80d6eaad95f3c1887
   languageName: node
   linkType: hard
 
@@ -29555,12 +29650,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise@npm:^6.0.1":
-  version: 6.1.0
-  resolution: "promise@npm:6.1.0"
+"promise@npm:^7.1.1":
+  version: 7.3.1
+  resolution: "promise@npm:7.3.1"
   dependencies:
-    asap: ~1.0.0
-  checksum: 9b36a42e2999672babceef60ff2219ccbdc1ac4bd629c283a3d5d6669145bedb6d039425292be58379132c9efa84c743280ca65f7841c59ef71a86aaa00945cd
+    asap: ~2.0.3
+  checksum: 475bb069130179fbd27ed2ab45f26d8862376a137a57314cf53310bdd85cc986a826fd585829be97ebc0aaf10e9d8e68be1bfe5a4a0364144b1f9eedfa940cf1
   languageName: node
   linkType: hard
 
@@ -31069,7 +31164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"request@npm:^2.51.0, request@npm:^2.68.0, request@npm:^2.82.0, request@npm:^2.85.0, request@npm:^2.88.0, request@npm:^2.88.2":
+"request@npm:^2.68.0, request@npm:^2.82.0, request@npm:^2.83.0, request@npm:^2.85.0, request@npm:^2.88.0, request@npm:^2.88.2":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
   dependencies:
@@ -31450,7 +31545,7 @@ __metadata:
     sodium-native: ^3.3.0
     sodium-plus: ^0.9.0
     ts-node: ^10.9.1
-    typescript: ~4.5.5
+    typescript: ~4.6.4
     underscore.string: ^3.3.6
     uuid: ^8.3.2
     ws: ^8.8.1
@@ -32530,15 +32625,6 @@ __metadata:
   version: 0.4.1
   resolution: "source-map-url@npm:0.4.1"
   checksum: 64c5c2c77aff815a6e61a4120c309ae4cac01298d9bcbb3deb1b46a4dd4c46d4a1eaeda79ec9f684766ae80e8dc86367b89326ce9dd2b89947bd9291fc1ac08c
-  languageName: node
-  linkType: hard
-
-"source-map@npm:^0.4.2":
-  version: 0.4.4
-  resolution: "source-map@npm:0.4.4"
-  dependencies:
-    amdefine: ">=0.0.4"
-  checksum: b31992fcb4a2a6c335617f187bd36f392896dfcc111830ebdb8b716923cf6554b665833b975fc998bdf3a63881b2c8b4c5c34fda0280357b8c18fe6aa5d148ea
   languageName: node
   linkType: hard
 
@@ -34850,43 +34936,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~4.3.5":
-  version: 4.3.5
-  resolution: "typescript@npm:4.3.5"
+"typescript@npm:~4.6.4":
+  version: 4.6.4
+  resolution: "typescript@npm:4.6.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: bab033b5e2b0790dd35b77fd005df976ef80b8d84fd2c6e63cc31808151875beae9216e5a315fe7068e8499905c3c354248fe83272cdfc13b7705635f0c66c97
+  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
   languageName: node
   linkType: hard
 
-"typescript@npm:~4.5.5":
-  version: 4.5.5
-  resolution: "typescript@npm:4.5.5"
+"typescript@patch:typescript@~4.6.4#~builtin<compat/typescript>":
+  version: 4.6.4
+  resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 506f4c919dc8aeaafa92068c997f1d213b9df4d9756d0fae1a1e7ab66b585ab3498050e236113a1c9e57ee08c21ec6814ca7a7f61378c058d79af50a4b1f5a5e
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@~4.3.5#~builtin<compat/typescript>":
-  version: 4.3.5
-  resolution: "typescript@patch:typescript@npm%3A4.3.5#~builtin<compat/typescript>::version=4.3.5&hash=f456af"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 365df18cf979c971ef9543b2acaa8694377a803f98e1804c41d0ede0b09d7046cb0cd98f2eaf3884b0fe923c01a60af1f653841bd8805c9715d5479c09a4ebe4
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@~4.5.5#~builtin<compat/typescript>":
-  version: 4.5.5
-  resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=f456af"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 858c61fa63f7274ca4aaaffeced854d550bf416cff6e558c4884041b3311fb662f476f167cf5c9f8680c607239797e26a2ee0bcc6467fbc05bfcb218e1c6c671
+  checksum: 1cb434fbc637d347be90e3a0c6cd05e33c38f941713c8786d3031faf1842c2c148ba91d2fac01e7276b0ae3249b8633f1660e32686cc7a8c6a8fd5361dc52c66
   languageName: node
   linkType: hard
 
