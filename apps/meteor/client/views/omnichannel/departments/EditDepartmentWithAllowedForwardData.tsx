@@ -6,8 +6,9 @@ import { FormSkeleton } from '../../../components/Skeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
+import type { EditDepartmentProps } from './EditDepartment';
 
-function EditDepartmentWithAllowedForwardData({ data, ...props }) {
+function EditDepartmentWithAllowedForwardData({ data, ...props }: Omit<EditDepartmentProps, 'allowedToForwardData'>) {
 	const t = useTranslation();
 
 	const {
@@ -17,7 +18,7 @@ function EditDepartmentWithAllowedForwardData({ data, ...props }) {
 	} = useEndpointData('/v1/livechat/department.listByIds', {
 		params: useMemo(
 			() => ({
-				ids: data && data.department && data.department.departmentsAllowedToForward ? data.department.departmentsAllowedToForward : [],
+				ids: data?.department?.departmentsAllowedToForward ? data.department.departmentsAllowedToForward : [],
 			}),
 			[data],
 		),

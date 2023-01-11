@@ -1,13 +1,28 @@
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import type { Dispatch, SetStateAction, ReactElement, ReactNode } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
+import type { GenericTableParams } from '../../../components/GenericTable/GenericTable';
 import Page from '../../../components/Page';
+import type { IRenderRow } from './DepartmentsRoute';
 
-function DepartmentsPage({ data, header, setParams, params, title, renderRow, children }) {
+type DepartmentsPageProps = {
+	data?: Serialized<OperationResult<'GET', '/v1/livechat/department'>> | Record<string, never>;
+	header: (false | JSX.Element)[];
+	setParams: Dispatch<SetStateAction<GenericTableParams>>;
+	params: GenericTableParams;
+	title: string;
+	renderRow: (props: IRenderRow) => ReactElement;
+	children?: ReactNode;
+};
+
+function DepartmentsPage({ data = {}, header, setParams, params, title, renderRow, children }: DepartmentsPageProps) {
 	const departmentsRoute = useRoute('omnichannel-departments');
 
 	const t = useTranslation();
@@ -29,11 +44,11 @@ function DepartmentsPage({ data, header, setParams, params, title, renderRow, ch
 					<GenericTable
 						header={header}
 						renderRow={renderRow}
-						results={data && data.departments}
-						total={data && data.total}
+						results={data?.departments}
+						total={data?.total}
 						setParams={setParams}
 						params={params}
-						renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
+						renderFilter={({ onChange, ...props }: any) => <FilterByText onChange={onChange} {...props} />}
 					/>
 				</Page.Content>
 			</Page>

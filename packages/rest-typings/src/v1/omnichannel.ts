@@ -70,7 +70,7 @@ const LivechatRoomOnHoldSchema = {
 
 export const isLivechatRoomOnHoldProps = ajv.compile<LivechatRoomOnHold>(LivechatRoomOnHoldSchema);
 
-type LivechatDepartmentId = {
+export type LivechatDepartmentId = {
 	onlyMyDepartments?: booleanString;
 	includeAgents?: booleanString;
 };
@@ -132,9 +132,9 @@ export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<Livech
 	LivechatDepartmentDepartmentIdAgentsGETSchema,
 );
 
-type LivechatDepartmentDepartmentIdAgentsPOST = {
-	upsert: string[];
-	remove: string[];
+export type LivechatDepartmentDepartmentIdAgentsPOST = {
+	upsert: ILivechatDepartmentAgents[];
+	remove: ILivechatDepartmentAgents[];
 };
 
 const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {

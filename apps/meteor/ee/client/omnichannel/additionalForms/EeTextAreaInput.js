@@ -2,7 +2,7 @@ import { TextAreaInput, Field } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-export const EeTextAreaInput = ({ value, handler, label, placeholder }) => {
+export const EeTextAreaInput = ({ value, handler, label, placeholder = '' }) => {
 	const t = useTranslation();
 
 	return (

@@ -1,3 +1,4 @@
+import type { ILivechatDepartment, ILivechatDepartmentAgents, ILivechatDepartmentRecord, Serialized } from '@rocket.chat/core-typings';
 import {
 	FieldGroup,
 	Field,
@@ -15,10 +16,12 @@ import {
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useRef, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
+import type { RoomListOptions } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
@@ -26,24 +29,64 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useFormsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
-function withDefault(key, defaultValue) {
+export type DataType = {
+	department: ILivechatDepartmentRecord | null;
+	agents?: ILivechatDepartmentAgents[];
+};
+
+export type EditDepartmentProps = {
+	data?: DataType;
+	id: string | undefined;
+	reload: () => void;
+	title: string;
+	allowedToForwardData?: Serialized<{
+		departments: ILivechatDepartment[];
+	}>;
+};
+
+type ValuesForm = {
+	name: string;
+	email: string;
+	description: string;
+	enabled: boolean;
+	maxNumberSimultaneousChat: any;
+	showOnRegistration: boolean;
+	showOnOfflineForm: boolean;
+	abandonedRoomsCloseCustomMessage: any;
+	requestTagBeforeClosingChat: boolean;
+	offlineMessageChannelName: string;
+	visitorInactivityTimeoutInSeconds: any;
+	waitingQueueMessage: any;
+	departmentsAllowedToForward: {
+		label: string;
+		value: string;
+	}[];
+	fallbackForwardDepartment:
+		| string
+		| {
+				label: string;
+				value: string;
+		  };
+};
+
+function withDefault<T>(key: T, defaultValue: T) {
 	return key || defaultValue;
 }
 
-function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
+function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
 
 	const {
-		useEeNumberInput = () => {},
-		useEeTextInput = () => {},
-		useEeTextAreaInput = () => {},
-		useDepartmentForwarding = () => {},
-		useDepartmentBusinessHours = () => {},
-		useSelectForwardDepartment = () => {},
+		useEeNumberInput = () => undefined,
+		useEeTextInput = () => undefined,
+		useEeTextAreaInput = () => undefined,
+		useDepartmentForwarding = () => undefined,
+		useDepartmentBusinessHours = () => undefined,
+		useSelectForwardDepartment = () => undefined,
 	} = useFormsSubscription();
 
-	const { agents } = data || { agents: [] };
+	const { agents = [], department } = data || { agents: [], department: null };
 
 	const initialAgents = useRef(agents);
 
@@ -54,11 +97,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const DepartmentForwarding = useDepartmentForwarding();
 	const DepartmentBusinessHours = useDepartmentBusinessHours();
 	const AutoCompleteDepartment = useSelectForwardDepartment();
-	const [agentList, setAgentList] = useState([]);
+	const [agentList, setAgentList] = useState<ILivechatDepartmentAgents[]>([]);
 	const [agentsRemoved, setAgentsRemoved] = useState([]);
 	const [agentsAdded, setAgentsAdded] = useState([]);
-
-	const { department } = data || { department: {} };
 
 	const [initialTags] = useState(() => department?.chatClosingTags ?? []);
 	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);
@@ -112,15 +153,15 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		waitingQueueMessage,
 		departmentsAllowedToForward,
 		fallbackForwardDepartment,
-	} = values;
+	} = values as ValuesForm;
 
 	const { itemsList: RoomsList, loadMoreItems: loadMoreRooms } = useRoomsList(
-		useMemo(() => ({ text: offlineMessageChannelName }), [offlineMessageChannelName]),
+		useMemo((): RoomListOptions => ({ text: offlineMessageChannelName }), [offlineMessageChannelName]),
 	);
 
 	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
 
-	const handleTagChipClick = (tag) => () => {
+	const handleTagChipClick = (tag: string) => () => {
 		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
 	};
 
@@ -136,7 +177,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		});
 	}, []);
 
-	const handleTagTextChange = (e) => {
+	const handleTagTextChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setTagsState(([tags]) => [tags, e.target.value]);
 	};
 
@@ -145,9 +186,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [nameError, setNameError] = useState();
-	const [emailError, setEmailError] = useState();
-	const [tagError, setTagError] = useState();
+	const [nameError, setNameError] = useState<string>();
+	const [emailError, setEmailError] = useState<string>();
+	const [tagError, setTagError] = useState<string>();
 
 	useComponentDidUpdate(() => {
 		setNameError(!name ? t('The_field_is_required', 'name') : '');
@@ -201,7 +242,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
 			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
-			fallbackForwardDepartment: fallbackForwardDepartment.value,
+			fallbackForwardDepartment:
+				typeof fallbackForwardDepartment === 'string' ? fallbackForwardDepartment : fallbackForwardDepartment.value,
 		};
 
 		const agentListPayload = {
@@ -217,7 +259,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		try {
 			if (id) {
 				await saveDepartmentInfo(id, payload, []);
-				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
+				if (agentListPayload.upsert.length > 0 || agentListPayload.remove?.length > 0) {
 					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 				}
 			} else {
@@ -359,9 +401,11 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									flexShrink={0}
 									filter={offlineMessageChannelName}
 									setFilter={handleOfflineMessageChannelName}
-									options={roomsItems}
+									options={roomsItems.map(({ _id, name }) => ({ value: _id, label: name || '' }))}
 									placeholder={t('Channel_name')}
-									endReached={roomsPhase === AsyncStatePhase.LOADING ? () => {} : (start) => loadMoreRooms(start, Math.min(50, roomsTotal))}
+									endReached={
+										roomsPhase === AsyncStatePhase.LOADING ? () => undefined : (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
+									}
 								/>
 							</Field.Row>
 						</Field>
@@ -407,7 +451,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									value={departmentsAllowedToForward}
 									handler={handleDepartmentsAllowedToForward}
 									label={'List_of_departments_for_forward'}
-									placeholder='Enter_a_department_name'
 								/>
 							</Field>
 						)}
@@ -419,8 +462,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									excludeDepartmentId={department?._id}
 									value={fallbackForwardDepartment}
 									onChange={handleFallbackForwardDepartment}
-									placeholder={t('Fallback_forward_department')}
-									label={t('Fallback_forward_department')}
 									onlyMyDepartments
 								/>
 							</Field>
@@ -453,7 +494,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 										disabled={Boolean(!tagsText.trim()) || tags.includes(tagsText)}
 										data-qa='DepartmentEditAddButton-ConversationClosingTags'
 										mis='x8'
-										title={t('add')}
+										title={t('Add')}
 										onClick={handleTagTextSubmit}
 									>
 										{t('Add')}

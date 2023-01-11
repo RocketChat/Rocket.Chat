@@ -6,7 +6,7 @@ import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecor
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
 
-type RoomListOptions = {
+export type RoomListOptions = {
 	text: string;
 };
 
