@@ -55,6 +55,7 @@ const mergeSubRoom = (subscription: ISubscription): SubscriptionWithRoom => {
 			closedAt: 1,
 			responseBy: 1,
 			priorityId: 1,
+			priorityWeight: 1,
 			slaId: 1,
 			livechatData: 1,
 			departmentId: 1,
