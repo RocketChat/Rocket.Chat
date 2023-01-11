@@ -60,7 +60,7 @@ function UnitsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/units', query);
+	const { value: data = {}, reload } = useEndpointData('/v1/livechat/units', { params: query });
 
 	const header = useMemo(
 		() =>

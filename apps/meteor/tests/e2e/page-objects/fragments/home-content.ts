@@ -224,4 +224,12 @@ export class HomeContent {
 	get btnJoinCall(): Locator {
 		return this.page.locator('.rcx-button--small >> text="Join"');
 	}
+
+	get btnAnonymousSignIn(): Locator {
+		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
+	}
+
+	get btnAnonymousTalk(): Locator {
+		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
 }

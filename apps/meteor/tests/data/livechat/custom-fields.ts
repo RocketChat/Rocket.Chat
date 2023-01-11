@@ -1,5 +1,5 @@
 import type { Response } from 'supertest';
-import { ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { credentials, request, methodCall, api } from './../api-data';
 
 export const createCustomField = (customField: ILivechatCustomField) => new Promise((resolve, reject) => {
