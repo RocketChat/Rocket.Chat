@@ -58,7 +58,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Permissions')}>
-					<Button primary onClick={handleAdd} aria-label={t('New')}>
+					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
 						{t('New_role')}
 					</Button>
 				</Page.Header>

@@ -32,7 +32,7 @@ const CustomRoleUpsellModal: VFC<CustomRoleUpsellModalProps> = ({ onClose }) => 
 					<Button secondary onClick={onClose}>
 						{t('Close')}
 					</Button>
-					<ExternalLink to={'https://go.rocket.chat/i/custom-role-community-edition'}>
+					<ExternalLink to={'https://go.rocket.chat/i/ce-custom-roles'}>
 						<Button primary>{t('Talk_to_sales')}</Button>
 					</ExternalLink>
 				</ButtonGroup>
