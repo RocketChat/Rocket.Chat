@@ -1,6 +1,7 @@
 import { Box, Skeleton, Margins } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
+
+import ZapierWarningDeprecatedPopup from '../../../../components/ZapierWarningDeprecatedPopup/ZapierWarningDeprecatedPopup';
 
 const blogSpotStyleScriptImport = (src) =>
 	new Promise((resolve) => {
@@ -16,7 +17,6 @@ const blogSpotStyleScriptImport = (src) =>
 	});
 
 export default function NewZapier({ ...props }) {
-	const t = useTranslation();
 	const [script, setScript] = useState();
 	useEffect(() => {
 		const importZapier = async () => {
@@ -33,7 +33,7 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<Box pb='x20' fontScale='h4' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }} />
+			<ZapierWarningDeprecatedPopup />
 			{!script && (
 				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
 					<Margins blockEnd={14}>
