@@ -93,6 +93,10 @@ export const EmojiPicker = {
 
 		return $('.emoji-picker').css(cssProperties);
 	},
+	/**
+	 * @param {Element} source
+	 * @param {(emoji: string) => void} callback
+	 */
 	async open(source, callback) {
 		if (!this.initiated) {
 			await this.init();
