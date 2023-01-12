@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting, useRolesDescription, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -29,10 +29,20 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 
 	const query = useMemo(() => ({ userId: uid }), [uid]);
 
-	const { data, isLoading, error, refetch } = useQuery(['users', query, 'admin'], async () => {
-		const usersInfo = await getUsersInfo(query);
-		return usersInfo;
-	});
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, refetch } = useQuery(
+		['users', query, 'admin'],
+		async () => {
+			const usersInfo = await getUsersInfo(query);
+			return usersInfo;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const onChange = useMutableCallback(() => {
 		onReload();

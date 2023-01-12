@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -90,7 +90,7 @@ const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[
 				return sort[1] === 'asc' ? result : result * -1;
 			});
 		}
-		return data.rooms;
+		return data;
 	}, [asyncState, sort]);
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
@@ -114,10 +114,24 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const endpointData = useQuery(['rooms', query, 'admin'], async () => {
-		const adminRooms = await getAdminRooms(params);
-		return adminRooms;
-	});
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const endpointData = useQuery(
+		['rooms', query, 'admin'],
+		async () => {
+			const { rooms } = await getAdminRooms(params);
+
+			if (rooms.length === 0) {
+				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+			}
+			return rooms;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const { data, refetch } = endpointData;
 
@@ -252,7 +266,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			header={header}
 			renderRow={renderRow}
 			results={displayData}
-			total={data?.total}
+			total={data?.length}
 			params={params}
 			setParams={setParams}
 			renderFilter={({ onChange, ...props }): ReactElement => <FilterByTypeAndText setFilter={onChange} {...props} />}

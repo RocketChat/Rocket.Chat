@@ -1,5 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
@@ -12,10 +12,20 @@ function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.get');
 
-	const { data, isLoading, error, refetch } = useQuery(['integrations', params], async () => {
-		const integrations = await getIntegrations(params);
-		return integrations;
-	});
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, refetch } = useQuery(
+		['integrations', params],
+		async () => {
+			const integrations = await getIntegrations(params);
+			return integrations;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const onChange = () => {
 		refetch();

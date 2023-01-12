@@ -1,5 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React from 'react';
@@ -9,10 +9,20 @@ import EditRoom from './EditRoom';
 const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	const { data, isLoading, error, refetch, isError } = useQuery(['rooms', rid, 'admin'], async () => {
-		const rooms = await getAdminRooms({ rid });
-		return rooms;
-	});
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, refetch } = useQuery(
+		['rooms', rid, 'admin'],
+		async () => {
+			const rooms = await getAdminRooms({ rid });
+			return rooms;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	if (isLoading) {
 		return (
@@ -25,10 +35,6 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 				<Skeleton mbe='x8' />
 			</Box>
 		);
-	}
-
-	if (isError) {
-		return <>{(error as Error).message}</>;
 	}
 
 	const handleChange = (): void => {

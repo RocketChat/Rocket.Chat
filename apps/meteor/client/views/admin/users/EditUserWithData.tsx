@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -19,16 +19,26 @@ const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): R
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const query = useMemo(() => ({ userId: uid }), [uid]);
 
 	const {
 		data: roleData,
 		isLoading: roleState,
 		error: roleError,
-	} = useQuery(['roles'], async () => {
-		const roles = await getRoles();
-		return roles;
-	});
+	} = useQuery(
+		['roles'],
+		async () => {
+			const roles = await getRoles();
+			return roles;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const getUsersInfo = useEndpoint('GET', '/v1/users.info');
 

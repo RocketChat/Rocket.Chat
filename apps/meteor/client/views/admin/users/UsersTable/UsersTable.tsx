@@ -1,6 +1,6 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
@@ -58,10 +58,21 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	);
 
 	const getUsers = useEndpoint('GET', '/v1/users.list');
-	const { data, isLoading, error, isSuccess, refetch } = useQuery(['users', query], async () => {
-		const users = await getUsers(query);
-		return users;
-	});
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, isSuccess, refetch } = useQuery(
+		['users', query],
+		async () => {
+			const users = await getUsers(query);
+			return users;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	useEffect(() => {
 		reload.current = refetch;

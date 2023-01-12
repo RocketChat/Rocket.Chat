@@ -1,8 +1,8 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import EditSound from './EditSound';
 
@@ -13,14 +13,27 @@ type EditCustomSoundProps = {
 };
 
 function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement {
-	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
-
+	const t = useTranslation();
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
-	const { data, isLoading, error, refetch } = useQuery(['custom-sounds', query], async () => {
-		const sound = await getSounds(query);
-		return sound;
-	});
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, refetch } = useQuery(
+		['custom-sounds', _id],
+		async () => {
+			const { sounds } = await getSounds({ query: JSON.stringify({ _id }) });
+
+			if (sounds.length === 0) {
+				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+			}
+			return sounds[0];
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	if (isLoading) {
 		return (
@@ -46,12 +59,8 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 		);
 	}
 
-	if (error || !data || data.sounds.length < 1) {
-		return (
-			<Box fontScale='h2' pb='x20'>
-				{(error as Error).message}
-			</Box>
-		);
+	if (!data) {
+		return <></>;
 	}
 
 	const handleChange: () => void = () => {
@@ -59,7 +68,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 		refetch?.();
 	};
 
-	return <EditSound data={data.sounds[0]} onChange={handleChange} {...props} />;
+	return <EditSound data={data} onChange={handleChange} {...props} />;
 }
 
 export default EditCustomSound;
