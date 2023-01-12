@@ -116,7 +116,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
 			{phase === AsyncStatePhase.LOADING && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
