@@ -4884,7 +4884,6 @@
   "Your_invite_link_will_expire_on__date__": "ستنتهي صلاحية رابط الدعوة في __date__.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "ستنتهي صلاحية رابط دعوتك في __date__ أو بعد استخدامات __usesLeft__.",
   "Your_invite_link_will_never_expire": "لن تنتهي صلاحية رابط الدعوة الخاص بك.",
-  "Your_mail_was_sent_to_s": "تم إرسال بريدك إلى %s",
   "your_message": "رسالتك",
   "your_message_optional": "رسالتك (اختياري)",
   "Your_new_email_is_email": "عنوان بريدك الإلكتروني الجديد هو <strong>[email]</strong>.",

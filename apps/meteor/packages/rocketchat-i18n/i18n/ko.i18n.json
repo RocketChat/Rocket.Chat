@@ -4070,7 +4070,6 @@
   "Your_invite_link_will_expire_on__date__": "초대 링크는 __date__에 만료됩니다.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "초대 링크는 __date__ 또는 __usesLeft__ 사용 후에 만료됩니다.",
   "Your_invite_link_will_never_expire": "초대 링크는 만료되지 않습니다.",
-  "Your_mail_was_sent_to_s": "%s님에게 메일을 전송했습니다.",
   "your_message": "메시지",
   "your_message_optional": "메시지 (선택 사항)",
   "Your_new_email_is_email": "새 이메일 주소는 <strong> [email] </strong>입니다.",

@@ -4176,7 +4176,6 @@
   "Your_invite_link_will_expire_on__date__": "您的邀请链接将于__date__过期。",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "您的邀请链接将于__date__或__usesLeft__次使用后失效。",
   "Your_invite_link_will_never_expire": "您的邀请链接将永不过期。",
-  "Your_mail_was_sent_to_s": "您的邮件已发送至 %s",
   "your_message": "你的消息",
   "your_message_optional": "你的消息（可选）",
   "Your_new_email_is_email": "您的新电子邮箱为：<strong>[email]</strong>。",

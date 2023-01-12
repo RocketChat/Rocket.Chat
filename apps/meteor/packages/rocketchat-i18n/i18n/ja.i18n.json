@@ -4832,7 +4832,6 @@
   "Your_invite_link_will_expire_on__date__": "招待リンクの有効期限は__date__です。",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "招待リンクは、__date__または__usesLeft__の使用後に期限切れになります。",
   "Your_invite_link_will_never_expire": "招待リンクが期限切れになることはありません。",
-  "Your_mail_was_sent_to_s": "メールは%sへ送信されました",
   "your_message": "あなたのメッセージ",
   "your_message_optional": "メッセージ（オプション）",
   "Your_new_email_is_email": "新しいメールアドレスは<strong>[email]</strong>です。",

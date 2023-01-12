@@ -5386,7 +5386,6 @@
   "Your_invite_link_will_expire_on__date__": "Ihr Einladungslink läuft am __date__ ab.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "Ihr Einladungslink läuft am __date__ oder nach dem Einladen von  __usesLeft__ Benutzrn ab.",
   "Your_invite_link_will_never_expire": "Ihr Einladungslink läuft niemals ab.",
-  "Your_mail_was_sent_to_s": "Ihre E-Mail wurde an %s gesendet",
   "your_message": "Ihre Nachricht",
   "your_message_optional": "Ihre optionale Nachricht",
   "Your_new_email_is_email": "Ihre neue E-Mail-Adresse lautet <strong>[email]</strong>",

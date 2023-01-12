@@ -5365,7 +5365,6 @@
   "Your_invite_link_will_expire_on__date__": null,
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "Kutsulinkkisi vanhenee __date__ tai __usesLeft__ käyttökerran jälkeen.",
   "Your_invite_link_will_never_expire": "Kutsulinkkisi ei vanhene koskaan.",
-  "Your_mail_was_sent_to_s": "Sähköposti lähetettiin osoitteeseen %s",
   "your_message": "viestisi",
   "your_message_optional": "viestisi (valinnainen)",
   "Your_new_email_is_email": "Uusi sähköpostiosoitteesi on <strong>[email]</strong>.",

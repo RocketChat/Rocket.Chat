@@ -5413,7 +5413,6 @@
   "Your_invite_link_will_expire_on__date__": "Inbjudningslänken upphör att gälla den __date__.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "Inbjudningslänken upphör att gälla den __date__ eller om __usesLeft__ användningar.",
   "Your_invite_link_will_never_expire": "Inbjudningslänken upphör aldrig att gälla.",
-  "Your_mail_was_sent_to_s": "Ditt e-postmeddelande skickades till %s",
   "your_message": "ditt meddelande",
   "your_message_optional": "ditt meddelande (valfri)",
   "Your_new_email_is_email": "Din nya e-postadress är <strong>[email]</strong>.",

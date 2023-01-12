@@ -4554,7 +4554,6 @@
   "Your_invite_link_will_expire_on__date__": "您的邀請連接將於__date__到期。",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "您的邀請連接將於__date__或__usesLeft__使用後到期。",
   "Your_invite_link_will_never_expire": "您的邀請連接將永不到期。",
-  "Your_mail_was_sent_to_s": "您的郵件已發送到 %s",
   "your_message": "您的訊息",
   "your_message_optional": "您的訊息（選填）",
   "Your_new_email_is_email": "您新的電子郵件地址是 <strong>[email]</strong>。",

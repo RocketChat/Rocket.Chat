@@ -5019,7 +5019,6 @@
   "Your_invite_link_will_expire_on__date__": "Ваше приглашение истечет __date__.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "Ваше приглашение истечет __date__ или после __usesLeft__ использований.",
   "Your_invite_link_will_never_expire": "Ваше приглашение никогда не истечет.",
-  "Your_mail_was_sent_to_s": "Ваше сообщение было отправлено на %s",
   "your_message": "ваше сообщение",
   "your_message_optional": "ваше сообщение (опционально)",
   "Your_new_email_is_email": "Ваш новый электронный адрес - <strong>[email]</strong>.",
