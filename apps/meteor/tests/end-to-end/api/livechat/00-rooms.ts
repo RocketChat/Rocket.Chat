@@ -1448,7 +1448,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('it should mark room as unread when a new message and the config is activated', () => {
+	describe('it should mark room as unread when a new message arrives and the config is activated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
@@ -1477,7 +1477,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('it should NOT mark room as unread when a new message and the config is deactivated', () => {
+	describe('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
