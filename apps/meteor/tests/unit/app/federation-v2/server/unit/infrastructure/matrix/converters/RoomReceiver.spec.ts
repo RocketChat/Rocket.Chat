@@ -235,7 +235,11 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 	describe('#toSendRoomMessageDto()', () => {
 		const event = {
 			event_id: 'eventId',
-			content: { 'body': 'msg', 'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } } },
+			content: {
+				'body': 'rawMessage',
+				'formatted_body': 'externalFormattedText',
+				'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } },
+			},
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};

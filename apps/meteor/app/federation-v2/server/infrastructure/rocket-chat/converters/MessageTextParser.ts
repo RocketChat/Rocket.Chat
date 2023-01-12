@@ -64,7 +64,7 @@ export const toInternalMessageFormat = ({
 }): string => replaceAllMentionsOneByOneSequentially(rawMessage, getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain));
 
 const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWithRealNames: IInternalMention[]): string =>
-	allMentionsWithRealNames.reduce((acc, { mention, realName }) => acc.replace(realName, mention), message).trim();
+	allMentionsWithRealNames.reduce((acc, { mention, realName }) => acc.replace(realName, mention), message || '').trim();
 
 export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain,
@@ -77,6 +77,9 @@ export const toInternalQuoteMessageFormat = async ({
 	rawMessage: string;
 	homeServerDomain: string;
 }): Promise<string> => {
+	if (!rawMessage || !formattedMessage) {
+		return '';
+	}
 	const withMentionsOnly = sanitizeHtml(formattedMessage, {
 		allowedTags: ['a'],
 		allowedAttributes: {

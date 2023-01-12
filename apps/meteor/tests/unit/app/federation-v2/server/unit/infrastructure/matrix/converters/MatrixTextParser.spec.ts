@@ -289,12 +289,14 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 	});
 
 	describe('#toExternalQuoteMessageFormat ()', () => {
+		const eventToReplyTo = 'eventToReplyTo';
+		const externalRoomId = 'externalRoomId';
+		const originalEventSender = 'originalEventSenderId';
+		const homeServerDomain = 'localDomain.com';
+		const quotedMessage = `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply>`;
+
 		it('should parse the internal quote to the external one correctly', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey people, how are you?';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -306,16 +308,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>${message}</p>`,
+				formattedMessage: `${quotedMessage}<p>${message}</p>`,
 			});
 		});
 
 		it('should parse the external user mention correctly', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey @user:server.com';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -327,16 +325,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a></p>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a></p>`,
 			});
 		});
 
 		it('should parse the @all mention correctly', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey @all';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -348,16 +342,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a></p>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a></p>`,
 			});
 		});
 
 		it('should parse the @here mention correctly', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey @here';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -369,16 +359,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a></p>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a></p>`,
 			});
 		});
 
 		it('should parse the user local mentions appending the local domain server in the mention', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey @user';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -390,16 +376,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>`,
 			});
 		});
 
 		it('should parse multiple and different mentions in the same message correctly', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey @user:server.com, hey @all, hey @here @user';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -411,16 +393,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a>, hey <a href="https://matrix.to/#/externalRoomId">externalRoomId</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>`,
 			});
 		});
 
 		it('should return the message as-is when it does not have any mention', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = 'hey people, how are you?';
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -432,12 +410,11 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>${message}</p>`,
+				formattedMessage: `${quotedMessage}<p>${message}</p>`,
 			});
 		});
 
 		it('should parse correctly a message containing both local mentions + some markdown', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = `hey @user, how are you? Hope **you** __are__ doing well, please see the list:
 			# List 1:
 			**Ordered List** 
@@ -446,9 +423,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			2. List Item 
 			3. List Item 
 			4. List Item`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -460,12 +434,11 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item </code></pre>`,
 			});
 		});
 
 		it('should parse correctly a message containing both external mentions + some markdown', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = `hey, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 			# List 1:
 			**Ordered List** 
@@ -474,9 +447,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			2. List Item 
 			3. List Item 
 			4. List Item`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -488,13 +458,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item </code></pre>`,
 			});
 		});
 
 		it('should parse correctly a message containing both local mentions + external mentions + some markdown', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
-			const message =  `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
+			const message = `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 			# List 1:
 			**Ordered List** 
 
@@ -502,9 +471,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			2. List Item 
 			3. List Item 
 			4. List Item`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -516,12 +482,11 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item </code></pre>`,
 			});
 		});
 
 		it('should parse correctly a message containing both mentions + some quoting inside the message', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 			# List 1:
 			**Ordered List** 
@@ -533,9 +498,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			
 			> Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet 
 			`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -547,12 +509,11 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet </code></pre>`,
 			});
 		});
 
 		it('should parse correctly a message containing both mentions + some quoting inside the message + an email inside the message', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 			# List 1:
 			**Ordered List** 
@@ -566,9 +527,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 
 			marcos.defendi@email.com
 			`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -580,13 +538,12 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet marcos.defendi@email.com </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet marcos.defendi@email.com </code></pre>`,
 			});
 		});
 
 		it('should parse correctly a message containing a message with mentions + the whole markdown spec', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
-			const message =  `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
+			const message = `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
 			# Heading 1 
 
 			**Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. 
@@ -631,9 +588,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			\`\`\`
 
 		`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -645,12 +599,11 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see: # Heading 1 </p> <pre><code> **Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ## Heading 2 _Italict Text_: _Italict_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ### Heading 3 - Lists, Links and elements **Unordered List** - List Item 1 - List Item 2 - List Item 3 - List Item 4 **Ordered List** 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. **Links:** [Google](google.com) [Rocket.Chat](rocket.chat) [Rocket.Chat Link Test](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [**Rocket.Chat Link Test**](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [~~Rocket.Chat Link Test~~](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__Rocket.Chat Link Test__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__**~~Rocket.Chat Link Test~~**__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) marcos.defendi@rocket.chat +55991999999 \`Inline code\` \`\`\`typescript const applyMarkdownIfRequires = ( list: MessageAttachmentDefault[&#39;mrkdwn_in&#39;] = [&#39;text&#39;, &#39;pretext&#39;], key: MarkdownFields, text: string, variant: &#39;inline&#39; | &#39;inlineWithoutBreaks&#39; | &#39;document&#39; = &#39;inline&#39;, ): ReactNode =&gt; (list?.includes(key) ? &lt;MarkdownText parseEmoji variant={variant} content={text} /&gt; : text); \`\`\` </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see: # Heading 1 </p> <pre><code> **Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ## Heading 2 _Italict Text_: _Italict_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ### Heading 3 - Lists, Links and elements **Unordered List** - List Item 1 - List Item 2 - List Item 3 - List Item 4 **Ordered List** 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. **Links:** [Google](google.com) [Rocket.Chat](rocket.chat) [Rocket.Chat Link Test](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [**Rocket.Chat Link Test**](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [~~Rocket.Chat Link Test~~](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__Rocket.Chat Link Test__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__**~~Rocket.Chat Link Test~~**__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) marcos.defendi@rocket.chat +55991999999 \`Inline code\` \`\`\`typescript const applyMarkdownIfRequires = ( list: MessageAttachmentDefault[&#39;mrkdwn_in&#39;] = [&#39;text&#39;, &#39;pretext&#39;], key: MarkdownFields, text: string, variant: &#39;inline&#39; | &#39;inlineWithoutBreaks&#39; | &#39;document&#39; = &#39;inline&#39;, ): ReactNode =&gt; (list?.includes(key) ? &lt;MarkdownText parseEmoji variant={variant} content={text} /&gt; : text); \`\`\` </code></pre>`,
 			});
 		});
 
 		it('should parse correctly a message containing a message with mentions + the whole markdown spec + emojis', async () => {
-			const eventToReplyTo = 'eventToReplyTo';
 			const message = `hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
 			# Heading 1 
 
@@ -699,9 +652,6 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			😀
 			😀
 		`;
-			const externalRoomId = 'externalRoomId';
-			const homeServerDomain = 'localDomain.com';
-			const originalEventSender = 'originalEventSenderId';
 
 			expect(
 				await toExternalQuoteMessageFormat({
@@ -713,7 +663,7 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.eql({
 				message: `> <${originalEventSender}> \n\n${message}`,
-				formattedMessage: `<mx-reply><blockquote><a href="https://matrix.to/#/${externalRoomId}/${eventToReplyTo}">In reply to</a> <a href="https://matrix.to/#/${originalEventSender}">${originalEventSender}</a><br /></blockquote></mx-reply><p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see: # Heading 1 </p> <pre><code> **Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ## Heading 2 _Italict Text_: _Italict_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ### Heading 3 - Lists, Links and elements **Unordered List** - List Item 1 - List Item 2 - List Item 3 - List Item 4 **Ordered List** 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. **Links:** [Google](google.com) [Rocket.Chat](rocket.chat) [Rocket.Chat Link Test](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [**Rocket.Chat Link Test**](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [~~Rocket.Chat Link Test~~](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__Rocket.Chat Link Test__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__**~~Rocket.Chat Link Test~~**__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) marcos.defendi@rocket.chat +55991999999 \`Inline code\` \`\`\`typescript const applyMarkdownIfRequires = ( list: MessageAttachmentDefault[&#39;mrkdwn_in&#39;] = [&#39;text&#39;, &#39;pretext&#39;], key: MarkdownFields, text: string, variant: &#39;inline&#39; | &#39;inlineWithoutBreaks&#39; | &#39;document&#39; = &#39;inline&#39;, ): ReactNode =&gt; (list?.includes(key) ? &lt;MarkdownText parseEmoji variant={variant} content={text} /&gt; : text); \`\`\` 😀 😀 😀 😀 </code></pre>`,
+				formattedMessage: `${quotedMessage}<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see: # Heading 1 </p> <pre><code> **Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ## Heading 2 _Italict Text_: _Italict_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. ### Heading 3 - Lists, Links and elements **Unordered List** - List Item 1 - List Item 2 - List Item 3 - List Item 4 **Ordered List** 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. **Links:** [Google](google.com) [Rocket.Chat](rocket.chat) [Rocket.Chat Link Test](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [**Rocket.Chat Link Test**](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [~~Rocket.Chat Link Test~~](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__Rocket.Chat Link Test__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) [__**~~Rocket.Chat Link Test~~**__](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351) marcos.defendi@rocket.chat +55991999999 \`Inline code\` \`\`\`typescript const applyMarkdownIfRequires = ( list: MessageAttachmentDefault[&#39;mrkdwn_in&#39;] = [&#39;text&#39;, &#39;pretext&#39;], key: MarkdownFields, text: string, variant: &#39;inline&#39; | &#39;inlineWithoutBreaks&#39; | &#39;document&#39; = &#39;inline&#39;, ): ReactNode =&gt; (list?.includes(key) ? &lt;MarkdownText parseEmoji variant={variant} content={text} /&gt; : text); \`\`\` 😀 😀 😀 😀 </code></pre>`,
 			});
 		});
 	});
