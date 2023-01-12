@@ -6,7 +6,7 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 export const useGoToThread = (): ((tmid: IMessage['_id']) => void) => {
 	const room = useRoom();
-	const [routeName, params] = useCurrentRoute();
+	const [routeName, params, queryStringParams] = useCurrentRoute();
 
 	if (!routeName) {
 		throw new Error('Route name is not defined');
@@ -16,8 +16,8 @@ export const useGoToThread = (): ((tmid: IMessage['_id']) => void) => {
 	// TODO: remove params recycling
 	return useCallback(
 		(tmid) => {
-			roomRoute.replace({ rid: room._id, ...params, tab: 'thread', context: tmid });
+			roomRoute.replace({ rid: room._id, ...params, tab: 'thread', context: tmid }, queryStringParams);
 		},
-		[room._id, params, roomRoute],
+		[room._id, params, queryStringParams, roomRoute],
 	);
 };
