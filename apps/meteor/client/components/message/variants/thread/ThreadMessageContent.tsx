@@ -30,7 +30,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 	const encrypted = isE2EEMessage(message);
 	const attachments = useTranslateAttachments({ message });
 	const {
-		actions: { replyBroadcast, runActionLink },
+		actions: { runActionLink },
 	} = useMessageContext();
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const broadcast = useRoomSubscription()?.broadcast ?? false;
@@ -74,7 +74,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!messageUser.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={messageUser.username} />
+				<BroadcastMetrics mid={message._id} username={messageUser.username} message={message} />
 			)}
 
 			{readReceiptEnabled && <ReadReceiptIndicator unread={message.unread} />}

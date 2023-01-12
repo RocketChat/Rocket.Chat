@@ -35,7 +35,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 	const encrypted = isE2EEMessage(message);
 	const attachments = useTranslateAttachments({ message });
 	const {
-		actions: { openRoom, openThread, replyBroadcast, runActionLink },
+		actions: { runActionLink },
 	} = useMessageContext();
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const broadcast = useRoomSubscription()?.broadcast ?? false;
@@ -78,7 +78,6 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{isThreadMainMessage(message) && (
 				<ThreadMetrics
-					openThread={openThread(message._id)}
 					counter={message.tcount}
 					following={Boolean(uid && message?.replies?.indexOf(uid) > -1)}
 					mid={message._id}
@@ -91,20 +90,12 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 				/>
 			)}
 
-			{isDiscussionMessage(message) && (
-				<DiscussionMetrics
-					count={message.dcount}
-					drid={message.drid}
-					lm={message.dlm}
-					rid={message.rid}
-					openDiscussion={openRoom(message.drid)}
-				/>
-			)}
+			{isDiscussionMessage(message) && <DiscussionMetrics count={message.dcount} drid={message.drid} lm={message.dlm} rid={message.rid} />}
 
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!messageUser.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={messageUser.username} />
+				<BroadcastMetrics mid={message._id} username={messageUser.username} message={message} />
 			)}
 
 			{readReceiptEnabled && <ReadReceiptIndicator unread={message.unread} />}
