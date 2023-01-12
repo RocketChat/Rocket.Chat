@@ -13,10 +13,7 @@ function ContactEditWithData({ id, close }) {
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/omnichannel/contact',
-		useMemo(() => ({ contactId: id }), [id]),
-	);
+	} = useEndpointData('/v1/omnichannel/contact', { params: useMemo(() => ({ contactId: id }), [id]) });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

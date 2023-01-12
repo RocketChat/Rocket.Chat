@@ -7,7 +7,7 @@ import React from 'react';
 const SendTestButton = ({ id }: { id: IEmailInboxPayload['_id'] }): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const sendTest = useEndpoint('POST', `/v1/email-inbox.send-test/${id}`);
+	const sendTest = useEndpoint('POST', '/v1/email-inbox.send-test/:_id', { _id: id });
 
 	const handleOnClick = async (e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<void> => {
 		e.preventDefault();

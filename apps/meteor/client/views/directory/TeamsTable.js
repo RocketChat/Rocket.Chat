@@ -10,7 +10,7 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomTags from './RoomTags';
-import { useQuery } from './hooks';
+import { useDirectoryQuery } from './hooks/useDirectoryQuery';
 
 const style = {
 	whiteSpace: 'nowrap',
@@ -67,9 +67,9 @@ function TeamsTable() {
 	const channelsRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const query = useQuery(params, sort, 'teams');
+	const query = useDirectoryQuery(params, sort, 'teams');
 
-	const { value: data = {} } = useEndpointData('/v1/directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', { params: query });
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {

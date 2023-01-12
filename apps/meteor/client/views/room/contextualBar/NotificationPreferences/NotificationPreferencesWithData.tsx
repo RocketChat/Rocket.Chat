@@ -3,7 +3,7 @@ import { useCustomSound, useUserSubscription, useTranslation } from '@rocket.cha
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
@@ -26,7 +26,9 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 
 	const customSound = useCustomSound();
 	const handleClose = useTabBarClose();
-	const saveSettings = useEndpointActionExperimental('POST', '/v1/rooms.saveNotification', t('Room_updated_successfully'));
+	const saveSettings = useEndpointAction('POST', '/v1/rooms.saveNotification', {
+		successMessage: t('Room_updated_successfully'),
+	});
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		turnOn: !subscription?.disableNotifications,

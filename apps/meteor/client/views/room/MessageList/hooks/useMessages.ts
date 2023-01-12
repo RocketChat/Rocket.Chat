@@ -4,7 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
-import { ChatMessage } from '../../../../../app/models/client';
+import { Messages } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useMessageListContext } from '../contexts/MessageListContext';
 import type { MessageWithMdEnforced } from '../lib/parseMessageTextToAstMarkdown';
@@ -48,6 +48,6 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): MessageWithMdEnforc
 	);
 
 	return useReactiveValue<MessageWithMdEnforced[]>(
-		useCallback(() => ChatMessage.find(query, options).fetch().map(normalizeMessage), [query, normalizeMessage]),
+		useCallback(() => Messages.find(query, options).fetch().map(normalizeMessage), [query, normalizeMessage]),
 	);
 };

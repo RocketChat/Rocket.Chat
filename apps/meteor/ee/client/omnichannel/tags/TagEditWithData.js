@@ -9,7 +9,7 @@ import TagEdit from './TagEdit';
 import TagEditWithDepartmentData from './TagEditWithDepartmentData';
 
 function TagEditWithData({ tagId, reload, title }) {
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/tags/${tagId}`);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/tags/:tagId', { keys: { tagId } });
 
 	const t = useTranslation();
 
