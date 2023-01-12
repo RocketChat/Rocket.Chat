@@ -1448,7 +1448,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('it should mark room as unread when a new message is sent', () => {
+	describe('it should mark room as unread when a new message and the config is activated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
@@ -1456,7 +1456,10 @@ describe('LIVECHAT - rooms', function () {
 
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Unread_Count_Omni', 'all_messages');
+		});
 
+		it('it should prepare the required data for further tests', async () => {
 			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
 			visitor = await createVisitor(departmentWithAgent.department._id);
 			room = await createLivechatRoom(visitor.token);
@@ -1466,6 +1469,35 @@ describe('LIVECHAT - rooms', function () {
 
 			// 1st message is for the room creation, so we need to add 1 to the total messages sent
 			totalMessagesSent = 3;
+		});
+
+		it("room's subscription should have correct unread count", async () => {
+			const { unread } = await getSubscriptionForRoom(room._id, departmentWithAgent.agent.credentials);
+			expect(unread).to.equal(totalMessagesSent);
+		});
+	});
+
+	describe('it should NOT mark room as unread when a new message and the config is deactivated', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+		let totalMessagesSent = 0;
+		let departmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+
+		before(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Unread_Count_Omni', 'mentions_only');
+		});
+
+		it('it should prepare the required data for further tests', async () => {
+			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
+			visitor = await createVisitor(departmentWithAgent.department._id);
+			room = await createLivechatRoom(visitor.token);
+
+			await sendMessage(room._id, 'message 1', visitor.token);
+			await sendMessage(room._id, 'message 2', visitor.token);
+
+			// 1st message is for the room creation, so we need to add 1 to the total messages sent
+			totalMessagesSent = 1;
 		});
 
 		it("room's subscription should have correct unread count", async () => {
