@@ -5,6 +5,7 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { DEFAULT_SLA_INQUIRY_CONFIG } from '@rocket.chat/core-typings/src/IInquiry';
+import { api } from '@rocket.chat/core-services';
 
 import { hasRole } from '../../../authorization';
 import {
@@ -27,7 +28,6 @@ import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
-import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('LivechatHelper');
 

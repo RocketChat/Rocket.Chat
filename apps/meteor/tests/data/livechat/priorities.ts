@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
 import { DEFAULT_SLA_INQUIRY_CONFIG, ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import { api, credentials, request } from '../api-data';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 import { expect } from 'chai';
 
 export const createSLA = (): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updated'>> => {

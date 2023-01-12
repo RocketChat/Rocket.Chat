@@ -14,7 +14,7 @@ type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 
 function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWithDataProps): ReactElement {
 	const t = useTranslation();
-	const getSLA = useEndpoint('GET', `/v1/livechat/priorities/${priorityId}`);
+	const getSLA = useEndpoint('GET', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	const { data, isLoading, isError } = useQuery(
 		['/v1/livechat/priorities', priorityId],
 		() => getSLA() as Promise<ILivechatClientPriority>,

@@ -9,7 +9,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
 	const urlParams = new URLSearchParams();
