@@ -26,7 +26,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 	const [isResetting, setResetting] = useState(false);
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
-	const savePriority = useEndpoint('PUT', `/v1/livechat/priorities/${priorityId}`);
+	const savePriority = useEndpoint('PUT', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	const resetPriorities = useEndpoint('POST', '/v1/livechat/priorities.reset');
 
 	const { data, refetch } = useQuery(['/v1/livechat/priorities'], () =>

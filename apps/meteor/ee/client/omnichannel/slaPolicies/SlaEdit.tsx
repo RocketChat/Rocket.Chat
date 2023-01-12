@@ -18,7 +18,7 @@ type SlaEditProps = {
 function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
 	const slasRoute = useRoute('omnichannel-sla-policies');
 	const saveSLA = useEndpoint('POST', '/v1/livechat/sla');
-	const updateSLA = useEndpoint('PUT', `/v1/livechat/sla/${slaId}`);
+	const updateSLA = useEndpoint('PUT', `/v1/livechat/sla/:slaId`, { slaId: slaId || '' });
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 

@@ -12,7 +12,7 @@ type Props = {
 };
 
 function RemoveSlaButton({ _id, reload }: Props): ReactElement {
-	const removeSLA = useEndpoint('DELETE', `/v1/livechat/sla/${_id}`);
+	const removeSLA = useEndpoint('DELETE', `/v1/livechat/sla/:slaId`, { slaId: _id });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
