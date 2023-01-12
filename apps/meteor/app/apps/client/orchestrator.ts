@@ -7,7 +7,7 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import type { AppScreenshot, Serialized } from '@rocket.chat/core-typings';
+import type { AppScreenshot, AppRequestFilter, Pagination, IRestResponse, Serialized, AppRequest } from '@rocket.chat/core-typings';
 
 import type { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
@@ -232,6 +232,28 @@ class AppClientOrchestrator {
 		}
 
 		throw new Error('Failed to build external url');
+	}
+
+	public async appRequests(
+		appId: string,
+		filter: AppRequestFilter,
+		sort: string,
+		pagination: Pagination,
+	): Promise<IRestResponse<AppRequest>> {
+		try {
+			const response: IRestResponse<AppRequest> = await APIClient.get(
+				`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${pagination.limit}&offset=${pagination.offset}`,
+			);
+
+			const restResponse = {
+				data: response.data,
+				meta: response.meta,
+			};
+
+			return restResponse;
+		} catch (e: unknown) {
+			throw new Error('Could not get the list of app requests');
+		}
 	}
 
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
