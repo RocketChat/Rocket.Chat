@@ -1,5 +1,4 @@
-import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
