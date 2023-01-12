@@ -4763,7 +4763,7 @@
 	"This_feature_is_currently_in_alpha": "This feature is currently in alpha!",
 	"This_is_a_desktop_notification": "This is a desktop notification",
 	"This_is_a_deprecated_feature_alert": "This is a deprecated feature. It may not work as expected and will not get new updates.",
-	"Install_Zapier_from_marketplace": "Please download the Zapier app on Marketplace to avoid disruptions",
+	"Install_Zapier_from_marketplace": "Install the Zapier app from Marketplace to avoid disruptions.",
 	"This_is_a_push_test_messsage": "This is a push test message",
 	"This_message_was_rejected_by__peer__peer": "This message was rejected by <em>__peer__</em> peer.",
 	"This_monitor_was_already_selected": "This monitor was already selected",

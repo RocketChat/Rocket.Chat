@@ -1,4 +1,3 @@
-// import type { UiKitBannerPayload as BannerProps } from '@rocket.chat/core-typings';
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
