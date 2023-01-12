@@ -6,7 +6,6 @@ import {
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -14,6 +13,7 @@ import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
+import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
 
 API.v1.addRoute(
 	'listInvites',
@@ -99,7 +99,7 @@ API.v1.addRoute(
 		async post() {
 			const { emails } = this.bodyParams;
 			try {
-				return API.v1.success({ success: Boolean(await Meteor.call('sendInvitationEmail', emails)) });
+				return API.v1.success({ success: Boolean(await sendInvitationEmail(emails, this.userId)) });
 			} catch (e: any) {
 				return API.v1.failure({ error: e.message });
 			}

@@ -30,7 +30,7 @@ const InviteUsers = (props: InviteUsersProps): ReactElement => {
 		return (
 			<VerticalBar.ScrollableContent {...props} color='default'>
 				<States>
-					<StatesTitle>{t('SMTP_Server_Not_Setup')}</StatesTitle>
+					<StatesTitle>{t('SMTP_Server_Not_Setup_Title')}</StatesTitle>
 					<StatesSubtitle>{t('SMTP_Server_Not_Setup_Description')}</StatesSubtitle>
 					<StatesActions>
 						<StatesAction role='link' onClick={() => adminRouter.push({ group: 'Email' })}>
