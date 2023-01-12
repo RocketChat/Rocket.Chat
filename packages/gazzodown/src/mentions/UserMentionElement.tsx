@@ -32,7 +32,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	return (
 		<span
 			className={resolved._id === uid ? 'mention-link mention-link--me mention-link--user' : 'mention-link mention-link--user'}
-			title={resolved.username}
+			title={resolved.username || resolved.name}
 			onClick={handleClick}
 			data-uid={resolved._id}
 		>

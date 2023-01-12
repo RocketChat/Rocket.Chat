@@ -17,7 +17,7 @@ import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import { appEnabledStatuses, handleAPIError, appButtonProps, handleInstallError, warnEnableDisableApp } from './helpers';
+import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
@@ -65,12 +65,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const confirmAction = useCallback(
-		(permissionsGranted) => {
+		async (permissionsGranted) => {
 			setModal(null);
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
+			await marketplaceActions[action]({ ...app, permissionsGranted });
+
+			setLoading(false);
 		},
 		[setModal, action, app, setLoading],
 	);
@@ -78,10 +78,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
 			setPurchased(true);
-		}
-
-		if (!Array.isArray(app.permissions)) {
-			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);

@@ -42,10 +42,10 @@ Meteor.methods({
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
-				Messages.unsetReactions(messageId);
+				Messages.update({ _id: messageId }, { $unset: { reactions: 1 } });
 				callbacks.run('unsetReaction', messageId, reaction);
 			} else {
-				Messages.setReactions(messageId, message.reactions);
+				Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
 				callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
@@ -59,7 +59,7 @@ Meteor.methods({
 			}
 			message.reactions[reaction].usernames.push(user.username);
 
-			Messages.setReactions(messageId, message.reactions);
+			Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
 			callbacks.run('setReaction', messageId, reaction);
 		}
 	},

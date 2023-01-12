@@ -16,7 +16,7 @@ const subscriptionOptions = {
 async function validateRoomMessagePermissionsAsync(
 	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData: Record<string, any>,
+	extraData?: Record<string, any>,
 ): Promise<void> {
 	if (!room) {
 		throw new Error('error-invalid-room');
@@ -48,7 +48,7 @@ async function validateRoomMessagePermissionsAsync(
 export async function canSendMessageAsync(
 	rid: IRoom['_id'],
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData: Record<string, any>,
+	extraData?: Record<string, any>,
 ): Promise<IRoom> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
@@ -62,14 +62,14 @@ export async function canSendMessageAsync(
 export function canSendMessage(
 	rid: IRoom['_id'],
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData: Record<string, any>,
+	extraData?: Record<string, any>,
 ): IRoom {
 	return Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
 }
 export function validateRoomMessagePermissions(
 	room: IRoom,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData: Record<string, any>,
+	extraData?: Record<string, any>,
 ): void {
 	return Promise.await(validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData));
 }

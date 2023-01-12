@@ -28,7 +28,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	const query = useMemo(() => ({ username }), [username]);
-	const { value: data, phase: state } = useEndpointData('/v1/users.info', query);
+	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: query });
 
 	ref.current = target;
 

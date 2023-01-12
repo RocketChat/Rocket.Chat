@@ -1,11 +1,11 @@
 import WebSocket from 'ws';
 import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
+import { api } from '@rocket.chat/core-services';
 
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
 import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
-import { api } from '../../../../apps/meteor/server/sdk/api';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
 	api.broadcast('stream', [name, eventName, args]);
