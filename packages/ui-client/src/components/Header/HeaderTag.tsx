@@ -1,6 +1,5 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ComponentProps, FC } from 'react';
-import React from 'react';
 
 const HeaderTag: FC<ComponentProps<typeof Tag>> = ({ children, ...props }) => (
 	<Box display='flex' minWidth='65px' mi='x4'>
