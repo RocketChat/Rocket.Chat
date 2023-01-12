@@ -1,6 +1,5 @@
 import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useEffect, useMemo } from 'react';
