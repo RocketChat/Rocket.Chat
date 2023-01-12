@@ -1,5 +1,5 @@
 import type { ILivechatInquiryRecord, ILivechatPriority } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_INQUIRY_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type { ModifyResult, UpdateResult, Document } from 'mongodb';
 
@@ -7,10 +7,7 @@ import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquir
 
 declare module '@rocket.chat/model-typings' {
 	export interface ILivechatInquiryModel {
-		setSlaForRoom(
-			rid: string,
-			sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
-		): Promise<ModifyResult<ILivechatInquiryRecord>>;
+		setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		unsetSlaForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
 		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;
 		setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>>;
@@ -20,18 +17,14 @@ declare module '@rocket.chat/model-typings' {
 
 // Note: Expect a circular dependency error here 😓
 export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivechatInquiryModel {
-	setSlaForRoom(
-		rid: string,
-		sla: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
-	): Promise<ModifyResult<ILivechatInquiryRecord>> {
-		const { estimatedWaitingTimeQueue, estimatedServiceTimeAt, slaId } = sla;
+	setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		const { estimatedWaitingTimeQueue, slaId } = sla;
 
 		return this.findOneAndUpdate(
 			{ rid },
 			{
 				$set: {
 					slaId,
-					estimatedServiceTimeAt,
 					estimatedWaitingTimeQueue,
 				},
 			},
@@ -46,8 +39,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 					slaId: 1,
 				},
 				$set: {
-					estimatedServiceTimeAt: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_SERVICE_TIME,
-					estimatedWaitingTimeQueue: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 				},
 			},
 		);
@@ -63,8 +55,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 					slaId: 1,
 				},
 				$set: {
-					estimatedServiceTimeAt: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_SERVICE_TIME,
-					estimatedWaitingTimeQueue: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 				},
 			},
 		);

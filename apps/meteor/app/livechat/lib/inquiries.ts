@@ -9,7 +9,7 @@ export const getInquirySortQuery = (
 		case OmnichannelSortingMechanismSettingType.Priority:
 			return { priorityWeight: 1, ts: 1 };
 		case OmnichannelSortingMechanismSettingType.SLAs:
-			return { estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 };
+			return { estimatedWaitingTimeQueue: 1, ts: 1 };
 		case OmnichannelSortingMechanismSettingType.Timestamp:
 		default:
 			return { ts: 1 };

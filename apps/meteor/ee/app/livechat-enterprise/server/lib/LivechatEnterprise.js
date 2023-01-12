@@ -8,7 +8,13 @@ import { Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries, updateRoomSLAHistory } from './Helper';
-import { updateInquiryQueueSla, removeSLAFromRooms, removeInquiryQueueSla } from './InquiryHelper';
+import {
+	updateInquiryQueueSla,
+	removeSLAFromRooms,
+	removeInquiryQueueSla,
+	updateRoomSlaWeights,
+	removeSlaFromRoom,
+} from './SlaNPriorityHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
@@ -172,11 +178,11 @@ export const LivechatEnterprise = {
 	},
 
 	async updateRoomSLA(roomId, user, sla) {
-		await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSLAHistory(roomId, user, sla)]);
+		await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSlaWeights(roomId, sla), updateRoomSLAHistory(roomId, user, sla)]);
 	},
 
 	async removeRoomSLA(roomId, user) {
-		await Promise.all([removeInquiryQueueSla(roomId), updateRoomSLAHistory(roomId, user)]);
+		await Promise.all([removeInquiryQueueSla(roomId), removeSlaFromRoom(roomId), updateRoomSLAHistory(roomId, user)]);
 	},
 
 	placeRoomOnHold(room, comment, onHoldBy) {

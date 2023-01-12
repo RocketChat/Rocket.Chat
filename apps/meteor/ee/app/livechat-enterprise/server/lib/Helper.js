@@ -17,7 +17,7 @@ import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/H
 import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { updateInquiryQueueSla } from './InquiryHelper';
+import { updateInquiryQueueSla } from './SlaNPriorityHelper';
 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {

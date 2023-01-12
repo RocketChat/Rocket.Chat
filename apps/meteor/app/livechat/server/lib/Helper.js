@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { DEFAULT_SLA_INQUIRY_CONFIG } from '@rocket.chat/core-typings/src/IInquiry';
 import { api } from '@rocket.chat/core-services';
 
 import { hasRole } from '../../../authorization';
@@ -87,6 +86,9 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 				alias: 'unknown',
 			},
 			queuedAt: newRoomAt,
+
+			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		},
 		extraRoomInfo,
 	);
@@ -145,8 +147,7 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 		},
 		t: 'l',
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-		estimatedWaitingTimeQueue: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
-		estimatedServiceTimeAt: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_SERVICE_TIME,
+		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
 		...extraInquiryInfo,
 	};

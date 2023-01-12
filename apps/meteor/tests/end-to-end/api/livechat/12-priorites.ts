@@ -627,7 +627,7 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		let slas: Awaited<ReturnType<typeof bulkCreateSLA>>;
 
 		const hasSlaProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { slaId: string } =>
-			!!inquiry.estimatedWaitingTimeQueue && !!inquiry.estimatedServiceTimeAt && !!inquiry.slaId;
+			!!inquiry.estimatedWaitingTimeQueue && !!inquiry.slaId;
 		const hasPriorityProps = (inquiry: ILivechatInquiryRecord): inquiry is ILivechatInquiryRecord & { priorityId: string } =>
 			inquiry.priorityId !== undefined;
 
@@ -639,15 +639,13 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 		const sortBySLAProps = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord): number => {
 			if (hasSlaProps(inquiry1) || hasSlaProps(inquiry2)) {
 				if (hasSlaProps(inquiry1) && hasSlaProps(inquiry2)) {
-					// if both inquiries have sla props, then sort by estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1
+					// if both inquiries have sla props, then sort by estimatedWaitingTimeQueue: 1
 					const estimatedWaitingTimeQueue1 = inquiry1.estimatedWaitingTimeQueue;
 					const estimatedWaitingTimeQueue2 = inquiry2.estimatedWaitingTimeQueue;
 
 					if (estimatedWaitingTimeQueue1 !== estimatedWaitingTimeQueue2) {
 						return estimatedWaitingTimeQueue1 - estimatedWaitingTimeQueue2;
 					}
-
-					return new Date(inquiry1.estimatedServiceTimeAt).getTime() - new Date(inquiry2.estimatedServiceTimeAt).getTime();
 				}
 
 				if (hasSlaProps(inquiry1)) {
@@ -686,32 +684,21 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 			return new Date(inquiry1.ts).getTime() - new Date(inquiry2.ts).getTime();
 		};
 
-		// this should sort using logic - { priorityWeight: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, ts: 1 }
+		// this should sort using logic - { priorityWeight: 1, ts: 1 }
 		const sortByPriority = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
 			const priorityPropsSort = sortByPriorityProps(inquiry1, inquiry2);
 			if (priorityPropsSort !== 0) {
 				return priorityPropsSort;
 			}
 
-			// check if sla props are present in both inquiries
-			const slaPropsSort = sortBySLAProps(inquiry1, inquiry2);
-			if (slaPropsSort !== 0) {
-				return slaPropsSort;
-			}
-
 			return sortByTimestamp(inquiry1, inquiry2);
 		};
 
-		// this should sort using logic - { estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1, priorityWeight: 1, ts: 1 }
+		// this should sort using logic - { estimatedWaitingTimeQueue: 1, ts: 1 }
 		const sortBySLA = (inquiry1: ILivechatInquiryRecord, inquiry2: ILivechatInquiryRecord) => {
 			const slaPropsSort = sortBySLAProps(inquiry1, inquiry2);
 			if (slaPropsSort !== 0) {
 				return slaPropsSort;
-			}
-
-			const priorityPropsSort = sortByPriorityProps(inquiry1, inquiry2);
-			if (priorityPropsSort !== 0) {
-				return priorityPropsSort;
 			}
 
 			return sortByTimestamp(inquiry1, inquiry2);
@@ -731,7 +718,6 @@ import { fetchAllInquiries } from '../../../data/livechat/inquiries';
 					...(hasSlaProps(inquiry) && {
 						sla: {
 							estimatedWaitingTimeQueue: inquiry.estimatedWaitingTimeQueue,
-							estimatedServiceTimeAt: inquiry.estimatedServiceTimeAt,
 						},
 					}),
 					ts: inquiry.ts,

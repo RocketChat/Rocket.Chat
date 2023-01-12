@@ -1,4 +1,5 @@
-import type { ILivechatPriority, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatPriority, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, UpdateResult, Document, FindOptions } from 'mongodb';
 
@@ -19,7 +20,12 @@ declare module '@rocket.chat/model-typings' {
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
 		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
-		unsetSlaById(slaId: string): Promise<UpdateResult | Document>;
+		setEstimatedWaitingTimeQueueForRoomById(
+			roomId: string,
+			sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+		): Promise<UpdateResult | Document>;
+		removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document>;
+		bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document>;
 		findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 		setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult>;
 		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
@@ -62,7 +68,42 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	unsetSlaById(slaId: string): Promise<UpdateResult | Document> {
+	setEstimatedWaitingTimeQueueForRoomById(
+		roomId: string,
+		sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+	): Promise<UpdateResult | Document> {
+		const { _id: slaId, dueTimeInMinutes } = sla;
+
+		return this.updateOne(
+			{
+				_id: roomId,
+				slaId,
+			},
+			{
+				$set: {
+					estimatedWaitingTimeQueue: dueTimeInMinutes,
+				},
+			},
+		);
+	}
+
+	removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document> {
+		return this.updateOne(
+			{
+				_id: roomId,
+			},
+			{
+				$unset: {
+					slaId: 1,
+				},
+				$set: {
+					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+				},
+			},
+		);
+	}
+
+	bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				open: true,
@@ -71,6 +112,9 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			},
 			{
 				$unset: { slaId: 1 },
+				$set: {
+					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+				},
 			},
 		);
 	}
