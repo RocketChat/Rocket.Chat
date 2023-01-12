@@ -6,6 +6,8 @@ import type { ComponentProps, FC } from 'react';
 import React, { memo, useLayoutEffect, useRef } from 'react';
 
 import { useBlazePortals } from '../../../lib/portals/blazePortals';
+import { useRoom } from '../contexts/RoomContext';
+import { useRoomMessageContext } from './body/useRoomMessageContext';
 
 const BlazeTemplate: FC<
 	Omit<ComponentProps<typeof Box>, 'children'> & {
@@ -13,11 +15,12 @@ const BlazeTemplate: FC<
 	} & Record<string, unknown>
 > = ({ name, flexShrink, overflow, onClick, w, ...props }) => {
 	const [portals, portalsSubscription] = useBlazePortals();
+	const roomMessageContext = useRoomMessageContext(useRoom());
 
 	const reactiveDataContextRef = useRef(new ReactiveVar(props));
 
 	useLayoutEffect(() => {
-		reactiveDataContextRef.current.set(props);
+		reactiveDataContextRef.current.set({ ...roomMessageContext, ...props });
 	});
 
 	const ref = useRef<HTMLDivElement>();

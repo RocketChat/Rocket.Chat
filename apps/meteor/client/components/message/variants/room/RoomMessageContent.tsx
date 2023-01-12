@@ -31,10 +31,7 @@ type RoomMessageContentProps = {
 
 const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
 	const uid = useUserId();
-	const {
-		broadcast,
-		actions: { openRoom, openThread, replyBroadcast },
-	} = useMessageActions();
+	const { broadcast } = useMessageActions();
 
 	const t = useTranslation();
 
@@ -85,7 +82,6 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{isThreadMainMessage(message) && (
 				<ThreadMetrics
-					openThread={openThread(message._id)}
 					counter={message.tcount}
 					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
@@ -98,20 +94,12 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 				/>
 			)}
 
-			{isDiscussionMessage(message) && (
-				<DiscussionMetrics
-					count={message.dcount}
-					drid={message.drid}
-					lm={message.dlm}
-					rid={message.rid}
-					openDiscussion={openRoom(message.drid)}
-				/>
-			)}
+			{isDiscussionMessage(message) && <DiscussionMetrics count={message.dcount} drid={message.drid} lm={message.dlm} rid={message.rid} />}
 
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+				<BroadcastMetrics mid={message._id} username={user.username} message={message} />
 			)}
 
 			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
