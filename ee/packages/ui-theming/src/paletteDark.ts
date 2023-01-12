@@ -61,7 +61,7 @@ export const palette = [
 		list: [
 			{ name: 'status-background-info', token: '', color: '#A8C3EB' },
 			{ name: 'status-background-success', token: '', color: '#C1EBDD' },
-			{ name: 'status-background-warning', token: '', color: '#F2ECD9' },
+			{ name: 'status-background-warning', token: '', color: '#FEEFBE' },
 			{ name: 'status-background-warning-2', token: '', color: '#4E4731' },
 			{ name: 'status-background-danger', token: '', color: '#FFBDC5' },
 			{ name: 'status-background-service-1', token: '', color: '#FCE3CF' },
