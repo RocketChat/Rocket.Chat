@@ -1,8 +1,8 @@
 import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
 import { marked } from 'marked';
 
-const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm; // @username:server.com
-const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = /(?:(?!\S*@\S*\s).)@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm; // @username, @username.name
+const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm; // @username:server.com excluding any <a> tags
+const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = /(?:(?!\S*@\S*\s).)@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm; // @username, @username.name excluding any <a> tags and emails
 const INTERNAL_GENERAL_REGEX = /(@all)|(@here)/gm;
 
 const replaceMessageMentions = async (
@@ -82,18 +82,25 @@ export const toExternalQuoteMessageFormat = async ({
 	const { RichReply } = await import('@rocket.chat/forked-matrix-bot-sdk');
 
 	const formattedMessage = convertMarkdownToHTML(message);
+	const finalFormattedMessage = convertMarkdownToHTML(
+		await toExternalMessageFormat({
+			message,
+			externalRoomId,
+			homeServerDomain,
+		}),
+	);
 
-	const { body, formatted_body: formattedBody } = RichReply.createFor(
+	const { formatted_body: formattedBody } = RichReply.createFor(
 		externalRoomId,
 		{ event_id: eventToReplyTo, sender: originalEventSender },
 		formattedMessage,
-		convertMarkdownToHTML(
-			await toExternalMessageFormat({
-				message,
-				externalRoomId,
-				homeServerDomain,
-			}),
-		),
+		finalFormattedMessage,
+	);
+	const { body } = RichReply.createFor(
+		externalRoomId,
+		{ event_id: eventToReplyTo, sender: originalEventSender },
+		message,
+		finalFormattedMessage,
 	);
 
 	return {
