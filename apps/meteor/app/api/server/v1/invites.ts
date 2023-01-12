@@ -99,7 +99,7 @@ API.v1.addRoute(
 		async post() {
 			const { emails } = this.bodyParams;
 			try {
-				return API.v1.success({ success: Boolean(await sendInvitationEmail(emails, this.userId)) });
+				return API.v1.success({ success: Boolean(await sendInvitationEmail(this.userId, emails)) });
 			} catch (e: any) {
 				return API.v1.failure({ error: e.message });
 			}

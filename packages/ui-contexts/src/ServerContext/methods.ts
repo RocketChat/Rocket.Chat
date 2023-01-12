@@ -203,7 +203,6 @@ export interface ServerMethods {
 	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
-	'sendInvitationEmail': (...args: any[]) => any;
 	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;

@@ -13,8 +13,7 @@ Meteor.startup(() => {
 	});
 });
 
-export const sendInvitationEmail = async (emails: string[], userId: string) => {
-	console.log('userId from API = ', userId);
+export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 	check(emails, [String]);
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
