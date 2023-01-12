@@ -41,8 +41,6 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 	const selected = useIsSelectedMessage(message._id);
 	useCountSelected();
 
-	message.renderedOnThread = false;
-
 	return (
 		<Message
 			id={message._id}

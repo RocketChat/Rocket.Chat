@@ -134,7 +134,6 @@ export interface IMessage extends IRocketChatRecord {
 		coordinates: [number, number];
 	};
 	starred?: { _id: IUser['_id'] }[];
-	renderedOnThread?: boolean | undefined;
 	pinned?: boolean;
 	unread?: boolean;
 	temp?: boolean;
@@ -218,6 +217,7 @@ export interface IThreadMainMessage extends IMessage {
 }
 export interface IThreadMessage extends IMessage {
 	tmid: string;
+	renderedOnThread?: boolean;
 }
 
 export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage => 'tcount' in message && 'tlm' in message;

@@ -1,4 +1,5 @@
-import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -14,21 +15,25 @@ import { useRoom } from '../../../views/room/contexts/RoomContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
-const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
+const isThreadFirstMessage = (message: IThreadMessage | IThreadMainMessage): boolean => {
+	return message.renderedOnThread;
+};
+
+const getMessageContext = (message: IThreadMessage | IThreadMainMessage, room: IRoom): MessageActionContext => {
 	if (message.t === 'videoconf') {
 		return 'videoconf';
 	}
 	if (isRoomFederated(room)) {
 		return 'federated';
 	}
-	if (isThreadMessage(message) || message.renderedOnThread) {
+	if (isThreadMessage(message) || isThreadFirstMessage(message)) {
 		return 'threads';
 	}
 	return 'message';
 };
 
 type ToolboxProps = {
-	message: IMessage;
+	message: IThreadMessage | IThreadMainMessage;
 };
 
 const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
@@ -54,7 +59,15 @@ const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 		);
 		const menuActions = await MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings, chat }, context, 'menu');
 
-		return { message: messageActions, menu: menuActions };
+		const filteredActions =
+			context === 'threads'
+				? {
+						message: messageActions.filter((button) => button.label !== 'Reply_in_thread'),
+						menu: menuActions.filter((button) => button.label !== 'Reply_in_thread'),
+				  }
+				: { message: messageActions, menu: menuActions };
+
+		return filteredActions;
 	});
 
 	const toolbox = useToolboxContext();
