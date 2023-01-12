@@ -221,8 +221,8 @@ export class HomeContent {
 		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
 	}
 
-	get btnJoinCall(): Locator {
-		return this.page.locator('.rcx-button--small >> text="Join"');
+	get videoConfMessageBlock(): Locator {
+		return this.page.locator('.rcx-videoconf-message-block');
 	}
 
 	get btnAnonymousSignIn(): Locator {
