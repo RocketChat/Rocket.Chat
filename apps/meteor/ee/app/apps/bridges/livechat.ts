@@ -39,8 +39,8 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		const msg = await Livechat.sendMessage({
-			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
-			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			guest: await this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
+			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
 			roomInfo: {
 				source: {
@@ -65,7 +65,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const data = {
 			guest: message.visitor,
-			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
 		Livechat.updateMessage(data);
@@ -89,7 +89,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		const result = await getRoom({
-			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
+			guest: await this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: uuid(),
 			roomInfo: {
@@ -111,11 +111,11 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async closeRoom(room: ILivechatRoom, comment: string, closer: IUser | undefined, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is closing a livechat room.`);
 
-		const user = closer && this.orch.getConverters()?.get('users').convertToRocketChat(closer);
-		const visitor = this.orch.getConverters()?.get('visitors').convertAppVisitor(room.visitor);
+		const user = closer && (await this.orch.getConverters()?.get('users').convertToRocketChat(closer));
+		const visitor = await this.orch.getConverters()?.get('visitors').convertAppVisitor(room.visitor);
 
 		const closeData: any = {
-			room: this.orch.getConverters()?.get('rooms').convertAppRoom(room),
+			room: await this.orch.getConverters()?.get('rooms').convertAppRoom(room),
 			comment,
 			...(user && { user }),
 			...(visitor && { visitor }),
@@ -139,7 +139,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
 		}
 
-		return result.map((room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room));
+		const promisedRooms = result.map(async (room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room));
+		return Promise.all(promisedRooms);
 	}
 
 	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
@@ -203,8 +204,8 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Livechat.transfer(
-			this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
-			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
+			await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
+			await this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },
 		);
 	}
@@ -216,9 +217,12 @@ export class AppLivechatBridge extends LivechatBridge {
 			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
 		}
 
-		return (await LivechatVisitors.find(query).toArray()).map(
-			(visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
+		const livechatVisitors = await LivechatVisitors.find(query).toArray();
+		const promisedVisitors = livechatVisitors.map(
+			async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
 		);
+
+		return Promise.all(promisedVisitors);
 	}
 
 	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {

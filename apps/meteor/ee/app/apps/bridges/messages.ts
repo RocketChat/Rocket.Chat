@@ -21,7 +21,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async create(message: IMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new message.`);
 
-		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const convertedMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
 
@@ -45,7 +45,7 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('A message must exist to update.');
 		}
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 		const editor = await Users.findOneById(message.editor.id);
 
 		if (!editor) {
@@ -58,7 +58,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a user.`);
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		if (!msg) {
 			return;
@@ -76,7 +76,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map(
 			(s: ISubscription) => s.u._id,

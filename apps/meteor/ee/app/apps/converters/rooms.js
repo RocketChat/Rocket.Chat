@@ -105,7 +105,7 @@ export class AppRoomsConverter {
 		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	convertRoom(room) {
+	async convertRoom(room) {
 		if (!room) {
 			return undefined;
 		}

@@ -19,7 +19,7 @@ export class AppVisitorsConverter {
 		return this.convertVisitor(visitor);
 	}
 
-	convertVisitor(visitor) {
+	async convertVisitor(visitor) {
 		if (!visitor) {
 			return undefined;
 		}
