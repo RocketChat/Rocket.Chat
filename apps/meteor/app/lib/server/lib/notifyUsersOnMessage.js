@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -64,14 +63,14 @@ export function getMentions(message) {
 
 const incGroupMentions = (rid, roomType, excludeUserId, unreadCount) => {
 	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
-	const incUnread = roomType === 'd' || incUnreadByGroup ? 1 : 0;
+	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
 
 	Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
 const incUserMentions = (rid, roomType, uids, unreadCount) => {
 	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
-	const incUnread = roomType === 'd' || incUnreadByUser ? 1 : 0;
+	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
 
 	Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
@@ -87,6 +86,26 @@ const getUserIdsFromHighlights = (rid, message) => {
 		.map(({ u: { _id: uid } }) => uid);
 };
 
+/*
+ * {IRoom['t']} roomType - The type of the room
+ * @returns {string} - The setting value for unread count
+ */
+const getUnreadSettingCount = (roomType) => {
+	let unreadSetting = 'Unread_Count';
+	switch (roomType) {
+		case 'd': {
+			unreadSetting = 'Unread_Count_DM';
+			break;
+		}
+		case 'l': {
+			unreadSetting = 'Unread_Count_Omni';
+			break;
+		}
+	}
+
+	return settings.get(unreadSetting);
+};
+
 export async function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
@@ -94,8 +113,7 @@ export async function updateUsersSubscriptions(message, room) {
 
 		const userIds = new Set(mentionIds);
 
-		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
-		const unreadCount = settings.get(unreadSetting);
+		const unreadCount = getUnreadSettingCount(room.t);
 
 		getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
 
@@ -107,8 +125,7 @@ export async function updateUsersSubscriptions(message, room) {
 		}
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
-		// and this should always run if it's a omnichannel room
-		if (!toAll && !toHere && (unreadCount === 'all_messages' || isOmnichannelRoom(room))) {
+		if (!toAll && !toHere && unreadCount === 'all_messages') {
 			await SubscriptionsRaw.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
 		}
 	}
