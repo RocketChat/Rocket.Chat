@@ -330,6 +330,10 @@ const RoomBody = (): ReactElement => {
 	useLegacyMessageEvents({
 		messageListRef: {
 			get current() {
+				if (!useLegacyMessageTemplate) {
+					return null;
+				}
+
 				return wrapperRef.current?.querySelector('ul') ?? null;
 			},
 		},
