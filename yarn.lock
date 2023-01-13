@@ -7554,6 +7554,7 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": 0.31.22
     "@rocket.chat/tools": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@types/eslint": ^8.4.10
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
@@ -7609,9 +7610,12 @@ __metadata:
     "@storybook/manager-webpack4": ~6.5.14
     "@storybook/react": ~6.5.14
     "@storybook/testing-library": ~0.0.13
+    "@testing-library/jest-dom": ^5.16.5
+    "@testing-library/react": ~13.4.0
     "@types/jest": ^27.4.1
     "@types/react": ^18.0.26
     "@types/react-dom": ^18
+    "@types/testing-library__jest-dom": ^5
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ^18.2.0
@@ -9954,6 +9958,20 @@ __metadata:
     react: <18.0.0
     react-dom: <18.0.0
   checksum: 4abd0490405e709a7df584a0db604e508a4612398bb1326e8fa32dd9393b15badc826dcf6d2f7525437886d507871f719f127b9860ed69ddd204d1fa834f576a
+  languageName: node
+  linkType: hard
+
+"@testing-library/react@npm:~13.4.0":
+  version: 13.4.0
+  resolution: "@testing-library/react@npm:13.4.0"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    "@testing-library/dom": ^8.5.0
+    "@types/react-dom": ^18.0.0
+  peerDependencies:
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  checksum: 51ec548c1fdb1271089a5c63e0908f0166f2c7fcd9cacd3108ebbe0ce64cb4351812d885892020dc37608418cfb15698514856502b3cab0e5cc58d6cc1bd4a3e
   languageName: node
   linkType: hard
 
