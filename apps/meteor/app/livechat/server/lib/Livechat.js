@@ -1018,7 +1018,6 @@ export const Livechat = {
 			upsert: Match.Maybe([
 				Match.ObjectIncluding({
 					agentId: String,
-					username: String,
 					count: Match.Maybe(Match.Integer),
 					order: Match.Maybe(Match.Integer),
 				}),
@@ -1026,81 +1025,37 @@ export const Livechat = {
 			remove: Match.Maybe([
 				Match.ObjectIncluding({
 					agentId: String,
-					username: Match.Maybe(String),
-					count: Match.Maybe(Match.Integer),
-					order: Match.Maybe(Match.Integer),
 				}),
 			]),
 		});
 
 		const department = LivechatDepartment.findOneById(_id);
 		if (!department) {
-			throw new Meteor.Error('error-department-not-found', 'Department not found', {
-				method: 'livechat:saveDepartmentAgents',
-			});
+			throw new Error('error-department-not-found');
 		}
 
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
-		check(_id, Match.Maybe(String));
-
-		const defaultValidations = {
-			enabled: Boolean,
-			name: String,
-			description: Match.Optional(String),
-			showOnRegistration: Boolean,
-			email: String,
-			showOnOfflineForm: Boolean,
-			requestTagBeforeClosingChat: Match.Optional(Boolean),
-			chatClosingTags: Match.Optional([String]),
-			fallbackForwardDepartment: Match.Optional(String),
-		};
-
-		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-		Object.keys(departmentData).forEach((field) => {
-			if (!defaultValidations.hasOwnProperty(field)) {
-				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-			}
-		});
-
-		check(departmentData, defaultValidations);
-		check(
-			departmentAgents,
-			Match.Maybe({
-				upsert: Match.Maybe(Array),
-				remove: Match.Maybe(Array),
-			}),
-		);
-
 		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
-			throw new Meteor.Error(
-				'error-validating-department-chat-closing-tags',
-				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
-				{ method: 'livechat:saveDepartment' },
-			);
+			throw new Error('error-validating-department-chat-closing-tags');
 		}
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);
 			if (!department) {
-				throw new Meteor.Error('error-department-not-found', 'Department not found', {
-					method: 'livechat:saveDepartment',
-				});
+				throw new Error('error-department-not-found');
 			}
 		}
 
 		if (fallbackForwardDepartment === _id) {
-			throw new Meteor.Error(
-				'error-fallback-department-circular',
-				'Cannot save department. Circular reference between fallback department and department',
-			);
+			throw new Error('error-fallback-department-circular');
 		}
 
 		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+			throw new Error('error-fallback-department-not-found');
 		}
 
 		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);

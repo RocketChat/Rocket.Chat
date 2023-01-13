@@ -518,7 +518,7 @@ const LivechatDepartmentSchema = {
 
 export const isGETLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
 
-type POSTLivechatDepartmentProps = {
+type POSTAndPUTLivechatDepartmentProps = {
 	department: {
 		enabled: boolean;
 		name: string;
@@ -529,11 +529,16 @@ type POSTLivechatDepartmentProps = {
 		requestTagsBeforeClosingChat?: boolean;
 		chatClosingTags?: string[];
 		fallbackForwardDepartment?: string;
+		abandonedRoomsCloseCustomMessage?: string;
+		departmentsAllowedToForward?: string[];
+		offlineMessageChannelName?: string;
+		waitingQueueMessage?: string;
+		requestTagBeforeClosingChat?: boolean;
 	};
 	agents: { agentId: string; count?: number; order?: number }[];
 };
 
-const POSTLivechatDepartmentSchema = {
+const POSTAndPUTLivechatDepartmentSchema = {
 	type: 'object',
 	properties: {
 		department: {
@@ -543,6 +548,9 @@ const POSTLivechatDepartmentSchema = {
 					type: 'boolean',
 				},
 				name: {
+					type: 'string',
+				},
+				email: {
 					type: 'string',
 				},
 				description: {
@@ -570,12 +578,32 @@ const POSTLivechatDepartmentSchema = {
 					type: 'string',
 					nullable: true,
 				},
-				email: {
+				abandonedRoomsCloseCustomMessage: {
 					type: 'string',
+					nullable: true,
+				},
+				departmentsAllowedToForward: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				offlineMessageChannelName: {
+					type: 'string',
+					nullable: true,
+				},
+				waitingQueueMessage: {
+					type: 'string',
+					nullable: true,
+				},
+				requestTagBeforeClosingChat: {
+					type: 'boolean',
+					nullable: true,
 				},
 			},
 			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
-			additionalProperties: true,
+			additionalProperties: false,
 		},
 		agents: {
 			type: 'array',
@@ -604,7 +632,7 @@ const POSTLivechatDepartmentSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatDepartmentProps = ajv.compile<POSTLivechatDepartmentProps>(POSTLivechatDepartmentSchema);
+export const isPOSTandPUTLivechatDepartmentProps = ajv.compile<POSTAndPUTLivechatDepartmentProps>(POSTAndPUTLivechatDepartmentSchema);
 
 type LivechatDepartmentsAvailableByUnitIdProps = PaginatedRequest<{ text: string; onlyMyDepartments?: 'true' | 'false' }>;
 
@@ -2768,7 +2796,7 @@ export type OmnichannelEndpoints = {
 			department: ILivechatDepartmentRecord | null;
 			agents?: ILivechatDepartmentAgents[];
 		};
-		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
+		PUT: (params: POSTAndPUTLivechatDepartmentProps) => {
 			department: ILivechatDepartment;
 			agents: ILivechatDepartmentAgents[];
 		};

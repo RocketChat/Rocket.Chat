@@ -13,7 +13,7 @@ import {
 	PaginatedSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useRef, useCallback } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -68,7 +68,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		name: withDefault(department?.name, ''),
 		email: withDefault(department?.email, ''),
 		description: withDefault(department?.description, ''),
-		enabled: !!department?.enabled,
+		enabled: department?.enabled ?? true,
 		maxNumberSimultaneousChat: department?.maxNumberSimultaneousChat,
 		showOnRegistration: !!department?.showOnRegistration,
 		showOnOfflineForm: !!department?.showOnOfflineForm,
@@ -140,8 +140,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		setTagsState(([tags]) => [tags, e.target.value]);
 	};
 
-	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/${id}/agents`);
+	const createNewDepartment = useEndpoint('POST', '/v1/livechat/department');
+	const updateDepartment = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id });
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', '/v1/livechat/department/:departmentId/agents', { departmentId: id });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -200,33 +201,52 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
 			fallbackForwardDepartment: fallbackForwardDepartment.value,
 		};
 
-		const agentListPayload = {
-			upsert: agentList.filter(
-				(agent) =>
-					!initialAgents.current.some(
-						(initialAgent) => initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
-					),
-			),
-			remove: initialAgents.current.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id)),
-		};
+		const genericAgentListValueMapper = ({ agentId, count, order }) => ({
+			agentId,
+			count,
+			order,
+		});
 
 		try {
 			if (id) {
-				await saveDepartmentInfo(id, payload, []);
+				const agentListPayload = {
+					upsert: agentList
+						.filter(
+							(agent) =>
+								!initialAgents.current.some(
+									(initialAgent) =>
+										initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
+								),
+						)
+						.map(genericAgentListValueMapper),
+					remove: initialAgents.current
+						.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id))
+						.map(({ agentId }) => ({
+							agentId,
+						})),
+				};
+
+				await updateDepartment({
+					department: payload,
+				});
 				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
 					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 				}
 			} else {
-				await saveDepartmentInfo(id, payload, agentList);
+				await createNewDepartment({
+					department: payload,
+					agents: (agentList || []).map(genericAgentListValueMapper),
+				});
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			departmentsRoute.push({});
 		} catch (error) {
+			console.error(error);
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});

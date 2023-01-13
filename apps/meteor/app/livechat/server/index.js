@@ -46,8 +46,6 @@ import './methods/removeRoom';
 import './methods/saveAgentInfo';
 import './methods/saveAppearance';
 import './methods/saveCustomField';
-import './methods/saveDepartment';
-import './methods/saveDepartmentAgents';
 import './methods/saveInfo';
 import './methods/saveIntegration';
 import './methods/saveSurveyFeedback';

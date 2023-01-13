@@ -1880,6 +1880,8 @@
   "error-email-domain-blacklisted": "The email domain is blacklisted",
   "error-email-send-failed": "Error trying to send email: __message__",
   "error-essential-app-disabled": "Error: a Rocket.Chat App that is essential for this is disabled. Please contact your administrator",
+  "error-fallback-department-circular": "Cannot save department. Circular reference between fallback department and department",
+  "error-fallback-department-not-found": "Error: Fallback department not found",
   "error-field-unavailable": "<strong>__field__</strong> is already in use :(",
   "error-file-too-large": "File is too large",
   "error-forwarding-chat": "Something went wrong while forwarding the chat, Please try again later.",

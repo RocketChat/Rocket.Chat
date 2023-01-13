@@ -42,7 +42,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:saveAppearance': (...args: any[]) => any;
 		'livechat:saveBusinessHour': (...args: any[]) => any;
 		'livechat:saveCustomField': (...args: any[]) => any;
-		'livechat:saveDepartment': (...args: any[]) => any;
 		'livechat:saveIntegration': (...args: any[]) => any;
 		'livechat:savePriority': (...args: any[]) => any;
 		'livechat:saveTag': (...args: any[]) => any;

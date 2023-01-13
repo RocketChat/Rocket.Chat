@@ -1,4 +1,4 @@
-import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
+import { isGETLivechatDepartmentProps, isPOSTandPUTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../../app/api/server';
@@ -17,7 +17,7 @@ API.v1.addRoute(
 	'livechat/department',
 	{
 		authRequired: true,
-		validateParams: { GET: isGETLivechatDepartmentProps, POST: isPOSTLivechatDepartmentProps },
+		validateParams: { GET: isGETLivechatDepartmentProps, POST: isPOSTandPUTLivechatDepartmentProps },
 		permissionsRequired: {
 			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
 			POST: { permissions: ['manage-livechat-departments'], operation: 'hasAll' },
@@ -72,6 +72,7 @@ API.v1.addRoute(
 	'livechat/department/:_id',
 	{
 		authRequired: true,
+		validateParams: { PUT: isPOSTandPUTLivechatDepartmentProps },
 		permissionsRequired: {
 			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
 			PUT: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
