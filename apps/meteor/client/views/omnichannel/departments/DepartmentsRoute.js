@@ -4,11 +4,12 @@ import { useRouteParameter, useRoute, usePermission, useTranslation } from '@roc
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useMultipleDepartmentsAvailable } from '../../../components/Omnichannel/hooks/useMultipleDepartmentsAvailable';
+import { useOmnichannelDepartments } from '../../../components/Omnichannel/hooks/useOmnichannelDepartments';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
-import EditDepartment from './EditDepartment';
 import EditDepartmentWithData from './EditDepartmentWithData';
+import NewDepartment from './NewDepartment';
 import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -44,7 +45,6 @@ function DepartmentsRoute() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const onlyMyDepartments = true;
-	const query = useQuery(debouncedParams, debouncedSort, onlyMyDepartments);
 	const departmentsRoute = useRoute('omnichannel-departments');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -67,7 +67,21 @@ function DepartmentsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/department', { params: query });
+	const { data, refetch } = useOmnichannelDepartments({
+		onlyMyDepartments,
+		text: debouncedParams.text,
+		offset: debouncedParams.current,
+		count: debouncedParams.itemsPerPage,
+		sort: JSON.stringify({
+			[debouncedSort.column]: sortDir(debouncedSort.direction),
+			usernames: debouncedSort.column === 'name' ? sortDir(debouncedSort.direction) : undefined,
+		}),
+		fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
+	});
+
+	const reload = useCallback(() => refetch(), [refetch]);
+
+	// const { value: data = {}, reload } = getDepartments('/v1/livechat/department', { params: query });
 
 	const header = useMemo(
 		() =>
@@ -125,7 +139,7 @@ function DepartmentsRoute() {
 				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
-		[canRemoveDepartments, onRowClick, t, reload],
+		[canRemoveDepartments, onRowClick, reload, t],
 	);
 
 	if (!canViewDepartments) {
@@ -133,7 +147,7 @@ function DepartmentsRoute() {
 	}
 
 	if (context === 'new') {
-		return <EditDepartment id={id} reload={reload} title={t('New_Department')} />;
+		return <NewDepartment id={id} reload={reload} title={t('New_Department')} />;
 	}
 
 	if (context === 'edit') {
