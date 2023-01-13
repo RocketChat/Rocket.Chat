@@ -36,15 +36,33 @@ test.describe.serial('homepage', () => {
 			}
 		});
 
-		test.describe('custom body', () => {
+		test.describe('custom body with empty custom content', () => {
+			test.beforeAll(async ({ api }) => {
+				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+			});
+
+			test('expect show custom content card', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]')).toBeVisible();
+			});
+
+			test('expect visibility custom content button to be disabled', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-visibility-button"]')).toBeDisabled();
+			});
+
+			test('expect only custom content button to be disabled', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-only-button"]')).toBeDisabled();
+			});
+		});
+
+		test.describe('custom body with custom content', () => {
 			test.beforeAll(async ({ api }) => {
 				expect(
 					(await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello admin</span>' })).status(),
 				).toBe(200);
 			});
 
-			test('expect custom content block', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-content"]')).toBeVisible();
+			test('expect show custom content card', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]')).toBeVisible();
 			});
 
 			test('expect custom body to be visible', async () => {

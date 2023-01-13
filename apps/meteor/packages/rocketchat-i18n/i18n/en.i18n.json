@@ -2371,6 +2371,7 @@
   "Hold_EE_only": "Hold (Enterprise Edition only)",
   "Home": "Home",
   "Homepage": "Homepage",
+  "Homepage_Custom_Content_Default_Message": "Admins may insert content html to be rendered in this white space.",
   "Host": "Host",
   "Hospitality_Businness": "Hospitality Business",
   "hours": "hours",
