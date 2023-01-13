@@ -2,8 +2,8 @@ import moment from 'moment';
 
 import type { Data } from '../types/Data';
 import type { IStrategy } from '../types/IStrategy';
-import exportChatTranscript from '../templates/ChatTranscriptTemplate';
-import type { ChatTranscriptData, PDFMessage } from '../templates/ChatTranscriptTemplate';
+import exportChatTranscript from '../templates/ChatTranscript';
+import type { ChatTranscriptData, PDFMessage } from '../templates/ChatTranscript';
 
 export class ChatTranscript implements IStrategy {
 	private isNewDay(current: PDFMessage, previous: PDFMessage | undefined): boolean {

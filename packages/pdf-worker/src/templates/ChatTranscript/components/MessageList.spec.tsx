@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import { MessageList } from './MessageList';
-import { invalidFile, validFile, validMessage } from '../ChatTranscriptTemplate.fixtures';
+import { invalidFile, validFile, validMessage } from '../ChatTranscript.fixtures';
 
 jest.mock('@react-pdf/renderer', () => ({
 	Image: () => <div>Image</div>,

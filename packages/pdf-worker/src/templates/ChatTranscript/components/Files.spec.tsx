@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import '@testing-library/jest-dom';
 import { Files } from './Files';
-import { invalidFile, validFile } from '../ChatTranscriptTemplate.fixtures';
+import { invalidFile, validFile } from '../ChatTranscript.fixtures';
 
 jest.mock('@react-pdf/renderer', () => ({
 	StyleSheet: { create: () => ({ style: '' }) },

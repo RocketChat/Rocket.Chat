@@ -1,7 +1,7 @@
 import { Font, PDFViewer } from '@react-pdf/renderer';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import { exampleData } from './ChatTranscriptTemplate.fixtures';
+import { exampleData } from './ChatTranscript.fixtures';
 import { ChatTranscript } from '../../strategies/ChatTranscript';
 import type { ChatTranscriptData } from '.';
 import { ChatTranscriptPDF } from '.';

@@ -53,4 +53,4 @@ This will start a development server and allow you to see the different componen
 
 ## Additional Note
 
-Please refer to the [official documentations](https://docs.rocket.chat/) of @react-pdf/renderer for more information about this package.
+Please refer to the [official documentation](https://docs.rocket.chat/) of @rocket.chat/pdf-worker for more information about this package.
