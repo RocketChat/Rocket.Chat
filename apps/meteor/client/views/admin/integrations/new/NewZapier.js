@@ -1,7 +1,6 @@
-import { Box, Skeleton, Margins } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Margins, Banner, Icon } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
-
-import DeprecatedZapierWarningPopup from '../../../../components/DeprecatedZapierWarningPopup/DeprecatedZapierWarningPopup';
 
 const blogSpotStyleScriptImport = (src) =>
 	new Promise((resolve) => {
@@ -18,6 +17,7 @@ const blogSpotStyleScriptImport = (src) =>
 
 export default function NewZapier({ ...props }) {
 	const [script, setScript] = useState();
+	const t = useTranslation();
 	useEffect(() => {
 		const importZapier = async () => {
 			const scriptEl = await blogSpotStyleScriptImport(
@@ -33,7 +33,9 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<DeprecatedZapierWarningPopup />
+			<Banner icon={<Icon name='warning' />} title={t('This_is_a_deprecated_feature_alert')} variant='warning'>
+				{t('Install_Zapier_from_marketplace')}
+			</Banner>
 			{!script && (
 				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
 					<Margins blockEnd={14}>
