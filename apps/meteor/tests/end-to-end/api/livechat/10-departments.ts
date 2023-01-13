@@ -497,7 +497,7 @@ describe('LIVECHAT - Departments', function () {
 					request
 						.post(api(`livechat/department/${dep._id}/agents`))
 						.set(credentials)
-						.send({ upsert: [{ agentId: agent._id, username: agent.username }], remove: [] })
+						.send({ upsert: [{ agentId: agent._id }], remove: [] })
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
