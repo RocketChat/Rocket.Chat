@@ -12,6 +12,8 @@ import {
 	findDepartmentsBetweenIds,
 	findDepartmentAgents,
 } from '../../../../../app/livechat/server/api/lib/departments';
+import { hasLicense } from '../../../license/server/license';
+import { isFeatureQualifiedForGrandfathering } from '../../../license/server/grandfatherFeature';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -48,10 +50,14 @@ API.v1.addRoute(
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
 		async post() {
-			check(this.bodyParams, {
-				department: Object,
-				agents: Match.Maybe(Array),
-			});
+			const hasEELicense = hasLicense('livechat-department-enterprise');
+			if (!hasEELicense) {
+				// check if this workspace was qualified for grandfathering in v6.0.0
+				const isGrandfathered = await isFeatureQualifiedForGrandfathering('livechat-department-enterprise');
+				if (!isGrandfathered) {
+					return API.v1.unauthorized();
+				}
+			}
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
