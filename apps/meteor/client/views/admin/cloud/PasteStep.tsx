@@ -51,7 +51,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 							height='x108'
 							fontFamily='mono'
 							fontScale='p2'
-							color='alternative'
+							color='white'
 							style={{ wordBreak: 'break-all', resize: 'none' }}
 							placeholder={t('Paste_here')}
 							disabled={isLoading}
