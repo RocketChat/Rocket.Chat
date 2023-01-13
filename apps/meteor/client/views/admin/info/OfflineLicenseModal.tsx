@@ -75,7 +75,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 					paddingInline='x16'
 					pb='x8'
 					flexGrow={1}
-					backgroundColor='neutral-800'
+					backgroundColor='dark'
 					mb={status === 'invalid' ? 'x8' : undefined}
 				>
 					<Margins block='x8'>

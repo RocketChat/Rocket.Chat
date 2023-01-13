@@ -94,7 +94,7 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps): ReactElemen
 			inset={0}
 			display='flex'
 			flexDirection='column'
-			backgroundColor='neutral-900-65'
+			backgroundColor='neutral'
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
 		/>
