@@ -80,19 +80,21 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 						</>
 					)}
 
-					<Box mi='x16' color='disabled'>
-						|
-					</Box>
-
 					{versionIncompatible && (
-						<Box mi='x16'>
-							<Tag
-								title={incompatibleStatus?.tooltipText}
-								variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
-							>
-								{incompatibleStatus?.label}
-							</Tag>
-						</Box>
+						<>
+							<Box mi='x16' color='disabled'>
+								|
+							</Box>
+
+							<Box mi='x16'>
+								<Tag
+									title={incompatibleStatus?.tooltipText}
+									variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
+								>
+									{incompatibleStatus?.label}
+								</Tag>
+							</Box>
+						</>
 					)}
 				</Box>
 			</Box>
