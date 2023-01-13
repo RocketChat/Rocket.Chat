@@ -1,336 +1,241 @@
+import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import {
-	isLivechatAnalyticsDepartmentsAmountOfChatsProps,
-	isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
-	isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps,
-	isLivechatAnalyticsDepartmentsTotalServiceTimeProps,
-	isLivechatAnalyticsDepartmentsAverageWaitingTimeProps,
-	isLivechatAnalyticsDepartmentsTotalTransferredChatsProps,
-	isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
-	isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
-} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
+import { hasPermission } from '../../../../../app/authorization/server';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import {
-	findAllRooms,
-	findAllAverageServiceTime,
-	findAllServiceTime,
-	findAllAverageWaitingTime,
-	findAllNumberOfTransferredRooms,
-	findAllNumberOfAbandonedRooms,
-	findPercentageOfAbandonedRooms,
-	findAllAverageOfChatDurationTime,
-} from '../../../../../app/livechat/server/lib/analytics/departments';
+	findDepartments,
+	findDepartmentById,
+	findDepartmentsToAutocomplete,
+	findDepartmentsBetweenIds,
+	findDepartmentAgents,
+} from '../../../../../app/livechat/server/api/lib/departments';
 
 API.v1.addRoute(
-	'livechat/analytics/departments/amount-of-chats',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsDepartmentsAmountOfChatsProps },
+	'livechat/department',
+	{
+		authRequired: true,
+		validateParams: { GET: isGETLivechatDepartmentProps, POST: isPOSTLivechatDepartmentProps },
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-departments'], operation: 'hasAll' },
+		},
+	},
 	{
 		async get() {
 			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { answered, departmentId } = this.requestParams();
+			const { sort } = this.parseJsonQuery();
 
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-			const startDate = new Date(start);
+			const { text, enabled, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findAllRooms({
-				start: startDate,
-				end: endDate,
-				answered: answered && answered === 'true',
-				departmentId,
-				options: { offset, count },
+			const { departments, total } = await findDepartments({
+				userId: this.userId,
+				text,
+				enabled: enabled === 'true',
+				onlyMyDepartments: onlyMyDepartments === 'true',
+				excludeDepartmentId,
+				pagination: {
+					offset,
+					count,
+					// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
+					// or the form { [k: keyof T]: number | string }
+					sort: sort as any,
+				},
 			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
+
+			return API.v1.success({ departments, count: departments.length, offset, total });
+		},
+		async post() {
+			check(this.bodyParams, {
+				department: Object,
+				agents: Match.Maybe(Array),
 			});
+
+			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
+			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
+
+			if (department) {
+				return API.v1.success({
+					department,
+					agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
+				});
+			}
+
+			return API.v1.failure();
 		},
 	},
 );
 
 API.v1.addRoute(
-	'livechat/analytics/departments/average-service-time',
+	'livechat/department/:_id',
 	{
 		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			PUT: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
+			DELETE: { permissions: ['manage-livechat-departments', 'remove-livechat-department'], operation: 'hasAny' },
+		},
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
-
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-			const startDate = new Date(start);
-
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findAllAverageServiceTime({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
+			check(this.urlParams, {
+				_id: String,
 			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
+
+			const { onlyMyDepartments } = this.queryParams;
+
+			const { department, agents } = await findDepartmentById({
+				userId: this.userId,
+				departmentId: this.urlParams._id,
+				includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+				onlyMyDepartments: onlyMyDepartments === 'true',
 			});
+
+			// TODO: return 404 when department is not found
+			// Currently, FE relies on the fact that this endpoint returns an empty payload
+			// to show the "new" view. Returning 404 breaks it
+
+			return API.v1.success({ department, agents });
+		},
+		async put() {
+			const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
+			const permissionToAddAgents = hasPermission(this.userId, 'add-livechat-department-agents');
+
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			check(this.bodyParams, {
+				department: Object,
+				agents: Match.Maybe(Array),
+			});
+
+			const { _id } = this.urlParams;
+			const { department, agents } = this.bodyParams;
+
+			let success;
+			if (permissionToSave) {
+				success = Livechat.saveDepartment(_id, department);
+			}
+
+			if (success && agents && permissionToAddAgents) {
+				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
+			}
+
+			if (success) {
+				return API.v1.success({
+					department: LivechatDepartment.findOneById(_id),
+					agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
+				});
+			}
+
+			return API.v1.failure();
+		},
+		delete() {
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			if (Livechat.removeDepartment(this.urlParams._id)) {
+				return API.v1.success();
+			}
+			return API.v1.failure();
 		},
 	},
 );
 
 API.v1.addRoute(
-	'livechat/analytics/departments/average-chat-duration-time',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps,
-	},
+	'livechat/department.autocomplete',
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
-
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
+			const { selector, onlyMyDepartments } = this.queryParams;
+			if (!selector) {
+				return API.v1.failure("The 'selector' param is required");
 			}
-			const startDate = new Date(start);
 
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findAllAverageOfChatDurationTime({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
-			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
+			return API.v1.success(
+				await findDepartmentsToAutocomplete({
+					uid: this.userId,
+					selector: JSON.parse(selector),
+					onlyMyDepartments: onlyMyDepartments === 'true',
+				}),
+			);
 		},
 	},
 );
 
 API.v1.addRoute(
-	'livechat/analytics/departments/total-service-time',
+	'livechat/department/:departmentId/agents',
 	{
 		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsTotalServiceTimeProps,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
+		},
 	},
 	{
 		async get() {
+			check(this.urlParams, {
+				departmentId: String,
+			});
+
 			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { sort } = this.parseJsonQuery();
 
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-			const startDate = new Date(start);
-
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findAllServiceTime({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
+			const agents = await findDepartmentAgents({
+				userId: this.userId,
+				departmentId: this.urlParams.departmentId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
 			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
+
+			return API.v1.success(agents);
+		},
+		async post() {
+			check(this.urlParams, {
+				departmentId: String,
 			});
+
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					upsert: Array,
+					remove: Array,
+				}),
+			);
+			Livechat.saveDepartmentAgents(this.urlParams.departmentId, this.bodyParams);
+
+			return API.v1.success();
 		},
 	},
 );
 
 API.v1.addRoute(
-	'livechat/analytics/departments/average-waiting-time',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsAverageWaitingTimeProps,
-	},
+	'livechat/department.listByIds',
+	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
-
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
+			const { ids } = this.queryParams;
+			const { fields } = this.parseJsonQuery();
+			if (!ids) {
+				return API.v1.failure("The 'ids' param is required");
 			}
-			const startDate = new Date(start);
-
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
+			if (!Array.isArray(ids)) {
+				return API.v1.failure("The 'ids' param must be an array");
 			}
-			const endDate = new Date(end);
 
-			const { departments, total } = findAllAverageWaitingTime({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
-			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/analytics/departments/total-transferred-chats',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsTotalTransferredChatsProps,
-	},
-	{
-		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
-
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-			const startDate = new Date(start);
-
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findAllNumberOfTransferredRooms({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
-			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/analytics/departments/total-abandoned-chats',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
-	},
-	{
-		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
-
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-			const startDate = new Date(start);
-
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findAllNumberOfAbandonedRooms({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
-			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/analytics/departments/percentage-abandoned-chats',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
-	},
-	{
-		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
-
-			if (isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-			const startDate = new Date(start);
-
-			if (isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-			const endDate = new Date(end);
-
-			const { departments, total } = findPercentageOfAbandonedRooms({
-				start: startDate,
-				end: endDate,
-				departmentId,
-				options: { offset, count },
-			});
-			return API.v1.success({
-				departments,
-				count: departments.length,
-				offset,
-				total,
-			});
+			return API.v1.success(
+				await findDepartmentsBetweenIds({
+					ids,
+					fields,
+				}),
+			);
 		},
 	},
 );

@@ -35,6 +35,7 @@ import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
+import './api/commonApiIndex';
 
 onLicense('livechat-enterprise', () => {
 	require('./api');

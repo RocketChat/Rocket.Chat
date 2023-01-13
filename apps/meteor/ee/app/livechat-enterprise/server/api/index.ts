@@ -1,5 +1,5 @@
 import './agents';
-import './departments';
+import './departmentsAnalytics';
 import './inquiries';
 import './monitors';
 import './priorities';
