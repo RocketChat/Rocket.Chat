@@ -21,4 +21,9 @@ export const {
 		icon: 'circle-arrow-down',
 		i18nLabel: 'Installed',
 	},
+	{
+		href: 'marketplace/private/list',
+		icon: 'lock',
+		i18nLabel: 'Private_Apps',
+	},
 ]);

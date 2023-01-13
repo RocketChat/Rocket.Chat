@@ -114,4 +114,5 @@ export type App = {
 	permissions: AppPermission[];
 	languages: string[];
 	createdDate: string;
+	private: boolean;
 };

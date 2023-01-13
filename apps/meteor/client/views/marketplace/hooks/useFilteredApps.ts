@@ -15,7 +15,7 @@ import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlpha
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
 import type { App } from '../types';
 
-type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
+export type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
 
 export const useFilteredApps = ({
 	appsData,
