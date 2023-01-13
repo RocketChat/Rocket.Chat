@@ -51,7 +51,7 @@ export const palette = [
 		description: 'Secondary Background',
 		list: [
 			{ name: 'button-background-secondary-default', token: '', color: '#0D0F11' },
-			{ name: 'button-background-secondary-hover', token: '', color: '#23282E' },
+			{ name: 'button-background-secondary-hover', token: '', color: '#3A404B' },
 			{ name: 'button-background-secondary-press', token: '', color: '#2C313A' },
 			{ name: 'button-background-secondary-focus', token: '', color: '#0D0F11' },
 			{ name: 'button-background-secondary-keyfocus', token: '', color: '#2F343D' },
