@@ -1,4 +1,5 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
@@ -95,6 +96,27 @@ export class ListenersModule {
 		service.onEvent('user.roleUpdate', (update) => {
 			notifications.notifyLoggedInThisInstance('roles-change', update);
 		});
+
+		service.onEvent(
+			'user.video-conference',
+			({
+				userId,
+				action,
+				params,
+			}: {
+				userId: string;
+				action: string;
+				params: {
+					callId: VideoConference['_id'];
+					uid: IUser['_id'];
+					rid: IRoom['_id'];
+					title?: string;
+					providerName?: string;
+				};
+			}) => {
+				notifications.notifyUserInThisInstance(userId, 'video-conference', { action, params });
+			},
+		);
 
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
