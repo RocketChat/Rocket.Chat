@@ -54,15 +54,7 @@ const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 		);
 		const menuActions = await MessageAction.getButtons({ message, room, user, subscription, settings: mapSettings, chat }, context, 'menu');
 
-		const filteredActions =
-			context === 'threads'
-				? {
-						message: messageActions.filter((button) => button.label !== 'Reply_in_thread'),
-						menu: menuActions.filter((button) => button.label !== 'Reply_in_thread'),
-				  }
-				: { message: messageActions, menu: menuActions };
-
-		return filteredActions;
+		return { message: messageActions, menu: menuActions };
 	});
 
 	const toolbox = useToolboxContext();

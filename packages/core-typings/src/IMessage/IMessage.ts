@@ -214,13 +214,13 @@ export interface IThreadMainMessage extends IMessage {
 	tcount: number;
 	tlm: Date;
 	replies: IUser['_id'][];
+	renderedOnThread?: boolean;
 }
 export interface IThreadMessage extends IMessage {
 	tmid: string;
-	renderedOnThread?: boolean;
 }
 
-export const isThreadFirstMessage = (message: IMessage) => (message as IThreadMessage).renderedOnThread;
+export const isThreadFirstMessage = (message: IMessage) => (message as IThreadMainMessage).renderedOnThread;
 
 export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage => 'tcount' in message && 'tlm' in message;
 
