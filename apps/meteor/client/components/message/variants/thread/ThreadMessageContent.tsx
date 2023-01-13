@@ -26,10 +26,7 @@ type ThreadMessageContentProps = {
 
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
 	const uid = useUserId();
-	const {
-		broadcast,
-		actions: { replyBroadcast },
-	} = useMessageActions();
+	const { broadcast } = useMessageActions();
 
 	const t = useTranslation();
 
@@ -79,7 +76,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+				<BroadcastMetrics mid={message._id} username={user.username} message={message} />
 			)}
 
 			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
