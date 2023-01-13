@@ -1,6 +1,5 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import type { ReactElement } from 'react';
 import React from 'react';
 
