@@ -1836,6 +1836,7 @@
   "Enter_your_E2E_password": "Enter your E2E password",
   "Enterprise": "Enterprise",
   "Enterprise_capabilities": "Enterprise capabilities",
+  "Enterprise_feature": "Enterprise feature",
   "Enterprise_Description": "Manually update your Enterprise license.",
   "Enterprise_License": "Enterprise License",
   "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
@@ -5550,5 +5551,10 @@
   "Theme_light": "Light",
   "Theme_dark": "Dark",
   "Join_your_team": "Join your team",
-  "Create_an_account": "Create an account"
+  "Create_an_account": "Create an account",
+  "Enable_unlimited_apps": "Enable unlimited apps",
+  "Talk_to_sales": "Talk to sales",
+  "Start_free_trial": "Start free trial",
+  "Get_all_apps": "Get all the apps your team needs",
+  "Workspaces_on_community_edition": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Start a free Enterprise trial to remove these limits today!"
 }
