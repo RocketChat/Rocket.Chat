@@ -51,7 +51,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 				</Box>
 
 				{shortDescription && (
-					<Box fontScale='p1' color='default' mbe='x16'>
+					<Box fontScale='p1' mbe='x16'>
 						{shortDescription}
 					</Box>
 				)}
