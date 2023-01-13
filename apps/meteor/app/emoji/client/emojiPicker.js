@@ -55,7 +55,7 @@ const createEmojiList = (category, actualTone, limit = null) => {
 };
 
 export function updateRecentEmoji(category) {
-	emojiListByCategory.set(category, createEmojiList(category));
+	emojiListByCategory.set(category, createEmojiList(category, null, category === 'rocket' ? customItems : null));
 }
 
 const createPickerEmojis = (instance) => {

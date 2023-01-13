@@ -200,8 +200,6 @@ Meteor.startup(() =>
 					};
 				}
 			}
-
-			EmojiPicker.updateRecent('rocket');
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}
