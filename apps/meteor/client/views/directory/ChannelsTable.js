@@ -10,7 +10,7 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomTags from './RoomTags';
-import { useQuery } from './hooks';
+import { useDirectoryQuery } from './hooks/useDirectoryQuery';
 
 const style = {
 	whiteSpace: 'nowrap',
@@ -26,7 +26,7 @@ function ChannelsTable() {
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
-	const query = useQuery(params, sort, 'channels');
+	const query = useDirectoryQuery(params, sort, 'channels');
 
 	const onHeaderClick = useCallback(
 		(id) => {
@@ -93,7 +93,7 @@ function ChannelsTable() {
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { value: data = {} } = useEndpointData('/v1/directory', query);
+	const { value: data = {} } = useEndpointData('/v1/directory', { params: query });
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {

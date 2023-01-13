@@ -43,7 +43,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useSelectForwardDepartment = () => {},
 	} = useFormsSubscription();
 
-	const initialAgents = useRef((data && data.agents) || []);
+	const { agents } = data || { agents: [] };
+
+	const initialAgents = useRef(agents);
 
 	const MaxChats = useEeNumberInput();
 	const VisitorInactivity = useEeNumberInput();
@@ -242,7 +244,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const formId = useUniqueId();
 
-	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
+	const hasNewAgent = useMemo(() => agents.length === agentList.length, [agents, agentList]);
 
 	const agentsHaveChanged = () => {
 		let hasChanges = false;
@@ -479,7 +481,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
 							<Box display='flex' flexDirection='column' height='50vh'>
 								<DepartmentsAgentsTable
-									agents={data && data.agents}
+									agents={agents}
 									setAgentListFinal={setAgentList}
 									setAgentsAdded={setAgentsAdded}
 									setAgentsRemoved={setAgentsRemoved}

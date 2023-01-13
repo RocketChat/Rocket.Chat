@@ -93,6 +93,10 @@ export const EmojiPicker = {
 
 		return $('.emoji-picker').css(cssProperties);
 	},
+	/**
+	 * @param {Element} source
+	 * @param {(emoji: string) => void} callback
+	 */
 	async open(source, callback) {
 		if (!this.initiated) {
 			await this.init();
@@ -122,10 +126,9 @@ export const EmojiPicker = {
 		this.source.focus();
 	},
 	pickEmoji(emoji) {
-		this.pickCallback(emoji);
-
 		this.close();
 		this.addRecent(emoji);
+		this.pickCallback(emoji);
 	},
 	addRecent(_emoji) {
 		const pos = this.recent.indexOf(_emoji);

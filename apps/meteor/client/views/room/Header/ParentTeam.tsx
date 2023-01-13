@@ -25,15 +25,11 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 		throw new Error('invalid uid');
 	}
 
-	const { value, phase } = useEndpointData(
-		'/v1/teams.info',
-		useMemo(() => ({ teamId }), [teamId]),
-	);
+	const { value, phase } = useEndpointData('/v1/teams.info', { params: useMemo(() => ({ teamId }), [teamId]) });
 
-	const { value: userTeams, phase: userTeamsPhase } = useEndpointData(
-		'/v1/users.listTeams',
-		useMemo(() => ({ userId }), [userId]),
-	);
+	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('/v1/users.listTeams', {
+		params: useMemo(() => ({ userId }), [userId]),
+	});
 
 	const belongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
 	const isTeamPublic = value?.teamInfo.type === TEAM_TYPE.PUBLIC;

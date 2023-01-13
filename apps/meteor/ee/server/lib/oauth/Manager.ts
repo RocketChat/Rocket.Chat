@@ -1,4 +1,5 @@
 import { Roles } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
@@ -9,7 +10,7 @@ export const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
 	static mapSSOGroupsToChannels(
-		user: Record<string, any>,
+		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
 		channelsMap: Record<string, any> | undefined,
@@ -34,7 +35,7 @@ export class OAuthEEManager {
 							}
 						}
 						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user.username);
+							addUserToRoom(room._id, user);
 						}
 					}
 				}

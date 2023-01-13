@@ -30,7 +30,7 @@ const MonitorsPage = () => {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [username, setUsername] = useState('');
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/monitors', useQuery(params, sort));
+	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/monitors', { params: useQuery(params, sort) });
 
 	const addMonitor = useMethod('livechat:addMonitor');
 

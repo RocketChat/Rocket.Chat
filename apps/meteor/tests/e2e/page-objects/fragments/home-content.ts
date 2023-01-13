@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
 
+	get encryptedRoomHeaderIcon(): Locator {
+		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
@@ -143,7 +147,7 @@ export class HomeContent {
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
-		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
 	}
@@ -199,5 +203,13 @@ export class HomeContent {
 
 	get btnOnHold(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
+	}
+
+	get btnAnonymousSignIn(): Locator {
+		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
+	}
+
+	get btnAnonymousTalk(): Locator {
+		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 }
