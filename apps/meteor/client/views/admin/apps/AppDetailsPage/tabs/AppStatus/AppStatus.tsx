@@ -122,7 +122,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const shouldShowPriceDisplay = isAppDetailsPage && button;
 
 	return (
-		<Box {...props} display='flex'>
+		<Box {...props} display='flex' alignItems='center'>
 			{button && isAppDetailsPage && (
 				<Box
 					display='flex'
@@ -132,7 +132,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary small disabled={loading} onClick={handleClick}>
+					<Button primary small disabled={loading} onClick={handleClick} mie='x8'>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
@@ -144,16 +144,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (
-						<Box mis='x8'>
-							<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
-						</Box>
+						<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 					)}
 				</Box>
 			)}
 
 			{statuses?.map((status, index) => (
 				<Fragment key={index}>
-					<Margins all='x8'>
+					<Margins inlineEnd='x8'>
 						{status.tooltipText ? (
 							<Tag title={status.tooltipText} variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>
 								{status.label}
