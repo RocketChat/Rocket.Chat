@@ -10,6 +10,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 		super(db, 'livechat_department', trash);
 	}
 
+	countTotal(): Promise<number> {
+		return this.col.countDocuments();
+	}
+
 	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord> {
 		const query = { _id: { $in: departmentsIds } };
 		return this.find(query, options);

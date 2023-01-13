@@ -12,6 +12,7 @@ import {
 	findDepartmentsBetweenIds,
 	findDepartmentAgents,
 } from '../../../server/api/lib/departments';
+import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -54,7 +55,7 @@ API.v1.addRoute(
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
+			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department, agents);
 
 			if (department) {
 				return API.v1.success({
@@ -117,7 +118,7 @@ API.v1.addRoute(
 
 			let success;
 			if (permissionToSave) {
-				success = Livechat.saveDepartment(_id, department);
+				success = await LivechatEnterprise.saveDepartment(_id, department);
 			}
 
 			if (success && agents && permissionToAddAgents) {

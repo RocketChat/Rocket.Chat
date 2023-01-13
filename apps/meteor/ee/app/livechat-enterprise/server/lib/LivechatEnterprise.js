@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users, LivechatRooms } from '@rocket.chat/models';
+import { LivechatInquiry, Users, LivechatRooms, LivechatDepartment as LivechatDepartmentRaw } from '@rocket.chat/models';
 
-import LivechatUnit from '../../../models/server/models/LivechatUnit';
-import LivechatTag from '../../../models/server/models/LivechatTag';
-import { Messages } from '../../../../../app/models/server';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
+import { hasLicense } from '../../../license/server/license';
+import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
+import { Messages, LivechatDepartment } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import {
@@ -20,7 +19,7 @@ import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
-import { LivechatUnitMonitors } from '../../../models/server';
+import { LivechatPriority, LivechatTag, LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -214,6 +213,82 @@ export const LivechatEnterprise = {
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
+	},
+
+	async saveDepartment(_id, departmentData, departmentAgents) {
+		check(_id, Match.Maybe(String));
+
+		const department = _id && (await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } }));
+
+		if (!hasLicense('livechat-enterprise')) {
+			const totalDepartments = await LivechatDepartmentRaw.countTotal();
+			if (!department && totalDepartments >= 1) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+					method: 'livechat:saveDepartment',
+				});
+			}
+		}
+
+		const defaultValidations = {
+			enabled: Boolean,
+			name: String,
+			description: Match.Optional(String),
+			showOnRegistration: Boolean,
+			email: String,
+			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
+			fallbackForwardDepartment: Match.Optional(String),
+		};
+
+		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
+		Object.keys(departmentData).forEach((field) => {
+			if (!defaultValidations.hasOwnProperty(field)) {
+				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
+			}
+		});
+
+		check(departmentData, defaultValidations);
+		check(
+			departmentAgents,
+			Match.Maybe({
+				upsert: Match.Maybe(Array),
+				remove: Match.Maybe(Array),
+			}),
+		);
+
+		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error(
+				'error-validating-department-chat-closing-tags',
+				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
+				{ method: 'livechat:saveDepartment' },
+			);
+		}
+
+		if (_id && !department) {
+			throw new Meteor.Error('error-department-not-found', 'Department not found', {
+				method: 'livechat:saveDepartment',
+			});
+		}
+
+		if (fallbackForwardDepartment === _id) {
+			throw new Meteor.Error(
+				'error-fallback-department-circular',
+				'Cannot save department. Circular reference between fallback department and department',
+			);
+		}
+
+		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
+			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		}
+
+		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
+		if (departmentDB && departmentAgents) {
+			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		return departmentDB;
 	},
 };
 
