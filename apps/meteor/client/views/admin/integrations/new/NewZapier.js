@@ -33,7 +33,12 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<Banner icon={<Icon name='warning' />} title={t('This_is_a_deprecated_feature_alert')} variant='warning'>
+			<Banner
+				icon={<Icon name='warning' />}
+				title={t('This_is_a_deprecated_feature_alert')}
+				variant='warning'
+				style={{ marginInline: '-1.5rem' }}
+			>
 				{t('Install_Zapier_from_marketplace')}
 			</Banner>
 			{!script && (
