@@ -34,7 +34,7 @@ const createEmojiList = (category, actualTone, limit = null) => {
 
 				const total = emojiPackage.emojisByCategory[category].length;
 
-				const listTotal = limit || total;
+				const listTotal = limit ? Math.min(limit, total) : total;
 
 				for (let i = 0; i < listTotal; i++) {
 					const current = emojiPackage.emojisByCategory[category][i];
@@ -43,7 +43,7 @@ const createEmojiList = (category, actualTone, limit = null) => {
 					result.push(getEmojiElement(current, emojiPackage.renderPicker(`:${current}${tone}:`)));
 				}
 
-				if (total > limit) {
+				if (limit > 0 && total > limit) {
 					result.push(loadMoreLink());
 				}
 
