@@ -220,6 +220,8 @@ export interface IThreadMessage extends IMessage {
 	renderedOnThread?: boolean;
 }
 
+export const isThreadFirstMessage = (message: IMessage) => (message as IThreadMessage).renderedOnThread;
+
 export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage => 'tcount' in message && 'tlm' in message;
 
 export const isThreadMessage = (message: IMessage): message is IThreadMessage => !!message.tmid;

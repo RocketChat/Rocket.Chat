@@ -1,5 +1,5 @@
-import type { IUser, IRoom, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { isThreadMessage, isThreadFirstMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -14,11 +14,7 @@ import { useRoom } from '../../../views/room/contexts/RoomContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
-const isThreadFirstMessage = (message: IThreadMessage | IThreadMainMessage): boolean => {
-	return message.renderedOnThread;
-};
-
-const getMessageContext = (message: IThreadMessage | IThreadMainMessage, room: IRoom): MessageActionContext => {
+const getMessageContext = (message: IMessage, room: IRoom): MessageActionContext => {
 	if (message.t === 'videoconf') {
 		return 'videoconf';
 	}
@@ -32,7 +28,7 @@ const getMessageContext = (message: IThreadMessage | IThreadMainMessage, room: I
 };
 
 type ToolboxProps = {
-	message: IThreadMessage | IThreadMainMessage;
+	message: IMessage;
 };
 
 const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
