@@ -41,7 +41,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 				</>
 			)}
 
-			<Box display='flex' flexDirection='column' color='default'>
+			<Box display='flex' flexDirection='column'>
 				<Margins block='x17'>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
@@ -49,11 +49,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Description')}
 						</Box>
-						<Box
-							dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }}
-							withRichContent
-							color='default'
-						/>
+						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
 					</Box>
 
 					<Box is='section'>
@@ -70,7 +66,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='default'>
+						<Box fontScale='h4' mbe='x8'>
 							{t('Contact')}
 						</Box>
 						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap'>

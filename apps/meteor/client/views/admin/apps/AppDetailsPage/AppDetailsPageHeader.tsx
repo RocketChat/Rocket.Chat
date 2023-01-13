@@ -31,16 +31,12 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x8'>
-					<Box fontScale='h1' mie='x8' color='default'>
+					<Box fontScale='h1' mie='x8'>
 						{name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
-				{app?.shortDescription && (
-					<Box mbe='x16' color='default'>
-						{app.shortDescription}
-					</Box>
-				)}
+				{app?.shortDescription && <Box mbe='x16'>{app.shortDescription}</Box>}
 
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x16'>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
