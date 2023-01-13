@@ -26,7 +26,6 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 		iconFileData,
 		name,
 		author,
-		version,
 		iconFileContent,
 		installed,
 		modifiedAt,
@@ -65,7 +64,8 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<Box mi='x16' color='disabled'>
 						|
 					</Box>
-					{t('Version_version', { version })}
+
+					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 
 					{lastUpdated && (
 						<>
@@ -83,8 +83,6 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<Box mi='x16' color='disabled'>
 						|
 					</Box>
-
-					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 
 					{versionIncompatible && (
 						<Box mi='x16'>
