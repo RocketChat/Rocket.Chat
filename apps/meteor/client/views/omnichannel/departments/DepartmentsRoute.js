@@ -1,10 +1,9 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useRef } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useMultipleDepartmentsAvailable } from '../../../components/Omnichannel/hooks/useMultipleDepartmentsAvailable';
 import { useOmnichannelDepartments } from '../../../components/Omnichannel/hooks/useOmnichannelDepartments';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
@@ -48,6 +47,12 @@ function DepartmentsRoute() {
 	const departmentsRoute = useRoute('omnichannel-departments');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+
+	const refetchRef = useRef(() => undefined);
+
+	const handleRefetch = useCallback(() => {
+		refetchRef.current();
+	}, [refetchRef]);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -136,7 +141,7 @@ function DepartmentsRoute() {
 				<Table.Cell withTruncatedText>{numAgents || '0'}</Table.Cell>
 				<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
 				<Table.Cell withTruncatedText>{showOnRegistration ? t('Yes') : t('No')}</Table.Cell>
-				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} />}
+				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} refetch={handleRefetch} />}
 			</Table.Row>
 		),
 		[canRemoveDepartments, onRowClick, reload, t],
@@ -147,7 +152,7 @@ function DepartmentsRoute() {
 	}
 
 	if (context === 'new') {
-		return <NewDepartment id={id} reload={reload} title={t('New_Department')} />;
+		return <NewDepartment id={id} reload={reload} refetchRef={refetchRef} title={t('New_Department')} />;
 	}
 
 	if (context === 'edit') {

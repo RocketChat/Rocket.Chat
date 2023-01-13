@@ -1,7 +1,9 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { MutableRefObject } from 'react';
+import React, { useEffect } from 'react';
 
-import { useMultipleDepartmentsAvailable } from '../../../components/Omnichannel/hooks/useMultipleDepartmentsAvailable';
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import PageSkeleton from '../../../components/PageSkeleton';
 import EditDepartment from './EditDepartment';
 import UpgradeDepartments from './UpgradeDepartments';
@@ -9,10 +11,19 @@ import UpgradeDepartments from './UpgradeDepartments';
 type NewDepartmentProps = {
 	id: string;
 	reload: () => void;
+	refetchRef: MutableRefObject<() => void>;
 };
 
-const NewDepartment = ({ id, reload }: NewDepartmentProps) => {
-	const isMultipleDepartmentsAvailable = useMultipleDepartmentsAvailable();
+const NewDepartment = ({ id, reload, refetchRef }: NewDepartmentProps) => {
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data, refetch } = useQuery(['getDepartments'], async () => getDepartments());
+
+	useEffect(() => {
+		refetchRef.current = refetch;
+	}, [refetchRef, refetch]);
+
+	const isMultipleDepartmentsAvailable = data ? data?.total < 1 || hasLicense : 'loading';
 	const t = useTranslation();
 
 	if (isMultipleDepartmentsAvailable === 'loading' || undefined) {
