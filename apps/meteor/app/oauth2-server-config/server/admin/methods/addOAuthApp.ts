@@ -45,6 +45,7 @@ export async function addOAuthApp(
 		clientId: Random.id(),
 		clientSecret: Random.secret(),
 		_createdAt: new Date(),
+		_updatedAt: new Date(),
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		_createdBy: (await Users.findOne(uid, { projection: { username: 1 } })) as { username: string; _id: string },
 	};
