@@ -1,5 +1,5 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 const UnlimitedAppsUpsellModal = () => {
@@ -23,7 +23,7 @@ const UnlimitedAppsUpsellModal = () => {
 					{t('Get_all_apps')}
 				</Box>
 				<Box is='span' fontStyle='p2'></Box>
-				{t('Workspaces_on_community_edition')}
+				{authorized ? t('Workspaces_on_community_edition_admin') : t('Workspaces_on_community_edition_not_admin')}
 			</Modal.Content>
 			<Modal.Footer>
 				{authorized ? (
