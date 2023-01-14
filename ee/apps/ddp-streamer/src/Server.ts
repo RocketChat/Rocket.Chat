@@ -3,13 +3,12 @@ import { EventEmitter } from 'events';
 import type WebSocket from 'ws';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
+import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
 
 import { DDP_EVENTS } from './constants';
 import { Publication } from './Publication';
 import type { Client } from './Client';
 import type { IPacket } from './types/IPacket';
-import { MeteorService } from '../../../../apps/meteor/server/sdk';
-import { isMeteorError, MeteorError } from '../../../../apps/meteor/server/sdk/errors';
 import { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const logger = new Logger('DDP-Streamer');

@@ -18,8 +18,6 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
-import type { CommonRoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/CommonRoomTemplateInstance';
-import { getCommonRoomEvents } from '../../../../../app/ui/client/views/app/lib/getCommonRoomEvents';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
@@ -35,6 +33,7 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
+import { useLegacyMessageEvents } from '../../hooks/useLegacyMessageEvents';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
@@ -80,7 +79,7 @@ const RoomBody = (): ReactElement => {
 		throw new Error('No ChatContext provided');
 	}
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(room);
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const _isAtBottom = useCallback((scrollThreshold = 0) => {
 		const wrapper = wrapperRef.current;
@@ -160,7 +159,7 @@ const RoomBody = (): ReactElement => {
 
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles, users }) => {
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles }) => {
 		const leaderRoomRole = roomRoles.findOne({
 			'rid': room._id,
 			'roles': 'leader',
@@ -171,13 +170,9 @@ const RoomBody = (): ReactElement => {
 			return null;
 		}
 
-		const leaderUser = users.findOne({ _id: leaderRoomRole.u._id }, { fields: { status: 1, statusText: 1 } });
-
 		return {
 			...leaderRoomRole.u,
 			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
-			status: leaderUser?.status,
-			statusText: leaderUser?.statusText,
 		};
 	});
 
@@ -332,47 +327,14 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [room._id, setUnreadCount]);
 
-	useEffect(() => {
-		const messageList = wrapperRef.current?.querySelector('ul');
-
-		if (!messageList) {
-			return;
-		}
-
-		const messageEvents: Record<string, (event: any, template: CommonRoomTemplateInstance) => void> = {
-			...getCommonRoomEvents(useLegacyMessageTemplate),
-			'click .toggle-hidden'(event: JQuery.ClickEvent) {
-				const mid = event.target.dataset.message;
-				if (mid) document.getElementById(mid)?.classList.toggle('message--ignored');
+	useLegacyMessageEvents({
+		messageListRef: {
+			get current() {
+				return wrapperRef.current?.querySelector('ul') ?? null;
 			},
-			'load .gallery-item'() {
-				sendToBottomIfNecessary();
-			},
-			'rendered .js-block-wrapper'() {
-				sendToBottomIfNecessary();
-			},
-		};
-
-		const eventHandlers = Object.entries(messageEvents).map(([key, handler]) => {
-			const [, event, selector] = key.match(/^(.+?)\s(.+)$/) ?? [key, key];
-			return {
-				event,
-				selector,
-				listener: (e: JQuery.TriggeredEvent<HTMLUListElement, undefined>) =>
-					handler.call(null, e, { data: { rid: room._id, tabBar: toolbox, chatContext: chat } }),
-			};
-		});
-
-		for (const { event, selector, listener } of eventHandlers) {
-			$(messageList).on(event, selector, listener);
-		}
-
-		return () => {
-			for (const { event, selector, listener } of eventHandlers) {
-				$(messageList).off(event, selector, listener);
-			}
-		};
-	}, [chat, room._id, sendToBottomIfNecessary, toolbox, useLegacyMessageTemplate]);
+		},
+		onRequestScrollToBottom: sendToBottomIfNecessary,
+	});
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -614,10 +576,9 @@ const RoomBody = (): ReactElement => {
 								) : null}
 								{roomLeader ? (
 									<LeaderBar
-										name={roomLeader.name}
+										_id={roomLeader._id}
 										username={roomLeader.username}
-										status={roomLeader.status}
-										statusText={roomLeader.statusText}
+										name={roomLeader.name}
 										visible={!hideLeaderHeader}
 										onAvatarClick={handleOpenUserCardButtonClick}
 									/>

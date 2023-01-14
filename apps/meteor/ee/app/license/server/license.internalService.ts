@@ -1,8 +1,7 @@
 import { debounce } from 'underscore';
+import type { ILicense } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import { api } from '../../../../server/sdk/api';
-import type { ILicense } from '../../../../server/sdk/types/ILicense';
-import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
 import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { getModules, hasLicense, isEnterprise, onModule, onValidateLicenses } from './license';

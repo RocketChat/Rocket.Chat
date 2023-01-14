@@ -4,6 +4,7 @@ import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-u
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { getURL } from '../../../app/utils/lib/getURL';
+import { getButtonStyle } from './getButtonStyle';
 import './textParsers';
 
 const focusableElementsString = `
@@ -144,9 +145,13 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 				</Modal.Content>
 				<Modal.Footer>
 					<Modal.FooterControllers>
-						{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
+						{view.close && (
+							<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+								{modalParser.text(view.close.text)}
+							</Button>
+						)}
 						{view.submit && (
-							<Button primary onClick={onSubmit}>
+							<Button {...getButtonStyle(view)} onClick={onSubmit}>
 								{modalParser.text(view.submit.text)}
 							</Button>
 						)}

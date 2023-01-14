@@ -1,7 +1,7 @@
 import faker from "@faker-js/faker";
-import { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
+import type { IOmnichannelBusinessUnit } from "@rocket.chat/core-typings";
 import { methodCall, credentials, request } from "../api-data";
-import { DummyResponse } from "./utils";
+import type { DummyResponse } from "./utils";
 
 export const createMonitor = async (username: string): Promise<{ _id: string; username: string }> => {
     return new Promise((resolve, reject) => {

@@ -14,7 +14,7 @@ const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => 
 			flexDirection='column'
 			flexShrink={0}
 			width={sizes.contextualBar}
-			borderInlineStartWidth='2px'
+			borderInlineStartWidth='default'
 			borderInlineStartColor='extra-light'
 			borderInlineStartStyle='solid'
 			height='full'
