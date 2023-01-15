@@ -1,21 +1,23 @@
+import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
+import type { IUser } from '@rocket.chat/core-typings';
 
-import { OAuthEEManager } from '../lib/oauth/Manager';
-import { onLicense } from '../../app/license/server';
-import { callbacks } from '../../../lib/callbacks';
-import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
+import { settings } from '../../../app/settings/server';
+import { callbacks } from '../../../lib/callbacks';
+import { onLicense } from '../../app/license/server';
+import { OAuthEEManager } from '../lib/oauth/Manager';
 
 interface IOAuthUserService {
 	serviceName: string;
 	serviceData: Record<string, any>;
-	user: Record<string, any>;
+	user: IUser;
 }
 
 interface IOAuthUserIdentity {
 	serviceName: string;
 	identity: Record<string, any>;
-	user: Record<string, any>;
+	user: IUser;
 }
 
 interface IOAuthSettings {
@@ -38,7 +40,7 @@ function getOAuthSettings(serviceName: string): IOAuthSettings {
 		rolesClaim: settings.get(`Accounts_OAuth_Custom-${serviceName}-roles_claim`) as string,
 		groupsClaim: settings.get(`Accounts_OAuth_Custom-${serviceName}-groups_claim`) as string,
 		channelsAdmin: settings.get(`Accounts_OAuth_Custom-${serviceName}-channels_admin`) as string,
-		channelsMap: settings.get(`Accounts_OAuth_Custom-${serviceName}-channels_map`) as string,
+		channelsMap: settings.get(`Accounts_OAuth_Custom-${serviceName}-groups_channel_map`) as string,
 	};
 }
 
@@ -82,7 +84,10 @@ onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			auth.user.roles = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
+			const rolesFromSSO = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
+			const mappedRoles = Promise.await(Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
+
+			auth.user.roles = mappedRoles;
 		}
 	});
 });

@@ -46,7 +46,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterSaveMessage': (message: IMessage, room: IRoom, uid: string) => void;
+	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (room: IRoom) => void;
@@ -177,6 +177,12 @@ type Hook =
 	| 'cachedCollection-received-subscriptions'
 	| 'cachedCollection-sync-rooms'
 	| 'cachedCollection-sync-subscriptions'
+	| 'cachedCollection-after-loadFromServer-rooms'
+	| 'cachedCollection-after-loadFromServer-subscriptions'
+	| 'cachedCollection-after-received-rooms'
+	| 'cachedCollection-after-received-subscriptions'
+	| 'cachedCollection-after-sync-rooms'
+	| 'cachedCollection-after-sync-subscriptions'
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'

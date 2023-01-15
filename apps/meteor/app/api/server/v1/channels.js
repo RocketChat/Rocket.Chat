@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { Integrations, Uploads, Messages as MessagesRaw, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Team } from '@rocket.chat/core-services';
 
 import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
@@ -9,7 +10,6 @@ import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/s
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { settings } from '../../../settings/server';
-import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
@@ -287,7 +287,7 @@ API.v1.addRoute(
 
 			const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-			const { cursor, totalCount } = Uploads.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
