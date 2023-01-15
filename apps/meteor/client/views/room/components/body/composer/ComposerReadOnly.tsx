@@ -11,7 +11,7 @@ export const ComposerReadOnly = (): ReactElement => {
 	const t = useTranslation();
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
-	const calloutRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
+	const calloutRef = useRef<HTMLButtonElement>(null);
 	const joinChannel = useEndpoint('POST', '/v1/channels.join');
 
 	useEffect(() => {
