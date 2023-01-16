@@ -36,6 +36,7 @@ export const subscriptionFields = {
 	muteGroupMentions: 1,
 	ignored: 1,
 	E2EKey: 1,
+	E2ESuggestedKey: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
