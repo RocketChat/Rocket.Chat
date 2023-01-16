@@ -146,6 +146,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
+						format: 'text',
 					},
 					query,
 				});
@@ -190,6 +191,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
+						format: 'text',
 					},
 					query,
 				});

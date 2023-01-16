@@ -1,6 +1,7 @@
-import { Button, Icon, Pagination } from '@rocket.chat/fuselage';
+import { Button, Icon, Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 
@@ -14,8 +15,6 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundRow from './CustomSoundRow';
@@ -46,7 +45,8 @@ const CustomSoundsRoute = (): ReactElement => {
 		500,
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/custom-sounds.list', query);
+	const getCustomSoundsList = useEndpoint('GET', '/v1/custom-sounds.list');
+	const { data, isSuccess, isLoading, isError, refetch } = useQuery(['custom-sounds', query], () => getCustomSoundsList(query));
 
 	const handleItemClick = useCallback(
 		(_id) => (): void => {
@@ -67,8 +67,18 @@ const CustomSoundsRoute = (): ReactElement => {
 	}, [route]);
 
 	const handleChange = useCallback(() => {
-		reload();
-	}, [reload]);
+		refetch();
+	}, [refetch]);
+
+	const headers = useMemo(
+		() => [
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+				{t('Name')}
+			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell w='x40' key='action' />,
+		],
+		[setSort, sortBy, sortDirection, t],
+	);
 
 	if (!canManageCustomSounds) {
 		return <NotAuthorizedPage />;
@@ -83,30 +93,54 @@ const CustomSoundsRoute = (): ReactElement => {
 					</Button>
 				</Page.Header>
 				<Page.Content>
-					<FilterByText onChange={({ text }): void => setParams(text)} />
-					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-								{t('Name')}
-							</GenericTableHeaderCell>
-							<GenericTableHeaderCell w='x40' key='action' />
-						</GenericTableHeader>
-						<GenericTableBody>
-							{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
-							{result.phase === AsyncStatePhase.RESOLVED &&
-								result.value.sounds.map((sound) => <CustomSoundRow sound={sound} onClick={handleItemClick} />)}
-						</GenericTableBody>
-					</GenericTable>
-					{result.phase === AsyncStatePhase.RESOLVED && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={result.value.total || 0}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
-					)}
+					<>
+						{isLoading && (
+							<GenericTable>
+								<GenericTableHeader>{headers}</GenericTableHeader>
+								<GenericTableBody>
+									<GenericTableLoadingTable headerCells={2} />
+								</GenericTableBody>
+							</GenericTable>
+						)}
+						{isSuccess && data && data.sounds.length > 0 && (
+							<>
+								<FilterByText onChange={({ text }): void => setParams(text)} />
+								<GenericTable>
+									<GenericTableHeader>{headers}</GenericTableHeader>
+									<GenericTableBody>
+										{data?.sounds.map((sound) => (
+											<CustomSoundRow key={sound._id} sound={sound} onClick={handleItemClick} />
+										))}
+									</GenericTableBody>
+								</GenericTable>
+								<Pagination
+									divider
+									current={current}
+									itemsPerPage={itemsPerPage}
+									count={data.total || 0}
+									onSetItemsPerPage={onSetItemsPerPage}
+									onSetCurrent={onSetCurrent}
+									{...paginationProps}
+								/>
+							</>
+						)}
+						{isSuccess && data?.sounds.length === 0 && (
+							<States>
+								<StatesIcon name='magnifier' />
+								<StatesTitle>{t('No_results_found')}</StatesTitle>
+							</States>
+						)}
+
+						{isError && (
+							<States>
+								<StatesIcon name='warning' variation='danger' />
+								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+								<StatesActions>
+									<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+								</StatesActions>
+							</States>
+						)}
+					</>
 				</Page.Content>
 			</Page>
 			{context && (

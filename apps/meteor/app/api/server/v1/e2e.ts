@@ -8,6 +8,7 @@ import {
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { API } from '../api';
+import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',
@@ -190,6 +191,40 @@ API.v1.addRoute(
 			const { uid, rid, key } = this.bodyParams;
 
 			Meteor.call('e2e.updateGroupKey', rid, uid, key);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'e2e.acceptSuggestedGroupKey',
+	{
+		authRequired: true,
+		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+	},
+	{
+		async post() {
+			const { rid } = this.bodyParams;
+
+			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey');
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'e2e.rejectSuggestedGroupKey',
+	{
+		authRequired: true,
+		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+	},
+	{
+		async post() {
+			const { rid } = this.bodyParams;
+
+			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
 
 			return API.v1.success();
 		},
