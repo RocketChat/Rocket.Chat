@@ -216,7 +216,3 @@ export const createMessageContext = ({
 		},
 	} as const;
 };
-
-export function messageContext({ rid }: { rid?: IRoom['_id'] } = {}) {
-	return createMessageContext({ rid });
-}

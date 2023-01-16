@@ -120,6 +120,7 @@ export type ChatAPI = {
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
+		readonly replyBroadcast: (message: IMessage) => Promise<void>;
 
 		readonly action: {
 			start(action: 'typing'): void;

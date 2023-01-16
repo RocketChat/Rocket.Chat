@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useMessageContext } from '../MessageContext';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 
 type BroadcastMetricsProps = {
@@ -17,15 +17,17 @@ const BroadcastMetrics = ({ username, mid, message }: BroadcastMetricsProps): Re
 	const t = useTranslation();
 	const { className, ref } = useBlockRendered<HTMLDivElement>();
 
-	const {
-		actions: { replyBroadcast },
-	} = useMessageContext();
+	const chat = useChat();
+
+	const handleReplyButtonClick = () => {
+		chat?.flows.replyBroadcast(message);
+	};
 
 	return (
 		<MessageBlock>
 			<MessageMetrics>
 				<div className={className} ref={ref} />
-				<MessageMetricsReply data-username={username} data-mid={mid} onClick={(): void => replyBroadcast(message)}>
+				<MessageMetricsReply data-username={username} data-mid={mid} onClick={handleReplyButtonClick}>
 					{t('Reply')}
 				</MessageMetricsReply>
 			</MessageMetrics>
