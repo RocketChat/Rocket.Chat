@@ -1,29 +1,24 @@
 import { Box, Button, Icon, States, StatesAction, StatesActions, StatesSubtitle, StatesTitle, TextAreaInput } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation, useSetting, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import VerticalBar from '../../../components/VerticalBar';
+import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 
 type InviteUsersProps = ComponentProps<typeof VerticalBar.ScrollableContent>;
 
 const InviteUsers = (props: InviteUsersProps): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const [text, setText] = useState('');
 	const getEmails = useCallback((text) => text.split(/[\ ,;]+/i).filter((val: string) => validateEmail(val)), []);
 	const smtpEnabled = Boolean(useSetting('SMTP_Host'));
 	const adminRouter = useRoute('admin-settings');
-	const sendInvites = useEndpoint('POST', '/v1/sendInvitationEmail');
+	const sendInvitationMutation = useSendInvitationEmailMutation();
 
-	const handleClick = async (): Promise<void> => {
-		try {
-			await sendInvites({ emails: getEmails(text) });
-			dispatchToastMessage({ type: 'success', message: t('Sending_Invitations') });
-		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+	const handleClick = () => {
+		sendInvitationMutation.mutate({ emails: getEmails(text) });
 	};
 
 	if (!smtpEnabled) {
