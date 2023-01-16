@@ -1,12 +1,13 @@
-import type { ISubscription, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
+import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import { useMessageContext } from '../MessageContext';
@@ -18,7 +19,6 @@ import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
-	subscription?: ISubscription;
 	unread: boolean;
 	sequential: boolean;
 };
@@ -31,7 +31,9 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 		actions: { openUserCard },
 	} = useMessageContext();
 
-	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
+	const { katex, showColors } = useMessageListContext();
+	const subscription = useUserSubscription(message.rid);
+	const autoTranslateOptions = useAutoTranslate(subscription);
 
 	const normalizeMessage = useMemo(() => {
 		const parseOptions = {
@@ -45,8 +47,8 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			}),
 		};
 		return <TMessage extends IThreadMessage | IThreadMainMessage>(message: TMessage) =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateLanguage, useShowTranslated);
-	}, [autoTranslateLanguage, katex, showColors, useShowTranslated]);
+			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
+	}, [katex, showColors, autoTranslateOptions]);
 
 	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
 

@@ -21,7 +21,6 @@ import ThreadMetrics from '../../content/ThreadMetrics';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useTranslateAttachments } from '../../list/MessageListContext';
 
 type RoomMessageContentProps = {
 	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
@@ -32,7 +31,6 @@ type RoomMessageContentProps = {
 
 const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
 	const encrypted = isE2EEMessage(message);
-	const attachments = useTranslateAttachments({ message });
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const broadcast = useRoomSubscription()?.broadcast ?? false;
 	const uid = useUserId();
@@ -54,7 +52,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{!!attachments.length && <Attachments attachments={attachments} file={message.file} />}
+			{!!message?.attachments?.length && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 

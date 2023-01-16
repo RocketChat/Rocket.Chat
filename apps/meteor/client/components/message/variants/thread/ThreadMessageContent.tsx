@@ -19,7 +19,6 @@ import Reactions from '../../content/Reactions';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
-import { useTranslateAttachments } from '../../list/MessageListContext';
 
 type ThreadMessageContentProps = {
 	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
@@ -27,7 +26,6 @@ type ThreadMessageContentProps = {
 
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
 	const encrypted = isE2EEMessage(message);
-	const attachments = useTranslateAttachments({ message });
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const broadcast = useRoomSubscription()?.broadcast ?? false;
 	const uid = useUserId();
@@ -49,7 +47,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{attachments && <Attachments attachments={attachments} file={message.file} />}
+			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
