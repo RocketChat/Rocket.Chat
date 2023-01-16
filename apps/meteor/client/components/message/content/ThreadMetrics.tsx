@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
+import { useMessageContext } from '../MessageContext';
 import { followStyle, anchor } from '../helpers/followSyle';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import AllMentionNotification from '../notification/AllMentionNotification';
@@ -32,7 +32,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 
 	const {
 		actions: { openThread },
-	} = useMessageActions();
+	} = useMessageContext();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const toggleFollowingThreadMutation = useToggleFollowingThreadMutation({

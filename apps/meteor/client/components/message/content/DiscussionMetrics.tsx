@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
+import { useMessageContext } from '../MessageContext';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 
 type DiscussionMetricsProps = {
@@ -21,7 +21,7 @@ const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): Re
 
 	const {
 		actions: { openRoom },
-	} = useMessageActions();
+	} = useMessageContext();
 
 	return (
 		<MessageBlock>
