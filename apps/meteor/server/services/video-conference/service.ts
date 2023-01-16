@@ -458,6 +458,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}).toArray();
 
 		for (const subscription of subscriptions) {
+			// Skip notifying users that already joined the call
 			if (call.users.find(({ _id }) => _id === subscription.u._id)) {
 				continue;
 			}
@@ -622,13 +623,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
 		setTimeout(async () => {
 			try {
-				const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'status'>>(callId, { projection: { status: 1 } });
+				const call = await VideoConferenceModel.findOneById<IDirectVideoConference>(callId);
 
-				if (call?.status !== VideoConferenceStatus.CALLING) {
-					return;
+				if (call) {
+					await this.endDirectCall(call);
+					if (call.status !== VideoConferenceStatus.CALLING) {
+						return;
+					}
+
+					await this.cancel(user._id, callId);
 				}
-
-				await this.cancel(user._id, callId);
 			} catch {
 				// Ignore errors on this timeout
 			}

@@ -99,8 +99,6 @@ export type EventSignatures = {
 			callId: VideoConference['_id'];
 			uid: IUser['_id'];
 			rid: IRoom['_id'];
-			title?: string;
-			providerName?: string;
 		};
 	}): void;
 	'presence.status'(data: {

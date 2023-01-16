@@ -110,8 +110,6 @@ export class ListenersModule {
 					callId: VideoConference['_id'];
 					uid: IUser['_id'];
 					rid: IRoom['_id'];
-					title?: string;
-					providerName?: string;
 				};
 			}) => {
 				notifications.notifyUserInThisInstance(userId, 'video-conference', { action, params });
