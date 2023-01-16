@@ -12,7 +12,6 @@ import VerticalBarActions from '../../../../components/VerticalBar/VerticalBarAc
 import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
 import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
 import VerticalBarInnerContent from '../../../../components/VerticalBar/VerticalBarInnerContent';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import ChatProvider from '../../providers/ChatProvider';
 import MessageProvider from '../../providers/MessageProvider';
@@ -36,9 +35,6 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 			closeTabBar();
 		},
 	});
-
-	const room = useRoom();
-	const subscription = useRoomSubscription();
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -125,7 +121,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (
 							<ChatProvider tmid={tmid}>
-								<MessageProvider rid={room._id} broadcast={subscription?.broadcast ?? false}>
+								<MessageProvider>
 									<ThreadChat mainMessage={mainMessageQueryResult.data} />
 								</MessageProvider>
 							</ChatProvider>

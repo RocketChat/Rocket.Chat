@@ -31,10 +31,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId: uid, username }), [uid, username]),
-	);
+	} = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid, username }), [uid, username]) });
 
 	const isLoading = state === AsyncStatePhase.LOADING;
 

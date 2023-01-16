@@ -1,5 +1,5 @@
 import { useSetModal, useTranslation, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import GenericModal from '../../../client/components/GenericModal';
 import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
@@ -14,11 +14,7 @@ export const useDeviceLogout = (
 	const deviceManagementRouter = useRoute('device-management');
 	const routeId = useRouteParameter('id');
 
-	const logoutDevice = useEndpointAction(
-		'POST',
-		endpoint,
-		useMemo(() => ({ sessionId }), [sessionId]),
-	);
+	const logoutDevice = useEndpointAction('POST', endpoint);
 
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
@@ -30,7 +26,7 @@ export const useDeviceLogout = (
 
 			const handleLogoutDevice = async (): Promise<void> => {
 				try {
-					await logoutDevice();
+					await logoutDevice({ sessionId });
 					onReload();
 					isContextualBarOpen && handleCloseContextualBar();
 					dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
@@ -55,7 +51,7 @@ export const useDeviceLogout = (
 				</GenericModal>,
 			);
 		},
-		[t, logoutDevice, setModal, dispatchToastMessage, handleCloseContextualBar, isContextualBarOpen],
+		[setModal, t, logoutDevice, sessionId, isContextualBarOpen, handleCloseContextualBar, dispatchToastMessage],
 	);
 
 	return handleLogoutDeviceModal;

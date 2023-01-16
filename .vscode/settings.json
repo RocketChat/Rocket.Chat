@@ -25,5 +25,6 @@
 	],
 	"editor.formatOnSave": true,
 	"editor.formatOnSaveMode": "file",
-	"editor.formatOnPaste": false
+	"editor.formatOnPaste": false,
+	"cSpell.words": ["katex", "livechat", "omnichannel", "photoswipe", "tmid"]
 }
