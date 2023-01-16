@@ -1,13 +1,13 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
+import { settings } from '../../../app/settings/client';
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
 import { APIClient } from '../../../app/utils/client';
 import { getRandomId } from '../../../lib/random';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
-import { settings } from '/app/settings';
 
 let uploads: readonly Upload[] = [];
 
