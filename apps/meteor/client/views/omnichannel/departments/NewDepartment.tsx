@@ -32,7 +32,8 @@ const NewDepartment = ({ id, reload, refetchRef }: NewDepartmentProps) => {
 	if (!isMultipleDepartmentsAvailable) {
 		return <UpgradeDepartments />;
 	}
-	return <EditDepartment id={id} reload={reload} title={t('New_Department')} />;
+	// TODO: remove allowedToForwardData and data props once the EditDepartment component is migrated to TS
+	return <EditDepartment id={id} reload={reload} title={t('New_Department')} allowedToForwardData={undefined} data={undefined} />;
 };
 
 export default NewDepartment;

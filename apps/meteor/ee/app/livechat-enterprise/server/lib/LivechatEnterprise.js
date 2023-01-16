@@ -223,7 +223,7 @@ export const LivechatEnterprise = {
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
 			if (!department && totalDepartments >= 1) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
 					method: 'livechat:saveDepartment',
 				});
 			}

@@ -1,10 +1,10 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState, useRef } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useOmnichannelDepartments } from '../../../components/Omnichannel/hooks/useOmnichannelDepartments';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
 import EditDepartmentWithData from './EditDepartmentWithData';
@@ -13,7 +13,7 @@ import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction], onlyMyDepartments) =>
+const useDepartmentsQuery = ({ text, itemsPerPage, current }, [column, direction], onlyMyDepartments) =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -72,7 +72,7 @@ function DepartmentsRoute() {
 			}),
 	);
 
-	const { data, refetch } = useOmnichannelDepartments({
+	const query = {
 		onlyMyDepartments,
 		text: debouncedParams.text,
 		offset: debouncedParams.current,
@@ -82,11 +82,13 @@ function DepartmentsRoute() {
 			usernames: debouncedSort.column === 'name' ? sortDir(debouncedSort.direction) : undefined,
 		}),
 		fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
-	});
+	};
+
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
+
+	const { data, refetch } = useQuery(['getDepartments', query], async () => getDepartments(query));
 
 	const reload = useCallback(() => refetch(), [refetch]);
-
-	// const { value: data = {}, reload } = getDepartments('/v1/livechat/department', { params: query });
 
 	const header = useMemo(
 		() =>
@@ -144,7 +146,7 @@ function DepartmentsRoute() {
 				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} refetch={handleRefetch} />}
 			</Table.Row>
 		),
-		[canRemoveDepartments, onRowClick, reload, t],
+		[canRemoveDepartments, handleRefetch, onRowClick, reload, t],
 	);
 
 	if (!canViewDepartments) {
@@ -165,7 +167,7 @@ function DepartmentsRoute() {
 			params={params}
 			onHeaderClick={onHeaderClick}
 			data={data}
-			useQuery={useQuery}
+			useQuery={useDepartmentsQuery}
 			reload={reload}
 			header={header}
 			renderRow={renderRow}

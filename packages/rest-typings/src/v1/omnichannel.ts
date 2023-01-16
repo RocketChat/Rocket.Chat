@@ -2755,7 +2755,7 @@ export type OmnichannelEndpoints = {
 		GET: () => ILivechatTag | null;
 	};
 	'/v1/livechat/department': {
-		GET: (params: LivechatDepartmentProps) => PaginatedResult<{
+		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {

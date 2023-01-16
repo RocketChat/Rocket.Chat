@@ -12,7 +12,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 	const { tabType, trialEndDate } = useUpgradeTabParams();
 
 	const upgradeNowClick = (): void => {
-		upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
+		tabType && upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
 		closeModal();
 	};
 
