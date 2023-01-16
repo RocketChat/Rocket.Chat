@@ -63,4 +63,20 @@ export class OmnichannelDepartments {
 	get btnModalConfirmDelete() {
 		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
 	}
+
+	get upgradeDepartmentsModal() {
+		return this.page.locator('[data-qa-id="enterprise-departments-modal"]');
+	}
+
+	get btnUpgradeDepartmentsModalClose() {
+		return this.page.locator('#modal-root .rcx-modal .rcx-modal__header .rcx-button--small-square');
+	}
+
+	get btnUpgradeDepartmentsModalTalkToSales() {
+		return this.page.locator('[data-qa-id="talk-to-sales"]');
+	}
+
+	get btnUpgradeDepartmentsModalUpgrade() {
+		return this.page.locator('[data-qa-id="upgrade-now"]');
+	}
 }

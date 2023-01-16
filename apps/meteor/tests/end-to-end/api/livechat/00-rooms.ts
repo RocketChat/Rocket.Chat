@@ -512,8 +512,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(lastMessage?.transferData?.scope).to.be.equal('agent');
 			expect(lastMessage?.transferData?.transferredTo?.username).to.be.equal(forwardChatToUser.username);
 		});
-
-		it('should return a success message when transferred successfully to a department', async () => {
+		(IS_EE ? it : it.skip)('should return a success message when transferred successfully to a department', async () => {
 			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
 			const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
 

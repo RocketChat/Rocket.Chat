@@ -32,6 +32,14 @@ test.describe.serial('omnichannel-departments', () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
+	test('expect to not be possible adding a second department ', async () => {
+		await poOmnichannelDepartments.btnNew.click();
+
+		await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
+
+		await poOmnichannelDepartments.btnUpgradeDepartmentsModalClose.click();
+	});
+
 	test('expect update department name', async () => {
 		await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
