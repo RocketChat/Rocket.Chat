@@ -107,8 +107,6 @@ API.v1.addRoute(
 			// Start: This section handle chunk upload (not the upload processing itself)
 			const chunkCapability = settings.get('FileUpload_Chunked_Enabled');
 			const chunkMaxSize = settings.get('FileUpload_Chunked_MaxSize');
-			const storageMethod = settings.get('FileUpload_Storage_Type');
-			const fileSystemRootPath = settings.get('FileUpload_FileSystemPath') || '/tmp';
 
 			if (!chunkCapability && file.chunk) {
 				throw new Meteor.Error('error-chunk-upload-disabled');
@@ -129,107 +127,68 @@ API.v1.addRoute(
 					.update(`${this.userId}-${this.urlParams.rid}-${file.filename}-${file.chunk.size}`)
 					.digest('hex')}.tmp`;
 
-				if (storageMethod !== 'GridFS') {
-					const tmpPath = `${fileSystemRootPath}/${tmpFileAppend}`;
-					const tmpFileExists = fs.existsSync(tmpPath);
+				// It is decided to use GridFs as the chunk tmp container
+				const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
+				const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-					if (file.chunk.start !== 0 && tmpFileExists) {
-						const stats = fs.statSync(tmpPath);
+				const bucket = new GridFSBucket(db, {
+					bucketName: 'rocketchat_chunk_upload',
+					chunkSizeBytes: 1024 * 512,
+				});
 
-						if (file.chunk.start !== stats.size) {
-							throw new Meteor.Error('error-invalid-chunk');
-						}
-					} else if (file.chunk.start !== 0) {
-						throw new Meteor.Error('error-invalid-chunk');
-					}
+				const expectedOffsets = Array.from({ length: file.chunk.size / chunkMaxSize + 1 }, (_, i) => i * chunkMaxSize);
 
-					if (file.chunk.start === 0) {
-						if (tmpFileExists) {
-							fs.unlinkSync(tmpPath);
-						}
-						if (uploadMaxSize > -1 && file.chunk.size > uploadMaxSize) {
-							throw new Meteor.Error('error-file-too-large');
-						}
-					}
+				if (expectedOffsets[expectedOffsets.length - 1] === file.chunk.size) {
+					expectedOffsets.pop();
+				}
 
-					fs.writeFileSync(tmpPath, file.fileBuffer, { flag: 'a+' });
+				if (uploadMaxSize > -1 && file.chunk.size > uploadMaxSize) {
+					throw new Meteor.Error('error-file-too-large');
+				}
 
-					// end
-					if (file.chunk.end !== file.chunk.size) {
-						return API.v1.success({
-							message: 'chunk received',
-							statusCode: 202,
-						});
-					}
-					// replace the buffer using the whole assembled file
-					file.fileBuffer = fs.readFileSync(tmpPath);
-					file.chunk = undefined;
+				const uploadStream = bucket.openUploadStream(`${tmpFileAppend}.${file.chunk.start}`, { contentType: 'application/octet-stream' });
 
-					fs.unlinkSync(tmpPath);
-				} else {
-					// We also support chunk saving in GridFs, this will work by default in a distributed environment
-					const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
-					const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+				Promise.await(
+					new Promise((resolve, reject) => {
+						uploadStream
+							.on('finish', () => {
+								resolve();
+							})
+							.on('error', (err) => {
+								reject(err);
+							});
 
-					const bucket = new GridFSBucket(db, {
-						bucketName: 'rocketchat_chunk_upload',
-						chunkSizeBytes: 1024 * 512,
+						uploadStream.write(file.fileBuffer);
+						uploadStream.end();
+					}),
+				);
+
+				uploadStream.destroy();
+
+				if (file.chunk.end !== file.chunk.size) {
+					return API.v1.success({
+						message: 'chunk received',
+						statusCode: 202,
+					});
+				}
+
+				const buffers = [];
+
+				for (const startOffset of expectedOffsets) {
+					const downloadStream = bucket.openDownloadStreamByName(`${tmpFileAppend}.${startOffset}`, {
+						contentType: 'application/octet-stream',
 					});
 
-					const expectedOffsets = Array.from({ length: file.chunk.size / chunkMaxSize + 1 }, (_, i) => i * chunkMaxSize);
+					const buffer = Promise.await(streamToBuffer(downloadStream));
 
-					if (expectedOffsets[expectedOffsets.length - 1] === file.chunk.size) {
-						expectedOffsets.pop();
-					}
+					buffers.push(buffer);
 
-					if (uploadMaxSize > -1 && file.chunk.size > uploadMaxSize) {
-						throw new Meteor.Error('error-file-too-large');
-					}
-
-					const uploadStream = bucket.openUploadStream(`${tmpFileAppend}.${file.chunk.start}`, { contentType: 'application/octet-stream' });
-
-					Promise.await(
-						new Promise((resolve, reject) => {
-							uploadStream
-								.on('finish', () => {
-									resolve();
-								})
-								.on('error', (err) => {
-									reject(err);
-								});
-
-							uploadStream.write(file.fileBuffer);
-							uploadStream.end();
-						}),
-					);
-
-					uploadStream.destroy();
-
-					if (file.chunk.end !== file.chunk.size) {
-						return API.v1.success({
-							message: 'chunk received',
-							statusCode: 202,
-						});
-					}
-
-					const buffers = [];
-
-					for (const startOffset of expectedOffsets) {
-						const downloadStream = bucket.openDownloadStreamByName(`${tmpFileAppend}.${startOffset}`, {
-							contentType: 'application/octet-stream',
-						});
-
-						const buffer = Promise.await(streamToBuffer(downloadStream));
-
-						buffers.push(buffer);
-
-						// free the tmp ressource in GridFs
-						Promise.await(bucket.delete(downloadStream.id));
-					}
-
-					file.fileBuffer = Buffer.concat(buffers);
-					file.chunk = undefined;
+					// free the tmp ressource in GridFs
+					Promise.await(bucket.delete(downloadStream.id));
 				}
+
+				file.fileBuffer = Buffer.concat(buffers);
+				file.chunk = undefined;
 			}
 
 			const { fields } = file;
