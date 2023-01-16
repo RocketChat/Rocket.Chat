@@ -67,7 +67,7 @@ export class TranslationProviderRegistry {
 		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
 	}
 
-	static translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage | undefined {
+	static translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): IMessage | undefined {
 		return TranslationProviderRegistry.enabled
 			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(message, room, targetLanguage)
 			: undefined;
@@ -281,7 +281,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage {
+	translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): IMessage {
 		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];

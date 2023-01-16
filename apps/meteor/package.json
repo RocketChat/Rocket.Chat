@@ -118,7 +118,7 @@
 		"@types/lodash.get": "^4.4.7",
 		"@types/mailparser": "^3.4.0",
 		"@types/marked": "^4.0.8",
-		"@types/meteor": "2.7.1",
+		"@types/meteor": "2.8.1",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "^8.2.3",
 		"@types/moment-timezone": "^0.5.30",
@@ -192,7 +192,7 @@
 		"supertest": "^6.2.3",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.1",
-		"typescript": "~4.5.5",
+		"typescript": "~4.6.4",
 		"webpack": "^4.46.0"
 	},
 	"dependencies": {
