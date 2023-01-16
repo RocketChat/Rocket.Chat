@@ -13,12 +13,13 @@ type SidebarGenericItemProps = {
 		hover: typeof colors[string];
 		active: typeof colors[string];
 	};
-	textColor?: string;
+	textColor?: 'stroke-dark' | 'stroke-extra-dark';
+	externalUrl?: boolean;
 };
 
-const SidebarGenericItem = ({ href, active, children, ...props }: SidebarGenericItemProps): ReactElement => (
-	<SidebarItem {...{ ...props, selected: active }} clickable is='a' href={href}>
-		<Box display='flex' flexDirection='row' alignItems='center' pb='x8' pi='x12'>
+const SidebarGenericItem = ({ href, active, externalUrl, children, textColor, ...props }: SidebarGenericItemProps): ReactElement => (
+	<SidebarItem {...{ ...props, selected: active }} clickable is='a' href={href} {...(externalUrl && { target: '_blank' })}>
+		<Box color={textColor || 'stroke-extra-dark'} display='flex' flexDirection='row' alignItems='center' pb='x8' pi='x12'>
 			{children}
 		</Box>
 	</SidebarItem>

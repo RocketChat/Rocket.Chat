@@ -14,6 +14,8 @@ type SidebarNavigationItemProps = {
 	label?: string;
 	tag?: string;
 	currentPath?: string;
+	textColor?: 'stroke-dark' | 'stroke-extra-dark';
+	externalUrl?: boolean;
 };
 
 const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
@@ -24,16 +26,19 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	label,
 	currentPath,
 	tag,
+	textColor,
+	externalUrl,
 }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(pathSection, params);
-	const isActive = currentPath?.includes(path as string);
+	const isActive = !!path && currentPath?.includes(path as string);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
+
 	return (
-		<SidebarGenericItem active={isActive} href={path} key={path}>
+		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} textColor={textColor}>
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
 			<Box withTruncatedText fontScale='p2' mi='x4'>
 				{label} {tag && <Tag>{tag}</Tag>}

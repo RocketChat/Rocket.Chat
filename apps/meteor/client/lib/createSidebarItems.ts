@@ -1,7 +1,7 @@
 import type { IconProps } from '@rocket.chat/fuselage';
 
 export type SidebarItem = {
-	i18nLabel: string;
+	i18nLabel?: string;
 	href?: string;
 	icon?: IconProps['name'];
 	tag?: 'Alpha';
@@ -9,6 +9,9 @@ export type SidebarItem = {
 	pathSection?: string;
 	pathGroup?: string;
 	name?: string;
+	divider?: boolean;
+	textColor?: 'stroke-dark' | 'stroke-extra-dark';
+	externalUrl?: boolean;
 };
 
 export const createSidebarItems = (
