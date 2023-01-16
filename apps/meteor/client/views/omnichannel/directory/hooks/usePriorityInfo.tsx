@@ -8,6 +8,6 @@ export type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 };
 
 export const usePriorityInfo = (priorityId: string) => {
-	const getPriority = useEndpoint('GET', `/v1/livechat/priorities/${priorityId}`);
+	const getPriority = useEndpoint('GET', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	return useQuery(['/v1/livechat/priorities', priorityId], () => getPriority() as Promise<ILivechatClientPriority>, { cacheTime: 0 });
 };

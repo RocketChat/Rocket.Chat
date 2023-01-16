@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, IOmnichannelGenericRoom, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -16,7 +16,7 @@ import { usePrioritiesData } from '../../../hooks/usePrioritiesData';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
 
 type RoomEditProps = {
-	room: Serialized<IOmnichannelGenericRoom>;
+	room: Serialized<IOmnichannelRoom>;
 	visitor: Serialized<ILivechatVisitor>;
 	reload?: () => void;
 	reloadInfo?: () => void;
@@ -30,7 +30,7 @@ const ROOM_INTIAL_VALUE = {
 	slaId: '',
 };
 
-export const getInitialValuesRoom = (room: Serialized<IOmnichannelGenericRoom>) => {
+export const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>) => {
 	const { topic, tags, livechatData, slaId, priorityId } = room ?? ROOM_INTIAL_VALUE;
 
 	return {
