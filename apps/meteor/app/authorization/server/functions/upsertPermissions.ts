@@ -152,7 +152,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'view-livechat-installation', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-appearance', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-webhooks', roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-facebook', roles: ['livechat-manager', 'admin'] },
 		{
 			_id: 'view-livechat-business-hours',
 			roles: ['livechat-manager', 'livechat-monitor', 'admin'],

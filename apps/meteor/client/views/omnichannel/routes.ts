@@ -63,11 +63,6 @@ registerOmnichannelRoute('/triggers/:context?/:id?', {
 	component: lazy(() => import('./triggers/TriggersPage')),
 });
 
-registerOmnichannelRoute('/facebook', {
-	name: 'omnichannel-facebook',
-	component: lazy(() => import('./facebook/FacebookPageContainer')),
-});
-
 registerOmnichannelRoute('/current/:id?/:tab?/:context?', {
 	name: 'omnichannel-current-chats',
 	component: lazy(() => import('./currentChats/CurrentChatsRoute')),
