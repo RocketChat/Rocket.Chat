@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-symbols {
-  background-image: url('/packages/emojione/symbols-sprites.png');
+.joypixels-symbols {
+  background-image: url('/packages/joypixels/symbols-sprites.png');
 
   &._1f6c5 {
     background-repeat: no-repeat;

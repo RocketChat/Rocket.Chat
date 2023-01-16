@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-activity {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-activity {
+  background-image: url('/packages/joypixels/activity-sprites.png');
 
   &._26bd {
     background-repeat: no-repeat;
@@ -636,1541 +636,1541 @@
 }
 
 
-.emojione-diversity._1f3c4-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 0%;
 }
 
-.emojione-diversity._1f3c2-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c2-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3c2-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c2-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3c2-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c2-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3c2-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c2-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3c2-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c2-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3cb-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 0%;
 }
 
-.emojione-diversity._1f3cb-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 5.882352941176471%;
 }
 
-.emojione-diversity._1f3cb-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 11.764705882352942%;
 }
 
-.emojione-diversity._1f3cb-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 17.647058823529413%;
 }
 
-.emojione-diversity._1f3cb-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 23.529411764705884%;
 }
 
-.emojione-diversity._1f3cb-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cb-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cb-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cb-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cb-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cb-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cb-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 0%;
 }
 
-.emojione-diversity._1f3cb-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 5.882352941176471%;
 }
 
-.emojione-diversity._1f3cb-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 11.764705882352942%;
 }
 
-.emojione-diversity._1f3cb-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cb-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 17.647058823529413%;
 }
 
-.emojione-diversity._1f938-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 0%;
 }
 
-.emojione-diversity._1f938-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 5.882352941176471%;
 }
 
-.emojione-diversity._1f938-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 11.764705882352942%;
 }
 
-.emojione-diversity._1f938-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 17.647058823529413%;
 }
 
-.emojione-diversity._1f938-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 29.41176470588235%;
 }
 
-.emojione-diversity._1f938-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 35.294117647058826%;
 }
 
-.emojione-diversity._1f938-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 41.1764705882353%;
 }
 
-.emojione-diversity._1f938-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 47.05882352941177%;
 }
 
-.emojione-diversity._1f938-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f938-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 0%;
 }
 
-.emojione-diversity._26f9-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 5.882352941176471%;
 }
 
-.emojione-diversity._26f9-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 11.764705882352942%;
 }
 
-.emojione-diversity._26f9-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 17.647058823529413%;
 }
 
-.emojione-diversity._26f9-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 23.529411764705884%;
 }
 
-.emojione-diversity._26f9-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 35.294117647058826%;
 }
 
-.emojione-diversity._26f9-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 41.1764705882353%;
 }
 
-.emojione-diversity._26f9-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 47.05882352941177%;
 }
 
-.emojione-diversity._26f9-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 52.94117647058823%;
 }
 
-.emojione-diversity._26f9-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._26f9-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 0%;
 }
 
-.emojione-diversity._1f93e-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 5.882352941176471%;
 }
 
-.emojione-diversity._1f93e-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 11.764705882352942%;
 }
 
-.emojione-diversity._1f93e-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 17.647058823529413%;
 }
 
-.emojione-diversity._1f93e-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 23.529411764705884%;
 }
 
-.emojione-diversity._1f93e-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 35.294117647058826%;
 }
 
-.emojione-diversity._1f93e-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 41.1764705882353%;
 }
 
-.emojione-diversity._1f93e-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 47.05882352941177%;
 }
 
-.emojione-diversity._1f93e-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93e-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93e-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3cc-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 0%;
 }
 
-.emojione-diversity._1f3cc-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 5.882352941176471%;
 }
 
-.emojione-diversity._1f3cc-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 17.647058823529413%;
 }
 
-.emojione-diversity._1f3cc-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 23.529411764705884%;
 }
 
-.emojione-diversity._1f3cc-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3cc-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3cc-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3cc-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 41.1764705882353%;
 }
 
-.emojione-diversity._1f3c7-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c7-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 52.94117647058823%;
 }
 
-.emojione-diversity._1f3c7-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c7-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3c7-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c7-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 64.70588235294117%;
 }
 
-.emojione-diversity._1f3c7-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c7-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 64.70588235294117%;
 }
 
-.emojione-diversity._1f3c7-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c7-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d8-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 0%;
 }
 
-.emojione-diversity._1f9d8-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 5.882352941176471%;
 }
 
-.emojione-diversity._1f9d8-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 11.764705882352942%;
 }
 
-.emojione-diversity._1f9d8-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 23.529411764705884%;
 }
 
-.emojione-diversity._1f9d8-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 29.41176470588235%;
 }
 
-.emojione-diversity._1f9d8-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 35.294117647058826%;
 }
 
-.emojione-diversity._1f9d8-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 41.1764705882353%;
 }
 
-.emojione-diversity._1f9d8-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d8-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 47.05882352941177%;
 }
 
-.emojione-diversity._1f3c4-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3c4-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 64.70588235294117%;
 }
 
-.emojione-diversity._1f3c4-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3c4-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 0%;
 }
 
-.emojione-diversity._1f3c4-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3c4-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 5.882352941176471%;
 }
 
-.emojione-diversity._1f3ca-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 17.647058823529413%;
 }
 
-.emojione-diversity._1f3ca-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 23.529411764705884%;
 }
 
-.emojione-diversity._1f3ca-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 29.41176470588235%;
 }
 
-.emojione-diversity._1f3ca-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 35.294117647058826%;
 }
 
-.emojione-diversity._1f3ca-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 41.1764705882353%;
 }
 
-.emojione-diversity._1f3ca-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 52.94117647058823%;
 }
 
-.emojione-diversity._1f3ca-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 58.8235294117647%;
 }
 
-.emojione-diversity._1f3ca-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 64.70588235294117%;
 }
 
-.emojione-diversity._1f3ca-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 70.58823529411765%;
 }
 
-.emojione-diversity._1f3ca-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 76.47058823529412%;
 }
 
-.emojione-diversity._1f3ca-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 76.47058823529412%;
 }
 
-.emojione-diversity._1f3ca-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 76.47058823529412%;
 }
 
-.emojione-diversity._1f3ca-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 76.47058823529412%;
 }
 
-.emojione-diversity._1f3ca-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 76.47058823529412%;
 }
 
-.emojione-diversity._1f3ca-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f3ca-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 76.47058823529412%;
 }
 
-.emojione-diversity._1f93d-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 76.47058823529412%;
 }
 
-.emojione-diversity._1f93d-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 50% 76.47058823529412%;
 }
 
-.emojione-diversity._1f93d-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 76.47058823529412%;
 }
 
-.emojione-diversity._1f93d-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 76.47058823529412%;
 }
 
-.emojione-diversity._1f93d-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 76.47058823529412%;
 }
 
-.emojione-diversity._1f93d-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 0%;
 }
 
-.emojione-diversity._1f93d-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 5.882352941176471%;
 }
 
-.emojione-diversity._1f93d-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 11.764705882352942%;
 }
 
-.emojione-diversity._1f93d-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 17.647058823529413%;
 }
 
-.emojione-diversity._1f93d-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 23.529411764705884%;
 }
 
-.emojione-diversity._1f93d-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 35.294117647058826%;
 }
 
-.emojione-diversity._1f93d-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 41.1764705882353%;
 }
 
-.emojione-diversity._1f93d-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 47.05882352941177%;
 }
 
-.emojione-diversity._1f93d-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 52.94117647058823%;
 }
 
-.emojione-diversity._1f93d-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f93d-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 58.8235294117647%;
 }
 
-.emojione-diversity._1f6a3-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 70.58823529411765%;
 }
 
-.emojione-diversity._1f6a3-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 76.47058823529412%;
 }
 
-.emojione-diversity._1f6a3-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6a3-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6a3-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 82.3529411764706%;
 }
 
-.emojione-diversity._1f9d7-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 5.882352941176471%;
 }
 
-.emojione-diversity._1f9d7-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 11.764705882352942%;
 }
 
-.emojione-diversity._1f9d7-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 17.647058823529413%;
 }
 
-.emojione-diversity._1f9d7-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 23.529411764705884%;
 }
 
-.emojione-diversity._1f9d7-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 29.41176470588235%;
 }
 
-.emojione-diversity._1f9d7-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 41.1764705882353%;
 }
 
-.emojione-diversity._1f9d7-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 47.05882352941177%;
 }
 
-.emojione-diversity._1f9d7-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 52.94117647058823%;
 }
 
-.emojione-diversity._1f9d7-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 58.8235294117647%;
 }
 
-.emojione-diversity._1f9d7-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 64.70588235294117%;
 }
 
-.emojione-diversity._1f9d7-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 76.47058823529412%;
 }
 
-.emojione-diversity._1f9d7-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 83.33333333333333% 82.3529411764706%;
 }
 
-.emojione-diversity._1f9d7-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 88.23529411764706%;
 }
 
-.emojione-diversity._1f9d7-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 88.23529411764706%;
 }
 
-.emojione-diversity._1f9d7-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f9d7-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 38.888888888888886% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 44.44444444444444% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 55.55555555555556% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 61.111111111111114% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 66.66666666666667% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 72.22222222222223% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 77.77777777777777% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b5-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 0%;
 }
 
-.emojione-diversity._1f6b5-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 5.882352941176471%;
 }
 
-.emojione-diversity._1f6b5-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 11.764705882352942%;
 }
 
-.emojione-diversity._1f6b5-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 17.647058823529413%;
 }
 
-.emojione-diversity._1f6b5-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b5-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 23.529411764705884%;
 }
 
-.emojione-diversity._1f6b4-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 35.294117647058826%;
 }
 
-.emojione-diversity._1f6b4-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 41.1764705882353%;
 }
 
-.emojione-diversity._1f6b4-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 47.05882352941177%;
 }
 
-.emojione-diversity._1f6b4-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 52.94117647058823%;
 }
 
-.emojione-diversity._1f6b4-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 58.8235294117647%;
 }
 
-.emojione-diversity._1f6b4-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 70.58823529411765%;
 }
 
-.emojione-diversity._1f6b4-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 76.47058823529412%;
 }
 
-.emojione-diversity._1f6b4-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 82.3529411764706%;
 }
 
-.emojione-diversity._1f6b4-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 88.88888888888889% 88.23529411764706%;
 }
 
-.emojione-diversity._1f6b4-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 94.11764705882354%;
 }
 
-.emojione-diversity._1f6b4-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 11.11111111111111% 94.11764705882354%;
 }
 
-.emojione-diversity._1f6b4-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 16.666666666666668% 94.11764705882354%;
 }
 
-.emojione-diversity._1f6b4-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 22.22222222222222% 94.11764705882354%;
 }
 
-.emojione-diversity._1f6b4-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 27.77777777777778% 94.11764705882354%;
 }
 
-.emojione-diversity._1f6b4-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f6b4-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 33.333333333333336% 94.11764705882354%;
 }
 
-.emojione-diversity._1f939-1f3fb {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fb {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 11.764705882352942%;
 }
 
-.emojione-diversity._1f939-1f3fc {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fc {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 17.647058823529413%;
 }
 
-.emojione-diversity._1f939-1f3fd {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fd {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 23.529411764705884%;
 }
 
-.emojione-diversity._1f939-1f3fe {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fe {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 29.41176470588235%;
 }
 
-.emojione-diversity._1f939-1f3ff {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3ff {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 35.294117647058826%;
 }
 
-.emojione-diversity._1f939-1f3fb-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fb-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 47.05882352941177%;
 }
 
-.emojione-diversity._1f939-1f3fc-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fc-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 52.94117647058823%;
 }
 
-.emojione-diversity._1f939-1f3fd-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fd-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 58.8235294117647%;
 }
 
-.emojione-diversity._1f939-1f3fe-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fe-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 64.70588235294117%;
 }
 
-.emojione-diversity._1f939-1f3ff-2640 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3ff-2640 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 70.58823529411765%;
 }
 
-.emojione-diversity._1f939-1f3fb-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fb-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 82.3529411764706%;
 }
 
-.emojione-diversity._1f939-1f3fc-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fc-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 88.23529411764706%;
 }
 
-.emojione-diversity._1f939-1f3fd-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fd-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 94.44444444444444% 94.11764705882354%;
 }
 
-.emojione-diversity._1f939-1f3fe-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3fe-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 0% 100%;
 }
 
-.emojione-diversity._1f939-1f3ff-2642 {
-  background-image: url('/packages/emojione/activity-sprites.png');
+.joypixels-diversity._1f939-1f3ff-2642 {
+  background-image: url('/packages/joypixels/activity-sprites.png');
   background-repeat: no-repeat;
   background-size: 1900% 1800%;
   background-position: 5.555555555555555% 100%;

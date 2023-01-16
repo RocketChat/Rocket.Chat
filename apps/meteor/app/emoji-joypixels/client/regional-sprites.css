@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-regional {
-  background-image: url('/packages/emojione/regional-sprites.png');
+.joypixels-regional {
+  background-image: url('/packages/joypixels/regional-sprites.png');
 
   &._1f1f2 {
     background-repeat: no-repeat;

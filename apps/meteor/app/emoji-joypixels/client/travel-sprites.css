@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-travel {
-  background-image: url('/packages/emojione/travel-sprites.png');
+.joypixels-travel {
+  background-image: url('/packages/joypixels/travel-sprites.png');
 
   &._1f5ff {
     background-repeat: no-repeat;

@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-nature {
-  background-image: url('/packages/emojione/nature-sprites.png');
+.joypixels-nature {
+  background-image: url('/packages/joypixels/nature-sprites.png');
 
   &._1f42b {
     background-repeat: no-repeat;

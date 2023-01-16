@@ -1,4 +1,4 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+import { emojioneRender } from '../../emoji-joypixels/lib/emojioneRender';
 
 let EmojiPicker;
 const removeFromRecent = (emoji) => {
