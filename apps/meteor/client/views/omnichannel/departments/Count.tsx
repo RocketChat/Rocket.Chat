@@ -1,11 +1,19 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { Dispatch, Key, SetStateAction } from 'react';
 import React, { useState } from 'react';
 
-function Count({ agentId, setAgentList, agentList }) {
+type CountProps = {
+	agentId: Key;
+	setAgentList: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
+	agentList: ILivechatDepartmentAgents[];
+};
+
+function Count({ agentId, setAgentList, agentList }: CountProps) {
 	const t = useTranslation();
-	const [agentCount, setAgentCount] = useState(agentList.find((agent) => agent.agentId === agentId).count || 0);
+	const [agentCount, setAgentCount] = useState(agentList?.find((agent) => agent?.agentId === agentId)?.count || 0);
 
 	const handleCount = useMutableCallback(async (e) => {
 		const countValue = Number(e.currentTarget.value);

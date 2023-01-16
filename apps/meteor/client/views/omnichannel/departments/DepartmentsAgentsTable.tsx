@@ -1,14 +1,23 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { Dispatch, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
-function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, setAgentsRemoved }) {
+type DepartmentsAgentsTableProps = {
+	agents: ILivechatDepartmentAgents[] | undefined;
+	setAgentListFinal: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
+	setAgentsAdded: Dispatch<SetStateAction<(ILivechatDepartmentAgents | { agentId: string })[]>>;
+	setAgentsRemoved: Dispatch<SetStateAction<never[]>>;
+};
+
+function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, setAgentsRemoved }: DepartmentsAgentsTableProps) {
 	const t = useTranslation();
-	const [agentList, setAgentList] = useState((agents && JSON.parse(JSON.stringify(agents))) || []);
+	const [agentList, setAgentList] = useState<ILivechatDepartmentAgents[]>((agents && JSON.parse(JSON.stringify(agents))) || []);
 
 	useEffect(() => setAgentListFinal(agentList), [agentList, setAgentListFinal]);
 
@@ -45,7 +54,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, set
 						agentList={agentList}
 						setAgentList={setAgentList}
 						setAgentsRemoved={setAgentsRemoved}
-						{...props}
+						{...(props as ILivechatDepartmentAgents)}
 					/>
 				)}
 			</GenericTable>

@@ -1,11 +1,19 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { Dispatch, Key, SetStateAction } from 'react';
 import React, { useState } from 'react';
 
-function Order({ agentId, setAgentList, agentList }) {
+type OrderProps = {
+	agentId: Key;
+	setAgentList: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
+	agentList: ILivechatDepartmentAgents[];
+};
+
+function Order({ agentId, setAgentList, agentList }: OrderProps) {
 	const t = useTranslation();
-	const [agentOrder, setAgentOrder] = useState(agentList.find((agent) => agent.agentId === agentId).order || 0);
+	const [agentOrder, setAgentOrder] = useState(agentList?.find((agent) => agent?.agentId === agentId)?.order || 0);
 
 	const handleOrder = useMutableCallback(async (e) => {
 		const orderValue = Number(e.currentTarget.value);

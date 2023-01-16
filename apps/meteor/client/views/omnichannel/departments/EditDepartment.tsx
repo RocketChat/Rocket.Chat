@@ -99,7 +99,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditD
 	const AutoCompleteDepartment = useSelectForwardDepartment();
 	const [agentList, setAgentList] = useState<ILivechatDepartmentAgents[]>([]);
 	const [agentsRemoved, setAgentsRemoved] = useState([]);
-	const [agentsAdded, setAgentsAdded] = useState([]);
+	const [agentsAdded, setAgentsAdded] = useState<(ILivechatDepartmentAgents | { agentId: string })[]>([]);
 
 	const [initialTags] = useState(() => department?.chatClosingTags ?? []);
 	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);

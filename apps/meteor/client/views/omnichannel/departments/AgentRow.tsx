@@ -1,4 +1,6 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Box, Table } from '@rocket.chat/fuselage';
+import type { Dispatch, Key, SetStateAction } from 'react';
 import React, { memo } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
@@ -6,7 +8,18 @@ import Count from './Count';
 import Order from './Order';
 import RemoveAgentButton from './RemoveAgentButton';
 
-const AgentRow = ({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList, setAgentsRemoved }) => (
+type AgentRowProps = {
+	agentId: Key;
+	username: string;
+	name?: string;
+	avatarETag?: string;
+	mediaQuery: boolean;
+	agentList: ILivechatDepartmentAgents[];
+	setAgentList: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
+	setAgentsRemoved: Dispatch<SetStateAction<never[]>>;
+};
+
+const AgentRow = ({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList, setAgentsRemoved }: AgentRowProps) => (
 	<Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
 		<Table.Cell withTruncatedText>
 			<Box display='flex' alignItems='center'>
