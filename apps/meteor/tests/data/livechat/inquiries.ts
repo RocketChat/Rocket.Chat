@@ -1,5 +1,5 @@
-import { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { api, request } from '../api-data';
 
 

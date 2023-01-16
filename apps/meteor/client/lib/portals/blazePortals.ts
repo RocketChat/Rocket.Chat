@@ -1,13 +1,16 @@
 import { Emitter } from '@rocket.chat/emitter';
+import type { Blaze } from 'meteor/blaze';
 import { Random } from 'meteor/random';
 import type { ReactNode } from 'react';
+import { createElement, Fragment, useState } from 'react';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 type BlazePortalEntry = {
 	key: string;
 	node: ReactNode;
 };
 
-class BlazePortalsSubscriptions extends Emitter<{ update: void }> {
+export class BlazePortalsSubscription extends Emitter<{ update: void }> {
 	private map = new Map<Blaze.TemplateInstance, BlazePortalEntry>();
 
 	private cache = Array.from(this.map.values());
@@ -43,4 +46,41 @@ class BlazePortalsSubscriptions extends Emitter<{ update: void }> {
 	};
 }
 
-export const blazePortals = new BlazePortalsSubscriptions();
+export const blazePortals = new BlazePortalsSubscription();
+
+export const getClosestBlazePortals = (view: Blaze.View | undefined): BlazePortalsSubscription => {
+	if (!view) {
+		return blazePortals;
+	}
+
+	if (typeof view.templateInstance !== 'function') {
+		return getClosestBlazePortals(view.parentView);
+	}
+
+	const templateInstance = view.templateInstance() as Blaze.TemplateInstance<{
+		portalsSubscription?: () => BlazePortalsSubscription;
+	}>;
+
+	if (!templateInstance) {
+		return getClosestBlazePortals(view.parentView);
+	}
+
+	const subscription = templateInstance.data?.portalsSubscription?.();
+
+	if (!(subscription instanceof BlazePortalsSubscription)) {
+		return getClosestBlazePortals(view.parentView);
+	}
+
+	return subscription;
+};
+
+export const useBlazePortals = (
+	outerSubscription: BlazePortalsSubscription | (() => BlazePortalsSubscription) = () => new BlazePortalsSubscription(),
+) => {
+	const [subscription] = useState(outerSubscription);
+	const entries = useSyncExternalStore(subscription.subscribe, subscription.getSnapshot);
+
+	const portals = createElement(Fragment, { children: entries.map(({ key, node }) => createElement(Fragment, { key, children: node })) });
+
+	return [portals, subscription] as const;
+};

@@ -7,6 +7,7 @@ import {
 	LivechatCustomField,
 	LivechatInquiry,
 } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { memoizeDebounce } from './debounceByParams';
 import { Users, Messages } from '../../../../../app/models/server';
@@ -15,9 +16,8 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { logger, helperLogger } from './logger';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
-import { api } from '../../../../../server/sdk/api';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { updateInquiryQueueSla } from './InquiryHelper';
+import { updateInquiryQueueSla } from './SlaNPriorityHelper';
 
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) => {
 	if (departmentId) {

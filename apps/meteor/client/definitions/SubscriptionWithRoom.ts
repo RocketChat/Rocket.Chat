@@ -30,6 +30,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'priorityId'
 		| 'priorityWeight'
 		| 'slaId'
+		| 'estimatedWaitingTimeQueue'
 		| 'livechatData'
 		| 'departmentId'
 		| 'queuedAt'

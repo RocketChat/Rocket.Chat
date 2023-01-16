@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
-import { DEFAULT_SLA_INQUIRY_CONFIG, ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import { api, credentials, request } from '../api-data';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 import { expect } from 'chai';
 
 export const createSLA = (): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updated'>> => {
@@ -38,7 +38,7 @@ export const generateRandomSLAData = (): Omit<IOmnichannelServiceLevelAgreements
 	return {
 		name: faker.name.firstName(),
 		description: faker.lorem.sentence(),
-		dueTimeInMinutes: faker.datatype.number({ min: 10, max: DEFAULT_SLA_INQUIRY_CONFIG.ESTIMATED_WAITING_TIME_QUEUE }),
+		dueTimeInMinutes: faker.datatype.number({ min: 10, max: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE }),
 	};
 };
 

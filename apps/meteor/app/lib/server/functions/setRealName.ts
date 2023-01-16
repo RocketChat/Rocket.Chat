@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import type { IUser } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
-import { api } from '../../../../server/sdk/api';
 
 export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
 	name = s.trim(name);

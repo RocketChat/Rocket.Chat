@@ -38,7 +38,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 
 	return (
 		<>
-			<VerticalBar.Header>
+			<VerticalBar.Header expanded>
 				<VerticalBar.Icon name='phone' />
 				<VerticalBar.Text>{t('Call_Information')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClickClose} />

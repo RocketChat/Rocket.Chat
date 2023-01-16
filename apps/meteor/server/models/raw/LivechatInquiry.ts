@@ -159,10 +159,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			.toArray();
 	}
 
-	setSlaForRoom(
-		_rid: string,
-		_data: { estimatedWaitingTimeQueue: number; estimatedServiceTimeAt: Date; slaId: string },
-	): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	setSlaForRoom(_rid: string, _data: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 

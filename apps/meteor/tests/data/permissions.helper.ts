@@ -1,4 +1,4 @@
-import { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { IS_EE } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
 
