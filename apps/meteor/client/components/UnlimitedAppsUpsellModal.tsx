@@ -17,8 +17,7 @@ const UnlimitedAppsUpsellModal = () => {
 				<Modal.Close />
 			</Modal.Header>
 			<Modal.Content>
-				{/* TODO: change image */}
-				<Modal.HeroImage src='images/logo/logo.svg?v=3' />
+				<Modal.HeroImage src='images/unlimited-apps-modal.svg' />
 				<Box is='h3' fontStyle='h3' fontSize='h3' fontScale='h3' mb='x16'>
 					{t('Get_all_apps')}
 				</Box>
