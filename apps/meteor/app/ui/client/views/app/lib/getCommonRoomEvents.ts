@@ -133,12 +133,15 @@ function handleOpenThreadButtonClick(event: JQuery.ClickEvent) {
 		msg: { rid, _id, tmid },
 	} = messageArgs(dataContext);
 	const room = Rooms.findOne({ _id: rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 
 	FlowRouter.go(
 		FlowRouter.getRouteName(),
 		{
 			rid,
-			name: room.name,
+			name: room.name ?? '',
 			tab: 'thread',
 			context: tmid || _id,
 		},
@@ -192,6 +195,9 @@ async function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: 
 	const messageContext = messageArgs(dataContext);
 	const { msg: message, u: user, context: ctx } = messageContext;
 	const room = Rooms.findOne({ _id: message.rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	// @ts-ignore
 	const context = ctx || message.context || message.actionContext || federationContext || 'message';

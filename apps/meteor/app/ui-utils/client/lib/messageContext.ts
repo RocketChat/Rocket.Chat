@@ -130,7 +130,7 @@ export const createMessageContext = ({
 			FlowRouter.getRouteName(),
 			{
 				rid,
-				name: room.name,
+				name: room?.name ?? '',
 				tab: 'thread',
 				context,
 			},
