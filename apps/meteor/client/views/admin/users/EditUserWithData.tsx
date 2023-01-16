@@ -18,14 +18,7 @@ type EditUserWithDataProps = {
 const EditUserWithData = ({ uid, onReload, ...props }: EditUserWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('/v1/roles.list');
-	const {
-		value: data,
-		phase: state,
-		error,
-	} = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId: uid }), [uid]),
-	);
+	const { value: data, phase: state, error } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid }), [uid]) });
 
 	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
 		return (
