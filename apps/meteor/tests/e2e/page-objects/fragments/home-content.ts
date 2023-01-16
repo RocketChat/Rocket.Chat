@@ -205,6 +205,26 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
+	get btnCall(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	}
+
+	get btnStartCall(): Locator {
+		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+	}
+
+	get btnDeclineCall(): Locator {
+		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
+	}
+
+	ringCallText(text: string): Locator {
+		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
+	}
+
+	get videoConfMessageBlock(): Locator {
+		return this.page.locator('.rcx-videoconf-message-block');
+	}
+
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}
