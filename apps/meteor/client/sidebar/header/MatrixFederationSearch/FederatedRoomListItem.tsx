@@ -8,7 +8,7 @@ type FederatedRoomListItemProps = {
 	canJoin: boolean;
 	canonicalAlias: string;
 	joinedMembers: number;
-	topic: string;
+	topic?: string;
 	disabled: boolean;
 	onClickJoin: () => void;
 };
@@ -27,9 +27,11 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, c
 				</Button>
 			</Box>
 
-			<Box is='p' fontScale='c1' mb='x4'>
-				{topic}
-			</Box>
+			{topic && (
+				<Box is='p' fontScale='c1' mb='x4'>
+					{topic}
+				</Box>
+			)}
 
 			<Box mbs='x4' fontScale='micro' fontWeight='bolder' verticalAlign='center'>
 				{canonicalAlias}{' '}

@@ -57,7 +57,7 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 					onChange={(e: FormEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
 				/>
 			</Box>
-			<Box h='full'>
+			<Box h='full' overflow='auto'>
 				<FederatedRoomList serverName={serverName} roomName={debouncedRoomName} />
 			</Box>
 		</>
