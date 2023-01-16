@@ -6,6 +6,7 @@ import React, { memo, useCallback } from 'react';
 import { Messages } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useBlazePortals } from '../../../../lib/portals/blazePortals';
+import MessageProvider from '../../providers/MessageProvider';
 import { useLegacyMessageRef } from './useLegacyMessageRef';
 
 type LegacyMessageTemplateListProps = {
@@ -48,12 +49,12 @@ const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): Re
 	const messageRef = useLegacyMessageRef(blazePortals);
 
 	return (
-		<>
+		<MessageProvider>
 			{portals}
 			{messagesHistory.map((message, index) => (
 				<li key={message._id} ref={messageRef(message, index)} />
 			))}
-		</>
+		</MessageProvider>
 	);
 };
 

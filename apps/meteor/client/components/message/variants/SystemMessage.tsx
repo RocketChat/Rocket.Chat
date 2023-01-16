@@ -43,7 +43,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
 	const {
-		actions: { openUserCard, runActionLink },
+		actions: { openUserCard },
 	} = useMessageContext();
 
 	const showRealName = useMessageListShowRealName();
@@ -111,13 +111,12 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 				)}
 				{message.actionLinks?.length && (
 					<MessageActions
-						mid={message._id}
+						message={message}
 						actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 							methodId,
 							i18nLabel: i18nLabel as TranslationKey,
 							...action,
 						}))}
-						runAction={runActionLink(message)}
 					/>
 				)}
 			</MessageSystemContainer>

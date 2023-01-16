@@ -9,11 +9,10 @@ import { useBlockRendered } from '../hooks/useBlockRendered';
 
 type BroadcastMetricsProps = {
 	username: string;
-	mid: string;
 	message: IMessage;
 };
 
-const BroadcastMetrics = ({ username, mid, message }: BroadcastMetricsProps): ReactElement => {
+const BroadcastMetrics = ({ username, message }: BroadcastMetricsProps): ReactElement => {
 	const t = useTranslation();
 	const { className, ref } = useBlockRendered<HTMLDivElement>();
 
@@ -27,7 +26,7 @@ const BroadcastMetrics = ({ username, mid, message }: BroadcastMetricsProps): Re
 		<MessageBlock>
 			<MessageMetrics>
 				<div className={className} ref={ref} />
-				<MessageMetricsReply data-username={username} data-mid={mid} onClick={handleReplyButtonClick}>
+				<MessageMetricsReply data-username={username} data-mid={message._id} onClick={handleReplyButtonClick}>
 					{t('Reply')}
 				</MessageMetricsReply>
 			</MessageMetrics>

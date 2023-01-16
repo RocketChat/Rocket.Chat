@@ -10,7 +10,6 @@ import type { MessageWithMdEnforced } from '../../../../lib/parseMessageTextToAs
 import type { UserPresence } from '../../../../lib/presence';
 import { useRoomSubscription } from '../../../../views/room/contexts/RoomContext';
 import MessageContentBody from '../../MessageContentBody';
-import { useMessageContext } from '../../MessageContext';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
@@ -29,9 +28,6 @@ type ThreadMessageContentProps = {
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
 	const encrypted = isE2EEMessage(message);
 	const attachments = useTranslateAttachments({ message });
-	const {
-		actions: { runActionLink },
-	} = useMessageContext();
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const broadcast = useRoomSubscription()?.broadcast ?? false;
 	const uid = useUserId();
@@ -59,13 +55,12 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 
 			{message.actionLinks?.length && (
 				<MessageActions
-					mid={message._id}
+					message={message}
 					actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 						methodId,
 						i18nLabel: i18nLabel as TranslationKey,
 						...action,
 					}))}
-					runAction={runActionLink(message)}
 				/>
 			)}
 
@@ -74,7 +69,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!messageUser.username && message.u._id !== uid && (
-				<BroadcastMetrics mid={message._id} username={messageUser.username} message={message} />
+				<BroadcastMetrics username={messageUser.username} message={message} />
 			)}
 
 			{readReceiptEnabled && <ReadReceiptIndicator unread={message.unread} />}
