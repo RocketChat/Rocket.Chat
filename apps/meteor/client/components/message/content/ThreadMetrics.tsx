@@ -1,9 +1,10 @@
 import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsReply, MessageMetricsFollowing } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import { followStyle, anchor } from '../helpers/followSyle';
 import { useBlockRendered } from '../hooks/useBlockRendered';
@@ -21,25 +22,17 @@ type ThreadMetricsProps = {
 	counter: number;
 	participants: number;
 	following: boolean;
-	openThread: (e: UIEvent) => void;
 };
 
-const ThreadMetrics = ({
-	unread,
-	mention,
-	all,
-	rid,
-	mid,
-	counter,
-	participants,
-	following,
-	lm,
-	openThread,
-}: ThreadMetricsProps): ReactElement => {
+const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps): ReactElement => {
 	const { className, ref } = useBlockRendered<HTMLDivElement>();
 	const t = useTranslation();
 
 	const format = useTimeAgo();
+
+	const {
+		actions: { openThread },
+	} = useMessageActions();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const toggleFollowingThreadMutation = useToggleFollowingThreadMutation({
@@ -56,7 +49,7 @@ const ThreadMetrics = ({
 		<MessageBlock className={followStyle}>
 			<div className={className} ref={ref} />
 			<MessageMetrics>
-				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={openThread}>
+				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={openThread(mid)}>
 					{t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={t('Replies')}>
