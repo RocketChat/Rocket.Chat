@@ -122,7 +122,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			const { rooms } = await getAdminRooms(params);
 
 			if (rooms.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+				throw new Error(t('No_results_found'));
 			}
 			return rooms;
 		},

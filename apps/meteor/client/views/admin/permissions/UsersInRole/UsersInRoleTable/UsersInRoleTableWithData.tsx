@@ -45,7 +45,7 @@ const UsersInRoleTableWithData = ({
 			const { users } = await getUsersInRole(query);
 
 			if (users.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+				throw new Error(t('No_results_found'));
 			}
 			return users;
 		},

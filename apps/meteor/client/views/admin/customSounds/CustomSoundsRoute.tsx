@@ -54,7 +54,7 @@ const CustomSoundsRoute = (): ReactElement => {
 			const { sounds } = await getSounds(query);
 
 			if (sounds.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+				throw new Error(t('No_results_found'));
 			}
 			return sounds;
 		},

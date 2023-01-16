@@ -20,7 +20,7 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 			const { apps } = await getVersions();
 
 			if (apps.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+				throw new Error(t('No_results_found'));
 			}
 			return apps;
 		},

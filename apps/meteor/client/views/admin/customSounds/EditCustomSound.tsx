@@ -24,7 +24,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 			const { sounds } = await getSounds({ query: JSON.stringify({ _id }) });
 
 			if (sounds.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t('No_results_found') });
+				throw new Error(t('No_results_found'));
 			}
 			return sounds[0];
 		},
