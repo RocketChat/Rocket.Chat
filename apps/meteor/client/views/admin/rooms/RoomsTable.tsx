@@ -113,7 +113,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const endpointData = useEndpointData('/v1/rooms.adminRooms', query);
+	const endpointData = useEndpointData('/v1/rooms.adminRooms', { params: query });
 
 	const { value: data, reload: reloadEndPoint } = endpointData;
 

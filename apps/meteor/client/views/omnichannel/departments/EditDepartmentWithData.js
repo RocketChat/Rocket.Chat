@@ -8,10 +8,10 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
 import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedForwardData';
 
-const param = { onlyMyDepartments: true };
+const params = { onlyMyDepartments: true };
 function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/department/${id}`, param);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: id }, params });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
