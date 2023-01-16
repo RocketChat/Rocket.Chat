@@ -1,4 +1,4 @@
-import { OptionTitle } from '@rocket.chat/fuselage';
+import { OptionTitle, OptionDivider } from '@rocket.chat/fuselage';
 import { useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import React from 'react';
@@ -8,6 +8,7 @@ import ListItem from '../../../components/Sidebar/ListItem';
 import CreateChannelWithData from '../CreateChannel';
 import CreateDirectMessage from '../CreateDirectMessage';
 import CreateTeam from '../CreateTeam';
+import MatrixFederationSearch from '../MatrixFederationSearch';
 import { useCreateRoomModal } from '../hooks/useCreateRoomModal';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
@@ -32,6 +33,9 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 	const createTeam = useCreateRoomModal(CreateTeam);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
+	const searchFederatedRooms = useCreateRoomModal(MatrixFederationSearch);
+
+	const isEnterprise = true;
 
 	return (
 		<>
@@ -76,6 +80,20 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 							closeList();
 						}}
 					/>
+				)}
+				{isEnterprise && (
+					<>
+						<OptionDivider />
+						<OptionTitle>{t('Explore')}</OptionTitle>
+						<ListItem
+							icon='magnifier'
+							text={t('Federation_Search_federated_rooms')}
+							action={(e: MouseEvent<HTMLElement>): void => {
+								searchFederatedRooms(e);
+								closeList();
+							}}
+						/>
+					</>
 				)}
 			</ul>
 		</>
