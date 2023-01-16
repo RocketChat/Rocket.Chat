@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
@@ -12,6 +13,7 @@ addAction('e2e', ({ room }) => {
 	const canToggleE2e = usePermission('toggle-room-e2e-encryption', room._id);
 	const canEditRoom = usePermission('edit-room', room._id);
 	const hasPermission = (room.t === 'd' || (canEditRoom && canToggleE2e)) && e2eReady;
+	const federated = isRoomFederated(room);
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
@@ -31,8 +33,12 @@ addAction('e2e', ({ room }) => {
 						icon: 'key',
 						order: 13,
 						action,
+						...(federated && {
+							'data-tooltip': 'E2E_unavailable_for_federation',
+							'disabled': true,
+						}),
 				  }
 				: null,
-		[action, e2eEnabled, enabledOnRoom, hasPermission],
+		[action, e2eEnabled, enabledOnRoom, hasPermission, federated],
 	);
 });
