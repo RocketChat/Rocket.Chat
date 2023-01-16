@@ -23,13 +23,12 @@ const NewDepartment = ({ id, reload, refetchRef }: NewDepartmentProps) => {
 		refetchRef.current = refetch;
 	}, [refetchRef, refetch]);
 
-	const isMultipleDepartmentsAvailable = hasLicense || (!isLoading && data?.total !== undefined && data.total < 1);
 	const t = useTranslation();
 
-	if (isMultipleDepartmentsAvailable === 'loading' || undefined) {
+	if (isLoading || hasLicense === 'loading') {
 		return <PageSkeleton />;
 	}
-	if (!isMultipleDepartmentsAvailable) {
+	if (hasLicense === false || (data?.total !== undefined && data.total < 1)) {
 		return <UpgradeDepartments />;
 	}
 	// TODO: remove allowedToForwardData and data props once the EditDepartment component is migrated to TS
