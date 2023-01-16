@@ -35,6 +35,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const isTeam = room && isTeamRoom(room);
 	const isDirect = room && isDirectMessageRoom(room);
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links');
+	const isFederated = room && isRoomFederated(room);
 
 	const canCreateInviteLinks =
 		room && isRoomFederated(room) ? hasPermissionToCreateInviteLinks && room.t === 'c' : hasPermissionToCreateInviteLinks;
@@ -58,7 +59,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	);
 
 	const canAddUsers =
-		room && user && isRoomFederated(room)
+		room && user && isFederated
 			? Federation.isEditableByTheUser(user, room, subscription) && hasPermissionToAddUsers
 			: hasPermissionToAddUsers;
 
@@ -103,6 +104,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
+			isFederated={isFederated}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}

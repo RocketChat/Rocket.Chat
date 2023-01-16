@@ -1,12 +1,11 @@
 import mem from 'mem';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
+import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
+import { License, ServiceClass } from '@rocket.chat/core-services';
 
-import type { IAuthorization, RoomAccessValidator } from '../../sdk/types/IAuthorization';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';
-import { License } from '../../sdk';
 
 import './canAccessRoomLivechat';
 

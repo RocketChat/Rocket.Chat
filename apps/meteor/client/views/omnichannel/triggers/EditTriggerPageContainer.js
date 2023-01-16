@@ -9,7 +9,7 @@ import EditTriggerPage from './EditTriggerPage';
 
 const EditTriggerPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData(`/v1/livechat/triggers/${id}`);
+	const { value: data, phase: state } = useEndpointData('/v1/livechat/triggers/:_id', { keys: { _id: id } });
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;

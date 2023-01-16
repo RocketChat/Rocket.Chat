@@ -6,18 +6,21 @@ import React from 'react';
 
 import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
-const COMPONENT_PATH = '../../../../../client/components/AdministrationList/AppsModelList';
-const defaultConfig = {
-	'../../../app/ui-message/client/ActionManager': {
-		'triggerActionButtonAction': {},
-		'@noCallThru': true,
-	},
+const mockAppsModelListModule = (stubs = {}) => {
+	return proxyquire.load('../../../../../client/components/AdministrationList/AppsModelList', {
+		'../../../app/ui-message/client/ActionManager': {
+			'triggerActionButtonAction': {},
+			'@noCallThru': true,
+		},
+		...stubs,
+		// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+	}) as typeof import('../../../../../client/components/AdministrationList/AppsModelList');
 };
 
 describe('components/AdministrationList/AppsModelList', () => {
 	it('should render apps', async () => {
-		const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
-		render(<AppsModelList showManageApps={true} closeList={() => null} appBoxItems={[]} />);
+		const AppsModelList = mockAppsModelListModule().default;
+		render(<AppsModelList appsManagementAllowed={true} onDismiss={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
@@ -25,13 +28,12 @@ describe('components/AdministrationList/AppsModelList', () => {
 	});
 
 	it('should not render marketplace and installed when does not have permission', async () => {
-		const AppsModelList = proxyquire.load(COMPONENT_PATH, {
-			...defaultConfig,
+		const AppsModelList = mockAppsModelListModule({
 			'@rocket.chat/ui-contexts': {
 				useAtLeastOnePermission: (): boolean => false,
 			},
 		}).default;
-		render(<AppsModelList showManageApps={false} closeList={() => null} appBoxItems={[]} />);
+		render(<AppsModelList appsManagementAllowed={false} onDismiss={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.queryByText('Marketplace')).to.not.exist;
@@ -41,42 +43,41 @@ describe('components/AdministrationList/AppsModelList', () => {
 	context('when clicked', () => {
 		it('should go to admin marketplace', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
-			const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+			const handleDismiss = spy();
+			const AppsModelList = mockAppsModelListModule().default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[]} />
+					<AppsModelList appsManagementAllowed={true} onDismiss={handleDismiss} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Marketplace');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace'));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should go to installed', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
-			const AppsModelList = proxyquire.load(COMPONENT_PATH, defaultConfig).default;
+			const handleDismiss = spy();
+			const AppsModelList = mockAppsModelListModule().default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[]} />
+					<AppsModelList appsManagementAllowed={true} onDismiss={handleDismiss} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Installed');
 
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace', { context: 'installed', page: 'list' }));
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should render apps and trigger action', async () => {
 			const pushRoute = spy();
-			const closeList = spy();
+			const handleDismiss = spy();
 			const triggerActionButtonAction = spy();
-			const AppsModelList = proxyquire.load(COMPONENT_PATH, {
-				...defaultConfig,
+			const AppsModelList = mockAppsModelListModule({
 				'../../../app/ui-message/client/ActionManager': {
 					triggerActionButtonAction,
 					'@noCallThru': true,
@@ -84,14 +85,14 @@ describe('components/AdministrationList/AppsModelList', () => {
 			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList showManageApps={true} closeList={closeList} appBoxItems={[{ name: 'Custom App' }]} />
+					<AppsModelList appsManagementAllowed={true} onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Custom App');
 
 			userEvent.click(button);
 			await waitFor(() => expect(triggerActionButtonAction).to.have.been.called());
-			await waitFor(() => expect(closeList).to.have.been.called());
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 	});
 });

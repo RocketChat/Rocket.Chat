@@ -169,11 +169,13 @@ export interface ServerMethods {
 	'loadSurroundingMessages': (
 		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 		limit?: number,
-	) => {
-		messages: IMessage[];
-		moreBefore: boolean;
-		moreAfter: boolean;
-	};
+	) =>
+		| {
+				messages: IMessage[];
+				moreBefore: boolean;
+				moreAfter: boolean;
+		  }
+		| false;
 	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
