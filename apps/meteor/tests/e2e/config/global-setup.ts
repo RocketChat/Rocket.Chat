@@ -4,6 +4,7 @@ import { chromium } from '@playwright/test';
 
 import * as constants from './constants';
 import injectInitialData from '../fixtures/inject-initial-data';
+import insertApp from '../fixtures/insert-apps';
 
 const loginProcedure = async (credentials: { username: string; password: string }) => {
 	const browser = await chromium.launch();
@@ -60,4 +61,6 @@ export default async function (): Promise<void> {
 			password: 'any_password',
 		});
 	}
+
+	await insertApp();
 }
