@@ -12,7 +12,7 @@ type EditCustomSoundProps = {
 	close?: () => void;
 };
 
-function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement {
+function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement | null {
 	const t = useTranslation();
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
@@ -60,7 +60,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 	}
 
 	if (!data) {
-		return <></>;
+		return null;
 	}
 
 	const handleChange: () => void = () => {
