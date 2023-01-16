@@ -158,7 +158,7 @@ export const createSettings = async (): Promise<void> => {
 				type: 'select',
 				values: [
 					{ key: OmnichannelSortingMechanismSettingType.Timestamp, i18nLabel: 'Timestamp' },
-					{ key: OmnichannelSortingMechanismSettingType.Priority, i18nLabel: 'Priority' },
+					{ key: OmnichannelSortingMechanismSettingType.Priority, i18nLabel: 'Priorities' },
 					{ key: OmnichannelSortingMechanismSettingType.SLAs, i18nLabel: 'SLA_Policies' },
 				],
 				group: 'Omnichannel',
