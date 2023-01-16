@@ -50,7 +50,6 @@ const beforeNewInquiry = async (extraData: Props) => {
 	if (sla) {
 		changes.slaId = sla._id;
 		changes.estimatedWaitingTimeQueue = sla.dueTimeInMinutes;
-		changes.estimatedServiceTimeAt = new Date(now.setMinutes(now.getMinutes() + sla.dueTimeInMinutes));
 	}
 	if (priority) {
 		changes.priorityId = priority._id;

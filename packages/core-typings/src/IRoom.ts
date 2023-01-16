@@ -1,4 +1,4 @@
-import type { ILivechatPriority } from '@rocket.chat/core-typings/src';
+import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings/src';
 
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage';
@@ -173,10 +173,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	metrics?: any;
 	waitingResponse: any;
 	responseBy: any;
-	priorityId?: string;
-	priorityWeight?: ILivechatPriority['sortItem'];
-
-	slaId?: string;
 
 	livechatData: any;
 	queuedAt?: Date;
@@ -205,6 +201,14 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	sms?: {
 		from: string;
 	};
+
+	// Following props are used for priorities feature
+	priorityId?: string;
+	priorityWeight: ILivechatPriority['sortItem']; // It should always have a default value for sorting mechanism to work
+
+	// Following props are used for SLA feature
+	slaId?: string;
+	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes']; // It should always have a default value for sorting mechanism to work
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {

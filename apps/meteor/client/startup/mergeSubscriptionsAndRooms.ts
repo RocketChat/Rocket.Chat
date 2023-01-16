@@ -1,4 +1,6 @@
 import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src';
 import type { Mongo } from 'meteor/mongo';
 
 import { Rooms, Subscriptions } from '../../app/models/client';
@@ -96,7 +98,9 @@ const mergeSubRoom = (subscription: ISubscription): SubscriptionWithRoom => {
 		waitingResponse: (room as IOmnichannelRoom | undefined)?.waitingResponse,
 		responseBy: (room as IOmnichannelRoom | undefined)?.responseBy,
 		priorityId: (room as IOmnichannelRoom | undefined)?.priorityId,
-		priorityWeight: (room as IOmnichannelRoom | undefined)?.priorityWeight,
+		priorityWeight: (room as IOmnichannelRoom | undefined)?.priorityWeight || LivechatPriorityWeight.NOT_SPECIFIED,
+		estimatedWaitingTimeQueue:
+			(room as IOmnichannelRoom | undefined)?.estimatedWaitingTimeQueue || DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		slaId: (room as IOmnichannelRoom | undefined)?.slaId,
 		livechatData: (room as IOmnichannelRoom | undefined)?.livechatData,
 		departmentId: (room as IOmnichannelRoom | undefined)?.departmentId,

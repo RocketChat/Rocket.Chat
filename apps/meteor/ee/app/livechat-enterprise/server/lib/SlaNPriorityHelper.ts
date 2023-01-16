@@ -8,7 +8,7 @@ export const removeSLAFromRooms = async (slaId: string) => {
 		await LivechatInquiry.bulkUnsetSla(openRoomIds);
 	}
 
-	await LivechatRooms.unsetSlaById(slaId);
+	await LivechatRooms.bulkRemoveSlaFromRoomsById(slaId);
 };
 
 export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
@@ -17,19 +17,24 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 		return;
 	}
 
-	const { ts: chatStartedAt } = inquiry;
 	const { dueTimeInMinutes, _id: slaId } = sla;
 
 	const estimatedWaitingTimeQueue = dueTimeInMinutes;
-	const estimatedServiceTimeAt = new Date(chatStartedAt.setMinutes(chatStartedAt.getMinutes() + dueTimeInMinutes));
 
 	await LivechatInquiry.setSlaForRoom(inquiry.rid, {
 		slaId,
 		estimatedWaitingTimeQueue,
-		estimatedServiceTimeAt,
 	});
+};
+
+export const updateRoomSlaWeights = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
+	await LivechatRooms.setEstimatedWaitingTimeQueueForRoomById(roomId, sla);
 };
 
 export const removeInquiryQueueSla = async (roomId: string) => {
 	await LivechatInquiry.unsetSlaForRoom(roomId);
+};
+
+export const removeSlaFromRoom = async (roomId: string) => {
+	await LivechatRooms.removeSlaFromRoomById(roomId);
 };
