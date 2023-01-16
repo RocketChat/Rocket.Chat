@@ -121,8 +121,8 @@ const ThreadChat: VFC<ThreadChatProps> = ({ mainMessage }) => {
 
 				<ComposerContainer
 					rid={mainMessage.rid}
+					tmid={mainMessage._id}
 					subscription={subscription}
-					chatMessagesInstance={chat}
 					onSend={handleSend}
 					onEscape={handleComposerEscape}
 					onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
