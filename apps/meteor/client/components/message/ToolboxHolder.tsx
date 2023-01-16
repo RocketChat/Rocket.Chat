@@ -8,14 +8,15 @@ import Toolbox from './toolbox/Toolbox';
 
 type ToolboxHolderProps = {
 	message: IMessage;
+	context?: 'message' | 'thread' | 'federated';
 };
 
-export const ToolboxHolder = (props: ToolboxHolderProps): ReactElement => {
+export const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement => {
 	const ref = useRef(null);
 
 	const [visible] = useIsVisible(ref);
 
-	return <MessageToolboxWrapper ref={ref}>{visible && <Toolbox {...props} />}</MessageToolboxWrapper>;
+	return <MessageToolboxWrapper ref={ref}>{visible && <Toolbox message={message} messageContext={context} />}</MessageToolboxWrapper>;
 };
 
 export default memo(ToolboxHolder);

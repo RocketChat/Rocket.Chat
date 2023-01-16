@@ -1,5 +1,4 @@
 import type { ISubscription, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
@@ -54,8 +53,6 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 
 	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
 
-	if (isThreadMainMessage(message)) message.renderedOnThread = true;
-
 	return (
 		<Message
 			id={message._id}
@@ -88,7 +85,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 
 				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context={'thread'} />}
 		</Message>
 	);
 };
