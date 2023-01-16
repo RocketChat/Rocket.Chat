@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
 import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
 import MessageContentBody from '../../MessageContentBody';
@@ -47,8 +47,6 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
-	const messageAttachments = useTranslateAttachments({ message });
-
 	return (
 		<>
 			{!message.blocks?.length && !!message.md?.length && (
@@ -62,7 +60,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
+			{!!message?.attachments?.length && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 

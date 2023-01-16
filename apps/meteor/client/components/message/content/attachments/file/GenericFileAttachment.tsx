@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
+import MessageContentBody from '../../../MessageContentBody';
 import Attachment from '../structure/Attachment';
 import AttachmentDescription from '../structure/AttachmentDescription';
 import AttachmentDownload from '../structure/AttachmentDownload';
@@ -27,6 +28,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 		// format,
 		// name,
 	} = {},
+	md,
 }) => {
 	// const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
@@ -34,7 +36,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 		<Attachment>
 			{description && (
 				<AttachmentDescription>
-					<MarkdownText parseEmoji content={description} />
+					{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 				</AttachmentDescription>
 			)}
 			<AttachmentRow>
