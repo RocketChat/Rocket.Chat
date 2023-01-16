@@ -46,29 +46,23 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 				</Modal.Content>
 				<Modal.Footer>
 					{hasPermission('view-statistics') ? (
-						<>
-							<Modal.FooterControllers>
-								<Button is='a' href='https://rocket.chat/contact' external onClick={onClose} data-qa-id='btn-talk-to-sales'>
-									{t('Talk_to_sales')}
-								</Button>
-								<Button onClick={upgradeNowClick} primary data-qa-id='upgrade-now'>
-									{tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan'
-										? t('Start_free_trial')
-										: t('Learn_more')}
-								</Button>
-							</Modal.FooterControllers>
-						</>
+						<Modal.FooterControllers>
+							<Button is='a' href='https://rocket.chat/contact' external onClick={onClose} data-qa-id='btn-talk-to-sales'>
+								{t('Talk_to_sales')}
+							</Button>
+							<Button onClick={upgradeNowClick} primary data-qa-id='upgrade-now'>
+								{tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan'
+									? t('Start_free_trial')
+									: t('Learn_more')}
+							</Button>
+						</Modal.FooterControllers>
 					) : (
-						<>
-							{/* <Modal.FooterControllers> */}
-							<Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
-								Talk to your workspace admin about enabling departments.
-								<Button onClick={onClose} data-qa='close'>
-									{t('Close')}
-								</Button>
-							</Box>
-							{/* </Modal.FooterControllers> */}
-						</>
+						<Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
+							Talk to your workspace admin about enabling departments.
+							<Button onClick={onClose} data-qa='close'>
+								{t('Close')}
+							</Button>
+						</Box>
 					)}
 				</Modal.Footer>
 			</Modal>

@@ -17,13 +17,13 @@ type NewDepartmentProps = {
 const NewDepartment = ({ id, reload, refetchRef }: NewDepartmentProps) => {
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
-	const { data, refetch } = useQuery(['getDepartments'], async () => getDepartments());
+	const { data, refetch, isLoading } = useQuery(['getDepartments'], async () => getDepartments());
 
 	useEffect(() => {
 		refetchRef.current = refetch;
 	}, [refetchRef, refetch]);
 
-	const isMultipleDepartmentsAvailable = data ? data?.total < 1 || hasLicense : 'loading';
+	const isMultipleDepartmentsAvailable = hasLicense || (!isLoading && data?.total !== undefined && data.total < 1);
 	const t = useTranslation();
 
 	if (isMultipleDepartmentsAvailable === 'loading' || undefined) {

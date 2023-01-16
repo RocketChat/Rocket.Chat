@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { OmnichannelDepartments } from './page-objects';
+import { IS_EE } from './config/constants';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -33,6 +34,8 @@ test.describe.serial('omnichannel-departments', () => {
 	});
 
 	test('expect to not be possible adding a second department ', async () => {
+		test.skip(!IS_EE, 'Enterprise Only');
+
 		await poOmnichannelDepartments.btnNew.click();
 
 		await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
