@@ -13,7 +13,7 @@ export const registerAdminRoute = createRouteGroup(
 
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
-	component: lazy(() => import('./customSounds/AdminSoundsRoute')),
+	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
 registerAdminRoute('/apps/what-is-it', {
