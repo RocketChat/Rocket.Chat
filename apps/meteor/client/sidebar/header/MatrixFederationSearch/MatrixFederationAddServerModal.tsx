@@ -1,5 +1,5 @@
 import { Box, Modal, ButtonGroup, Button, Field, TextInput } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { VFC, FormEvent } from 'react';
 import React, { useState } from 'react';
@@ -10,11 +10,9 @@ type MatrixFederationAddServerModalProps = {
 	onClickClose: () => void;
 };
 
-const addMatrixServer = async (_: { serverName: string }) => ({ success: true });
-
 const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> = ({ onClickClose }) => {
 	const t = useTranslation();
-	// const addMatrixServer = useEndpoint('POST', 'v1/federation/addServerByUser');
+	const addMatrixServer = useEndpoint('POST', '/v1/federation/addServerByUser');
 	const [serverName, setServerName] = useState('');
 	const setModal = useSetModal();
 
