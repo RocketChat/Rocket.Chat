@@ -10,9 +10,6 @@ const openUserCard =
 
 const openRoom = () => (): void => console.log('openRoom');
 const openThread = () => (): void => console.log('openThread');
-const replyBroadcast = (): void => {
-	console.log('replyBroadcast');
-};
 const runActionLink = () => () => (): void => {
 	console.log('replyBroadcast');
 };
@@ -23,7 +20,6 @@ export type MessageContextValue = {
 		openRoom: (id: string) => (event: UIEvent) => void;
 		openThread: (tmid: string, jump?: string) => (e: UIEvent) => void;
 		runActionLink: (message: IMessage) => (action: string) => () => void;
-		replyBroadcast: (message: IMessage) => void;
 	};
 };
 
@@ -33,7 +29,6 @@ export const MessageContext = createContext<MessageContextValue>({
 		openRoom,
 		openThread,
 		runActionLink,
-		replyBroadcast,
 	},
 });
 

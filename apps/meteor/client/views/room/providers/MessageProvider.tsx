@@ -6,7 +6,6 @@ import React, { useMemo, memo } from 'react';
 import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
 import { MessageContext } from '../../../components/message/MessageContext';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useRoom } from '../contexts/RoomContext';
@@ -19,7 +18,7 @@ type MessageProviderProps = {
 const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 	const room = useRoom();
 	const tabBarOpen = useTabBarOpen();
-	const [routeName, params, queryStringParams] = useCurrentRoute();
+	const [routeName, params] = useCurrentRoute();
 	const { isEmbedded } = useLayout();
 	if (!routeName) {
 		throw new Error('routeName is not defined');
@@ -89,19 +88,9 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 					},
 				openRoom,
 				openThread,
-				replyBroadcast: (message: IMessage): void => {
-					roomCoordinator.openRouteLink(
-						'd',
-						{ name: message.u.username },
-						{
-							...queryStringParams,
-							reply: message._id,
-						},
-					);
-				},
 			},
 		};
-	}, [isEmbedded, router, params, routeName, tabBarOpen, room._id, queryStringParams]);
+	}, [isEmbedded, router, params, routeName, tabBarOpen, room._id]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 };
