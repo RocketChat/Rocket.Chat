@@ -33,7 +33,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 						<Modal.Tagline>{t('Enterprise_capability')}</Modal.Tagline>
 						<Modal.Title>{t('Departments')}</Modal.Title>
 					</Modal.HeaderText>
-					<Modal.Close onClick={onClose} />
+					<Modal.Close onClick={onClose} data-qa='modal-close' />
 				</Modal.Header>
 				<Modal.Content fontScale='p2'>
 					<Modal.HeroImage src='/images/departments.svg' />
@@ -59,7 +59,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 					) : (
 						<Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
 							Talk to your workspace admin about enabling departments.
-							<Button onClick={onClose} data-qa='close'>
+							<Button onClick={onClose} data-qa='button-close'>
 								{t('Close')}
 							</Button>
 						</Box>

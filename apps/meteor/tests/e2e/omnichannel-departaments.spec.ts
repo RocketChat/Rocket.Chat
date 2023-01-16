@@ -34,7 +34,7 @@ test.describe.serial('omnichannel-departments', () => {
 	});
 
 	test('expect to not be possible adding a second department ', async () => {
-		test.skip(!IS_EE, 'Enterprise Only');
+		test.skip(IS_EE, 'Community Edition Only');
 
 		await poOmnichannelDepartments.btnNew.click();
 

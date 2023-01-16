@@ -465,7 +465,7 @@ const LivechatTagsListSchema = {
 
 export const isLivechatTagsListProps = ajv.compile<LivechatTagsListProps>(LivechatTagsListSchema);
 
-export type LivechatDepartmentProps = PaginatedRequest<{
+type LivechatDepartmentProps = PaginatedRequest<{
 	text: string;
 	onlyMyDepartments?: booleanString;
 	enabled?: booleanString;

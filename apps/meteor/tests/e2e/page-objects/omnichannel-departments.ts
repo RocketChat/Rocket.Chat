@@ -69,7 +69,7 @@ export class OmnichannelDepartments {
 	}
 
 	get btnUpgradeDepartmentsModalClose() {
-		return this.page.locator('#modal-root .rcx-modal .rcx-modal__header .rcx-button--small-square');
+		return this.page.locator('[data-qa="modal-close"]');
 	}
 
 	get btnUpgradeDepartmentsModalTalkToSales() {
