@@ -40,7 +40,9 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 					<Box fontSize={20} fontWeight={700} lineHeight={28} mbe={28}>
 						{t('Enterprise_Departments_title')}
 					</Box>
-					{t('Enterprise_Departments_description')}
+					{tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan'
+						? t('Enterprise_Departments_description_upgrade')
+						: t('Enterprise_Departments_description_free_trial')}
 				</Modal.Content>
 				<Modal.Footer>
 					{hasPermission('view-statistics') ? (
@@ -50,7 +52,9 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 									{t('Talk_to_sales')}
 								</Button>
 								<Button onClick={upgradeNowClick} primary data-qa-id='upgrade-now'>
-									{t('Upgrade_now')}
+									{tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan'
+										? t('Start_free_trial')
+										: t('Learn_more')}
 								</Button>
 							</Modal.FooterControllers>
 						</>
