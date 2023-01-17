@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
+import MessageContentBody from '../../../MessageContentBody';
 import { useCollapse } from '../../../hooks/useCollapse';
 import Attachment from '../structure/Attachment';
 import AttachmentContent from '../structure/AttachmentContent';
@@ -22,13 +23,14 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
+	md,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
 			<AttachmentDescription>
-				<MarkdownText parseEmoji variant='inline' content={description} />
+				{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 			</AttachmentDescription>
 			<AttachmentRow>
 				<AttachmentTitle>{title}</AttachmentTitle>
