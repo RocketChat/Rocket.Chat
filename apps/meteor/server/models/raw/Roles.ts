@@ -157,14 +157,14 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {});
 	}
 
-    findCustomUserRoles(options?: FindOptions<IRole> | undefined): FindCursor<IRole> {
-        const query = {
-            scope: "Users" as IRole['scope'],
-            protected: false,
-        };
+	findCustomUserRoles(options?: FindOptions<IRole> | undefined): FindCursor<IRole> {
+		const query = {
+			scope: 'Users' as IRole['scope'],
+			protected: false,
+		};
 
-        return this.find(query, options || {});
-    }
+		return this.find(query, options || {});
+	}
 
 	updateById(
 		_id: IRole['_id'],
