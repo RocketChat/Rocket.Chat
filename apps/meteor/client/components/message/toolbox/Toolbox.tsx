@@ -1,4 +1,4 @@
-import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IMessage, ToolboxMessageType } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -14,14 +14,14 @@ import { useRoom } from '../../../views/room/contexts/RoomContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
-const getMessageContext = (message: IMessage, room: IRoom, context?: 'message' | 'thread' | 'federated'): MessageActionContext => {
+const getMessageContext = (message: IMessage, room: IRoom, context?: ToolboxMessageType): MessageActionContext => {
 	if (message.t === 'videoconf') {
 		return 'videoconf';
 	}
 	if (isRoomFederated(room)) {
 		return 'federated';
 	}
-	if (isThreadMessage(message) || (context && context === 'thread')) {
+	if (isThreadMessage(message) || context === 'thread') {
 		return 'threads';
 	}
 	return 'message';
@@ -29,7 +29,7 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: 'message' |
 
 type ToolboxProps = {
 	message: IMessage;
-	messageContext?: 'message' | 'thread' | 'federated';
+	messageContext?: ToolboxMessageType;
 };
 
 const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null => {
@@ -41,7 +41,6 @@ const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null
 	const settings = useSettings();
 	const user = useUser() as IUser;
 
-	console.log(messageContext);
 	const context = getMessageContext(message, room, messageContext);
 
 	const mapSettings = useMemo(() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])), [settings]);
