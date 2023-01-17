@@ -1,4 +1,4 @@
-import type { IUser, IRoom, IMessage, ToolboxMessageType } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, ITranslatedMessage, ToolboxMessageType } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useUserSubscription, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,6 +9,7 @@ import React, { memo, useMemo } from 'react';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoom } from '../../../views/room/contexts/RoomContext';
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
@@ -28,7 +29,7 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: ToolboxMess
 };
 
 type ToolboxProps = {
-	message: IMessage;
+	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: ToolboxMessageType;
 };
 
@@ -62,6 +63,8 @@ const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null
 
 	const selecting = useIsSelecting();
 
+	const autoTranslateOptions = useAutoTranslate(subscription);
+
 	if (selecting) {
 		return null;
 	}
@@ -70,10 +73,10 @@ const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null
 		<MessageToolbox>
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
+					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
 					key={action.id}
 					icon={action.icon}
 					title={t(action.label)}
-					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat })}
 					data-qa-id={action.label}
 					data-qa-type='message-action-menu'
 				/>
@@ -83,7 +86,7 @@ const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null
 					options={
 						actionsQueryResult.data?.menu.map((action) => ({
 							...action,
-							action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat }),
+							action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
 						})) ?? []
 					}
 					data-qa-type='message-action-menu-options'
