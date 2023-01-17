@@ -32,9 +32,7 @@ const COMPONENT_PATH = '../../../../../../client/components/message/variants/Thr
 const defaultConfig = {
 	'../MessageContext': {
 		useMessageContext: () => ({
-			actions: {
-				openThread: () => () => '',
-			},
+			actions: {},
 		}),
 	},
 	'../../../views/room/MessageList/hooks/useParentMessage': {

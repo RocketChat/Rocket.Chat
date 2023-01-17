@@ -38,7 +38,6 @@ const RoomMessageContent = proxyquire.noCallThru().load('../../../../../../clien
 		useMessageContext: () => ({
 			actions: {
 				openRoom: () => '',
-				openThread: () => () => '',
 				replyBroadcast: () => '',
 			},
 		}),

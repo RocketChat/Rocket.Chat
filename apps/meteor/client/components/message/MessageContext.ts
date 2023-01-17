@@ -8,13 +8,11 @@ const openUserCard =
 	};
 
 const openRoom = () => (): void => console.log('openRoom');
-const openThread = () => (): void => console.log('openThread');
 
 export type MessageContextValue = {
 	actions: {
 		openUserCard: (username: string) => (e: UIEvent) => void;
 		openRoom: (id: string) => (event: UIEvent) => void;
-		openThread: (tmid: string, jump?: string) => (e: UIEvent) => void;
 	};
 };
 
@@ -22,7 +20,6 @@ export const MessageContext = createContext<MessageContextValue>({
 	actions: {
 		openUserCard,
 		openRoom,
-		openThread,
 	},
 });
 

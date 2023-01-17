@@ -26,8 +26,8 @@ import {
 import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
 import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
+import { useGoToThread } from '../../../views/room/contextualBar/Threads/hooks/useGoToThread';
 import UserAvatar from '../../avatar/UserAvatar';
-import { useMessageContext } from '../MessageContext';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
@@ -37,9 +37,6 @@ type ThreadMessagePreviewProps = {
 };
 
 const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
-	const {
-		actions: { openThread },
-	} = useMessageContext();
 	const parentMessage = useParentMessage(message.tmid);
 
 	const translated = useShowTranslated(message);
@@ -55,10 +52,14 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 
 	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
+	const goToThread = useGoToThread();
+
 	return (
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			{!sequential && (
-				<ThreadMessageRow onClick={!isSelecting && parentMessage.isSuccess ? openThread(message.tmid, parentMessage.data?._id) : undefined}>
+				<ThreadMessageRow
+					onClick={!isSelecting && parentMessage.isSuccess ? () => goToThread(message.tmid, parentMessage.data?._id) : undefined}
+				>
 					<ThreadMessageLeftContainer>
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
@@ -86,7 +87,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!isSelecting ? openThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow onClick={!isSelecting ? () => goToThread(message.tmid, message._id) : undefined}>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}

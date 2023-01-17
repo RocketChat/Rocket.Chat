@@ -21,22 +21,6 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 	const router = useRoute(routeName);
 
 	const context = useMemo((): ContextType<typeof MessageContext> => {
-		const openThread =
-			(tmid: string, jump?: string): ((e: UIEvent) => void) =>
-			(e: UIEvent): void => {
-				e.stopPropagation();
-
-				router.replace(
-					{
-						...params,
-						rid: room._id,
-						tab: 'thread',
-						context: tmid,
-					},
-					jump ? { jump } : undefined,
-				);
-			};
-
 		const openUserInfo = (username: string): void => {
 			const tab =
 				{
@@ -71,7 +55,6 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 						});
 					},
 				openRoom,
-				openThread,
 			},
 		};
 	}, [router, params, routeName, room._id]);
