@@ -9,20 +9,29 @@ import MatrixFederationSearchModalContent from './MatrixFederationSearchModalCon
 type MatrixFederationSearchProps = {
 	onClose: () => void;
 };
-
+// const fetchServerList = () => ({
+// 	servers: Array.from({ length: 5 }).map((_, index) => ({ name: `Server ${index}`, default: true, local: false })),
+// });
 const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose }) => {
 	const fetchServerList = useEndpoint('GET', '/v1/federation/listServersByUser');
 	const t = useTranslation();
 	const { data, isLoading } = useQuery(['federation/listServersByUsers'], async () => fetchServerList());
 
 	return (
-		<Modal maxHeight={'x600'}>
+		<Modal>
 			<Modal.Header>
 				<Modal.Title>{t('Federation_Federated_room_search')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content overflow='hidden'>
-				{isLoading && <Skeleton />}
+			<Modal.Content display='flex' flexDirection='column' h='full' maxHeight={'x400'}>
+				{isLoading && (
+					<>
+						<Skeleton />
+						<Skeleton />
+						<Skeleton />
+						<Skeleton />
+					</>
+				)}
 				{!isLoading && data?.servers && <MatrixFederationSearchModalContent servers={data.servers} />}
 			</Modal.Content>
 			<Modal.Footer />
