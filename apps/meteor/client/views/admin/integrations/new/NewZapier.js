@@ -1,4 +1,4 @@
-import { Box, Skeleton, Margins, Banner, Icon } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
 
@@ -33,14 +33,14 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<Banner
-				icon={<Icon name='warning' />}
-				title={t('This_is_a_deprecated_feature_alert')}
-				variant='warning'
+			<Callout
+				bg='status-background-warning'
+				icon={'warning'}
+				title={t('Zapier_integration_has_been_deprecated')}
 				style={{ marginInline: '-1.5rem' }}
 			>
 				{t('Install_Zapier_from_marketplace')}
-			</Banner>
+			</Callout>
 			{!script && (
 				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
 					<Margins blockEnd={14}>
