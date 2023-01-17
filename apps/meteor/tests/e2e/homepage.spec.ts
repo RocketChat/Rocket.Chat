@@ -52,6 +52,10 @@ test.describe.serial('homepage', () => {
 			test('expect only custom content button to be disabled', async () => {
 				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-only-button"]')).toBeDisabled();
 			});
+
+			test('expect visibility tag to show "not visible"', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-visibility-tag"]')).toContainText('Not visible to workspace');
+			});
 		});
 
 		test.describe('custom body with custom content', () => {

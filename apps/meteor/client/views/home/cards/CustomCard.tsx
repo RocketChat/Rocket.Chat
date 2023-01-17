@@ -41,9 +41,9 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 		return (
 			<Card variant='light' data-qa-id='homepage-custom-card'>
 				<Card.Title>
-					<Tag>
+					<Tag data-qa-id='homepage-custom-content-visibility-tag'>
 						<Icon mie='x4' name={isCustomContentBodyEmpty || !isCustomContentVisible ? 'eye-off' : 'eye'} size='x16' />
-						{!isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
+						{isCustomContentBodyEmpty || !isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
 				<Box mb='x8' color='info'>
