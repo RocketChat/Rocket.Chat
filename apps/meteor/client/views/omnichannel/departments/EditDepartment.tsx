@@ -190,7 +190,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditD
 	};
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/${id}/agents`);
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:departmentId/agents`, { departmentId: id || '' });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

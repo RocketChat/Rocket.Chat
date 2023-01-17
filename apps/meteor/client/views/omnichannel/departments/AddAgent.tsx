@@ -19,7 +19,7 @@ type AddAgentListProps = ComponentProps<typeof Box> & {
 function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }: AddAgentListProps) {
 	const t = useTranslation();
 	const [userId, setUserId] = useState('');
-	const getAgent = useEndpointAction('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
+	const getAgent = useEndpointAction('GET', '/v1/livechat/users/:type/:_id', { keys: { type: 'agent', _id: userId } });
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleAgent = useMutableCallback((e) => setUserId(e));
@@ -30,11 +30,15 @@ function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }: AddAgen
 		}
 		const { user } = await getAgent();
 
-		if (agentList.filter((e) => e.agentId === user._id).length === 0) {
-			const newAgent = { ...user, agentId: user._id } as unknown as ILivechatDepartmentAgents;
+		if (!user?._id) {
+			return;
+		}
+
+		if (agentList.filter((e) => e.agentId === user?._id).length === 0) {
+			const newAgent = { ...user, agentId: user?._id } as unknown as ILivechatDepartmentAgents;
 			setAgentList([newAgent, ...agentList]);
 			setUserId('');
-			setAgentsAdded((agents) => [...agents, { agentId: user._id }]); // Search the real type of setAgentsAdded and type the function on the root props
+			setAgentsAdded((agents) => [...agents, { agentId: user?._id }]); // Search the real type of setAgentsAdded and type the function on the root props
 		} else {
 			dispatchToastMessage({ type: 'error', message: t('This_agent_was_already_selected') });
 		}
