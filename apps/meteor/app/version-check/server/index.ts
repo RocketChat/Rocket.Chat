@@ -24,14 +24,14 @@ const addVersionCheckJob = Meteor.bindEnvironment(() => {
 
 Meteor.startup(() => {
 	Meteor.defer(() => {
-		if (settings.get('Register_Server') && settings.get('Update_EnableChecker')) {
+		if (settings.get('Update_EnableChecker')) {
 			Promise.await(checkVersionUpdate());
 		}
 	});
 });
 
-settings.watchMultiple(['Register_Server', 'Update_EnableChecker'], () => {
-	const checkForUpdates = settings.get('Register_Server') && settings.get('Update_EnableChecker');
+settings.watchMultiple(['Update_EnableChecker'], () => {
+	const checkForUpdates = settings.get('Update_EnableChecker');
 
 	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
 		return;
