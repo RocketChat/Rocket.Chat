@@ -11,6 +11,7 @@ import type { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adap
 import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import { FederationServiceEE } from './sender/AbstractFederationService';
+import { FederatedUserEE } from '../domain/FederatedUser';
 
 const DEFAULT_SERVERS = [
 	{
@@ -140,8 +141,13 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		}
 		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
 		if (!creatorUser) {
-			const existsOnlyOnProxyServer = false;
-			await this.createFederatedUserInternallyOnly(externalRoomData.creator.id, externalRoomData.creator.username, existsOnlyOnProxyServer);
+			const isCreatorFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
+				this.bridge.extractHomeserverOrigin(externalRoomData.creator.id),
+				this.internalHomeServerDomain,
+			);
+			const existsOnlyOnProxyServer = isCreatorFromTheSameHomeServer;
+			const username = isCreatorFromTheSameHomeServer ? externalRoomData.creator.username : externalRoomData.creator.id.replace('@', '');
+			await this.createFederatedUserInternallyOnly(externalRoomData.creator.id, username, existsOnlyOnProxyServer);
 		}
 		const federatedCreatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
 		if (!federatedCreatorUser) {
@@ -177,14 +183,16 @@ class RoomMapper {
 		rooms: IFederationPublicRooms[];
 	}> {
 		return {
-			rooms: (rooms?.chunk || []).map((room) => ({
-				id: room.room_id,
-				name: room.name,
-				canJoin: !(room.join_rule && room.join_rule === MatrixRoomJoinRules.KNOCK),
-				canonicalAlias: room.canonical_alias,
-				joinedMembers: room.num_joined_members,
-				topic: room.topic,
-			})),
+			rooms: (rooms?.chunk || [])
+				.map((room) => ({
+					id: room.room_id,
+					name: room.name,
+					canJoin: !(room.join_rule && room.join_rule === MatrixRoomJoinRules.KNOCK),
+					canonicalAlias: room.canonical_alias,
+					joinedMembers: room.num_joined_members,
+					topic: room.topic,
+				}))
+				.filter((room) => room.canJoin),
 			count: rooms?.chunk?.length || 0,
 			total: rooms?.total_room_count_estimate || 0,
 			...(rooms?.next_batch ? { nextPageToken: rooms.next_batch } : {}),
