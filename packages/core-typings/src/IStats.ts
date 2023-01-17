@@ -118,8 +118,8 @@ export interface IStats {
 		totalInstalled: number | false;
 		totalActive: number | false;
 		totalFailed: number | false;
-        totalPublic: number | false;
-        totalPrivate: number | false;
+		totalPublic: number | false;
+		totalPrivate: number | false;
 	};
 	services: Record<string, unknown>;
 	importer: Record<string, unknown>;
@@ -197,7 +197,7 @@ export interface IStats {
 	};
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
-    totalUserCustomRoles: number;
+	totalUserCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	matrixFederation: {
