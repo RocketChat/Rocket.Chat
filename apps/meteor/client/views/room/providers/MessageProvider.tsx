@@ -1,15 +1,11 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { useLayout, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
+import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 import type { ContextType, MouseEvent, ReactNode, UIEvent, VFC } from 'react';
 import React, { useMemo, memo } from 'react';
 
-import { actionLinks } from '../../../../app/action-links/client';
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
 import { MessageContext } from '../../../components/message/MessageContext';
-import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useRoom } from '../contexts/RoomContext';
-import { useTabBarOpen } from '../contexts/ToolboxContext';
 
 type MessageProviderProps = {
 	children: ReactNode;
@@ -17,9 +13,7 @@ type MessageProviderProps = {
 
 const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 	const room = useRoom();
-	const tabBarOpen = useTabBarOpen();
 	const [routeName, params] = useCurrentRoute();
-	const { isEmbedded } = useLayout();
 	if (!routeName) {
 		throw new Error('routeName is not defined');
 	}
@@ -58,21 +52,11 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 				context: username,
 			});
 		};
+
 		const openRoom = (id: string) => (): Promise<void> => goToRoomById(id);
 
-		const runActionLink = isEmbedded
-			? (msg: IMessage) => (actionLink: string) => (): void =>
-					fireGlobalEvent('click-action-link', {
-						actionlink: actionLink,
-						value: msg._id,
-						message: msg,
-					})
-			: (msg: IMessage) => (actionLink: string) => (): void => {
-					actionLinks.run(actionLink, msg, tabBarOpen);
-			  };
 		return {
 			actions: {
-				runActionLink,
 				openUserCard:
 					(username: string) =>
 					(e: UIEvent): void => {
@@ -90,7 +74,7 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 				openThread,
 			},
 		};
-	}, [isEmbedded, router, params, routeName, tabBarOpen, room._id]);
+	}, [router, params, routeName, room._id]);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 };

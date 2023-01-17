@@ -77,7 +77,6 @@ export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubsc
 								subscription: reactiveThreadMessageContext.get().subscription,
 								settings: reactiveThreadMessageContext.get().settings,
 								u: reactiveThreadMessageContext.get().u,
-								actions: reactiveThreadMessageContext.get().actions,
 								chatContext: reactiveThreadMessageContext.get().chatContext,
 								messageContext: reactiveThreadMessageContext.get().messageContext,
 								hideRoles: true,

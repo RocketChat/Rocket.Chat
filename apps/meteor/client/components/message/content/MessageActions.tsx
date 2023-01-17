@@ -1,11 +1,12 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { IconProps } from '@rocket.chat/fuselage';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useMessageContext } from '../MessageContext';
+import { actionLinks } from '../../../../app/action-links/client';
 import MessageAction from './actions/MessageAction';
 
 type MessageActionOptions = {
@@ -23,9 +24,9 @@ type MessageActionsProps = {
 };
 
 const MessageActions = ({ message, actions }: MessageActionsProps): ReactElement => {
-	const {
-		actions: { runActionLink },
-	} = useMessageContext();
+	const runAction = useMutableCallback((action: string) => () => {
+		actionLinks.run(action, message);
+	});
 
 	const alignment = actions[0]?.actionLinksAlignment || 'center';
 
@@ -33,7 +34,7 @@ const MessageActions = ({ message, actions }: MessageActionsProps): ReactElement
 		<Box display='flex' mb={4} mi={-4} width='full' justifyContent={alignment}>
 			<ButtonGroup align='center'>
 				{actions.map((action, key) => (
-					<MessageAction runAction={runActionLink(message)} key={key} {...action} />
+					<MessageAction key={key} runAction={runAction} {...action} />
 				))}
 			</ButtonGroup>
 		</Box>

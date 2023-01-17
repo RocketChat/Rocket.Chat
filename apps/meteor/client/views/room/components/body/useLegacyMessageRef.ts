@@ -67,7 +67,6 @@ export const useLegacyMessageRef = (portalsSubscription: BlazePortalsSubscriptio
 								subscription: reactiveMessageContext.get().subscription,
 								settings: reactiveMessageContext.get().settings,
 								u: reactiveMessageContext.get().u,
-								actions: reactiveMessageContext.get().actions,
 								chatContext: reactiveMessageContext.get().chatContext,
 								messageContext: reactiveMessageContext.get().messageContext,
 								portalsSubscription: () => portalsSubscription,
