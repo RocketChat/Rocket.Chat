@@ -1,7 +1,9 @@
 import { Subscriptions } from '@rocket.chat/models';
 
-import { ReadReceipt } from './lib/ReadReceipt';
-import { callbacks } from '../../../lib/callbacks';
+import { Reads } from '../../../../server/sdk';
+import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
+import { callbacks } from '../../../../../lib/callbacks';
+import { settings } from '../../../../../app/settings/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -27,8 +29,16 @@ callbacks.add(
 
 callbacks.add(
 	'afterReadMessages',
-	(rid, { uid, lastSeen }) => {
-		ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
+	(rid, { uid, lastSeen, tmid }) => {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		if (tmid) {
+			Reads.readThread(uid, tmid);
+		} else if (lastSeen) {
+			ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
+		}
 	},
 	callbacks.priority.MEDIUM,
 	'message-read-receipt-afterReadMessages',

@@ -1,10 +1,10 @@
 import { Reads } from '@rocket.chat/models';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IReadsService } from '@rocket.chat/core-services';
 
-import { Messages, Subscriptions } from '../../../app/models/server';
-import { ReadReceipt } from '../../../imports/message-read-receipt/server/lib/ReadReceipt';
+import type { IReadsService } from '../../sdk/types/IReadsService';
+import { Messages, Subscriptions } from '../../../../app/models/server';
+import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
 
 export class ReadsService extends ServiceClassInternal implements IReadsService {
 	protected name = 'reads';
@@ -33,7 +33,7 @@ export class ReadsService extends ServiceClassInternal implements IReadsService 
 		}
 
 		const firstRead = await Reads.getMinimumLastSeenByThreadId(tmid);
-		if (firstRead && firstRead.ls) {
+		if (firstRead?.ls) {
 			Messages.setThreadMessagesAsRead(tmid, firstRead.ls);
 		}
 	}

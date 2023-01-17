@@ -37,7 +37,6 @@ import './OEmbedCache';
 import './PbxEvents';
 import './PushToken';
 import './Permissions';
-import './ReadReceipts';
 import './Reads';
 import './Reports';
 import './Roles';

@@ -373,31 +373,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.getMessageReadReceipts',
-	{ authRequired: true },
-	{
-		async get() {
-			const { messageId } = this.queryParams;
-			if (!messageId) {
-				return API.v1.failure({
-					error: "The required 'messageId' param is missing.",
-				});
-			}
-
-			try {
-				return API.v1.success({
-					receipts: await Meteor.call('getReadReceipts', { messageId }),
-				});
-			} catch (error) {
-				return API.v1.failure({
-					error: error.message,
-				});
-			}
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.reportMessage',
 	{ authRequired: true },
 	{

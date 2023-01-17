@@ -1,8 +1,5 @@
-import { Reads } from '@rocket.chat/core-services';
-
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
-import { settings } from '../../settings/server';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
 	const { rid, ts, u, editedAt } = message;
@@ -78,7 +75,4 @@ export const readThread = ({ userId, rid, tmid }) => {
 	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
-	if (settings.get('Message_Read_Receipt_Enabled')) {
-		Reads.readThread(userId, tmid);
-	}
 };

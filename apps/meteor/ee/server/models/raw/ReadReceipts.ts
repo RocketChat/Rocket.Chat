@@ -2,7 +2,7 @@ import type { ReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typ
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
+import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ReadReceipt>>) {

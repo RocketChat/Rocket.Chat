@@ -23,7 +23,7 @@ import './oauth';
 import './openedRoom';
 import './otr';
 import './readMessage';
-import './readReceipt';
+import '../../ee/client/startup/readReceipt';
 import './reloadRoomAfterLogin';
 import './renderMessage';
 import './renderNotification';

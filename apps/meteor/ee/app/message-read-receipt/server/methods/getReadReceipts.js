@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { Messages } from '../../../../../app/models/server';
 import { canAccessRoomId } from '../../../../../app/authorization/server';
-import { ReadReceipt } from '../../lib/ReadReceipt';
+import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 
 Meteor.methods({
 	async getReadReceipts({ messageId }) {

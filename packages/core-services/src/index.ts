@@ -35,7 +35,6 @@ import type { IDeviceManagementService } from './types/IDeviceManagementService'
 import type { IPushService } from './types/IPushService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
-import type { IReadsService } from './types/IReadsService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -72,7 +71,6 @@ export {
 	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
-	IReadsService,
 	IRoomService,
 	ISAUMonitorService,
 	ISubscriptionExtraData,
@@ -121,7 +119,6 @@ export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
-export const Reads = proxifyWithWait<IReadsService>('reads');
 export const Upload = proxifyWithWait<IUploadService>('upload');
 
 // Calls without wait. Means that the service is optional and the result may be an error
