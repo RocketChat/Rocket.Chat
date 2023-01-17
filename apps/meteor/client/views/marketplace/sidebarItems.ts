@@ -8,7 +8,7 @@ export const {
 } = createSidebarItems([
 	{
 		href: 'marketplace/explore/list',
-		icon: 'cube',
+		icon: 'compass',
 		textColor: 'stroke-extra-dark',
 		i18nLabel: 'Explore',
 	},
