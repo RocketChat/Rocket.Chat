@@ -89,9 +89,7 @@ export async function process2faAsyncReturn({
 	return new Promise<unknown>((resolve, reject) => {
 		promise
 			// if the promise is resolved, we don't need to do anything
-			.then((result) => {
-				resolve(result);
-			})
+			.then(resolve)
 			// if the promise is rejected, we need to check if it's a 2fa error
 			.catch((error) => {
 				// if it's not a 2fa error, we reject the promise
