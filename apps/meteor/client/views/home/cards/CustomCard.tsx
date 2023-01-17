@@ -1,4 +1,4 @@
-import { Button, Icon, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
 import { useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -46,7 +46,9 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 						{!isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
-				<Card.Body>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</Card.Body>
+				<Box mb='x8' color='info'>
+					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
+				</Box>
 				<Card.FooterWrapper>
 					<Card.Footer>
 						<Button is='a' href='/admin/settings/Layout' title={t('Layout_Home_Page_Content')}>
