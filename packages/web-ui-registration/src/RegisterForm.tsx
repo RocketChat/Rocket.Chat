@@ -1,10 +1,10 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, TextInput, Field, PasswordInput, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation as useT } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
@@ -19,7 +19,8 @@ type LoginRegisterPayload = {
 };
 
 export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const t1 = useT();
 
 	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
@@ -46,18 +47,18 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			{
 				onError: (error: any) => {
 					if (error.errorType === 'error-invalid-email') {
-						setError('email', { type: 'invalid-email', message: t('Invalid_email') });
+						setError('email', { type: 'invalid-email', message: t1('Invalid_email') });
 					}
 					if (error.errorType === 'error-user-already-exists') {
-						setError('username', { type: 'user-already-exists', message: t('Username_already_exist') });
+						setError('username', { type: 'user-already-exists', message: t1('Username_already_exist') });
 					}
 
 					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('Email_already_exists') });
+						setError('email', { type: 'email-already-exists', message: t1('Email_already_exists') });
 					}
 
 					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('Username_already_exist') });
+						setError('username', { type: 'username-already-exists', message: t1('Username_already_exist') });
 					}
 				},
 			},
@@ -67,12 +68,12 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
 			<Form.Header>
-				<Form.Title id={formLabelId}>{t('Create_an_account')}</Form.Title>
+				<Form.Title id={formLabelId}>{t1('Create_an_account')}</Form.Title>
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
 					<Field>
-						<Field.Label htmlFor='name'>{requireNameForRegister ? `${t('Name')}*` : t('Name_optional')}</Field.Label>
+						<Field.Label htmlFor='name'>{requireNameForRegister ? `${t('Name')}*` : t1('Name_optional')}</Field.Label>
 						<Field.Row>
 							<TextInput
 								{...register('name', {
@@ -80,7 +81,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								})}
 								error={
 									errors.name &&
-									t('The_field_is_required', {
+									t1('The_field_is_required', {
 										postProcess: 'sprintf',
 										sprintf: [t('Name')],
 									})
@@ -91,7 +92,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						</Field.Row>
 						{errors.name && (
 							<Field.Error>
-								{t('The_field_is_required', {
+								{t1('The_field_is_required', {
 									postProcess: 'sprintf',
 									sprintf: [t('Name')],
 								})}
@@ -108,7 +109,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 								error={
 									errors.email &&
-									t('The_field_is_required', {
+									t1('The_field_is_required', {
 										postProcess: 'sprintf',
 										sprintf: [t('Email')],
 									})
@@ -121,7 +122,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						{errors.email && (
 							<Field.Error>
 								{errors.email.message ||
-									t('The_field_is_required', {
+									t1('The_field_is_required', {
 										postProcess: 'sprintf',
 										sprintf: [t('Email')],
 									})}
@@ -137,7 +138,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								})}
 								error={
 									errors.username &&
-									(errors.username.message || t('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Username')] }))
+									(errors.username.message || t1('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Username')] }))
 								}
 								aria-invalid={errors.username ? 'true' : undefined}
 								id='username'
@@ -146,7 +147,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						</Field.Row>
 						{errors.username?.message && <Field.Error>{errors.username.message}</Field.Error>}
 						{errors.username?.type === 'required' && (
-							<Field.Error>{t('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Username')] })}</Field.Error>
+							<Field.Error>{t1('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Username')] })}</Field.Error>
 						)}
 					</Field>
 					<Field>
@@ -154,7 +155,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						<Field.Row>
 							<PasswordInput
 								{...register('password', {
-									required: t('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Password')] }),
+									required: t1('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Password')] }),
 								})}
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
@@ -166,7 +167,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
-							<Field.Label htmlFor='passwordConfirmation'>{t('Confirm_password')}*</Field.Label>
+							<Field.Label htmlFor='passwordConfirmation'>{t1('Confirm_password')}*</Field.Label>
 							<Field.Row>
 								<PasswordInput
 									{...register('passwordConfirmation', {
@@ -174,21 +175,21 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 										deps: ['password'],
 										validate: (val: string) => watch('password') === val,
 									})}
-									error={errors.passwordConfirmation?.type === 'validate' ? t('Invalid_confirm_pass') : undefined}
+									error={errors.passwordConfirmation?.type === 'validate' ? t1('Invalid_confirm_pass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
 									placeholder={passwordConfirmationPlaceholder}
 								/>
 							</Field.Row>
-							{errors.passwordConfirmation?.type === 'validate' && <Field.Error>{t('Invalid_confirm_pass')}</Field.Error>}
+							{errors.passwordConfirmation?.type === 'validate' && <Field.Error>{t1('Invalid_confirm_pass')}</Field.Error>}
 							{errors.passwordConfirmation?.type === 'required' && (
-								<Field.Error>{t('The_field_is_required', { postProcess: 'sprintf', sprintf: [t('Confirm_password')] })}</Field.Error>
+								<Field.Error>{t1('The_field_is_required', { postProcess: 'sprintf', sprintf: [t1('Confirm_password')] })}</Field.Error>
 							)}
 						</Field>
 					)}
 					{manuallyApproveNewUsersRequired && (
 						<Field>
-							<Field.Label htmlFor='reason'>{t('Reason_To_Join')}*</Field.Label>
+							<Field.Label htmlFor='reason'>{t1('Reason_To_Join')}*</Field.Label>
 							<Field.Row>
 								<TextAreaInput
 									{...register('reason', {
@@ -196,7 +197,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 									})}
 									error={
 										errors.reason &&
-										t('The_field_is_required', {
+										t1('The_field_is_required', {
 											postProcess: 'sprintf',
 										})
 									}
@@ -208,7 +209,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								<Field.Error>
 									{t('The_field_is_required', {
 										postProcess: 'sprintf',
-										sprintf: [t('Reason_To_Join')],
+										sprintf: [t1('Reason_To_Join')],
 									})}
 								</Field.Error>
 							)}
@@ -219,7 +220,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' disabled={registerUser.isLoading} primary>
-						{t('Join_your_team')}
+						{t1('Join_your_team')}
 					</Button>
 				</ButtonGroup>
 				<ActionLink
