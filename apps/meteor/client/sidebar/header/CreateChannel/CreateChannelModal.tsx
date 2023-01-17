@@ -159,7 +159,11 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 	);
 
 	return (
-		<Modal data-qa='create-channel-modal' aria-label={t('Create_channel')}>
+		<Modal
+			data-qa='create-channel-modal'
+			aria-label={t('Create_channel')}
+			wrapper={(props) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
@@ -308,7 +312,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} onClick={handleSubmit(handleCreateChannel)} primary data-qa-type='create-channel-confirm-button'>
+					<Button disabled={!isDirty} type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

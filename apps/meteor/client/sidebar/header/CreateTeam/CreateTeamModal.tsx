@@ -123,10 +123,10 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	};
 
 	return (
-		<Modal>
+		<Modal wrapper={(props) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
+				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
 			<Modal.Content>
 				<FieldGroup>
@@ -134,7 +134,6 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								autoFocus
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
@@ -256,7 +255,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isButtonEnabled} onClick={handleSubmit(handleCreateTeam)} primary>
+					<Button disabled={!isButtonEnabled} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

@@ -22,6 +22,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	const createDirect = useEndpointAction('POST', '/v1/dm.create');
 
 	const onCreate = useMutableCallback(async () => {
+		if (!users.length) return;
 		try {
 			const {
 				room: { rid },
@@ -35,7 +36,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	});
 
 	return (
-		<Modal data-qa='create-direct-modal'>
+		<Modal data-qa='create-direct-modal' wrapper={(props) => <Box is='form' onSubmit={onCreate} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -49,7 +50,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={users.length < 1} onClick={onCreate} primary>
+					<Button disabled={users.length < 1} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
