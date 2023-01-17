@@ -7,14 +7,14 @@ import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
 import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
-import DicussionMetrics from '../../content/DicussionMetrics';
+import DiscussionMetrics from '../../content/DiscussionMetrics';
 import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
@@ -31,10 +31,7 @@ type RoomMessageContentProps = {
 
 const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
 	const uid = useUserId();
-	const {
-		broadcast,
-		actions: { openRoom, openThread, replyBroadcast },
-	} = useMessageActions();
+	const { broadcast } = useMessageActions();
 
 	const t = useTranslation();
 
@@ -50,8 +47,6 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
-	const messageAttachments = useTranslateAttachments({ message });
-
 	return (
 		<>
 			{!message.blocks?.length && !!message.md?.length && (
@@ -65,7 +60,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
+			{!!message?.attachments?.length && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
@@ -85,7 +80,6 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{isThreadMainMessage(message) && (
 				<ThreadMetrics
-					openThread={openThread(message._id)}
 					counter={message.tcount}
 					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
 					mid={message._id}
@@ -98,20 +92,12 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 				/>
 			)}
 
-			{isDiscussionMessage(message) && (
-				<DicussionMetrics
-					count={message.dcount}
-					drid={message.drid}
-					lm={message.dlm}
-					rid={message.rid}
-					openDiscussion={openRoom(message.drid)}
-				/>
-			)}
+			{isDiscussionMessage(message) && <DiscussionMetrics count={message.dcount} drid={message.drid} lm={message.dlm} rid={message.rid} />}
 
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+				<BroadcastMetrics mid={message._id} username={user.username} message={message} />
 			)}
 
 			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}

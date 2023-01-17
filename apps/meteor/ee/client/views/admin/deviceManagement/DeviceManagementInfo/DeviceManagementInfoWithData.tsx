@@ -26,10 +26,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 		value: data,
 		phase,
 		error,
-	} = useEndpointData(
-		'/v1/sessions/info.admin',
-		useMemo(() => ({ sessionId: deviceId }), [deviceId]),
-	);
+	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
