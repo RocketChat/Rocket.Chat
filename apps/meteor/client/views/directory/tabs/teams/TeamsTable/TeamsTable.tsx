@@ -1,4 +1,5 @@
-import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -58,11 +59,11 @@ const TeamsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
-	const { data, isFetched, isLoading } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
+	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
 	const onClick = useMemo(
-		() => (name: string, type: string) => (e: React.KeyboardEvent | React.MouseEvent) => {
-			if (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter') {
+		() => (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => {
+			if (name && (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter')) {
 				type === 'c' ? channelsRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},
@@ -86,7 +87,12 @@ const TeamsTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((team) => (
-								<TeamsTableRow key={team._id} team={team} onClick={onClick} mediaQuery={mediaQuery} />
+								<TeamsTableRow
+									key={team._id}
+									team={team as unknown as IRoom & { roomsCount: number }}
+									onClick={onClick}
+									mediaQuery={mediaQuery}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -105,6 +111,15 @@ const TeamsTable = () => {
 				<States>
 					<StatesIcon name='magnifier' />
 					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
+			)}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
 				</States>
 			)}
 		</>

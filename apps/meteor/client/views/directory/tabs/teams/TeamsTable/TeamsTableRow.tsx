@@ -1,14 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, TableRow, TableCell, Avatar, Icon } from '@rocket.chat/fuselage';
+import { Box, TableRow, TableCell, Avatar } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import MarkdownText from '../../../../../components/MarkdownText';
+import { RoomIcon } from '../../../../../components/RoomIcon';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RoomTags from '../../../RoomTags';
 
 type TeamsTableRowProps = {
-	onClick: (name: IRoom['name'], t: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => void;
+	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => void;
 	team: IRoom & { roomsCount: number };
 	mediaQuery: boolean;
 };
@@ -25,7 +26,7 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={fname || name} url={avatarUrl} />}</Box>
 					<Box flexGrow={1} mi='x8' withTruncatedText>
 						<Box display='flex' alignItems='center'>
-							<Icon name={roomCoordinator.getIcon(team)} color='hint' />{' '}
+							<RoomIcon room={team} />
 							<Box fontScale='p2m' mi='x4'>
 								{fname || name}
 							</Box>
@@ -38,7 +39,7 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 			<TableCell fontScale='p2' color='hint' withTruncatedText>
 				{roomsCount}
 			</TableCell>
-			{mediaQuery && (
+			{mediaQuery && ts && (
 				<TableCell fontScale='p2' color='hint' withTruncatedText>
 					{formatDate(ts)}
 				</TableCell>
