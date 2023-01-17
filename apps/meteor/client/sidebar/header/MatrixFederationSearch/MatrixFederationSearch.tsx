@@ -8,11 +8,12 @@ import MatrixFederationSearchModalContent from './MatrixFederationSearchModalCon
 
 type MatrixFederationSearchProps = {
 	onClose: () => void;
+	defaultSelectedServer?: string;
 };
 // const fetchServerList = () => ({
 // 	servers: Array.from({ length: 5 }).map((_, index) => ({ name: `Server ${index}`, default: true, local: false })),
 // });
-const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose }) => {
+const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose, defaultSelectedServer }) => {
 	const fetchServerList = useEndpoint('GET', '/v1/federation/listServersByUser');
 	const t = useTranslation();
 	const { data, isLoading } = useQuery(['federation/listServersByUsers'], async () => fetchServerList());
@@ -32,7 +33,9 @@ const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose }) =
 						<Skeleton />
 					</>
 				)}
-				{!isLoading && data?.servers && <MatrixFederationSearchModalContent servers={data.servers} />}
+				{!isLoading && data?.servers && (
+					<MatrixFederationSearchModalContent defaultSelectedServer={defaultSelectedServer} servers={data.servers} />
+				)}
 			</Modal.Content>
 			<Modal.Footer />
 		</Modal>
