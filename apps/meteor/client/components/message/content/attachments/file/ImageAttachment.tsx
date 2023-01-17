@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
+import MessageContentBody from '../../../MessageContentBody';
 import { useCollapse } from '../../../hooks/useCollapse';
 import Attachment from '../structure/Attachment';
 import AttachmentContent from '../structure/AttachmentContent';
@@ -28,6 +29,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
+	md,
 }) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
@@ -36,7 +38,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 		<Attachment>
 			{description && (
 				<AttachmentDescription>
-					<MarkdownText parseEmoji variant='inline' content={description} />
+					{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
 				</AttachmentDescription>
 			)}
 			<AttachmentRow>
