@@ -488,6 +488,7 @@ export const statistics = {
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+        statistics.totalUserCustomRoles = await RolesRaw.findCustomUserRoles({ readPreference }).count();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
