@@ -16,7 +16,7 @@ type AgentRowProps = {
 	mediaQuery: boolean;
 	agentList: ILivechatDepartmentAgents[];
 	setAgentList: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
-	setAgentsRemoved: Dispatch<SetStateAction<never[]>>;
+	setAgentsRemoved: Dispatch<SetStateAction<{ agentId: Key }[]>>;
 };
 
 const AgentRow = ({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList, setAgentsRemoved }: AgentRowProps) => (

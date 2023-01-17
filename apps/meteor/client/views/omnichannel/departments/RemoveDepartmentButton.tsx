@@ -6,7 +6,12 @@ import React from 'react';
 import GenericModal from '../../../components/GenericModal';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-function RemoveDepartmentButton({ _id, reload }) {
+type Props = {
+	_id: string;
+	reload: () => void;
+};
+
+function RemoveDepartmentButton({ _id = '', reload }: Props) {
 	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/department/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -1,7 +1,7 @@
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, Key, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
@@ -11,8 +11,8 @@ import AgentRow from './AgentRow';
 type DepartmentsAgentsTableProps = {
 	agents: ILivechatDepartmentAgents[] | undefined;
 	setAgentListFinal: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
-	setAgentsAdded: Dispatch<SetStateAction<(ILivechatDepartmentAgents | { agentId: string })[]>>;
-	setAgentsRemoved: Dispatch<SetStateAction<never[]>>;
+	setAgentsAdded: Dispatch<SetStateAction<{ agentId: string }[]>>;
+	setAgentsRemoved: Dispatch<SetStateAction<{ agentId: Key }[]>>;
 };
 
 function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, setAgentsRemoved }: DepartmentsAgentsTableProps) {

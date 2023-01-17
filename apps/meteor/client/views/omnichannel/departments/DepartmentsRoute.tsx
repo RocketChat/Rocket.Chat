@@ -3,7 +3,6 @@ import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
-import type { Key } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import type { GenericTableParams } from '../../../components/GenericTable/GenericTable';
@@ -15,10 +14,6 @@ import EditDepartmentWithData from './EditDepartmentWithData';
 import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 type SortingParams = [column: string, direction: 'asc' | 'desc'];
-
-export interface IRenderRow extends Omit<ILivechatDepartment, '_id'> {
-	_id?: Key | undefined;
-}
 
 const sortDir = (sortDir: string) => (sortDir === 'asc' ? 1 : -1);
 
@@ -128,7 +123,7 @@ function DepartmentsRoute() {
 	);
 
 	const renderRow = useCallback(
-		({ name, _id, description, numAgents, enabled, showOnRegistration }: IRenderRow) => (
+		({ name, _id, description, numAgents, enabled, showOnRegistration }: ILivechatDepartment) => (
 			<Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 				<Table.Cell withTruncatedText>{name}</Table.Cell>
 				<Table.Cell withTruncatedText>{description}</Table.Cell>

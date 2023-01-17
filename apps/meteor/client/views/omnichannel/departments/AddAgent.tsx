@@ -13,7 +13,7 @@ type AgentListType = ILivechatDepartmentAgents[];
 type AddAgentListProps = ComponentProps<typeof Box> & {
 	agentList: AgentListType;
 	setAgentList: Dispatch<SetStateAction<AgentListType>>;
-	setAgentsAdded: Dispatch<SetStateAction<(ILivechatDepartmentAgents | { agentId: string })[]>>;
+	setAgentsAdded: Dispatch<SetStateAction<{ agentId: string }[]>>;
 };
 
 function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }: AddAgentListProps) {

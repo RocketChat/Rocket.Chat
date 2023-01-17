@@ -1,16 +1,19 @@
-import type { Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import type { Dispatch, SetStateAction, ReactElement, ReactNode } from 'react';
+import type { Dispatch, SetStateAction, ReactElement, ReactNode, Key } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
 import type { GenericTableParams } from '../../../components/GenericTable/GenericTable';
 import Page from '../../../components/Page';
-import type { IRenderRow } from './DepartmentsRoute';
+
+interface IRenderRow {
+	(params: { _id?: Key | undefined }): ReactElement;
+}
 
 type DepartmentsPageProps = {
 	data?: Serialized<OperationResult<'GET', '/v1/livechat/department'>> | Record<string, never>;
@@ -18,7 +21,7 @@ type DepartmentsPageProps = {
 	setParams: Dispatch<SetStateAction<GenericTableParams>>;
 	params: GenericTableParams;
 	title: string;
-	renderRow: (props: IRenderRow) => ReactElement;
+	renderRow: (props: ILivechatDepartment) => ReactElement;
 	children?: ReactNode;
 };
 
@@ -43,7 +46,7 @@ function DepartmentsPage({ data = {}, header, setParams, params, title, renderRo
 				<Page.Content>
 					<GenericTable
 						header={header}
-						renderRow={renderRow}
+						renderRow={renderRow as IRenderRow}
 						results={data?.departments}
 						total={data?.total}
 						setParams={setParams}

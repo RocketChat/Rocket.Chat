@@ -1,11 +1,20 @@
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { Dispatch, Key, SetStateAction } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 
-function RemoveAgentButton({ agentId, setAgentList, agentList, setAgentsRemoved }) {
+type Props = {
+	agentId: Key;
+	setAgentList: Dispatch<SetStateAction<ILivechatDepartmentAgents[]>>;
+	agentList: ILivechatDepartmentAgents[];
+	setAgentsRemoved: Dispatch<SetStateAction<{ agentId: Key }[]>>;
+};
+
+function RemoveAgentButton({ agentId, setAgentList, agentList, setAgentsRemoved }: Props) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();

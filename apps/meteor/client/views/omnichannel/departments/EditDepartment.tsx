@@ -16,7 +16,7 @@ import {
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useRef, useCallback } from 'react';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, Key } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
@@ -98,8 +98,16 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditD
 	const DepartmentBusinessHours = useDepartmentBusinessHours();
 	const AutoCompleteDepartment = useSelectForwardDepartment();
 	const [agentList, setAgentList] = useState<ILivechatDepartmentAgents[]>([]);
-	const [agentsRemoved, setAgentsRemoved] = useState([]);
-	const [agentsAdded, setAgentsAdded] = useState<(ILivechatDepartmentAgents | { agentId: string })[]>([]);
+	const [agentsRemoved, setAgentsRemoved] = useState<
+		{
+			agentId: Key;
+		}[]
+	>([]);
+	const [agentsAdded, setAgentsAdded] = useState<
+		{
+			agentId: string;
+		}[]
+	>([]);
 
 	const [initialTags] = useState(() => department?.chatClosingTags ?? []);
 	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);
