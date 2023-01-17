@@ -7,7 +7,7 @@ import { Avatar, Box, Flex, TableCell, TableRow, Icon } from "@rocket.chat/fusel
 import type { IRoom } from "@rocket.chat/core-typings"
 
 type ChannelsTableRowProps = {
-  channel: IRoom,
+  channel: IRoom & { belongsTo: string },
   onClick: (name: IRoom['name']) => (e: React.KeyboardEvent | React.MouseEvent) => void;
   mediaQuery: boolean
 }
@@ -18,8 +18,8 @@ const ChannelsTableRow = ({
   mediaQuery,
 }: ChannelsTableRowProps) => {
   const formatDate = useFormatDate();
-  const { _id, ts, t, name, usersCount, lastMessage, fname, topic } = channel;
-  
+  const { _id, ts, t, name, usersCount, lastMessage, fname, topic, belongsTo } = channel;
+
   const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(channel);
 
   return (
@@ -38,12 +38,7 @@ const ChannelsTableRow = ({
                 <RoomTags room={channel} />
               </Box>
               {topic && (
-                <MarkdownText
-                  variant='inlineWithoutBreaks'
-                  fontScale='p2'
-                  color='hint'
-                  content={topic}
-                />
+                <MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' content={topic} />
               )}
             </Box>
           </Box>
@@ -64,7 +59,7 @@ const ChannelsTableRow = ({
       )}
       {mediaQuery && (
         <TableCell fontScale='p2' color='hint' withTruncatedText>
-          {""}
+          {belongsTo}
         </TableCell>
       )}
     </TableRow>
