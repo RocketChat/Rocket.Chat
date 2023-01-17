@@ -125,7 +125,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 					</Margins>
 				</Page.Content>
 			</Page>
-			<PermissionsContextBar />
+			<PermissionsContextBar isEnterprise={isEnterprise} />
 		</Page>
 	);
 };

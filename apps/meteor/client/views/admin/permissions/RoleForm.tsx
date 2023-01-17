@@ -9,9 +9,10 @@ type RoleFormProps = {
 	className?: string;
 	editing?: boolean;
 	isProtected?: boolean;
+	isDisabled?: boolean;
 };
 
-const RoleForm = ({ className, editing = false, isProtected = false }: RoleFormProps): ReactElement => {
+const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		register,
@@ -32,14 +33,14 @@ const RoleForm = ({ className, editing = false, isProtected = false }: RoleFormP
 			<Field className={className}>
 				<Field.Label>{t('Role')}</Field.Label>
 				<Field.Row>
-					<TextInput disabled={editing} placeholder={t('Role')} {...register('name', { required: true })} />
+					<TextInput disabled={editing || isDisabled} placeholder={t('Role')} {...register('name', { required: true })} />
 				</Field.Row>
 				{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Role') })}</Field.Error>}
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Description')}</Field.Label>
 				<Field.Row>
-					<TextInput placeholder={t('Description')} {...register('description')} />
+					<TextInput placeholder={t('Description')} disabled={isDisabled} {...register('description')} />
 				</Field.Row>
 				<Field.Hint>{'Leave the description field blank if you dont want to show the role'}</Field.Hint>
 			</Field>
@@ -49,7 +50,9 @@ const RoleForm = ({ className, editing = false, isProtected = false }: RoleFormP
 					<Controller
 						name='scope'
 						control={control}
-						render={({ field }): ReactElement => <Select {...field} options={options} disabled={isProtected} placeholder={t('Scope')} />}
+						render={({ field }): ReactElement => (
+							<Select {...field} options={options} disabled={isProtected || isDisabled} placeholder={t('Scope')} />
+						)}
 					/>
 				</Field.Row>
 			</Field>
@@ -60,7 +63,7 @@ const RoleForm = ({ className, editing = false, isProtected = false }: RoleFormP
 						<Controller
 							name='mandatory2fa'
 							control={control}
-							render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} />}
+							render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} disabled={isDisabled} />}
 						/>
 					</Field.Row>
 				</Box>
