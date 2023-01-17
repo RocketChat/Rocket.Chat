@@ -19,10 +19,10 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, c
 	return (
 		<Box mb='x16' is='li' display='flex' flexDirection='column' w='full' name={canonicalAlias}>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe='x4'>
-				<Box fontScale='p1' fontWeight='bold' title={name}>
+				<Box fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}
 				</Box>
-				<Button primary onClick={onClickJoin} disabled={disabled} small>
+				<Button primary flexGrow={1} flexShrink={0} onClick={onClickJoin} disabled={disabled} small>
 					{t('Join')}
 				</Button>
 			</Box>

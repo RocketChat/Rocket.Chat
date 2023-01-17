@@ -1,6 +1,6 @@
 import { Box, Modal, ButtonGroup, Button, Field, TextInput } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { VFC, FormEvent } from 'react';
 import React, { useState } from 'react';
 
@@ -22,12 +22,14 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 	const addMatrixServer = useEndpoint('POST', '/v1/federation/addServerByUser');
 	const [serverName, setServerName] = useState('');
 	const setModal = useSetModal();
+	const queryClient = useQueryClient();
 
 	const { mutate: addServer, isLoading } = useMutation(
 		['v1/federation/addServerByUser', serverName],
 		() => addMatrixServer({ serverName }),
 		{
 			onSuccess: () => {
+				queryClient.invalidateQueries(['federation/listServersByUsers']);
 				setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} />);
 			},
 		},
