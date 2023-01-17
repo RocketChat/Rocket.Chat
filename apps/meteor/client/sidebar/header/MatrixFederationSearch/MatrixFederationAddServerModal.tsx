@@ -30,7 +30,7 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 		{
 			onSuccess: () => {
 				queryClient.invalidateQueries(['federation/listServersByUsers']);
-				setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} />);
+				setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
 			},
 		},
 	);
