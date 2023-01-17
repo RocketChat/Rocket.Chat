@@ -1,8 +1,7 @@
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
-
-import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getURL } from '../../../utils/client';
 
 const getCustomSoundId = (sound) => `custom-sound-${sound}`;
@@ -50,6 +49,9 @@ class CustomSoundsClass {
 			name: 'Call Ended',
 			extension: 'mp3',
 			src: getURL('sounds/call-ended.mp3'),
+		});
+		this.add({
+			_id: 'default',name: 'Default',extension: '',src: getURL(''),
 		});
 		this.add({ _id: 'dialtone', name: 'Dialtone', extension: 'mp3', src: getURL('sounds/dialtone.mp3') });
 		this.add({ _id: 'ringtone', name: 'Ringtone', extension: 'mp3', src: getURL('sounds/ringtone.mp3') });
