@@ -30,7 +30,7 @@ Meteor.startup(() => {
 	});
 });
 
-settings.watchMultiple(['Update_EnableChecker'], () => {
+settings.watch('Update_EnableChecker', () => {
 	const checkForUpdates = settings.get('Update_EnableChecker');
 
 	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
