@@ -1,4 +1,4 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointMetadata, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
@@ -86,5 +86,9 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 
 	getAllActionButtons(): IUIActionButton[] {
 		return this.apps.getManager()?.getUIActionButtonManager().getAllActionButtons() ?? [];
+	}
+
+	async executeApi(appId: string, path: string, request: IApiRequest): Promise<IApiResponse | undefined> {
+		return this.apps.getManager()?.getApiManager().executeApi(appId, path, request);
 	}
 }

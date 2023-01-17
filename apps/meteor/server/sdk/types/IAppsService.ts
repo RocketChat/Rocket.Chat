@@ -5,6 +5,8 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { SettingValue } from '@rocket.chat/core-typings';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
+import type { AppRealLogsStorage } from '../../../ee/app/apps/storage';
+
 export interface IAppsService {
 	triggerEvent: (event: string, ...payload: any) => Promise<any>;
 	updateAppsMarketplaceInfo: (apps: Array<IAppInfo>) => Promise<ProxiedApp[] | undefined>;
@@ -19,6 +21,8 @@ export interface IAppsService {
 	getProvidedComponents: () => IExternalComponent[];
 	rocketChatLoggerWarn<T>(obj: T, args: any[]): void;
 	rocketChatLoggerError<T>(obj: T, args: any[]): void;
+	debugLog(...args: any[]): void;
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null>;
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
+	getLogStorage(): AppRealLogsStorage | undefined;
 }

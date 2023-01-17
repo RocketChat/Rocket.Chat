@@ -2,12 +2,12 @@ import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
-import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiRequest, IApiEndpoint, IApi, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
-import type { AppServerOrchestrator } from '../orchestrator';
-import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
+import { AppsManager, Apps, AppsConverter } from '../../../../server/sdk';
+import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
 
@@ -23,8 +23,7 @@ interface IRequestWithPrivateHash extends Request {
 export class AppApisBridge extends ApiBridge {
 	appRouters: Map<string, IRouter>;
 
-	// eslint-disable-next-line no-empty-function
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor() {
 		super();
 		this.appRouters = new Map();
 
@@ -55,7 +54,7 @@ export class AppApisBridge extends ApiBridge {
 	}
 
 	public registerApi({ api, computedPath, endpoint }: AppApi, appId: string): void {
-		this.orch.debugLog(`The App ${appId} is registering the api: "${endpoint.path}" (${computedPath})`);
+		Apps.debugLog(`The App ${appId} is registering the api: "${endpoint.path}" (${computedPath})`);
 
 		this._verifyApi(api, endpoint);
 
@@ -79,7 +78,7 @@ export class AppApisBridge extends ApiBridge {
 	}
 
 	public unregisterApis(appId: string): void {
-		this.orch.debugLog(`The App ${appId} is unregistering all apis`);
+		Apps.debugLog(`The App ${appId} is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);
@@ -110,14 +109,12 @@ export class AppApisBridge extends ApiBridge {
 				params: req.params || {},
 				content: req.body,
 				privateHash: req._privateHash,
-				user: req.user && this.orch.getConverters()?.get('users')?.convertToApp(req.user),
+				user: req.user && AppsConverter.convertUserToApp(req.user),
 			};
 
-			this.orch
-				.getManager()
-				?.getApiManager()
-				.executeApi(appId, endpoint.path, request)
-				.then(({ status, headers = {}, content }) => {
+			AppsManager.executeApi(appId, endpoint.path, request)
+				.then((response) => {
+					const { status, headers = {}, content } = response as IApiResponse;
 					res.set(headers);
 					res.status(status);
 					res.send(content);

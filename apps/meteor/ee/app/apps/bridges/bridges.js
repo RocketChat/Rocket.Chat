@@ -4,7 +4,6 @@ import { AppActivationBridge } from './activation';
 import { AppDetailChangesBridge } from './details';
 import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
-import { AppApisBridge } from './api';
 import { AppEnvironmentalVariableBridge } from './environmental';
 import { AppHttpBridge } from './http';
 import { AppListenerBridge } from './listeners';
@@ -20,6 +19,7 @@ import { UiInteractionBridge } from './uiInteraction';
 import { AppSchedulerBridge } from './scheduler';
 import { AppVideoConferenceBridge } from './videoConferences';
 import { AppOAuthAppsBridge } from './oauthApps';
+import { AppApisBridge } from '../../../../app/apps/server/bridges/api';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {

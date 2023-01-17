@@ -1,4 +1,4 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { IApiEndpointMetadata, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
@@ -25,4 +25,5 @@ export interface IAppsManagerService {
 	getAppSettings(appId: string): { [key: string]: ISetting } | undefined;
 	listApis(appId: string): Array<IApiEndpointMetadata> | undefined;
 	changeStatus(appId: string, status: AppStatus): Promise<ProxiedApp | undefined>;
+	executeApi(appId: string, path: string, request: IApiRequest): Promise<IApiResponse | undefined>;
 }

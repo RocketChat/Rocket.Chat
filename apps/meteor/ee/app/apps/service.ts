@@ -11,6 +11,7 @@ import { settings } from '../../../app/settings/server';
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
+import type { AppRealLogsStorage } from './storage';
 
 type AppsInitParams = {
 	appsSourceStorageFilesystemPath: any;
@@ -95,11 +96,19 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getRocketChatLogger()?.error(obj, args);
 	}
 
-	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null> {
+	debugLog(...args: any[]) {
+		return this.apps.debugLog(args);
+	}
+
+	async retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null> {
 		return this.apps.getStorage()?.retrieveOne(appId);
 	}
 
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined {
 		return this.apps.getAppSourceStorage()?.fetch(storageItem);
+	}
+
+	getLogStorage(): AppRealLogsStorage | undefined {
+		return this.apps.getLogStorage();
 	}
 }
