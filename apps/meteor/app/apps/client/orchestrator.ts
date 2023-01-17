@@ -88,7 +88,7 @@ class AppClientOrchestrator {
 		return this.deferredIsEnabled;
 	}
 
-	public async getApps(): Promise<App[]> {
+	public async getInstalledApps(): Promise<App[]> {
 		const result = await APIClient.get<'/apps/installed'>('/apps/installed');
 
 		if ('apps' in result) {
