@@ -1,10 +1,12 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
+import { settings } from '../../../app/settings/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type {
 	RoomSettingsEnum,
@@ -176,13 +178,18 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return Boolean(room?.archived);
 	}
 
-	verifyCanSendMessage(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
+	verifyCanSendMessage(rid: string, isFederationModuleEnabled = false): boolean {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
 		if (!room?.t) {
 			return false;
 		}
-
-		return Boolean(this.getRoomDirectives(room.t)?.canSendMessage(rid));
+		if (!this.getRoomDirectives(room.t)?.canSendMessage(rid)) {
+			return false;
+		}
+		if (isRoomFederated(room)) {
+			return isFederationModuleEnabled && settings.get('Federation_Matrix_enabled');
+		}
+		return true;
 	}
 
 	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {

@@ -187,4 +187,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<UpdateResult>;
 
 	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
+
+	findSearchedServerNamesByUserId(userId: string): Promise<string[]>;
+
+	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
+
+	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 }

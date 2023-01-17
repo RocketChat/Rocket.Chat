@@ -12,7 +12,7 @@ import type {
 	FederationOnUsersAddedToARoomDto,
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
-} from '../../input/RoomSenderDto';
+} from '../input/RoomSenderDto';
 import { FederationServiceEE } from '../AbstractFederationService';
 
 export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
@@ -162,6 +162,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 	private async inviteUserToAFederatedRoom(roomInviteUserInput: FederationRoomInviteUserDto): Promise<void> {
 		const { internalInviterId, internalRoomId, normalizedInviteeId, inviteeUsernameOnly, rawInviteeId } = roomInviteUserInput;
+		const isUserAutoJoining = Boolean(!internalInviterId);
 
 		const isInviteeFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
@@ -174,7 +175,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		}
 
 		const federatedInviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
-		if (!federatedInviterUser) {
+		if (!federatedInviterUser && !isUserAutoJoining) {
 			throw new Error(`User with internalId ${internalInviterId} not found`);
 		}
 
@@ -199,6 +200,15 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 					this.internalHomeServerDomain,
 				);
 			}
+		}
+
+		if (!federatedInviterUser && isUserAutoJoining) {
+			await this.bridge.joinRoom(federatedRoom.getExternalId(), federatedInviteeUser.getExternalId());
+			return;
+		}
+
+		if (!federatedInviterUser) {
+			throw new Error(`User with internalId ${internalInviterId} not found`);
 		}
 
 		await this.bridge.inviteToRoom(

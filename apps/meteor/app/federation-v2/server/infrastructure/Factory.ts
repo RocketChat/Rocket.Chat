@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { FederationRoomServiceListener } from '../application/RoomServiceListener';
+import { FederationRoomServiceListener } from '../application/listener/RoomServiceListener';
 import { FederationRoomServiceSender } from '../application/sender/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
@@ -24,10 +24,10 @@ import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
 import { FederationRoomInternalHooksValidator } from '../application/sender/RoomInternalHooksValidator';
 import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
-import { FederationMessageServiceListener } from '../application/MessageServiceListener';
+import { FederationMessageServiceListener } from '../application/listener/MessageServiceListener';
 import { MatrixMessageReactedHandler } from './matrix/handlers/Message';
 import { FederationMessageServiceSender } from '../application/sender/MessageServiceSender';
-import { FederationUserServiceListener } from '../application/UserServiceListener';
+import { FederationUserServiceListener } from '../application/listener/UserServiceListener';
 import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';

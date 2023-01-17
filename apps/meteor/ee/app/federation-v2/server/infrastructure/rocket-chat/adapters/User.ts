@@ -21,4 +21,16 @@ export class RocketChatUserAdapterEE extends RocketChatUserAdapter {
 			federated: internalUser.federated,
 		});
 	}
+
+	public async getSearchedServerNamesByUserId(internalUserId: string): Promise<string[]> {
+		return Users.findSearchedServerNamesByUserId(internalUserId);
+	}
+
+	public async addServerNameToSearchedServerNamesListByUserId(internalUserId: string, serverName: string): Promise<void> {
+		await Users.addServerNameToSearchedServerNamesList(internalUserId, serverName);
+	}
+
+	public async removeServerNameFromSearchedServerNamesListByUserId(internalUserId: string, serverName: string): Promise<void> {
+		await Users.removeServerNameFromSearchedServerNamesList(internalUserId, serverName);
+	}
 }

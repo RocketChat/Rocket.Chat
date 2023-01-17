@@ -6,7 +6,7 @@ import proxyquire from 'proxyquire';
 
 const { FederationUserServiceListener } = proxyquire
 	.noCallThru()
-	.load('../../../../../../../app/federation-v2/server/application/UserServiceListener', {
+	.load('../../../../../../../app/federation-v2/server/application/listener/UserServiceListener', {
 		mongodb: {
 			'ObjectId': class ObjectId {
 				toHexString(): string {

@@ -14,6 +14,7 @@ import { FederationHooksEE } from './rocket-chat/hooks';
 import type { RocketChatMessageAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatFileAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
 import { RocketChatNotificationAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Notification';
+import { FederationRoomApplicationServiceEE } from '../application/RoomService';
 
 export class FederationFactoryEE {
 	public static buildRoomServiceSender(
@@ -94,6 +95,24 @@ export class FederationFactoryEE {
 		return new RocketChatUserAdapterEE();
 	}
 
+	public static buildRoomApplicationService(
+		rocketSettingsAdapter: RocketChatSettingsAdapter,
+		rocketUserAdapter: RocketChatUserAdapterEE,
+		rocketFileAdapter: RocketChatFileAdapter,
+		rocketRoomAdapter: RocketChatRoomAdapterEE,
+		rocketNotificationAdapter: RocketChatNotificationAdapter,
+		bridge: IFederationBridgeEE,
+	): FederationRoomApplicationServiceEE {
+		return new FederationRoomApplicationServiceEE(
+			rocketSettingsAdapter,
+			rocketFileAdapter,
+			rocketUserAdapter,
+			rocketRoomAdapter,
+			rocketNotificationAdapter,
+			bridge,
+		);
+	}
+
 	public static setupListeners(
 		roomInternalHooksServiceSender: FederationRoomInternalHooksServiceSender,
 		dmRoomInternalHooksServiceSender: FederationDMRoomInternalHooksServiceSender,
@@ -111,9 +130,15 @@ export class FederationFactoryEE {
 				),
 			),
 		);
-		FederationHooksEE.onUsersAddedToARoom(async (room: IRoom, owner: IUser, members: IUser[] | string[]) =>
+		FederationHooksEE.onUsersAddedToARoom(async (room: IRoom, members: IUser[] | string[], owner?: IUser) =>
 			roomInternalHooksServiceSender.onUsersAddedToARoom(
-				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(owner._id, owner.username || '', room._id, members, homeServerDomain),
+				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(
+					owner?._id || '',
+					owner?.username || '',
+					room._id,
+					members,
+					homeServerDomain,
+				),
 			),
 		);
 		FederationHooksEE.beforeDirectMessageRoomCreate(async (members: IUser[] | string[]) =>

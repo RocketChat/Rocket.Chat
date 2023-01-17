@@ -149,12 +149,14 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
-	federated?: boolean;
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
+	// TODO: move this to a specific federation user type
+	federated?: boolean;
 	federation?: {
 		avatarUrl?: string;
+		searchedServerNames?: string[];
 	};
 }
 

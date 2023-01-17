@@ -6,7 +6,7 @@ import type { RocketChatSettingsAdapter } from '../../../../../../../app/federat
 import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
-import type { FederationCreateDirectMessageDto } from '../../input/RoomSenderDto';
+import type { FederationCreateDirectMessageDto } from '../input/RoomSenderDto';
 
 export class FederationRoomServiceSenderEE extends FederationRoomServiceSender {
 	constructor(

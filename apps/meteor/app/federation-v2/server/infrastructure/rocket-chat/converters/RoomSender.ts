@@ -5,7 +5,7 @@ import {
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../../../application/input/RoomSenderDto';
+} from '../../../application/sender/input/RoomSenderDto';
 import {
 	formatExternalUserIdToInternalUsernameFormat,
 	removeExternalSpecificCharsFromExternalIdentifier,

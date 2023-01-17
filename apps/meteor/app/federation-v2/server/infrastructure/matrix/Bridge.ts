@@ -102,8 +102,8 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async joinRoom(externalRoomId: string, externalUserId: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId);
+	public async joinRoom(externalRoomId: string, externalUserId: string, viaServers?: string[]): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId, viaServers);
 	}
 
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {

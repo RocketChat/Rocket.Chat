@@ -1,4 +1,4 @@
-import type { FederationMessageServiceListener } from '../../../application/MessageServiceListener';
+import type { FederationMessageServiceListener } from '../../../application/listener/MessageServiceListener';
 import { MatrixMessageReceiverConverter } from '../converters/MessageReceiver';
 import type { MatrixEventMessageReact } from '../definitions/events/MessageReacted';
 import { MatrixEventType } from '../definitions/MatrixEventType';
