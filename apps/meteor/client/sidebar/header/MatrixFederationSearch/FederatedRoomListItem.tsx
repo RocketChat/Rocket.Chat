@@ -28,7 +28,7 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, c
 			</Box>
 
 			{topic && (
-				<Box is='p' fontScale='c1' mb='x4' maxHeight='x120'>
+				<Box is='p' fontScale='c1' mb='x4' maxHeight='x120' overflow='hidden'>
 					{topic}
 				</Box>
 			)}

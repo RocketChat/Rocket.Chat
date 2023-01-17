@@ -15,10 +15,15 @@ type MatrixFederationSearchModalContentProps = {
 		default: boolean;
 		local: boolean;
 	}>;
+	defaultSelectedServer?: string;
 };
 
-const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContentProps> = ({ servers }) => {
-	const [serverName, setServerName] = useState(servers[0].name);
+const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContentProps> = ({ defaultSelectedServer, servers }) => {
+	const [serverName, setServerName] = useState(() => {
+		const defaultServer = servers.find((server) => server.name === defaultSelectedServer);
+		return defaultServer?.name ?? servers[0].name;
+	});
+
 	const [roomName, setRoomName] = useState('');
 
 	const setModal = useSetModal();
