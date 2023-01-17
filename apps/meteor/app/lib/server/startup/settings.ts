@@ -1579,6 +1579,13 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			invalidValue: false,
 			public: true,
+			enableQuery: {
+				_id: 'Layout_Home_Body',
+				value: {
+					$exists: true,
+					$ne: '',
+				},
+			},
 		});
 		this.add('Layout_Custom_Body_Only', false, {
 			i18nDescription: 'Layout_Custom_Body_Only_Description',

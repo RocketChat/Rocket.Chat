@@ -42,7 +42,7 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 			<Card variant='light' data-qa-id='homepage-custom-card'>
 				<Card.Title>
 					<Tag>
-						<Icon mie='x4' name={!isCustomContentVisible ? 'eye-off' : 'eye'} size='x16' />
+						<Icon mie='x4' name={isCustomContentBodyEmpty || !isCustomContentVisible ? 'eye-off' : 'eye'} size='x16' />
 						{!isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
@@ -67,7 +67,7 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 							onClick={handleOnlyShowCustomContent}
 							data-qa-id='homepage-custom-content-only-button'
 						>
-							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : 'Show other blocks'}
+							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>
 					</Card.Footer>
 				</Card.FooterWrapper>
