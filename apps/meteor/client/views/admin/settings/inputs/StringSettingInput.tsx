@@ -7,6 +7,7 @@ import ResetSettingButton from '../ResetSettingButton';
 type StringSettingInputProps = {
 	_id: string;
 	label: string;
+	name?: string;
 	value?: string;
 	multiline?: boolean;
 	placeholder?: string;
@@ -22,6 +23,7 @@ type StringSettingInputProps = {
 function StringSettingInput({
 	_id,
 	label,
+	name,
 	disabled,
 	multiline,
 	placeholder,
@@ -52,6 +54,7 @@ function StringSettingInput({
 					<TextAreaInput
 						data-qa-setting-id={_id}
 						id={_id}
+						name={name}
 						rows={4}
 						value={value}
 						placeholder={placeholder}
@@ -66,6 +69,7 @@ function StringSettingInput({
 						data-qa-setting-id={_id}
 						id={_id}
 						value={value}
+						name={name}
 						placeholder={placeholder}
 						disabled={disabled}
 						readOnly={readonly}
