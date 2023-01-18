@@ -17,7 +17,7 @@ type QueryOptions = {
 				lowerCaseName: number;
 				lm?: number | undefined;
 		  }
-		| ReturnType<typeof getOmniChatSortQuery>
+		| ReturnType<typeof getOmniChatSortQuery>;
 };
 
 const getSortOption = (sortingMechanism: OmniSortType, sortBy: string, showRealName: boolean) =>
