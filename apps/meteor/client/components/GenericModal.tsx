@@ -21,7 +21,7 @@ type GenericModalProps = RequiredModalProps & {
 	onCancel?: () => void;
 	onClose?: () => void;
 	onConfirm: () => void;
-} & ComponentProps<typeof Modal>;
+} & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	danger: 'modal-warning',
