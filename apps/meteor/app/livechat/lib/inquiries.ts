@@ -1,10 +1,22 @@
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import type { SortDirection } from 'mongodb';
 
-export const getInquirySortQuery = (
+type ReturnType =
+	| {
+			priorityWeight: SortDirection;
+			ts: SortDirection;
+	  }
+	| {
+			estimatedWaitingTimeQueue: SortDirection;
+			ts: SortDirection;
+	  }
+	| {
+			ts: SortDirection;
+	  };
+
+export const getOmniChatSortQuery = (
 	sortByMechanism: OmnichannelSortingMechanismSettingType = OmnichannelSortingMechanismSettingType.Timestamp,
-): Partial<{ [k in keyof ILivechatInquiryRecord]: SortDirection }> => {
+): ReturnType => {
 	switch (sortByMechanism) {
 		case OmnichannelSortingMechanismSettingType.Priority:
 			return { priorityWeight: 1, ts: 1 };

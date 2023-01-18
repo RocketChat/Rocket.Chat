@@ -11,7 +11,7 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { getInquirySortQuery } from '../../../app/livechat/lib/inquiries';
+import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -78,7 +78,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 			},
 			{
-				sort: getInquirySortQuery(queueSortBy),
+				sort: getOmniChatSortQuery(queueSortBy),
 			},
 		);
 
@@ -112,7 +112,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					...(department && { department }),
 				},
 			},
-			{ $sort: getInquirySortQuery(queueSortBy) },
+			{ $sort: getOmniChatSortQuery(queueSortBy) },
 			{
 				$group: {
 					_id: 1,

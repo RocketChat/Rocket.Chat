@@ -6,7 +6,7 @@ import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from '
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
-import { getInquirySortQuery } from '../../app/livechat/lib/inquiries';
+import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { Notifications } from '../../app/notifications/client';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
@@ -94,7 +94,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
 				},
 				{
-					sort: getInquirySortQuery(omnichannelSortingMechanism),
+					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
