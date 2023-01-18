@@ -312,7 +312,6 @@
   "Additional_emails": "Lisäsähköposti",
   "Additional_Feedback": "Lisäpalaute",
   "additional_integrations_Bots": "Jos haluat ingeroida oman botin, kokeile Hubot-sovitintamme. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Haluatko integroida muita ohjelmia ja sovelluksia Rocket.Chatiin, muttet ehdi tehdä sitä manuaalisesti? Sitten suosittelemme Zapierin käyttöä, jota tuemme täysin. Lue lisää oppaistamme. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "Järjestelmänvalvoja ei ole ottanut E2E-salausta käyttöön.",
   "Admin_Info": "Järjestelmänvalvojan tiedot",
   "admin-no-active-video-conf-provider": "**Neuvottelupuhelu ei ole käytössä**: Määritä neuvottelupuhelut, jotta ne ovat käytettävissä tässä työtilassa.",

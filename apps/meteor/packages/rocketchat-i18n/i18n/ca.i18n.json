@@ -292,7 +292,6 @@
   "Additional_emails": "Correus electrònics addicionals",
   "Additional_Feedback": "Retroalimentació addicional",
   "additional_integrations_Bots": "Si esteu buscant com integrar el vostre propi bot, no busqueu més que el nostre adaptador Hubot. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Està buscant integrar un altre programari i aplicacions amb Rocket.Chat però no té temps per fer-ho manualment? Llavors, suggerim utilitzar Zapier, que és totalment compatible. Llegiu més sobre això a la nostra documentació <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "El seu administrador no va habilitar encriptació E2E",
   "Admin_Info": "Informació d'administrador",
   "Administration": "Administració",

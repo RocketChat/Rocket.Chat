@@ -243,7 +243,6 @@
   "Additional_emails": "ایمیل های اضافی",
   "Additional_Feedback": "بازخورد اضافی",
   "additional_integrations_Bots": "اگر به دنبال چگونگی ادغام ربات خود هستید ، به دنبال آداپتور Hubot ما نباشید. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "آیا می خواهید نرم افزار و برنامه های دیگر را با Rocket.Chat ادغام کنید اما زمان لازم برای انجام این کار را ندارید؟ ما پیشنهاد می کنیم از Zapier استفاده کنید که ما به طور کامل آن را پشتیبانی می کنیم. در  مورد اسناد ما بیشتر بخوانید. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "ادمین شما رمزگذاری E2E را فعال نکرده.",
   "Admin_Info": "اطلاعات مدیریت",
   "Administration": "مدیریت",

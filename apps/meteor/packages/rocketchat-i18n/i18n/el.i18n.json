@@ -221,7 +221,6 @@
   "Additional_emails": "Πρόσθετες Διευθύνσεις E-mail",
   "Additional_Feedback": "Πρόσθετα Σχόλια",
   "additional_integrations_Bots": "Αν ψάχνετε για το πώς να ενσωματώσετε το δικό σας bot, τότε μην κοιτάξετε περισσότερο από τον προσαρμογέα Hubot. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Ψάχνετε να ενσωματώσετε άλλα λογισμικά και εφαρμογές με το Rocket.Chat αλλά δεν έχετε το χρόνο να το κάνετε χειροκίνητα; Στη συνέχεια, προτείνουμε τη χρήση του Zapier, την οποία υποστηρίζουμε πλήρως. Διαβάστε περισσότερα σχετικά με την τεκμηρίωσή μας. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_Info": "Πληροφορίες διαχειριστή",
   "Administration": "Διαχείριση",
   "Adult_images_are_not_allowed": "Ακατάλληλες φωτογραφίες δεν επιτρέπονται",

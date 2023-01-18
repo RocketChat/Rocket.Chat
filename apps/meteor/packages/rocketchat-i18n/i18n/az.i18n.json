@@ -215,7 +215,6 @@
   "Additional_emails": "Əlavə e-poçtlar",
   "Additional_Feedback": "Əlavə Əlaqə",
   "additional_integrations_Bots": "Öz botunuzu necə birləşdirə bilərsinizsə, onda Hubot adapterimizdən daha çox baxın. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Digər proqram və proqramları Rocket.Chat ilə inteqrasiya etmək istəyirsənsə, ancaq bunu elle etmək üçün vaxtınız yoxdur? Sonra biz tam dəstəkləyən Zapier-dən istifadə etməyi təklif edirik. Bu barədə bizim sənədlərimiz haqqında ətraflı məlumat əldə edin. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_Info": "Admin məlumatı",
   "Administration": "İdarə",
   "Adult_images_are_not_allowed": "Yetkin görünüşlərə icazə verilmir",

@@ -239,7 +239,6 @@
   "Additional_emails": "Ek E-postalar",
   "Additional_Feedback": "Ek Geri Bildirim",
   "additional_integrations_Bots": "Kendi botunuzu nasıl entegre edeceğinizi arıyorsanız, o zaman Hubot adaptörümüzden başka bir yere bakmayın. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Diğer yazılımları ve uygulamaları Rocket ile entegre etmek istiyor musunuz.Ancak, ancak bunu elle yapmak için zamanınız yok mu? Sonra tamamen desteklediğimiz Zapier'i kullanmanızı öneririz. Dokümanlarımızda daha fazla bilgi edinin. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "Yöneticiniz uçtan uca şifrelemeyi devre dışı bıraktı.",
   "Admin_Info": "Yönetici Bilgisi",
   "Administration": "Yönetim",
