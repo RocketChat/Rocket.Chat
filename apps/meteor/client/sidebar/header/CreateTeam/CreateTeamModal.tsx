@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -123,7 +123,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	};
 
 	return (
-		<Modal wrapper={(props) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
+		<Modal wrapper={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />

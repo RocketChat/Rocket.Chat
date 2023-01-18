@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ComponentProps, FC } from 'react';
 import React, { useState, memo } from 'react';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -36,7 +36,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	});
 
 	return (
-		<Modal data-qa='create-direct-modal' wrapper={(props) => <Box is='form' onSubmit={onCreate} {...props} />}>
+		<Modal data-qa='create-direct-modal' wrapper={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={onCreate} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />

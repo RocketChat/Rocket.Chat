@@ -1,7 +1,7 @@
 import { Box, Modal, Button, TextInput, Icon, Field, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useEndpoint, usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -162,7 +162,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		<Modal
 			data-qa='create-channel-modal'
 			aria-label={t('Create_channel')}
-			wrapper={(props) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
+			wrapper={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
 		>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
