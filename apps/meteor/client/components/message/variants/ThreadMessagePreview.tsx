@@ -26,7 +26,7 @@ import {
 import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
 import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
-import { useGoToThread } from '../../../views/room/contextualBar/Threads/hooks/useGoToThread';
+import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import UserAvatar from '../../avatar/UserAvatar';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';

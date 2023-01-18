@@ -13,12 +13,12 @@ import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClos
 import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
 import VerticalBarInnerContent from '../../../../components/VerticalBar/VerticalBarInnerContent';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 import MessageProvider from '../../providers/MessageProvider';
 import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
-import { useGoToThreadList } from './hooks/useGoToThreadList';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 
@@ -27,7 +27,7 @@ type ThreadProps = {
 };
 
 const Thread: VFC<ThreadProps> = ({ tmid }) => {
-	const goToThreadList = useGoToThreadList();
+	const goToThreadList = useGoToThreadList({ replace: true });
 	const closeTabBar = useTabBarClose();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {

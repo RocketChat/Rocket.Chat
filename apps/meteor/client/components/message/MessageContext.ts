@@ -7,19 +7,15 @@ const openUserCard =
 		console.log('openUserCard');
 	};
 
-const openRoom = () => (): void => console.log('openRoom');
-
 export type MessageContextValue = {
 	actions: {
 		openUserCard: (username: string) => (e: UIEvent) => void;
-		openRoom: (id: string) => (event: UIEvent) => void;
 	};
 };
 
 export const MessageContext = createContext<MessageContextValue>({
 	actions: {
 		openUserCard,
-		openRoom,
 	},
 });
 

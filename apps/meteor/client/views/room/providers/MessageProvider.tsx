@@ -4,7 +4,6 @@ import React, { useMemo, memo } from 'react';
 
 import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
 import { MessageContext } from '../../../components/message/MessageContext';
-import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useRoom } from '../contexts/RoomContext';
 
 type MessageProviderProps = {
@@ -37,8 +36,6 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 			});
 		};
 
-		const openRoom = (id: string) => (): Promise<void> => goToRoomById(id);
-
 		return {
 			actions: {
 				openUserCard:
@@ -54,7 +51,6 @@ const MessageProvider: VFC<MessageProviderProps> = ({ children }) => {
 							},
 						});
 					},
-				openRoom,
 			},
 		};
 	}, [router, params, routeName, room._id]);

@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useGoToThread } from '../../../views/room/contextualBar/Threads/hooks/useGoToThread';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
+import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import { followStyle, anchor } from '../helpers/followSyle';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import AllMentionNotification from '../notification/AllMentionNotification';

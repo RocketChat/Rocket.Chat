@@ -11,6 +11,7 @@ import React, { useCallback, useMemo } from 'react';
 import { emoji } from '../../../app/emoji/client';
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
+import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 import { useMessageContext } from './MessageContext';
 import { useMessageListHighlights } from './list/MessageListContext';
 
@@ -58,8 +59,10 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 	);
 
 	const {
-		actions: { openRoom, openUserCard },
+		actions: { openUserCard },
 	} = useMessageContext();
+
+	const goToRoom = useGoToRoom();
 
 	const onUserMentionClick = useCallback(
 		({ username }: UserMention) => {
@@ -90,9 +93,9 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 				}
 
 				event.stopPropagation();
-				openRoom(rid)(event);
+				goToRoom(rid);
 			},
-		[isEmbedded, openRoom],
+		[isEmbedded, goToRoom],
 	);
 
 	// TODO:  this style should go to Fuselage <MessageBody> repository
