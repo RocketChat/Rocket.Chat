@@ -6,16 +6,16 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../components/VerticalBar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { FormSkeleton } from './Skeleton';
 import Chat from './chats/Chat';
 import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
-import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
+import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
+import { FormSkeleton } from './components';
 
 const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const bar = useRouteParameter('bar') || 'info';
-	const id = useRouteParameter('id');
+	const id = useRouteParameter('id') || '';
 
 	const t = useTranslation();
 
@@ -76,7 +76,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 			</VerticalBar.Header>
 			{bar === 'info' && <ChatInfoDirectory id={id} room={data.room} />}
 			{bar === 'edit' && (
-				<RoomEditWithData id={id} close={handleChatsVerticalBarBackButtonClick} reload={chatReload} reloadInfo={reloadInfo} />
+				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsVerticalBarBackButtonClick} />
 			)}
 		</VerticalBar>
 	);

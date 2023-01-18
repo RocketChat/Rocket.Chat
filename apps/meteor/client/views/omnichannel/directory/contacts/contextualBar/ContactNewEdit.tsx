@@ -1,7 +1,6 @@
-import type { ILivechatCustomField, ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useController, useForm } from 'react-hook-form';
@@ -13,11 +12,12 @@ import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../lib/utils/createToken';
 import { useFormsSubscription } from '../../../additionalForms';
-import { FormSkeleton } from '../../Skeleton';
+import { FormSkeleton } from '../../components/FormSkeleton';
+import { useCustomFieldsMetadata } from '../../hooks/useCustomFieldsMetadata';
 
 type ContactNewEditProps = {
 	id: string;
-	data: { contact: Serialized<ILivechatVisitor> | null };
+	data?: { contact: Serialized<ILivechatVisitor> | null };
 	close(): void;
 };
 
@@ -29,17 +29,6 @@ type ContactFormData = {
 	username: string;
 	customFields: Record<any, any>;
 };
-
-type CustomFieldsMetadata = Record<
-	string,
-	{
-		label: string;
-		type: 'select' | 'text';
-		required?: boolean;
-		defaultValue?: unknown;
-		options?: string[];
-	}
->;
 
 const DEFAULT_VALUES = {
 	token: '',
@@ -67,22 +56,9 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 	};
 };
 
-const formatCustomFieldsMetadata = (customFields: Serialized<ILivechatCustomField>[]): CustomFieldsMetadata =>
-	customFields
-		.filter(({ visibility, scope }) => visibility === 'visible' && scope === 'visitor')
-		.reduce((obj, { _id, label, options, defaultValue, required }) => {
-			obj[_id] = {
-				label,
-				type: options ? 'select' : 'text',
-				required,
-				defaultValue,
-				options: options?.split(',').map((item) => item.trim()),
-			};
-			return obj;
-		}, {} as CustomFieldsMetadata);
-
 export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canViewCustomFields = (): boolean =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
@@ -92,15 +68,13 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 	const ContactManager = useContactManager?.();
 
 	const [userId, setUserId] = useState('no-agent-selected');
-	const dispatchToastMessage = useToastMessageDispatch();
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const getUserData = useEndpoint('GET', '/v1/users.info');
-	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 
-	const { data: customFieldsMetadata = {}, isLoading: isLoadingCustomFields } = useQuery(['contact-json-custom-fields'], async () => {
-		const rawFields = await getCustomFields();
-		return formatCustomFieldsMetadata(rawFields?.customFields);
+	const { data: customFieldsMetadata = {}, isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+		scope: 'visitor',
+		enabled: canViewCustomFields(),
 	});
 
 	const initialValue = getInitialValues(data);

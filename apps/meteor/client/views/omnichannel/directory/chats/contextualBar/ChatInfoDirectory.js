@@ -14,10 +14,9 @@ import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import AgentField from './AgentField';
-import ContactField from './ContactField';
+import { AgentField, ContactField, SlaField } from '../../components';
+import PriorityField from '../../components/PriorityField';
 import DepartmentField from './DepartmentField';
-import PriorityField from './PriorityField';
 import VisitorClientInfo from './VisitorClientInfo';
 
 function ChatInfoDirectory({ id, route = undefined, room }) {
@@ -28,8 +27,22 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, slaId, livechatData, queuedAt } =
-		room || { room: { v: {} } };
+	const {
+		ts,
+		tags,
+		closedAt,
+		departmentId,
+		v,
+		servedBy,
+		metrics,
+		topic,
+		waitingResponse,
+		responseBy,
+		slaId,
+		priorityId,
+		livechatData,
+		queuedAt,
+	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
@@ -155,7 +168,8 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 						Object.keys(livechatData).map(
 							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
-					{slaId && <PriorityField id={slaId} />}
+					{slaId && <SlaField id={slaId} />}
+					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

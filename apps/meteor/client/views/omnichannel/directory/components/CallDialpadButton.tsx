@@ -4,8 +4,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
 
-import { useVoipOutboundStates } from '../../../contexts/CallContext';
-import { useDialModal } from '../../../hooks/useDialModal';
+import { useVoipOutboundStates } from '../../../../contexts/CallContext';
+import { useDialModal } from '../../../../hooks/useDialModal';
 
 export const rcxCallDialButton = css`
 	.rcx-show-call-button-on-hover:not(:hover) & {

@@ -1,11 +1,11 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import type { ILivechatClientPriority, PriorityEditFormProps } from './PriorityEditForm';
+import { usePriorityInfo } from '../../../../client/views/omnichannel/directory/hooks/usePriorityInfo';
+import type { PriorityEditFormProps } from './PriorityEditForm';
 import PriorityEditForm from './PriorityEditForm';
 
 type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
@@ -14,12 +14,7 @@ type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 
 function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWithDataProps): ReactElement {
 	const t = useTranslation();
-	const getSLA = useEndpoint('GET', `/v1/livechat/priorities/:priorityId`, { priorityId });
-	const { data, isLoading, isError } = useQuery(
-		['/v1/livechat/priorities', priorityId],
-		() => getSLA() as Promise<ILivechatClientPriority>,
-		{ cacheTime: 0 },
-	);
+	const { data, isLoading, isError } = usePriorityInfo(priorityId);
 
 	if (isLoading) {
 		return <FormSkeleton />;

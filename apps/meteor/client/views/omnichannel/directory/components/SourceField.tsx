@@ -4,10 +4,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
-import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
-import Field from '../../../components/Field';
-import Info from '../../../components/Info';
-import Label from '../../../components/Label';
+import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
+import Field from '../../components/Field';
+import Info from '../../components/Info';
+import Label from '../../components/Label';
 
 type SourceFieldProps = {
 	room: IOmnichannelRoom;

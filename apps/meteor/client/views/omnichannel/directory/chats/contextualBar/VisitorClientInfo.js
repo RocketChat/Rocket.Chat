@@ -7,7 +7,7 @@ import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import { FormSkeleton } from '../../Skeleton';
+import { FormSkeleton } from '../../components/FormSkeleton';
 
 const VisitorClientInfo = ({ uid }) => {
 	const t = useTranslation();
