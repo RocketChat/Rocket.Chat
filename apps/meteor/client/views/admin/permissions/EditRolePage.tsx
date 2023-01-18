@@ -7,6 +7,7 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
+import { FormSkeleton } from '../../../components/Skeleton';
 import VerticalBar from '../../../components/VerticalBar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import RoleForm from './RoleForm';
@@ -19,7 +20,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 	const router = useRoute('admin-permissions');
 	const { data, isLoading } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise;
-	console.log('isEnterprise == ', isLoading, data?.isEnterprise);
+
 	const createRole = useEndpoint('POST', '/v1/roles.create');
 	const updateRole = useEndpoint('POST', '/v1/roles.update');
 	const deleteRole = useEndpoint('POST', '/v1/roles.delete');
@@ -89,6 +90,10 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 			</GenericModal>,
 		);
 	});
+
+	if (isLoading) {
+		return <FormSkeleton />;
+	}
 
 	return (
 		<>
