@@ -1,5 +1,12 @@
 import type { IMessage, ITranslatedMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { isE2EEMessage, isOTRMessage, isQuoteAttachment, isTranslatedAttachment, isTranslatedMessage } from '@rocket.chat/core-typings';
+import {
+	isFileAttachment,
+	isE2EEMessage,
+	isOTRMessage,
+	isQuoteAttachment,
+	isTranslatedAttachment,
+	isTranslatedMessage,
+} from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -81,6 +88,10 @@ export const parseMessageAttachments = <T extends MessageAttachment>(
 			attachment.attachments = attachment.attachments.map((quoteAttachment) =>
 				parseMessageQuoteAttachment(quoteAttachment, parseOptions, autoTranslateOptions),
 			);
+		}
+
+		if (isFileAttachment(attachment) && attachment.description) {
+			attachment.descriptionMd = attachment.descriptionMd ?? textToMessageToken(attachment.description, parseOptions);
 		}
 
 		const text =
