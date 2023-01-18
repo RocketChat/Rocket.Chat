@@ -5,14 +5,14 @@ import React from 'react';
 
 const getBarColor = (numberOfEnabledApps: number): string => {
 	if (numberOfEnabledApps < 4) {
-		return 'font-on-success';
+		return 'success-500';
 	}
 
 	if (numberOfEnabledApps === 4) {
-		return 'font-on-warning';
+		return 'warning-500';
 	}
 
-	return 'font-on-danger';
+	return 'danger-500';
 };
 
 const EnabledAppsCount = (): ReactElement => {
