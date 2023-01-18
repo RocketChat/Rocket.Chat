@@ -15,12 +15,12 @@ type AgentEditWithDataProps = {
 
 const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/users/agent/${uid}`);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
 	const {
 		value: userDepartments,
 		phase: userDepartmentsState,
 		error: userDepartmentsError,
-	} = useEndpointData(`/v1/livechat/agents/${uid}/departments`);
+	} = useEndpointData('/v1/livechat/agents/:agentId/departments', { keys: { agentId: uid } });
 	const {
 		value: availableDepartments,
 		phase: availableDepartmentsState,
