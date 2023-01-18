@@ -130,7 +130,7 @@ export class Admin {
 	}
 
 	get btnCreateRole(): Locator {
-		return this.page.locator('role=button[name="New role"]');
+		return this.page.locator('button[name="New role"]');
 	}
 
 	get inputAssetsLogo(): Locator {

@@ -65,9 +65,9 @@ test.describe.parallel('administration', () => {
 		});
 
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
-			test.skip(!IS_EE);
+			test.skip(IS_EE);
 			await poAdmin.btnCreateRole.click();
-			await page.waitForSelector('role=dialog[id="custom-roles"]');
+			await page.waitForSelector('dialog[id="custom-roles"]');
 		});
 	});
 
