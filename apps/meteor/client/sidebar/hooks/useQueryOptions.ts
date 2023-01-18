@@ -2,6 +2,7 @@ import { OmnichannelSortingMechanismSettingType as OmniSortType } from '@rocket.
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings/src';
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 
 type QueryOptions = {
