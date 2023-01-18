@@ -40,7 +40,7 @@ const InformationPage = memo(function InformationPage({
 	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (
-		<Page data-qa='admin-info'>
+		<Page data-qa='admin-info' bg='tint'>
 			<Page.Header title={t('Info')}>
 				{canViewStatistics && (
 					<ButtonGroup>
