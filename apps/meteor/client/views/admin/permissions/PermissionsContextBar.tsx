@@ -19,18 +19,12 @@ const PermissionsContextBar = ({ isEnterprise }: { isEnterprise: boolean }): Rea
 	});
 
 	useEffect(() => {
-		if (isEnterprise) {
+		if (context !== 'new' || isEnterprise) {
 			return;
 		}
 
-		if (context !== 'new') {
-			return;
-		}
-
-		if (context === 'new' && !isEnterprise) {
-			setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
-			handleCloseVerticalBar();
-		}
+		setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
+		handleCloseVerticalBar();
 	}, [context, isEnterprise, handleCloseVerticalBar, setModal]);
 
 	return (
