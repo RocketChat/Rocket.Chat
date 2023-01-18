@@ -6,22 +6,7 @@ import Page from '../../../components/Page';
 import MarketplaceHeaderComponent from '../components/MarketplaceHeaderComponent';
 import AppsPageContent from './AppsPageContent';
 
-type HeaderTitle = 'Explore' | 'Enterprise' | 'Installed' | 'Private Apps' | 'Apps';
-
-const getTitle = (context: string): HeaderTitle => {
-	switch (context) {
-		case 'explore':
-			return 'Explore';
-		case 'enterprise':
-			return 'Enterprise';
-		case 'installed':
-			return 'Installed';
-		case 'private':
-			return 'Private Apps';
-	}
-
-	return 'Apps';
-};
+type AppsContext = 'explore' | 'installed' | 'enterprise' | 'private';
 
 const AppsPage = (): ReactElement => {
 	const t = useTranslation();
@@ -29,7 +14,7 @@ const AppsPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			{context && <MarketplaceHeaderComponent title={t(getTitle(context))} />}
+			{context && <MarketplaceHeaderComponent title={t(`Apps_context_${context as AppsContext}`)} />}
 			<Page.Content>
 				<AppsPageContent />
 			</Page.Content>
