@@ -46,6 +46,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				await resetPriorities();
 				await refetch();
 
+				prioritiesRoute.push({});
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

@@ -28,7 +28,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 	const t = useTranslation();
 	const [isSaving, setSaving] = useState(false);
 
-	const { name, i18n, dirty, _id } = data;
+	const { name, i18n, dirty } = data;
 	const defaultName = t(i18n);
 
 	const {
@@ -80,12 +80,13 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v?.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
-							_id={_id}
+							_id={''}
 							disabled={isSaving}
 							error={errors.name?.message}
 							label={`${t('Name')}*`}
 							placeholder={t('Name')}
 							value={value}
+							name='name'
 							hasResetButton={value !== t(i18n)}
 							onResetButtonClick={onReset}
 							onChangeValue={onChange}
