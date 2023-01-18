@@ -37,7 +37,7 @@ export default function NewZapier({ ...props }) {
 				bg='status-background-warning'
 				icon={'warning'}
 				title={t('Zapier_integration_has_been_deprecated')}
-				style={{ marginInline: '-1.5rem' }}
+				mi='neg-x24'
 			>
 				{t('Install_Zapier_from_marketplace')}
 			</Callout>
