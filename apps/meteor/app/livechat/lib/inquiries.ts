@@ -1,17 +1,18 @@
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
-import type { SortDirection } from 'mongodb';
+
+type SortOrder = 1 | -1;
 
 type ReturnType =
 	| {
-			priorityWeight: SortDirection;
-			ts: SortDirection;
+			priorityWeight: SortOrder;
+			ts: SortOrder;
 	  }
 	| {
-			estimatedWaitingTimeQueue: SortDirection;
-			ts: SortDirection;
+			estimatedWaitingTimeQueue: SortOrder;
+			ts: SortOrder;
 	  }
 	| {
-			ts: SortDirection;
+			ts: SortOrder;
 	  };
 
 export const getOmniChatSortQuery = (
