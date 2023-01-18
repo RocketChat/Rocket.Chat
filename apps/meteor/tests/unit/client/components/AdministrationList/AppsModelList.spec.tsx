@@ -53,7 +53,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const button = screen.getByText('Marketplace');
 
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace'));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace'));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
@@ -69,7 +69,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const button = screen.getByText('Installed');
 
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace', { context: 'installed', page: 'list' }));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'installed', page: 'list' }));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 

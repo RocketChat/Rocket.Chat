@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import type { AppScreenshot, Serialized } from '@rocket.chat/core-typings';
 
-import type { App } from '../../../client/views/admin/apps/types';
+import type { App } from '../../../client/views/marketplace/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection';

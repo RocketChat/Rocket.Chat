@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 
-import { filterAppsByText } from '../../../../../../../client/views/admin/apps/helpers/filterAppsByText';
+import { filterAppsByText } from '../../../../../../../client/views/marketplace/helpers/filterAppsByText';
 
 describe('filterAppsByText', () => {
 	it('should return true if the text is the name of an app', () => {

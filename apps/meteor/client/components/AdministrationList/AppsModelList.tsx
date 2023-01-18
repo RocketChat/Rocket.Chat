@@ -15,7 +15,7 @@ type AppsModelListProps = {
 
 const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
 
 	return (
@@ -28,7 +28,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 							icon='store'
 							text={t('Marketplace')}
 							action={(): void => {
-								marketplaceRoute.push({ context: 'all', page });
+								marketplaceRoute.push({ context: 'explore', page });
 								onDismiss();
 							}}
 						/>

@@ -1,21 +1,18 @@
 import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 import type { ReactElement } from 'react';
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useRoomMessageContext } from './useRoomMessageContext';
+import { useBlazePortals } from '../../../../lib/portals/blazePortals';
+import { useLegacyMessageRef } from './useLegacyMessageRef';
 
 type LegacyMessageTemplateListProps = {
 	room: IRoom;
 };
 
 const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): ReactElement => {
-	const roomMessageContext = useRoomMessageContext(room);
-
 	const hideSystemMessages = useSetting('Hide_System_Messages') as MessageTypesValues[];
 
 	const messagesHistory = useReactiveValue(
@@ -47,40 +44,12 @@ const LegacyMessageTemplateList = ({ room }: LegacyMessageTemplateListProps): Re
 		}, [hideSystemMessages, room._id, room.sysMes]),
 	);
 
-	const viewsRef = useRef<Map<string, Blaze.View>>(new Map());
-
-	const messageRef = useCallback(
-		(message: IMessage, index: number) => (node: HTMLLIElement | null) => {
-			if (node?.parentElement) {
-				const view = Blaze.renderWithData(
-					Template.message,
-					() => ({
-						showRoles: true,
-						index,
-						shouldCollapseReplies: false,
-						msg: message,
-						...roomMessageContext,
-					}),
-					node.parentElement,
-					node,
-				);
-
-				viewsRef.current.set(message._id, view);
-			}
-
-			if (!node && viewsRef.current.has(message._id)) {
-				const view = viewsRef.current.get(message._id);
-				if (view) {
-					Blaze.remove(view);
-				}
-				viewsRef.current.delete(message._id);
-			}
-		},
-		[roomMessageContext],
-	);
+	const [portals, blazePortals] = useBlazePortals();
+	const messageRef = useLegacyMessageRef(blazePortals);
 
 	return (
 		<>
+			{portals}
 			{messagesHistory.map((message, index) => (
 				<li key={message._id} ref={messageRef(message, index)} />
 			))}
