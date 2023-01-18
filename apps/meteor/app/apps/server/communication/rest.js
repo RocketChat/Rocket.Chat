@@ -842,7 +842,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							apis: await AppsManager.listApis(this.urlParams.id);,
+							apis: await AppsManager.listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
