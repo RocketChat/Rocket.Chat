@@ -274,7 +274,8 @@ describe('LIVECHAT - Departments', function () {
 				.then(() => createDepartment())
 				.then((department: ILivechatDepartment) => {
 					dep1 = department;
-				}).then(() => createDepartment())
+				})
+				.then(() => createDepartment())
 				.then((department: ILivechatDepartment) => {
 					dep2 = department;
 				})
