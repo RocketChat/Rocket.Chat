@@ -76,11 +76,23 @@ export class OmnichannelDepartments {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
 
+	findTdByName(name: string) {
+		return this.page.locator(`td div >> text="${name}"`);
+	}
+
 	findRowByName(name: string) {
-		return this.page.locator('td', { has: this.page.locator(`div >> text="${name}"`) });
+		return this.page.locator('tr', { has: this.findTdByName(name) });
 	}
 
 	findAgentRemoveBtn(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`div >> text="${name}"`) }).locator('button.rcx-button');
+		return this.findRowByName(name).locator('button.rcx-button');
+	}
+
+	findAgentCountInput(name: string) {
+		return this.findRowByName(name).locator('input[title="Order"]');
+	}
+
+	findAgentNumberInput(name: string) {
+		return this.findRowByName(name).locator('input[title="Count"]');
 	}
 }

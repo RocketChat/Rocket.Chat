@@ -6,18 +6,18 @@ export default {
 	// globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
 		headless: true,
-		browserName: 'firefox',
+		// browserName: 'firefox',
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
-		// channel: 'firefox',
+		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
 			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
 		},
-		// permissions: ['microphone'],
+		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
