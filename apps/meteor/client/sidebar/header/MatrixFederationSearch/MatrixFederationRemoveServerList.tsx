@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Option, OptionContent, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { VFC } from 'react';
 import React from 'react';
 
@@ -24,8 +24,13 @@ const showIconOnHover = css`
 
 const MatrixFederationRemoveServerList: VFC<MatrixFederationRemoveServerListProps> = ({ servers }) => {
 	const removeMatrixServer = useEndpoint('POST', '/v1/federation/removeServerByUser');
-	const { mutate: removeServer, isLoading: isRemovingServer } = useMutation(['federation/removeServerByUser'], (serverName: string) =>
-		removeMatrixServer({ serverName }),
+
+	const queryClient = useQueryClient();
+
+	const { mutate: removeServer, isLoading: isRemovingServer } = useMutation(
+		['federation/removeServerByUser'],
+		(serverName: string) => removeMatrixServer({ serverName }),
+		{ onSuccess: () => queryClient.invalidateQueries(['federation/listServersByUsers']) },
 	);
 
 	const t = useTranslation();
@@ -35,15 +40,17 @@ const MatrixFederationRemoveServerList: VFC<MatrixFederationRemoveServerListProp
 			<Box is='h2' fontScale='p1' fontWeight='bolder'>
 				{t('Servers')}
 			</Box>
-			{servers.map(({ name }) => (
+			{servers.map(({ name, default: isDefault }) => (
 				<Option key={name}>
 					<OptionContent>{name}</OptionContent>
-					<Icon
-						size='x16'
-						color={isRemovingServer ? 'hint' : 'danger'}
-						name='cross'
-						onClick={() => (isRemovingServer ? null : removeServer(name))}
-					/>
+					{!isDefault && (
+						<Icon
+							size='x16'
+							color={isRemovingServer ? 'annotation' : 'danger'}
+							name='cross'
+							onClick={() => (isRemovingServer ? null : removeServer(name))}
+						/>
+					)}
 				</Option>
 			))}
 		</Box>
