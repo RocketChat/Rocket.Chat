@@ -70,7 +70,7 @@ const Toolbox = ({ message }: ToolboxProps): ReactElement | null => {
 			{actionsQueryResult.data?.message.map((action) => (
 				<MessageToolboxItem
 					key={action.id}
-					icon={action.icon}
+					icon={action.icon as any} // TODO: the union type coming from fuselage seems broken; it should be fix asap
 					title={t(action.label)}
 					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat })}
 					data-qa-id={action.label}
