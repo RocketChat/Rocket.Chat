@@ -1,7 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 
 import { AnalyticsService } from './analytics/service';
-import { AppsOrchestratorService } from './apps/service';
 import { api } from '../sdk/api';
 import { AppsEngineService } from './apps-engine/service';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
@@ -21,10 +20,6 @@ import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
-import { AppsStatisticsService } from './apps/statisticsService';
-import { AppsConverterService } from './apps/converterService';
-import { AppsManagerService } from './apps/managerService';
-import { AppsVideoManagerService } from './apps/videoManagerService';
 import { UploadService } from './upload/service';
 import { CloudService } from './cloud/service';
 import { UserService } from './user/service';
@@ -34,11 +29,6 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 api.registerService(new AppsEngineService());
 api.registerService(new AnalyticsService());
-api.registerService(new AppsOrchestratorService(db));
-api.registerService(new AppsStatisticsService());
-api.registerService(new AppsConverterService());
-api.registerService(new AppsManagerService());
-api.registerService(new AppsVideoManagerService());
 api.registerService(new AuthorizationLivechat());
 api.registerService(new BannerService());
 api.registerService(new CloudService());
@@ -67,7 +57,19 @@ if (!isRunningMs()) {
 
 		const { Authorization } = await import('./authorization/service');
 
+		const { AppsOrchestratorService } = await import('../../ee/app/apps/service');
+		const { AppsStatisticsService } = await import('../../ee/app/apps/statisticsService');
+		const { AppsConverterService } = await import('../../ee/app/apps/converterService');
+		const { AppsManagerService } = await import('../../ee/app/apps/managerService');
+		const { AppsVideoManagerService } = await import('../../ee/app/apps/videoManagerService');
+
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
+
+		api.registerService(new AppsOrchestratorService(db));
+		api.registerService(new AppsStatisticsService());
+		api.registerService(new AppsConverterService());
+		api.registerService(new AppsManagerService());
+		api.registerService(new AppsVideoManagerService());
 	})();
 }

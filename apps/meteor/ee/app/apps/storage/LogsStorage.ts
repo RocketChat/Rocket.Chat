@@ -15,7 +15,7 @@ export class AppRealLogsStorage extends AppLogStorage {
 		},
 		options?: IAppLogStorageFindOptions,
 	): Promise<Array<ILoggerStorageEntry>> {
-		return this.db.find(query, options).toArray();
+		return this.db.find(query, { projection: options?.fields || {} }).toArray();
 	}
 
 	public async storeEntries(appId: string, logger: AppConsole): Promise<ILoggerStorageEntry> {

@@ -5,6 +5,7 @@ import type {
 	ISetting,
 	ISubscription,
 	RocketChatRecordDeleted,
+	IAppStorageItem,
 } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
 
@@ -26,6 +27,9 @@ import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHis
 import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
+import { AppsRaw } from '../../../server/models/raw/Apps';
+import { AppsLogsRaw } from '../../../server/models/raw/AppsLogs';
+import { AppsPersistenceRaw } from '../../../server/models/raw/AppsPersistence';
 
 // TODO add trash param to appropiate model instances
 export function registerServiceModels(db: Db, trash?: Collection): void {
@@ -59,4 +63,8 @@ export function registerServiceModels(db: Db, trash?: Collection): void {
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
+
+	registerModel('IAppsModel', new AppsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<IAppStorageItem>>));
+	registerModel('IAppsLogsModel', new AppsLogsRaw(db));
+	registerModel('IAppsPersistenceModel', new AppsPersistenceRaw(db));
 }

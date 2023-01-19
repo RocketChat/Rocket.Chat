@@ -24,6 +24,7 @@ import { FibersContextStore } from './lib/ContextStore';
 import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import type { IAppsConverterService } from './types/IAppsConverterService';
 import type { IAppsManagerService } from './types/IAppsManagerService';
+import type { IAppsListenerService } from './types/IAppsListenerService';
 import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import type { IUploadService } from './types/IUploadService';
 import type { ICloudService } from './types/ICloudService';
@@ -55,6 +56,7 @@ export const Apps = proxifyWithWait<IAppsService>('apps');
 export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
 export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
+export const AppsListener = proxifyWithWait<IAppsListenerService>('apps');
 export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
 
 // Calls without wait. Means that the service is optional and the result may be an error
