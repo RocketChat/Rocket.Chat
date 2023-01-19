@@ -13,23 +13,45 @@ export class LivechatRoomsRaw extends BaseRaw {
 	}
 
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
-		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
-		const matchUsers = { $match: {} };
-		if (departmentId && departmentId !== 'undefined') {
-			match.$match.departmentId = departmentId;
-		}
-		if (agentId) {
-			matchUsers.$match['user._id'] = agentId;
-		}
-		if (!includeOfflineAgents) {
-			matchUsers.$match['user.status'] = { $ne: 'offline' };
-			matchUsers.$match['user.statusLivechat'] = { $eq: 'available' };
-		}
+		const match = {
+			$match: {
+				t: 'l',
+				open: true,
+				servedBy: {
+					$and: [{ $exists: true }, ...(agentId ? [{ _id: agentId }] : [])],
+				},
+				...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			},
+		};
+		const roomsProject = {
+			$project: {
+				_id: 1,
+				departmentId: 1,
+				servedBy: 1,
+				open: 1,
+				t: 1,
+				ts: 1,
+			},
+		};
 		const departmentsLookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
+				let: { departmentId: '$departmentId' },
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$departmentId'],
+							},
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+							name: 1,
+						},
+					},
+				],
 				as: 'departments',
 			},
 		};
@@ -51,8 +73,24 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const usersLookup = {
 			$lookup: {
 				from: 'users',
-				localField: '_id.room.servedBy._id',
-				foreignField: '_id',
+				let: { userId: '$_id.room.servedBy._id' },
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$userId'],
+							},
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+							username: 1,
+							status: 1,
+							statusLivechat: 1,
+						},
+					},
+				],
 				as: 'user',
 			},
 		};
@@ -62,12 +100,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 				preserveNullAndEmptyArrays: true,
 			},
 		};
+		const usersStatusFilter = {
+			$match: {
+				'user.status': { $ne: 'offline' },
+				'user.statusLivechat': { $eq: 'available' },
+			},
+		};
 		const usersGroup = {
 			$group: {
 				_id: {
 					userId: '$user._id',
 					username: '$user.username',
 					status: '$user.status',
+					statusLivechat: '$user.statusLivechat',
 					departmentId: '$_id.departmentId',
 					departmentName: '$_id.name',
 				},
@@ -81,6 +126,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 					_id: '$_id.userId',
 					username: '$_id.username',
 					status: '$_id.status',
+					statusLivechat: '$_id.statusLivechat',
 				},
 				department: {
 					_id: { $ifNull: ['$_id.departmentId', null] },
@@ -89,10 +135,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind, departmentsGroup, usersLookup, usersUnwind];
-		if (Object.keys(matchUsers.$match)) {
-			firstParams.push(matchUsers);
-		}
+		const firstParams = [
+			match,
+			roomsProject,
+			departmentsLookup,
+			departmentsUnwind,
+			departmentsGroup,
+			usersLookup,
+			usersUnwind,
+			...(!includeOfflineAgents ? [usersStatusFilter] : []),
+			usersGroup,
+		];
+
 		const sort = { $sort: options.sort || { chats: -1 } };
 		const pagination = [sort];
 
@@ -110,7 +164,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 
-		const params = [...firstParams, usersGroup, project, facet];
+		const params = [...firstParams, project, facet];
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 

@@ -43,7 +43,7 @@ const QueueList = (): ReactElement => {
 				<GenericTable.HeaderCell
 					key={'department'}
 					direction={sort[1]}
-					active={sort[0] === 'departmend'}
+					active={sort[0] === 'department'}
 					onClick={onHeaderClick}
 					sort='department'
 				>
