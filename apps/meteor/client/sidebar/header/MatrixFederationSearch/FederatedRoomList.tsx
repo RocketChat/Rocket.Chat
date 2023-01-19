@@ -73,7 +73,7 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 			<Virtuoso
 				data={flattenedData || []}
 				totalCount={data?.pages[data?.pages.length - 1].total || 0}
-				overscan={25}
+				overscan={4}
 				components={{ Footer: isFetchingNextPage ? Throbber : undefined, Scroller: ScrollableContentWrapper }}
 				endReached={() => fetchNextPage()}
 				itemContent={(_, { id, ...props }) => (
