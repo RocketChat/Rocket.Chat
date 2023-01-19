@@ -1,22 +1,19 @@
 import { Modal, Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { VFC } from 'react';
 
 import MatrixFederationSearchModalContent from './MatrixFederationSearchModalContent';
+import { useMatrixServerList } from './useMatrixServerList';
 
 type MatrixFederationSearchProps = {
 	onClose: () => void;
 	defaultSelectedServer?: string;
 };
-// const fetchServerList = () => ({
-// 	servers: Array.from({ length: 5 }).map((_, index) => ({ name: `Server ${index}`, default: true, local: false })),
-// });
+
 const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose, defaultSelectedServer }) => {
-	const fetchServerList = useEndpoint('GET', '/v1/federation/listServersByUser');
 	const t = useTranslation();
-	const { data, isLoading } = useQuery(['federation/listServersByUsers'], async () => fetchServerList());
+	const { data, isLoading } = useMatrixServerList();
 
 	return (
 		<Modal>
