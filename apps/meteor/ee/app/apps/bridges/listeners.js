@@ -71,7 +71,7 @@ export class AppListenerBridge {
 	async messageEvent(inte, message, ...payload) {
 		const msg = await this.orch.getConverters().get('messages').convertMessage(message);
 
-		const params = (async () => {
+		const params = await (async () => {
 			switch (inte) {
 				case AppInterface.IPostMessageDeleted:
 					const [userDeleted] = payload;
@@ -131,7 +131,7 @@ export class AppListenerBridge {
 	async roomEvent(inte, room, ...payload) {
 		const rm = await this.orch.getConverters().get('rooms').convertRoom(room);
 
-		const params = (async () => {
+		const params = await (async () => {
 			switch (inte) {
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
