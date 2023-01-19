@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import Page from '../../../../components/Page';
-import UpsellModal from '../CustomRoleUpsellModal';
+import CustomRoleUpsellModal from '../CustomRoleUpsellModal';
 import PermissionsContextBar from '../PermissionsContextBar';
 import { usePermissionsAndRoles } from '../hooks/usePermissionsAndRoles';
 import PermissionRow from './PermissionRow';
@@ -46,7 +46,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 
 	const handleAdd = useMutableCallback(() => {
 		if (!isEnterprise) {
-			setModal(<UpsellModal onClose={() => setModal()} />);
+			setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
 			return;
 		}
 		router.push({
@@ -125,7 +125,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 					</Margins>
 				</Page.Content>
 			</Page>
-			<PermissionsContextBar isEnterprise={isEnterprise} />
+			<PermissionsContextBar />
 		</Page>
 	);
 };

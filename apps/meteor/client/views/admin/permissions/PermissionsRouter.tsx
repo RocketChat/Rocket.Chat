@@ -26,7 +26,7 @@ const PermissionsRouter = (): ReactElement => {
 		return <UsersInRole />;
 	}
 
-	return <PermissionsTable isEnterprise={Boolean(data?.isEnterprise)} />;
+	return <PermissionsTable isEnterprise={!!data?.isEnterprise} />;
 };
 
 export default PermissionsRouter;

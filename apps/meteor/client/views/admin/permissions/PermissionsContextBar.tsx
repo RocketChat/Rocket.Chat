@@ -4,15 +4,18 @@ import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
 
-const PermissionsContextBar = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement | null => {
+const PermissionsContextBar = (): ReactElement | null => {
 	const t = useTranslation();
 	const _id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
+	const { data } = useIsEnterprise();
+	const isEnterprise = !!data?.isEnterprise;
 
 	const handleCloseVerticalBar = useMutableCallback(() => {
 		router.push({});
