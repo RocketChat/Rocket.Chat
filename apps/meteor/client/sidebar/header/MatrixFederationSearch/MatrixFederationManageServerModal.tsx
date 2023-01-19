@@ -1,10 +1,12 @@
-import { Box, Modal, ButtonGroup, Button, Field, TextInput } from '@rocket.chat/fuselage';
+import { Divider, Modal, ButtonGroup, Button, Field, TextInput } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { VFC, FormEvent } from 'react';
 import React, { useState } from 'react';
 
+import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
 import MatrixFederationSearch from './MatrixFederationSearch';
+import { useMatrixServerList } from './useMatrixServerList';
 
 type MatrixFederationAddServerModalProps = {
 	onClickClose: () => void;
@@ -24,41 +26,43 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
 
-	const { mutate: addServer, isLoading } = useMutation(
-		['v1/federation/addServerByUser', serverName],
-		() => addMatrixServer({ serverName }),
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries(['federation/listServersByUsers']);
-				setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
-			},
+	const {
+		mutate: addServer,
+		isLoading,
+		isError,
+	} = useMutation(['v1/federation/addServerByUser', serverName], () => addMatrixServer({ serverName }), {
+		onSuccess: () => {
+			queryClient.invalidateQueries(['federation/listServersByUsers']);
+			setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
 		},
-	);
+	});
+
+	const { data, isLoading: isLoadingServerList } = useMatrixServerList();
 
 	return (
 		<Modal maxHeight={'x600'}>
 			<Modal.Header>
-				<Modal.Title>{t('Add_new_federated_server')}</Modal.Title>
+				<Modal.Title>{t('Manage_servers')}</Modal.Title>
 				<Modal.Close onClick={onClickClose} />
 			</Modal.Header>
 			<Modal.Content>
 				<Field>
 					<Field.Label>{t('Server_name')}</Field.Label>
 					<Field.Row>
-						<TextInput value={serverName} onChange={(e: FormEvent<HTMLInputElement>) => setServerName(e.currentTarget.value)} />
+						<TextInput value={serverName} onChange={(e: FormEvent<HTMLInputElement>) => setServerName(e.currentTarget.value)} mie='x4' />
+						<Button onClick={() => addServer()} primary disabled={isLoading}>
+							{t('Add')}
+						</Button>
 					</Field.Row>
+					{isError && <Field.Error>{t('Server_doesnt_exist')}</Field.Error>}
 					<Field.Hint>{t('Federation_Example_matrix_server')}</Field.Hint>
 				</Field>
+				<Divider mb='x16' />
+				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
 			</Modal.Content>
-			<Modal.Footer justifyContent='space-between' alignItems='center'>
-				<Box is='span' fontScale='c1' color='annotation'>
-					{t('This_server_will_be_available_while_your_session_is_active')}
-				</Box>
+			<Modal.Footer>
 				<ButtonGroup>
 					<Button onClick={onClickClose}>{t('Cancel')}</Button>
-					<Button onClick={() => addServer()} primary disabled={isLoading}>
-						{t('Add')}
-					</Button>
 				</ButtonGroup>
 			</Modal.Footer>
 		</Modal>
