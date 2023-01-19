@@ -11,7 +11,7 @@ import { FormSkeleton } from '../../Skeleton';
 
 const PriorityField = ({ id }) => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/priorities/${id}`);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/priorities/:priorityId', { keys: { priorityId: id } });
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

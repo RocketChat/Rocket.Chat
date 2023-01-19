@@ -58,7 +58,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		500,
 	);
 
-	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', query);
+	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', { params: query });
 
 	useEffect(() => {
 		reload.current = reloadList;
@@ -116,7 +116,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
 			{phase === AsyncStatePhase.LOADING && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IThreadMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -17,7 +17,7 @@ import { useMessages } from './hooks/useMessages';
 import { isMessageFirstUnread } from './lib/isMessageFirstUnread';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
-import { MessageListProvider } from './providers/MessageListProvider';
+import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
@@ -27,13 +27,12 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
-	const isBroadcast = Boolean(subscription?.broadcast);
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
 
 	return (
-		<MessageListProvider rid={rid}>
-			<MessageProvider rid={rid} broadcast={isBroadcast}>
+		<MessageListProvider>
+			<MessageProvider>
 				<SelectedMessagesProvider>
 					{messages.map((message, index, arr) => {
 						const previous = arr[index - 1];
@@ -72,7 +71,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 										data-unread={firstUnread}
 										data-sequential={sequential}
 										sequential={shouldShowAsSequential}
-										message={message}
+										message={message as IThreadMessage}
 									/>
 								)}
 
