@@ -31,8 +31,8 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 		isLoading,
 		isError,
 	} = useMutation(['v1/federation/addServerByUser', serverName], () => addMatrixServer({ serverName }), {
-		onSuccess: () => {
-			queryClient.invalidateQueries(['federation/listServersByUsers']);
+		onSuccess: async () => {
+			await queryClient.invalidateQueries(['federation/listServersByUsers']);
 			setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
 		},
 	});

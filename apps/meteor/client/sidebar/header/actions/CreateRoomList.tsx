@@ -5,6 +5,7 @@ import React from 'react';
 
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import ListItem from '../../../components/Sidebar/ListItem';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CreateChannelWithData from '../CreateChannel';
 import CreateDirectMessage from '../CreateDirectMessage';
 import CreateTeam from '../CreateTeam';
@@ -35,7 +36,8 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
 	const searchFederatedRooms = useCreateRoomModal(MatrixFederationSearch);
 
-	const isEnterprise = true;
+	const { data } = useIsEnterprise();
+	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
 
 	return (
 		<>
@@ -81,7 +83,7 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 						}}
 					/>
 				)}
-				{isEnterprise && (
+				{isMatrixEnabled && (
 					<>
 						<OptionDivider />
 						<OptionTitle>{t('Explore')}</OptionTitle>
