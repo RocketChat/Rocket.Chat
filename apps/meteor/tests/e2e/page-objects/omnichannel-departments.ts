@@ -63,4 +63,24 @@ export class OmnichannelDepartments {
 	get btnModalConfirmDelete() {
 		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
 	}
+
+	get selectAgentToAdd() {
+		return this.page.locator('[data-qa="autocomplete-agent"]');
+	}
+
+	getAgentOptionToAdd(agentName: string) {
+		return this.page.locator(`div.rcx-option__content >> text="${agentName}"`);
+	}
+
+	get btnAddAgent() {
+		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
+	}
+
+	findRowByName(name: string) {
+		return this.page.locator('td', { has: this.page.locator(`div >> text="${name}"`) });
+	}
+
+	findAgentRemoveBtn(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`div >> text="${name}"`) }).locator('button.rcx-button');
+	}
 }
