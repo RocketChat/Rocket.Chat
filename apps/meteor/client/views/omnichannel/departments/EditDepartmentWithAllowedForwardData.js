@@ -14,15 +14,14 @@ function EditDepartmentWithAllowedForwardData({ data, ...props }) {
 		value: allowedToForwardData,
 		phase: allowedToForwardState,
 		error: allowedToForwardError,
-	} = useEndpointData(
-		'/v1/livechat/department.listByIds',
-		useMemo(
+	} = useEndpointData('/v1/livechat/department.listByIds', {
+		params: useMemo(
 			() => ({
 				ids: data && data.department && data.department.departmentsAllowedToForward ? data.department.departmentsAllowedToForward : [],
 			}),
 			[data],
 		),
-	);
+	});
 
 	if ([allowedToForwardState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
