@@ -6,7 +6,7 @@ import type { VFC, FormEvent } from 'react';
 import React, { useCallback, useState, useMemo } from 'react';
 
 import FederatedRoomList from './FederatedRoomList';
-import MatrixFederationAddServerModal from './MatrixFederationAddServerModal';
+import MatrixFederationManageServersModal from './MatrixFederationManageServerModal';
 import MatrixFederationSearch from './MatrixFederationSearch';
 
 type MatrixFederationSearchModalContentProps = {
@@ -32,28 +32,18 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 
 	const t = useTranslation();
 
-	const serverOptions = useMemo<Array<SelectOption>>(
-		() => servers.map((server): SelectOption => [server.name, server.name]).concat([['addServer', t('Add_server')]]),
-		[servers, t],
-	);
+	const serverOptions = useMemo<Array<SelectOption>>(() => servers.map((server): SelectOption => [server.name, server.name]), [servers]);
 
-	const handleSelectServer = useCallback(
-		(value) => {
-			if (value === 'addServer') {
-				setModal(
-					<MatrixFederationAddServerModal onClickClose={() => setModal(<MatrixFederationSearch onClose={() => setModal(null)} />)} />,
-				);
-				return;
-			}
-			setServerName(value);
-		},
-		[setModal],
-	);
+	const manageServers = useCallback(() => {
+		setModal(
+			<MatrixFederationManageServersModal onClickClose={() => setModal(<MatrixFederationSearch onClose={() => setModal(null)} />)} />,
+		);
+	}, [setModal]);
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' mbe='x16'>
-				<Select mie='x4' flexGrow={0} flexShrink={4} options={serverOptions} value={serverName} onChange={handleSelectServer} />
+			<Box display='flex' flexDirection='row'>
+				<Select mie='x4' flexGrow={0} flexShrink={4} options={serverOptions} value={serverName} onChange={setServerName} />
 				<TextInput
 					placeholder={t('Search_rooms')}
 					flexGrow={4}
@@ -61,6 +51,9 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 					value={roomName}
 					onChange={(e: FormEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
 				/>
+			</Box>
+			<Box is='a' display='flex' flexDirection='row' mbe='x16' onClick={manageServers}>
+				{t('Manage_server_list')}
 			</Box>
 			<FederatedRoomList serverName={serverName} roomName={debouncedRoomName} />
 		</>
