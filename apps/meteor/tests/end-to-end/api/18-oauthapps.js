@@ -161,4 +161,62 @@ describe('[OAuthApps]', function () {
 				});
 		});
 	});
+
+	describe('[/oauth-apps/:_id]', () => {
+		let _id;
+
+		before(async () => {
+			const name = 'test-oauth-app';
+			const redirectUri = 'https://test.com';
+			const active = true;
+
+			const { _id: newId } = await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.then((res) => res.body.application);
+
+			_id = newId;
+		});
+
+		it('should update an app name, active and redirect URI correctly by its id', async () => {
+			const name = `new app ${Date.now()}`;
+			const redirectUri = 'http://localhost:3000';
+			const active = false;
+
+			await request
+				.post(api(`oauth-apps/${_id}`))
+				.set(credentials)
+				.send({
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('active', active);
+					expect(res.body).to.have.property('redirectUri', redirectUri);
+					expect(res.body).to.have.property('name', name);
+				});
+		});
+
+		it('should delete an app by its id', async () => {
+			await request
+				.delete(api(`oauth-apps/${_id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.equals(true);
+				});
+		});
+	});
 });
