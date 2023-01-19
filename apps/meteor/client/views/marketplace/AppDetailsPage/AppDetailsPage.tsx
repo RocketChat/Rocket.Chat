@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Box, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCurrentRoute, useRoute, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -13,6 +13,7 @@ import { handleAPIError } from '../helpers';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLoading from './AppDetailsPageLoading';
+import AppDetailsPageTabs from './AppDetailsPageTabs';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
@@ -35,7 +36,6 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	}
 	const router = useRoute(currentRouteName);
 
-	const [, urlParams] = useCurrentRoute();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
@@ -44,7 +44,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	});
 
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, marketplace, name } = appData || {};
-	const isSecurityVisible = privacyPolicySummary || permissions || tosLink || privacyLink;
+	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	const saveAppSettings = useCallback(async () => {
 		const { current } = settingsRef;
@@ -65,10 +65,6 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		setIsSaving(false);
 	}, [dispatchToastMessage, id, name, settings]);
 
-	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
-		router.replace({ ...urlParams, tab });
-	};
-
 	return (
 		<Page flexDirection='column'>
 			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
@@ -87,31 +83,13 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 					{appData && (
 						<>
 							<AppDetailsPageHeader app={appData} />
-							<Tabs>
-								<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
-									{t('Details')}
-								</Tabs.Item>
-								{Boolean(installed) && isSecurityVisible && (
-									<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
-										{t('Security')}
-									</Tabs.Item>
-								)}
-								{Boolean(installed) && marketplace !== false && (
-									<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
-										{t('Releases')}
-									</Tabs.Item>
-								)}
-								{Boolean(installed && settings && Object.values(settings).length) && (
-									<Tabs.Item onClick={(): void => handleTabClick('settings')} selected={tab === 'settings'}>
-										{t('Settings')}
-									</Tabs.Item>
-								)}
-								{Boolean(installed) && (
-									<Tabs.Item onClick={(): void => handleTabClick('logs')} selected={tab === 'logs'}>
-										{t('Logs')}
-									</Tabs.Item>
-								)}
-							</Tabs>
+							<AppDetailsPageTabs
+								installed={installed}
+								isSecurityVisible={isSecurityVisible}
+								marketplace={marketplace}
+								settings={settings}
+								tab={tab}
+							/>
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 							{tab === 'security' && isSecurityVisible && (
 								<AppSecurity
