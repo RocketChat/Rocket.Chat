@@ -5,7 +5,8 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createDepartment } from '../../../data/livechat/rooms';
+import { makeAgentAvailable, createAgent, createDepartment, deleteDepartment } from '../../../data/livechat/rooms';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
@@ -51,7 +52,9 @@ describe('LIVECHAT - Departments', function () {
 				request
 					.post(api('livechat/department'))
 					.set(credentials)
-					.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
+					.send({
+						department: { name: 'TestUnauthorized', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(403)
 					.end(done);
@@ -91,6 +94,7 @@ describe('LIVECHAT - Departments', function () {
 						expect(res.body.department).to.have.property('enabled', true);
 						expect(res.body.department).to.have.property('showOnOfflineForm', true);
 						expect(res.body.department).to.have.property('showOnRegistration', true);
+						deleteDepartment(res.body.department._id);
 					})
 					.end(done);
 			});
@@ -147,6 +151,7 @@ describe('LIVECHAT - Departments', function () {
 							expect(res.body.department).to.have.property('showOnOfflineForm', dep.showOnOfflineForm);
 							expect(res.body.department).to.have.property('showOnRegistration', dep.showOnRegistration);
 							expect(res.body.department).to.have.property('email', dep.email);
+							deleteDepartment(res.body.department._id);
 						})
 						.end(done);
 				});
@@ -240,6 +245,7 @@ describe('LIVECHAT - Departments', function () {
 		it('should return a list of departments that match selector.term', (done) => {
 			updatePermission('view-livechat-departments', ['admin'])
 				.then(() => updatePermission('view-l-room', ['admin']))
+				.then(() => createDepartment(undefined, 'test'))
 				.then(() => {
 					request
 						.get(api('livechat/department.autocomplete'))
@@ -254,25 +260,29 @@ describe('LIVECHAT - Departments', function () {
 							expect(res.body.items).to.have.length.of.at.least(1);
 							expect(res.body.items[0]).to.have.property('_id');
 							expect(res.body.items[0]).to.have.property('name');
+							deleteDepartment(res.body.items[0]._id);
 						})
 						.end(done);
 				});
 		});
-
-		it('should return a list of departments excluding the ids on selector.exceptions', (done) => {
-			let dep: ILivechatDepartment;
+		(IS_EE ? it : it.skip)('should return a list of departments excluding the ids on selector.exceptions', (done) => {
+			let dep1: ILivechatDepartment;
+			let dep2: ILivechatDepartment;
 
 			updatePermission('view-livechat-departments', ['admin'])
 				.then(() => updatePermission('view-l-room', ['admin']))
 				.then(() => createDepartment())
 				.then((department: ILivechatDepartment) => {
-					dep = department;
+					dep1 = department;
+				}).then(() => createDepartment())
+				.then((department: ILivechatDepartment) => {
+					dep2 = department;
 				})
 				.then(() => {
 					request
 						.get(api('livechat/department.autocomplete'))
 						.set(credentials)
-						.query({ selector: `{"exceptions":["${dep._id}"]}` })
+						.query({ selector: `{"exceptions":["${dep1._id}"]}` })
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
@@ -282,7 +292,9 @@ describe('LIVECHAT - Departments', function () {
 							expect(res.body.items).to.have.length.of.at.least(1);
 							expect(res.body.items[0]).to.have.property('_id');
 							expect(res.body.items[0]).to.have.property('name');
-							expect(res.body.items.every((department: ILivechatDepartment) => department._id !== dep._id)).to.be.true;
+							expect(res.body.items.every((department: ILivechatDepartment) => department._id !== dep1._id)).to.be.true;
+							deleteDepartment(dep1._id);
+							deleteDepartment(dep2._id);
 						})
 						.end(done);
 				});
@@ -389,6 +401,7 @@ describe('LIVECHAT - Departments', function () {
 							expect(res.body.agents).to.be.an('array');
 							expect(res.body.agents).to.have.lengthOf(0);
 							expect(res.body.total).to.be.equal(0);
+							deleteDepartment(dep._id);
 						})
 						.end(done);
 				});
@@ -414,6 +427,7 @@ describe('LIVECHAT - Departments', function () {
 							expect(res.body.agents[0]).to.have.property('departmentId', dep._id);
 							expect(res.body.agents[0]).to.have.property('departmentEnabled', true);
 							expect(res.body.count).to.be.equal(1);
+							deleteDepartment(dep._id);
 						})
 						.end(done);
 				});
@@ -465,6 +479,7 @@ describe('LIVECHAT - Departments', function () {
 						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', "Match error: Missing key 'upsert'");
+							deleteDepartment(dep._id);
 						})
 						.end(done);
 				});
@@ -484,6 +499,7 @@ describe('LIVECHAT - Departments', function () {
 						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', "Match error: Missing key 'agentId' in field upsert[0]");
+							deleteDepartment(dep._id);
 						})
 						.end(done);
 				});
@@ -502,6 +518,7 @@ describe('LIVECHAT - Departments', function () {
 						.expect(200)
 						.expect((res: Response) => {
 							expect(res.body).to.have.property('success', true);
+							deleteDepartment(dep._id);
 						})
 						.end(done);
 				});
