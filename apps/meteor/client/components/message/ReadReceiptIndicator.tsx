@@ -15,7 +15,7 @@ const ReadReceiptIndicator = ({ unread }: ReadReceiptIndicatorProps): ReactEleme
 			right: 0.5rem;
 		`}
 	>
-		<Icon name='check' size='x11' color={unread ? 'secondary' : 'primary'} />
+		<Icon name='check' size='x16' color={unread ? 'annotation' : 'on-info'} />
 	</Box>
 );
 

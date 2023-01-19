@@ -957,6 +957,64 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+
+		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
+			let privateTeam;
+
+			it('should create a team', (done) => {
+				request
+					.post(api('teams.create'))
+					.set(credentials)
+					.send({
+						name: `test-team-${Date.now()}`,
+						type: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('team');
+						expect(res.body).to.have.nested.property('team._id');
+						privateTeam = res.body.team;
+					})
+					.end(done);
+			});
+
+			it('should add the public channel to the team', (done) => {
+				request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [testChannel._id],
+						teamId: privateTeam._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success');
+					})
+					.end(done);
+			});
+
+			it('should create a private discussion inside the public channel', (done) => {
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-create-from-tests-${testChannel.name}-team`,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('discussion').and.to.be.an('object');
+						expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+						expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}-team`);
+						expect(res.body.discussion).to.have.property('t').and.to.be.equal('p');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/rooms.getDiscussions', () => {
