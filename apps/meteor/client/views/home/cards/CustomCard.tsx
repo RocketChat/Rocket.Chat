@@ -1,17 +1,18 @@
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
 import { Card } from '@rocket.chat/ui-client';
-import { useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
-const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement | null => {
+const CustomCard = (): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { data } = useIsEnterprise();
+	const isAdmin = useRole('admin');
 	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body') === '';
 	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
 	const isCustomContentOnly = Boolean(useSetting('Layout_Custom_Body_Only'));
@@ -36,14 +37,15 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement | null => {
 	};
 
 	const isEnterprise = data?.isEnterprise;
+	const willNotShowCustomContent = isCustomContentBodyEmpty || !isCustomContentVisible;
 
 	if (isAdmin) {
 		return (
 			<Card variant='light' data-qa-id='homepage-custom-card'>
 				<Card.Title>
 					<Tag data-qa-id='homepage-custom-content-visibility-tag'>
-						<Icon mie='x4' name={isCustomContentBodyEmpty || !isCustomContentVisible ? 'eye-off' : 'eye'} size='x16' />
-						{isCustomContentBodyEmpty || !isCustomContentVisible ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
+						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x16' />
+						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
 				<Box mb='x8' color='info'>
@@ -55,16 +57,16 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement | null => {
 							{t('Customize_Content')}
 						</Button>
 						<Button
-							disabled={isCustomContentBodyEmpty}
+							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 							title={!isCustomContentVisible ? t('Now_Its_Available_Only_For_Admins') : t('Now_Its_Available_For_Everyone')}
 							onClick={handleChangeCustomContentVisibility}
 							data-qa-id='homepage-custom-content-visibility-button'
 						>
-							<Icon mie='x4' name='eye-off' size='x16' />
-							{t('Show_To_Workspace')}
+							<Icon mie='x4' name={willNotShowCustomContent ? 'eye' : 'eye-off'} size='x16' />
+							{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
 						</Button>
 						<Button
-							disabled={isCustomContentBodyEmpty || !isEnterprise}
+							disabled={willNotShowCustomContent || !isEnterprise}
 							title={t('It_Will_Hide_All_Other_White_Blocks_In_The_Homepage')}
 							onClick={handleOnlyShowCustomContent}
 							data-qa-id='homepage-custom-content-only-button'
