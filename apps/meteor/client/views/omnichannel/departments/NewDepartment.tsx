@@ -28,7 +28,7 @@ const NewDepartment = ({ id, reload, refetchRef }: NewDepartmentProps) => {
 	if (isLoading || hasLicense === 'loading') {
 		return <PageSkeleton />;
 	}
-	if (!hasLicense && data?.total >= 1) {
+	if (!hasLicense && data?.total && data.total >= 1) {
 		return <UpgradeDepartments />;
 	}
 	// TODO: remove allowedToForwardData and data props once the EditDepartment component is migrated to TS
