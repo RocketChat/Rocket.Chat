@@ -1,4 +1,3 @@
-// import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
