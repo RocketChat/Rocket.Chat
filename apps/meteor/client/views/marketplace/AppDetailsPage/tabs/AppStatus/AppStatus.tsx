@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo, Fragment } from 'react';
 
@@ -27,7 +27,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
 	const { price, purchaseType, pricingPlans } = app;
-	const button = appButtonProps(app || {});
+	const isAdminUser = usePermission('manage-apps');
+	const button = appButtonProps({ ...app, isAdminUser });
 	const statuses = appMultiStatusProps(app, isAppDetailsPage);
 
 	if (button?.action === undefined && button?.action) {
@@ -44,9 +45,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				return;
 			}
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
+			if (action !== 'request') {
+				marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
+					setLoading(false);
+				});
+			}
 		},
 		[setModal, action, app, setLoading],
 	);
@@ -98,11 +101,24 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 		setLoading(true);
 
-		const isLoggedIn = await checkUserLoggedIn();
+		let isLoggedIn = true;
+		if (action !== 'request') {
+			isLoggedIn = await checkUserLoggedIn();
+		}
 
 		if (!isLoggedIn) {
 			setLoading(false);
 			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (action === 'request') {
+			try {
+				const data = await Apps.buildExternalAppRequest(app.id);
+				setModal(<IframeModal url={data?.url} cancel={cancelAction} confirm={undefined} />);
+			} catch (error) {
+				handleAPIError(error);
+			}
 			return;
 		}
 
@@ -123,7 +139,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	return (
 		<Box {...props} display='flex' alignItems='center'>
-			{button && isAppDetailsPage && (
+			{button && isAppDetailsPage && !installed && (
 				<Box
 					display='flex'
 					flexDirection='row'

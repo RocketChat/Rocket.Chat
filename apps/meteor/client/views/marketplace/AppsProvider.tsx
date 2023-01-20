@@ -175,7 +175,7 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		try {
-			installedApps = await Apps.getApps().then((result: App[]) =>
+			installedApps = await Apps.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,

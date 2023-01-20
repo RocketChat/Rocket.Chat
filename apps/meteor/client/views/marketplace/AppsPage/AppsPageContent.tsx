@@ -17,7 +17,7 @@ import AppsPageConnectionError from './AppsPageConnectionError';
 import AppsPageContentSkeleton from './AppsPageContentSkeleton';
 import FeaturedAppsSections from './FeaturedAppsSections';
 import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
-import NoInstalledAppsFoundEmptyState from './NoInstalledAppsFoundEmptyState';
+import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 
 const AppsPageContent = (): ReactElement => {
@@ -82,7 +82,7 @@ const AppsPageContent = (): ReactElement => {
 		context,
 	});
 
-	const noInstalledAppsFound = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.totalAppsLength === 0;
+	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.totalAppsLength === 0;
 
 	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
 
@@ -91,6 +91,8 @@ const AppsPageContent = (): ReactElement => {
 		!isMarketplace &&
 		appsResult.value.totalAppsLength !== 0 &&
 		appsResult.value.count === 0;
+
+	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps;
 
 	const isFiltered =
 		Boolean(text.length) ||
@@ -120,27 +122,25 @@ const AppsPageContent = (): ReactElement => {
 			/>
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
 
-			{appsResult.phase === AsyncStatePhase.RESOLVED &&
-				!noMarketplaceOrInstalledAppMatches &&
-				(!noInstalledAppMatches || !noInstalledAppsFound) && (
-					<Box display='flex' flexDirection='column' overflow='hidden'>
-						<Box overflowY='scroll'>
-							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
-							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
-						</Box>
-						{Boolean(appsResult.value.count) && (
-							<Pagination
-								divider
-								current={current}
-								itemsPerPage={itemsPerPage}
-								count={appsResult.value.total}
-								onSetItemsPerPage={onSetItemsPerPage}
-								onSetCurrent={onSetCurrent}
-								{...paginationProps}
-							/>
-						)}
+			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
+				<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
+					<Box overflowY='scroll'>
+						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
+						<AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />
 					</Box>
-				)}
+					{Boolean(appsResult.value.count) && (
+						<Pagination
+							divider
+							current={current}
+							itemsPerPage={itemsPerPage}
+							count={appsResult.value.total}
+							onSetItemsPerPage={onSetItemsPerPage}
+							onSetCurrent={onSetCurrent}
+							{...paginationProps}
+						/>
+					)}
+				</Box>
+			)}
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
 			)}
@@ -151,7 +151,7 @@ const AppsPageContent = (): ReactElement => {
 					onButtonClick={handleReturn}
 				/>
 			)}
-			{noInstalledAppsFound && <NoInstalledAppsFoundEmptyState onButtonClick={handleReturn} />}
+			{noInstalledApps && <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);

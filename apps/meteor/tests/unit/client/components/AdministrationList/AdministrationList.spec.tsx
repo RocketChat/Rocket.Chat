@@ -31,7 +31,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 				accountBoxItems={[{} as any]}
 				hasAuditPermission={true}
 				hasAuditLogPermission={true}
-				hasManageApps={true}
 				hasAdminPermission={true}
 				hasAuditLicense={false}
 				onDismiss={() => null}
@@ -41,29 +40,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 		expect(screen.getByText('Administration Model List')).to.exist;
 		expect(screen.getByText('Apps Model List')).to.exist;
 		expect(screen.getByText('Audit Model List')).to.exist;
-	});
-
-	it('should render nothing when no permission', async () => {
-		const AdministrationList = mockAdministrationListModule({
-			'@rocket.chat/ui-contexts': {
-				useAtLeastOnePermission: () => false,
-			},
-		}).default;
-		render(
-			<AdministrationList
-				hasAdminPermission={false}
-				hasAuditLicense={false}
-				hasAuditLogPermission={false}
-				hasAuditPermission={false}
-				hasManageApps={false}
-				accountBoxItems={[]}
-				onDismiss={() => null}
-			/>,
-		);
-
-		expect(screen.queryByText('Administration Model List')).to.not.exist;
-		expect(screen.queryByText('Apps Model List')).to.not.exist;
-		expect(screen.queryByText('Audit Model List')).to.not.exist;
 	});
 
 	it('should render administration model list when has account box item', async () => {
@@ -78,14 +54,13 @@ describe('components/AdministrationList/AdministrationList', () => {
 				hasAuditLicense={false}
 				hasAuditLogPermission={false}
 				hasAuditPermission={false}
-				hasManageApps={false}
 				accountBoxItems={[{} as any]}
 				onDismiss={() => null}
 			/>,
 		);
 
 		expect(screen.getByText('Administration Model List')).to.exist;
-		expect(screen.queryByText('Apps Model List')).to.not.exist;
+		expect(screen.queryByText('Apps Model List')).to.exist;
 		expect(screen.queryByText('Audit Model List')).to.not.exist;
 	});
 
@@ -106,7 +81,6 @@ describe('components/AdministrationList/AdministrationList', () => {
 				hasAuditLicense={false}
 				hasAuditLogPermission={false}
 				hasAuditPermission={false}
-				hasManageApps={false}
 				accountBoxItems={[{} as any]}
 				onDismiss={() => null}
 			/>,
