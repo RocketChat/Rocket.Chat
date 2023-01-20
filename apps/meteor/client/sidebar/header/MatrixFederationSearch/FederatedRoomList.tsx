@@ -16,34 +16,6 @@ type FederatedRoomListProps = {
 	count?: number;
 };
 
-// const fetchRoomList = async ({ serverName, roomName, count, pageToken }: FederatedRoomListProps) => {
-// 	console.log(pageToken);
-// 	return new Promise((resolve) =>
-// 		setTimeout(
-// 			() =>
-// 				resolve({
-// 					rooms: Array.from({ length: count || 100 }).map(() => ({
-// 						id: `${Math.random()}:${serverName}`,
-// 						name: roomName || 'MatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrixMatrix',
-// 						canJoin: true,
-// 						canonicalAlias: `#${serverName}:matrix.org`,
-// 						joinedMembers: 44461,
-// 						topic:
-// 							'The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room | The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room | The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room',
-// 					})),
-// 					count: 1,
-// 					total: 73080,
-// 					nextPageToken: 'g6FtzZa3oXK+IUpkemFiTlVQUFh6bENKQWhFbDpmYWJyaWMucHVioWTD',
-// 					prevPageToken: 'g6FtzYqIoXK+IWNOd2pkUXdWcFJNc0lNa1VweDptYXRyaXgub3JnoWTC',
-// 					success: true,
-// 				}),
-// 			1000,
-// 		),
-// 	);
-// };
-
-// const joinExternalPublicRoom = (id: string) => console.log(id);
-
 const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, count }) => {
 	const fetchRoomList = useEndpoint('GET', '/v1/federation/searchPublicRooms');
 	const joinExternalPublicRoom = useEndpoint('POST', '/v1/federation/joinExternalPublicRoom');

@@ -9,8 +9,6 @@ type MatrixFederationRemoveServerListProps = {
 	servers: Array<{ name: string; default: boolean; local: boolean }>;
 };
 
-// const removeMatrixServer = ({ serverName }) => new Promise((resolve) => setTimeout(resolve, 1000));
-
 const showIconOnHover = css`
 	i {
 		visibility: hidden;

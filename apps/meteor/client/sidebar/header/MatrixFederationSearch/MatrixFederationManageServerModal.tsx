@@ -12,13 +12,6 @@ type MatrixFederationAddServerModalProps = {
 	onClickClose: () => void;
 };
 
-// const addMatrixServer = ({ serverName }) =>
-// 	new Promise((resolve) =>
-// 		resolve({
-// 			success: true,
-// 		}),
-// 	);
-
 const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> = ({ onClickClose }) => {
 	const t = useTranslation();
 	const addMatrixServer = useEndpoint('POST', '/v1/federation/addServerByUser');
