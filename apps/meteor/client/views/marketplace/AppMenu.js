@@ -8,6 +8,7 @@ import {
 	useRouteParameter,
 	useToastMessageDispatch,
 	useCurrentRoute,
+	usePermission,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
@@ -56,7 +57,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const isAppEnabled = appEnabledStatuses.includes(app.status);
 	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
 
-	const button = appButtonProps(app || {});
+	const isAdminUser = usePermission('manage-apps');
+	const button = appButtonProps({ ...app, isAdminUser });
 	const action = button?.action || '';
 
 	const cancelAction = useCallback(() => {
@@ -65,12 +67,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const confirmAction = useCallback(
-		(permissionsGranted) => {
+		async (permissionsGranted) => {
 			setModal(null);
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
+			await marketplaceActions[action]({ ...app, permissionsGranted });
+
+			setLoading(false);
 		},
 		[setModal, action, app, setLoading],
 	);
@@ -126,11 +128,24 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const handleAcquireApp = useCallback(async () => {
 		setLoading(true);
 
-		const isLoggedIn = await checkUserLoggedIn();
+		let isLoggedIn = true;
+		if (action !== 'request') {
+			isLoggedIn = await checkUserLoggedIn();
+		}
 
 		if (!isLoggedIn) {
 			setLoading(false);
 			setModal(<CloudLoginModal />);
+			return;
+		}
+
+		if (action === 'request') {
+			try {
+				const data = await Apps.buildExternalAppRequest(app.id);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={undefined} />);
+			} catch (error) {
+				handleAPIError(error);
+			}
 			return;
 		}
 
@@ -308,6 +323,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 		const installedAppOptions = {
 			...(context !== 'details' &&
+				isAdminUser &&
 				app.installed && {
 					viewLogs: {
 						label: (
@@ -319,7 +335,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 						action: handleViewLogs,
 					},
 				}),
-			...(canUpdate &&
+			...(isAdminUser &&
+				canUpdate &&
 				!isAppDetailsPage && {
 					update: {
 						label: (
@@ -332,6 +349,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					},
 				}),
 			...(app.installed &&
+				isAdminUser &&
 				isAppEnabled && {
 					disable: {
 						label: (
@@ -344,6 +362,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					},
 				}),
 			...(app.installed &&
+				isAdminUser &&
 				!isAppEnabled && {
 					enable: {
 						label: (
@@ -355,22 +374,24 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 						action: handleEnable,
 					},
 				}),
-			...(app.installed && {
-				divider: {
-					type: 'divider',
-				},
-			}),
-			...(app.installed && {
-				uninstall: {
-					label: (
-						<Box color='danger'>
-							<Icon name='trash' size='x16' marginInlineEnd='x4' />
-							{t('Uninstall')}
-						</Box>
-					),
-					action: handleUninstall,
-				},
-			}),
+			...(app.installed &&
+				isAdminUser && {
+					divider: {
+						type: 'divider',
+					},
+				}),
+			...(app.installed &&
+				isAdminUser && {
+					uninstall: {
+						label: (
+							<Box color='danger'>
+								<Icon name='trash' size='x16' marginInlineEnd='x4' />
+								{t('Uninstall')}
+							</Box>
+						),
+						action: handleUninstall,
+					},
+				}),
 		};
 
 		return {
@@ -381,12 +402,14 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [
 		canAppBeSubscribed,
 		isSubscribed,
+		incompatibleIconName,
 		app,
 		t,
 		handleSubscription,
 		button?.label,
 		handleAcquireApp,
 		context,
+		isAdminUser,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
@@ -395,10 +418,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleDisable,
 		handleEnable,
 		handleUninstall,
-		incompatibleIconName,
 	]);
 
-	return loading ? <Throbber disabled /> : <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
+	if (loading) {
+		return <Throbber disabled />;
+	}
+
+	if (!isAdminUser && app?.installed) {
+		return null;
+	}
+
+	return <Menu options={menuOptions} placement='bottom-start' maxHeight='initial' {...props} />;
 }
 
 export default AppMenu;
