@@ -225,8 +225,8 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'view-import-operations', roles: ['admin'] },
 		{ _id: 'clear-oembed-cache', roles: ['admin'] },
 		{ _id: 'videoconf-ring-users', roles: ['admin', 'owner4', 'moderator', 'user'] },
-		{_id: 'view-moderation-console', roles: ['admin', 'owner', 'moderator'] },
-		{_id: 'manage-moderation-actions', roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'view-moderation-console', roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'manage-moderation-actions', roles: ['admin', 'owner', 'moderator'] },
 	];
 
 	for await (const permission of permissions) {

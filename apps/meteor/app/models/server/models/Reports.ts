@@ -1,4 +1,5 @@
 import type { IReport } from '@rocket.chat/core-typings';
+
 import { Base } from './_Base';
 
 class Reports extends Base {
@@ -6,7 +7,7 @@ class Reports extends Base {
 		super('reports');
 	}
 
-	findReportsBetweenDates(latest: Date, oldest: Date | undefined, offset: number = 0, count: number = 20): Array<IReport> {
+	findReportsBetweenDates(latest: Date, oldest: Date | undefined, offset = 0, count = 20): Array<IReport> {
 		const query = {
 			ts: {
 				$lt: latest,
@@ -23,7 +24,7 @@ class Reports extends Base {
 		}).fetch();
 	}
 
-	findReportsByRoom(roomId: string, offset: number = 0, count: number = 20): Array<IReport> {
+	findReportsByRoom(roomId: string, offset = 0, count = 20): Array<IReport> {
 		const query = {
 			'message.rid': roomId,
 		};
@@ -37,7 +38,7 @@ class Reports extends Base {
 		}).fetch();
 	}
 
-	findReportsByUser(userId: string, offset: number = 0, count: number = 20): Array<IReport> {
+	findReportsByUser(userId: string, offset = 0, count = 20): Array<IReport> {
 		const query = {
 			userId: userId,
 		};
@@ -51,7 +52,7 @@ class Reports extends Base {
 		}).fetch();
 	}
 
-	findReportsBeforeDate(oldest: string, offset: number = 0, count: number = 20): Array<IReport> {
+	findReportsBeforeDate(oldest: string, offset = 0, count = 20): Array<IReport> {
 		const query = {
 			ts: {
 				$gt: oldest,
@@ -67,7 +68,7 @@ class Reports extends Base {
 		}).fetch();
 	}
 
-	findReportsAfterDate(latest: string, offset: number = 0, count: number = 20): Array<IReport> {
+	findReportsAfterDate(latest: string, offset = 0, count = 20): Array<IReport> {
 		const query = {
 			ts: {
 				$lt: latest,

@@ -1,7 +1,7 @@
-import { API } from '../api';
 import { isReportHistoryProps } from '@rocket.chat/rest-typings';
-import { getReportHistory } from '/server/lib/getReportHistory';
-import { hasPermission } from '../../../authorization/server';
+
+import { API } from '../api';
+import { getReportHistory } from '../../../../server/lib/getReportHistory';
 
 API.v1.addRoute(
 	'moderation.history',
@@ -12,19 +12,11 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			if (!this.userId) {
-				return API.v1.unauthorized();
-			}
-
-			if (!this.hasPermission(this.userId, 'view-moderation-console')) {
-				return API.v1.unauthorized();
-			}
-
 			const { latest, oldest } = this.queryParams();
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 
-			const reports = getReportHistory({ latest, oldest, count });
+			const reports = getReportHistory({ latest, oldest, count, offset });
 
 			if (!reports) {
 				return API.v1.failure('No reports found');

@@ -6,21 +6,19 @@ import { getReportHistory } from '../lib/getReportHistory';
 
 Meteor.methods({
 	getReportHistory({ latest, oldest, offset = 0, count = 20 }) {
-		if (!Meteor.userId()) {
+		const fromUserId = Meteor.userId();
+
+		if (!fromUserId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getReportHistory',
 			});
 		}
 
-		const fromUserId = Meteor.userId();
-
-		if (!fromUserId) {
-			return false;
-		}
-
 		// Ensure user has permission to view the moderation console.
 		if (!hasPermission(fromUserId, 'view-moderation-console')) {
-			return false;
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'getReportHistory',
+			});
 		}
 
 		// Ensure latest is always defined.
