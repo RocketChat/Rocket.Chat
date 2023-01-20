@@ -1,19 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import Colors from '@rocket.chat/fuselage-tokens/colors';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useState } from 'react';
 
 import PageContext from './PageContext';
 
 type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
-	background?: 'light' | 'tint';
+	background?: 'light' | 'tint' | 'neutral';
 };
-
-const surfaceMap = {
-	light: Colors.white,
-	tint: Colors.n100,
-	neutral: Colors.n400,
-}; // TODO: Remove this export after the migration is complete
 
 const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 	const [border, setBorder] = useState(false);
@@ -28,8 +21,8 @@ const Page = ({ background = 'light', ...props }: PageProps): ReactElement => {
 				height='full'
 				overflow='hidden'
 				aria-labelledby='PageHeader-title'
+				bg={background}
 				{...props}
-				backgroundColor={`var(--rcx-color-surface-${background}, ${surfaceMap[background]})`}
 			/>
 		</PageContext.Provider>
 	);
