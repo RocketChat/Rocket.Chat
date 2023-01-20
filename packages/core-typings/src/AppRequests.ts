@@ -1,4 +1,4 @@
-export type AppRequestFilter = 'unseen' | 'seen' | 'notification-sent' | 'notification-not-sent';
+export type AppRequestFilter = 'unseen' | 'seen' | 'notification-sent' | 'notification-not-sent' | '';
 
 export type AppRequestEndUser = {
 	id: string;
@@ -24,4 +24,24 @@ export type AppRequest = {
 	notificationSentAt: string;
 
 	createdAt: string;
+};
+
+export type Meta = {
+	limit: number;
+	offset: number;
+	sort: string;
+	filter: string;
+	total: number;
+};
+
+export type PaginatedAppRequests = {
+	data: AppRequest[];
+	meta: Meta;
+};
+
+export type AppRequestsStats = {
+	data: {
+		totalSeen: number;
+		totalUnseen: number;
+	};
 };
