@@ -40,7 +40,7 @@ export class Reports extends Base {
 
 	findReportsByUser(userId: string, offset = 0, count = 20): Array<IReport> {
 		const query = {
-			userId: userId,
+			userId,
 		};
 
 		return this.find(query, {
