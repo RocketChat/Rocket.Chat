@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
-.emojione-flags {
-  background-image: url('/packages/emojione/flags-sprites.png');
+.emoji-toolkit-flags {
+  background-image: url('/packages/emoji-toolkit/flags-sprites.png');
 
   &._1f1f1-1f1f9 {
     background-repeat: no-repeat;

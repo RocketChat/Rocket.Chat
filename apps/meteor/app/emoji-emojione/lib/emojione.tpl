@@ -1,6 +1,6 @@
 /* stylelint-disable */
 
-.emojione-<%= options.category %> {
+.emoji-toolkit-<%= options.category %> {
   background-image: url('<%= options.spritePath %>');
 <%
 layout.images.forEach(function (image) {
@@ -22,7 +22,7 @@ layout.images.forEach(function (image) {
   }
 %>
 
-.emojione-diversity._<%= image.className %> {
+.emoji-toolkit-diversity._<%= image.className %> {
   background-image: url('<%= options.spritePath %>');
   background-repeat: no-repeat;
   background-size: <%= (layout.width / image.width * 100) %>% <%= (layout.height / image.height * 100) %>%;

@@ -20,7 +20,7 @@ import '../app/dolphin/server';
 import '../app/drupal/server';
 import '../app/emoji';
 import '../app/emoji-custom/server';
-import '../app/emoji-emojione/server';
+import '../app/emoji-emoji-toolkit/server';
 import '../app/error-handler';
 import '../app/federation/server';
 import '../app/federation-v2/server';

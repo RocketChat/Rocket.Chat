@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import emojione from 'emojione';
+import emoji-toolkit from 'emoji-toolkit';
 
 import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(function () {
 	callbacks.add(
 		'beforeSendMessageNotifications',
-		(message) => emojione.shortnameToUnicode(message),
+		(message) => emoji-toolkit.shortnameToUnicode(message),
 		callbacks.priority.MEDIUM,
-		'emojione-shortnameToUnicode',
+		'emoji-toolkit-shortnameToUnicode',
 	);
 });

@@ -1,9 +1,9 @@
-import emojione from 'emojione';
+import emoji-toolkit from 'emoji-toolkit';
 
-export function emojioneRender(message) {
-	return emojione.toImage(message);
+export function emoji-toolkitRender(message) {
+	return emoji-toolkit.toImage(message);
 }
 
-export function emojioneRenderFromShort(message) {
-	return emojione.shortnameToImage(message);
+export function emoji-toolkitRenderFromShort(message) {
+	return emoji-toolkit.shortnameToImage(message);
 }
