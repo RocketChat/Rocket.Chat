@@ -12,12 +12,9 @@ import { appIncompatibleStatusProps } from '../helpers';
 import AppStatus from './tabs/AppStatus';
 
 const versioni18nKey = (app: App): string => {
-	const { version, marketplaceVersion, marketplace } = app;
-	if (typeof marketplace === 'boolean') {
-		return marketplaceVersion;
-	}
+	const { version, marketplaceVersion, installed } = app;
 
-	return version;
+	return installed ? version : marketplaceVersion;
 };
 
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {

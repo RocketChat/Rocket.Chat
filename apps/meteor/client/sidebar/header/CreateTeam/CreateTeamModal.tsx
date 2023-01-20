@@ -128,7 +128,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe='x2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
