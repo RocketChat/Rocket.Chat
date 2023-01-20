@@ -96,7 +96,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 				DEFAULT_TIMEOUT_IN_MS,
 			);
 		} catch (error) {
-			throw new Error('Invalid server name');
+			throw new Error('invalid-server-name');
 		}
 	}
 

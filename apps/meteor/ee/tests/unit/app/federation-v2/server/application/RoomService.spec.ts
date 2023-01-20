@@ -461,7 +461,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		it('should throw an error when trying to add a default server', async () => {
 			settingsAdapter.isFederationEnabled.returns(true);
 			await expect(service.addSearchedServerNameByInternalUserId('internalUserId', 'matrix.org')).to.be.rejectedWith(
-				'This is already a default server',
+				'already-a-default-server',
 			);
 		});
 
@@ -491,16 +491,14 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		it('should throw an error when trying to remove a default server', async () => {
 			settingsAdapter.isFederationEnabled.returns(true);
 			await expect(service.removeSearchedServerNameByInternalUserId('internalUserId', 'matrix.org')).to.be.rejectedWith(
-				"Can't remove a default server",
+				'cannot-remove-default-server',
 			);
 		});
 
 		it('should throw an error when the server does not exists', async () => {
 			settingsAdapter.isFederationEnabled.returns(true);
 			userAdapter.getSearchedServerNamesByUserId.resolves([]);
-			await expect(service.removeSearchedServerNameByInternalUserId('internalUserId', 'serverName')).to.be.rejectedWith(
-				'The given server is not in the list',
-			);
+			await expect(service.removeSearchedServerNameByInternalUserId('internalUserId', 'serverName')).to.be.rejectedWith('server-not-found');
 		});
 
 		it('should call the function to remove the server name', async () => {

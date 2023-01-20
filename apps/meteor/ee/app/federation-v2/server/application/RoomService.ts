@@ -91,7 +91,7 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		}
 
 		if (this.availableServers.some((server) => server.name === serverName)) {
-			throw new Error('This is already a default server');
+			throw new Error('already-a-default-server');
 		}
 
 		await this.bridge.searchPublicRooms({
@@ -107,12 +107,12 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		}
 
 		if (this.availableServers.some((server) => server.name === serverName)) {
-			throw new Error("Can't remove a default server");
+			throw new Error('cannot-remove-default-server');
 		}
 
 		const searchedServersByUser = await this.internalUserAdapter.getSearchedServerNamesByUserId(internalUserId);
 		if (!searchedServersByUser.includes(serverName)) {
-			throw new Error('The given server is not in the list');
+			throw new Error('server-not-found');
 		}
 
 		await this.internalUserAdapter.removeServerNameFromSearchedServerNamesListByUserId(internalUserId, serverName);
