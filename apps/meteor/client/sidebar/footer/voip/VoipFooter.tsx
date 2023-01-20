@@ -87,7 +87,7 @@ export const VoipFooter = ({
 					{callsInQueue}
 				</Box>
 				<Box display='flex' flexDirection='row' h='24px' mi='16px' mbs='12px' mbe='8px' justifyContent='space-between' alignItems='center'>
-					<Box color='neutral-500' fontScale='c2' withTruncatedText>
+					<Box color='disabled' fontScale='c2' withTruncatedText>
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
@@ -111,7 +111,7 @@ export const VoipFooter = ({
 								color={paused ? 'disabled' : 'hint'}
 								onClick={handleHold}
 							/>
-							{options && <Menu color='neutral-500' data-tooltip={t('More_options')} options={options} />}
+							{options && <Menu color='disabled' data-tooltip={t('More_options')} options={options} />}
 						</ButtonGroup>
 					)}
 				</Box>
