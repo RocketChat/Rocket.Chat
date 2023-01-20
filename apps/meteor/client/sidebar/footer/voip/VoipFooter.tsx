@@ -91,7 +91,7 @@ export const VoipFooter = ({
 						{title}
 					</Box>
 					{(callerState === 'IN_CALL' || callerState === 'ON_HOLD') && (
-						<ButtonGroup medium onClick={(e): void => e.stopPropagation()}>
+						<ButtonGroup onClick={(e): void => e.stopPropagation()}>
 							<IconButton
 								small
 								disabled={paused}
@@ -125,7 +125,7 @@ export const VoipFooter = ({
 						</Box>
 					</Box>
 
-					<ButtonGroup medium>
+					<ButtonGroup>
 						{(callerState === 'IN_CALL' || callerState === 'ON_HOLD' || callerState === 'OFFER_SENT') && (
 							<Button
 								small
