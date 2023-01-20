@@ -14,7 +14,5 @@ export function getAppsStatistics() {
 			Apps.getManager()
 				.get({ disabled: true })
 				.filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length,
-		totalPublic: Apps.isInitialized() && Apps.getManager().get({ installationType: 'public' }).length,
-		totalPrivate: Apps.isInitialized() && Apps.getManager().get({ installationType: 'private' }).length,
 	};
 }

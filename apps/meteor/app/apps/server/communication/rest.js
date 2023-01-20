@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
-import { AppInstallationMethod } from '@rocket.chat/apps-engine/definition/AppInstallationMethod';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -172,7 +171,6 @@ export class AppsRestApi {
 					let buff;
 					let marketplaceInfo;
 					let permissionsGranted;
-					let installationMethod;
 
 					if (this.bodyParams.url) {
 						if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -189,7 +187,6 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await response.arrayBuffer());
-							installationMethod = AppInstallationMethod.PRIVATE_URL;
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
@@ -225,7 +222,6 @@ export class AppsRestApi {
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
 							marketplaceInfo = await marketplaceResponse.json();
 							permissionsGranted = this.bodyParams.permissionsGranted;
-							installationMethod = AppInstallationMethod.PUBLIC_MARKETPLACE;
 						} catch (err) {
 							return API.v1.failure(err.message);
 						}
@@ -252,7 +248,6 @@ export class AppsRestApi {
 								return undefined;
 							}
 						})();
-						installationMethod = AppInstallationMethod.PRIVATE_FILE;
 					}
 
 					if (!buff) {
@@ -261,7 +256,7 @@ export class AppsRestApi {
 
 					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, installationMethod, enable: true, user });
+					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user });
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
