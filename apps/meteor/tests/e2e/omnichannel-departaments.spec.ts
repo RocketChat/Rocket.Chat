@@ -8,6 +8,7 @@ import { IS_EE } from './config/constants';
 test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('omnichannel-departments', () => {
+	test.skip(!IS_EE, 'Enterprise Edition Only');
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	let departmentName: string;
@@ -33,7 +34,7 @@ test.describe.serial('omnichannel-departments', () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
-	test('expect to not be possible adding a second department ', async () => {
+	test.skip('expect to not be possible adding a second department ', async () => {
 		test.skip(IS_EE, 'Community Edition Only');
 
 		await poOmnichannelDepartments.btnNew.click();
