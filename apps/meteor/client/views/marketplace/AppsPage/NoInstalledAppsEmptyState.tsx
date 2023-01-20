@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-const NoInstalledAppsFoundEmptyState = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
+const NoInstalledAppsEmptyState = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
 	const t = useTranslation();
 
 	return (
@@ -20,4 +20,4 @@ const NoInstalledAppsFoundEmptyState = ({ onButtonClick }: { onButtonClick: () =
 	);
 };
 
-export default NoInstalledAppsFoundEmptyState;
+export default NoInstalledAppsEmptyState;
