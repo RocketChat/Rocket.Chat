@@ -1,4 +1,4 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { useRole } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -8,7 +8,7 @@ import HomePageHeader from './HomePageHeader';
 import CustomCard from './cards/CustomCard';
 
 const CustomHomePage = (): ReactElement => {
-	const isAdmin = usePermission('view-user-administration');
+	const isAdmin = useRole('admin');
 
 	return (
 		<Page data-qa='page-home' data-qa-type='custom' color='default' background='tint'>

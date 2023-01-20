@@ -7,7 +7,7 @@ import React from 'react';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
-const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
+const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -81,7 +81,7 @@ const CustomCard = ({ isAdmin }: { isAdmin: boolean }): ReactElement => {
 		return <CustomHomepageContent />;
 	}
 
-	return <></>;
+	return null;
 };
 
 export default CustomCard;

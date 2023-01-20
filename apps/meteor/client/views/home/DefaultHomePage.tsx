@@ -1,5 +1,5 @@
 import { Box, Grid } from '@rocket.chat/fuselage';
-import { usePermission, useAtLeastOnePermission, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useSetting, useTranslation, useRole } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -19,7 +19,7 @@ const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const DefaultHomePage = (): ReactElement => {
 	const t = useTranslation();
-	const isAdmin = usePermission('view-user-administration');
+	const isAdmin = useRole('admin');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
 	const displayCustomBody = Boolean(useSetting('Layout_Home_Body'));
