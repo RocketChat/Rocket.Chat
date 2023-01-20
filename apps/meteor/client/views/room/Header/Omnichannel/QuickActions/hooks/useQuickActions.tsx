@@ -92,7 +92,7 @@ export const useQuickActions = (
 		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
 	);
 
-	const sendTranscriptPDF = useEndpoint('POST', `/v1/omnichannel/${rid}/request-transcript`);
+	const sendTranscriptPDF = useEndpoint('POST', '/v1/omnichannel/:rid/request-transcript', { rid });
 
 	const handleSendTranscriptPDF = useCallback(async () => {
 		try {
