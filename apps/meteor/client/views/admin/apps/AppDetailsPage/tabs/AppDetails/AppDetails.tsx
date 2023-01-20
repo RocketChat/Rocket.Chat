@@ -56,7 +56,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Categories')}
 						</Box>
-						<ButtonGroup medium flexWrap='wrap'>
+						<ButtonGroup flexWrap='wrap'>
 							{categories?.map((current) => (
 								<Chip key={current} textTransform='uppercase'>
 									{current}
