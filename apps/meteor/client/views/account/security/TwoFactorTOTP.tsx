@@ -125,7 +125,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
-						<TextCopy text={totpSecret || ''} />
+						<TextCopy text={totpSecret || ''} data-qa='totp-secret' />
 						<Box is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Box display='flex' flexDirection='row' w='full'>
 							<TextInput placeholder={t('Enter_authentication_code')} value={authCode} onChange={handleAuthCode} />
