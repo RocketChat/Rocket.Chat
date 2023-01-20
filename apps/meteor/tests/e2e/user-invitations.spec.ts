@@ -6,7 +6,7 @@ test.describe.serial('user-invites', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/admin/users/invite');
 
-		await expect(page.locator('[data-qa-type="VerticalBarText"]')).toHaveText('Invite Members');
+		await expect(page.locator('//div[contains(text(), "Invite Members")]')).toBeVisible();
 	});
 
 	test('expect SMTP setup warning and routing to email settings', async ({ page }) => {

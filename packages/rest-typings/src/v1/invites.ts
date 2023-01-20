@@ -1,4 +1,5 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
+import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -9,7 +10,7 @@ type UseInviteTokenProps = {
 	token: string;
 };
 
-const UseInviteTokenPropsSchema = {
+const UseInviteTokenPropsSchema: JSONSchemaType<UseInviteTokenProps> = {
 	type: 'object',
 	properties: {
 		token: {
@@ -26,7 +27,7 @@ type ValidateInviteTokenProps = {
 	token: string;
 };
 
-const ValidateInviteTokenPropsSchema = {
+const ValidateInviteTokenPropsSchema: JSONSchemaType<ValidateInviteTokenProps> = {
 	type: 'object',
 	properties: {
 		token: {
@@ -41,7 +42,7 @@ export const isValidateInviteTokenProps = ajv.compile<ValidateInviteTokenProps>(
 
 type FindOrCreateInviteParams = { rid: IRoom['_id']; days: number; maxUses: number };
 
-const FindOrCreateInviteParamsSchema = {
+const FindOrCreateInviteParamsSchema: JSONSchemaType<FindOrCreateInviteParams> = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -64,7 +65,7 @@ type SendInvitationEmailParams = {
 	emails: string[];
 };
 
-const SendInvitationEmailParamsSchema = {
+const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams> = {
 	type: 'object',
 	properties: {
 		emails: {
