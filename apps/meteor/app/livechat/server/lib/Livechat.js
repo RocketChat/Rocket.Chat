@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
@@ -1275,7 +1275,7 @@ export const Livechat = {
 		}).fetch();
 	},
 
-	requestTranscript({ rid, email, subject, user }) {
+	async requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
 		check(subject, String);
@@ -1312,7 +1312,7 @@ export const Livechat = {
 			subject,
 		};
 
-		LivechatRooms.requestTranscriptByRoomId(rid, transcriptRequest);
+		await LivechatRoomsRaw.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
 		return true;
 	},
 
