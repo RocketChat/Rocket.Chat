@@ -11,7 +11,7 @@ import { saveRoomTopic } from '../../../../../channel-settings/server/functions/
 import { getFederatedUserByInternalUsername } from './User';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/InternalFederatedRoomRoles';
 import { settings } from '../../../../../settings/server';
-import { api } from '../../../../../../server/sdk/api';
+import { api } from '@rocket.chat/core-services';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {

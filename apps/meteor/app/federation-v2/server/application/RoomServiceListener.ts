@@ -25,7 +25,7 @@ import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
 import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-
+require('util').inspect.defaultOptions.depth = null;
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
@@ -416,6 +416,7 @@ export class FederationRoomServiceListener extends FederationService {
 
 	public async onChangeRoomPowerLevels(roomPowerLevelsInput: FederationRoomRoomChangePowerLevelsEventDto): Promise<void> {
 		const { externalRoomId, roleChangesToApply = {}, externalSenderId } = roomPowerLevelsInput;
+		console.log({ roomPowerLevelsInput })
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {

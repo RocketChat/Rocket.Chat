@@ -294,7 +294,7 @@ export class FederationRoomServiceSender extends FederationService {
 				federatedRoom.getExternalId(),
 				federatedOwnerUser.getExternalId(),
 				federatedUser.getExternalId(),
-				MATRIX_POWER_LEVELS.OWNER,
+				MATRIX_POWER_LEVELS.ADMIN,
 			);
 		} catch (e) {
 			this.internalNotificationAdapter.notifyWithEphemeralMessage(
@@ -305,48 +305,48 @@ export class FederationRoomServiceSender extends FederationService {
 		}
 	}
 
-	public async onRoomOwnerRemoved(internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> {
-		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
+	// public async onRoomOwnerRemoved(internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> {
+	// 	const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+	// 	if (!federatedRoom) {
+	// 		return;
+	// 	}
 
-		const federatedOwnerUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalOwnerId);
-		if (!federatedOwnerUser) {
-			return;
-		}
+	// 	const federatedOwnerUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalOwnerId);
+	// 	if (!federatedOwnerUser) {
+	// 		return;
+	// 	}
 
-		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
-		if (!federatedUser) {
-			return;
-		}
+	// 	const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+	// 	if (!federatedUser) {
+	// 		return;
+	// 	}
 
-		if (federatedRoom.isTheCreator(federatedUser.getInternalId())) {
-			return;
-		}
+	// 	if (federatedRoom.isTheCreator(federatedUser.getInternalId())) {
+	// 		return;
+	// 	}
 
-		const isOwnerFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedOwnerUser.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
-		);
-		if (!isOwnerFromTheSameHomeServer) {
-			return;
-		}
-		try {
-			await this.bridge.setRoomPowerLevels(
-				federatedRoom.getExternalId(),
-				federatedOwnerUser.getExternalId(),
-				federatedUser.getExternalId(),
-				MATRIX_POWER_LEVELS.USER,
-			);
-		} catch (e) {
-			this.internalNotificationAdapter.notifyWithEphemeralMessage(
-				'Federation_Matrix_error_applying_room_roles',
-				federatedOwnerUser.getInternalId(),
-				federatedRoom.getInternalId(),
-			);
-		}
-	}
+	// 	const isOwnerFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+	// 		this.bridge.extractHomeserverOrigin(federatedOwnerUser.getExternalId()),
+	// 		this.internalSettingsAdapter.getHomeServerDomain(),
+	// 	);
+	// 	if (!isOwnerFromTheSameHomeServer) {
+	// 		return;
+	// 	}
+	// 	try {
+	// 		await this.bridge.setRoomPowerLevels(
+	// 			federatedRoom.getExternalId(),
+	// 			federatedOwnerUser.getExternalId(),
+	// 			federatedUser.getExternalId(),
+	// 			MATRIX_POWER_LEVELS.USER,
+	// 		);
+	// 	} catch (e) {
+	// 		this.internalNotificationAdapter.notifyWithEphemeralMessage(
+	// 			'Federation_Matrix_error_applying_room_roles',
+	// 			federatedOwnerUser.getInternalId(),
+	// 			federatedRoom.getInternalId(),
+	// 		);
+	// 	}
+	// }
 
 	public async onRoomModeratorAdded(internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> {
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);

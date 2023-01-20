@@ -37,8 +37,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links');
 	const isFederated = room && isRoomFederated(room);
 
-	const canCreateInviteLinks =
-		room && isRoomFederated(room) ? hasPermissionToCreateInviteLinks && room.t === 'c' : hasPermissionToCreateInviteLinks;
+	const canCreateInviteLinks = isFederated ? hasPermissionToCreateInviteLinks && room.t === 'c' : hasPermissionToCreateInviteLinks;
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,

@@ -28,7 +28,7 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		return {
 			ban: MATRIX_POWER_LEVELS.MODERATOR,
 			events_default: MATRIX_POWER_LEVELS.USER,
-			historical: MATRIX_POWER_LEVELS.OWNER,
+			historical: MATRIX_POWER_LEVELS.ADMIN,
 			invite: MATRIX_POWER_LEVELS.MODERATOR,
 			kick: MATRIX_POWER_LEVELS.MODERATOR,
 			redact: MATRIX_POWER_LEVELS.MODERATOR,
@@ -37,12 +37,12 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 			events: {
 				'm.room.avatar': MATRIX_POWER_LEVELS.MODERATOR,
 				'm.room.canonical_alias': MATRIX_POWER_LEVELS.MODERATOR,
-				'm.room.encryption': MATRIX_POWER_LEVELS.OWNER,
-				'm.room.history_visibility': MATRIX_POWER_LEVELS.OWNER,
+				'm.room.encryption': MATRIX_POWER_LEVELS.ADMIN,
+				'm.room.history_visibility': MATRIX_POWER_LEVELS.ADMIN,
 				'm.room.name': MATRIX_POWER_LEVELS.MODERATOR,
 				'm.room.power_levels': MATRIX_POWER_LEVELS.MODERATOR,
-				'm.room.server_acl': MATRIX_POWER_LEVELS.OWNER,
-				'm.room.tombstone': MATRIX_POWER_LEVELS.OWNER,
+				'm.room.server_acl': MATRIX_POWER_LEVELS.ADMIN,
+				'm.room.tombstone': MATRIX_POWER_LEVELS.ADMIN,
 			},
 		};
 	}
