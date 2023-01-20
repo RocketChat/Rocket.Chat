@@ -1,4 +1,5 @@
 import type { IReport } from '@rocket.chat/core-typings';
+
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ReportHistoryProps } from './ReportHistoryProps';
 
