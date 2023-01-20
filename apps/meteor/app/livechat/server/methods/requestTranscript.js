@@ -19,6 +19,9 @@ Meteor.methods({
 		const user = Users.findOneById(Meteor.userId(), {
 			fields: { _id: 1, username: 1, name: 1, utcOffset: 1 },
 		});
-		return Livechat.requestTranscript({ rid, email, subject, user });
+
+		Promise.await(Livechat.requestTranscript({ rid, email, subject, user }));
+
+		return true;
 	},
 });

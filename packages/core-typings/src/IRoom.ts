@@ -9,10 +9,10 @@ type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 export type RoomID = string;
 export type ChannelName = string;
 interface IRequestTranscript {
-	email: string;
+	email: string; // the email address to send the transcript to
+	subject: string; // the subject of the email
 	requestedAt: Date;
-	requestedBy: IUser;
-	subject: string;
+	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
 }
 
 export interface IRoom extends IRocketChatRecord {
@@ -155,7 +155,10 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		// The default sidebar icon
 		defaultIcon?: string;
 	};
+
+	// Note: this field is used only for email transcripts. For Pdf transcripts, we have a separate field.
 	transcriptRequest?: IRequestTranscript;
+
 	servedBy?: {
 		_id: string;
 		ts: Date;

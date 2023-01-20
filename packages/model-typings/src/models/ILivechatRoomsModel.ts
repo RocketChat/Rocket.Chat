@@ -113,4 +113,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
 	unsetTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
 	setPdfTranscriptFileIdById(rid: string, fileId: string): Promise<UpdateResult>;
+
+	setEmailTranscriptRequestedByRoomId(
+		rid: string,
+		transcriptInfo: NonNullable<IOmnichannelRoom['transcriptRequest']>,
+	): Promise<UpdateResult>;
+	unsetEmailTranscriptRequestedByRoomId(rid: string): Promise<UpdateResult>;
 }

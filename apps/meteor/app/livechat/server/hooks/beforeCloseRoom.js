@@ -42,5 +42,5 @@ callbacks.add(
 		return normalizeParams({ ...originalParams }, extraRoomTags);
 	},
 	callbacks.priority.HIGH,
-	'livechat-before-close-Room',
+	'livechat-request-tag-before-closing-chat',
 );

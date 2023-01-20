@@ -14,7 +14,7 @@ import './hooks/sendToFacebook';
 import './hooks/processRoomAbandonment';
 import './hooks/saveLastVisitorMessageTs';
 import './hooks/markRoomNotResponded';
-import './hooks/sendTranscriptOnClose';
+import './hooks/sendEmailTranscriptOnClose';
 import './hooks/saveContactLastChat';
 import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
