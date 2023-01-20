@@ -61,9 +61,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 					<Box mi='x16' color='disabled'>
 						|
 					</Box>
-
 					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
-
 					{lastUpdated && (
 						<>
 							<Box mi='x16' color='disabled'>
