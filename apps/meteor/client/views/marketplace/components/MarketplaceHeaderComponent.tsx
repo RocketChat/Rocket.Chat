@@ -6,7 +6,7 @@ import EnabledAppsCount from './EnabledAppsCount';
 
 const MarketplaceHeaderComponent = ({ title }: { title: string }) => {
 	const t = useTranslation();
-	const hasPermission = usePermission('manage-assets');
+	const hasPermission = usePermission('enable-unlimited-apps');
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
 	const context = useRouteParameter('context') || 'explore';
 	const route = useRoute('marketplace');
