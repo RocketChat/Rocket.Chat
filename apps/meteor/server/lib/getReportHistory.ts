@@ -1,7 +1,8 @@
 import type { IReport } from '@rocket.chat/core-typings';
 import type { ReportHistoryProps } from '@rocket.chat/rest-typings';
-import { Reports } from '/app/models/server';
 import _ from 'underscore';
+
+import { Reports } from '../../app/models/server';
 
 export const getReportHistory = (params: ReportHistoryProps): Array<IReport> => {
 	const { latest, oldest, count } = params;

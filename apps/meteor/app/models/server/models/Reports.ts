@@ -2,7 +2,7 @@ import type { IReport } from '@rocket.chat/core-typings';
 
 import { Base } from './_Base';
 
-class Reports extends Base {
+export class Reports extends Base {
 	constructor() {
 		super('reports');
 	}
