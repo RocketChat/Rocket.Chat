@@ -118,8 +118,6 @@ export interface IStats {
 		totalInstalled: number | false;
 		totalActive: number | false;
 		totalFailed: number | false;
-		totalPublic: number | false;
-		totalPrivate: number | false;
 	};
 	services: Record<string, unknown>;
 	importer: Record<string, unknown>;
