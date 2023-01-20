@@ -150,7 +150,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll showArchived value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (

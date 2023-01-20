@@ -470,6 +470,7 @@ type LivechatDepartmentProps = PaginatedRequest<{
 	onlyMyDepartments?: booleanString;
 	enabled?: booleanString;
 	excludeDepartmentId?: string;
+	showArchived?: booleanString;
 }>;
 
 const LivechatDepartmentSchema = {
@@ -2773,6 +2774,21 @@ export type OmnichannelEndpoints = {
 			agents: ILivechatDepartmentAgents[];
 		};
 		DELETE: () => void;
+	};
+	'/v1/livechat/department/archived': {
+		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
+	};
+	'/v1/livechat/department/:_id/archive': {
+		POST: () => void;
+	};
+	'/v1/livechat/department/:_id/unarchive': {
+		POST: () => void;
+	};
+
+	'/v1/livechat/department/isDepartmentCreationAvailable': {
+		GET: () => { departmentCreationAvailable: boolean };
 	};
 	'/v1/livechat/department.autocomplete': {
 		GET: (params: LivechatDepartmentAutocomplete) => {

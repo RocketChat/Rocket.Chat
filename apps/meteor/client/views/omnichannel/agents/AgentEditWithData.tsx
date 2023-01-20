@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import AgentEdit from './AgentEdit';
 
 type AgentEditWithDataProps = {
@@ -15,23 +14,26 @@ type AgentEditWithDataProps = {
 
 const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
-	const {
-		value: userDepartments,
-		phase: userDepartmentsState,
-		error: userDepartmentsError,
-	} = useEndpointData('/v1/livechat/agents/:agentId/departments', { keys: { agentId: uid } });
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('/v1/livechat/department');
+	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
-	if (
-		[state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING) ||
-		!userDepartments ||
-		!availableDepartments
-	) {
+	const getAgent = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
+
+	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
+
+	const { data, isLoading: state, error } = useQuery(['getAgent'], async () => getAgent());
+	const {
+		data: userDepartments,
+		isLoading: userDepartmentsState,
+		error: userDepartmentsError,
+	} = useQuery(['getAgentDepartments'], async () => getAgentDepartments());
+
+	const {
+		data: availableDepartments,
+		isLoading: availableDepartmentsState,
+		error: availableDepartmentsError,
+	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: true }));
+
+	if (state || availableDepartmentsState || userDepartmentsState || !userDepartments || !availableDepartments) {
 		return <FormSkeleton />;
 	}
 

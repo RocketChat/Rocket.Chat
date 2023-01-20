@@ -218,7 +218,7 @@ export const LivechatEnterprise = {
 	async saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
 
-		const department = _id && (await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } }));
+		const department = _id && (await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }));
 
 		if (!hasLicense('livechat-enterprise')) {
 			const totalDepartments = await LivechatDepartmentRaw.countTotal();
@@ -227,6 +227,12 @@ export const LivechatEnterprise = {
 					method: 'livechat:saveDepartment',
 				});
 			}
+		}
+		console.log(department?.archived, departmentData.enabled);
+		if (department?.archived && departmentData.enabled) {
+			throw new Meteor.Error('error-archived-department-cant-be-enabled', 'Archived departments cant be enabled', {
+				method: 'livechat:saveDepartment',
+			});
 		}
 
 		const defaultValidations = {
@@ -289,6 +295,10 @@ export const LivechatEnterprise = {
 		}
 
 		return departmentDB;
+	},
+
+	async isDepartmentCreationAvailable() {
+		return hasLicense('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
 	},
 };
 

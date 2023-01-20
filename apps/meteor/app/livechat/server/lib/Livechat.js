@@ -9,7 +9,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import {
+	Users as UsersRaw,
+	LivechatVisitors,
+	LivechatCustomField,
+	Settings,
+	LivechatDepartment as LivechatDepartmentRaw,
+} from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
@@ -1064,7 +1070,15 @@ export const Livechat = {
 	removeDepartment(_id) {
 		check(_id, String);
 
-		const department = LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
+		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+
+		if (!departmentRemovalEnabled) {
+			throw new Meteor.Error('department-removal-disabled', 'Department removal is disabled', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		const department = LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', {
@@ -1083,6 +1097,21 @@ export const Livechat = {
 			});
 		}
 		return ret;
+	},
+
+	archiveOrUnarchiveDepartment(_id, archive) {
+		check(_id, String);
+		check(archive, Boolean);
+
+		const department = LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.archiveOrUnarchiveDepartment(_id, archive);
 	},
 
 	showConnecting() {

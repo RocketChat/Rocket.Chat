@@ -14,6 +14,7 @@ type DepartmentsListOptions = {
 	haveNone?: boolean;
 	excludeDepartmentId?: string;
 	enabled?: boolean;
+	showArchived?: boolean;
 };
 
 export const useDepartmentsList = (
@@ -44,6 +45,7 @@ export const useDepartmentsList = (
 				sort: `{ "name": 1 }`,
 				excludeDepartmentId: options.excludeDepartmentId,
 				enabled: options.enabled ? 'true' : 'false',
+				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
 			const items = departments
@@ -54,6 +56,9 @@ export const useDepartmentsList = (
 					return true;
 				})
 				.map((department: any) => {
+					if (department.archived) {
+						department.name = `${department.name} [${t('Archived')}]`;
+					}
 					department._updatedAt = new Date(department._updatedAt);
 					department.label = department.name;
 					department.value = { value: department._id, label: department.name };
@@ -81,13 +86,14 @@ export const useDepartmentsList = (
 		},
 		[
 			getDepartments,
-			options.departmentId,
-			options.filter,
-			options.haveAll,
 			options.onlyMyDepartments,
-			options.haveNone,
+			options.filter,
 			options.excludeDepartmentId,
 			options.enabled,
+			options.showArchived,
+			options.haveAll,
+			options.haveNone,
+			options.departmentId,
 			t,
 		],
 	);

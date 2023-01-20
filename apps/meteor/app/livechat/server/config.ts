@@ -413,6 +413,15 @@ Meteor.startup(function () {
 			enableQuery: [{ _id: 'Livechat_enable_transcript', value: true }, omnichannelEnabledQuery],
 		});
 
+		this.add('Omnichannel_enable_department_removal', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			i18nLabel: 'Omnichannel_enable_department_removal',
+			alert: 'Omnichannel_enable_department_removal_alert',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		this.add('Livechat_registration_form_message', '', {
 			type: 'string',
 			group: 'Omnichannel',
