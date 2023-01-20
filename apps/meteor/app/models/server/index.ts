@@ -10,6 +10,7 @@ import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatInquiry from './models/LivechatInquiry';
 import ImportData from './models/ImportData';
+import Reports from './models/Reports';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -29,4 +30,5 @@ export {
 	LivechatRooms,
 	LivechatInquiry,
 	ImportData,
+	Reports,
 };
