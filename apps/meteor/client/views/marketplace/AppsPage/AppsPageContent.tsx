@@ -120,13 +120,14 @@ const AppsPageContent = (): ReactElement => {
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
+
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
 
 			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
 				<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
 					<Box overflowY='scroll'>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
-						<AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />
+						<AppsList apps={appsResult.value.items} title={t('All_Apps')} />
 					</Box>
 					{Boolean(appsResult.value.count) && (
 						<Pagination
@@ -141,9 +142,11 @@ const AppsPageContent = (): ReactElement => {
 					)}
 				</Box>
 			)}
+
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
 			)}
+
 			{noInstalledAppMatches && (
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}
@@ -151,7 +154,9 @@ const AppsPageContent = (): ReactElement => {
 					onButtonClick={handleReturn}
 				/>
 			)}
+
 			{noInstalledApps && <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}
+
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
