@@ -1,71 +1,31 @@
+import React, { useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
 	useQueryStringParameter,
-	useRoute,
-	useRouteParameter,
 	useMethod,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import RegisterWorkspaceMenu from './components/RegisterWorkspaceMenu';
 import RegisterWorkspaceCards from './components/RegisterWorkspaceCards';
 import RegisterWorkspaceModal from './modals/WorkspaceRegistrationModal';
 
-const CloudPage = function CloudPage(): ReactNode {
+const RegisterWorkspace = (): ReactNode => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const cloudRoute = useRoute('cloud');
-
-	const page = useRouteParameter('page');
-
-	const errorCode = useQueryStringParameter('error_code');
-	const code = useQueryStringParameter('code');
-	const state = useQueryStringParameter('state');
 	const token = useQueryStringParameter('token');
-
-	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
 
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
 	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
 	const reload = useMutableCallback(() => result.refetch());
 
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
-
-	useEffect(() => {
-		const acceptOAuthAuthorization = async (): Promise<void> => {
-			if (page !== 'oauth-callback') {
-				return;
-			}
-
-			if (errorCode) {
-				dispatchToastMessage({
-					type: 'error',
-					title: t('Cloud_error_in_authenticating'),
-					message: t('Cloud_error_code', { errorCode }),
-				});
-				cloudRoute.push();
-				return;
-			}
-
-			try {
-				await finishOAuthAuthorization(code, state);
-			} catch (error: unknown) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				cloudRoute.push();
-			}
-		};
-
-		acceptOAuthAuthorization();
-	}, [errorCode, code, state, page, dispatchToastMessage, t, cloudRoute, finishOAuthAuthorization]);
 
 	const setModal = useSetModal();
 
@@ -118,14 +78,14 @@ const CloudPage = function CloudPage(): ReactNode {
 			
 			<Page.ScrollableContentWithShadow>
 				{isWorkspaceRegistered ? (
-					<Tag variant='primary'>Workspace registered</Tag>
+					<Tag variant='primary'>{t('RegisterWorkspace_Registered_Title')}</Tag>
 				) : (
-					<Tag variant='secondary-danger'>Workspace not registered</Tag>
+					<Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>
 				)}
 				
 				<Box pb={8}>
 					<Box fontSize='h3' fontWeight={700}>{
-						isWorkspaceRegistered ? 'These services are available' : 'Benefits of registering workspace'
+						isWorkspaceRegistered ? t('RegisterWorkspace_Registered_Description') : t('RegisterWorkspace_NotRegistered_Description')
 					}</Box>
 					<RegisterWorkspaceCards />
 				</Box>
@@ -134,4 +94,4 @@ const CloudPage = function CloudPage(): ReactNode {
 	);
 };
 
-export default CloudPage;
+export default RegisterWorkspace;

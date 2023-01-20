@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { cloudConsoleUrl } from '../constants';
-// import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 
 type RegisterWorkspaceMenuProps = {
   isWorkspaceRegistered: boolean | string,
@@ -9,23 +9,23 @@ type RegisterWorkspaceMenuProps = {
 }
 
 const RegisterWorkspaceMenu = ({ isWorkspaceRegistered, onClick }: RegisterWorkspaceMenuProps) => {
-  // const t = useTranslation();
+  const t = useTranslation();
 
   return (
     <ButtonGroup>
       {!isWorkspaceRegistered ? (
         <Button primary onClick={onClick}>
-          {'Register Workspace'}
+          {t('RegisterWorkspace_Button')}
         </Button>
       ) : (
         <>
           <Button is='a' href={cloudConsoleUrl} target='_blank' rel='noopener noreferrer'>
             <Icon name='new-window' size='x20' pie={4} />
-            {'Cloud'}
+            {t('Cloud')}
           </Button>
           <Button>
             <Icon name='customize' size='x20' pie={4} />
-            {'Manage'}
+            {t('Manage')}
           </Button>
         </>
       )}

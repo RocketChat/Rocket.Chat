@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, ButtonGroup, Field, Modal, TextInput } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import WorkspaceRegistrationModal from './WorkspaceRegistrationModal';
 
 type RegisterWorkspaceTokenModalProps = {
@@ -9,6 +9,7 @@ type RegisterWorkspaceTokenModalProps = {
 
 const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTokenModalProps) => {
   const setModal = useSetModal();
+  const t = useTranslation();
 
   const handleTokenModal = (): void => {
 		const handleModalClose = (): void => setModal(null);
@@ -19,15 +20,15 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
     <Modal {...props}>
       <Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Title>Register workspace with token</Modal.Title>
+					<Modal.Title>{t('RegisterWorkspace_Token_Title')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
       <Modal.Content>
-        <Box is='p' fontSize='p2'>1. Go to: <strong>cloud.rocket.chat {`>`} Workspaces</strong> and click <strong>“Register self-managed"</strong>.</Box>
-        <Box is='p' fontSize='p2'>2. Copy the token and paste it below</Box>
+        <Box is='p' fontSize='p2'>`1. ${t('RegisterWorkspace_Token_Step_One')}`</Box>
+        <Box is='p' fontSize='p2'>`2. ${t('RegisterWorkspace_Token_Step_Two')}</Box>
         <Field pbs={10}>
-          <Field.Label>Registration token</Field.Label>
+          <Field.Label>{t('Registration_Token')}</Field.Label>
           <Field.Row>
             <TextInput />
           </Field.Row>
@@ -36,10 +37,10 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
       <Modal.Footer>
         <ButtonGroup align='end'>
           <Button onClick={handleTokenModal}>
-            {'Back'}
+            {t('Back')}
           </Button>
           <Button primary onClick={() => console.log('submit')}>
-            {'Next'}
+            {t('Next')}
           </Button>
         </ButtonGroup>
       </Modal.Footer>

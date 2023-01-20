@@ -1,34 +1,18 @@
 import React from 'react';
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';
+import useFeatureBullets from '../hooks/useFeatureBullets';
 
 type WorkspaceRegistrationModalProps = {
   onClose: () => void,
 }
 
-export const bulletItems = [
-  {
-    title: 'Mobile push notifications',
-    description: 'Allows workspace members to receive notifications on their mobile devices.',
-  },
-  {
-    title: 'Marketplace',
-    description: 'Install Rocket.Chat Marketplace apps on this workspace.',
-  },
-  {
-    title: 'Omnichannel',
-    description: 'Talk to your audience, where they are, through the most popular social channels in the world.',
-  },
-  {
-    title: 'Third-party login',
-    description: 'Let workspace members log in using a set of third-party applications.',
-  },
-];
-
 const WorkspaceRegistrationModal = ({ onClose, ...props }: WorkspaceRegistrationModalProps) => {
   const setModal = useSetModal();
+  const bulletFeatures = useFeatureBullets();
+  const t = useTranslation();
 
   const handleTokenModal = (): void => {
 		const handleModalClose = (): void => setModal(null);
@@ -44,37 +28,37 @@ const WorkspaceRegistrationModal = ({ onClose, ...props }: WorkspaceRegistration
     <Modal {...props}>
       <Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Title>Workspace not registered</Modal.Title>
+					<Modal.Title>{t('RegisterWorkspace_NotRegistered_Title')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
       <Modal.Content>
 				<Box withRichContent>
-					<span>Register this workspace and get:</span>
+					<span>`${t('RegisterWorkspace_NotRegistered_Subtitle')}:`</span>
           <ul>
             {
-              bulletItems.map((item, index) => (
-                <li key={index}>
-                  <strong>{item.title}</strong>
-                  <Box is='p' mbs={4}>{item.description}</Box>
+              bulletFeatures.map(features => (
+                <li key={features.key}>
+                  <strong>{features.title}</strong>
+                  <Box is='p' mbs={4}>{features.description}</Box>
                 </li>
               ))
             }
           </ul>
-          <Box is='p' fontSize='p2'>Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared with Rocket.Chat.</Box>
+          <Box is='p' fontSize='p2'>{t('RegisterWorkspace_Registered_Benefits')}</Box>
 				</Box>
 			</Modal.Content>
       <Modal.Footer>
         <Box is='div' display='flex' justifyContent='space-between' alignItems='center' w='full'>
           <a href={'https://cloud.rocket.chat'} target='_blank' rel='noopener noreferrer'>
-            {'Learn more'}
+            {t('Learn_more')}
           </a>
           <ButtonGroup align='end'>
             <Button onClick={handleTokenModal}>
-              {'Use token'}
+              {t('Use_token')}
             </Button>
             <Button primary onClick={handleSetupModal}>
-              {'Register Workspace'}
+              {t('RegisterWorkspace_Button')}
             </Button>
           </ButtonGroup>
         </Box>
