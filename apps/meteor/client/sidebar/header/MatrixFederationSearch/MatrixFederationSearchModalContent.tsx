@@ -20,9 +20,7 @@ type MatrixFederationSearchModalContentProps = {
 
 const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContentProps> = ({ defaultSelectedServer, servers }) => {
 	const [serverName, setServerName] = useState(() => {
-		console.log('defaultSelectedServer', defaultSelectedServer);
 		const defaultServer = servers.find((server) => server.name === defaultSelectedServer);
-		console.log('defaultServer', defaultServer);
 		return defaultServer?.name ?? servers[0].name;
 	});
 

@@ -39,7 +39,7 @@ const MatrixFederationRemoveServerList: VFC<MatrixFederationRemoveServerListProp
 				{t('Servers')}
 			</Box>
 			{servers.map(({ name, default: isDefault }) => (
-				<Option key={name}>
+				<Option key={name} title={name}>
 					<OptionContent>{name}</OptionContent>
 					{!isDefault && (
 						<Icon
