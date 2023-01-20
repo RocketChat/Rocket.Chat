@@ -2436,6 +2436,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.16.4":
+  version: 7.20.7
+  resolution: "@babel/runtime@npm:7.20.7"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 4629ce5c46f06cca9cfb9b7fc00d48003335a809888e2b91ec2069a2dcfbfef738480cff32ba81e0b7c290f8918e5c22ddcf2b710001464ee84ba62c7e32a3a3
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:~7.5.4":
   version: 7.5.5
   resolution: "@babel/runtime@npm:7.5.5"
@@ -5266,8 +5275,8 @@ __metadata:
   linkType: hard
 
 "@react-pdf/layout@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@react-pdf/layout@npm:3.2.1"
+  version: 3.2.2
+  resolution: "@react-pdf/layout@npm:3.2.2"
   dependencies:
     "@babel/runtime": ^7.16.4
     "@react-pdf/fns": 2.0.0
@@ -5281,7 +5290,7 @@ __metadata:
     cross-fetch: ^3.1.5
     emoji-regex: ^8.0.0
     queue: ^6.0.1
-  checksum: 2f58cf70512d0e5b52a0a900f02b1917495534f2b4e4f83a8a74809b39d494e77e76952855b8989fd06411165ac30caa7c2e96bc1e63e4bbc1064ed6d6a0cff9
+  checksum: 8f85e429851f6e5be0ac8df4621501ceabeacb4b787c0240fc8389569abe54e48a23930ccfcf643d9fe2c221a23560e2fbc61b6bf75f1ad6d07873840eff2bac
   languageName: node
   linkType: hard
 
@@ -10696,13 +10705,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18.0.26":
-  version: 18.0.26
-  resolution: "@types/react@npm:18.0.26"
+  version: 18.0.27
+  resolution: "@types/react@npm:18.0.27"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: b62f0ea3cdfa68e106391728325057ad36f1bde7ba2dfae029472c47e01e482bc77c6ba4f1dad59f3f04ee81cb597618ff7c30a33c157c0a20462b6dd6aa2d4d
+  checksum: 600fdbc39a92ea4a77047db3e12f05f67776a710f5918248c0189a59ac2a38900c9db5a5d2e433a16df528a3ecab1aa114b322cacea573bb1ca2fc0b094c52d1
   languageName: node
   linkType: hard
 
@@ -18039,8 +18048,8 @@ __metadata:
   linkType: hard
 
 "eslint@npm:^8.12.0":
-  version: 8.31.0
-  resolution: "eslint@npm:8.31.0"
+  version: 8.32.0
+  resolution: "eslint@npm:8.32.0"
   dependencies:
     "@eslint/eslintrc": ^1.4.1
     "@humanwhocodes/config-array": ^0.11.8
@@ -18083,7 +18092,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 5e5688bb864edc6b12d165849994812eefa67fb3fc44bb26f53659b63edcd8bcc68389d27cc6cc9e5b79ee22f24b6f311fa3ed047bddcafdec7d84c1b5561e4f
+  checksum: 23c8fb3c57291eecd9c1448faf603226a8f885022a2cd96e303459bf72e39b7f54987c6fb948f0f9eecaf7085600e6eb0663482a35ea83da12e9f9141a22b91e
   languageName: node
   linkType: hard
 
