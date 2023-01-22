@@ -125,19 +125,6 @@ const convertNumericalPowerLevelToInternalRole = (powerLevel: number): ROCKET_CH
 	return ROCKET_CHAT_FEDERATION_ROLES.OWNER;
 };
 
-// const getActionsWhenChangeOwnership = (action: 'add' | 'remove'): { action: 'remove' | 'add'; role: ROCKET_CHAT_FEDERATION_ROLES }[] => [
-// 	{
-// 		action,
-// 		role: ROCKET_CHAT_FEDERATION_ROLES.OWNER,
-// 	},
-// ];
-// const getActionsWhenChangeModerators = (action: 'add' | 'remove'): { action: 'remove' | 'add'; role: ROCKET_CHAT_FEDERATION_ROLES }[] => [
-// 	{
-// 		action,
-// 		role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR,
-// 	},
-// ];
-
 const onlyRolesAddedToDefaultUsers = (previousRolesState: { [key: string]: number }, externalUserId: string): boolean =>
 	!previousRolesState[externalUserId];
 
@@ -154,9 +141,6 @@ const verifyIfNewRolesWereAddedForDefaultUsers = (
 			externalRolesChangesForDefaultUsers[externalUserId] = isCurrentRoleAnOwner
 				? [{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER }]
 				: [{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR }];
-			// externalRolesChangesForDefaultUsers[externalUserId] = isCurrentRoleAnOwner
-			// 	? getActionsWhenChangeOwnership('add')
-			// 	: getActionsWhenChangeModerators('add');
 			return externalRolesChangesForDefaultUsers;
 		}, changesAlreadyMadeToRoles);
 
@@ -179,10 +163,6 @@ const createExternalRolesChangesActions = (
 				? [{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER }]
 				: [{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR }];
 			return externalRolesChangesByUser;
-			// externalRolesChangesByUser[externalUserId] = wasPreviousRoleAnOwner
-			// 	? getActionsWhenChangeOwnership('remove')
-			// 	: getActionsWhenChangeModerators('remove');
-			// return externalRolesChangesByUser;
 		}
 		if (isStillTheSameRole) {
 			return externalRolesChangesByUser;
@@ -203,9 +183,6 @@ const createExternalRolesChangesActions = (
 					{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR },
 					{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER },
 			  ];
-		// externalRolesChangesByUser[externalUserId] = isCurrentRoleAnOwner
-		// 	? getActionsWhenChangeOwnership('add')
-		// 	: getActionsWhenChangeModerators('add');
 
 		return externalRolesChangesByUser;
 	}, {} as IExternalRolesChangesToApplyInputDto);
