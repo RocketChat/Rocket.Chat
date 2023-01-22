@@ -161,14 +161,14 @@ export class FederationHooks {
 			_id: role,
 			type: action,
 			scope: internalRoomId,
-			u: { _id: internalUserId = undefined } = {},
-			givenByUserId: internalOwnerId,
+			u: { _id: internalTargetUserId = undefined } = {},
+			givenByUserId: internalUserId,
 		} = data;
 		const roleEventsInterestedIn = ['moderator', 'owner'];
 		if (!roleEventsInterestedIn.includes(role)) {
 			return;
 		}
-		const handlers: Record<string, (internalOwnerId: string, internalUserId: string, internalRoomId: string) => Promise<void>> = {
+		const handlers: Record<string, (internalUserId: string, internalTargetUserId: string, internalRoomId: string) => Promise<void>> = {
 			'owner-added': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
 				federationRoomService.onRoomOwnerAdded(internalOwnerId, internalUserId, internalRoomId),
 			'owner-removed': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
@@ -182,7 +182,7 @@ export class FederationHooks {
 		if (!handlers[`${role}-${action}`]) {
 			return;
 		}
-		Promise.await(handlers[`${role}-${action}`](internalOwnerId, internalUserId, internalRoomId));
+		Promise.await(handlers[`${role}-${action}`](internalUserId, internalTargetUserId, internalRoomId));
 	}
 
 	public static removeCEValidation(): void {

@@ -3,8 +3,9 @@ import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 
 import { hasPermission, getUsersInRole } from '../../app/authorization/server';
-import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	async removeRoomOwner(rid, userId) {
@@ -19,7 +20,8 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(uid, 'set-owner', rid)) {
+		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		if (!hasPermission(uid, 'set-owner', rid) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomOwner',
 			});

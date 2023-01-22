@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { IRoom, IUser, isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -13,6 +13,25 @@ import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import GenericModal from '../../../../../components/GenericModal';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 
+const getWarningModalForFederatedRooms = (
+	closeModalFn: () => void,
+	handleConfirmFn: () => void,
+	title: string,
+	confirmText: string,
+	bodyText: string,
+): ReactElement => (
+	<GenericModal
+		variant='warning'
+		onClose={closeModalFn}
+		onConfirm={handleConfirmFn}
+		onCancel={closeModalFn}
+		title={title}
+		confirmText={confirmText}
+	>
+		{bodyText}
+	</GenericModal>
+);
+
 // TODO: Remove endpoint concatenation
 export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {
 	const t = useTranslation();
@@ -26,6 +45,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	const loggedUserIsModerator = useUserHasRoomRole(loggedUserId, rid, 'moderator');
 	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, rid, 'owner');
 	const setModal = useSetModal();
+	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	if (!room) {
 		throw Error('Room not provided');
@@ -44,61 +64,54 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		successMessage: t(changeModeratorMessage, { username: user.username, room_name: roomName }),
 	});
 
+	const handleConfirm = useCallback(() => {
+		changeModerator({ roomId: rid, userId: uid });
+		closeModal();
+	}, [changeModerator, rid, uid, closeModal]);
+
 	const handleChangeModerator = useCallback(
 		({ userId }) => {
-			const handleClose = (): void => {
-				setModal(null);
-			};
+			if (!isRoomFederated(room)) {
+				return changeModerator({ roomId: rid, userId: uid });
+			}
 			if (userId === loggedUserId) {
 				if (loggedUserIsModerator) {
-					setModal(() => (
-						<GenericModal
-							variant='warning'
-							onClose={handleClose}
-							onConfirm={() => changeModerator({ roomId: rid, userId: uid })}
-							onCancel={handleClose}
-							title={t('Federation_Matrix_losing_privileges')}
-							confirmText={'Yes, continue'}
-						>
-							{t('Federation_Matrix_losing_privileges_warning')}
-						</GenericModal>
-					));
-					return;
+					return setModal(() =>
+						getWarningModalForFederatedRooms(
+							closeModal,
+							handleConfirm,
+							t('Federation_Matrix_losing_privileges'),
+							t('Yes_continue'),
+							t('Federation_Matrix_losing_privileges_warning'),
+						),
+					);
 				}
 				if (loggedUserIsOwner) {
-					setModal(() => (
-						<GenericModal
-							variant='warning'
-							onClose={handleClose}
-							onConfirm={() => changeModerator({ roomId: rid, userId: uid })}
-							onCancel={handleClose}
-							title={t('Federation_Matrix_losing_privileges')}
-							confirmText={'Yes, continue'}
-						>
-							{t('Federation_Matrix_losing_privileges_warning')}
-						</GenericModal>
-					));
+					return setModal(() =>
+						getWarningModalForFederatedRooms(
+							closeModal,
+							handleConfirm,
+							t('Federation_Matrix_losing_privileges'),
+							t('Yes_continue'),
+							t('Federation_Matrix_losing_privileges_warning'),
+						),
+					);
 				}
-				return;
 			}
 			if (userId !== loggedUserId && loggedUserIsModerator) {
-				setModal(() => (
-					<GenericModal
-						variant='warning'
-						onClose={handleClose}
-						onConfirm={() => changeModerator({ roomId: rid, userId: uid })}
-						onCancel={handleClose}
-						title={t('Warning')}
-						confirmText={'Yes, continue'}
-					>
-						{t('Federation_Matrix_giving_same_permission_warning')}
-					</GenericModal>
-				));
-				return;
+				return setModal(() =>
+					getWarningModalForFederatedRooms(
+						closeModal,
+						handleConfirm,
+						t('Warning'),
+						t('Yes_continue'),
+						t('Federation_Matrix_giving_same_permission_warning'),
+					),
+				);
 			}
 			changeModerator({ roomId: rid, userId: uid });
 		},
-		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, changeModerator],
+		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, changeModerator, closeModal, handleConfirm, room],
 	);
 
 	const changeModeratorAction = useMutableCallback(() => handleChangeModerator({ roomId: rid, userId: uid }));

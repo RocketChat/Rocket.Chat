@@ -195,8 +195,14 @@ const createExternalRolesChangesActions = (
 			return externalRolesChangesByUser;
 		}
 		externalRolesChangesByUser[externalUserId] = isCurrentRoleAnOwner
-			? [{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER }]
-			: [{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR }];
+			? [
+					{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER },
+					{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR },
+			  ]
+			: [
+					{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR },
+					{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER },
+			  ];
 		// externalRolesChangesByUser[externalUserId] = isCurrentRoleAnOwner
 		// 	? getActionsWhenChangeOwnership('add')
 		// 	: getActionsWhenChangeModerators('add');
@@ -357,7 +363,7 @@ export class MatrixRoomReceiverConverter {
 	public static toRoomChangePowerLevelsEventDto(
 		externalEvent: MatrixEventRoomRoomPowerLevelsChanged,
 	): FederationRoomRoomChangePowerLevelsEventDto {
-		console.log({ externalEvent })
+		console.log({ externalEvent });
 		return new FederationRoomRoomChangePowerLevelsEventDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,

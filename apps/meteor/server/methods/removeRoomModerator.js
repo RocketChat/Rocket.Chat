@@ -3,8 +3,9 @@ import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../app/authorization';
-import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 Meteor.methods({
 	removeRoomModerator(rid, userId) {
@@ -17,7 +18,9 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'set-moderator', rid)) {
+		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		console.log({ room })
+		if (!hasPermission(Meteor.userId(), 'set-moderator', rid) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomModerator',
 			});
