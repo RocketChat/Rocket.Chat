@@ -267,7 +267,7 @@ const RoomBody = (): ReactElement => {
 		}
 
 		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
+			sendToBottom();
 		});
 
 		observer.observe(messageList);
@@ -275,7 +275,7 @@ const RoomBody = (): ReactElement => {
 		return () => {
 			observer?.disconnect();
 		};
-	}, [sendToBottomIfNecessary]);
+	}, [sendToBottom]);
 
 	const [routeName] = useCurrentRoute();
 
