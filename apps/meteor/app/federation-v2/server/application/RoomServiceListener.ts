@@ -25,7 +25,7 @@ import { FederationService } from './AbstractFederationService';
 import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
 import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-require('util').inspect.defaultOptions.depth = null;
+
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
@@ -430,18 +430,19 @@ export class FederationRoomServiceListener extends FederationService {
 		const federatedUsers = await this.internalUserAdapter.getFederatedUsersByExternalIds(Object.keys(roleChangesToApply));
 
 		await Promise.all(
-			federatedUsers.map((federatedUser) => {
-				const changes = roleChangesToApply[federatedUser.getExternalId()];
+			federatedUsers.map((targetFederatedUser) => {
+				const changes = roleChangesToApply[targetFederatedUser.getExternalId()];
 				const rolesToRemove = changes.filter((change) => change.action === 'remove').map((change) => change.role);
 				const rolesToAdd = changes.filter((change) => change.action === 'add').map((change) => change.role);
 
-				return this.internalRoomAdapter.applyRoomRolesToUser(
+				return this.internalRoomAdapter.applyRoomRolesToUser({
 					federatedRoom,
-					federatedUser,
-					federatedUserWhoChangedThePermission,
+					targetFederatedUser,
+					fromUser: federatedUserWhoChangedThePermission,
 					rolesToAdd,
 					rolesToRemove,
-				);
+					notifyChannel: true,
+				});
 			}),
 		);
 	}

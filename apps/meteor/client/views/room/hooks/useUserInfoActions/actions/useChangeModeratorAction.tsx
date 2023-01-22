@@ -1,17 +1,17 @@
-import React, { ReactElement } from 'react';
-import { IRoom, IUser, isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useTranslation, usePermission, useUserRoom, useUserSubscription, useUser } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import { useTranslation, usePermission, useUserRoom, useUserSubscription, useUser, useSetModal } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
+import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
-import GenericModal from '../../../../../components/GenericModal';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,

@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
@@ -11,7 +12,6 @@ import { saveRoomTopic } from '../../../../../channel-settings/server/functions/
 import { getFederatedUserByInternalUsername } from './User';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/InternalFederatedRoomRoles';
 import { settings } from '../../../../../settings/server';
-import { api } from '@rocket.chat/core-services';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -157,14 +157,22 @@ export class RocketChatRoomAdapter {
 		return subscription.roles || [];
 	}
 
-	public async applyRoomRolesToUser(
-		federatedRoom: FederatedRoom,
-		federatedUser: FederatedUser,
-		fromUser: FederatedUser,
-		rolesToAdd: ROCKET_CHAT_FEDERATION_ROLES[],
-		rolesToRemove: ROCKET_CHAT_FEDERATION_ROLES[],
-	): Promise<void> {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(federatedRoom.getInternalId(), federatedUser.getInternalId(), {
+	public async applyRoomRolesToUser({
+		federatedRoom,
+		fromUser,
+		targetFederatedUser,
+		notifyChannel,
+		rolesToAdd,
+		rolesToRemove,
+	}: {
+		federatedRoom: FederatedRoom;
+		targetFederatedUser: FederatedUser;
+		fromUser: FederatedUser;
+		rolesToAdd: ROCKET_CHAT_FEDERATION_ROLES[];
+		rolesToRemove: ROCKET_CHAT_FEDERATION_ROLES[];
+		notifyChannel: boolean;
+	}): Promise<void> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(federatedRoom.getInternalId(), targetFederatedUser.getInternalId(), {
 			projection: { roles: 1 },
 		});
 		if (!subscription) {
@@ -178,30 +186,42 @@ export class RocketChatRoomAdapter {
 			username: fromUser.getUsername(),
 		};
 		if (addTheseRoles.length > 0) {
-			await Subscriptions.addRolesByUserId(federatedUser.getInternalId(), addTheseRoles, federatedRoom.getInternalId());
-			await Promise.all(
-				addTheseRoles.map((role) =>
-					Messages.createSubscriptionRoleAddedWithRoomIdAndUser(federatedRoom.getInternalId(), federatedUser.getInternalReference(), {
-						u: whoDidTheChange,
-						role,
-					}),
-				),
-			);
+			await Subscriptions.addRolesByUserId(targetFederatedUser.getInternalId(), addTheseRoles, federatedRoom.getInternalId());
+			if (notifyChannel) {
+				await Promise.all(
+					addTheseRoles.map((role) =>
+						Messages.createSubscriptionRoleAddedWithRoomIdAndUser(
+							federatedRoom.getInternalId(),
+							targetFederatedUser.getInternalReference(),
+							{
+								u: whoDidTheChange,
+								role,
+							},
+						),
+					),
+				);
+			}
 		}
 		if (removeTheseRoles.length > 0) {
-			await Subscriptions.removeRolesByUserId(federatedUser.getInternalId(), removeTheseRoles, federatedRoom.getInternalId());
-			await Promise.all(
-				removeTheseRoles.map((role) =>
-					Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(federatedRoom.getInternalId(), federatedUser.getInternalReference(), {
-						u: whoDidTheChange,
-						role,
-					}),
-				),
-			);
+			await Subscriptions.removeRolesByUserId(targetFederatedUser.getInternalId(), removeTheseRoles, federatedRoom.getInternalId());
+			if (notifyChannel) {
+				await Promise.all(
+					removeTheseRoles.map((role) =>
+						Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
+							federatedRoom.getInternalId(),
+							targetFederatedUser.getInternalReference(),
+							{
+								u: whoDidTheChange,
+								role,
+							},
+						),
+					),
+				);
+			}
 		}
 		if (settings.get('UI_DisplayRoles')) {
-			const addedRoles = addTheseRoles.map((role) => this.createRoleUpdateEvent(federatedUser, federatedRoom, role, 'added'));
-			const removedRoles = removeTheseRoles.map((role) => this.createRoleUpdateEvent(federatedUser, federatedRoom, role, 'removed'));
+			const addedRoles = addTheseRoles.map((role) => this.createRoleUpdateEvent(targetFederatedUser, federatedRoom, role, 'added'));
+			const removedRoles = removeTheseRoles.map((role) => this.createRoleUpdateEvent(targetFederatedUser, federatedRoom, role, 'removed'));
 			[...addedRoles, ...removedRoles].forEach((event) => api.broadcast('user.roleUpdate', event));
 		}
 	}

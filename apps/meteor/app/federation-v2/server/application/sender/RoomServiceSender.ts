@@ -1,6 +1,7 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuoteAttachment } from '@rocket.chat/core-typings';
 
+import type { FederatedRoom } from '../../domain/FederatedRoom';
 import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
@@ -303,11 +304,7 @@ export class FederationRoomServiceSender extends FederationService {
 				MATRIX_POWER_LEVELS.ADMIN,
 			);
 		} catch (e) {
-			this.internalNotificationAdapter.notifyWithEphemeralMessage(
-				'Federation_Matrix_error_applying_room_roles',
-				federatedUser.getInternalId(),
-				federatedRoom.getInternalId(),
-			);
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [], [ROCKET_CHAT_FEDERATION_ROLES.OWNER]);
 		}
 	}
 
@@ -342,11 +339,7 @@ export class FederationRoomServiceSender extends FederationService {
 				MATRIX_POWER_LEVELS.USER,
 			);
 		} catch (e) {
-			this.internalNotificationAdapter.notifyWithEphemeralMessage(
-				'Federation_Matrix_error_applying_room_roles',
-				federatedUser.getInternalId(),
-				federatedRoom.getInternalId(),
-			);
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [ROCKET_CHAT_FEDERATION_ROLES.OWNER], []);
 		}
 	}
 
@@ -391,11 +384,7 @@ export class FederationRoomServiceSender extends FederationService {
 				MATRIX_POWER_LEVELS.MODERATOR,
 			);
 		} catch (e) {
-			this.internalNotificationAdapter.notifyWithEphemeralMessage(
-				'Federation_Matrix_error_applying_room_roles',
-				federatedUser.getInternalId(),
-				federatedRoom.getInternalId(),
-			);
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [], [ROCKET_CHAT_FEDERATION_ROLES.MODERATOR]);
 		}
 	}
 
@@ -441,11 +430,29 @@ export class FederationRoomServiceSender extends FederationService {
 				MATRIX_POWER_LEVELS.USER,
 			);
 		} catch (e) {
-			this.internalNotificationAdapter.notifyWithEphemeralMessage(
-				'Federation_Matrix_error_applying_room_roles',
-				federatedUser.getInternalId(),
-				federatedRoom.getInternalId(),
-			);
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [ROCKET_CHAT_FEDERATION_ROLES.MODERATOR], []);
 		}
+	}
+
+	private async rollbackRoomRoles(
+		federatedRoom: FederatedRoom,
+		targetFederatedUser: FederatedUser,
+		fromUser: FederatedUser,
+		rolesToAdd: ROCKET_CHAT_FEDERATION_ROLES[],
+		rolesToRemove: ROCKET_CHAT_FEDERATION_ROLES[],
+	): Promise<void> {
+		await this.internalRoomAdapter.applyRoomRolesToUser({
+			federatedRoom,
+			targetFederatedUser,
+			fromUser,
+			rolesToAdd,
+			rolesToRemove,
+			notifyChannel: false,
+		});
+		this.internalNotificationAdapter.notifyWithEphemeralMessage(
+			'Federation_Matrix_error_applying_room_roles',
+			fromUser.getInternalId(),
+			federatedRoom.getInternalId(),
+		);
 	}
 }

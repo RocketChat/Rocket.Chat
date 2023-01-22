@@ -1,7 +1,7 @@
-import { federationRoomServiceSender, federationUserServiceSender } from '../../../app/federation-v2/server';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService } from '@rocket.chat/core-services';
 
+import { federationRoomServiceSender, federationUserServiceSender } from '../../../app/federation-v2/server';
 import { settings } from '../../../app/settings/server';
 import { FederationHooks } from '../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
 
