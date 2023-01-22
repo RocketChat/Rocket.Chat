@@ -16,12 +16,12 @@ const reportHistoryPropsSchema = {
 	type: 'object',
 	properties: {
 		latest: {
-			type: 'date',
+			type: 'string',
 			minLength: 1,
 			nullable: true,
 		},
 		oldest: {
-			type: 'date',
+			type: 'string',
 			minLength: 1,
 			nullable: true,
 		},

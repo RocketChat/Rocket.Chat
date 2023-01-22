@@ -1,10 +1,11 @@
 import type { IReport } from '@rocket.chat/core-typings';
+import type { FindPaginated } from '@rocket.chat/model-typings';
+import { Reports } from '@rocket.chat/models';
 import type { ReportHistoryProps } from '@rocket.chat/rest-typings';
+import type { FindCursor } from 'mongodb';
 import _ from 'underscore';
 
-import { Reports } from '../../app/models/server';
-
-export const getReportHistory = (params: ReportHistoryProps): Array<IReport> => {
+export const getReportHistory = (params: ReportHistoryProps): FindPaginated<FindCursor<IReport>> => {
 	const { latest, oldest, count } = params;
 
 	const query: Record<string, any> = {};
