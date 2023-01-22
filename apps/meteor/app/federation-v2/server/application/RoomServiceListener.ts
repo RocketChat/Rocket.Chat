@@ -416,7 +416,6 @@ export class FederationRoomServiceListener extends FederationService {
 
 	public async onChangeRoomPowerLevels(roomPowerLevelsInput: FederationRoomRoomChangePowerLevelsEventDto): Promise<void> {
 		const { externalRoomId, roleChangesToApply = {}, externalSenderId } = roomPowerLevelsInput;
-		console.log({ roomPowerLevelsInput })
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {

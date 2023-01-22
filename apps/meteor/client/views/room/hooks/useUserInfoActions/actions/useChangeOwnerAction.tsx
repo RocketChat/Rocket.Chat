@@ -70,7 +70,9 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 			if (!isRoomFederated(room)) {
 				return changeOwner({ roomId: rid, userId: uid });
 			}
-			if (userId === loggedUserId && loggedUserIsOwner) {
+			const changingOwnRole = userId === loggedUserId;
+
+			if (changingOwnRole && loggedUserIsOwner) {
 				return setModal(() =>
 					getWarningModalForFederatedRooms(
 						closeModal,
@@ -81,7 +83,8 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 					),
 				);
 			}
-			if (userId !== loggedUserId && loggedUserIsOwner) {
+
+			if (!changingOwnRole && loggedUserIsOwner) {
 				return setModal(() =>
 					getWarningModalForFederatedRooms(
 						closeModal,
@@ -92,6 +95,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 					),
 				);
 			}
+
 			changeOwner({ roomId: rid, userId: uid });
 		},
 		[setModal, loggedUserId, loggedUserIsOwner, t, rid, uid, changeOwner, closeModal, handleConfirm, room],

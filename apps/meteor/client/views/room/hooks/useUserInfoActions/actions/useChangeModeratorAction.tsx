@@ -74,31 +74,33 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 			if (!isRoomFederated(room)) {
 				return changeModerator({ roomId: rid, userId: uid });
 			}
-			if (userId === loggedUserId) {
-				if (loggedUserIsModerator) {
-					return setModal(() =>
-						getWarningModalForFederatedRooms(
-							closeModal,
-							handleConfirm,
-							t('Federation_Matrix_losing_privileges'),
-							t('Yes_continue'),
-							t('Federation_Matrix_losing_privileges_warning'),
-						),
-					);
-				}
-				if (loggedUserIsOwner) {
-					return setModal(() =>
-						getWarningModalForFederatedRooms(
-							closeModal,
-							handleConfirm,
-							t('Federation_Matrix_losing_privileges'),
-							t('Yes_continue'),
-							t('Federation_Matrix_losing_privileges_warning'),
-						),
-					);
-				}
+
+			const changingOwnRole = userId === loggedUserId;
+			if (changingOwnRole && loggedUserIsModerator) {
+				return setModal(() =>
+					getWarningModalForFederatedRooms(
+						closeModal,
+						handleConfirm,
+						t('Federation_Matrix_losing_privileges'),
+						t('Yes_continue'),
+						t('Federation_Matrix_losing_privileges_warning'),
+					),
+				);
 			}
-			if (userId !== loggedUserId && loggedUserIsModerator) {
+
+			if (changingOwnRole && loggedUserIsOwner) {
+				return setModal(() =>
+					getWarningModalForFederatedRooms(
+						closeModal,
+						handleConfirm,
+						t('Federation_Matrix_losing_privileges'),
+						t('Yes_continue'),
+						t('Federation_Matrix_losing_privileges_warning'),
+					),
+				);
+			}
+
+			if (!changingOwnRole && loggedUserIsModerator) {
 				return setModal(() =>
 					getWarningModalForFederatedRooms(
 						closeModal,
@@ -109,6 +111,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 					),
 				);
 			}
+
 			changeModerator({ roomId: rid, userId: uid });
 		},
 		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, changeModerator, closeModal, handleConfirm, room],

@@ -363,7 +363,6 @@ export class MatrixRoomReceiverConverter {
 	public static toRoomChangePowerLevelsEventDto(
 		externalEvent: MatrixEventRoomRoomPowerLevelsChanged,
 	): FederationRoomRoomChangePowerLevelsEventDto {
-		console.log({ externalEvent });
 		return new FederationRoomRoomChangePowerLevelsEventDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,

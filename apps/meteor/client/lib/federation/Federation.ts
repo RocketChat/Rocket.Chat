@@ -27,11 +27,7 @@ export const actionAllowed = (
 	}
 
 	const myself = userSubscription.u?._id === showingUserId;
-	// console.log({ myself });
-	// console.log({ myRoles: userSubscription.roles });
-
 	const showingUserRoles = RoomRoles.findOne({ 'rid': room._id, 'u._id': showingUserId })?.roles;
-	// console.log({ forShowingUserRoles: showingUserRoles });
 
 	if (action === RoomMemberActions.REMOVE_USER && myself) {
 		return false;
@@ -78,29 +74,6 @@ export const actionAllowed = (
 		return action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER;
 	}
 	return false;
-
-	// const isTheOwner = room.u?._id === showingUserId;
-
-	// if (isTheOwner) {
-	// 	return false;
-	// }
-
-	// if (action === RoomMemberActions.SET_AS_OWNER && !userSubscription.roles?.includes('owner')) {
-	// 	return false;
-	// }
-
-	// if (action === RoomMemberActions.SET_AS_MODERATOR) {
-	// 	return (
-	// 		Boolean(userSubscription.roles?.includes('owner')) ||
-	// 		(Boolean(userSubscription.roles?.includes('moderator')) &&
-	// 			RoomRoles.findOne({ 'rid': room._id, 'u._id': showingUserId, 'roles': 'moderator' }) === undefined)
-	// 	);
-	// }
-
-	// return Boolean(
-	// 	(userSubscription?.roles?.includes('owner') || userSubscription?.roles?.includes('moderator')) &&
-	// 		allowedActionsInFederatedRooms.includes(action),
-	// );
 };
 
 export const isEditableByTheUser = (user?: IUser, room?: IRoom, subscription?: ISubscription): boolean => {
