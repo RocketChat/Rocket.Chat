@@ -17,8 +17,8 @@ import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
-import {BIO_TEXT_MAX_LENGTH} from '../../../constants';
 
+const BIO_TEXT_MAX_LENGTH = 160;
 const MAX_NICKNAME_LENGTH = 120;
 
 let html = '';
