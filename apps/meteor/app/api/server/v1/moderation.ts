@@ -1,8 +1,8 @@
 import { isReportHistoryProps } from '@rocket.chat/rest-typings';
+import { Reports } from '@rocket.chat/models';
 
 import { API } from '../api';
-import { getReportHistory } from '../../../../server/lib/getReportHistory';
-import { Reports } from '@rocket.chat/models';
+// import { getReportHistory } from '../../../../server/lib/getReportHistory';
 
 API.v1.addRoute(
 	'moderation.history',
@@ -18,7 +18,6 @@ API.v1.addRoute(
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 
-
 			const { cursor, totalCount } = Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), oldest, count, offset);
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -27,7 +26,7 @@ API.v1.addRoute(
 			// }
 
 			return API.v1.success({
-				reports: reports,
+				reports,
 				count: reports.length,
 				offset,
 				total,
