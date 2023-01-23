@@ -162,8 +162,8 @@ describe('[OAuthApps]', function () {
 		});
 	});
 
-	describe('[/oauth-apps/:_id]', () => {
-		let _id;
+	describe('[/oauth-apps.update]', () => {
+		let appId;
 
 		before((done) => {
 			const name = 'test-oauth-app';
@@ -191,9 +191,10 @@ describe('[OAuthApps]', function () {
 			const active = false;
 
 			await request
-				.post(api(`oauth-apps/${_id}`))
+				.post(api(`oauth-apps.update`))
 				.set(credentials)
 				.send({
+					appId,
 					name,
 					redirectUri,
 					active,
@@ -207,11 +208,38 @@ describe('[OAuthApps]', function () {
 					expect(res.body).to.have.property('name', name);
 				});
 		});
+	});
+
+	describe('[/oauth-apps.delete]', () => {
+		let appId;
+
+		before((done) => {
+			const name = 'test-oauth-app';
+			const redirectUri = 'https://test.com';
+			const active = true;
+			request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end((err, res) => {
+					_id = res.body.application._id;
+					done();
+				});
+		});
 
 		it('should delete an app by its id', async () => {
 			await request
-				.delete(api(`oauth-apps/${_id}`))
+				.delete(api(`oauth-apps.delete`))
 				.set(credentials)
+				.send({
+					appId,
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {

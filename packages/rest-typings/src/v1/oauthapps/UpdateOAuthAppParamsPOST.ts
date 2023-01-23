@@ -1,6 +1,7 @@
 import { ajv } from '../Ajv';
 
 export type UpdateOAuthAppParams = {
+	appId: string;
 	name: string;
 	active: boolean;
 	clientId?: string | undefined;

@@ -19,8 +19,11 @@ export type OAuthAppsEndpoint = {
 		POST: (params: OauthAppsAddParams) => { application: IOAuthApps };
 	};
 
-	'/v1/oauth-apps/:_id': {
+	'/v1/oauth-apps.update': {
 		POST: (params: UpdateOAuthAppParams) => IOAuthApps | null;
-		DELETE: () => boolean;
+	};
+
+	'/v1/oauth-apps.delete': {
+		DELETE: (params: { appId: string }) => boolean;
 	};
 };

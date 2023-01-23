@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
+import type { IUser } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../../authorization/server';
@@ -40,17 +41,25 @@ export async function addOAuthApp(
 		});
 	}
 
+	const createdBy = await Users.findOne<Pick<IUser, '_id' | 'username'>>(uid, { projection: { username: 1 } });
+	if (!createdBy || !createdBy._id || !createdBy.username) {
+		throw new Meteor.Error('user-not-defined', 'User not defined.', {
+			method: 'addOAuthApp',
+		});
+	}
+
 	const inserted = {
 		...application,
 		clientId: Random.id(),
 		clientSecret: Random.secret(),
 		_createdAt: new Date(),
 		_updatedAt: new Date(),
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		_createdBy: (await Users.findOne(uid, { projection: { username: 1 } })) as { username: string; _id: string },
+		_createdBy: {
+			_id: createdBy._id,
+			username: createdBy.username,
+		},
 	};
 
-	application;
 	return {
 		...inserted,
 		_id: (await OAuthApps.insertOne(inserted)).insertedId,

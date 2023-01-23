@@ -9,7 +9,9 @@ import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationW
 
 Meteor.methods({
 	async updateOAuthApp(applicationId, application) {
-		methodDeprecationLogger.warn('updateOAuthApp will be deprecated in future versions of Rocket.Chat');
+		methodDeprecationLogger.warn(
+			'updateOAuthApp is deprecated and will be in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.update instead',
+		);
 
 		if (!this.userId || !hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
