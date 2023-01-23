@@ -17,6 +17,7 @@ const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(
 			role='group'
 			display='flex'
 			flexDirection='column'
+			overflow='hidden'
 			p={0}
 			{...props}
 		/>

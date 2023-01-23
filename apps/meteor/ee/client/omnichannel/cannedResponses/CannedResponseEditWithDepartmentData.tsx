@@ -19,7 +19,7 @@ const CannedResponseEditWithData: FC<{
 	totalDataReload: () => void;
 }> = ({ data, reload, totalDataReload }) => {
 	const departmentId = useMemo(() => data?.cannedResponse?.departmentId, [data]) as string;
-	const { value: departmentData, phase: state, error } = useEndpointData(`/v1/livechat/department/${departmentId}`);
+	const { value: departmentData, phase: state, error } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: departmentId } });
 
 	const t = useTranslation();
 
