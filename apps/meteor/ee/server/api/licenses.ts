@@ -1,7 +1,15 @@
 import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 
-import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
+import {
+	getLicenses,
+	validateFormat,
+	flatModules,
+	getMaxActiveUsers,
+	isEnterprise,
+	getMaxGuestUsers,
+	getMaxRoomsPerGuest,
+} from '../../app/license/server/license';
 import { Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
@@ -66,6 +74,31 @@ API.v1.addRoute(
 			const activeUsers = Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'licenses.maxGuestUsers',
+	{ authRequired: true },
+	{
+		get() {
+			const maxGuestUsers = getMaxGuestUsers() || null;
+			const activeGuests = Users.getActiveLocalGuestCount();
+
+			return API.v1.success({ maxGuestUsers, activeGuests });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'licenses.maxRoomsPerGuest',
+	{ authRequired: true },
+	{
+		get() {
+			const maxRoomsPerGuest = getMaxRoomsPerGuest() || null;
+
+			return API.v1.success({ maxRoomsPerGuest });
 		},
 	},
 );
