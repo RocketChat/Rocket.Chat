@@ -9,10 +9,15 @@ import type {
 	IUser,
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
+import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 
 import { Subscriptions, Messages } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { call } from '../../../../client/lib/utils/call';
+import {
+	hasTranslationLanguageInAttachments,
+	hasTranslationLanguageInMessage,
+} from '../../../../client/views/room/MessageList/lib/autoTranslate';
 
 let userLanguage = 'en';
 let username = '';
@@ -55,6 +60,9 @@ export const AutoTranslate = {
 		language: string,
 		autoTranslateShowInverse: boolean,
 	): MessageAttachmentDefault[] {
+		if (!isTranslatedMessageAttachment(attachments)) {
+			return attachments;
+		}
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
@@ -134,16 +142,11 @@ export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMess
 				message.translations = {};
 			}
 			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
-				const hasAttachmentsTranslate =
-					message.attachments?.some(
-						(attachment) =>
-							'translations' in attachment &&
-							typeof attachment.translations === 'object' &&
-							autoTranslateLanguage in attachment.translations,
-					) ?? false;
-
 				message.translations.original = message.html;
-				if (message.translations[autoTranslateLanguage] && !hasAttachmentsTranslate) {
+				if (
+					message.translations[autoTranslateLanguage] &&
+					!hasTranslationLanguageInAttachments(message.attachments, autoTranslateLanguage)
+				) {
 					message.html = message.translations[autoTranslateLanguage];
 				}
 
@@ -155,12 +158,6 @@ export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMess
 					);
 				}
 			}
-		} else if (message.attachments && message.attachments.length > 0) {
-			message.attachments = AutoTranslate.translateAttachments(
-				message.attachments,
-				autoTranslateLanguage,
-				!!message.autoTranslateShowInverse,
-			);
 		}
 		return message;
 	};
@@ -177,7 +174,8 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				subscription &&
 				subscription.autoTranslate === true &&
 				message.msg &&
-				(!message.translations || !message.translations[language])
+				(!message.translations ||
+					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))
 			) {
 				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
