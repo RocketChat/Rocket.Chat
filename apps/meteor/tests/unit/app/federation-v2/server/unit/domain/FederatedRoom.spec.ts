@@ -232,6 +232,18 @@ describe('Federation - Domain - FederatedRoom', () => {
 				expect(MyClass.shouldUpdateMessage('new message', { msg: 'new message' })).to.be.equal(false);
 			});
 		});
+
+		describe('#isTheCreator()', () => {
+			it('should return true if the provided userId is the creator', () => {
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { u: { _id: 'userId' } } });
+				expect(federatedRoom.isTheCreator('userId')).to.be.true;
+			});
+
+			it('should return false if the provided userId is NOT the creator', () => {
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { u: { _id: 'userId' } } });
+				expect(federatedRoom.isTheCreator('notCreatorUserId')).to.be.false;
+			});
+		});
 	});
 
 	describe('FederatedRoom', () => {

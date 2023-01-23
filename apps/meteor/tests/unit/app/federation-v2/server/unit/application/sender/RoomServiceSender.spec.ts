@@ -3,6 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
+import { MATRIX_POWER_LEVELS } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixPowerLevels';
+
 const sendMessageStub = sinon.stub();
 const sendQuoteMessageStub = sinon.stub();
 const { FederationRoomServiceSender } = proxyquire
@@ -53,6 +55,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		getDirectMessageFederatedRoomByUserIds: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
+		getInternalRoomRolesByUserId: sinon.stub(),
+		applyRoomRolesToUser: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -75,6 +79,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	const notificationsAdapter = {
 		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
 		broadcastUserTypingOnRoom: sinon.stub(),
+		notifyWithEphemeralMessage: sinon.stub(),
 	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
@@ -88,6 +93,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		kickUserFromRoom: sinon.stub(),
 		redactEvent: sinon.stub(),
 		updateMessage: sinon.stub(),
+		setRoomPowerLevels: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -108,6 +114,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.getDirectMessageFederatedRoomByUserIds.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.createFederatedRoom.reset();
+		roomAdapter.getInternalRoomRolesByUserId.reset();
+		roomAdapter.applyRoomRolesToUser.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -124,8 +132,12 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.kickUserFromRoom.reset();
 		bridge.redactEvent.reset();
 		bridge.updateMessage.reset();
+		bridge.setRoomPowerLevels.reset();
 		messageAdapter.getMessageById.reset();
 		messageAdapter.setExternalFederationEventOnMessage.reset();
+		notificationsAdapter.subscribeToUserTypingEventsOnFederatedRoomId.reset();
+		notificationsAdapter.notifyWithEphemeralMessage.reset();
+		notificationsAdapter.broadcastUserTypingOnRoom.reset();
 		sendMessageStub.reset();
 		sendQuoteMessageStub.reset();
 	});
@@ -664,6 +676,482 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			);
 
 			expect(bridge.updateMessage.calledWith(room.getExternalId(), user.getExternalId(), 'federationEventId', 'msg')).to.be.true;
+		});
+	});
+
+	describe('#onRoomOwnerAdded()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'You are not allowed to change the owner',
+			);
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to someone else', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId
+				.onSecondCall()
+				.resolves({ getInternalId: () => 'internalTargetUserId', getExternalId: () => 'externalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(room.getExternalId(), user.getExternalId(), 'externalTargetUserId', MATRIX_POWER_LEVELS.ADMIN),
+			).to.be.true;
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to himself', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(room.getExternalId(), user.getExternalId(), user.getExternalId(), MATRIX_POWER_LEVELS.ADMIN),
+			).to.be.true;
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				roomAdapter.applyRoomRolesToUser.calledWith({
+					federatedRoom: room,
+					targetFederatedUser: user,
+					fromUser: user,
+					rolesToAdd: [],
+					rolesToRemove: ['owner'],
+					notifyChannel: false,
+				}),
+			).to.be.true;
+			expect(
+				notificationsAdapter.notifyWithEphemeralMessage.calledWith(
+					'Federation_Matrix_error_applying_room_roles',
+					user.getInternalId(),
+					room.getInternalId(),
+				),
+			).to.be.true;
+		});
+	});
+
+	describe('#onRoomOwnerRemoved()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'You are not allowed to change the owner',
+			);
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should set the user power level in the room when everything is correct', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(room.getExternalId(), user.getExternalId(), user.getExternalId(), MATRIX_POWER_LEVELS.USER),
+			).to.be.true;
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				roomAdapter.applyRoomRolesToUser.calledWith({
+					federatedRoom: room,
+					targetFederatedUser: user,
+					fromUser: user,
+					rolesToAdd: ['owner'],
+					rolesToRemove: [],
+					notifyChannel: false,
+				}),
+			).to.be.true;
+			expect(
+				notificationsAdapter.notifyWithEphemeralMessage.calledWith(
+					'Federation_Matrix_error_applying_room_roles',
+					user.getInternalId(),
+					room.getInternalId(),
+				),
+			).to.be.true;
+		});
+	});
+
+	describe('#onRoomModeratorAdded()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner nor a moderator', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'You are not allowed to change the moderator',
+			);
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to someone else', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId
+				.onSecondCall()
+				.resolves({ getInternalId: () => 'internalTargetUserId', getExternalId: () => 'externalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(
+					room.getExternalId(),
+					user.getExternalId(),
+					'externalTargetUserId',
+					MATRIX_POWER_LEVELS.MODERATOR,
+				),
+			).to.be.true;
+		});
+
+		it('should set the user power level in the room when the user is a moderator giving an ownership to someone else', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['moderator']);
+			userAdapter.getFederatedUserByInternalId
+				.onSecondCall()
+				.resolves({ getInternalId: () => 'internalTargetUserId', getExternalId: () => 'externalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(
+					room.getExternalId(),
+					user.getExternalId(),
+					'externalTargetUserId',
+					MATRIX_POWER_LEVELS.MODERATOR,
+				),
+			).to.be.true;
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to himself', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(
+					room.getExternalId(),
+					user.getExternalId(),
+					user.getExternalId(),
+					MATRIX_POWER_LEVELS.MODERATOR,
+				),
+			).to.be.true;
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				roomAdapter.applyRoomRolesToUser.calledWith({
+					federatedRoom: room,
+					targetFederatedUser: user,
+					fromUser: user,
+					rolesToAdd: [],
+					rolesToRemove: ['moderator'],
+					notifyChannel: false,
+				}),
+			).to.be.true;
+			expect(
+				notificationsAdapter.notifyWithEphemeralMessage.calledWith(
+					'Federation_Matrix_error_applying_room_roles',
+					user.getInternalId(),
+					room.getInternalId(),
+				),
+			).to.be.true;
+		});
+	});
+
+	describe('#onRoomModeratorRemoved()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner nor a moderator', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'You are not allowed to change the moderator',
+			);
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(bridge.setRoomPowerLevels.called).to.be.false;
+		});
+
+		it('should set the user power level in the room when everything is correct', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				bridge.setRoomPowerLevels.calledWith(room.getExternalId(), user.getExternalId(), user.getExternalId(), MATRIX_POWER_LEVELS.USER),
+			).to.be.true;
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			expect(
+				roomAdapter.applyRoomRolesToUser.calledWith({
+					federatedRoom: room,
+					targetFederatedUser: user,
+					fromUser: user,
+					rolesToAdd: ['moderator'],
+					rolesToRemove: [],
+					notifyChannel: false,
+				}),
+			).to.be.true;
+			expect(
+				notificationsAdapter.notifyWithEphemeralMessage.calledWith(
+					'Federation_Matrix_error_applying_room_roles',
+					user.getInternalId(),
+					room.getInternalId(),
+				),
+			).to.be.true;
 		});
 	});
 });

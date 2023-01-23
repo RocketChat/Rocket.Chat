@@ -4,6 +4,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 const remove = sinon.stub();
+const get = sinon.stub();
+
 const { FederationHooksEE } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks', {
 	'meteor/meteor': {
 		'@global': true,
@@ -17,9 +19,54 @@ const { FederationHooksEE } = proxyquire.noCallThru().load('../../../../../../..
 	'../../../../../../../lib/callbacks': {
 		callbacks: { remove },
 	},
+	'../../../../../../../app/settings/server': {
+		settings: { get },
+	},
 });
 
 describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
+
+	beforeEach(() => {
+		Promise.await = (args) => args;
+	});
+
+	afterEach(() => {
+		remove.reset();
+		get.reset();
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
+	describe('#onUsersAddedToARoom()', () => {
+	
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
+	describe('#onFederatedRoomCreated()', () => {
+	
+	});
+
 	describe('#removeAll()', () => {
 		it('should remove the specific validation for EE environments', () => {
 			FederationHooksEE.removeAll();

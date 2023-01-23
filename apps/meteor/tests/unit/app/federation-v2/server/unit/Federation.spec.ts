@@ -1,32 +1,80 @@
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
-import { Federation } from '../../../../../../app/federation-v2/server/Federation';
 import { RoomMemberActions } from '../../../../../../definition/IRoomTypeConfig';
 
+const findOneByRoomIdAndUserIdStub = sinon.stub();
+
+const { Federation } = proxyquire.noCallThru().load('../../../../../../app/federation-v2/server/Federation', {
+	'@rocket.chat/models': {
+		Subscriptions: {
+			findOneByRoomIdAndUserId: findOneByRoomIdAndUserIdStub,
+		},
+	},
+});
+
 describe('Federation[Server] - Federation', () => {
+	beforeEach(() => {
+		Promise.await = (args) => args;
+	});
+
+	afterEach(() => findOneByRoomIdAndUserIdStub.reset());
+
 	describe('#actionAllowed()', () => {
-		const allowedActions = [RoomMemberActions.REMOVE_USER, RoomMemberActions.INVITE, RoomMemberActions.JOIN, RoomMemberActions.LEAVE];
+		it('should return false if the room is NOT federated', () => {
+			expect(Federation.actionAllowed({ t: 'c' } as any, RoomMemberActions.INVITE)).to.be.false;
+		});
+
+		it('should return false if the room is a DM one', () => {
+			expect(Federation.actionAllowed({ t: 'd', federated: true } as any, RoomMemberActions.INVITE)).to.be.false;
+		});
+
+		it('should return true if an userId was not provided', () => {
+			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE)).to.be.true;
+		});
+
+		it('should return true if the user is the room creator', () => {
+			expect(Federation.actionAllowed({ t: 'c', federated: true, u: { _id: 'userId' } } as any, RoomMemberActions.INVITE, 'userId')).to.be
+				.true;
+		});
+
+		it('should return true if there is no subscription for the userId', () => {
+			findOneByRoomIdAndUserIdStub.returns(undefined);
+			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE, 'userId')).to.be.true;
+		});
+
+		const allowedActions = [
+			RoomMemberActions.REMOVE_USER,
+			RoomMemberActions.SET_AS_OWNER,
+			RoomMemberActions.SET_AS_MODERATOR,
+			RoomMemberActions.INVITE,
+			RoomMemberActions.JOIN,
+			RoomMemberActions.LEAVE,
+		];
 
 		Object.values(RoomMemberActions)
 			.filter((action) => !allowedActions.includes(action as any))
 			.forEach((action) => {
 				it('should return false if the action is NOT allowed within the federation context for regular channels', () => {
-					expect(Federation.actionAllowed({ t: 'c' } as any, action)).to.be.false;
+					findOneByRoomIdAndUserIdStub.returns({});
+					expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.false;
 				});
 			});
 
 		allowedActions.forEach((action) => {
-			it('should return true if the action is allowed within the federation context for regular channels', () => {
-				expect(Federation.actionAllowed({ t: 'c' } as any, action)).to.be.true;
+			it('should return true if the action is allowed within the federation context for regular channels and the user is a room owner', () => {
+				findOneByRoomIdAndUserIdStub.returns({ roles: ['owner'] });
+				expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.true;
 			});
-		});
-
-		it('should return false if the action is equal to REMOVE_USER and the channel is a DM', () => {
-			expect(Federation.actionAllowed({ t: 'd' } as any, RoomMemberActions.REMOVE_USER)).to.be.false;
-		});
-
-		it('should return true if the action is equal to any other action except REMOVE_USER and the channel is a DM', () => {
-			expect(Federation.actionAllowed({ t: 'd' } as any, RoomMemberActions.INVITE)).to.be.true;
+			it('should return true if the action is allowed within the federation context for regular channels and the user is a room moderator', () => {
+				findOneByRoomIdAndUserIdStub.returns({ roles: ['moderator'] });
+				expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.true;
+			});
+			it('should return false if the action is allowed within the federation context for regular channels and the user is nor a moderator or owner', () => {
+				findOneByRoomIdAndUserIdStub.returns({});
+				expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.false;
+			});
 		});
 	});
 

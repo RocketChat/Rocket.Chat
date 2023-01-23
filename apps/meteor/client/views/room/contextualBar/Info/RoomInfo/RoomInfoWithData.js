@@ -76,7 +76,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 	const hasPermissionToEdit = usePermission('edit-room', rid);
 	const hasPermissionToConvertRoomToTeam = usePermission('create-team');
-	const canDelete = isFederated ? false && hasPermissionToDelete : hasPermissionToDelete;
+	const canDelete = isFederated ? false : hasPermissionToDelete;
 	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room, subscription) && hasPermissionToEdit : hasPermissionToEdit;
 	const canConvertRoomToTeam = isFederated ? false : hasPermissionToConvertRoomToTeam;
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;

@@ -37,7 +37,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links');
 	const isFederated = room && isRoomFederated(room);
 
-	const canCreateInviteLinks = isFederated ? hasPermissionToCreateInviteLinks && room.t === 'c' : hasPermissionToCreateInviteLinks;
+	const canCreateInviteLinks = isFederated ? false : hasPermissionToCreateInviteLinks;
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,
@@ -57,10 +57,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		rid,
 	);
 
-	const canAddUsers =
-		room && user && isFederated
-			? Federation.isEditableByTheUser(user, room, subscription) && hasPermissionToAddUsers
-			: hasPermissionToAddUsers;
+	const canAddUsers = room && user && isFederated ? Federation.isEditableByTheUser(user, room, subscription) : hasPermissionToAddUsers;
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);

@@ -10,7 +10,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterLeaveRoom',
 			(user: IUser, room: IRoom | undefined): void => {
-				if (!room || !isRoomFederated(room)) {
+				if (!room || !isRoomFederated(room) || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(user, room));
@@ -24,7 +24,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterRemoveFromRoom',
 			(params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): void => {
-				if (!room || !isRoomFederated(room)) {
+				if (!room || !isRoomFederated(room) || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(params.removedUser, room, params.userWhoRemoved));
@@ -38,7 +38,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserAToRoom',
 			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !room) {
+				if (!params || !params.user || !room || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 
@@ -67,9 +67,7 @@ export class FederationHooks {
 	public static canCreateDirectMessageFromUI(callback: (members: IUser[]) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeCreateDirectMessage',
-			(members: IUser[]): void => {
-				Promise.await(callback(members));
-			},
+			(members: IUser[]): void => Promise.await(callback(members)),
 			callbacks.priority.HIGH,
 			'federation-v2-can-create-direct-message-from-ui-ce',
 		);
@@ -79,7 +77,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSetReaction',
 			(message: IMessage, { user, reaction }: { user: IUser; reaction: string }): void => {
-				if (!message || !isMessageFromMatrixFederation(message)) {
+				if (!message || !isMessageFromMatrixFederation(message) || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(message, user, reaction));
@@ -93,7 +91,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterUnsetReaction',
 			(message: IMessage, { user, reaction, oldMessage }: any): void => {
-				if (!message || !isMessageFromMatrixFederation(message)) {
+				if (!message || !isMessageFromMatrixFederation(message) || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(oldMessage, user, reaction));
@@ -107,7 +105,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterDeleteMessage',
 			(message: IMessage, room: IRoom): void => {
-				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message)) {
+				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message) || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(message, room._id));
@@ -121,7 +119,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSaveMessage',
 			(message: IMessage, room: IRoom): IMessage => {
-				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message)) {
+				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message) || !settings.get('Federation_Matrix_enabled')) {
 					return message;
 				}
 				if (!isEditedMessage(message)) {
@@ -139,7 +137,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSaveMessage',
 			(message: IMessage, room: IRoom): IMessage => {
-				if (!room || !isRoomFederated(room)) {
+				if (!room || !isRoomFederated(room) || !settings.get('Federation_Matrix_enabled')) {
 					return message;
 				}
 				if (isEditedMessage(message)) {
@@ -169,14 +167,14 @@ export class FederationHooks {
 			return;
 		}
 		const handlers: Record<string, (internalUserId: string, internalTargetUserId: string, internalRoomId: string) => Promise<void>> = {
-			'owner-added': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
-				federationRoomService.onRoomOwnerAdded(internalOwnerId, internalUserId, internalRoomId),
-			'owner-removed': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
-				federationRoomService.onRoomOwnerRemoved(internalOwnerId, internalUserId, internalRoomId),
-			'moderator-added': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
-				federationRoomService.onRoomModeratorAdded(internalOwnerId, internalUserId, internalRoomId),
-			'moderator-removed': (internalOwnerId: string, internalUserId: string, internalRoomId: string): Promise<void> =>
-				federationRoomService.onRoomModeratorRemoved(internalOwnerId, internalUserId, internalRoomId),
+			'owner-added': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomOwnerAdded(internalUserId, internalTargetUserId, internalRoomId),
+			'owner-removed': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomOwnerRemoved(internalUserId, internalTargetUserId, internalRoomId),
+			'moderator-added': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomModeratorAdded(internalUserId, internalTargetUserId, internalRoomId),
+			'moderator-removed': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomModeratorRemoved(internalUserId, internalTargetUserId, internalRoomId),
 		};
 
 		if (!handlers[`${role}-${action}`]) {

@@ -285,7 +285,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
 		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
-		if (!userRoomRoles.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
+		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
 			throw new Error('You are not allowed to change the owner');
 		}
 
@@ -322,6 +322,12 @@ export class FederationRoomServiceSender extends FederationService {
 		const federatedTargetUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalTargetUserId);
 		if (!federatedTargetUser) {
 			return;
+		}
+
+		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
+		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
+		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
+			throw new Error('You are not allowed to change the owner');
 		}
 
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
@@ -361,8 +367,8 @@ export class FederationRoomServiceSender extends FederationService {
 		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
 		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
 		if (
-			!userRoomRoles.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) &&
-			!userRoomRoles.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) &&
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
 			!myself
 		) {
 			throw new Error('You are not allowed to change the moderator');
@@ -407,8 +413,8 @@ export class FederationRoomServiceSender extends FederationService {
 		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
 		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
 		if (
-			!userRoomRoles.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) &&
-			!userRoomRoles.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) &&
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
 			!myself
 		) {
 			throw new Error('You are not allowed to change the moderator');

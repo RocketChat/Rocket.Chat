@@ -29,7 +29,7 @@ export class Federation {
 		const isTheOwner = room.u?._id === userId;
 
 		if (isTheOwner) {
-			return false;
+			return true;
 		}
 		const userSubscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, userId));
 		if (!userSubscription) {

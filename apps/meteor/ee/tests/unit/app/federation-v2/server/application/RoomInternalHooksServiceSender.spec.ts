@@ -43,6 +43,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getFederatedRoomByInternalId: sinon.stub(),
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
+		getInternalRoomRolesByUserId: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -98,6 +99,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		roomAdapter.getFederatedRoomByInternalId.reset();
 		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
 		roomAdapter.getInternalRoomById.reset();
+		roomAdapter.getInternalRoomRolesByUserId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
@@ -298,6 +300,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			username: 'normalizedInviteeId',
 			existsOnlyOnProxyServer: false,
 		});
+		const room = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', federatedUser, RoomType.CHANNEL, 'externalRoomName');
 		const validParams = {
 			invitees: [
 				...invitees,
@@ -308,6 +311,92 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 				},
 			],
 		} as any;
+
+		it('should not create the invitee locally if the inviter was provided but it does not exists', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+			expect(createUsersLocallyOnlySpy.called).to.be.false;
+		});
+
+		it('should not create the invitee locally if the inviter was provided but the room does not exists', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves(federatedUser);
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+			expect(createUsersLocallyOnlySpy.called).to.be.false;
+		});
+
+		it('should throw an error if the inviter was provided and he/she is not neither owner, moderator or the room creator', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+
+			await expect(
+				service.beforeAddUserToARoom({
+					...validParams,
+					internalInviter: 'internalInviterId',
+					internalRoomId: 'internalRoomId',
+				}),
+			).to.be.rejectedWith('You are not allowed to add users to this room');
+			expect(createUsersLocallyOnlySpy.called).to.be.false;
+		});
+
+		it('should create the user locally if the inviter was provided and he/she is an owner', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+
+			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
+		});
+
+		it('should create the user locally if the inviter was provided and he/she is an moderator', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['moderator']);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+
+			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
+		});
+
+		it('should create the user locally if the inviter was provided and he/she is the room creator', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves(federatedUser);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+
+			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
+		});
 
 		it('should create the invitee locally for each external user', async () => {
 			const avatarSpy = sinon.spy(service, 'updateUserAvatarInternally');
