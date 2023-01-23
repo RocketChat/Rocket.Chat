@@ -18,7 +18,9 @@ type SendEmailTranscriptOnCloseParams = {
 					sendToVisitor: true;
 					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
 			  };
-		generateTranscriptPdf?: boolean;
+		pdfTranscript?: {
+			requestedBy: string;
+		};
 	};
 };
 
@@ -50,7 +52,7 @@ const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnClosePara
 
 	return {
 		room,
-		options: params.options,
+		options,
 	};
 };
 

@@ -19,6 +19,20 @@ type CloseRoomOptions = {
 	generateTranscriptPdf?: boolean;
 };
 
+type LivechatCloseRoomOptions = Omit<CloseRoomOptions, 'generateTranscriptPdf'> & {
+	emailTranscript?:
+		| {
+				sendToVisitor: false;
+		  }
+		| {
+				sendToVisitor: true;
+				requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+		  };
+	pdfTranscript?: {
+		requestedBy: string;
+	};
+};
+
 Meteor.methods({
 	'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
 		const userId = Meteor.userId();
@@ -66,36 +80,37 @@ Meteor.methods({
 const resolveOptions = (
 	user: NonNullable<IOmnichannelRoom['transcriptRequest']>['requestedBy'],
 	options?: CloseRoomOptions,
-):
-	| (CloseRoomOptions & {
-			emailTranscript?:
-				| {
-						sendToVisitor: false;
-				  }
-				| {
-						sendToVisitor: true;
-						requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-				  };
-	  })
-	| undefined => {
-	if (!options?.emailTranscript) {
-		return {
-			...options,
-			emailTranscript: undefined,
+): LivechatCloseRoomOptions | undefined => {
+	if (!options) {
+		return undefined;
+	}
+
+	const resolvedOptions: LivechatCloseRoomOptions = {
+		clientAction: options.clientAction,
+		tags: options.tags,
+	};
+
+	if (options.generateTranscriptPdf) {
+		resolvedOptions.pdfTranscript = {
+			requestedBy: user._id,
 		};
+	}
+
+	if (!options?.emailTranscript) {
+		return resolvedOptions;
 	}
 	if (options?.emailTranscript.sendToVisitor === false) {
 		return {
-			...options,
+			...resolvedOptions,
 			emailTranscript: {
 				sendToVisitor: false,
 			},
 		};
 	}
 	return {
-		...options,
+		...resolvedOptions,
 		emailTranscript: {
-			...options.emailTranscript,
+			sendToVisitor: true,
 			requestData: {
 				...options.emailTranscript.requestData,
 				requestedBy: user,

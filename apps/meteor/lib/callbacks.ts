@@ -56,7 +56,9 @@ type EventLikeCallbackSignatures = {
 			clientAction?: boolean;
 			tags: string[];
 			emailTranscript?: { send: false } | { send: true; requestData: NonNullable<IOmnichannelRoom['transcriptRequest']> };
-			generateTranscriptPdf?: boolean;
+			pdfTranscript?: {
+				requestedBy: string;
+			};
 		};
 	}) => void;
 	'livechat.saveRoom': (room: IRoom) => void;
