@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { RoomMemberUser } from '../../views/room/contextualBar/RoomMembers/RoomMembers';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { AsyncStatePhase } from '../asyncState';
@@ -24,6 +25,8 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 	}
 
 	protected compare(a: T, b: T): number {
+		if(a instanceof RoomMemberUser && b instanceof RoomMemberUser)
+			 return a.name.localeCompare(b.name);
 		return b._updatedAt.getTime() - a._updatedAt.getTime();
 	}
 
