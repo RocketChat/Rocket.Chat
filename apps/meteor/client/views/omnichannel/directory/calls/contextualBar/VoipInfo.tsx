@@ -47,7 +47,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 				<InfoPanel>
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Channel')}</InfoPanel.Label>
-						<Box>
+						<Box color='default'>
 							<Icon size='x24' name='phone' />
 							{t('Voice_Call')}
 						</Box>
