@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
@@ -7,40 +7,39 @@ import { Livechat } from '../lib/Livechat';
 
 type SendEmailTranscriptOnCloseParams = {
 	room: IRoom;
-	options: { clientAction?: boolean; tags: string[]; sendTranscriptEmailToVisitor?: boolean; generateTranscriptPdf?: boolean };
+	options: {
+		clientAction?: boolean;
+		tags: string[];
+		emailTranscript?:
+			| {
+					sendToVisitor: false;
+			  }
+			| {
+					sendToVisitor: true;
+					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+			  };
+		generateTranscriptPdf?: boolean;
+	};
 };
 
 const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnCloseParams): Promise<SendEmailTranscriptOnCloseParams> => {
-	const {
-		room,
-		options: { sendTranscriptEmailToVisitor },
-	} = params;
+	const { room, options } = params;
 
 	if (!isOmnichannelRoom(room)) {
 		return params;
 	}
 
-	const { _id: rid, transcriptRequest, v: { token } = {} } = room;
+	const { _id: rid, v: { token } = {} } = room;
 	if (!token) {
 		return params;
 	}
 
-	// Note: options.sendTranscriptEmailToVisitor will override the room.transcriptRequest check
-	// If options.sendTranscriptEmailToVisitor is not set, then the room.transcriptRequest will be checked
-	if (sendEmailTranscriptOnClose === undefined) {
-		if (!transcriptRequest) {
-			return params;
-		}
-	} else if (!sendTranscriptEmailToVisitor) {
-		return params;
-	} else if (!transcriptRequest) {
-		// TODO: Not sure what to do about this case yet
-		// need to figure out how to get the email address from the visitor
-		// need to check with design team
+	const transcriptData = resolveTranscriptData(room, options);
+	if (!transcriptData) {
 		return params;
 	}
 
-	const { email, subject, requestedBy: user } = transcriptRequest;
+	const { email, subject, requestedBy: user } = transcriptData;
 
 	await Promise.all([
 		Livechat.sendTranscript({ token, rid, email, subject, user }),
@@ -53,6 +52,26 @@ const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnClosePara
 		room,
 		options: params.options,
 	};
+};
+
+const resolveTranscriptData = (
+	room: IOmnichannelRoom,
+	options: SendEmailTranscriptOnCloseParams['options'],
+): IOmnichannelRoom['transcriptRequest'] | undefined => {
+	const { transcriptRequest: roomTranscriptRequest } = room;
+
+	const { emailTranscript: optionsTranscriptRequest } = options;
+
+	// Note: options.emailTranscript will override the room.transcriptRequest check
+	// If options.emailTranscript is not set, then the room.transcriptRequest will be checked
+	if (optionsTranscriptRequest === undefined) {
+		return roomTranscriptRequest;
+	}
+
+	if (!optionsTranscriptRequest.sendToVisitor) {
+		return undefined;
+	}
+	return optionsTranscriptRequest.requestData;
 };
 
 callbacks.add(
