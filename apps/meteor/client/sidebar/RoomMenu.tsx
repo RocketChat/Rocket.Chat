@@ -20,6 +20,7 @@ import { RoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
+import { useOmnichannelPriorities } from '../hooks/omnichannel/useOmnichannelPriorities';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
@@ -84,6 +85,18 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
+
+	const priorities = useOmnichannelPriorities();
+
+	const priorityMenu = useMemo(() => {
+		const priorityMenu = {};
+		priorities?.forEach((item) => {
+			priorityMenu[item.name] = { label: item.name, icon: 'priority' };
+		});
+		return priorityMenu;
+	}, [priorities]);
+
+	console.log(priorityMenu, priorities);
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {

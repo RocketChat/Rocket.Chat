@@ -1,6 +1,12 @@
-import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelAgent,
+	IRoom,
+	OmichannelRoutingConfig,
+	OmnichannelSortingMechanismSettingType,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, usePermission, useMethod, useStream, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
@@ -26,6 +32,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
+	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
@@ -38,9 +45,17 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
+	const [priorities, setPriorities] = useState<ILivechatPriority[]>();
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
+
+	const subscribe = useStream('notify-logged');
+
+	const updatePriorities = useCallback(async (): Promise<void> => {
+		const { priorities } = await getPriorities();
+		setPriorities(priorities);
+	}, [getPriorities]);
 
 	useEffect(() => {
 		if (!accessible) {
@@ -60,6 +75,11 @@ const OmnichannelProvider: FC = ({ children }) => {
 			update();
 		}
 	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
+
+	useEffect(() => {
+		updatePriorities();
+		subscribe('omni-priority-changed', async () => updatePriorities());
+	}, [getPriorities, subscribe, updatePriorities]);
 
 	const enabled = accessible && !!user && !!routeConfig;
 	const manuallySelected =
@@ -116,6 +136,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 			};
 		}
 
+		console.log('priorities', priorities);
+
 		return {
 			...emptyContextValue,
 			enabled: true,
@@ -129,8 +151,9 @@ const OmnichannelProvider: FC = ({ children }) => {
 				  }
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
+			livechatPriority: priorities,
 		};
-	}, [agentAvailable, voipCallAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
+	}, [enabled, manuallySelected, agentAvailable, voipCallAvailable, routeConfig, queue, showOmnichannelQueueLink, priorities]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
 };
