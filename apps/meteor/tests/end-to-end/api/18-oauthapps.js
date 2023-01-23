@@ -165,12 +165,11 @@ describe('[OAuthApps]', function () {
 	describe('[/oauth-apps/:_id]', () => {
 		let _id;
 
-		before(async () => {
+		before((done) => {
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
-
-			const { _id: newId } = await request
+			request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -180,9 +179,10 @@ describe('[OAuthApps]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.then((res) => res.body.application);
-
-			_id = newId;
+				.end((err, res) => {
+					_id = res.body.application._id;
+					done();
+				});
 		});
 
 		it('should update an app name, active and redirect URI correctly by its id', async () => {
