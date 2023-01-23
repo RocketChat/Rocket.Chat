@@ -298,6 +298,7 @@
 		"file-type": "^16.5.3",
 		"filenamify": "^4.3.0",
 		"filesize": "9.0.11",
+                "generate-password": "^1.7.0",
 		"google-libphonenumber": "^3.2.28",
 		"googleapis": "^104.0.0",
 		"grapheme-splitter": "^1.0.4",
