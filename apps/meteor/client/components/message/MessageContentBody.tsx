@@ -49,7 +49,10 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 				return undefined;
 			}
 
-			return mentions?.find(({ username }) => username === mention);
+			const filterUser = ({ username, type }: UserMention) => (!type || type === 'user') && username === mention;
+			const filterTeam = ({ name, type }: UserMention) => type === 'team' && name === mention;
+
+			return mentions?.find((mention) => filterUser(mention) || filterTeam(mention));
 		},
 		[mentions],
 	);
@@ -96,11 +99,9 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 	const messageBodyAdditionalStyles = css`
 		> blockquote {
 			padding-inline: 8px;
+			border: 1px solid ${Palette.stroke['stroke-extra-light']};
 			border-radius: 2px;
-			border-width: 1px;
-			border-style: solid;
 			background-color: ${Palette.surface['surface-tint']};
-			border-color: ${Palette.stroke['stroke-extra-light']};
 			border-inline-start-color: ${Palette.stroke['stroke-medium']};
 
 			&:hover,
@@ -122,6 +123,16 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 			list-style: none;
 			margin-inline-start: 0;
 			padding-inline-start: 0;
+		}
+		a {
+			color: ${Palette.statusColor['status-font-on-info']};
+			&:hover {
+				text-decoration: underline;
+			}
+			&:focus {
+				border: 2px solid ${Palette.stroke['stroke-extra-light-highlight']};
+				border-radius: 2px;
+			}
 		}
 	`;
 

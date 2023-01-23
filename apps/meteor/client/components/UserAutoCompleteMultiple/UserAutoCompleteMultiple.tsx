@@ -22,10 +22,7 @@ type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, '
 const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const { value: data } = useEndpointData(
-		'/v1/users.autocomplete',
-		useMemo(() => query(debouncedFilter), [debouncedFilter]),
-	);
+	const { value: data } = useEndpointData('/v1/users.autocomplete', { params: useMemo(() => query(debouncedFilter), [debouncedFilter]) });
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name })) || [], [data]);
 

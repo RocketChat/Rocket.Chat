@@ -10,12 +10,14 @@ import {
 	ThreadMessageBody,
 	ThreadMessageUnfollow,
 	CheckBox,
+	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import { useShowTranslated } from '../../../views/room/MessageList/contexts/MessageListContext';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -24,6 +26,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
+import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
 import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
@@ -38,7 +41,8 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 		actions: { openThread },
 	} = useMessageActions();
 	const parentMessage = useParentMessage(message.tmid);
-	const body = useMessageBody(parentMessage.data);
+
+	const translated = useShowTranslated(message);
 	const t = useTranslation();
 
 	const isSelecting = useIsSelecting();
@@ -47,6 +51,9 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
+	const messageBody = useMessageBody(parentMessage.data, message.rid);
+
+	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
 	return (
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
@@ -62,7 +69,13 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 									{(parentMessage.data as { ignored?: boolean })?.ignored ? (
 										t('Message_Ignored')
 									) : (
-										<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
+										<ThreadMessagePreviewBody message={{ ...parentMessage.data, ...previewMessage }} />
+									)}
+									{translated && (
+										<>
+											{' '}
+											<MessageStatusIndicatorItem name='language' color='font-on-info' title={t('Translated')} />
+										</>
 									)}
 								</>
 							)}
@@ -80,7 +93,19 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{(message as { ignored?: boolean }).ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}
+						{(message as { ignored?: boolean }).ignored ? (
+							t('Message_Ignored')
+						) : (
+							<>
+								<ThreadMessagePreviewBody message={message} />
+								{translated && (
+									<>
+										{' '}
+										<MessageStatusIndicatorItem name='language' title={t('Translated')} />
+									</>
+								)}
+							</>
+						)}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>
