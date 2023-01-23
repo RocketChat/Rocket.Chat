@@ -12,7 +12,7 @@ import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 import { AppEvents, Apps } from '../../app/apps/server/orchestrator';
 
-const BIO_TEXT_MAX_LENGTH = 160;
+const BIO_TEXT_MAX_LENGTH = 260;
 
 function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
