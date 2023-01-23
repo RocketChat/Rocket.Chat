@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -13,6 +13,7 @@ import {
 	isLiveChatRoomJoinProps,
 	isPUTLivechatRoomVisitorParams,
 	isLiveChatRoomSaveInfoProps,
+	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
@@ -86,6 +87,8 @@ API.v1.addRoute('livechat/room', {
 	},
 });
 
+// Note: use this route if a visitor is closing a room
+// If a RC user(like eg agent) is closing a room, use the `livechat/room.closeByUser` route
 API.v1.addRoute(
 	'livechat/room.close',
 	{ validateParams: isPOSTLivechatRoomCloseParams },
@@ -116,6 +119,85 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ rid, comment });
+		},
+	},
+);
+
+type LivechatCloseRoomMethodOptions = {
+	clientAction?: boolean;
+	tags?: string[];
+	emailTranscript?:
+		| {
+				sendToVisitor: false;
+		  }
+		| {
+				sendToVisitor: true;
+				requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+		  };
+	pdfTranscript?: {
+		requestedBy: string;
+	};
+};
+
+API.v1.addRoute(
+	'livechat/room.closeByUser',
+	{
+		validateParams: isPOSTLivechatRoomCloseByUserParams,
+		authRequired: true,
+		permissionsRequired: ['close-livechat-room'],
+	},
+	{
+		async post() {
+			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
+
+			const room = await LivechatRoomsRaw.findOneById(rid);
+			if (!room || !isOmnichannelRoom(room)) {
+				throw new Error('error-invalid-room');
+			}
+
+			if (!room.open) {
+				throw new Error('error-room-already-closed');
+			}
+
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
+			if (!subscription && !hasPermission(this.userId, 'close-others-livechat-room')) {
+				throw new Error('error-not-authorized');
+			}
+
+			const options: LivechatCloseRoomMethodOptions = {
+				clientAction: true,
+				tags,
+				...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),
+				...(transcriptEmail && {
+					...(transcriptEmail.sendToVisitor
+						? {
+								emailTranscript: {
+									sendToVisitor: true,
+									requestData: {
+										email: transcriptEmail.requestData.email,
+										subject: transcriptEmail.requestData.subject,
+										requestedAt: new Date(),
+										requestedBy: this.user,
+									},
+								},
+						  }
+						: {
+								emailTranscript: {
+									sendToVisitor: false,
+								},
+						  }),
+				}),
+			};
+
+			Livechat.closeRoom({
+				room,
+				user: this.user,
+				options,
+				comment,
+				visitor: undefined,
+			});
+
+			return API.v1.success();
 		},
 	},
 );

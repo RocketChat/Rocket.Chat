@@ -69,7 +69,7 @@ Meteor.methods({
 
 		return Livechat.closeRoom({
 			user,
-			room: LivechatRooms.findOneById(roomId),
+			room,
 			comment,
 			options: resolveOptions(user, options),
 			visitor: undefined,
