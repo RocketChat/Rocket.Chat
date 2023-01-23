@@ -34,11 +34,6 @@ describe('Federation[Server] - Federation', () => {
 			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE)).to.be.true;
 		});
 
-		it('should return true if the user is the room creator', () => {
-			expect(Federation.actionAllowed({ t: 'c', federated: true, u: { _id: 'userId' } } as any, RoomMemberActions.INVITE, 'userId')).to.be
-				.true;
-		});
-
 		it('should return true if there is no subscription for the userId', () => {
 			findOneByRoomIdAndUserIdStub.returns(undefined);
 			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE, 'userId')).to.be.true;

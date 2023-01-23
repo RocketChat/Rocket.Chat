@@ -373,10 +373,6 @@ describe('Federation[Client] - Federation', () => {
 			expect(Federation.isEditableByTheUser({} as any, undefined, {} as any)).to.be.false;
 		});
 
-		it('should return true if the current user is the room owner', () => {
-			expect(Federation.isEditableByTheUser({ _id: 'id' } as any, { u: { _id: 'id' } } as any, {} as any)).to.be.true;
-		});
-
 		it('should return false if the current user is NOT the room owner', () => {
 			expect(Federation.isEditableByTheUser({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any, {} as any)).to.be.false;
 		});

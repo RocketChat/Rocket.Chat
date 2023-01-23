@@ -1,4 +1,4 @@
-import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
@@ -189,7 +189,16 @@ export class RocketChatRoomAdapter {
 			await Subscriptions.addRolesByUserId(targetFederatedUser.getInternalId(), toAdd, federatedRoom.getInternalId());
 			if (notifyChannel) {
 				await Promise.all(
-					toAdd.map((role) => this.createMessageToNotifyRoomAboutRoleChange(federatedRoom, targetFederatedUser, whoDidTheChange, role)),
+					toAdd.map((role) =>
+						Messages.createSubscriptionRoleAddedWithRoomIdAndUser(
+							federatedRoom.getInternalId(),
+							targetFederatedUser.getInternalReference(),
+							{
+								u: whoDidTheChange,
+								role,
+							},
+						),
+					),
 				);
 			}
 		}
@@ -197,29 +206,22 @@ export class RocketChatRoomAdapter {
 			await Subscriptions.removeRolesByUserId(targetFederatedUser.getInternalId(), toRemove, federatedRoom.getInternalId());
 			if (notifyChannel) {
 				await Promise.all(
-					toRemove.map((role) => this.createMessageToNotifyRoomAboutRoleChange(federatedRoom, targetFederatedUser, whoDidTheChange, role)),
+					toRemove.map((role) =>
+						Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
+							federatedRoom.getInternalId(),
+							targetFederatedUser.getInternalReference(),
+							{
+								u: whoDidTheChange,
+								role,
+							},
+						),
+					),
 				);
 			}
 		}
 		if (settings.get('UI_DisplayRoles')) {
 			this.notifyUIAboutRoomRolesChange(targetFederatedUser, federatedRoom, toAdd, toRemove);
 		}
-	}
-
-	private createMessageToNotifyRoomAboutRoleChange(
-		federatedRoom: FederatedRoom,
-		targetFederatedUser: FederatedUser,
-		whoDidTheChange: AtLeast<IUser, '_id' | 'username'>,
-		role: ROCKET_CHAT_FEDERATION_ROLES,
-	): Partial<IMessage> {
-		return Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
-			federatedRoom.getInternalId(),
-			targetFederatedUser.getInternalReference(),
-			{
-				u: whoDidTheChange,
-				role,
-			},
-		) as IMessage;
 	}
 
 	private notifyUIAboutRoomRolesChange(

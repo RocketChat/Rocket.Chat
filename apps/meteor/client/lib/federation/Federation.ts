@@ -13,66 +13,63 @@ const allowedUserActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = 
 export const actionAllowed = (
 	room: Partial<IRoom>,
 	action: ValueOf<typeof RoomMemberActions>,
-	showingUserId: IUser['_id'],
+	displayingUserId: IUser['_id'],
 	userSubscription?: ISubscription,
 ): boolean => {
 	if (!isRoomFederated(room)) {
 		return false;
 	}
+
 	if (isDirectMessageRoom(room)) {
 		return false;
 	}
-	if (!userSubscription) {
+
+	const subscribed = Boolean(userSubscription);
+	const defaultUser = !userSubscription?.roles;
+	if (!subscribed || defaultUser) {
 		return false;
 	}
 
-	const myself = userSubscription.u?._id === showingUserId;
-	const showingUserRoles = RoomRoles.findOne({ 'rid': room._id, 'u._id': showingUserId })?.roles;
+	const myself = userSubscription.u?._id === displayingUserId;
+	const removingMyself = action === RoomMemberActions.REMOVE_USER && myself;
 
-	if (action === RoomMemberActions.REMOVE_USER && myself) {
+	if (removingMyself) {
 		return false;
 	}
 
-	if (userSubscription.roles?.includes('owner')) {
-		if (showingUserRoles?.includes('owner')) {
-			if (action === RoomMemberActions.SET_AS_OWNER || action === RoomMemberActions.SET_AS_MODERATOR) {
-				return myself;
-			}
-			if (action === RoomMemberActions.REMOVE_USER) {
-				return false;
-			}
+	const displayingUserRoomRoles = RoomRoles.findOne({ 'rid': room._id, 'u._id': displayingUserId })?.roles || [];
+	const loggedInUserRoomRoles = userSubscription.roles || [];
+
+	if (loggedInUserRoomRoles.includes('owner')) {
+		if (action === RoomMemberActions.SET_AS_OWNER || action === RoomMemberActions.SET_AS_MODERATOR) {
+			return displayingUserRoomRoles.includes('owner') ? myself : true;
 		}
 
-		if (showingUserRoles?.includes('moderator')) {
-			if (action === RoomMemberActions.SET_AS_OWNER) {
-				return true;
-			}
-			if (action === RoomMemberActions.SET_AS_MODERATOR) {
-				return true;
-			}
-			return allowedUserActionsInFederatedRooms.includes(action);
+		if (action === RoomMemberActions.REMOVE_USER) {
+			return !displayingUserRoomRoles.includes('owner');
 		}
+		const allowedForOwnersOverDefaultUsers = allowedUserActionsInFederatedRooms.includes(action);
 
-		return allowedUserActionsInFederatedRooms.includes(action);
+		return allowedForOwnersOverDefaultUsers;
 	}
 
-	if (userSubscription.roles?.includes('moderator')) {
-		if (showingUserRoles?.includes('owner')) {
+	if (loggedInUserRoomRoles.includes('moderator')) {
+		if (displayingUserRoomRoles.includes('owner')) {
 			return false;
 		}
 
-		if (showingUserRoles?.includes('moderator')) {
-			if (action === RoomMemberActions.SET_AS_OWNER) {
-				return false;
-			}
+		if (displayingUserRoomRoles.includes('moderator')) {
 			if (action === RoomMemberActions.SET_AS_MODERATOR) {
 				return myself;
 			}
 			return false;
 		}
 
-		return action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER;
+		const allowedForModeratorsOverDefaultUsers = action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER;
+
+		return allowedForModeratorsOverDefaultUsers;
 	}
+
 	return false;
 };
 
@@ -80,5 +77,5 @@ export const isEditableByTheUser = (user?: IUser, room?: IRoom, subscription?: I
 	if (!user || !room || !subscription) {
 		return false;
 	}
-	return Boolean(user._id === room.u?._id || subscription.roles?.includes('owner') || subscription.roles?.includes('moderator'));
+	return Boolean(subscription.roles?.includes('owner') || subscription.roles?.includes('moderator'));
 };
