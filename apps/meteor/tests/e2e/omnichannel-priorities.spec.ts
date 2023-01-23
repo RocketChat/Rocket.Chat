@@ -1,6 +1,6 @@
 import faker from '@faker-js/faker';
 
-// import { IS_EE } from './config/constants';
+import { IS_EE } from './config/constants';
 import { OmnichannelPriorities } from './page-objects/omnichannel-priorities';
 import { test, expect } from './utils/test';
 
@@ -10,7 +10,7 @@ const ERROR = {
 	fieldNameRequired: 'The field Name is required.',
 };
 
-// test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
+test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
 
 test.use({ storageState: 'user1-session.json' });
 
