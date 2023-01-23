@@ -71,7 +71,7 @@ storiesOf('Components/Composer', module)
 						<SmileIcon width='20' />
 					</ComposerAction>
 					<ComposerAction text='Send' onClick={action('click send')}>
-						<SendIcon color='#1D74F5' width='20' />
+						<SendIcon color='on-info' width='20' />
 					</ComposerAction>
 				</ComposerActions>
 			}
