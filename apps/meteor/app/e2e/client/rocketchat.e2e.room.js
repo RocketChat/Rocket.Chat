@@ -264,7 +264,8 @@ export class E2ERoom extends Emitter {
 			const decryptedKey = await decryptRSA(e2e.privateKey, groupKey);
 			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
-			return this.error('Error decrypting group key: ', error);
+			this.error('Error decrypting group key: ', error);
+			return false;
 		}
 
 		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
@@ -275,8 +276,11 @@ export class E2ERoom extends Emitter {
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
-			return this.error('Error importing group key: ', error);
+			this.error('Error importing group key: ', error);
+			return false;
 		}
+
+		return true;
 	}
 
 	async createGroupKey() {
