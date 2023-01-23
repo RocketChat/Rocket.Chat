@@ -330,6 +330,10 @@ const RoomBody = (): ReactElement => {
 	useLegacyMessageEvents({
 		messageListRef: {
 			get current() {
+				if (!useLegacyMessageTemplate) {
+					return null;
+				}
+
 				return wrapperRef.current?.querySelector('ul') ?? null;
 			},
 		},
@@ -619,7 +623,6 @@ const RoomBody = (): ReactElement => {
 							<ComposerContainer
 								rid={room._id}
 								subscription={subscription}
-								chatMessagesInstance={chat}
 								onResize={handleComposerResize}
 								onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 								onNavigateToNextMessage={handleNavigateToNextMessage}

@@ -449,4 +449,22 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 		return this.updateMany(query, update);
 	}
+
+	async setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null> {
+		const query = { _id };
+		const update = { $set: { E2EKey: key } };
+		await this.updateOne(query, update);
+		return this.findOneById(_id);
+	}
+
+	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+		const update = { $set: { E2ESuggestedKey: key } };
+		return this.updateOne(query, update);
+	}
+
+	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
+	}
 }

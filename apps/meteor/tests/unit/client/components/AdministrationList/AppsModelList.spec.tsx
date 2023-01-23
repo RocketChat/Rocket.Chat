@@ -20,40 +20,26 @@ const mockAppsModelListModule = (stubs = {}) => {
 describe('components/AdministrationList/AppsModelList', () => {
 	it('should render apps', async () => {
 		const AppsModelList = mockAppsModelListModule().default;
-		render(<AppsModelList appsManagementAllowed={true} onDismiss={() => null} appBoxItems={[]} />);
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
 		expect(screen.getByText('Installed')).to.exist;
 	});
 
-	it('should not render marketplace and installed when does not have permission', async () => {
-		const AppsModelList = mockAppsModelListModule({
-			'@rocket.chat/ui-contexts': {
-				useAtLeastOnePermission: (): boolean => false,
-			},
-		}).default;
-		render(<AppsModelList appsManagementAllowed={false} onDismiss={() => null} appBoxItems={[]} />);
-
-		expect(screen.getByText('Apps')).to.exist;
-		expect(screen.queryByText('Marketplace')).to.not.exist;
-		expect(screen.queryByText('Installed')).to.not.exist;
-	});
-
 	context('when clicked', () => {
-		it('should go to admin marketplace', async () => {
+		it('should go to marketplace', async () => {
 			const pushRoute = spy();
 			const handleDismiss = spy();
 			const AppsModelList = mockAppsModelListModule().default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList appsManagementAllowed={true} onDismiss={handleDismiss} appBoxItems={[]} />
+					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Marketplace');
-
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace'));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'explore', page: 'list' }));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
@@ -63,13 +49,13 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const AppsModelList = mockAppsModelListModule().default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList appsManagementAllowed={true} onDismiss={handleDismiss} appBoxItems={[]} />
+					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Installed');
 
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace', { context: 'installed', page: 'list' }));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'installed', page: 'list' }));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
@@ -85,7 +71,7 @@ describe('components/AdministrationList/AppsModelList', () => {
 			}).default;
 			render(
 				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList appsManagementAllowed={true} onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
+					<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
 				</RouterContextMock>,
 			);
 			const button = screen.getByText('Custom App');
