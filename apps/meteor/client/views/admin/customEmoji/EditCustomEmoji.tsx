@@ -81,16 +81,12 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		}
 	}, [emojiFile, _id, name, aliases, saveAction, onChange, close, newEmojiPreview]);
 
-	const deleteAction = useEndpointAction(
-		'POST',
-		'/v1/emoji-custom.delete',
-		useMemo(() => ({ emojiId: _id }), [_id]),
-	);
+	const deleteAction = useEndpointAction('POST', '/v1/emoji-custom.delete');
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
 			try {
-				await deleteAction();
+				await deleteAction({ emojiId: _id });
 				dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -110,7 +106,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 				{t('Custom_Emoji_Delete_Warning')}
 			</GenericModal>
 		));
-	}, [deleteAction, close, dispatchToastMessage, onChange, setModal, t]);
+	}, [setModal, deleteAction, _id, dispatchToastMessage, t, onChange, close]);
 
 	const handleChangeAliases = useCallback(
 		(e) => {

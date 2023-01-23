@@ -17,7 +17,7 @@ const AttachmentBlock: FC<{ pre?: JSX.Element | string | undefined; color?: stri
 			pis={16}
 			borderRadius={2}
 			borderInlineStartStyle='solid'
-			borderInlineStartWidth={2}
+			borderInlineStartWidth='default'
 			borderInlineStartColor={color}
 			children={children}
 		/>
