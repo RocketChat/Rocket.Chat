@@ -145,8 +145,8 @@ const verifyIfNewRolesWereAddedForDefaultUsers = (
 		}, changesAlreadyMadeToRoles);
 
 const createExternalRolesChangesActions = (
-	currentRolesState: { [key: string]: number },
-	previousRolesState: { [key: string]: number },
+	currentRolesState: { [key: string]: number } = {},
+	previousRolesState: { [key: string]: number } = {},
 ): IExternalRolesChangesToApplyInputDto => {
 	const changesInRolesBasedOnPreviousState = Object.keys(previousRolesState).reduce((externalRolesChangesByUser, externalUserId) => {
 		const currentPowerLevel = currentRolesState[externalUserId];
@@ -346,7 +346,7 @@ export class MatrixRoomReceiverConverter {
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			roleChangesToApply: createExternalRolesChangesActions(
-				externalEvent.content.users,
+				externalEvent.content?.users,
 				(externalEvent.prev_content as IMatrixEventContentRoomPowerLevelsChanged)?.users || {},
 			),
 		});

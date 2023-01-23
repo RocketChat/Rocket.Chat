@@ -58,6 +58,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		updateRoomType: sinon.stub(),
 		updateRoomName: sinon.stub(),
 		updateRoomTopic: sinon.stub(),
+		applyRoomRolesToUser: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -66,6 +67,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		setAvatar: sinon.stub(),
 		getInternalUserByUsername: sinon.stub(),
 		updateRealName: sinon.stub(),
+		getFederatedUsersByExternalIds: sinon.stub(),
 	};
 	const messageAdapter = {
 		sendMessage: sinon.stub(),
@@ -121,12 +123,14 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		roomAdapter.isUserAlreadyJoined.reset();
 		roomAdapter.getInternalRoomById.reset();
 		roomAdapter.addUserToRoom.reset();
+		roomAdapter.applyRoomRolesToUser.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.updateFederationAvatar.reset();
 		userAdapter.setAvatar.reset();
 		userAdapter.getInternalUserByUsername.reset();
 		userAdapter.updateRealName.reset();
+		userAdapter.getFederatedUsersByExternalIds.reset();
 		messageAdapter.sendMessage.reset();
 		messageAdapter.sendFileMessage.reset();
 		messageAdapter.deleteMessage.reset();
@@ -1131,6 +1135,109 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			} as any);
 
 			expect(messageAdapter.editMessage.calledWith(user, 'newMessageText', { msg: 'differentOne' })).to.be.true;
+		});
+	});
+
+	describe('#onChangeRoomPowerLevels()', () => {
+		const user = FederatedUser.createInstance('externalUserId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT update the room roles if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(undefined);
+			await service.onChangeRoomPowerLevels({
+				externalRoomId: 'externalRoomId',
+				externalSenderId: 'externalSenderId',
+				rolesChangesToApply: [],
+			} as any);
+
+			expect(roomAdapter.applyRoomRolesToUser.called).to.be.false;
+		});
+
+		it('should NOT update the room roles if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(undefined);
+			await service.onChangeRoomPowerLevels({
+				externalRoomId: 'externalRoomId',
+				externalSenderId: 'externalSenderId',
+				rolesChangesToApply: [],
+			} as any);
+
+			expect(roomAdapter.applyRoomRolesToUser.called).to.be.false;
+		});
+
+		it('should NOT update the room roles if there is no target users', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			userAdapter.getFederatedUsersByExternalIds.resolves([]);
+			await service.onChangeRoomPowerLevels({
+				externalRoomId: 'externalRoomId',
+				externalSenderId: 'externalSenderId',
+				rolesChangesToApply: [],
+			} as any);
+
+			expect(roomAdapter.applyRoomRolesToUser.called).to.be.false;
+		});
+
+		it('should update the room roles adding one role to be added', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			userAdapter.getFederatedUsersByExternalIds.resolves([user]);
+			await service.onChangeRoomPowerLevels({
+				externalRoomId: 'externalRoomId',
+				externalSenderId: 'externalSenderId',
+				roleChangesToApply: {
+					externalUserId: [
+						{
+							action: 'add',
+							role: 'owner',
+						},
+					],
+				},
+			} as any);
+
+			expect(
+				roomAdapter.applyRoomRolesToUser.calledWith({
+					federatedRoom: room,
+					targetFederatedUser: user,
+					fromUser: user,
+					rolesToAdd: ['owner'],
+					rolesToRemove: [],
+					notifyChannel: true,
+				}),
+			).to.be.true;
+		});
+
+		it('should update the room roles adding one role to be removed', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			userAdapter.getFederatedUsersByExternalIds.resolves([user]);
+			await service.onChangeRoomPowerLevels({
+				externalRoomId: 'externalRoomId',
+				externalSenderId: 'externalSenderId',
+				roleChangesToApply: {
+					externalUserId: [
+						{
+							action: 'remove',
+							role: 'owner',
+						},
+					],
+				},
+			} as any);
+
+			expect(
+				roomAdapter.applyRoomRolesToUser.calledWith({
+					federatedRoom: room,
+					targetFederatedUser: user,
+					fromUser: user,
+					rolesToAdd: [],
+					rolesToRemove: ['owner'],
+					notifyChannel: true,
+				}),
+			).to.be.true;
 		});
 	});
 });

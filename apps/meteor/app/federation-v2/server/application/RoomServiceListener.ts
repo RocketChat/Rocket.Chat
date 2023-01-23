@@ -432,6 +432,9 @@ export class FederationRoomServiceListener extends FederationService {
 		await Promise.all(
 			federatedUsers.map((targetFederatedUser) => {
 				const changes = roleChangesToApply[targetFederatedUser.getExternalId()];
+				if (!changes) {
+					return;
+				}
 				const rolesToRemove = changes.filter((change) => change.action === 'remove').map((change) => change.role);
 				const rolesToAdd = changes.filter((change) => change.action === 'add').map((change) => change.role);
 

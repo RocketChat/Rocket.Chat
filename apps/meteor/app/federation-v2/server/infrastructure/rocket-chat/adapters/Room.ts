@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
@@ -179,51 +179,60 @@ export class RocketChatRoomAdapter {
 			return;
 		}
 		const { roles: currentRoles = [] } = subscription;
-		const addTheseRoles = rolesToAdd.filter((role) => !currentRoles.includes(role));
-		const removeTheseRoles = rolesToRemove.filter((role) => currentRoles.includes(role));
+		const toAdd = rolesToAdd.filter((role) => !currentRoles.includes(role));
+		const toRemove = rolesToRemove.filter((role) => currentRoles.includes(role));
 		const whoDidTheChange = {
 			_id: fromUser.getInternalId(),
 			username: fromUser.getUsername(),
 		};
-		if (addTheseRoles.length > 0) {
-			await Subscriptions.addRolesByUserId(targetFederatedUser.getInternalId(), addTheseRoles, federatedRoom.getInternalId());
+		if (toAdd.length > 0) {
+			await Subscriptions.addRolesByUserId(targetFederatedUser.getInternalId(), toAdd, federatedRoom.getInternalId());
 			if (notifyChannel) {
 				await Promise.all(
-					addTheseRoles.map((role) =>
-						Messages.createSubscriptionRoleAddedWithRoomIdAndUser(
-							federatedRoom.getInternalId(),
-							targetFederatedUser.getInternalReference(),
-							{
-								u: whoDidTheChange,
-								role,
-							},
-						),
-					),
+					toAdd.map((role) => this.createMessageToNotifyRoomAboutRoleChange(federatedRoom, targetFederatedUser, whoDidTheChange, role)),
 				);
 			}
 		}
-		if (removeTheseRoles.length > 0) {
-			await Subscriptions.removeRolesByUserId(targetFederatedUser.getInternalId(), removeTheseRoles, federatedRoom.getInternalId());
+		if (toRemove.length > 0) {
+			await Subscriptions.removeRolesByUserId(targetFederatedUser.getInternalId(), toRemove, federatedRoom.getInternalId());
 			if (notifyChannel) {
 				await Promise.all(
-					removeTheseRoles.map((role) =>
-						Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
-							federatedRoom.getInternalId(),
-							targetFederatedUser.getInternalReference(),
-							{
-								u: whoDidTheChange,
-								role,
-							},
-						),
-					),
+					toRemove.map((role) => this.createMessageToNotifyRoomAboutRoleChange(federatedRoom, targetFederatedUser, whoDidTheChange, role)),
 				);
 			}
 		}
 		if (settings.get('UI_DisplayRoles')) {
-			const addedRoles = addTheseRoles.map((role) => this.createRoleUpdateEvent(targetFederatedUser, federatedRoom, role, 'added'));
-			const removedRoles = removeTheseRoles.map((role) => this.createRoleUpdateEvent(targetFederatedUser, federatedRoom, role, 'removed'));
-			[...addedRoles, ...removedRoles].forEach((event) => api.broadcast('user.roleUpdate', event));
+			this.notifyUIAboutRoomRolesChange(targetFederatedUser, federatedRoom, toAdd, toRemove);
 		}
+	}
+
+	private createMessageToNotifyRoomAboutRoleChange(
+		federatedRoom: FederatedRoom,
+		targetFederatedUser: FederatedUser,
+		whoDidTheChange: AtLeast<IUser, '_id' | 'username'>,
+		role: ROCKET_CHAT_FEDERATION_ROLES,
+	): Partial<IMessage> {
+		return Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
+			federatedRoom.getInternalId(),
+			targetFederatedUser.getInternalReference(),
+			{
+				u: whoDidTheChange,
+				role,
+			},
+		) as IMessage;
+	}
+
+	private notifyUIAboutRoomRolesChange(
+		targetFederatedUser: FederatedUser,
+		federatedRoom: FederatedRoom,
+		addedRoles: ROCKET_CHAT_FEDERATION_ROLES[],
+		removedRoles: ROCKET_CHAT_FEDERATION_ROLES[],
+	): void {
+		const eventsForAddedRoles = addedRoles.map((role) => this.createRoleUpdateEvent(targetFederatedUser, federatedRoom, role, 'added'));
+		const eventsForRemovedRoles = removedRoles.map((role) =>
+			this.createRoleUpdateEvent(targetFederatedUser, federatedRoom, role, 'removed'),
+		);
+		[...eventsForAddedRoles, ...eventsForRemovedRoles].forEach((event) => api.broadcast('user.roleUpdate', event));
 	}
 
 	private createRoleUpdateEvent(
