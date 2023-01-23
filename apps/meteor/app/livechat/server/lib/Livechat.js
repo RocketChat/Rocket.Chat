@@ -469,7 +469,7 @@ export const Livechat = {
 			transcriptRequested: !!transcriptRequest,
 		};
 
-		// Retreive the closed room
+		// Retrieve the closed room
 		room = LivechatRooms.findOneByIdOrName(rid);
 
 		Livechat.logger.debug(`Sending closing message to room ${room._id}`);
@@ -485,7 +485,10 @@ export const Livechat = {
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 		});
-		callbacks.runAsync('livechat.closeRoom', room);
+		callbacks.runAsync('livechat.closeRoom', {
+			room,
+			options,
+		});
 
 		return true;
 	},

@@ -15,6 +15,7 @@ import type {
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -51,7 +52,12 @@ type EventLikeCallbackSignatures = {
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (params: {
 		room: IRoom;
-		options: { clientAction?: boolean; tags: string[]; sendTranscriptEmailToVisitor?: boolean; generateTranscriptPdf?: boolean };
+		options: {
+			clientAction?: boolean;
+			tags: string[];
+			emailTranscript?: { send: false } | { send: true; requestData: NonNullable<IOmnichannelRoom['transcriptRequest']> };
+			generateTranscriptPdf?: boolean;
+		};
 	}) => void;
 	'livechat.saveRoom': (room: IRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
