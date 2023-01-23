@@ -27,8 +27,8 @@ const getUserIsMuted = (
 			return false;
 		}
 
-		if (userCanPostReadonly) {
-			return Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') !== -1;
+		if (userCanPostReadonly && Array.isArray(room.muted) && room.muted.indexOf(user.username ?? '') !== -1) {
+			return true;
 		}
 
 		return true;
