@@ -18,9 +18,9 @@ export const getReportHistory = (params: ReportHistoryProps): FindPaginated<Find
 		query._id = { $gt: oldest };
 	}
 
-	const reports = _.isUndefined(oldest)
+	const reports = oldest === undefined ?
 		? Reports.findReportsBetweenDates(query._id.$gt, query._id.$lt, count)
-		: Reports.findReportsAfterDate(query._id.$lt, undefined, count);
+			: Reports.findReportsAfterDate(query._id.$lt, undefined, count);
 
 	return reports;
 };
