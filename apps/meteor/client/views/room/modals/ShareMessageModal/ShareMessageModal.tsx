@@ -53,21 +53,35 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 		const optionalMessage = '';
 		const curMsg = await prependReplies(optionalMessage, [message]);
 
-		try {
-			rooms.map(async (room: roomType) => {
-				const sendPayload = {
-					roomId: room._id,
-					text: curMsg,
-				};
+		const messages = rooms.map(async (room: roomType) => {
+			const sendPayload = {
+				roomId: room._id,
+				text: curMsg,
+			};
 
-				await sendMessage(sendPayload as never);
-			});
-			dispatchToastMessage({ type: 'success', message: t('Message_has_been_shared') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onClose();
+			await sendMessage(sendPayload);
+		});
+
+		const result = await Promise.allSettled(messages);
+		const failedRequests = result.filter((request) => request.status === 'rejected');
+
+		console.log(failedRequests);
+
+		if (failedRequests.length) {
+			dispatchToastMessage({ type: 'error', message: `${failedRequests.length} could not be sent` });
+			return onClose();
 		}
+
+		dispatchToastMessage({ type: 'success', message: `${result.length} has been shared` });
+
+		// try {
+		// 	// console.log(result);
+		// 	// dispatchToastMessage({ type: 'success', message: t('Message_has_been_shared') });
+		// } catch (error) {
+		// } finally {
+		// }
+
+		onClose();
 	};
 
 	const avatarUrl = getUserAvatarPath(message.u.username);
@@ -80,7 +94,6 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 		text: message.msg,
 		attachments: message.attachments,
 		md: message.md,
-		ts: message.ts,
 	};
 
 	const handleCopy = (): void => {
@@ -120,7 +133,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup medium>
+				<ButtonGroup>
 					<Button ref={ref} onClick={handleCopy}>
 						{t('Copy_Link')}
 					</Button>

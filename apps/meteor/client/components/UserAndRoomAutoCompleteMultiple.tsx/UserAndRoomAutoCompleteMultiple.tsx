@@ -2,15 +2,17 @@ import { AutoComplete, Box, Option, OptionAvatar, OptionContent, OptionDescripti
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
+import { useSearchItems } from '../../sidebar/search/useSearchItems';
 import UserAvatar from '../avatar/UserAvatar';
 
-const query = (
-	term = '',
-): {
-	selector: string;
-} => ({ selector: JSON.stringify({ term }) });
+// const query = (
+// 	term = '',
+// ): {
+// 	selector: string;
+// } => ({ selector: JSON.stringify({ term }) });
 
 type roomType = {
 	label: string;
@@ -21,7 +23,7 @@ type roomType = {
 
 type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'value' | 'filter' | 'onChange'> &
 	Omit<ComponentProps<typeof Option>, 'value' | 'is' | 'className' | 'onChange'> & {
-		onChange: (room: roomType, action: 'remove' | undefined) => void;
+		onChange: (room: roomType, action?: 'remove') => void;
 		value: any;
 		filter?: string;
 	};
@@ -43,28 +45,39 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 	const searchSpotlight = useEndpoint('GET', '/v1/spotlight');
 	const { data } = useQuery(['spotlight', query], () => searchSpotlight({ query }));
 
-	const users = useMemo(
-		() => data?.users.map((user) => ({ _id: user._id, value: user.username, label: user.name, type: 'u' })) || [],
-		[data?.users],
+	const { data: items = [], isLoading } = useSearchItems(debouncedFilter);
+
+	// console.log(items);
+
+	const parseItems = useMemo(
+		() =>
+			items.map((subscription) => {
+				return {
+					...(subscription.t === 'd' ? { _id: subscription._id } : { _id: subscription.rid }),
+					value: subscription.name,
+					label: subscription.name,
+					t: subscription.t,
+				};
+			}),
+		[items],
 	);
 
-	const rooms = useMemo(
-		() => data?.rooms.map((room) => ({ _id: room._id, value: room.name, label: room.name, type: 'c' })) || [],
-		[data?.rooms],
-	);
+	// console.log(data);
 
-	const options = [...users, ...rooms];
+	const options = [...parseItems];
 
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
 		e.preventDefault();
-		const room = options.find((cur) => cur.value === e.currentTarget.value) as roomType;
+		const room = options.find((cur) => cur.value === e.currentTarget.value) as unknown as roomType;
 		onChange?.(room, 'remove');
 	});
+
 	const onChangeContent = (name: string, action: any): void => {
-		const room = options.find((cur) => cur.value === name) as roomType;
+		const room = options.find((cur) => cur.value === name) as unknown as roomType;
 		onChange(room, action);
 	};
+
 	return (
 		<AutoComplete
 			{...props}
