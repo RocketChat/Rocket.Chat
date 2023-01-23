@@ -13,7 +13,7 @@ const CreateChannelsCard = (): ReactElement => {
 	const openCreateChannelModal = (): void => setModal(<CreateChannelWithData onClose={(): void => setModal(null)} />);
 
 	return (
-		<Card variant='light' data-qa-id='homepage-create-channels-card'>
+		<Card data-qa-id='homepage-create-channels-card'>
 			<Card.Title>{t('Create_channels')}</Card.Title>
 			<Card.Body>{t('Create_a_public_channel_that_new_workspace_members_can_join')}</Card.Body>
 			<Card.FooterWrapper>

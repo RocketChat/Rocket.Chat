@@ -11,7 +11,7 @@ const MobileAppsCard = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
-		<Card variant='light' data-qa-id='homepage-mobile-apps-card'>
+		<Card data-qa-id='homepage-mobile-apps-card'>
 			<Card.Title>{t('Mobile_apps')}</Card.Title>
 			<Card.Body>{t('Take_rocket_chat_with_you_with_mobile_applications')}</Card.Body>
 			<Card.FooterWrapper>

@@ -36,7 +36,7 @@ const SettingsGroupCard = ({ id, title, description }: SettingsGroupCardProps): 
 	});
 
 	return (
-		<Card data-qa-id={id} variant='light'>
+		<Card data-qa-id={id}>
 			<Card.Title>{t(title)}</Card.Title>
 			<Card.Body height='x88'>
 				<Box className={clampStyle}>
