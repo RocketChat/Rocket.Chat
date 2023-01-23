@@ -11,6 +11,7 @@ import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentit
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 import { AppEvents, Apps } from '../../app/apps/server/orchestrator';
+import {BIO_TEXT_MAX_LENGTH} from '../../../client/lib/constrants';
 
 function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
@@ -59,7 +60,7 @@ function saveUserProfile(settings, customFields) {
 	}
 
 	if (settings.bio != null) {
-		if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+		if (typeof settings.bio !== 'string' || settings.bio.length > BIO_TEXT_MAX_LENGTH) {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
