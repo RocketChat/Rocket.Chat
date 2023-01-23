@@ -21,4 +21,9 @@ export const {
 		icon: 'circle-arrow-down',
 		i18nLabel: 'Installed',
 	},
+	{
+		href: 'marketplace/requested/list',
+		icon: 'cube',
+		i18nLabel: 'Requested',
+	},
 ]);

@@ -63,6 +63,10 @@ export const useFilteredApps = ({
 			filtered = apps.filter(({ categories }) => categories.includes('Enterprise'));
 		}
 
+		if (context && context === 'requested') {
+			filtered = apps.filter(({ appRequestStats }) => Boolean(appRequestStats));
+		}
+
 		if (sortingMethod) {
 			filtered = sortingMethods[sortingMethod]();
 		}

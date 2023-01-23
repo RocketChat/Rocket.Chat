@@ -261,7 +261,7 @@ class AppClientOrchestrator {
 		}
 	}
 
-	public async appRequestsStats(): Promise<AppRequestsStats> {
+	public async getAppRequestsStats(): Promise<AppRequestsStats> {
 		try {
 			const response = await APIClient.get('/apps/app-request/stats');
 

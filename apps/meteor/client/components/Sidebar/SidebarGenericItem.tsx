@@ -18,7 +18,7 @@ type SidebarGenericItemProps = {
 
 const SidebarGenericItem = ({ href, active, children, ...props }: SidebarGenericItemProps): ReactElement => (
 	<SidebarItem {...{ ...props, selected: active }} clickable is='a' href={href}>
-		<Box display='flex' flexDirection='row' alignItems='center' pb='x8' pi='x12'>
+		<Box display='flex' flexDirection='row' alignItems='center' pb='x8' pi='x12' width='100%'>
 			{children}
 		</Box>
 	</SidebarItem>

@@ -16,9 +16,7 @@ type AppRowProps = App;
 
 // TODO: org props
 const AppRow = (props: AppRowProps): ReactElement => {
-	const { name, id, appRequestStats, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } =
-		props;
-	console.log(appRequestStats);
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 	const breakpoints = useBreakpoints();
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {

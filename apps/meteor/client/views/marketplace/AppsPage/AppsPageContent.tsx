@@ -37,6 +37,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
+	const isRequested = context === 'requested';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
 		label: t('Filter_By_Price'),
@@ -71,7 +72,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
-		appsData: isMarketplace || isEnterprise ? marketplaceApps : installedApps,
+		appsData: isMarketplace || isEnterprise || isRequested ? marketplaceApps : installedApps,
 		text,
 		current,
 		itemsPerPage,
@@ -127,7 +128,7 @@ const AppsPageContent = (): ReactElement => {
 				<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
 					<Box overflowY='scroll'>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
-						<AppsList apps={appsResult.value.items} title={t('All_Apps')} />
+						<AppsList apps={appsResult.value.items} title={isRequested ? '' : t('All_Apps')} />
 					</Box>
 					{Boolean(appsResult.value.count) && (
 						<Pagination

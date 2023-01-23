@@ -36,10 +36,10 @@ type appButtonResponseProps = {
 	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request';
 };
 
-type appStatusSpanResponseProps = {
+export type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon?: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests';
 	tooltipText?: string;
 };
 
@@ -277,10 +277,17 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 	tooltipText: t('App_version_incompatible_tooltip'),
 });
 
-export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
-	if (!installed) {
-		return;
+export const appStatusSpanProps = (
+	{ installed, status, subscriptionInfo, appRequestStats }: App,
+	context: string,
+): appStatusSpanResponseProps | undefined => {
+	if (installed) {
+		return {
+			icon: 'check',
+			label: 'Installed',
+		};
 	}
+
 	const isFailed = status && appErroredStatuses.includes(status);
 	if (isFailed) {
 		return {
@@ -291,7 +298,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	}
 
 	const isEnabled = status && appEnabledStatuses.includes(status);
-	if (!isEnabled) {
+	if (!isEnabled && installed) {
 		return {
 			type: 'warning',
 			label: 'Disabled',
@@ -306,14 +313,15 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 		};
 	}
 
-	return {
-		icon: 'check',
-		label: 'Installed',
-	};
+	if (context === 'requested' && appRequestStats) {
+		return {
+			label: appRequestStats.totalSeen > 1 ? 'requests' : 'request',
+		};
+	}
 };
 
-export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean): appStatusSpanResponseProps[] => {
-	const status = appStatusSpanProps(app);
+export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context: string): appStatusSpanResponseProps[] => {
+	const status = appStatusSpanProps(app, context);
 	const statuses = [];
 
 	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {
