@@ -9,9 +9,9 @@ import AgentInfo from './AgentInfo';
 
 const AgentInfoActions = ({ reload }: { reload: () => void }): ReactElement => {
 	const t = useTranslation();
-	const _id = useRouteParameter('id');
+	const _id = useRouteParameter('id') ?? '';
 	const agentsRoute = useRoute('omnichannel-agents');
-	const deleteAction = useEndpointAction('DELETE', `/v1/livechat/users/agent/${_id}`);
+	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/agent/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 

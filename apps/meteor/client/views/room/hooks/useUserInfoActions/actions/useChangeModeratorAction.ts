@@ -4,7 +4,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
@@ -31,11 +31,9 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	const changeModeratorMessage = isModerator
 		? 'User__username__removed_from__room_name__moderators'
 		: 'User__username__is_now_a_moderator_of__room_name_';
-	const changeModerator = useEndpointActionExperimental(
-		'POST',
-		`${endpointPrefix}.${changeModeratorEndpoint}`,
-		t(changeModeratorMessage, { username: user.username, room_name: roomName }),
-	);
+	const changeModerator = useEndpointAction('POST', `${endpointPrefix}.${changeModeratorEndpoint}`, {
+		successMessage: t(changeModeratorMessage, { username: user.username, room_name: roomName }),
+	});
 	const changeModeratorAction = useMutableCallback(() => changeModerator({ roomId: rid, userId: uid }));
 	const changeModeratorOption = useMemo(
 		() =>
