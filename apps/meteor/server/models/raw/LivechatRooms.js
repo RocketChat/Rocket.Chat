@@ -1288,4 +1288,39 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		]);
 	}
+
+	// These 3 methods shouldn't be here :( but current EE model has a meteor dependency
+	// And refactoring it could take time
+	setTranscriptRequestedPdfById(rid) {
+		return this.updateOne(
+			{
+				_id: rid,
+			},
+			{
+				$set: { pdfTranscriptRequested: true },
+			},
+		);
+	}
+
+	unsetTranscriptRequestedPdfById(rid) {
+		return this.updateOne(
+			{
+				_id: rid,
+			},
+			{
+				$unset: { pdfTranscriptRequested: 1 },
+			},
+		);
+	}
+
+	setPdfTranscriptFileIdById(rid, fileId) {
+		return this.updateOne(
+			{
+				_id: rid,
+			},
+			{
+				$set: { pdfTranscriptFileId: fileId },
+			},
+		);
+	}
 }

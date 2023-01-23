@@ -4,7 +4,9 @@ export type HealthAggResult = {
 	status: 'Rejected' | 'In progress';
 };
 
+type Actions = 'work' | 'workComplete';
+
 export interface IQueueWorkerService {
-	queueWork<T extends Record<string, unknown>>(to: string, data: T): Promise<void>;
+	queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void>;
 	queueInfo(): Promise<HealthAggResult[]>;
 }

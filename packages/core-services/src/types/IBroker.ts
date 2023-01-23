@@ -48,7 +48,7 @@ export interface IServiceMetrics {
 export interface IBroker {
 	metrics?: IServiceMetrics;
 	destroyService(service: IServiceClass): void;
-	createService(service: IServiceClass): void;
+	createService(service: IServiceClass, serviceDependencies?: string[]): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;
 	broadcastToServices<T extends keyof EventSignatures>(

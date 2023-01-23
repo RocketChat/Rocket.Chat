@@ -23,7 +23,7 @@ const ajv = new Ajv({
 /** *************************************************/
 type CustomSoundsList = PaginatedRequest<{ query: string }>;
 
-const CustomSoundsListSchema: JSONSchemaType<CustomSoundsList> = {
+const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
 		count: {
