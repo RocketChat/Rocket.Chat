@@ -19,11 +19,11 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		return this.insertOne(record);
 	}
 
-	findReportsBetweenDates(latest: Date, oldest: Date | undefined, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
+	findReportsBetweenDates(latest: Date, oldest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			ts: {
 				$lt: latest,
-				...(oldest && { $gt: oldest }),
+				$gt: oldest,
 			},
 		};
 

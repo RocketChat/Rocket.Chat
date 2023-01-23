@@ -8,9 +8,7 @@ API.v1.addRoute(
 	'moderation.history',
 	{
 		authRequired: true,
-		twoFactorRequired: true,
 		validateParams: isReportHistoryProps,
-		permissionsRequired: ['view-moderation-console'],
 	},
 	{
 		async get() {
@@ -18,12 +16,16 @@ API.v1.addRoute(
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 
-			const { cursor, totalCount } = Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), oldest, count, offset);
+			const { cursor, totalCount } = oldest
+				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), count, offset)
+				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), count, offset);
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 			// if (!reports) {
 			// 	return API.v1.failure('No reports found');
 			// }
+
+			// console.log('reports', reports);
 
 			return API.v1.success({
 				reports,

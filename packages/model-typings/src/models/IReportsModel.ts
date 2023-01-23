@@ -10,7 +10,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		userId: string,
 	): ReturnType<IBaseModel<IReport>['insertOne']>;
 
-	findReportsBetweenDates(latest: Date, oldest: Date | undefined, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
+	findReportsBetweenDates(latest: Date, oldest: Date, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
 	findReportsByRoom(roomId: string, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
