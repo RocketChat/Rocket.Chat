@@ -18,7 +18,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 
-const MAX_BIO_LENGTH = 260;
+const BIO_TEXT_MAX_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
 let html = '';
@@ -234,7 +234,7 @@ export function validateUserEditing(userId, userData) {
 
 const handleBio = (updateUser, bio) => {
 	if (bio && bio.trim()) {
-		if (typeof bio !== 'string' || bio.length > MAX_BIO_LENGTH) {
+		if (typeof bio !== 'string' || bio.length > BIO_TEXT_MAX_LENGTH) {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});

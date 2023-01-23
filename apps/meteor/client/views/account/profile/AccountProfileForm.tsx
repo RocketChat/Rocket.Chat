@@ -18,7 +18,6 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
-
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
