@@ -13,7 +13,7 @@ const JoinRoomsCard = (): ReactElement => {
 	};
 
 	return (
-		<Card variant='light' data-qa-id='homepage-join-rooms-card'>
+		<Card data-qa-id='homepage-join-rooms-card'>
 			<Card.Title>{t('Join_rooms')}</Card.Title>
 			<Card.Body>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</Card.Body>
 			<Card.FooterWrapper>
