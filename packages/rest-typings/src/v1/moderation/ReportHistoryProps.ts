@@ -7,8 +7,8 @@ const ajv = new Ajv({ coerceTypes: true });
 // Define the type of the request body of call to fetch the reported messages
 
 export type ReportHistoryProps = PaginatedRequest<{
-	latest?: Date;
-	oldest?: Date;
+	latest?: string;
+	oldest?: string;
 	count?: number;
 }>;
 
