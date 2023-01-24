@@ -53,6 +53,7 @@ export const ReadReceipt = {
 	},
 
 	markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
+		console.log('Mark as read by sender');
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -69,6 +70,7 @@ export const ReadReceipt = {
 
 		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
+		console.log('Mark as read by sender - store');
 	},
 
 	storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {

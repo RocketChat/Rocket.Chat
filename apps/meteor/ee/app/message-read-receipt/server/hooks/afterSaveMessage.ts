@@ -1,15 +1,15 @@
 import { Subscriptions } from '@rocket.chat/models';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 
-import { Reads } from '../../../../server/sdk';
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 import { callbacks } from '../../../../../lib/callbacks';
-import { settings } from '../../../../../app/settings/server';
 
 callbacks.add(
 	'afterSaveMessage',
-	(message, room) => {
+	(message: IMessage, room: IRoom) => {
 		// skips this callback if the message was edited
-		if (message.editedAt) {
+		if (isEditedMessage(message) && message.editedAt) {
 			return message;
 		}
 
@@ -25,21 +25,4 @@ callbacks.add(
 	},
 	callbacks.priority.MEDIUM,
 	'message-read-receipt-afterSaveMessage',
-);
-
-callbacks.add(
-	'afterReadMessages',
-	(rid, { uid, lastSeen, tmid }) => {
-		if (!settings.get('Message_Read_Receipt_Enabled')) {
-			return;
-		}
-
-		if (tmid) {
-			Reads.readThread(uid, tmid);
-		} else if (lastSeen) {
-			ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
-		}
-	},
-	callbacks.priority.MEDIUM,
-	'message-read-receipt-afterReadMessages',
 );

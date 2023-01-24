@@ -1,6 +1,6 @@
 import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
@@ -17,12 +17,9 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const getReadReceipts = useEndpoint('GET', '/v1/chat.getMessageReadReceipts');
+	const getReadReceipts = useMethod('getReadReceipts');
 
-	const readReceiptsResult = useQuery<ReadReceipt[], Error>(
-		['read-receipts', messageId],
-		async () => (await getReadReceipts({ messageId })).receipts,
-	);
+	const readReceiptsResult = useQuery<ReadReceipt[], Error>(['read-receipts', messageId], () => getReadReceipts({ messageId }));
 
 	useEffect(() => {
 		if (readReceiptsResult.isError) {

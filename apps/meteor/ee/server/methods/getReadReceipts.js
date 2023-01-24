@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages } from '../../../../../app/models/server';
-import { canAccessRoomId } from '../../../../../app/authorization/server';
-import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
+import { Messages } from '../../../app/models/server';
+import { canAccessRoomId } from '../../../app/authorization/server';
+import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 Meteor.methods({
-	async getReadReceipts({ messageId }) {
+	getReadReceipts({ messageId }) {
 		if (!messageId) {
 			throw new Meteor.Error('error-invalid-message', "The required 'messageId' param is missing.", { method: 'getReadReceipts' });
 		}

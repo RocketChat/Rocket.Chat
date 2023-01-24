@@ -74,6 +74,7 @@ export interface IRoom extends IRocketChatRecord {
 	usernames?: string[];
 	ts?: Date;
 
+	closedAt?: Date;
 	cl?: boolean;
 	ro?: boolean;
 	favorite?: boolean;
@@ -167,7 +168,6 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	lastMessage?: IMessage & { token?: string };
 
 	tags?: any;
-	closedAt?: Date;
 	metrics?: any;
 	waitingResponse: any;
 	responseBy: any;
