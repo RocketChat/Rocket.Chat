@@ -4,6 +4,7 @@ import { getCredentials, api, login, request, credentials } from '../../data/api
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('miscellaneous', function () {
 	this.retries(0);
@@ -150,6 +151,8 @@ describe('miscellaneous', function () {
 					'emailNotificationMode',
 					'unreadAlert',
 					'notificationsSoundVolume',
+					'omnichannelTranscriptEmail',
+					IS_EE ?? 'omnichannelTranscriptPDF',
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',
@@ -170,7 +173,7 @@ describe('miscellaneous', function () {
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-				];
+				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
