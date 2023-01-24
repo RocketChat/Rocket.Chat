@@ -1,9 +1,10 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
@@ -12,7 +13,7 @@ import { createFakeMessageWithMd } from '../../../../tests/mocks/data';
 import { queryClient } from '../../../lib/queryClient';
 import type * as ThreadMessagePreviewModule from './ThreadMessagePreview';
 
-const fakeMessage = createFakeMessageWithMd({
+const fakeMessage = createFakeMessageWithMd<IThreadMessage>({
 	msg: 'message',
 });
 
@@ -35,7 +36,7 @@ const loadMock = (stubs?: Record<string, unknown>) => {
 };
 
 describe('ThreadMessagePreview', () => {
-	const ProvidersMock = ({ children }: { children: React.ReactNode }) => {
+	const ProvidersMock = ({ children }: { children: ReactNode }) => {
 		return (
 			<QueryClientProvider client={queryClient}>
 				<RouterContextMock>

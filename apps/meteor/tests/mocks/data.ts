@@ -42,22 +42,28 @@ export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISub
 	...overrides,
 });
 
-export const createFakeMessage = (overrides?: Partial<IMessage>): IMessage => ({
-	_id: faker.database.mongodbObjectId(),
-	_updatedAt: faker.date.recent(),
-	rid: faker.database.mongodbObjectId(),
-	msg: faker.lorem.sentence(),
-	ts: faker.date.recent(),
-	u: {
+export function createFakeMessage<TMessage extends IMessage>(overrides?: Partial<TMessage>): TMessage;
+export function createFakeMessage(overrides?: Partial<IMessage>): IMessage {
+	return {
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
-		name: faker.name.findName(),
-		...overrides?.u,
-	},
-	...overrides,
-});
+		_updatedAt: faker.date.recent(),
+		rid: faker.database.mongodbObjectId(),
+		msg: faker.lorem.sentence(),
+		ts: faker.date.recent(),
+		u: {
+			_id: faker.database.mongodbObjectId(),
+			username: faker.internet.userName(),
+			name: faker.name.findName(),
+			...overrides?.u,
+		},
+		...overrides,
+	};
+}
 
-export const createFakeMessageWithMd = (overrides?: Partial<MessageWithMdEnforced<IMessage>>): MessageWithMdEnforced<IMessage> => {
+export function createFakeMessageWithMd<TMessage extends IMessage>(
+	overrides?: Partial<MessageWithMdEnforced<TMessage>>,
+): MessageWithMdEnforced<TMessage>;
+export function createFakeMessageWithMd(overrides?: Partial<MessageWithMdEnforced<IMessage>>): MessageWithMdEnforced<IMessage> {
 	const fakeMessage = createFakeMessage(overrides);
 
 	return {
@@ -65,4 +71,4 @@ export const createFakeMessageWithMd = (overrides?: Partial<MessageWithMdEnforce
 		md: parse(fakeMessage.msg),
 		...overrides,
 	};
-};
+}
