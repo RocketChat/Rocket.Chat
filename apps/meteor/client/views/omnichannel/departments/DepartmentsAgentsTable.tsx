@@ -49,7 +49,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, set
 			>
 				{(props) => (
 					<AgentRow
-						key={props._id}
+						key={(props as { _id?: Key })._id}
 						mediaQuery={mediaQuery}
 						agentList={agentList}
 						setAgentList={setAgentList}

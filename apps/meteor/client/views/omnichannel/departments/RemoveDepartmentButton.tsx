@@ -19,7 +19,7 @@ function RemoveDepartmentButton({ _id = '', reload }: Props) {
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
-		if (result.success === true) {
+		if ((result as unknown as { success: boolean }).success === true) {
 			reload();
 		}
 	});

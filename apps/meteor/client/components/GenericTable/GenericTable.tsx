@@ -36,7 +36,7 @@ type GenericTableProps<FilterProps extends { onChange?: (params: GenericTablePar
 
 const GenericTable = forwardRef(function GenericTable<
 	FilterProps extends { onChange?: (params: GenericTableParams) => void },
-	ResultProps extends { _id?: Key },
+	ResultProps extends { _id?: Key } | object,
 >(
 	{
 		children,

@@ -2772,7 +2772,7 @@ export type OmnichannelEndpoints = {
 			department: ILivechatDepartment;
 			agents: ILivechatDepartmentAgents[];
 		};
-		DELETE: () => { success: boolean };
+		DELETE: () => void;
 	};
 	'/v1/livechat/department.autocomplete': {
 		GET: (params: LivechatDepartmentAutocomplete) => {
