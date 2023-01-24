@@ -32,6 +32,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const button = appButtonProps({ ...app, isAdminUser });
 	const context = useRouteParameter('context');
 
+	const isAppRequestsPage = context === 'requested';
+
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
 
 	const totalSeenRequests = app?.appRequestStats?.totalSeen;
@@ -142,8 +144,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
-		if (context === 'requested' && totalUnseenRequests && (status.label === 'request' || status.label === 'requests')) {
+		if (isAppRequestsPage && totalUnseenRequests && (status.label === 'request' || status.label === 'requests')) {
 			return 'primary';
+		}
+
+		if (isAppRequestsPage && status.label === 'Requested') {
+			return undefined;
 		}
 
 		if (status.label === 'Disabled') {
@@ -153,7 +159,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		return undefined;
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
+		if (status.label !== 'Requested') {
+			return isAppRequestsPage && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests;
+		}
+
+		return null;
+	};
+
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !isAppRequestsPage;
 
 	return (
 		<Box {...props} display='flex' alignItems='center'>
@@ -186,8 +200,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd='x8' key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						{context === 'requested' && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests}{' '}
-						{t(`${status.label}` as TranslationKey)}
+						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>
 				</Margins>
 			))}

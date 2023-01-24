@@ -1,4 +1,4 @@
-import { Badge, OptionTitle, Throbber } from '@rocket.chat/fuselage';
+import { OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -48,13 +48,8 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 							marketplaceRoute.push({ context: 'requested', page });
 							onDismiss();
 						}}
-						input={
-							appRequestStats.isSuccess ? (
-								<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
-							) : (
-								<Throbber size='x8' disabled />
-							)
-						}
+						loading={appRequestStats.isLoading}
+						notifications={appRequestStats?.data?.data.totalUnseen}
 					/>
 				</>
 				{appBoxItems.length > 0 && (
