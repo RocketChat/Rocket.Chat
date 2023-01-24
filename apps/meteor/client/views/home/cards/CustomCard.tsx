@@ -41,7 +41,7 @@ const CustomCard = (): ReactElement | null => {
 
 	if (isAdmin) {
 		return (
-			<Card variant='light' data-qa-id='homepage-custom-card'>
+			<Card data-qa-id='homepage-custom-card'>
 				<Card.Title>
 					<Tag data-qa-id='homepage-custom-content-visibility-tag'>
 						<Icon mie='x4' name={willNotShowCustomContent ? 'eye-off' : 'eye'} size='x16' />
@@ -81,7 +81,7 @@ const CustomCard = (): ReactElement | null => {
 
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
-			<Card variant='light'>
+			<Card>
 				<Box mb='x8' color='info'>
 					<CustomHomepageContent />
 				</Box>
