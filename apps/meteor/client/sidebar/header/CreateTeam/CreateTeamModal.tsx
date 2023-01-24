@@ -123,7 +123,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 	};
 
 	return (
-		<Modal wrapper={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateTeam)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />

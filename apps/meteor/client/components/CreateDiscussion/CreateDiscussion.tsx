@@ -2,7 +2,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import { useEndpointAction } from '../../hooks/useEndpointAction';
@@ -46,7 +46,8 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 
 	const createDiscussion = useEndpointAction('POST', '/v1/rooms.createDiscussion');
 
-	const create = useMutableCallback(async (): Promise<void> => {
+	const create = useMutableCallback(async (e): Promise<void> => {
+		e.preventDefault();
 		try {
 			const result = await createDiscussion({
 				prid: defaultParentRoom || parentRoom,
@@ -74,7 +75,10 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	});
 
 	return (
-		<Modal>
+		<Modal
+			data-qa='create-discussion-modal'
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={create} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Discussion_title')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -140,7 +144,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!canCreate} onClick={create}>
+					<Button primary disabled={!canCreate} type='submit'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

@@ -162,7 +162,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 		<Modal
 			data-qa='create-channel-modal'
 			aria-label={t('Create_channel')}
-			wrapper={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreateChannel)} {...props} />}
 		>
 			<Modal.Header>
 				<Modal.Title>{t('Create_channel')}</Modal.Title>

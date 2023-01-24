@@ -36,7 +36,10 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 	});
 
 	return (
-		<Modal data-qa='create-direct-modal' wrapper={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={onCreate} {...props} />}>
+		<Modal
+			data-qa='create-direct-modal'
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={onCreate} {...props} />}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Direct_Messages')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
