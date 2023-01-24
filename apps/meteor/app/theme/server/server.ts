@@ -18,6 +18,8 @@ settings.watch('theme-custom-css', (value) => {
 // TODO: Add a migration to remove this setting from the database
 Meteor.startup(() => {
 	Settings.deleteMany({ _id: /theme-color/ });
+	Settings.deleteOne({ _id: /theme-font/ });
+	Settings.deleteOne({ _id: 'css' });
 });
 
 WebApp.rawConnectHandlers.use((req, res, next) => {
