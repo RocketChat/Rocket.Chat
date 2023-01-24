@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, useMemo, useCallback, CSSProperties, ReactElement, MutableRefObject } from 'react';
+import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
@@ -112,7 +113,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const endpointData = useEndpointData('/v1/rooms.adminRooms', query);
+	const endpointData = useEndpointData('/v1/rooms.adminRooms', { params: query });
 
 	const { value: data, reload: reloadEndPoint } = endpointData;
 

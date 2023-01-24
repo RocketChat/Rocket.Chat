@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
 
+	get encryptedRoomHeaderIcon(): Locator {
+		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
@@ -55,7 +59,7 @@ export class HomeContent {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get fileNameInput(): Locator {
@@ -66,12 +70,12 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
-	get waitForLastMessageTextAttachmentEqualsText(): Locator {
+	get lastMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
-	get waitForLastThreadMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('//main//aside >> [data-qa-type="message"]:last-child .rcx-attachment__details');
+	get lastThreadMessageTextAttachmentEqualsText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -143,7 +147,7 @@ export class HomeContent {
 	}
 
 	async pickEmoji(emoji: string, section = 'icon-people') {
-		await this.page.locator('.rc-message-box__icon.emoji-picker-icon').click();
+		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${section}")]`).click();
 		await this.page.locator(`//*[contains(@class, "emoji-picker")]//*[contains(@class, "${emoji}")]`).first().click();
 	}
@@ -199,5 +203,33 @@ export class HomeContent {
 
 	get btnOnHold(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
+	}
+
+	get btnCall(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	}
+
+	get btnStartCall(): Locator {
+		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+	}
+
+	get btnDeclineCall(): Locator {
+		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
+	}
+
+	ringCallText(text: string): Locator {
+		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
+	}
+
+	get videoConfMessageBlock(): Locator {
+		return this.page.locator('.rcx-videoconf-message-block');
+	}
+
+	get btnAnonymousSignIn(): Locator {
+		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
+	}
+
+	get btnAnonymousTalk(): Locator {
+		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 }

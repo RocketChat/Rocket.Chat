@@ -1,8 +1,9 @@
-import { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement, useEffect } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import ReadReceiptRow from './ReadReceiptRow';

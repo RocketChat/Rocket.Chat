@@ -1,7 +1,8 @@
-import { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useStream, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useRef, useState, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import { ansispan } from './ansispan';
 
@@ -174,8 +175,8 @@ const ServerLogs = (): ReactElement => {
 					padding='x8'
 					flexGrow={1}
 					fontFamily='mono'
-					color='alternative'
-					backgroundColor='neutral-800'
+					color='white'
+					bg='dark'
 					style={{ wordBreak: 'break-all' }}
 					onWheel={handleWheel}
 					onTouchStart={handleTouchStart}
@@ -197,7 +198,7 @@ const ServerLogs = (): ReactElement => {
 				paddingBlock='x8'
 				fontScale='c1'
 				borderRadius='full'
-				color='primary-500'
+				color='on-info'
 				backgroundColor='surface'
 				onClick={handleClick}
 				textAlign='center'

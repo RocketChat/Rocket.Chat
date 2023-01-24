@@ -1,6 +1,7 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import React, { memo, ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
-const VerticalBarActions = (props: ComponentProps<typeof ButtonGroup>): ReactElement => <ButtonGroup medium {...props} />;
+const VerticalBarActions = (props: ComponentProps<typeof ButtonGroup>): ReactElement => <ButtonGroup {...props} />;
 
 export default memo(VerticalBarActions);

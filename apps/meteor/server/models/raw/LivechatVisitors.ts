@@ -236,11 +236,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			}
 		}
 
-		const update = {
+		const update: UpdateFilter<ILivechatVisitor> = {
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		};
+		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
 
 		return this.updateOne(query, update);
 	}

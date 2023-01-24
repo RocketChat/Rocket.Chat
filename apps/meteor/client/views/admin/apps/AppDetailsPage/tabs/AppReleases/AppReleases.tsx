@@ -1,6 +1,7 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../../lib/asyncState/AsyncStatePhase';
@@ -9,7 +10,7 @@ import AppReleasesItem from './AppReleasesItem';
 
 // TODO: replace useEndpointData
 const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
-	const result = useEndpointData(`/apps/${id}/versions`);
+	const result = useEndpointData('/apps/:id/versions', { keys: { id } });
 
 	return (
 		<>

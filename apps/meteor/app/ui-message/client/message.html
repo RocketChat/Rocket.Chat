@@ -55,7 +55,6 @@
 					{{#if showTranslated}}
 						<span class="translated">
 							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
-							<span class="translation-provider">{{ translationProvider }}</span>
 						</span>
 					{{/if}}
 					{{#if msg.sentByEmail}}
@@ -132,7 +131,7 @@
 				{{/each}}
 			{{/if}}
 			{{#if hasAttachments}}
-				{{> reactAttachments attachments=msg.attachments file=msg.file }}
+				{{> Attachments attachments=msg.attachments file=msg.file}}
 			{{/if}}
 
 
@@ -143,9 +142,8 @@
 			{{/with}}
 			{{#unless hideMessageActions}}
 				<div class="message-actions">
-
 					<div class="message-actions__buttons">
-						{{#each action in messageActions 'message'}}
+						{{#each action in messageActions}}
 							<button class="message-actions__button" data-qa-type="message-action-menu"  data-message-action="{{action.id}}" title="{{_ action.label}}">
 									{{> icon block="message-actions__button-icon" icon=action.icon}}
 							</button>
@@ -179,15 +177,15 @@
 			{{/unless}}
 
 			{{#if msg.drid}}
-				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
+				{{> DiscussionMetrics count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
 
 			{{#if $and settings.showReplyButton msg.tcount}}
-			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
+				{{> ThreadMetrics counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
 			{{/if}}
 
 			{{#if broadcast}}
-			 	{{> BroadCastMetric mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
+			 	{{> BroadcastMetrics mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
 			{{/if}}
 		{{/unless}}
 	</li>

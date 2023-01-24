@@ -1,5 +1,4 @@
 {
-  "403": "已禁止",
   "500": "内部服务器错误",
   "__count__empty_rooms_will_be_removed_automatically": "将会自动移除 __count__ 个空聊天室。",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "将会自动移除以下 __count__ 个空聊天室：<br/>__rooms__",
@@ -3060,6 +3059,7 @@
   "Reactions": "反应",
   "Read_by": "阅读",
   "Read_only": "只读",
+  "This_room_is_read_only": "这个聊天室是只读的",
   "Read_only_changed_successfully": "只读更改成功",
   "Read_only_channel": "只读频道",
   "Read_only_group": "只读组",
@@ -4197,6 +4197,7 @@
   "registration.page.login.forgot": "忘记密码",
   "registration.page.resetPassword.sent": "如果此电子邮件已注册，我们将发送有关如何重置密码的说明。如果您很短时间内没有收到电子邮件，请返回并重试。",
   "registration.component.login": "登录",
+  "registration.component.login.userNotFound": "找不到用户",
   "registration.component.resetPassword": "重设密码",
   "registration.component.form.emailOrUsername": "电子邮件或用户名",
   "registration.component.form.email": "电子邮箱",

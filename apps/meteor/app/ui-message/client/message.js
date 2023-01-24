@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
@@ -13,16 +14,17 @@ import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTi
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Rooms } from '../../models/client';
 import { Markdown } from '../../markdown/client';
-import { t } from '../../utils';
+import { t } from '../../utils/client';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
 import { settings } from '../../settings/client';
 import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
+import { hasTranslationLanguageInAttachments } from '../../../client/views/room/MessageList/lib/autoTranslate';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import './messageThread';
 import './message.html';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -257,7 +259,9 @@ Template.message.helpers({
 			const autoTranslate = subscription && subscription.autoTranslate;
 			return (
 				msg.autoTranslateFetching ||
-				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage])
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]) ||
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse &&
+					hasTranslationLanguageInAttachments(msg.attachments, settings.translateLanguage))
 			);
 		}
 	},
@@ -439,22 +443,8 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.actionContext;
 	},
-	messageActions(group) {
-		const { msg, context: ctx } = this;
-		let messageGroup = group;
-		let context = ctx || msg.actionContext;
-
-		if (!group) {
-			messageGroup = 'message';
-		}
-
-		if (!context) {
-			const room = Rooms.findOne({ _id: this.msg.rid });
-
-			context = isRoomFederated(room) ? 'federated' : 'message';
-		}
-
-		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);
+	messageActions() {
+		return Template.instance().actions.get();
 	},
 	isSnippet() {
 		const { msg } = this;
@@ -639,6 +629,28 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 		}
 	}
 };
+
+Template.message.onCreated(function () {
+	this.actions = new ReactiveVar([]);
+
+	this.autorun(() => {
+		const { msg, context: ctx, u, chatContext } = Template.currentData();
+		const messageGroup = 'message';
+		let context = ctx || msg.actionContext;
+
+		if (!context) {
+			const room = Rooms.findOne({ _id: msg.rid });
+
+			context = isRoomFederated(room) ? 'federated' : 'message';
+		}
+
+		MessageAction.getButtons({ ...Template.currentData(), message: msg, user: u, chat: chatContext }, context, messageGroup).then(
+			(actions) => {
+				this.actions.set(actions);
+			},
+		);
+	});
+});
 
 Template.message.onRendered(function () {
 	const currentNode = this.firstNode;

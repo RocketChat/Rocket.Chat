@@ -2,7 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
 import { useUser } from '@rocket.chat/ui-contexts';
-import React, { memo, useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { UserStatus } from '../../components/UserStatus';
@@ -52,7 +53,7 @@ const UserAvatarButton = function UserAvatarButton(): ReactElement {
 					display='flex'
 					overflow='hidden'
 					size={12}
-					borderWidth='x2'
+					borderWidth='default'
 					position='absolute'
 					bg='surface-tint'
 					borderColor='extra-light'

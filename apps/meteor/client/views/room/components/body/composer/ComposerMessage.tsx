@@ -1,96 +1,70 @@
-import { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
-import { Blaze } from 'meteor/blaze';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Template } from 'meteor/templating';
-import React, { memo, ReactElement, useCallback, useEffect, useRef } from 'react';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client';
-import { ChatMessages } from '../../../../../../app/ui/client';
-import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
+import { useChat } from '../../../contexts/ChatContext';
+import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+	children?: ReactNode;
 	subscription?: ISubscription;
-	chatMessagesInstance: ChatMessages;
+	readOnly?: boolean;
+	tshow?: boolean;
 	onResize?: () => void;
+	onEscape?: () => void;
+	onSend?: () => void;
+	onNavigateToNextMessage?: () => void;
+	onNavigateToPreviousMessage?: () => void;
+	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: ComposerMessageProps): ReactElement => {
-	const isLayoutEmbedded = useEmbeddedLayout();
-	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
+const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
+	const chat = useChat();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const messageBoxViewRef = useRef<Blaze.View>();
-	const messageBoxViewDataRef = useRef(
-		new ReactiveVar({
-			rid,
-			subscription,
-			isEmbedded: isLayoutEmbedded,
-			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
-			onResize,
-			chatMessagesInstance,
+	const composerProps = useMemo(
+		() => ({
+			onJoin: async (): Promise<void> => {
+				try {
+					await chat?.data?.joinRoom();
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+					throw error;
+				}
+			},
+
+			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
+				try {
+					await chat?.flows.action.stop('typing');
+					const newMessageSent = await chat?.flows.sendMessage({
+						text,
+						tshow,
+					});
+					if (newMessageSent) onSend?.();
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			},
+			onTyping: async (): Promise<void> => {
+				if (chat?.composer?.text?.trim() === '') {
+					await chat?.flows.action.stop('typing');
+					return;
+				}
+				await chat?.flows.action.start('typing');
+			},
+			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
+			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
+			onUploadFiles: (files: readonly File[]) => {
+				return chat?.flows.uploadFiles(files);
+			},
 		}),
-	);
-
-	useEffect(() => {
-		messageBoxViewDataRef.current.set({
-			rid,
-			subscription,
-			isEmbedded: isLayoutEmbedded,
-			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
-			onResize,
-			chatMessagesInstance,
-		});
-	}, [isLayoutEmbedded, onResize, rid, showFormattingTips, subscription, chatMessagesInstance]);
-
-	const footerRef = useCallback(
-		(footer: HTMLElement | null) => {
-			if (footer) {
-				messageBoxViewRef.current = Blaze.renderWithData(
-					Template.messageBox,
-					() => ({
-						...messageBoxViewDataRef.current.get(),
-						onInputChanged: (input: HTMLTextAreaElement): void => {
-							chatMessagesInstance.initializeInput(input);
-
-							setTimeout(() => {
-								if (window.matchMedia('screen and (min-device-width: 500px)').matches) {
-									input.focus();
-								}
-							}, 200);
-						},
-						onKeyUp: (
-							event: KeyboardEvent,
-							{
-								rid,
-								tmid,
-							}: {
-								rid: string;
-								tmid?: string | undefined;
-							},
-						) => chatMessagesInstance.keyup(event, { rid, tmid }),
-						onKeyDown: (event: KeyboardEvent) => chatMessagesInstance.keydown(event),
-						onSend: (
-							_event: Event,
-							params: {
-								value: string;
-								tshow?: boolean;
-							},
-						) => chatMessagesInstance.send(params),
-					}),
-					footer,
-				);
-				return;
-			}
-
-			if (messageBoxViewRef.current) {
-				Blaze.remove(messageBoxViewRef.current);
-				messageBoxViewRef.current = undefined;
-			}
-		},
-		[chatMessagesInstance],
+		[chat?.data, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
@@ -103,7 +77,7 @@ const ComposerMessage = ({ rid, subscription, chatMessagesInstance, onResize }: 
 		);
 	}
 
-	return <footer ref={footerRef} className='footer' />;
+	return <MessageBox readOnly={readOnly ?? false} rid={rid} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);

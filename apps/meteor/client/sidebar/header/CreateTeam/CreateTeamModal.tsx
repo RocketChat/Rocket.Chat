@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, ReactElement, useEffect } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -9,7 +10,7 @@ import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
 	name: string;
-	description: string;
+	topic: string;
 	isPrivate: boolean;
 	readOnly: boolean;
 	encrypted: boolean;
@@ -92,7 +93,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		members,
 		isPrivate,
 		readOnly,
-		description,
+		topic,
 		broadcast,
 		encrypted,
 	}: CreateTeamModalInputs): Promise<void> => {
@@ -103,7 +104,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			room: {
 				readOnly,
 				extraData: {
-					description,
+					topic,
 					broadcast,
 					encrypted,
 				},
@@ -127,13 +128,12 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe='x2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								autoFocus
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
@@ -154,7 +154,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<TextInput {...register('description')} placeholder={t('Teams_New_Description_Placeholder')} />
+							<TextInput {...register('topic')} placeholder={t('Teams_New_Description_Placeholder')} />
 						</Field.Row>
 					</Field>
 					<Field>
@@ -174,7 +174,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</Box>
 					</Field>
-					<Field disabled={!canChangeReadOnly}>
+					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
@@ -191,7 +191,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							/>
 						</Box>
 					</Field>
-					<Field disabled={!canChangeEncrypted}>
+					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>

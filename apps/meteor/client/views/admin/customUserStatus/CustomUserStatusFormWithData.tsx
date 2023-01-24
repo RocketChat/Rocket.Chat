@@ -1,7 +1,8 @@
-import { IUserStatus } from '@rocket.chat/core-typings';
+import type { IUserStatus } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -17,7 +18,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-user-status.list', query);
+	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-user-status.list', { params: query });
 
 	const handleReload = (): void => {
 		onReload?.();

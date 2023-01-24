@@ -1,6 +1,6 @@
-import { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { useEndpointAction } from './useEndpointAction';
 import { useEndpointUpload } from './useEndpointUpload';
@@ -18,42 +18,32 @@ export const useUpdateAvatar = (
 	const t = useTranslation();
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
 
-	const successText = t('Avatar_changed_successfully');
+	const successMessage = t('Avatar_changed_successfully');
 	const setAvatarFromService = useMethod('setAvatarFromService');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveAvatarQuery = useMemo(
-		() => ({
-			userId,
-			...(avatarUrl && { avatarUrl }),
-		}),
-		[avatarUrl, userId],
-	);
-
-	const resetAvatarQuery = useMemo(
-		() => ({
-			userId,
-		}),
-		[userId],
-	);
-
-	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', successText);
-	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, successText);
-	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, successText);
+	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', successMessage);
+	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', { successMessage });
+	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', { successMessage });
 
 	const updateAvatar = useCallback(async () => {
 		if (isAvatarReset(avatarObj)) {
-			return resetAvatarAction();
+			return resetAvatarAction({
+				userId,
+			});
 		}
 		if (isAvatarUrl(avatarObj)) {
-			return saveAvatarUrlAction();
+			return saveAvatarUrlAction({
+				userId,
+				...(avatarUrl && { avatarUrl }),
+			});
 		}
 		if (isServiceObject(avatarObj)) {
 			const { blob, contentType, service } = avatarObj;
 			try {
 				await setAvatarFromService(blob, contentType, service);
-				dispatchToastMessage({ type: 'success', message: successText });
+				dispatchToastMessage({ type: 'success', message: successMessage });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -65,12 +55,13 @@ export const useUpdateAvatar = (
 		}
 	}, [
 		avatarObj,
+		avatarUrl,
 		dispatchToastMessage,
 		resetAvatarAction,
 		saveAvatarAction,
 		saveAvatarUrlAction,
 		setAvatarFromService,
-		successText,
+		successMessage,
 		userId,
 	]);
 

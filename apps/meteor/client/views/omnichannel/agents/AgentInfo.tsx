@@ -1,6 +1,7 @@
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { HTMLAttributes, memo } from 'react';
+import type { HTMLAttributes } from 'react';
+import React, { memo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserInfo from '../../../components/UserInfo';
@@ -17,7 +18,7 @@ type AgentInfoProps = {
 
 export const AgentInfo = memo<AgentInfoProps>(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
-	const result = useEndpointData(`/v1/livechat/users/agent/${uid}`);
+	const result = useEndpointData('/v1/livechat/users/agent/:_id', { keys: { _id: uid } });
 
 	const { useMaxChatsPerAgentDisplay } = useFormsSubscription();
 

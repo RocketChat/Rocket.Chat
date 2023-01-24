@@ -1,7 +1,8 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, MutableRefObject, useState, useEffect } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import {
@@ -57,7 +58,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		500,
 	);
 
-	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', query);
+	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', { params: query });
 
 	useEffect(() => {
 		reload.current = reloadList;
@@ -115,7 +116,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
 			{phase === AsyncStatePhase.LOADING && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

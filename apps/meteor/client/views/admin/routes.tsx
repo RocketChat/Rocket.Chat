@@ -13,7 +13,7 @@ export const registerAdminRoute = createRouteGroup(
 
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
-	component: lazy(() => import('./customSounds/AdminSoundsRoute')),
+	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
 registerAdminRoute('/apps/what-is-it', {
@@ -24,13 +24,6 @@ registerAdminRoute('/apps/what-is-it', {
 registerAdminRoute('/marketplace/:context?/:page?/:id?/:version?/:tab?', {
 	name: 'admin-marketplace',
 	component: lazy(() => import('./apps/AppsRoute')),
-	triggersEnter: [
-		(context, redirect): void => {
-			if (!context.params.context) {
-				redirect('/admin/marketplace/all/list');
-			}
-		},
-	],
 });
 
 registerAdminRoute('/info', {

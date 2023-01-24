@@ -1,15 +1,16 @@
 import type { IOmnichannelRoomFromAppSource } from '@rocket.chat/core-typings';
 import { Icon, Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
 export const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+	busy: 'on-danger',
+	away: 'on-warning',
+	online: 'on-success',
+	offline: 'annotation',
 };
 
 const convertBoxSizeToNumber = (boxSize: ComponentProps<typeof Icon>['size']): number => {

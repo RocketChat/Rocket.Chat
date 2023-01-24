@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import * as Status from '../../components/UserStatus';
@@ -16,7 +16,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
+			<Box maxWidth='x300' bg='dark' borderRadius='x4'>
 				{fn()}
 			</Box>
 		),

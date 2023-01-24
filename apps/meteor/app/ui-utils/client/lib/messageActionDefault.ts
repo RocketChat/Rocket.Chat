@@ -2,7 +2,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Session } from 'meteor/session';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
@@ -15,9 +14,7 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
-import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import type { ChatMessages } from '../../../ui/client';
 
 export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
@@ -29,14 +26,6 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 Meteor.startup(async function () {
-	const { ChatMessages } = await import('../../../ui/client');
-
-	const getChatMessagesFrom = (msg: IMessage): ChatMessages | undefined => {
-		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
-
-		return ChatMessages.get({ rid, tmid }) ?? ChatMessages.get({ rid });
-	};
-
 	MessageAction.addButton({
 		id: 'reply-directly',
 		icon: 'reply-directly',
@@ -81,17 +70,16 @@ Meteor.startup(async function () {
 		label: 'Quote',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const chatMessagesInstance = getChatMessagesFrom(message);
-			const input = chatMessagesInstance?.input;
-			if (!input) {
-				return;
+			const { message = messageArgs(this).msg, chat, autoTranslateOptions } = props;
+
+			if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
+				message.msg =
+					message.translations && autoTranslateOptions.autoTranslateLanguage
+						? message.translations[autoTranslateOptions.autoTranslateLanguage]
+						: message.msg;
 			}
 
-			const $input = $(input);
-
-			$input.focus().data('mention-user', false).trigger('dataChange');
-			chatMessagesInstance.quotedMessages.add(message);
+			chat?.composer?.quoteMessage(message);
 		},
 		condition({ subscription, room }) {
 			if (subscription == null) {
@@ -115,10 +103,14 @@ Meteor.startup(async function () {
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const permalink = await MessageAction.getPermaLink(message._id);
-			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			try {
+				const { message = messageArgs(this).msg } = props;
+				const permalink = await MessageAction.getPermaLink(message._id);
+				navigator.clipboard.writeText(permalink);
+				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: e });
+			}
 		},
 		condition({ subscription }) {
 			return !!subscription;
@@ -151,12 +143,8 @@ Meteor.startup(async function () {
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			const element = document.getElementById(message.tmid ? `thread-${message._id}` : message._id);
-			if (!element) {
-				throw new Error('Message not found');
-			}
-			getChatMessagesFrom(message)?.edit(element);
+			const { message = messageArgs(this).msg, chat } = props;
+			chat?.messageEditing.editMessage(message);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
@@ -195,11 +183,10 @@ Meteor.startup(async function () {
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
-		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-			getChatMessagesFrom(message)?.confirmDeleteMsg(message);
+		action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
+			chat?.flows.requestMessageDeletion(message);
 		},
-		condition({ message, subscription, room }) {
+		condition({ message, subscription, room, chat }) {
 			if (!subscription) {
 				return false;
 			}
@@ -211,11 +198,7 @@ Meteor.startup(async function () {
 				return false;
 			}
 
-			return canDeleteMessage({
-				rid: message.rid,
-				ts: message.ts,
-				uid: message.u._id,
-			});
+			return chat?.data.canDeleteMessage(message) ?? false;
 		},
 		order: 18,
 		group: 'menu',
@@ -227,8 +210,7 @@ Meteor.startup(async function () {
 		label: 'Report',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
-		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		action(this: unknown, _, { message = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReportMessageModal,
 				props: {
@@ -254,9 +236,7 @@ Meteor.startup(async function () {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action(_, { tabbar, ...props }) {
-			const { message: { reactions = {}, rid } = messageArgs(this).msg } = props;
-
+		action(this: unknown, _, { tabbar, message: { reactions = {}, rid } = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReactionList,
 				props: { reactions, rid, tabBar: tabbar, onClose: imperativeModal.close },
@@ -274,9 +254,7 @@ Meteor.startup(async function () {
 		icon: 'discussion',
 		label: 'Discussion_start',
 		context: ['message', 'message-mobile'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg, room } = props;
-
+		async action(this: unknown, _, { message = messageArgs(this).msg, room }) {
 			imperativeModal.open({
 				component: CreateDiscussion,
 				props: {

@@ -1,90 +1,117 @@
+import type { IMessage, ITranslatedMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import {
-	IMessage,
+	isFileAttachment,
 	isE2EEMessage,
 	isOTRMessage,
 	isQuoteAttachment,
+	isTranslatedAttachment,
 	isTranslatedMessage,
-	MessageAttachment,
-	MessageQuoteAttachment,
 } from '@rocket.chat/core-typings';
-import { Options, parse, Root } from '@rocket.chat/message-parser';
+import type { Options, Root } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 
+import type { AutoTranslateOptions } from '../hooks/useAutoTranslate';
 import { isParsedMessage } from './isParsedMessage';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];
 };
 
-export type MessageWithMdEnforced = WithRequiredProperty<IMessage, 'md'>;
-/*
+export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
+	WithRequiredProperty<TMessage, 'md'>;
+/**
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
  * if has `attachments` property, but attachment is missing `md` property, it will be added.
  * if translation is enabled and message contains `translations` property, it will be replaced by the parsed message.
  * @param message The message to be parsed.
  * @param parseOptions The options to be used in the parser.
- * @param autoTranslateLanguage The language to be used in the parser.
- * @param showTranslatedMessage function that evaluates if message should be translated.
+ * @param autoTranslateOptions The auto translate options to be used in the parser.
  * @returns message normalized.
  */
-
-export const parseMessageTextToAstMarkdown = (
-	message: IMessage,
+export const parseMessageTextToAstMarkdown = <
+	TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>,
+>(
+	message: TMessage,
 	parseOptions: Options,
-	autoTranslateLanguage?: string,
-	showTranslated?: ({ message }: { message: IMessage }) => boolean,
+	autoTranslateOptions: AutoTranslateOptions,
 ): MessageWithMdEnforced => {
 	const msg = removePossibleNullMessageValues(message);
-	const translations = autoTranslateLanguage && showTranslated && isTranslatedMessage(msg) && msg.translations;
-	const translated = autoTranslateLanguage && showTranslated?.({ message });
+	const { showAutoTranslate, autoTranslateLanguage } = autoTranslateOptions;
+	const translations = autoTranslateLanguage && isTranslatedMessage(msg) && msg.translations;
+	const translated = showAutoTranslate(message);
 
 	const text = (translated && translations && translations[autoTranslateLanguage]) || msg.msg;
 
 	return {
 		...msg,
 		md:
-			isE2EEMessage(message) || isOTRMessage(message)
+			isE2EEMessage(message) || isOTRMessage(message) || translated
 				? textToMessageToken(text, parseOptions)
 				: msg.md ?? textToMessageToken(text, parseOptions),
-		...(msg.attachments && { attachments: parseMessageAttachments(msg.attachments, parseOptions) }),
+		...(msg.attachments && {
+			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
+		}),
 	};
 };
 
-const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(quote: T, parseOptions: Options): T => {
+export const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(
+	quote: T,
+	parseOptions: Options,
+	autoTranslateOptions: { autoTranslateLanguage?: string; translated: boolean },
+): T => {
+	const { translated, autoTranslateLanguage } = autoTranslateOptions;
 	if (quote.attachments && quote.attachments?.length > 0) {
-		quote.attachments = quote.attachments.map((attachment) => parseMessageQuoteAttachment(attachment, parseOptions));
+		quote.attachments = quote.attachments.map((attachment) => parseMessageQuoteAttachment(attachment, parseOptions, autoTranslateOptions));
 	}
 
-	return { ...quote, md: quote.md ?? textToMessageToken(quote.text, parseOptions) };
+	const text = (isTranslatedAttachment(quote) && autoTranslateLanguage && quote?.translations?.[autoTranslateLanguage]) || quote.text || '';
+
+	return {
+		...quote,
+		md: translated ? textToMessageToken(text, parseOptions) : quote.md ?? textToMessageToken(text, parseOptions),
+	};
 };
 
-const parseMessageAttachments = <T extends MessageAttachment>(attachments: T[], parseOptions: Options): T[] => {
-	if (attachments.length === 0) {
-		return attachments;
-	}
-
-	return attachments.map((attachment) => {
-		if (isQuoteAttachment(attachment) && attachment.attachments) {
-			attachment.attachments = attachment.attachments.map((quoteAttachment) => parseMessageQuoteAttachment(quoteAttachment, parseOptions));
-		}
-
-		if (!attachment.text) {
+export const parseMessageAttachments = <T extends MessageAttachment>(
+	attachments: T[],
+	parseOptions: Options,
+	autoTranslateOptions: { autoTranslateLanguage?: string; translated: boolean },
+): T[] =>
+	attachments.map((attachment) => {
+		const { translated, autoTranslateLanguage } = autoTranslateOptions;
+		if (!attachment.text && !attachment.description) {
 			return attachment;
 		}
 
+		if (isQuoteAttachment(attachment) && attachment.attachments) {
+			attachment.attachments = attachment.attachments.map((quoteAttachment) =>
+				parseMessageQuoteAttachment(quoteAttachment, parseOptions, autoTranslateOptions),
+			);
+		}
+
+		if (isFileAttachment(attachment) && attachment.description) {
+			attachment.descriptionMd = attachment.descriptionMd ?? textToMessageToken(attachment.description, parseOptions);
+		}
+
+		const text =
+			(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
+			attachment.text ||
+			attachment.description ||
+			'';
+
 		return {
 			...attachment,
-			md: attachment.md ?? textToMessageToken(attachment.text, parseOptions),
+			md: translated ? textToMessageToken(text, parseOptions) : attachment.md ?? textToMessageToken(text, parseOptions),
 		};
 	});
-};
 
 const isNotNullOrUndefined = (value: unknown): boolean => value !== null && value !== undefined;
 
 // In a previous version of the app, some values were being set to null.
 // This is a workaround to remove those null values.
 // A migration script should be created to remove this code.
-export const removePossibleNullMessageValues = ({
+export const removePossibleNullMessageValues = <TMessage extends IMessage = IMessage>({
 	editedBy,
 	editedAt,
 	emoji,
@@ -95,7 +122,7 @@ export const removePossibleNullMessageValues = ({
 	attachments,
 	reactions,
 	...message
-}: any): IMessage => ({
+}: any): TMessage => ({
 	...message,
 	...(isNotNullOrUndefined(editedBy) && { editedBy }),
 	...(isNotNullOrUndefined(editedAt) && { editedAt }),
@@ -116,6 +143,9 @@ const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): R
 	if (isParsedMessage(textOrRoot)) {
 		return textOrRoot;
 	}
+	const parsedMessage = parse(textOrRoot, parseOptions);
 
-	return parse(textOrRoot, parseOptions);
+	const parsedMessageCleaned = parsedMessage[0].type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);
+
+	return parsedMessageCleaned;
 };

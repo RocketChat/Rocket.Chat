@@ -169,11 +169,13 @@ export interface ServerMethods {
 	'loadSurroundingMessages': (
 		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 		limit?: number,
-	) => {
-		messages: IMessage[];
-		moreBefore: boolean;
-		moreAfter: boolean;
-	};
+	) =>
+		| {
+				messages: IMessage[];
+				moreBefore: boolean;
+				moreAfter: boolean;
+		  }
+		| false;
 	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
@@ -183,6 +185,7 @@ export interface ServerMethods {
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
+	'readThreads': (tmid: IMessage['_id']) => void;
 	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
@@ -209,6 +212,7 @@ export interface ServerMethods {
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
 	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
+	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unfollowMessage': UnfollowMessageMethod;
@@ -216,7 +220,7 @@ export interface ServerMethods {
 	'unreadMessages': (...args: any[]) => any;
 	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
-	'updateMessage': (message: IMessage) => void;
+	'updateMessage': (message: Pick<IMessage, '_id'> & Partial<Omit<IMessage, '_id'>>) => void;
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;

@@ -1,8 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
@@ -23,7 +23,7 @@ const SecondStep: FC<SecondStepsProps> = ({ onClose, onCancel, onConfirm, delete
 		<GenericModal
 			{...props}
 			variant='warning'
-			icon={<Icon name='modal-warning' size={24} color='warning' />}
+			icon={<Icon name='modal-warning' size={24} color='on-warning' />}
 			cancelText={rooms?.length > 0 ? t('Back') : t('Cancel')}
 			confirmText={t('Convert')}
 			title={t('Confirmation')}

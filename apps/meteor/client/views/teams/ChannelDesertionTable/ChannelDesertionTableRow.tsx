@@ -1,7 +1,8 @@
-import { IRoom, Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { CheckBox, TableRow, TableCell, Icon, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
@@ -24,7 +25,7 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 				<Margins inline='x8'>
 					<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
 					{fname ?? name}
-					{isLastOwner && <Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />}
+					{isLastOwner && <Icon size='x16' name='info-circled' color='on-danger' title={lastOwnerWarning} />}
 				</Margins>
 			</TableCell>
 			<TableCell align='end' withTruncatedText>

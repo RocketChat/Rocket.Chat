@@ -1,7 +1,8 @@
 import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, FormEvent, ReactElement, useState } from 'react';
+import type { ComponentProps, FormEvent, ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import { queryClient } from '../../../lib/queryClient';
 
@@ -74,7 +75,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 					paddingInline='x16'
 					pb='x8'
 					flexGrow={1}
-					backgroundColor='neutral-800'
+					backgroundColor='dark'
 					mb={status === 'invalid' ? 'x8' : undefined}
 				>
 					<Margins block='x8'>
@@ -84,7 +85,7 @@ const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }: Offl
 								height='x108'
 								fontFamily='mono'
 								fontScale='p2'
-								color='alternative'
+								color='white'
 								style={{ wordBreak: 'break-all', resize: 'none' }}
 								placeholder={t('Paste_here')}
 								disabled={isUpdating}
