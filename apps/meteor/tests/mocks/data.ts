@@ -2,7 +2,7 @@ import faker from '@faker-js/faker';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
-import type { MessageWithMdEnforced } from '../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
 
 export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
 	_id: faker.database.mongodbObjectId(),
