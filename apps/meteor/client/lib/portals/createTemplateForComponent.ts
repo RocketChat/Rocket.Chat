@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import type { ComponentType, PropsWithoutRef } from 'react';
 
-import { blazePortals } from './blazePortals';
+import { getClosestBlazePortals } from './blazePortals';
 import { createLazyPortal } from './createLazyPortal';
 
 export const createTemplateForComponent = <Props>(
@@ -51,11 +51,13 @@ export const createTemplateForComponent = <Props>(
 
 		const portal = createLazyPortal(factory, () => props.get(), container);
 
-		blazePortals.register(this, portal);
+		const portalsSubscription = getClosestBlazePortals(this.view as Blaze.View);
+		portalsSubscription.register(this, portal);
 	});
 
 	template.onDestroyed(function (this: Blaze.TemplateInstance) {
-		blazePortals.unregister(this);
+		const portalsSubscription = getClosestBlazePortals(this.view as Blaze.View);
+		portalsSubscription.unregister(this);
 	});
 
 	Template[name] = template;

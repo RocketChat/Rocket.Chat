@@ -15,7 +15,7 @@ const Growth = ({ children, ...props }: GrowthProps): ReactElement | null => {
 	}
 
 	return (
-		<Box is='span' color={children < 0 ? 'danger' : 'success'} {...props}>
+		<Box is='span' color={children < 0 ? 'on-danger' : 'on-success'} {...props}>
 			{children < 0 ? <NegativeGrowthSymbol /> : <PositiveGrowthSymbol />}
 			{String(Math.abs(children))}
 		</Box>

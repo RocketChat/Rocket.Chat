@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import React, { createContext, useContext } from 'react';
+import { createContext, useContext } from 'react';
 
 export type SurfaceContextValue = {
   type: 'message' | 'modal' | 'banner';
