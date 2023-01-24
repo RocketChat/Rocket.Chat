@@ -9,7 +9,7 @@ import { addStyle } from '../../ui-master/server/inject';
 
 settings.watch('theme-custom-css', (value) => {
 	if (!value || typeof value !== 'string') {
-		addStyle('theme-custom-css', '');
+		addStyle('css-theme', '');
 		return;
 	}
 	addStyle('css-theme', value);
