@@ -1,4 +1,3 @@
-import { debounce } from 'underscore';
 import type { ILicense } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
@@ -23,54 +22,6 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 
 		onModule((licenseModule) => {
 			api.broadcast('license.module', licenseModule);
-		});
-
-		/**
-		 * The main idea is if there is no scalability module enabled,
-		 * then we should not allow more than one service per environment.
-		 * So we list the services and nodes, and if there is more than
-		 * one, we inform the service that it should be disabled.
-		 */
-		const shutdownServices = debounce(async () => {
-			if (hasLicense('scalability')) {
-				return;
-			}
-
-			const services: {
-				name: string;
-				nodes: string[];
-			}[] = await api.call('$node.services');
-
-			// Filter only the duplicated services
-			const duplicated = services.filter((service) => {
-				return service.name !== '$node' && service.nodes.length > 1;
-			});
-
-			if (!duplicated.length) {
-				return;
-			}
-
-			const brokers: Record<string, string[]> = Object.fromEntries(
-				duplicated.map((service) => {
-					// remove the first node from the list
-					const [, ...nodes] = service.nodes;
-					return [service.name, nodes];
-				}),
-			);
-
-			const duplicatedServicesNames = duplicated.map((service) => service.name);
-
-			// send shutdown signal to the duplicated services
-			api.broadcastToServices(duplicatedServicesNames, 'shutdown', brokers);
-		}, 1000);
-
-		this.onEvent('$services.changed', async ({ localService }) => {
-			// since this is an internal service, we can ignore this event if the service that triggered is a local service.
-			// this will also prevent race conditions if a license is not in place when this process is starting up.
-			if (localService) {
-				return;
-			}
-			shutdownServices();
 		});
 	}
 
