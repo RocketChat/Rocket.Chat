@@ -3,17 +3,14 @@ import crypto from 'crypto';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';
-import { Logger } from '../../logger/server';
 import { addStyle } from '../../ui-master/server/inject';
-import { Theme } from './Theme';
 
-const logger = new Logger('rocketchat:theme');
-
-export const theme = new Theme({ logger });
-
-settings.watch('css', () => {
-	addStyle('css-theme', theme.getCss());
-	process.emit('message', { refresh: 'client' });
+settings.watch('theme-custom-css', (value) => {
+	if (!value || typeof value !== 'string') {
+		addStyle('theme-custom-css', '');
+		return;
+	}
+	addStyle('css-theme', value);
 });
 
 WebApp.rawConnectHandlers.use((req, res, next) => {
@@ -25,10 +22,14 @@ WebApp.rawConnectHandlers.use((req, res, next) => {
 		return;
 	}
 
-	const data = theme.getCss();
+	const style = settings.get('theme-custom-css');
+
+	if (!style || typeof style !== 'string') {
+		throw new Error('Invalid theme-custom-css setting');
+	}
 
 	res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-	res.setHeader('Content-Length', data.length);
-	res.setHeader('ETag', `"${crypto.createHash('sha1').update(data).digest('hex')}"`);
-	res.end(data, 'utf-8');
+	res.setHeader('Content-Length', style.length);
+	res.setHeader('ETag', `"${crypto.createHash('sha1').update(style).digest('hex')}"`);
+	res.end(style, 'utf-8');
 });
