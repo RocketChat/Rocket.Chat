@@ -207,6 +207,12 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
+	settingsRegistry.add('Accounts_Default_User_Preferences_omnichannelTranscriptPDF', false, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Transcript_PDF',
+	});
+
 	await Settings.addOptionValueById('Livechat_Routing_Method', {
 		key: 'Load_Balancing',
 		i18nLabel: 'Load_Balancing',

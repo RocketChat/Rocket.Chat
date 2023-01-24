@@ -561,12 +561,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Transcript_Email',
 		});
-
-		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptPDF', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Transcript_PDF',
-		});
 	});
 
 	this.section('Avatar', function () {
