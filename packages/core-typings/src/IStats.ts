@@ -195,7 +195,7 @@ export interface IStats {
 	};
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
-	totalUserCustomRoles: number;
+	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	matrixFederation: {

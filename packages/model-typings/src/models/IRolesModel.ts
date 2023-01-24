@@ -47,7 +47,7 @@ export interface IRolesModel extends IBaseModel<IRole> {
 		options?: any | undefined,
 	): Promise<FindCursor<IUser> | FindCursor<P>>;
 
-	findCustomUserRoles(options?: FindOptions<IRole>): FindCursor<IRole>;
+	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole>;
 
 	createWithRandomId(
 		name: IRole['name'],
