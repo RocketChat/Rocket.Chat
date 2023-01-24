@@ -1,6 +1,28 @@
 
+# 5.2.2
+`2023-01-24  ·  1 🚀  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Emoji picker for large amount of custom emojis ([#27745](https://github.com/RocketChat/Rocket.Chat/pull/27745))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.2.1
 `2022-11-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
 
 ### 🐛 Bug fixes
 
@@ -714,7 +736,7 @@
 
   This PR fixes an issue that was happening when an invalid token was passed on SlackBridge, basically the app crashes because the error was not being handled
 
-- Slash commands description as undefined ([#26372](https://github.com/RocketChat/Rocket.Chat/pull/26372))
+- Slash commands description as undefined ([#26372](https://github.com/RocketChat/Rocket.Chat/pull/26372) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - SMS service check ([#26558](https://github.com/RocketChat/Rocket.Chat/pull/26558))
 
@@ -750,7 +772,7 @@
 
 - Chore: Accounts/token to TS ([#26434](https://github.com/RocketChat/Rocket.Chat/pull/26434))
 
-- Chore: Add end-to-end tests to teams listing in the `directory` endpoint ([#26347](https://github.com/RocketChat/Rocket.Chat/pull/26347))
+- Chore: Add end-to-end tests to teams listing in the `directory` endpoint ([#26347](https://github.com/RocketChat/Rocket.Chat/pull/26347) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Chore: Add license env var to ee tests ([#26650](https://github.com/RocketChat/Rocket.Chat/pull/26650))
 
@@ -1072,6 +1094,7 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Karting06](https://github.com/Karting06)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@imyaman](https://github.com/imyaman)
 - [@pierreozoux](https://github.com/pierreozoux)
 - [@shrinish123](https://github.com/shrinish123)
@@ -1085,7 +1108,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@casalsgh](https://github.com/casalsgh)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
@@ -1532,7 +1554,7 @@
   Demo gif:
   ![privacy-tab](https://user-images.githubusercontent.com/43561537/173878394-333057d4-3c7e-434e-a3ca-d3e08f33c7bc.gif)
 
-- Matrix Federation UX improvements ([#25847](https://github.com/RocketChat/Rocket.Chat/pull/25847))
+- Matrix Federation UX improvements ([#25847](https://github.com/RocketChat/Rocket.Chat/pull/25847) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Message Template React Component ([#23971](https://github.com/RocketChat/Rocket.Chat/pull/23971))
 
@@ -1602,7 +1624,7 @@
 
 - Add tooltip to sidebar room menu ([#24405](https://github.com/RocketChat/Rocket.Chat/pull/24405) by [@Himanshu664](https://github.com/Himanshu664))
 
-- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684))
+- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Added MaxNickNameLength and MaxBioLength constants ([#25231](https://github.com/RocketChat/Rocket.Chat/pull/25231) by [@aakash-gitdev](https://github.com/aakash-gitdev))
 
@@ -2826,7 +2848,7 @@
 
 - Regression: Federated users not showing as federated in Room Members ([#26249](https://github.com/RocketChat/Rocket.Chat/pull/26249))
 
-- Regression: fix `directory` endpoint not listing teams ([#26310](https://github.com/RocketChat/Rocket.Chat/pull/26310))
+- Regression: fix `directory` endpoint not listing teams ([#26310](https://github.com/RocketChat/Rocket.Chat/pull/26310) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Regression: Fix app icons breaking UI ([#26278](https://github.com/RocketChat/Rocket.Chat/pull/26278))
 
@@ -2981,7 +3003,7 @@
 
   ### I'm definitely open for better looking alternatives. Please leave a comment if you have a better solution to share.
 
-- Regression: Matrix Federation regressions ([#26283](https://github.com/RocketChat/Rocket.Chat/pull/26283))
+- Regression: Matrix Federation regressions ([#26283](https://github.com/RocketChat/Rocket.Chat/pull/26283) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
 
@@ -3168,6 +3190,7 @@
 - [@Sh0uld](https://github.com/Sh0uld)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
 - [@amolghode1981](https://github.com/amolghode1981)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
@@ -3193,7 +3216,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cauefcr](https://github.com/cauefcr)
 - [@csuadev](https://github.com/csuadev)
 - [@d-gubert](https://github.com/d-gubert)
@@ -3505,7 +3527,7 @@
 
 - Add tooltip to sidebar room menu ([#24405](https://github.com/RocketChat/Rocket.Chat/pull/24405) by [@Himanshu664](https://github.com/Himanshu664))
 
-- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684))
+- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Added MaxNickNameLength and MaxBioLength constants ([#25231](https://github.com/RocketChat/Rocket.Chat/pull/25231) by [@aakash-gitdev](https://github.com/aakash-gitdev))
 
@@ -4177,6 +4199,7 @@
 - [@Himanshu664](https://github.com/Himanshu664)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
 - [@amolghode1981](https://github.com/amolghode1981)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
@@ -4199,7 +4222,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
@@ -10441,7 +10463,7 @@
 - [@ggazzo](https://github.com/ggazzo)
 
 # 3.18.6
-`2022-05-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2022-05-26  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - MongoDB: `3.4, 3.6, 4.0, 4.2`
