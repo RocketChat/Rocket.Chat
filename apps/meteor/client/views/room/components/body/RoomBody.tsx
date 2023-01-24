@@ -58,7 +58,7 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
-	const [lastMessage, setLastMessage] = useState<Date | undefined>();
+	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
@@ -300,16 +300,19 @@ const RoomBody = (): ReactElement => {
 	useEffect(() => {
 		if (!subscribed) {
 			setUnreadCount(0);
+			// console.log(`Não inscrito`);
 			return;
 		}
 
 		const count = ChatMessage.find({
 			rid: room._id,
-			ts: { $lte: lastMessage, $gt: subscription?.ls },
+			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
 		setUnreadCount(count);
-	}, [lastMessage, room._id, setUnreadCount, subscribed, subscription?.ls]);
+		// console.log(`Contador de mensagens: ${count}`);
+		// console.log(`Mudando: ${lastMessageDate}`);
+	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
 		if (!unread?.count) {
@@ -365,7 +368,7 @@ const RoomBody = (): ReactElement => {
 				element = document.elementFromPoint(messagesBoxLeft + 1, messagesBoxTop + topOffset + 1);
 			}
 
-			if (element?.classList.contains('message')) {
+			if (element?.classList.contains('rcx-message') || element?.classList.contains('rcx-message--sequential')) {
 				return element;
 			}
 		};
@@ -374,7 +377,7 @@ const RoomBody = (): ReactElement => {
 			Tracker.afterFlush(() => {
 				const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
-				if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
+				if (!lastInvisibleMessageOnScreen) {
 					setUnreadCount(0);
 					return;
 				}
@@ -385,7 +388,8 @@ const RoomBody = (): ReactElement => {
 					return;
 				}
 
-				setLastMessage(lastMessage.ts);
+				setLastMessageDate(lastMessage.ts);
+				// console.log(`Última mensagem: ${lastMessage.ts}`);
 			});
 		});
 
