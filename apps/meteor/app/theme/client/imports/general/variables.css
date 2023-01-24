@@ -85,8 +85,7 @@
 	/* #endregion */
 
 	/* #region fonts Fonts */
-	--body-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue',
-		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', Arial, sans-serif;
+	--body-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', Arial, sans-serif;
 
 	/* #endregion */
 
@@ -170,10 +169,7 @@
 		var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8))
 	);
 	--input-icon-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
-	--input-border-color: var(
-		--rcx-input-colors-border-color,
-		var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-light)))
-	);
+	--input-border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-light))));
 	--input-border-width: var(--border);
 	--input-border-radius: var(--border-radius);
 	--input-description-text-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
@@ -316,19 +312,13 @@
 	* Message box
 	*/
 	--message-box-text-size: var(--input-font-size);
-	--message-box-placeholder-color: var(
-		--rc-input-colors-placeholder-color,
-		var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8))
-	);
+	--message-box-placeholder-color: var(--rc-input-colors-placeholder-color,var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8)));
 	--message-box-markdown-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-markdown-hover-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
 	--message-box-user-activity-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-user-activity-text-size: 0.75rem;
 	--message-box-user-activity-user-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
-	--message-box-container-border-color: var(
-		--rcx-input-colors-border-color,
-		var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-medium)))
-	);
+	--message-box-container-border-color: var(--rcx-input-colors-border-color,  var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-medium))));
 	--message-box-container-border-width: var(--border);
 	--message-box-container-border-radius: var(--border-radius);
 	--message-box-editing-color: var(--rcx-color-status-background-warning-2, #fff6d6);
