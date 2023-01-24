@@ -14,7 +14,6 @@ addAction('calls', ({ room }) => {
 	const t = useTranslation();
 	const hasLicense = useHasLicenseModule('videoconference-enterprise');
 	const federated = isRoomFederated(room);
-	const canPostReadOnly = usePermission('post-readonly', room._id);
 
 	return useMemo(
 		() =>
@@ -24,7 +23,7 @@ addAction('calls', ({ room }) => {
 						id: 'calls',
 						icon: 'phone',
 						title: 'Calls',
-						...((federated || !canPostReadOnly) && {
+						...(federated && {
 							'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
 							'disabled': true,
 						}),
@@ -32,7 +31,7 @@ addAction('calls', ({ room }) => {
 						order: 999,
 				  }
 				: null,
-		[hasLicense, federated, canPostReadOnly, t],
+		[hasLicense, federated, t],
 	);
 });
 
@@ -93,7 +92,7 @@ addAction('start-call', ({ room }) => {
 						title: 'Call',
 						icon: 'phone',
 						action: handleOpenVideoConf,
-						...((federated || !canPostReadOnly) && {
+						...((federated || (room.ro && !canPostReadOnly)) && {
 							'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
 							'disabled': true,
 						}),
@@ -102,6 +101,6 @@ addAction('start-call', ({ room }) => {
 						featured: true,
 				  }
 				: null,
-		[groups, enableOption, live, handleOpenVideoConf, ownUser, canPostReadOnly, federated, t],
+		[groups, enableOption, live, handleOpenVideoConf, ownUser, canPostReadOnly, federated, t, room.ro],
 	);
 });
