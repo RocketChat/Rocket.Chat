@@ -59,13 +59,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
-	const action = button?.action || '';
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
 		setLoading(false);
 	}, [setModal]);
 
+	const action = button?.action || '';
 	const confirmAction = useCallback(
 		async (permissionsGranted) => {
 			setModal(null);

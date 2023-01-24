@@ -28,7 +28,7 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
-type Actions = 'update' | 'install' | 'purchase' | 'request';
+export type Actions = 'update' | 'install' | 'purchase' | 'request';
 
 type appButtonResponseProps = {
 	action: Actions;
@@ -39,7 +39,7 @@ type appButtonResponseProps = {
 export type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon?: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests' | 'Requested';
 	tooltipText?: string;
 };
 
@@ -280,6 +280,7 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 export const appStatusSpanProps = (
 	{ installed, status, subscriptionInfo, appRequestStats }: App,
 	context?: string,
+	isAppDetailsPage?: boolean,
 ): appStatusSpanResponseProps | undefined => {
 	if (installed) {
 		return {
@@ -314,6 +315,12 @@ export const appStatusSpanProps = (
 	}
 
 	if (context === 'requested' && appRequestStats) {
+		if (isAppDetailsPage) {
+			return {
+				label: 'Requested',
+			};
+		}
+
 		return {
 			label: appRequestStats.totalSeen > 1 ? 'requests' : 'request',
 		};
@@ -321,7 +328,7 @@ export const appStatusSpanProps = (
 };
 
 export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context: string): appStatusSpanResponseProps[] => {
-	const status = appStatusSpanProps(app, context);
+	const status = appStatusSpanProps(app, context, isAppDetailsPage);
 	const statuses = [];
 
 	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {
