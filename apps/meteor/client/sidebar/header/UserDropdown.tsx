@@ -24,7 +24,6 @@ import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
-import { useIsExperimentalThemeEnabled } from '../../views/hooks/useExperimentalTheme';
 import EditStatusModal from './EditStatusModal';
 
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
@@ -56,8 +55,6 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const { isMobile } = useLayout();
 
 	const [selectedTheme, setTheme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
-
-	const isExperimentalThemeEnabled = useIsExperimentalThemeEnabled();
 
 	const { username, avatarETag, status, statusText } = user;
 
@@ -139,26 +136,22 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus}></Option>
 			<OptionDivider />
 
-			{isExperimentalThemeEnabled && (
-				<>
-					<OptionTitle>{t('Theme')}</OptionTitle>
-					<Option>
-						<OptionIcon name='sun' />
-						<OptionContent>{t('Theme_light')}</OptionContent>
-						<OptionColumn>
-							<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
-						</OptionColumn>
-					</Option>
-					<Option>
-						<OptionIcon name='moon' />
-						<OptionContent>{t('Theme_dark')}</OptionContent>
-						<OptionColumn>
-							<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
-						</OptionColumn>
-					</Option>
-					<OptionDivider />
-				</>
-			)}
+			<OptionTitle>{t('Theme')}</OptionTitle>
+			<Option>
+				<OptionIcon name='sun' />
+				<OptionContent>{t('Theme_light')}</OptionContent>
+				<OptionColumn>
+					<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
+				</OptionColumn>
+			</Option>
+			<Option>
+				<OptionIcon name='moon' />
+				<OptionContent>{t('Theme_dark')}</OptionContent>
+				<OptionColumn>
+					<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
+				</OptionColumn>
+			</Option>
+			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>
