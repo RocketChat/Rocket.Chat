@@ -178,7 +178,7 @@ router.post('/:appId', async (req, res, next) => {
 
 const appsRoutes =
 	() =>
-	(req: Request, res: Response): void => {
+	async (req: Request, res: Response): Promise<void> => {
 		const { appId } = req.params;
 
 		const { type } = req.body;
@@ -188,9 +188,9 @@ const appsRoutes =
 				const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
 				const { visitor } = req.body;
-				const room = Promise.await(AppsConverter.convertRoomById(rid));
-				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
-				const message = Promise.await(AppsConverter.convertMessageById(mid));
+				const room = await AppsConverter.convertRoomById(rid);
+				const user = await AppsConverter.convertUserToApp(req.user);
+				const message = await AppsConverter.convertMessageById(mid);
 
 				const action = {
 					type,
@@ -208,8 +208,7 @@ const appsRoutes =
 				try {
 					const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
 
-					const result = Promise.await(Apps.triggerEvent(eventInterface, action));
-
+					const result = await Apps.triggerEvent(eventInterface, action);
 					res.send(result);
 				} catch (e) {
 					res.status(500).send(e); // e.message
@@ -224,7 +223,7 @@ const appsRoutes =
 					payload: { view, isCleared },
 				} = req.body;
 
-				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
+				const user = await AppsConverter.convertUserToApp(req.user);
 
 				const action = {
 					type,
@@ -238,7 +237,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(Apps.triggerEvent('IUIKitInteractionHandler', action));
+					const result = await Apps.triggerEvent('IUIKitInteractionHandler', action);
 
 					res.send(result);
 				} catch (e) {
@@ -250,7 +249,7 @@ const appsRoutes =
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const { type, actionId, triggerId, payload } = req.body;
 
-				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
+				const user = await AppsConverter.convertUserToApp(req.user);
 
 				const action = {
 					type,
@@ -262,7 +261,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(Apps.triggerEvent('IUIKitInteractionHandler', action));
+					const result = await Apps.triggerEvent('IUIKitInteractionHandler', action);
 
 					res.send(result);
 				} catch (e) {
@@ -281,9 +280,9 @@ const appsRoutes =
 					payload: { context },
 				} = req.body;
 
-				const room = Promise.await(AppsConverter.convertRoomById(rid));
-				const user = Promise.await(AppsConverter.convertUserToApp(req.user));
-				const message = Promise.await(AppsConverter.convertMessageById(mid));
+				const room = await AppsConverter.convertRoomById(rid);
+				const user = await AppsConverter.convertUserToApp(req.user);
+				const message = await AppsConverter.convertMessageById(mid);
 				const action = {
 					type,
 					appId,
@@ -298,7 +297,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(Apps.triggerEvent('IUIKitInteractionHandler', action));
+					const result = await Apps.triggerEvent('IUIKitInteractionHandler', action);
 
 					res.send(result);
 				} catch (e) {
