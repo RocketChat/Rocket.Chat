@@ -279,7 +279,7 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 
 export const appStatusSpanProps = (
 	{ installed, status, subscriptionInfo, appRequestStats }: App,
-	context: string,
+	context?: string,
 ): appStatusSpanResponseProps | undefined => {
 	if (installed) {
 		return {

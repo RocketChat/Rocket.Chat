@@ -4,7 +4,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState, memo, Fragment } from 'react';
+import React, { useCallback, useState, memo } from 'react';
 
 import { Apps } from '../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
