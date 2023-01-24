@@ -7290,9 +7290,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/presence@workspace:^, @rocket.chat/presence@workspace:packages/presence":
+"@rocket.chat/presence@workspace:^, @rocket.chat/presence@workspace:ee/packages/presence":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/presence@workspace:packages/presence"
+  resolution: "@rocket.chat/presence@workspace:ee/packages/presence"
   dependencies:
     "@babel/core": ^7.20.5
     "@babel/preset-env": ^7.20.2
