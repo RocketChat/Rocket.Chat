@@ -180,7 +180,7 @@ describe('[OAuthApps]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.end((err, res) => {
-					_id = res.body.application._id;
+					appId = res.body.application._id;
 					done();
 				});
 		});
@@ -228,7 +228,7 @@ describe('[OAuthApps]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.end((err, res) => {
-					_id = res.body.application._id;
+					appId = res.body.application._id;
 					done();
 				});
 		});
