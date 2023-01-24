@@ -1,4 +1,4 @@
-import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -23,7 +23,7 @@ import UrlPreviews from '../../content/UrlPreviews';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 
 type RoomMessageContentProps = {
-	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
+	message: MessageWithMdEnforced<IMessage>;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;

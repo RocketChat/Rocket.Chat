@@ -1,35 +1,22 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import React from 'react';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-const date = new Date('2021-10-27T00:00:00.000Z');
-const baseMessage = {
-	ts: date,
-	u: {
-		_id: 'userId',
-		name: 'userName',
-		username: 'userName',
-	},
+import { queryClient } from '../../../../../../client/lib/queryClient';
+import FakeRoomProvider from '../../../../../mocks/client/FakeRoomProvider';
+import RouterContextMock from '../../../../../mocks/client/RouterContextMock';
+import { createFakeMessageWithMd } from '../../../../../mocks/data';
+import type * as ThreadMessagePreviewModule from '../../../../../../client/components/message/variants/ThreadMessagePreview';
+
+const fakeMessage = createFakeMessageWithMd({
 	msg: 'message',
-	md: [
-		{
-			type: 'PARAGRAPH',
-			value: [
-				{
-					type: 'PLAIN_TEXT',
-					value: 'message',
-				},
-			],
-		},
-	],
-	rid: 'roomId',
-	_id: 'messageId',
-	_updatedAt: date,
-	urls: [],
-};
-const COMPONENT_PATH = '../../../../../../client/components/message/variants/ThreadMessagePreview.tsx';
-const defaultConfig = {
+});
+
+const modulePath = '../../../../../../client/components/message/variants/ThreadMessagePreview';
+const stubs = {
 	'../MessageContext': {
 		useMessageContext: () => ({
 			actions: {},
@@ -46,45 +33,55 @@ const defaultConfig = {
 			getType: () => false,
 		},
 	},
-	'./threadPreview/ThreadMessagePreviewBody': ({ message }: { message: any }) => <span>{message.msg}</span>,
+	'./threadPreview/ThreadMessagePreviewBody': ({ message }: { message: IMessage }) => <span>{message.msg}</span>,
 };
 
 describe('ThreadMessagePreview', () => {
+	const ProvidersMock = ({ children }: { children: React.ReactNode }) => {
+		return (
+			<QueryClientProvider client={queryClient}>
+				<RouterContextMock>
+					<FakeRoomProvider>{children}</FakeRoomProvider>
+				</RouterContextMock>
+			</QueryClientProvider>
+		);
+	};
+
 	it('should render the message when exists', () => {
-		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, defaultConfig).default;
+		const { default: ThreadMessagePreview } = proxyquire.noCallThru().load<typeof ThreadMessagePreviewModule>(modulePath, stubs);
 
-		render(<ThreadMessagePreview message={baseMessage} sequential={true} />);
+		render(<ThreadMessagePreview message={fakeMessage} sequential={true} />, { wrapper: ProvidersMock });
 
-		expect(screen.getByText(baseMessage.msg)).to.exist;
+		expect(screen.getByText(fakeMessage.msg)).to.exist;
 	});
 
 	it('should render ignored message', () => {
-		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, defaultConfig).default;
+		const { default: ThreadMessagePreview } = proxyquire.noCallThru().load<typeof ThreadMessagePreviewModule>(modulePath, stubs);
 
-		const message = { ...baseMessage, ignored: true };
-		render(<ThreadMessagePreview message={message} sequential={true} />);
+		const message = { ...fakeMessage, ignored: true };
+		render(<ThreadMessagePreview message={message} sequential={true} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText('Message_Ignored')).to.exist;
 	});
 
 	it('should render parent message', () => {
-		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, {
-			...defaultConfig,
+		const { default: ThreadMessagePreview } = proxyquire.noCallThru().load<typeof ThreadMessagePreviewModule>(modulePath, {
+			...stubs,
 			'../../../views/room/MessageList/hooks/useParentMessage': {
 				useParentMessage: () => ({
 					isSuccess: true,
 				}),
 			},
-		}).default;
+		});
 
-		render(<ThreadMessagePreview message={baseMessage} sequential={false} />);
+		render(<ThreadMessagePreview message={fakeMessage} sequential={false} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText('Parent Message')).to.exist;
 	});
 
 	it('should render parent system message', () => {
-		const ThreadMessagePreview = proxyquire.noCallThru().load(COMPONENT_PATH, {
-			...defaultConfig,
+		const { default: ThreadMessagePreview } = proxyquire.noCallThru().load<typeof ThreadMessagePreviewModule>(modulePath, {
+			...stubs,
 			'../../../views/room/MessageList/hooks/useParentMessage': {
 				useParentMessage: () => ({
 					isSuccess: true,
@@ -97,9 +94,9 @@ describe('ThreadMessagePreview', () => {
 					}),
 				},
 			},
-		}).default;
+		});
 
-		render(<ThreadMessagePreview message={baseMessage} sequential={false} />);
+		render(<ThreadMessagePreview message={fakeMessage} sequential={false} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText('System Message')).to.exist;
 	});

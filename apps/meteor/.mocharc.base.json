@@ -1,11 +1,12 @@
 {
 	"ui": "bdd",
 	"reporter": "spec",
-	"extension": ["js", "ts", "tsx"],
+	"extension": ["js", "ts", "tsx", "mjs", "mts", "mtsx"],
 	"require": [
 		"ts-node/register",
 		"./tests/setup/chaiPlugins.ts"
 	],
+	"loader": "ts-node/esm",
 	"watch-files": [
 		"./**/*.js",
 		"./**/*.ts",
