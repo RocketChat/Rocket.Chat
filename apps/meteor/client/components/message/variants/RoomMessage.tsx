@@ -1,6 +1,6 @@
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId,useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -35,7 +35,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 	const {
 		actions: { openUserCard },
 	} = useMessageActions();
-
+	const displayUserAvatar = useUserPreference<boolean>('displayAvatars');
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
@@ -59,7 +59,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 			data-qa-type='message'
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && !selecting && (
+				{!sequential && message.u.username && !selecting && displayUserAvatar &&(
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
