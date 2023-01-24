@@ -12,6 +12,9 @@ export type UpdateOAuthAppParams = {
 const UpdateOAuthAppParamsSchema = {
 	type: 'object',
 	properties: {
+		appId: {
+			type: 'string',
+		},
 		name: {
 			type: 'string',
 		},
@@ -30,7 +33,7 @@ const UpdateOAuthAppParamsSchema = {
 			type: 'string',
 		},
 	},
-	required: ['name', 'active', 'redirectUri'],
+	required: ['appId', 'name', 'active', 'redirectUri'],
 	additionalProperties: false,
 };
 

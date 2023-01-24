@@ -1,4 +1,4 @@
-import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams } from '@rocket.chat/rest-typings';
+import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -64,6 +64,7 @@ API.v1.addRoute(
 	'oauth-apps.delete',
 	{
 		authRequired: true,
+		validateParams: isDeleteOAuthAppParams,
 	},
 	{
 		async delete() {
