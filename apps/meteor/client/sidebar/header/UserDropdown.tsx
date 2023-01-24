@@ -11,8 +11,9 @@ import {
 	OptionTitle,
 	RadioButton,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -54,7 +55,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const logout = useLogout();
 	const { isMobile } = useLayout();
 
-	const [selectedTheme, setTheme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
+	const [selectedTheme, setTheme] = useThemeMode();
 
 	const { username, avatarETag, status, statusText } = user;
 
@@ -149,6 +150,13 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<OptionContent>{t('Theme_dark')}</OptionContent>
 				<OptionColumn>
 					<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
+				</OptionColumn>
+			</Option>
+			<Option>
+				<OptionIcon name='desktop' />
+				<OptionContent>{t('Theme_match_system')}</OptionContent>
+				<OptionColumn>
+					<RadioButton checked={selectedTheme === 'auto'} onChange={(): void => setTheme('auto')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<OptionDivider />
