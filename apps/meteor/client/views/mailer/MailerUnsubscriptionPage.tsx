@@ -1,6 +1,6 @@
 import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
 import { HeroLayout } from '@rocket.chat/layout';
-import { useToastMessageDispatch, useRouteParameter, useAbsoluteUrl, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouteParameter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
