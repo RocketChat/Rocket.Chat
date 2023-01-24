@@ -55,7 +55,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 									<StatusBullet status={userPresence?.status} />
 								</Box>
 								{name && <Box is='span'>{name}</Box>}
-								<Box is='span' color='gray'>
+								<Box is='span' color='hint'>
 									{`(${username})`}
 								</Box>
 							</Box>
