@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 
+import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import AttachmentProvider from '../components/message/Attachments/providers/AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
@@ -36,13 +37,15 @@ const MeteorProvider: FC = ({ children }) => (
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
-																<VideoConfProvider>
-																	<CallProvider>
-																		<OmnichannelProvider>
-																			<AttachmentProvider>{children}</AttachmentProvider>
-																		</OmnichannelProvider>
-																	</CallProvider>
-																</VideoConfProvider>
+																<OmnichannelRoomIconProvider>
+																	<VideoConfProvider>
+																		<CallProvider>
+																			<OmnichannelProvider>
+																				<AttachmentProvider>{children}</AttachmentProvider>
+																			</OmnichannelProvider>
+																		</CallProvider>
+																	</VideoConfProvider>
+																</OmnichannelRoomIconProvider>
 															</AuthorizationProvider>
 														</ModalProvider>
 													</DeviceProvider>
