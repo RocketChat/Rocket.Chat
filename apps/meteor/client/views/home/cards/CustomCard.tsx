@@ -79,11 +79,16 @@ const CustomCard = (): ReactElement | null => {
 		);
 	}
 
-	if (isCustomContentVisible) {
-		return <CustomHomepageContent />;
+	if (!willNotShowCustomContent && !isCustomContentOnly) {
+		return (
+			<Card variant='light'>
+				<Box mb='x8' color='info'>
+					<CustomHomepageContent />
+				</Box>
+			</Card>
+		);
 	}
-
-	return null;
+	return <CustomHomepageContent />;
 };
 
 export default CustomCard;

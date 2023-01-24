@@ -23,7 +23,8 @@ const DefaultHomePage = (): ReactElement => {
 	const isAdmin = useRole('admin');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
-	const displayCustomBody = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
+	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body') === '';
+	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
 
 	return (
 		<Page color='default' is='main' data-qa='page-home' data-qa-type='default' background='tint'>
@@ -35,7 +36,7 @@ const DefaultHomePage = (): ReactElement => {
 				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
-				<Grid margin='neg-x8' mbe='x32'>
+				<Grid margin='neg-x8'>
 					{canAddUsers && (
 						<HomepageGridItem>
 							<AddUsersCard />
@@ -58,12 +59,12 @@ const DefaultHomePage = (): ReactElement => {
 					<HomepageGridItem>
 						<DocumentationCard />
 					</HomepageGridItem>
-					{(displayCustomBody || isAdmin) && (
-						<Box p='x8'>
-							<CustomCard />
-						</Box>
-					)}
 				</Grid>
+				{(isAdmin || (isCustomContentVisible && !isCustomContentBodyEmpty)) && (
+					<Box pbs='x16' mbe='x32'>
+						<CustomCard />
+					</Box>
+				)}
 			</PageScrollableContent>
 		</Page>
 	);
