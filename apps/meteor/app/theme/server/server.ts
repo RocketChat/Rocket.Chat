@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 
+import { Meteor } from 'meteor/meteor';
+import { Settings } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../settings/server';
@@ -13,6 +15,11 @@ settings.watch('theme-custom-css', (value) => {
 	addStyle('css-theme', value);
 });
 
+// TODO: Add a migration to remove this setting from the database
+Meteor.startup(() => {
+	Settings.deleteMany({ _id: /theme-color/ });
+});
+
 WebApp.rawConnectHandlers.use((req, res, next) => {
 	const path = req.url?.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
@@ -23,8 +30,7 @@ WebApp.rawConnectHandlers.use((req, res, next) => {
 	}
 
 	const style = settings.get('theme-custom-css');
-
-	if (!style || typeof style !== 'string') {
+	if (typeof style !== 'string') {
 		throw new Error('Invalid theme-custom-css setting');
 	}
 
