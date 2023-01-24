@@ -95754,6 +95754,39 @@
           ]
         }
       ]
+    },
+    "5.3.6": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27816",
+          "title": "[FIX] Not all messages in chat conversations are available when forwarding between agents or departments.",
+          "userLogin": "filipemarins",
+          "milestone": "5.3.6",
+          "contributors": [
+            "filipemarins",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27745",
+          "title": "[IMPROVE] Emoji picker for large amount of custom emojis",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.2.2",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        }
+      ]
     }
   }
 }
