@@ -487,7 +487,7 @@ jobs:
           TRANSPORTER: nats://nats:4222
           # this is 100% intentional, secrets are not available at forks, so ee-tests will always fail
           # to avoid this, we are using a dummy license, expiring on 2022-12-31
-          ENTERPRISE_LICENSE: GWHMQe3C3lu3if4ropk1iQ09sCKjIaQogwMymgl7pbuotLpHPhTzxvuSqJYmEtHGKX4MQsrYA+8witFF3JMOc3AswwAkxQz+TZz9+XfiBo49p7OL0xfO6f9ElhLHclptcEPFDSilQlmDI1Jjr7k+MdqXxE4XbZ4Pdeg9vdEDtroKvSvd0ngtFMkIXa6829Cg0nzTCCcWo3Jc80JPub6VMgpdZ2KnsswQt8dBz+psvztcwrqF7X5731HkPX0lTttjF6SSIs+WAIdwAY4b2VRtD3PbMWxbe0ac+2x5+ItIRH0PFRh/gVWdtiKfskQpcucU739CX/d4pQGK/OWxKifH1XH824doeyYuvjXwvCW5anPlRXKAqIn2gh6LcdGfFNIbjX9wG4/U162vDr3AtEpRYdjzfvvBW1gveYMGidIiEhQZu7h5Ie9b3tNBkNBgBcqibL9JO6K3/2pxX7gymjT+9VRZgB5+ME2pziD54SjSWCwkLcf/RByxArdDSqI3llKjyDnRXjhqzsLhmsc6UdJCJd1IiqjQ4v5QXH2C57cJlej93ZLuNRFcnb0cE0nAFHIfLSZP5CSJA/gY7mtBL0b0osUisNL/os7a74JFMoa4DDfTD2CarYV5E4+fpX3NqINzpYwFzZi9pH2wIL6oe1yuZPcn9vjRhK2jvG81tHSR/4s=
+          ENTERPRISE_LICENSE: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
