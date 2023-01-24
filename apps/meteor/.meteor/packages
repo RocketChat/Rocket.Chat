@@ -45,7 +45,6 @@ rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 
-konecty:multiple-instances-status
 konecty:user-presence
 
 dispatch:run-as-user

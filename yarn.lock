@@ -6720,6 +6720,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/instance-status@workspace:^, @rocket.chat/instance-status@workspace:packages/instance-status":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/instance-status@workspace:packages/instance-status"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    eslint: ^8.29.0
+    mongodb: ^4.12.1
+    prettier: ^2.7.1
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/layout@npm:next":
   version: 0.32.0-dev.128
   resolution: "@rocket.chat/layout@npm:0.32.0-dev.128"
@@ -6893,6 +6906,7 @@ __metadata:
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": next
+    "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/layout": next
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": next

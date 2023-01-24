@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders } from 'http';
 
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

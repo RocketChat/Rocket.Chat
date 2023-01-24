@@ -1,6 +1,6 @@
 import { AppConsole } from '@rocket.chat/apps-engine/server/logging';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 export class AppRealLogsStorage extends AppLogStorage {
 	constructor(model) {
