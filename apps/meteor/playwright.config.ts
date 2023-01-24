@@ -3,10 +3,9 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 import * as constants from './tests/e2e/config/constants';
 
 export default {
-	// globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
+	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
 		headless: true,
-		// browserName: 'firefox',
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
