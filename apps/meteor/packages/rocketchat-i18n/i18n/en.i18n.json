@@ -5570,5 +5570,6 @@
 	"Always_export_the_transcript_as_PDF_at_the_end_of_conversations": "Always export the transcript as PDF at the end of conversations.",
   "Configure_recurring_email_sending_in_My_Account_Omnichannel": "Configure recurring email sending in **My Account** > **Omnichannel**.",
 	"Send_chat_transcript_via_email": "Send chat transcript via email.",
-	"Export_chat_transcript_as_PDF": "Export chat transcript as PDF."
+	"Export_chat_transcript_as_PDF": "Export chat transcript as PDF.",
+  "Contact_email": "Contact email"
 }

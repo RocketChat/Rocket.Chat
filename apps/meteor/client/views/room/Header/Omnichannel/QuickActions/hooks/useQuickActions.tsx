@@ -184,17 +184,27 @@ export const useQuickActions = (
 		async (
 			comment?: string,
 			tags?: string[],
-			preferences?: { omnichannelTranscriptPDF?: boolean; omnichannelTranscriptEmail?: boolean },
+			preferences?: { data: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean }; hasChanges: boolean },
+			requestData?: { email: string; subject: string },
 		) => {
 			try {
+				const generateTranscriptPdf = preferences?.data.omnichannelTranscriptPDF || undefined;
+				if (preferences?.hasChanges) {
+					await savePreferences({ data: preferences.data });
+				}
+
 				await closeChat({
 					rid,
 					...(comment && { comment }),
 					...(tags && { tags }),
+					...(generateTranscriptPdf && { generateTranscriptPdf }),
+					...(preferences?.data.omnichannelTranscriptEmail && {
+						emailTranscript: {
+							sendToVisitor: preferences?.data.omnichannelTranscriptEmail || false,
+							requestData,
+						},
+					}),
 				});
-				if (preferences) {
-					await savePreferences({ data: preferences });
-				}
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
@@ -267,11 +277,12 @@ export const useQuickActions = (
 				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
+				const email = await getVisitorEmail();
 				setModal(
 					room.departmentId ? (
-						<CloseChatModalData departmentId={room.departmentId} onConfirm={handleClose} onCancel={closeModal} />
+						<CloseChatModalData visitorEmail={email} departmentId={room.departmentId} onConfirm={handleClose} onCancel={closeModal} />
 					) : (
-						<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />
+						<CloseChatModal visitorEmail={email} onConfirm={handleClose} onCancel={closeModal} />
 					),
 				);
 				break;
