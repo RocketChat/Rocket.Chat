@@ -10,6 +10,7 @@ import CodeMirror from './CodeMirror';
 type CodeSettingInputProps = {
 	_id: string;
 	label: string;
+	hint: string;
 	value?: string;
 	code: string;
 	placeholder?: string;
@@ -24,6 +25,7 @@ type CodeSettingInputProps = {
 function CodeSettingInput({
 	_id,
 	label,
+	hint,
 	value = '',
 	code,
 	placeholder,
@@ -51,6 +53,7 @@ function CodeSettingInput({
 					</Field.Label>
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
+				{hint && <Field.Hint>{hint}</Field.Hint>}
 			</Flex.Container>
 			<div className={['code-mirror-box', fullScreen && 'code-mirror-box-fullscreen content-background-color'].filter(Boolean).join(' ')}>
 				<div className='title'>{label}</div>
