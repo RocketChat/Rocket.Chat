@@ -84,17 +84,17 @@ export const useFilteredApps = ({
 		}
 
 		if (Boolean(categories.length) && Boolean(text)) {
-			filtered = apps.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
+			filtered = filtered.filter((app) => filterAppsByCategories(app, categories)).filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
 		}
 
 		if (Boolean(categories.length) && !text) {
-			filtered = apps.filter((app) => filterAppsByCategories(app, categories));
+			filtered = filtered.filter((app) => filterAppsByCategories(app, categories));
 			shouldShowSearchText = false;
 		}
 
 		if (!categories.length && Boolean(text)) {
-			filtered = apps.filter(({ name }) => filterAppsByText(name, text));
+			filtered = filtered.filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
 		}
 
