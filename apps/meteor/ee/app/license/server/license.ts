@@ -1,12 +1,16 @@
 import { EventEmitter } from 'events';
 
+import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+
 import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definitions/ILicense';
+import type { ILicense, LicenseAppSources } from '../definitions/ILicense';
 import type { ILicenseTag } from '../definitions/ILicenseTag';
+import { isUnderAppLimits } from './lib/isUnderAppLimits';
+import { Apps } from '../../../../app/apps/server';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -29,6 +33,11 @@ class LicenseClass {
 
 	private modules = new Set<string>();
 
+	private appsConfig: NonNullable<ILicense['apps']> = {
+		maxPrivateApps: 3,
+		maxMarketplaceApps: 5,
+	};
+
 	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
 	}
@@ -40,6 +49,21 @@ class LicenseClass {
 		const regex = new RegExp(`^${licenseURL}$`, 'i');
 
 		return !!regex.exec(url);
+	}
+
+	private _appsConfig(license: ILicense): void {
+		// If the license is valid, no limit is going to be applied to apps installation for now
+		// This guarantees that upgraded workspaces won't be affected by the new limit right away
+		// and gives us time to propagate the new limit schema to all licenses
+		const { maxPrivateApps = -1, maxMarketplaceApps = -1 } = license.apps || {};
+
+		if (maxPrivateApps === -1 || maxPrivateApps > this.appsConfig.maxPrivateApps) {
+			this.appsConfig.maxPrivateApps = maxPrivateApps;
+		}
+
+		if (maxMarketplaceApps === -1 || maxMarketplaceApps > this.appsConfig.maxMarketplaceApps) {
+			this.appsConfig.maxMarketplaceApps = maxMarketplaceApps;
+		}
 	}
 
 	private _validModules(licenseModules: string[]): void {
@@ -167,6 +191,8 @@ class LicenseClass {
 				maxActiveUsers = license.maxActiveUsers;
 			}
 
+			this._appsConfig(license);
+
 			this._validModules(license.modules);
 
 			this._addTags(license);
@@ -187,6 +213,10 @@ class LicenseClass {
 		}
 
 		return maxActiveUsers > Users.getActiveLocalUserCount();
+	}
+
+	canEnableApp(source: LicenseAppSources): Promise<boolean> {
+		return isUnderAppLimits({ appManager: Apps.getManager() as AppManager }, this.appsConfig, source);
 	}
 
 	showLicenses(): void {
@@ -290,6 +320,30 @@ export function getTags(): ILicenseTag[] {
 
 export function canAddNewUser(): boolean {
 	return License.canAddNewUser();
+}
+
+export async function canEnableApp(source: LicenseAppSources): Promise<boolean> {
+	if (!Apps.isInitialized()) {
+		return false;
+	}
+
+	return License.canEnableApp(source);
+}
+
+export async function canInstallMarketplaceApp(): Promise<boolean> {
+	if (!Apps.isInitialized()) {
+		return false;
+	}
+
+	return License.canEnableApp('marketplace');
+}
+
+export async function canInstallPrivateApp(): Promise<boolean> {
+	if (!Apps.isInitialized()) {
+		return false;
+	}
+
+	return License.canEnableApp('private');
 }
 
 export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {

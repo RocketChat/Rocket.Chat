@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -12,6 +13,7 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { canEnableApp } from '../../../../ee/app/license/server/license';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -169,6 +171,7 @@ export class AppsRestApi {
 				},
 				async post() {
 					let buff;
+					let source;
 					let marketplaceInfo;
 					let permissionsGranted;
 
@@ -187,6 +190,7 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await response.arrayBuffer());
+							source = 'private';
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
@@ -222,6 +226,7 @@ export class AppsRestApi {
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
 							marketplaceInfo = await marketplaceResponse.json();
 							permissionsGranted = this.bodyParams.permissionsGranted;
+							source = 'marketplace';
 						} catch (err) {
 							return API.v1.failure(err.message);
 						}
@@ -248,6 +253,7 @@ export class AppsRestApi {
 								return undefined;
 							}
 						})();
+						source = 'private';
 					}
 
 					if (!buff) {
@@ -256,7 +262,7 @@ export class AppsRestApi {
 
 					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user });
+					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -272,6 +278,11 @@ export class AppsRestApi {
 					}
 
 					info.status = aff.getApp().getStatus();
+
+					if (await canEnableApp(source)) {
+						const success = await manager.enable(info.id);
+						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
+					}
 
 					return API.v1.success({
 						app: info,
@@ -877,6 +888,14 @@ export class AppsRestApi {
 
 					if (!prl) {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+					}
+
+					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
+						const source = !prl.getInfo().marketplaceInfo ? 'private' : 'marketplace';
+
+						if (!canEnableApp(source)) {
+							return API.v1.failure('Enabled apps have been maxed out');
+						}
 					}
 
 					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
