@@ -2,7 +2,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { lazy, Suspense } from 'react';
 
-import { OmnichannelRoomIconProvider } from '../../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import { queryClient } from '../../lib/queryClient';
 import PageLoading from './PageLoading';
 
@@ -17,13 +16,11 @@ const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
 		<QueryClientProvider client={queryClient}>
 			<MeteorProvider>
-				<OmnichannelRoomIconProvider>
-					<ConnectionStatusBar />
-					<BannerRegion />
-					<AppLayout />
-					<PortalsWrapper />
-					<ModalRegion />
-				</OmnichannelRoomIconProvider>
+				<ConnectionStatusBar />
+				<BannerRegion />
+				<AppLayout />
+				<PortalsWrapper />
+				<ModalRegion />
 			</MeteorProvider>
 		</QueryClientProvider>
 	</Suspense>
