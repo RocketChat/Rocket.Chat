@@ -9,10 +9,11 @@ import type { ReactElement, UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../app/emoji/client';
+import { useUserCard } from '../../hooks/useUserCard';
+import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
-import { useMessageListHighlights } from '../../views/room/MessageList/contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../views/room/contexts/MessageContext';
+import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
+import { useMessageListHighlights } from './list/MessageListContext';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
 
@@ -57,9 +58,9 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 		[mentions],
 	);
 
-	const {
-		actions: { openRoom, openUserCard },
-	} = useMessageActions();
+	const { open: openUserCard } = useUserCard();
+
+	const goToRoom = useGoToRoom();
 
 	const onUserMentionClick = useCallback(
 		({ username }: UserMention) => {
@@ -90,9 +91,9 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 				}
 
 				event.stopPropagation();
-				openRoom(rid)(event);
+				goToRoom(rid);
 			},
-		[isEmbedded, openRoom],
+		[isEmbedded, goToRoom],
 	);
 
 	// TODO:  this style should go to Fuselage <MessageBody> repository

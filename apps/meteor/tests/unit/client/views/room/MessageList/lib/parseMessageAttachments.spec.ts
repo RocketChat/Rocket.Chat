@@ -2,7 +2,7 @@
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { expect } from 'chai';
 
-import { parseMessageAttachments } from '../../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { parseMessageAttachments } from '../../../../../../../client/lib/parseMessageTextToAstMarkdown';
 
 const parseOptions: Options = {
 	colors: true,
