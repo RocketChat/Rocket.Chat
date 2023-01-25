@@ -17,8 +17,8 @@ API.v1.addRoute(
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 
 			const { cursor, totalCount } = oldest
-				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), count, offset)
-				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), count, offset);
+				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), offset, count)
+				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), offset, count);
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 			// if (!reports) {
