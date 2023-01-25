@@ -82,7 +82,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 
 				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context={'thread'} />}
 		</Message>
 	);
 };
