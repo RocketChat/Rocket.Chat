@@ -5,8 +5,8 @@ import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createVisitor } from '../../data/livechat/rooms';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
+import { testFileUploads } from '../../data/uploads.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -43,6 +43,7 @@ describe('[Channels]', function () {
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', 0);
 				channel._id = res.body.channel._id;
+				channel.name = res.body.channel.name;
 			})
 			.end(done);
 	});
@@ -301,119 +302,8 @@ describe('[Channels]', function () {
 		});
 	});
 
-	describe('[/channels.files]', () => {
-		before(() => updateSetting('VoIP_Enabled', true));
-		const createVoipRoom = async () => {
-			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
-			const testUserCredentials = await login(testUser.username, password);
-			const visitor = await createVisitor();
-			const roomResponse = await createRoom({
-				token: visitor.token,
-				type: 'v',
-				agentId: testUser._id,
-				credentials: testUserCredentials,
-			});
-			return roomResponse.body.room;
-		};
-		it('should fail if invalid channel', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: 'invalid',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-room-not-found');
-				})
-				.end(done);
-		});
-
-		it('should fail for room type v', async () => {
-			const { _id } = await createVoipRoom();
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: _id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-room-not-found');
-				});
-		});
-
-		it('should succeed when searching by roomId', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: 'GENERAL',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should succeed when searching by roomId even requested with count and offset params', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: 'GENERAL',
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should succeed when searching by roomName', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomName: 'general',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should succeed when searching by roomName even requested with count and offset params', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomName: 'general',
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
+	describe('[/channels.files]', async function () {
+		await testFileUploads('channels.files', channel);
 	});
 
 	describe('[/channels.join]', () => {
