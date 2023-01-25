@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import Page from '../../../components/Page';
-import MarketplaceHeaderComponent from '../components/MarketplaceHeaderComponent';
+import MarketplaceHeader from '../components/MarketplaceHeader';
 import AppsPageContent from './AppsPageContent';
 
 type AppsContext = 'explore' | 'installed' | 'enterprise' | 'private';
@@ -14,7 +14,7 @@ const AppsPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			{context && <MarketplaceHeaderComponent title={t(`Apps_context_${context as AppsContext}`)} />}
+			{context && <MarketplaceHeader title={t(`Apps_context_${context as AppsContext}`)} />}
 			<Page.Content>
 				<AppsPageContent />
 			</Page.Content>
