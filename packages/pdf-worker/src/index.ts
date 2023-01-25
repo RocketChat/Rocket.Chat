@@ -1,7 +1,7 @@
+import { ChatTranscript } from './strategies/ChatTranscript';
 import type { IStrategy } from './types/IStrategy';
-import { OmnichannelPDF } from './strategies/OmnichannelPDF';
 
-export type Templates = 'omnichannel-transcript';
+export type Templates = 'chat-transcript';
 
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png'];
@@ -21,8 +21,8 @@ export class PdfWorker {
 
 	getWorkerClass(): IStrategy {
 		switch (this.mode) {
-			case 'omnichannel-transcript':
-				return new OmnichannelPDF();
+			case 'chat-transcript':
+				return new ChatTranscript();
 			default:
 				throw new Error('Invalid mode');
 		}

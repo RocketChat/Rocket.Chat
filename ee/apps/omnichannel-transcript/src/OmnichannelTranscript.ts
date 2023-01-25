@@ -5,6 +5,7 @@ import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent 
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService, Settings } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -30,6 +31,7 @@ type WorkerData = {
 	timezone: string;
 	dateFormat: string;
 	timeAndDateFormat: string;
+	translations: { key: TranslationKey; value: string }[];
 };
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -52,7 +54,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		loggerClass: typeof Logger,
 	) {
 		super();
-		this.worker = new PdfWorker('omnichannel-transcript');
+		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
 		// your stuff
@@ -160,6 +162,27 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
+	private async getTranslations(): Promise<Array<{ key: TranslationKey; value: string }>> {
+		const keys: TranslationKey[] = [
+			'Agent',
+			'Date',
+			'Customer',
+			'Omnichannel_Agent',
+			'Time',
+			'Chat_transcript',
+			'This_attachment_is_not_supported',
+		];
+
+		return Promise.all(
+			keys.map(async (key) => {
+				return {
+					key,
+					value: await this.translationService.translateToServerLanguage(key),
+				};
+			}),
+		);
+	}
+
 	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
 		this.log.log(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
@@ -188,6 +211,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				dateFormat: await this.settingsService.get<string>('Message_DateFormat'),
 				timeAndDateFormat: await this.settingsService.get<string>('Message_TimeAndDateFormat'),
 				timezone: await this.getTimezone(agent),
+				translations: await this.getTranslations(),
 			};
 
 			await this.doRender({ template, data, details });
