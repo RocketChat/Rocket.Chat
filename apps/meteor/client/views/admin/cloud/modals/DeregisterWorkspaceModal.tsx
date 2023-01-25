@@ -1,44 +1,46 @@
 import React from 'react';
-import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import useFeatureBullets from '../hooks/useFeatureBullets';
-import DeregisterWorkspaceModal from './DeregisterWorkspaceModal';
+import RegisteredWorkspaceModal from './RegisteredWorkspaceModal';
 
-type RegisteredWorkspaceModalProps = {
+type DeregisterWorkspaceModalProps = {
   onClose: () => void,
 }
 
-const RegisteredWorkspaceModal = ({ onClose, ...props }: RegisteredWorkspaceModalProps) => {
+const DeregisterWorkspaceModal = ({ onClose, ...props }: DeregisterWorkspaceModalProps) => {
   const t = useTranslation();
   const setModal = useSetModal();
   const bulletFeatures = useFeatureBullets();
+  
+  const handleCancelAction = (): void => {
+    const handleModalClose = (): void => setModal(null);
+    setModal(<RegisteredWorkspaceModal onClose={handleModalClose} />);
+  };
 
   const handleDeregister = (): void => {
-		const handleModalClose = (): void => setModal(null);
-		setModal(<DeregisterWorkspaceModal onClose={handleModalClose} />);
+		// here should be the deregister action
 	};
-
-  const handleSyncAction = (): void => {
-    // here should be the sync action
-  };
 
   return (
     <Modal {...props}>
       <Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Title>{t('RegisterWorkspace_Registered_Title')}</Modal.Title>
+					<Modal.Title>
+            {t('Are_you_sure')}
+          </Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
       <Modal.Content>
 				<Box withRichContent>
-					<span>{`${t('RegisterWorkspace_Registered_Subtitle')}: `}</span>
+					<span>{`${t('RegisterWorkspace_Deregister_Subtitle')}: `}</span>
           <ul>
             {
               bulletFeatures.map((item, index) => (
                 <li key={index}>
                   <strong>{item.title}</strong>
-                  <Box is='p' mbs={4}>{item.description}</Box>
+                  <Box color='danger' is='p' mbs={4}>{item.deregister}</Box>
                 </li>
               ))
             }
@@ -47,12 +49,11 @@ const RegisteredWorkspaceModal = ({ onClose, ...props }: RegisteredWorkspaceModa
 			</Modal.Content>
       <Modal.Footer>
         <ButtonGroup align='end'>
-          <Button secondary danger onClick={handleDeregister}>
-            {t('Deregister')}
+          <Button onClick={handleCancelAction}>
+            {t('Cancel')} 
           </Button>
-          <Button onClick={handleSyncAction}>
-            <Icon pie={4} name='reload' size='x20' />
-            {t('Sync')}
+          <Button danger onClick={handleDeregister}>
+            {t('Deregister_workspace')}
           </Button>
         </ButtonGroup>
       </Modal.Footer>
@@ -60,4 +61,4 @@ const RegisteredWorkspaceModal = ({ onClose, ...props }: RegisteredWorkspaceModa
   )
 }
 
-export default RegisteredWorkspaceModal;
+export default DeregisterWorkspaceModal;

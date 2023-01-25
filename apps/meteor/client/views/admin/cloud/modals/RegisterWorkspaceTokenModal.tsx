@@ -11,10 +11,14 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
   const setModal = useSetModal();
   const t = useTranslation();
 
-  const handleTokenModal = (): void => {
+  const handleBackAction = (): void => {
 		const handleModalClose = (): void => setModal(null);
 		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
+
+  const handleToken = (): void => {
+    // here should be the connection to the service
+  }
 
   return (
     <Modal {...props}>
@@ -25,8 +29,8 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
       <Modal.Content>
-        <Box is='p' fontSize='p2'>`1. ${t('RegisterWorkspace_Token_Step_One')}`</Box>
-        <Box is='p' fontSize='p2'>`2. ${t('RegisterWorkspace_Token_Step_Two')}</Box>
+        <Box is='p' fontSize='p2'>{`1. ${t('RegisterWorkspace_Token_Step_One')}`}</Box>
+        <Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
         <Field pbs={10}>
           <Field.Label>{t('Registration_Token')}</Field.Label>
           <Field.Row>
@@ -36,10 +40,10 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
 			</Modal.Content>
       <Modal.Footer>
         <ButtonGroup align='end'>
-          <Button onClick={handleTokenModal}>
+          <Button onClick={handleBackAction}>
             {t('Back')}
           </Button>
-          <Button primary onClick={() => console.log('submit')}>
+          <Button primary onClick={handleToken}>
             {t('Next')}
           </Button>
         </ButtonGroup>
