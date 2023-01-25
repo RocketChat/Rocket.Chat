@@ -108,7 +108,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 					isAdmin={data?.user.roles.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
-					isAFederatedUser={isUserFederated(data?.user as unknown as IUser)}
+					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}
 					onChange={onChange}
 					onReload={onReload}
 				/>

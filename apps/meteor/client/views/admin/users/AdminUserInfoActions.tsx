@@ -15,7 +15,7 @@ import { useResetTOTPAction } from './hooks/useResetTOTPAction';
 type AdminUserInfoActionsProps = {
 	username: IUser['username'];
 	userId: IUser['_id'];
-	isAFederatedUser: IUser['federated'];
+	isFederatedUser: IUser['federated'];
 	isActive: boolean;
 	isAdmin: boolean;
 	onChange: () => void;
@@ -25,7 +25,7 @@ type AdminUserInfoActionsProps = {
 const AdminUserInfoActions = ({
 	username,
 	userId,
-	isAFederatedUser,
+	isFederatedUser,
 	isActive,
 	isAdmin,
 	onChange,
@@ -75,16 +75,16 @@ const AdminUserInfoActions = ({
 				editUser: {
 					icon: 'edit',
 					label: t('Edit'),
-					title: isAFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
+					title: isFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
 					action: editUserClick,
-					disabled: isAFederatedUser,
+					disabled: isFederatedUser,
 				},
 			}),
-			...(changeAdminStatusAction && !isAFederatedUser && { makeAdmin: changeAdminStatusAction }),
-			...(resetE2EKeyAction && !isAFederatedUser && { resetE2EKey: resetE2EKeyAction }),
-			...(resetTOTPAction && !isAFederatedUser && { resetTOTP: resetTOTPAction }),
-			...(deleteUserAction && !isAFederatedUser && { delete: deleteUserAction }),
-			...(changeUserStatusAction && !isAFederatedUser && { changeActiveStatus: changeUserStatusAction }),
+			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
+			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
+			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
+			...(deleteUserAction && !isFederatedUser && { delete: deleteUserAction }),
+			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
 		}),
 		[
 			t,
@@ -97,7 +97,7 @@ const AdminUserInfoActions = ({
 			deleteUserAction,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			isAFederatedUser,
+			isFederatedUser,
 		],
 	);
 
