@@ -1,8 +1,8 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
+import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
 import FakeRoomProvider from '../../../../../tests/mocks/client/FakeRoomProvider';
@@ -26,7 +26,7 @@ describe('RoomMessageContent', () => {
 		'../../content/MessageActions': () => null,
 	});
 
-	const ProvidersMock = ({ children }: { children: React.ReactNode }) => {
+	const ProvidersMock = ({ children }: { children: ReactNode }) => {
 		return (
 			<QueryClientProvider client={queryClient}>
 				<RouterContextMock>

@@ -2,7 +2,6 @@ import type { IMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import type { ReactNode } from 'react';
 import React from 'react';
@@ -13,29 +12,29 @@ import { createFakeMessageWithMd } from '../../../../tests/mocks/data';
 import { queryClient } from '../../../lib/queryClient';
 import type * as ThreadMessagePreviewModule from './ThreadMessagePreview';
 
-const fakeMessage = createFakeMessageWithMd<IThreadMessage>({
-	msg: 'message',
-});
-
-const loadMock = (stubs?: Record<string, unknown>) => {
-	return proxyquire.noCallThru().load<typeof ThreadMessagePreviewModule>('./ThreadMessagePreview', {
-		'../../../views/room/MessageList/hooks/useParentMessage': {
-			useParentMessage: () => '',
-		},
-		'../../../views/room/MessageList/hooks/useMessageBody': {
-			useMessageBody: () => <p>Parent Message</p>,
-		},
-		'../../../../app/ui-utils/client': {
-			MessageTypes: {
-				getType: () => false,
-			},
-		},
-		'./threadPreview/ThreadMessagePreviewBody': ({ message }: { message: IMessage }) => <span>{message.msg}</span>,
-		...stubs,
-	}).default;
-};
-
 describe('ThreadMessagePreview', () => {
+	const fakeMessage = createFakeMessageWithMd<IThreadMessage>({
+		msg: 'message',
+	});
+
+	const loadMock = (stubs?: Record<string, unknown>) => {
+		return proxyquire.noCallThru().load<typeof ThreadMessagePreviewModule>('./ThreadMessagePreview', {
+			'../../../views/room/MessageList/hooks/useParentMessage': {
+				useParentMessage: () => '',
+			},
+			'../../../views/room/MessageList/hooks/useMessageBody': {
+				useMessageBody: () => <p>Parent Message</p>,
+			},
+			'../../../../app/ui-utils/client': {
+				MessageTypes: {
+					getType: () => false,
+				},
+			},
+			'./threadPreview/ThreadMessagePreviewBody': ({ message }: { message: IMessage }) => <span>{message.msg}</span>,
+			...stubs,
+		}).default;
+	};
+
 	const ProvidersMock = ({ children }: { children: ReactNode }) => {
 		return (
 			<QueryClientProvider client={queryClient}>

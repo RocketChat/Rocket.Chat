@@ -6937,7 +6937,7 @@ __metadata:
     "@types/chai-as-promised": ^7
     "@types/chai-datetime": 0.0.37
     "@types/chai-dom": 0.0.13
-    "@types/chai-spies": ^1.0.3
+    "@types/chai-spies": ~1.0.3
     "@types/clipboard": ^2.0.7
     "@types/codemirror": ^5.60.5
     "@types/cookie": ^0.5.1
@@ -7021,7 +7021,7 @@ __metadata:
     chai-as-promised: ^7.1.1
     chai-datetime: ^1.8.0
     chai-dom: ^1.11.0
-    chai-spies: ^1.0.0
+    chai-spies: ~1.0.0
     change-case: ^4.1.2
     chart.js: ^3.8.0
     clipboard: ^2.0.11
@@ -9713,7 +9713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai-spies@npm:^1.0.3":
+"@types/chai-spies@npm:~1.0.3":
   version: 1.0.3
   resolution: "@types/chai-spies@npm:1.0.3"
   dependencies:
@@ -14123,7 +14123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai-spies@npm:^1.0.0":
+"chai-spies@npm:~1.0.0":
   version: 1.0.0
   resolution: "chai-spies@npm:1.0.0"
   peerDependencies:
