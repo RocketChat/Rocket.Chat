@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -13,6 +13,7 @@ import {
 	isLiveChatRoomJoinProps,
 	isPUTLivechatRoomVisitorParams,
 	isLiveChatRoomSaveInfoProps,
+	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
@@ -20,6 +21,7 @@ import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoom, hasPermission } from '../../../../authorization/server';
@@ -27,6 +29,7 @@ import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
+import type { CloseRoomParams } from '../../lib/LivechatTyped.d';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -86,6 +89,8 @@ API.v1.addRoute('livechat/room', {
 	},
 });
 
+// Note: use this route if a visitor is closing a room
+// If a RC user(like eg agent) is closing a room, use the `livechat/room.closeByUser` route
 API.v1.addRoute(
 	'livechat/room.close',
 	{ validateParams: isPOSTLivechatRoomCloseParams },
@@ -110,12 +115,71 @@ API.v1.addRoute(
 			const language = rcSettings.get<string>('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
-			// @ts-expect-error -- typings on closeRoom are wrong
-			if (!Livechat.closeRoom({ visitor, room, comment })) {
-				return API.v1.failure();
-			}
+			await LivechatTyped.closeRoom({ visitor, room, comment });
 
 			return API.v1.success({ rid, comment });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/room.closeByUser',
+	{
+		validateParams: isPOSTLivechatRoomCloseByUserParams,
+		authRequired: true,
+		permissionsRequired: ['close-livechat-room'],
+	},
+	{
+		async post() {
+			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
+
+			const room = await LivechatRoomsRaw.findOneById(rid);
+			if (!room || !isOmnichannelRoom(room)) {
+				throw new Error('error-invalid-room');
+			}
+
+			if (!room.open) {
+				throw new Error('error-room-already-closed');
+			}
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
+			if (!subscription && !hasPermission(this.userId, 'close-others-livechat-room')) {
+				throw new Error('error-not-authorized');
+			}
+
+			const options: CloseRoomParams['options'] = {
+				clientAction: true,
+				tags,
+				...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),
+				...(transcriptEmail && {
+					...(transcriptEmail.sendToVisitor
+						? {
+								emailTranscript: {
+									sendToVisitor: true,
+									requestData: {
+										email: transcriptEmail.requestData.email,
+										subject: transcriptEmail.requestData.subject,
+										requestedAt: new Date(),
+										requestedBy: this.user,
+									},
+								},
+						  }
+						: {
+								emailTranscript: {
+									sendToVisitor: false,
+								},
+						  }),
+				}),
+			};
+
+			await LivechatTyped.closeRoom({
+				room,
+				user: this.user,
+				options,
+				comment,
+			});
+
+			return API.v1.success();
 		},
 	},
 );

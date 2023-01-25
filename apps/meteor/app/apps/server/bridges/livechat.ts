@@ -17,6 +17,7 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import { Users, LivechatDepartment, LivechatRooms } from '../../../models/server';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -122,7 +123,9 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor && { visitor }),
 		};
 
-		return Livechat.closeRoom(closeData);
+		await LivechatTyped.closeRoom(closeData);
+
+		return true;
 	}
 
 	protected async findRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>> {

@@ -4,7 +4,7 @@ import { LivechatVisitors } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { LivechatRooms } from '../../../models/server';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

@@ -2011,6 +2011,73 @@ const POSTLivechatRoomCloseParamsSchema = {
 
 export const isPOSTLivechatRoomCloseParams = ajv.compile<POSTLivechatRoomCloseParams>(POSTLivechatRoomCloseParamsSchema);
 
+type POSTLivechatRoomCloseByUserParams = {
+	rid: string;
+	comment?: string;
+	tags?: string[];
+	generateTranscriptPdf?: boolean;
+	transcriptEmail?:
+		| {
+				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+				sendToVisitor: false;
+		  }
+		| {
+				sendToVisitor: true;
+				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+		  };
+};
+
+const POSTLivechatRoomCloseByUserParamsSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		comment: {
+			type: 'string',
+			nullable: true,
+		},
+		tags: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		generateTranscriptPdf: {
+			type: 'boolean',
+			nullable: true,
+		},
+		transcriptEmail: {
+			type: 'object',
+			properties: {
+				sendToVisitor: {
+					type: 'boolean',
+				},
+				requestData: {
+					type: 'object',
+					properties: {
+						email: {
+							type: 'string',
+						},
+						subject: {
+							type: 'string',
+						},
+					},
+					required: ['email', 'subject'],
+					additionalProperties: false,
+				},
+			},
+			required: ['sendToVisitor'],
+			additionalProperties: false,
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomCloseByUserParams = ajv.compile<POSTLivechatRoomCloseByUserParams>(POSTLivechatRoomCloseByUserParamsSchema);
+
 type POSTLivechatRoomTransferParams = {
 	token: string;
 	rid: string;
@@ -3003,6 +3070,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.close': {
 		POST: (params: POSTLivechatRoomCloseParams) => { rid: string; comment: string };
+	};
+	'/v1/livechat/room.closeByUser': {
+		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
 	};
 	'/v1/livechat/room.transfer': {
 		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom }>;

@@ -69,7 +69,7 @@ export const onlineAgents = {
 
 		try {
 			if (action === 'close') {
-				return Livechat.closeOpenChats(userId, comment);
+				return Promise.await(Livechat.closeOpenChats(userId, comment));
 			}
 
 			if (action === 'forward') {

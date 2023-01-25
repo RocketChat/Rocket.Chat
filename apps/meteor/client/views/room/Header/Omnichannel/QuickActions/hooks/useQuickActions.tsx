@@ -177,7 +177,7 @@ export const useQuickActions = (
 		[closeModal, dispatchToastMessage, forwardChat, rid, homeRoute, t],
 	);
 
-	const closeChat = useMethod('livechat:closeRoom');
+	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 	const savePreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const handleClose = useCallback(
@@ -187,10 +187,14 @@ export const useQuickActions = (
 			preferences?: { omnichannelTranscriptPDF?: boolean; omnichannelTranscriptEmail?: boolean },
 		) => {
 			try {
+				await closeChat({
+					rid,
+					...(comment && { comment }),
+					...(tags && { tags }),
+				});
 				if (preferences) {
 					await savePreferences({ data: preferences });
 				}
-				await closeChat(rid, comment, { clientAction: true, tags });
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {

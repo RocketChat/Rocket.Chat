@@ -1972,6 +1972,7 @@
   "error-role-name-required": "Role name is required",
   "error-room-does-not-exist": "This room does not exist",
   "error-role-already-present": "A role with this name already exists",
+  "error-room-already-closed": "Room is already closed",
   "error-room-is-not-closed": "Room is not closed",
   "error-room-onHold": "Error! Room is On Hold",
   "error-selected-agent-room-agent-are-same": "The selected agent and the room agent are the same",

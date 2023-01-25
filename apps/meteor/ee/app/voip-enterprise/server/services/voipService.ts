@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatVisitor, IRoomClosingInfo, IUser, IVoipRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IVoipRoomClosingInfo, IUser, IVoipRoom } from '@rocket.chat/core-typings';
 
 import type { IOmniRoomClosingMessage } from '../../../../../server/services/omnichannel-voip/internalTypes';
 import { OmnichannelVoipService } from '../../../../../server/services/omnichannel-voip/service';
@@ -14,12 +14,12 @@ overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
 			sysMessageId?: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 			options?: { comment?: string | null; tags?: string[] | null },
 		) => Promise<boolean>,
-		closeInfo: IRoomClosingInfo,
+		closeInfo: IVoipRoomClosingInfo,
 		closeSystemMsgData: IOmniRoomClosingMessage,
 		room: IVoipRoom,
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 		options?: { comment?: string; tags?: string[] },
-	): { closeInfo: IRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
+	): { closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
 		const { comment, tags } = options || {};
 		if (comment) {
 			closeSystemMsgData.msg = comment;

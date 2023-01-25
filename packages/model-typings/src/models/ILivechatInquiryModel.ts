@@ -1,4 +1,4 @@
-import type { FindOptions, DistinctOptions, Document, UpdateResult } from 'mongodb';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult } from 'mongodb';
 import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
@@ -15,4 +15,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findNextAndLock(department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
+	removeByRoomId(rid: string): Promise<DeleteResult>;
 }

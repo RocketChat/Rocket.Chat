@@ -15,6 +15,15 @@ Meteor.methods({
 		let count = 0;
 		// These are not debug logs since we want to know when the action is performed
 		Livechat.logger.info(`User ${Meteor.userId()} is removing all closed rooms`);
+
+		const rooms = LivechatRooms.findClosedRooms(departmentIds);
+		const promises = [];
+		rooms.forEach(({ _id }) => {
+			promises.push(Livechat.removeRoom(_id));
+			count++;
+		});
+		Promise.await(Promise.all(promises));
+
 		LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }) => {
 			Livechat.removeRoom(_id);
 			count++;

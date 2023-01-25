@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatRooms } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:discardTranscript'(rid) {
@@ -14,19 +14,21 @@ Meteor.methods({
 			});
 		}
 
-		const room = LivechatRooms.findOneById(rid);
+		const room = Promise.await(LivechatRooms.findOneById(rid));
 		if (!room || !room.open) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'livechat:requestTranscript',
+				method: 'livechat:discardTranscript',
 			});
 		}
 
 		if (!room.transcriptRequest) {
 			throw new Meteor.Error('error-transcript-not-requested', 'No transcript requested for this chat', {
-				method: 'livechat:requestTranscript',
+				method: 'livechat:discardTranscript',
 			});
 		}
 
-		return LivechatRooms.removeTranscriptRequestByRoomId(rid);
+		Promise.await(LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid));
+
+		return true;
 	},
 });

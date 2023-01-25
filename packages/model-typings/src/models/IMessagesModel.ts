@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { AggregationCursor, CountDocumentsOptions, FindCursor, FindOptions, AggregateOptions } from 'mongodb';
+import type { AggregationCursor, CountDocumentsOptions, FindCursor, FindOptions, AggregateOptions, DeleteResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -64,4 +64,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
 	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
+
+	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
 }
