@@ -1,7 +1,8 @@
 import type { FC } from 'react';
 import React from 'react';
 
-import AttachmentProvider from '../components/message/Attachments/providers/AttachmentProvider';
+import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
+import AttachmentProvider from './AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
@@ -25,11 +26,11 @@ const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
 		<ServerProvider>
 			<RouterProvider>
-				<TranslationProvider>
-					<SessionProvider>
-						<TooltipProvider>
-							<ToastMessagesProvider>
-								<SettingsProvider>
+				<SettingsProvider>
+					<TranslationProvider>
+						<SessionProvider>
+							<TooltipProvider>
+								<ToastMessagesProvider>
 									<LayoutProvider>
 										<AvatarUrlProvider>
 											<CustomSoundProvider>
@@ -37,13 +38,15 @@ const MeteorProvider: FC = ({ children }) => (
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
-																<VideoConfProvider>
-																	<CallProvider>
-																		<OmnichannelProvider>
-																			<AttachmentProvider>{children}</AttachmentProvider>
-																		</OmnichannelProvider>
-																	</CallProvider>
-																</VideoConfProvider>
+																<OmnichannelRoomIconProvider>
+																	<VideoConfProvider>
+																		<CallProvider>
+																			<OmnichannelProvider>
+																				<AttachmentProvider>{children}</AttachmentProvider>
+																			</OmnichannelProvider>
+																		</CallProvider>
+																	</VideoConfProvider>
+																</OmnichannelRoomIconProvider>
 															</AuthorizationProvider>
 														</ModalProvider>
 													</DeviceProvider>
@@ -51,11 +54,11 @@ const MeteorProvider: FC = ({ children }) => (
 											</CustomSoundProvider>
 										</AvatarUrlProvider>
 									</LayoutProvider>
-								</SettingsProvider>
-							</ToastMessagesProvider>
-						</TooltipProvider>
-					</SessionProvider>
-				</TranslationProvider>
+								</ToastMessagesProvider>
+							</TooltipProvider>
+						</SessionProvider>
+					</TranslationProvider>
+				</SettingsProvider>
 			</RouterProvider>
 		</ServerProvider>
 	</ConnectionStatusProvider>

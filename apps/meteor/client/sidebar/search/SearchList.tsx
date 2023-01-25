@@ -302,7 +302,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			`}
 			ref={ref}
 		>
-			<Sidebar.TopBar.Section {...({ role: 'search' } as any)} is='form'>
+			<Sidebar.TopBar.Section {...({ role: 'search', flexShrink: 0 } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
 					data-qa='sidebar-search-input'
