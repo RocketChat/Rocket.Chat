@@ -1,50 +1,51 @@
-import type { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
+import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
+import {
+	MessageGenericPreview,
+	MessageGenericPreviewContent,
+	MessageGenericPreviewIcon,
+	MessageGenericPreviewTitle,
+	MessageGenericPreviewDescription,
+} from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
+import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import MarkdownText from '../../../../MarkdownText';
+import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
-import Attachment from '../structure/Attachment';
-import AttachmentDescription from '../structure/AttachmentDescription';
-import AttachmentDownload from '../structure/AttachmentDownload';
-import AttachmentRow from '../structure/AttachmentRow';
 import AttachmentSize from '../structure/AttachmentSize';
-import AttachmentTitle from '../structure/AttachmentTitle';
-import AttachmentTitleLink from '../structure/AttachmentTitleLink';
 
-export type GenericFileAttachmentProps = {
-	file?: FileProp;
-} & MessageAttachmentBase;
-
-export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
+export const GenericFileAttachment: FC<MessageAttachmentBase> = ({
 	title,
-	// collapsed: collapsedDefault = false,
 	description,
+	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
-	file: {
-		size,
-		// format,
-		// name,
-	} = {},
-	md,
+	size,
+	format,
 }) => {
-	// const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
-	return (
-		<Attachment>
-			{description && (
-				<AttachmentDescription>
-					{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
-				</AttachmentDescription>
-			)}
-			<AttachmentRow>
-				{hasDownload && link ? <AttachmentTitleLink link={getURL(link)} title={title} /> : <AttachmentTitle>{title}</AttachmentTitle>}
-				{size && <AttachmentSize size={size} />}
 
-				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
-			</AttachmentRow>
-		</Attachment>
+	return (
+		<>
+			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={link}>
+				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
+					<MessageGenericPreviewContent
+						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
+					>
+						<MessageGenericPreviewTitle externalUrl={hasDownload && link ? getURL(link) : undefined} data-qa-type='attachment-title-link'>
+							{title}
+						</MessageGenericPreviewTitle>
+						{size && (
+							<MessageGenericPreviewDescription>
+								<AttachmentSize size={size} wrapper={false} />
+							</MessageGenericPreviewDescription>
+						)}
+					</MessageGenericPreviewContent>
+				</MessageGenericPreview>
+			</MessageCollapsible>
+		</>
 	);
 };
