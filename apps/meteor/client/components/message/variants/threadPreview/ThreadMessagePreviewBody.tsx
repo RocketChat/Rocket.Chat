@@ -5,8 +5,6 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { parseMessageTextToAstMarkdown } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-
 type ThreadMessagePreviewBodyProps = {
 	message: IMessage;
 };
@@ -15,18 +13,16 @@ const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): R
 	const t = useTranslation();
 	const isEncryptedMessage = isE2EEMessage(message);
 
-	const parsedMessage = parseMessageTextToAstMarkdown(message, { colors: true, emoticons: true });
-
 	const getMessage = () => {
 		if (!isEncryptedMessage || message.e2e === 'done') {
-			return parsedMessage.md ? <PreviewMarkup tokens={parsedMessage.md} /> : <>{parsedMessage.msg}</>;
+			return message.md ? <PreviewMarkup tokens={message.md} /> : <>{message.msg}</>;
 		}
 
 		if (isEncryptedMessage && message.e2e === 'pending') {
 			return <>{t('E2E_message_encrypted_placeholder')}</>;
 		}
 
-		return <>{parsedMessage.msg}</>;
+		return <>{message.msg}</>;
 	};
 
 	return getMessage();

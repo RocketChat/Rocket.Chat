@@ -4,7 +4,6 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { AudioAttachment } from './file/AudioAttachment';
-import type { GenericFileAttachmentProps } from './file/GenericFileAttachment';
 import { GenericFileAttachment } from './file/GenericFileAttachment';
 import { ImageAttachment } from './file/ImageAttachment';
 import { VideoAttachment } from './file/VideoAttachment';
@@ -19,9 +18,8 @@ export const FileAttachment: FC<FileAttachmentProps> = (attachment) => {
 	if (isFileVideoAttachment(attachment)) {
 		return <VideoAttachment {...attachment} />;
 	}
-	// if (isFilePDFAttachment(attachment)) { return <PDFAttachment {...attachment} />; }
 
-	return <GenericFileAttachment {...(attachment as GenericFileAttachmentProps)} />;
+	return <GenericFileAttachment {...attachment} />;
 };
 
 export { GenericFileAttachment, ImageAttachment, VideoAttachment };
