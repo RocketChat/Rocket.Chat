@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { lazy } from 'react';
@@ -10,7 +9,7 @@ const ResetPasswordPage = lazy(() =>
 );
 
 const PasswordChangeCheck = ({ children }: { children: ReactNode }): ReactElement => {
-	const requirePasswordChange = (useUser() as IUser | null)?.requirePasswordChange === true;
+	const requirePasswordChange = useUser()?.requirePasswordChange === true;
 
 	if (requirePasswordChange) {
 		return <ResetPasswordPage />;
