@@ -164,8 +164,7 @@ export interface IRegisterUser extends IUser {
 }
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
-export const isUserFederated = (user: Partial<IUser>): user is IUser =>
-	'federated' in user && user.federated === true && Boolean(user.username?.includes(':'));
+export const isUserFederated = (user: Partial<IUser>): user is IUser => 'federated' in user && user.federated === true;
 
 export type IUserDataEvent = {
 	id: unknown;
