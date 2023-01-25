@@ -27,6 +27,7 @@ import './v1/import';
 import './v1/ldap';
 import './v1/misc';
 import './v1/permissions';
+import './v1/presence';
 import './v1/push';
 import './v1/roles';
 import './v1/rooms.js';

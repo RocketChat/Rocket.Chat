@@ -1,15 +1,25 @@
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { ServiceClass } from '@rocket.chat/core-services';
+import { License, ServiceClass } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Users, UsersSessions } from '@rocket.chat/models';
+import { Settings, Users, UsersSessions } from '@rocket.chat/models';
 
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
+
+const MAX_CONNECTIONS = 200;
+
+const connsPerInstance = new Map<string, number>();
+
+function getTotalConnections(): number {
+	return Array.from(connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
+}
 
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
 	private broadcastEnabled = true;
+
+	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
 
@@ -19,13 +29,27 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async created(): Promise<void> {
-		this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
-			if (clientAction !== 'removed') {
+		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
+			if (clientAction === 'removed') {
+				connsPerInstance.delete(id);
+
+				const affectedUsers = await this.removeLostConnections(id);
+				affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 				return;
 			}
 
-			const affectedUsers = await this.removeLostConnections(id);
-			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
+			// check total connections if there is no license
+			if (!this.hasLicense && diff?.hasOwnProperty('extraInformation.conns')) {
+				connsPerInstance.set(id, diff['extraInformation.conns']);
+
+				this.validateAvailability();
+			}
+		});
+
+		this.onEvent('license.module', ({ module, valid }) => {
+			if (module === 'scalability') {
+				this.hasLicense = valid;
+			}
 		});
 	}
 
@@ -34,6 +58,14 @@ export class Presence extends ServiceClass implements IPresence {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 		}, 10000);
+
+		try {
+			this.hasLicense = await License.hasLicense('scalability');
+
+			await Settings.updateValueById('Presence_broadcast_disabled', false);
+		} catch (e: unknown) {
+			// ignore
+		}
 	}
 
 	async stopped(): Promise<void> {
@@ -44,7 +76,22 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	toggleBroadcast(enabled: boolean): void {
+		if (!this.hasLicense && getTotalConnections() > MAX_CONNECTIONS) {
+			throw new Error('Cannot enable broadcast when there are more than 200 connections');
+		}
 		this.broadcastEnabled = enabled;
+
+		// update the setting only to turn it on, because it may have been disabled via the troubleshooting setting, which doesn't affect the setting
+		if (enabled) {
+			Settings.updateValueById('Presence_broadcast_disabled', false);
+		}
+	}
+
+	getConnectionCount(): { current: number; max: number } {
+		return {
+			current: getTotalConnections(),
+			max: MAX_CONNECTIONS,
+		};
 	}
 
 	async newConnection(
@@ -184,5 +231,17 @@ export class Presence extends ServiceClass implements IPresence {
 			user,
 			previousStatus,
 		});
+	}
+
+	private async validateAvailability(): Promise<void> {
+		if (this.hasLicense) {
+			return;
+		}
+
+		if (getTotalConnections() > MAX_CONNECTIONS) {
+			this.broadcastEnabled = false;
+
+			await Settings.updateValueById('Presence_broadcast_disabled', true);
+		}
 	}
 }

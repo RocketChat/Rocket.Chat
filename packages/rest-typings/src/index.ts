@@ -25,6 +25,7 @@ import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
+import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
@@ -72,6 +73,7 @@ export interface Endpoints
 		LicensesEndpoints,
 		MiscEndpoints,
 		PermissionsEndpoints,
+		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
 		VoipEndpoints,
@@ -199,6 +201,7 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './v1/permissions';
+export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
