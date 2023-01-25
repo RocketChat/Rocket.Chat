@@ -124,6 +124,14 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		}
 
 		const { externalRoomId, internalUserId, normalizedRoomId, externalRoomHomeServerName } = joinExternalPublicRoomInputDto;
+		const room = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		if (room) {
+			const alreadyJoined = await this.internalRoomAdapter.isUserAlreadyJoined(room.getInternalId(), internalUserId);
+			if (alreadyJoined) {
+				throw new Error('already-joined');
+			}
+		}
+
 		const user = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
 		if (!user) {
 			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalUserId);
@@ -153,7 +161,6 @@ export class FederationRoomApplicationServiceEE extends FederationServiceEE {
 		if (!federatedCreatorUser) {
 			return;
 		}
-		const room = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		let internalRoomId;
 		if (!room) {
 			const newFederatedRoom = FederatedRoomEE.createInstance(

@@ -44,6 +44,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		createFederatedRoom: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		getFederatedRoomByInternalId: sinon.stub(),
+		isUserAlreadyJoined: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -92,6 +93,7 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		roomAdapter.createFederatedRoom.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.getFederatedRoomByInternalId.reset();
+		roomAdapter.isUserAlreadyJoined.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -252,6 +254,13 @@ describe('FederationEE - Application - FederationRoomApplicationServiceEE', () =
 		it('should throw an error if the federation is disabled', async () => {
 			settingsAdapter.isFederationEnabled.returns(false);
 			await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('Federation is disabled');
+		});
+
+		it('should throw an error if the user already joined the room', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			roomAdapter.isUserAlreadyJoined.resolves(true);
+			await expect(service.joinExternalPublicRoom({} as any)).to.be.rejectedWith('already-joined');
 		});
 
 		it('should NOT create an external user if it already exists', async () => {
