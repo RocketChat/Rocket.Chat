@@ -29,6 +29,7 @@ import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
+import type { CloseRoomParams } from '../../lib/LivechatTyped.d';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -121,22 +122,6 @@ API.v1.addRoute(
 	},
 );
 
-type LivechatCloseRoomMethodOptions = {
-	clientAction?: boolean;
-	tags?: string[];
-	emailTranscript?:
-		| {
-				sendToVisitor: false;
-		  }
-		| {
-				sendToVisitor: true;
-				requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-		  };
-	pdfTranscript?: {
-		requestedBy: string;
-	};
-};
-
 API.v1.addRoute(
 	'livechat/room.closeByUser',
 	{
@@ -162,7 +147,7 @@ API.v1.addRoute(
 				throw new Error('error-not-authorized');
 			}
 
-			const options: LivechatCloseRoomMethodOptions = {
+			const options: CloseRoomParams['options'] = {
 				clientAction: true,
 				tags,
 				...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),

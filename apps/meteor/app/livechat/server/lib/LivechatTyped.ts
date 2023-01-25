@@ -27,12 +27,14 @@ class LivechatClass {
 		const { comment } = params;
 		let { room } = params;
 
-		Livechat.logger.debug(`Attempting to close room ${room._id}`);
-		if (!room || isOmnichannelRoom(room) || !room.open) {
+		this.logger.debug(`Attempting to close room ${room._id}`);
+		if (!room || !isOmnichannelRoom(room) || !room.open) {
+			this.logger.debug(`Room ${room._id} is not open`);
 			return;
 		}
 
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
+		this.logger.debug(`Resolved chat tags for room ${room._id}`, { updatedOptions: options });
 
 		const now = new Date();
 		const { _id: rid, servedBy, transcriptRequest } = room;
@@ -44,7 +46,7 @@ class LivechatClass {
 			...(serviceTimeDuration && { serviceTimeDuration }),
 			...options,
 		};
-		Livechat.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
+		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
 
 		const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
 			(params as CloseRoomParamsByUser).user !== undefined;
@@ -54,7 +56,7 @@ class LivechatClass {
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
-			Livechat.logger.debug(`Closing by user ${user._id}`);
+			this.logger.debug(`Closing by user ${user._id}`);
 			closeData.closer = 'user';
 			closeData.closedBy = {
 				_id: user._id,
@@ -63,7 +65,7 @@ class LivechatClass {
 			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
 			const { visitor } = params;
-			Livechat.logger.debug(`Closing by visitor ${params.visitor._id}`);
+			this.logger.debug(`Closing by visitor ${params.visitor._id}`);
 			closeData.closer = 'visitor';
 			closeData.closedBy = {
 				_id: visitor._id,
@@ -74,11 +76,15 @@ class LivechatClass {
 			throw new Error('Error: Please provide details of the user or visitor who closed the room');
 		}
 
+		this.logger.debug(`Updating DB for room ${room._id} with close data`, closeData);
+
 		await Promise.all([
 			LivechatRooms.closeRoomById(rid, closeData),
 			LivechatInquiry.removeByRoomId(rid),
 			Subscriptions.removeByRoomId(rid),
 		]);
+
+		this.logger.debug(`DB updated for room ${room._id}`);
 
 		const message = {
 			t: 'livechat-close',
@@ -90,10 +96,12 @@ class LivechatClass {
 		// Retrieve the closed room
 		room = (await LivechatRooms.findOneById(rid)) as IOmnichannelRoom;
 
-		Livechat.logger.debug(`Sending closing message to room ${room._id}`);
+		this.logger.debug(`Sending closing message to room ${room._id}`);
 		sendMessage(chatCloser, message, room);
 
 		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
+
+		this.logger.debug(`Running callbacks for room ${room._id}`);
 
 		Meteor.defer(() => {
 			/**
@@ -107,12 +115,16 @@ class LivechatClass {
 			room,
 			options,
 		});
+
+		this.logger.debug(`Room ${room._id} was closed`);
 	}
 
 	private async resolveChatTags(
 		room: IOmnichannelRoom,
 		options: CloseRoomParams['options'] = {},
 	): Promise<{ updatedOptions: CloseRoomParams['options'] }> {
+		this.logger.debug(`Resolving chat tags for room ${room._id}`, { options });
+
 		const concatUnique = (...arrays: (string[] | undefined)[]): string[] => [
 			...new Set(([] as string[]).concat(...arrays.filter((a): a is string[] => !!a))),
 		];
