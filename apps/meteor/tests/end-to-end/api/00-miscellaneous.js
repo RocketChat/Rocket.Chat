@@ -152,7 +152,7 @@ describe('miscellaneous', function () {
 					'unreadAlert',
 					'notificationsSoundVolume',
 					'omnichannelTranscriptEmail',
-					IS_EE ?? 'omnichannelTranscriptPDF',
+					IS_EE ? 'omnichannelTranscriptPDF' : false,
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',

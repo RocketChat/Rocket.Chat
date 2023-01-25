@@ -6,6 +6,7 @@ import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { dispatchToastMessage } from '../../../lib/toast';
 import GenericModal from '../../GenericModal';
 import MarkdownText from '../../MarkdownText';
 import Tags from '../Tags';
@@ -22,7 +23,7 @@ const CloseChatModal = ({
 	onConfirm: (
 		comment?: string,
 		tags?: string[],
-		preferences?: { data: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean }; hasChanges: boolean },
+		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 		requestData?: { email: string; subject: string },
 	) => Promise<void>;
 }): ReactElement => {
@@ -44,7 +45,6 @@ const CloseChatModal = ({
 	const tags = watch('tags');
 	const comment = watch('comment');
 	const transcriptEmail = watch('transcriptEmail');
-	const contactEmail = watch('contactEmail');
 	const subject = watch('subject');
 
 	const userTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
@@ -60,22 +60,15 @@ const CloseChatModal = ({
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, contactEmail, subject }): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail, subject }): void => {
 			const preferences = {
-				data: {
-					omnichannelTranscriptPDF: !!transcriptPDF,
-					omnichannelTranscriptEmail: !!transcriptEmail,
-				},
-				hasChanges: transcriptPDF !== userTranscriptPDF || transcriptEmail !== userTranscriptEmail,
+				omnichannelTranscriptPDF: !!transcriptPDF,
+				omnichannelTranscriptEmail: !!transcriptEmail,
 			};
-			const requestData = transcriptEmail ? { email: contactEmail, subject } : undefined;
+			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
 			if (!comment && commentRequired) {
 				setError('comment', { type: 'custom', message: t('The_field_is_required', t('Comment')) });
-			}
-
-			if (transcriptEmail && !contactEmail) {
-				setError('contactEmail', { type: 'custom', message: t('The_field_is_required', t('Contact_email')) });
 			}
 
 			if (transcriptEmail && !subject) {
@@ -90,16 +83,16 @@ const CloseChatModal = ({
 				onConfirm(comment, tags, preferences, requestData);
 			}
 		},
-		[commentRequired, userTranscriptEmail, userTranscriptPDF, tagRequired, errors, setError, t, onConfirm],
+		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm],
 	);
 
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
 		const cannotSendComment = (commentRequired && !comment) || errors.comment;
-		const cannotSendTranscriptEmail = transcriptEmail && (!contactEmail || !subject);
+		const cannotSendTranscriptEmail = transcriptEmail && (!visitorEmail || !subject);
 
 		return Boolean(cannotSendTag || cannotSendComment || cannotSendTranscriptEmail);
-	}, [comment, commentRequired, errors, tagRequired, tags, transcriptEmail, contactEmail, subject]);
+	}, [comment, commentRequired, errors, tagRequired, tags, transcriptEmail, visitorEmail, subject]);
 
 	useEffect(() => {
 		if (department?.requestTagBeforeClosingChat) {
@@ -121,10 +114,13 @@ const CloseChatModal = ({
 
 	useEffect(() => {
 		if (transcriptEmail) {
-			setValue('contactEmail', contactEmail || visitorEmail);
+			if (!visitorEmail) {
+				dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
+				return;
+			}
 			setValue('subject', subject || t('Transcript_of_your_livechat_conversation'));
 		}
-	}, [transcriptEmail, setValue, visitorEmail, contactEmail, subject, t]);
+	}, [transcriptEmail, setValue, visitorEmail, subject, t]);
 
 	return commentRequired || tagRequired || canSendTranscript ? (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
@@ -175,18 +171,18 @@ const CloseChatModal = ({
 								<Field.Row>
 									<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
 									<Field.Label htmlFor='transcript-pdf' color='default' fontScale='c1'>
-										{t('Export_chat_transcript_as_PDF')}
+										{t('Omnichannel_transcript_pdf')}
 									</Field.Label>
 								</Field.Row>
 							</Field>
 						)}
-						{canSendTranscriptEmail && (
+						{canSendTranscriptEmail && visitorEmail && (
 							<>
 								<Field marginBlockStart='x6'>
 									<Field.Row>
 										<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
 										<Field.Label htmlFor='transcript-email' color='default' fontScale='c1'>
-											{t('Send_chat_transcript_via_email')}
+											{t('Omnichannel_transcript_email')}
 										</Field.Label>
 									</Field.Row>
 								</Field>
@@ -195,21 +191,10 @@ const CloseChatModal = ({
 										<Field marginBlockStart='x14'>
 											<Field.Label required>{t('Contact_email')}</Field.Label>
 											<Field.Row>
-												<EmailInput
-													{...register('contactEmail', { required: true })}
-													className='active'
-													error={
-														errors.contactEmail &&
-														t('error-the-field-is-required', {
-															field: t('Contact_email'),
-														})
-													}
-													flexGrow={1}
-												/>
+												<EmailInput value={visitorEmail} className='active' required disabled flexGrow={1} />
 											</Field.Row>
-											<Field.Error>{errors.contactEmail?.message}</Field.Error>
 										</Field>
-										<Field marginBlockStart='x10'>
+										<Field marginBlockStart='x12'>
 											<Field.Label required>{t('Subject')}</Field.Label>
 											<Field.Row>
 												<TextInput

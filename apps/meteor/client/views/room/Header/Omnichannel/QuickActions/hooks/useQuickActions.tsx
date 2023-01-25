@@ -178,32 +178,28 @@ export const useQuickActions = (
 	);
 
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
-	const savePreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const handleClose = useCallback(
 		async (
 			comment?: string,
 			tags?: string[],
-			preferences?: { data: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean }; hasChanges: boolean },
+			preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 			requestData?: { email: string; subject: string },
 		) => {
 			try {
-				const generateTranscriptPdf = preferences?.data.omnichannelTranscriptPDF || undefined;
-				if (preferences?.hasChanges) {
-					await savePreferences({ data: preferences.data });
-				}
-
 				await closeChat({
 					rid,
 					...(comment && { comment }),
 					...(tags && { tags }),
-					...(generateTranscriptPdf && { generateTranscriptPdf }),
-					...(preferences?.data.omnichannelTranscriptEmail && {
-						emailTranscript: {
-							sendToVisitor: preferences?.data.omnichannelTranscriptEmail || false,
-							requestData,
-						},
-					}),
+					...(preferences?.omnichannelTranscriptPDF && { generateTranscriptPdf: true }),
+					...(preferences?.omnichannelTranscriptEmail && requestData
+						? {
+								transcriptEmail: {
+									sendToVisitor: preferences?.omnichannelTranscriptEmail,
+									requestData,
+								},
+						  }
+						: { transcriptEmail: { sendToVisitor: false } }),
 				});
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
@@ -211,7 +207,7 @@ export const useQuickActions = (
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, savePreferences, dispatchToastMessage, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, t],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({

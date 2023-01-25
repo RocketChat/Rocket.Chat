@@ -559,7 +559,7 @@ settingsRegistry.addGroup('Accounts', function () {
 		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Transcript_Email',
+			i18nLabel: 'Omnichannel_transcript_email',
 		});
 	});
 

@@ -210,7 +210,7 @@ export const createSettings = async (): Promise<void> => {
 	settingsRegistry.add('Accounts_Default_User_Preferences_omnichannelTranscriptPDF', false, {
 		type: 'boolean',
 		public: true,
-		i18nLabel: 'Transcript_PDF',
+		i18nLabel: 'Omnichannel_transcript_pdf',
 	});
 
 	await Settings.addOptionValueById('Livechat_Routing_Method', {

@@ -19,7 +19,7 @@ const CloseChatModalData = ({
 	onConfirm: (
 		comment?: string,
 		tags?: string[],
-		preferences?: { data: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean }; hasChanges: boolean },
+		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 	) => Promise<void>;
 }): ReactElement => {
 	const { value: data, phase: state } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: departmentId } });
