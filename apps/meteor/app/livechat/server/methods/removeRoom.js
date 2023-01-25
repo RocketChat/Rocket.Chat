@@ -30,6 +30,6 @@ Meteor.methods({
 			});
 		}
 
-		return Livechat.removeRoom(rid);
+		Promise.await(Livechat.removeRoom(rid));
 	},
 });

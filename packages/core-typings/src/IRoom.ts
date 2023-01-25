@@ -169,9 +169,11 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags?: any;
+	tags?: string[];
 	closedAt?: Date;
-	metrics?: any;
+	metrics?: {
+		serviceTimeDuration?: number;
+	};
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
@@ -209,6 +211,11 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
 	pdfFileId?: string;
+
+	metrics?: {
+		serviceTimeDuration?: number;
+		chatDuration?: number;
+	};
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -241,10 +248,15 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
-export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
+export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
 	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & {
 		serviceTimeDuration?: number;
 	};
+
+export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
+	serviceTimeDuration?: number;
+	chatDuration: number;
+};
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
 

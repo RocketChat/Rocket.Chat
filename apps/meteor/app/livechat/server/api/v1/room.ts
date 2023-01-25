@@ -21,6 +21,7 @@ import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoom, hasPermission } from '../../../../authorization/server';
@@ -113,10 +114,7 @@ API.v1.addRoute(
 			const language = rcSettings.get<string>('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
-			// @ts-expect-error -- typings on closeRoom are wrong
-			if (!Livechat.closeRoom({ visitor, room, comment })) {
-				return API.v1.failure();
-			}
+			await LivechatTyped.closeRoom({ visitor, room, comment });
 
 			return API.v1.success({ rid, comment });
 		},
@@ -159,7 +157,7 @@ API.v1.addRoute(
 				throw new Error('error-room-already-closed');
 			}
 
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
 			if (!subscription && !hasPermission(this.userId, 'close-others-livechat-room')) {
 				throw new Error('error-not-authorized');
 			}
@@ -189,12 +187,11 @@ API.v1.addRoute(
 				}),
 			};
 
-			Livechat.closeRoom({
+			await LivechatTyped.closeRoom({
 				room,
 				user: this.user,
 				options,
 				comment,
-				visitor: undefined,
 			});
 
 			return API.v1.success();

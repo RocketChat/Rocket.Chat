@@ -1,9 +1,10 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import { Users, LivechatRooms, Subscriptions as SubscriptionRaw } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { Subscriptions, LivechatRooms } from '../../../models/server';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 type CloseRoomOptions = {
 	clientAction?: boolean;
@@ -35,6 +36,10 @@ type LivechatCloseRoomOptions = Omit<CloseRoomOptions, 'generateTranscriptPdf'> 
 
 Meteor.methods({
 	'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
+		methodDeprecationLogger.warn(
+			'livechat:closeRoom is deprecated and will be removed in next major version. Use /api/v1/livechat/room.closeByUser API instead.',
+		);
+
 		const userId = Meteor.userId();
 		if (!userId || !hasPermission(userId, 'close-livechat-room')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
@@ -42,7 +47,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = LivechatRooms.findOneById(roomId);
+		const room = Promise.await(LivechatRooms.findOneById(roomId));
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:closeRoom',
@@ -53,27 +58,34 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:closeRoom' });
 		}
 
-		const user = Meteor.user();
+		const user = Promise.await(Users.findOneById(userId));
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:closeRoom',
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
+		const subscription = Promise.await(
+			SubscriptionRaw.findOneByRoomIdAndUserId(roomId, user._id, {
+				projection: {
+					_id: 1,
+				},
+			}),
+		);
 		if (!subscription && !hasPermission(userId, 'close-others-livechat-room')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:closeRoom',
 			});
 		}
 
-		return Livechat.closeRoom({
-			user,
-			room,
-			comment,
-			options: resolveOptions(user, options),
-			visitor: undefined,
-		});
+		Promise.await(
+			Livechat.closeRoom({
+				user,
+				room,
+				comment,
+				options: resolveOptions(user, options),
+			}),
+		);
 	},
 });
 

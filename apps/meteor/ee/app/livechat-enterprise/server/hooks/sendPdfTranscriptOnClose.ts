@@ -1,26 +1,13 @@
-import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelTranscript } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped.d';
 
 type SendPdfTranscriptOnCloseParams = {
 	room: IRoom;
-	options: {
-		clientAction?: boolean;
-		tags: string[];
-		emailTranscript?:
-			| {
-					sendToVisitor: false;
-			  }
-			| {
-					sendToVisitor: true;
-					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-			  };
-		pdfTranscript?: {
-			requestedBy: string;
-		};
-	};
+	options: CloseRoomParams['options'];
 };
 
 const sendPdfTranscriptOnClose = async (params: SendPdfTranscriptOnCloseParams): Promise<SendPdfTranscriptOnCloseParams> => {
@@ -30,7 +17,7 @@ const sendPdfTranscriptOnClose = async (params: SendPdfTranscriptOnCloseParams):
 		return params;
 	}
 
-	const { pdfTranscript } = options;
+	const { pdfTranscript } = options || {};
 	if (!pdfTranscript) {
 		return params;
 	}

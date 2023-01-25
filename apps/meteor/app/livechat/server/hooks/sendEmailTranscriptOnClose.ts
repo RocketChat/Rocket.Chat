@@ -4,24 +4,11 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
+import type { CloseRoomParams } from '../lib/LivechatTyped.d';
 
 type SendEmailTranscriptOnCloseParams = {
 	room: IRoom;
-	options: {
-		clientAction?: boolean;
-		tags: string[];
-		emailTranscript?:
-			| {
-					sendToVisitor: false;
-			  }
-			| {
-					sendToVisitor: true;
-					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-			  };
-		pdfTranscript?: {
-			requestedBy: string;
-		};
-	};
+	options: CloseRoomParams['options'];
 };
 
 const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnCloseParams): Promise<SendEmailTranscriptOnCloseParams> => {
@@ -58,7 +45,7 @@ const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnClosePara
 
 const resolveTranscriptData = (
 	room: IOmnichannelRoom,
-	options: SendEmailTranscriptOnCloseParams['options'],
+	options: SendEmailTranscriptOnCloseParams['options'] = {},
 ): IOmnichannelRoom['transcriptRequest'] | undefined => {
 	const { transcriptRequest: roomTranscriptRequest } = room;
 

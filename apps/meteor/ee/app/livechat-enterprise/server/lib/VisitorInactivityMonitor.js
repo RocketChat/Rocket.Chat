@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
 
@@ -72,7 +72,7 @@ export class VisitorInactivityMonitor {
 		if (room.departmentId) {
 			comment = (await this._getDepartmentAbandonedCustomMessage(room.departmentId)) || comment;
 		}
-		Livechat.closeRoom({
+		await Livechat.closeRoom({
 			comment,
 			room,
 			user: this.user,

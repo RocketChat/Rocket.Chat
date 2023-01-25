@@ -1,5 +1,5 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult } from 'mongodb';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, DeleteResult } from 'mongodb';
 import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 
@@ -90,5 +90,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
 			{ $unset: { locked: 1, lockedAt: 1 } },
 		);
+	}
+
+	async removeByRoomId(rid: string): Promise<DeleteResult> {
+		return this.deleteOne({ rid });
 	}
 }

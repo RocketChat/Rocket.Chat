@@ -4,11 +4,12 @@ import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms as LivechatRoomsRaw, LivechatInquiry as LivechatInquiryRaw } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { Logger } from '../../../../../app/logger/server';
-import { LivechatRooms, Users, LivechatInquiry } from '../../../../../app/models/server';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
+import { Users } from '../../../../../app/models/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
@@ -92,29 +93,33 @@ export class OmnichannelQueueInactivityMonitorClass {
 		await this.scheduler.cancel({ name });
 	}
 
-	closeRoomAction(room: IOmnichannelRoom): void {
+	closeRoomAction(room: IOmnichannelRoom): Promise<void> {
 		const comment = this.message;
-		Livechat.closeRoom({
+		return Livechat.closeRoom({
 			comment,
 			room,
 			user: this.user,
-			visitor: null,
 		});
 	}
 
 	closeRoom({ attrs: { data } }: any = {}): void {
 		const { inquiryId } = data;
-		const inquiry = LivechatInquiry.findOneById(inquiryId);
-
+		const inquiry = Promise.await(LivechatInquiryRaw.findOneById(inquiryId));
 		this.logger.debug(`Processing inquiry item ${inquiryId}`);
 		if (!inquiry || inquiry.status !== 'queued') {
 			this.logger.debug(`Skipping inquiry ${inquiryId}. Invalid or not queued anymore`);
 			return;
 		}
 
-		this.closeRoomAction(LivechatRooms.findOneById(inquiry.rid));
-		Promise.await(this.stopInquiry(inquiryId));
-		this.logger.debug(`Running succesful. Closed inquiry ${inquiry._id} because of inactivity`);
+		const room = Promise.await(LivechatRoomsRaw.findOneById(inquiry.rid));
+		if (!room) {
+			this.logger.error(`Error: unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
+			return;
+		}
+
+		Promise.await(Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]));
+
+		this.logger.debug(`Running successful. Closed inquiry ${inquiry._id} because of inactivity`);
 	}
 }
 
