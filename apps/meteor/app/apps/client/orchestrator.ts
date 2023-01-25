@@ -7,7 +7,7 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import type { AppScreenshot, Serialized } from '@rocket.chat/core-typings';
+import type { AppScreenshot, AppRequestFilter, Pagination, IRestResponse, Serialized, AppRequest } from '@rocket.chat/core-typings';
 
 import type { App } from '../../../client/views/marketplace/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
@@ -88,8 +88,8 @@ class AppClientOrchestrator {
 		return this.deferredIsEnabled;
 	}
 
-	public async getApps(): Promise<App[]> {
-		const result = await APIClient.get<'/apps'>('/apps');
+	public async getInstalledApps(): Promise<App[]> {
+		const result = await APIClient.get<'/apps/installed'>('/apps/installed');
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -99,7 +99,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsFromMarketplace(): Promise<App[]> {
-		const result = await APIClient.get('/apps', { marketplace: 'true' });
+		const result = await APIClient.get('/apps/marketplace');
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -206,8 +206,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
-		const result = await APIClient.get('/apps', {
-			buildExternalUrl: 'true',
+		const result = await APIClient.get('/apps/buildExternalUrl', {
 			appId,
 			purchaseType,
 			details: `${details}`,
@@ -218,6 +217,17 @@ class AppClientOrchestrator {
 		}
 
 		throw new Error('Failed to build external url');
+	}
+
+	public async buildExternalAppRequest(appId: string) {
+		const result = await APIClient.get('/apps/buildExternalAppRequest', {
+			appId,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+		throw new Error('Failed to build App Request external url');
 	}
 
 	public async buildIncompatibleExternalUrl(appId: string, appVersion: string, action: string): Promise<IAppExternalURL> {
@@ -234,8 +244,30 @@ class AppClientOrchestrator {
 		throw new Error('Failed to build external url');
 	}
 
+	public async appRequests(
+		appId: string,
+		filter: AppRequestFilter,
+		sort: string,
+		pagination: Pagination,
+	): Promise<IRestResponse<AppRequest>> {
+		try {
+			const response: IRestResponse<AppRequest> = await APIClient.get(
+				`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${pagination.limit}&offset=${pagination.offset}`,
+			);
+
+			const restResponse = {
+				data: response.data,
+				meta: response.meta,
+			};
+
+			return restResponse;
+		} catch (e: unknown) {
+			throw new Error('Could not get the list of app requests');
+		}
+	}
+
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
-		const result = await APIClient.get('/apps', { categories: 'true' });
+		const result = await APIClient.get('/apps/categories');
 
 		if (Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one

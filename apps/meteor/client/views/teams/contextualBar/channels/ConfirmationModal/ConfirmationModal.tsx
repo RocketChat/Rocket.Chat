@@ -21,7 +21,7 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmActio
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Icon name='modal-warning' color='warning-700'></Modal.Icon>
+				<Modal.Icon name='modal-warning' color='on-warning'></Modal.Icon>
 				<Modal.Title>{t('Confirmation')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>

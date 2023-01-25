@@ -7,7 +7,7 @@ import { Utilities } from '../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../app/utils/client';
 import { dispatchToastMessage } from '../../lib/toast';
 
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED, AppStatus.INITIALIZED];
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface ApiError {
@@ -28,17 +28,17 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
-type Actions = 'update' | 'install' | 'purchase';
+type Actions = 'update' | 'install' | 'purchase' | 'request';
 
 type appButtonResponseProps = {
 	action: Actions;
 	icon?: 'reload' | 'warning';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request';
 };
 
 type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
-	icon: 'warning' | 'ban' | 'checkmark-circled' | 'check';
+	icon?: 'warning' | 'ban' | 'checkmark-circled' | 'check';
 	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
 	tooltipText?: string;
 };
@@ -162,7 +162,15 @@ export const appButtonProps = ({
 	pricingPlans,
 	isEnterpriseOnly,
 	versionIncompatible,
-}: App): appButtonResponseProps | undefined => {
+	isAdminUser,
+}: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
+	if (!isAdminUser) {
+		return {
+			action: 'request',
+			label: 'Request',
+		};
+	}
+
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		if (versionIncompatible) {
@@ -286,7 +294,6 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	if (!isEnabled) {
 		return {
 			type: 'warning',
-			icon: 'ban',
 			label: 'Disabled',
 		};
 	}
