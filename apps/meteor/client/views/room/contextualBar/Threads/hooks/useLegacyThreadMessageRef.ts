@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import type { RefCallback } from 'react';
 import { useEffect, useMemo, useState, useContext, useCallback, useRef } from 'react';
 
-import { MessageContext } from '../../../../../components/message/MessageContext';
 import type { BlazePortalsSubscription } from '../../../../../lib/portals/blazePortals';
 import MessageHighlightContext from '../../../MessageList/contexts/MessageHighlightContext';
 import { useRoomMessageContext } from '../../../components/body/useRoomMessageContext';
@@ -12,7 +11,6 @@ import { ChatContext } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubscription) => {
-	const messageContext = useContext(MessageContext);
 	const chatContext = useContext(ChatContext);
 	const messageHighlightContext = useContext(MessageHighlightContext);
 	const room = useRoom();
@@ -34,7 +32,6 @@ export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubsc
 			new ReactiveVar({
 				...threadMessageContext,
 				'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
-				messageContext,
 				chatContext,
 			}),
 	);
@@ -42,10 +39,9 @@ export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubsc
 		reactiveThreadMessageContext.set({
 			...threadMessageContext,
 			'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
-			messageContext,
 			chatContext,
 		});
-	}, [chatContext, messageContext, messageHighlightContext.highlightMessageId, reactiveThreadMessageContext, threadMessageContext]);
+	}, [chatContext, messageHighlightContext.highlightMessageId, reactiveThreadMessageContext, threadMessageContext]);
 
 	const cache = useRef<Map<IMessage['_id'], { callback: RefCallback<HTMLLIElement>; reactiveMessage: ReactiveVar<IMessage> }>>(new Map());
 
@@ -78,7 +74,6 @@ export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubsc
 								settings: reactiveThreadMessageContext.get().settings,
 								u: reactiveThreadMessageContext.get().u,
 								chatContext: reactiveThreadMessageContext.get().chatContext,
-								messageContext: reactiveThreadMessageContext.get().messageContext,
 								hideRoles: true,
 								shouldCollapseReplies: true,
 								templatePrefix: 'thread-',

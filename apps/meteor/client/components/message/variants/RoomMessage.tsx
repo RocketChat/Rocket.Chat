@@ -4,6 +4,7 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { useUserCard } from '../../../hooks/useUserCard';
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
@@ -14,7 +15,6 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
-import { useMessageContext } from '../MessageContext';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
 import ToolboxHolder from '../ToolboxHolder';
@@ -32,9 +32,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored ?? false);
-	const {
-		actions: { openUserCard },
-	} = useMessageContext();
+	const { open: openUserCard } = useUserCard();
 
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);

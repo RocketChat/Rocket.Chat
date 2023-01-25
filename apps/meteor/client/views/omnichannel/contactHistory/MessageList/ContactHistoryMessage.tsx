@@ -23,11 +23,11 @@ import React, { memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
-import { useMessageContext } from '../../../../components/message/MessageContext';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { useUserCard } from '../../../../hooks/useUserCard';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 
 const ContactHistoryMessage: FC<{
@@ -39,9 +39,7 @@ const ContactHistoryMessage: FC<{
 	const formatTime = useFormatTime();
 
 	const t = useTranslation();
-	const {
-		actions: { openUserCard },
-	} = useMessageContext();
+	const { open: openUserCard } = useUserCard();
 
 	if (message.t === 'livechat-close') {
 		return (

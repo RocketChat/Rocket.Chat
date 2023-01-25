@@ -9,10 +9,10 @@ import type { ReactElement, UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../app/emoji/client';
+import { useUserCard } from '../../hooks/useUserCard';
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
-import { useMessageContext } from './MessageContext';
 import { useMessageListHighlights } from './list/MessageListContext';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
@@ -58,9 +58,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 		[mentions],
 	);
 
-	const {
-		actions: { openUserCard },
-	} = useMessageContext();
+	const { open: openUserCard } = useUserCard();
 
 	const goToRoom = useGoToRoom();
 

@@ -4,7 +4,6 @@ import { Template } from 'meteor/templating';
 import type { RefCallback } from 'react';
 import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 
-import { MessageContext } from '../../../../components/message/MessageContext';
 import type { BlazePortalsSubscription } from '../../../../lib/portals/blazePortals';
 import MessageHighlightContext from '../../MessageList/contexts/MessageHighlightContext';
 import { ChatContext } from '../../contexts/ChatContext';
@@ -12,7 +11,6 @@ import { useRoom } from '../../contexts/RoomContext';
 import { useRoomMessageContext } from './useRoomMessageContext';
 
 export const useLegacyMessageRef = (portalsSubscription: BlazePortalsSubscription) => {
-	const messageContext = useContext(MessageContext);
 	const chatContext = useContext(ChatContext);
 	const messageHighlightContext = useContext(MessageHighlightContext);
 	const room = useRoom();
@@ -23,7 +21,6 @@ export const useLegacyMessageRef = (portalsSubscription: BlazePortalsSubscriptio
 			new ReactiveVar({
 				...roomMessageContext,
 				'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
-				messageContext,
 				chatContext,
 			}),
 	);
@@ -31,10 +28,9 @@ export const useLegacyMessageRef = (portalsSubscription: BlazePortalsSubscriptio
 		reactiveMessageContext.set({
 			...roomMessageContext,
 			'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
-			messageContext,
 			chatContext,
 		});
-	}, [chatContext, messageContext, messageHighlightContext.highlightMessageId, reactiveMessageContext, roomMessageContext]);
+	}, [chatContext, messageHighlightContext.highlightMessageId, reactiveMessageContext, roomMessageContext]);
 
 	const cache = useRef<Map<IMessage['_id'], { callback: RefCallback<HTMLLIElement>; reactiveMessage: ReactiveVar<IMessage> }>>(new Map());
 
@@ -68,7 +64,6 @@ export const useLegacyMessageRef = (portalsSubscription: BlazePortalsSubscriptio
 								settings: reactiveMessageContext.get().settings,
 								u: reactiveMessageContext.get().u,
 								chatContext: reactiveMessageContext.get().chatContext,
-								messageContext: reactiveMessageContext.get().messageContext,
 								portalsSubscription: () => portalsSubscription,
 							};
 						},

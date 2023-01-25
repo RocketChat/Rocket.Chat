@@ -15,7 +15,6 @@ import VerticalBarInnerContent from '../../../../components/VerticalBar/Vertical
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
-import MessageProvider from '../../providers/MessageProvider';
 import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
@@ -121,9 +120,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (
 							<ChatProvider tmid={tmid}>
-								<MessageProvider>
-									<ThreadChat mainMessage={mainMessageQueryResult.data} />
-								</MessageProvider>
+								<ThreadChat mainMessage={mainMessageQueryResult.data} />
 							</ChatProvider>
 						)) ||
 						null}

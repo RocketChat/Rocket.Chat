@@ -5,12 +5,12 @@ import { useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
+import { useUserCard } from '../../../hooks/useUserCard';
 import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
-import { useMessageContext } from '../MessageContext';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
 import ToolboxHolder from '../ToolboxHolder';
@@ -27,9 +27,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const {
-		actions: { openUserCard },
-	} = useMessageContext();
+	const { open: openUserCard } = useUserCard();
 
 	const { katex, showColors } = useMessageListContext();
 	const subscription = useUserSubscription(message.rid);

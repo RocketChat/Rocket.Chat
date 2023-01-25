@@ -10,7 +10,6 @@ import RouterContextMock from '../../../../../tests/mocks/client/RouterContextMo
 import { createFakeMessageWithMd } from '../../../../../tests/mocks/data';
 import { UserPresenceContext } from '../../../../contexts/UserPresenceContext';
 import { queryClient } from '../../../../lib/queryClient';
-import { MessageContext } from '../../MessageContext';
 import type * as RoomMessageContentModule from './RoomMessageContent';
 
 describe('RoomMessageContent', () => {
@@ -42,15 +41,7 @@ describe('RoomMessageContent', () => {
 								[],
 							)}
 						>
-							<MessageContext.Provider
-								value={{
-									actions: {
-										openUserCard: () => () => undefined,
-									},
-								}}
-							>
-								{children}
-							</MessageContext.Provider>
+							{children}
 						</UserPresenceContext.Provider>
 					</FakeRoomProvider>
 				</RouterContextMock>

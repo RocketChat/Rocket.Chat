@@ -13,10 +13,10 @@ import React, { memo } from 'react';
 
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../hooks/useFormatTime';
+import { useUserCard } from '../../hooks/useUserCard';
 import { useUserData } from '../../hooks/useUserData';
 import { getUserDisplayName } from '../../lib/getUserDisplayName';
 import type { UserPresence } from '../../lib/presence';
-import { useMessageContext } from './MessageContext';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
@@ -28,9 +28,7 @@ type MessageHeaderProps = {
 
 const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const t = useTranslation();
-	const {
-		actions: { openUserCard },
-	} = useMessageContext();
+	const { open: openUserCard } = useUserCard();
 
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();

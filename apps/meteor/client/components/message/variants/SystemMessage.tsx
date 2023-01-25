@@ -19,6 +19,7 @@ import React, { memo } from 'react';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
+import { useUserCard } from '../../../hooks/useUserCard';
 import { useUserData } from '../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../lib/presence';
@@ -29,7 +30,6 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import UserAvatar from '../../avatar/UserAvatar';
-import { useMessageContext } from '../MessageContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
@@ -42,9 +42,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
-	const {
-		actions: { openUserCard },
-	} = useMessageContext();
+	const { open: openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
