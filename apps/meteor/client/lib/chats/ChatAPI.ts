@@ -1,6 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { Subscribable } from '../../definitions/Subscribable';
 import type { Upload } from './Upload';
 
 export type UserActionAPI = {
@@ -11,11 +12,6 @@ export type UserActionAPI = {
 		}[];
 		subscribe(callback: () => void): () => void;
 	};
-};
-
-type Subscribable<T> = {
-	get(): T;
-	subscribe(callback: () => void): () => void;
 };
 
 export type ComposerAPI = {
@@ -120,6 +116,7 @@ export type ChatAPI = {
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
+		readonly replyBroadcast: (message: IMessage) => Promise<void>;
 
 		readonly action: {
 			start(action: 'typing'): void;
