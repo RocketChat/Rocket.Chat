@@ -18,7 +18,7 @@ const SeatsCapUsage = ({ limit, members }: SeatsCapUsageProps): ReactElement => 
 	return (
 		<Box display='flex' flexDirection='column' minWidth='x180'>
 			<Box
-				color={reachedLimit ? 'danger' : 'default'}
+				color={reachedLimit ? 'on-danger' : 'default'}
 				display='flex'
 				flexDirection='row'
 				justifyContent='space-between'
@@ -26,7 +26,7 @@ const SeatsCapUsage = ({ limit, members }: SeatsCapUsageProps): ReactElement => 
 				mb='x8'
 			>
 				<div>{t('Seats_Available', { seatsLeft })}</div>
-				<Box color={reachedLimit ? 'danger' : 'hint'}>{`${members}/${limit}`}</Box>
+				<Box color={reachedLimit ? 'on-danger' : 'hint'}>{`${members}/${limit}`}</Box>
 			</Box>
 			<ProgressBar percentage={percentage} variant={closeToLimit ? 'danger' : 'success'} />
 		</Box>
