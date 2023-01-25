@@ -127,8 +127,7 @@ export class LDAPManager {
 		}
 
 		const { attribute: idAttribute, value: id } = uniqueId;
-		const username =
-			this.slugifyUsername(ldapUser, usedUsername || '') || this.getLdapUsername(ldapUser) || usedUsername || id || undefined;
+		const username = this.getLdapUsername(ldapUser) || usedUsername || id || undefined;
 		const emails = this.getLdapEmails(ldapUser, username);
 		const name = this.getLdapName(ldapUser) || undefined;
 
@@ -136,7 +135,7 @@ export class LDAPManager {
 			type: 'user',
 			emails,
 			importIds: [ldapUser.dn],
-			username,
+			username: this.slugifyUsername(ldapUser, username || ''),
 			name,
 			services: {
 				ldap: {
