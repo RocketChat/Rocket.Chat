@@ -9,7 +9,7 @@ const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => 
 	return (
 		<Box
 			rcx-vertical-bar
-			bg='light'
+			bg='room'
 			display='flex'
 			flexDirection='column'
 			flexShrink={0}

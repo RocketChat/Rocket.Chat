@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { Icon } from '@rocket.chat/fuselage';
-import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -13,6 +13,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import { APIClient } from '../../../utils/client';
+import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
@@ -71,7 +72,14 @@ export type MessageActionConfig = {
 			tabbar,
 			room,
 			chat,
-		}: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom; chat: ContextType<typeof ChatContext> },
+			autoTranslateOptions,
+		}: {
+			message?: IMessage & Partial<ITranslatedMessage>;
+			tabbar: ToolboxContextValue;
+			room?: IRoom;
+			chat: ContextType<typeof ChatContext>;
+			autoTranslateOptions?: AutoTranslateOptions;
+		},
 	) => any;
 	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
 };
