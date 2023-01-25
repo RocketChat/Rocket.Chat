@@ -649,31 +649,6 @@ export class LivechatRooms extends Base {
 		);
 	}
 
-	closeByRoomId(roomId, closeInfo) {
-		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
-
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					closer,
-					closedBy,
-					closedAt,
-					'metrics.chatDuration': chatDuration,
-					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
-					...extraData,
-				},
-				$unset: {
-					open: 1,
-				},
-			},
-		);
-	}
-
 	findOpenByAgent(userId) {
 		const query = {
 			't': 'l',

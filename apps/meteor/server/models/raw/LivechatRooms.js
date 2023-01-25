@@ -1359,23 +1359,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		);
 	}
 
-	/**
-	 * Closes a livechat room
-	 * @param {string} roomId
-	 * @param {object} closeInfo
-	 * {
-			closedAt: Date;
-			chatDuration: number;
-			closer?: 'user' | 'visitor';
-			closedBy?: {
-				_id: string;
-				username: string;
-			};
-			serviceTimeDuration?: number;
-			tags?: string[];
-		}
-	 */
-	closeByRoomId(roomId, closeInfo) {
+	closeRoomById(roomId, closeInfo) {
 		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
 
 		return this.updateOne(
