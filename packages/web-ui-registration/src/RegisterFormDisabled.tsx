@@ -1,4 +1,4 @@
-import { ButtonGroup, Callout } from '@rocket.chat/fuselage';
+import { Callout } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -21,7 +21,6 @@ export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: Dispatc
 				</Callout>
 			</Form.Container>
 			<Form.Footer>
-				<ButtonGroup></ButtonGroup>
 				<ActionLink
 					onClick={(): void => {
 						setLoginRoute('login');
