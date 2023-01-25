@@ -1,11 +1,13 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Modal, Box } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { Field, Button, TextInput, Modal, Box, CheckBox, Divider } from '@rocket.chat/fuselage';
+import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import GenericModal from '../../GenericModal';
+import MarkdownText from '../../MarkdownText';
 import Tags from '../Tags';
 
 const CloseChatModal = ({
@@ -15,7 +17,11 @@ const CloseChatModal = ({
 }: {
 	department?: ILivechatDepartment | null;
 	onCancel: () => void;
-	onConfirm: (comment?: string, tags?: string[]) => Promise<void>;
+	onConfirm: (
+		comment?: string,
+		tags?: string[],
+		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
+	) => Promise<void>;
 }): ReactElement => {
 	const t = useTranslation();
 
@@ -35,12 +41,28 @@ const CloseChatModal = ({
 	const tags = watch('tags');
 	const comment = watch('comment');
 
+	const userTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
+	const userTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
+	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
+
+	const canSendTranscript = canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF);
+
 	const handleTags = (value: string[]): void => {
 		setValue('tags', value);
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags }): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail }): void => {
+			const preferences =
+				transcriptPDF !== userTranscriptPDF || transcriptEmail !== userTranscriptEmail
+					? {
+							omnichannelTranscriptPDF: transcriptPDF,
+							omnichannelTranscriptEmail: transcriptEmail,
+					  }
+					: undefined;
+
 			if (!comment && commentRequired) {
 				setError('comment', { type: 'custom', message: t('The_field_is_required', t('Comment')) });
 			}
@@ -50,10 +72,10 @@ const CloseChatModal = ({
 			}
 
 			if (!errors.comment || errors.tags) {
-				onConfirm(comment, tags);
+				onConfirm(comment, tags, preferences);
 			}
 		},
-		[commentRequired, tagRequired, errors, setError, t, onConfirm],
+		[commentRequired, userTranscriptEmail, userTranscriptPDF, tagRequired, errors, setError, t, onConfirm],
 	);
 
 	const cannotSubmit = useMemo(() => {
@@ -80,7 +102,7 @@ const CloseChatModal = ({
 		}
 	}, [register, tagRequired]);
 
-	return commentRequired || tagRequired ? (
+	return commentRequired || tagRequired || canSendTranscript ? (
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
 				<Modal.Icon name='baloon-close-top-right' />
@@ -110,6 +132,42 @@ const CloseChatModal = ({
 					<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} />
 					<Field.Error>{errors.tags?.message}</Field.Error>
 				</Field>
+				{canSendTranscript && (
+					<>
+						<Field>
+							<Divider />
+							<Field.Label>{t('Chat_transcript')}</Field.Label>
+							<MarkdownText
+								variant='inline'
+								fontScale='c1'
+								color='annotation'
+								content={t('Configure_recurring_email_sending_in_My_Account_Omnichannel')}
+								marginBlockStart={2}
+								marginBlockEnd={8}
+							/>
+						</Field>
+						{canSendTranscriptEmail && (
+							<Field>
+								<Field.Row>
+									<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
+									<Field.Label htmlFor='transcript-email' color='default' fontScale='c1'>
+										{t('Send_chat_transcript_via_email')}
+									</Field.Label>
+								</Field.Row>
+							</Field>
+						)}
+						{canSendTranscriptPDF && hasLicense && (
+							<Field>
+								<Field.Row>
+									<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
+									<Field.Label htmlFor='transcript-pdf' color='default' fontScale='c1'>
+										{t('Export_chat_transcript_as_PDF')}
+									</Field.Label>
+								</Field.Row>
+							</Field>
+						)}
+					</>
+				)}
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

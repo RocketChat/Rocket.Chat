@@ -42,6 +42,8 @@ export type UsersSetPreferencesParamsPOST = {
 		receiveLoginDetectionEmail?: boolean;
 		useLegacyMessageTemplate?: boolean;
 		idleTimeLimit?: number;
+		omnichannelTranscriptEmail?: boolean;
+		omnichannelTranscriptPDF?: boolean;
 	};
 };
 
@@ -204,6 +206,14 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				idleTimeLimit: {
 					type: 'number',
+					nullable: true,
+				},
+				omnichannelTranscriptEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				omnichannelTranscriptPDF: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},

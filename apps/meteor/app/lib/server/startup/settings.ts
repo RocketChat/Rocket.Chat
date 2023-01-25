@@ -555,6 +555,12 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Use_Legacy_Message_Template',
 			alert: 'This_is_a_deprecated_feature_alert',
 		});
+
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Transcript_Email',
+		});
 	});
 
 	this.section('Avatar', function () {
