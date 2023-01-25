@@ -261,7 +261,7 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		if (!installedAppsError) {
-			if (installedApps.length) {
+			if (installedApps.length > 0) {
 				installedAppsData.push(...installedApps);
 			}
 
@@ -273,7 +273,7 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		if (!privateAppsError) {
-			if (privateApps.length) {
+			if (privateApps.length > 0) {
 				privateAppsData.push(...privateApps);
 			}
 
