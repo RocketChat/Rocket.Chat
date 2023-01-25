@@ -2018,6 +2018,7 @@ type POSTLivechatRoomCloseByUserParams = {
 	generateTranscriptPdf?: boolean;
 	transcriptEmail?:
 		| {
+				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
 				sendToVisitor: false;
 		  }
 		| {

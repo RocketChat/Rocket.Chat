@@ -176,12 +176,16 @@ export const useQuickActions = (
 		[closeModal, dispatchToastMessage, forwardChat, rid, homeRoute, t],
 	);
 
-	const closeChat = useMethod('livechat:closeRoom');
+	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 
 	const handleClose = useCallback(
 		async (comment?: string, tags?: string[]) => {
 			try {
-				await closeChat(rid, comment, { clientAction: true, tags });
+				await closeChat({
+					rid,
+					...(comment && { comment }),
+					...(tags && { tags }),
+				});
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
