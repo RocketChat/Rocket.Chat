@@ -10,8 +10,8 @@ import {
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
-import type { AutoTranslateOptions } from '../hooks/useAutoTranslate';
-import { isParsedMessage } from './isParsedMessage';
+import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
+import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 	[Property in Key]-?: Type[Property];

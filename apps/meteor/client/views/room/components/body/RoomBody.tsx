@@ -17,13 +17,13 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
+import { useUserCard } from '../../../../hooks/useUserCard';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -176,19 +176,17 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
+	const { open: openUserCard } = useUserCard();
+
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
-			openUserCard({
-				username,
-				rid: room._id,
-				target: event.currentTarget,
-				open: (event: MouseEvent) => {
-					event.preventDefault();
-					if (username) toolbox.openRoomInfo(username);
-				},
-			});
+			if (!username) {
+				return;
+			}
+
+			openUserCard(username)(event);
 		},
-		[room._id, toolbox],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
