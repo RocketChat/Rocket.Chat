@@ -5552,5 +5552,6 @@
   "Theme_light": "Light",
   "Theme_dark": "Dark",
   "Join_your_team": "Join your team",
-  "Create_an_account": "Create an account"
+  "No_private_apps_installed": "No private apps installed",
+  "Private_apps_are_side-loaded": "Private apps are side-loaded and are not available on the Marketplace."
 }
