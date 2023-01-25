@@ -95,7 +95,13 @@ function TagsRoute() {
 	);
 
 	if (context === 'edit' || context === 'new') {
-		return <TagEditWithData reload={reload} tagId={id} title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')} />;
+		return (
+			<TagEditWithData
+				reload={reload}
+				tagId={context === 'edit' ? id : undefined}
+				title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')}
+			/>
+		);
 	}
 
 	if (!canViewTags) {

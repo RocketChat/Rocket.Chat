@@ -1,23 +1,22 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import TagEdit from './TagEdit';
 import TagEditWithDepartmentData from './TagEditWithDepartmentData';
 
 function TagEditWithData({ tagId, reload, title }) {
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/tags/:tagId', { keys: { tagId } });
-
+	const getTag = useEndpoint('GET', '/v1/livechat/tags/:tagId', { tagId });
+	const { data, isLoading, isError } = useQuery(['/v1/livechat/tags/:tagId'], () => getTag(), { enabled: Boolean(tagId) });
 	const t = useTranslation();
 
-	if ([state].includes(AsyncStatePhase.LOADING)) {
+	if (isLoading && tagId) {
 		return <FormSkeleton />;
 	}
 
-	if (error) {
+	if (isError) {
 		return (
 			<Callout m='x16' type='danger'>
 				{t('Not_Available')}
