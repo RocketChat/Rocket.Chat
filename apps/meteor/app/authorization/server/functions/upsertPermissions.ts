@@ -48,6 +48,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'edit-room', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-room-avatar', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-room-retention-policy', roles: ['admin'] },
+		{ _id: 'enable-unlimited-apps', roles: ['admin'] },
 		{ _id: 'force-delete-message', roles: ['admin', 'owner'] },
 		{ _id: 'join-without-join-code', roles: ['admin', 'bot', 'app'] },
 		{ _id: 'leave-c', roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },

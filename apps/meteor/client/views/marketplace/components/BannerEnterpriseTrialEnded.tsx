@@ -1,20 +1,20 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const t = useTranslation();
-	const isAdmin = usePermission('');
+	const isAdmin = usePermission('enable-unlimited-apps');
 	const bannerLink = {
 		// TODO: add link internal to upgrade page
-		link: '',
+		link: '#',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
 	};
+	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
-	// TODO: verify trial end date
-	const [showTrialBanner, setShowTrialBanner] = useLocalStorage('showAppsTrialEndBanner', true);
+	const [showTrialBanner, setShowTrialBanner] = useLocalStorage('showAppsTrialEndBanner', cloudWorkspaceHadTrial);
 
 	return (
 		<>
@@ -25,7 +25,7 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 					variant='warning'
 					title={t('Apps_disabled_when_Enterprise_trial_ended')}
 					onClose={() => setShowTrialBanner(false)}
-					{...(isAdmin && { bannerLink })}
+					{...(isAdmin && bannerLink)}
 				>
 					{isAdmin
 						? t('Apps_disabled_when_Enterprise_trial_ended_description_admin')
