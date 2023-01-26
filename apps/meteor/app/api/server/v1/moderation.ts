@@ -2,13 +2,13 @@ import { isReportHistoryProps } from '@rocket.chat/rest-typings';
 import { Reports } from '@rocket.chat/models';
 
 import { API } from '../api';
-// import { getReportHistory } from '../../../../server/lib/getReportHistory';
 
 API.v1.addRoute(
 	'moderation.history',
 	{
 		authRequired: true,
 		validateParams: isReportHistoryProps,
+		permissionsRequired: ['view-moderation-console'],
 	},
 	{
 		async get() {
@@ -21,11 +21,10 @@ API.v1.addRoute(
 				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), offset, count);
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
-			// if (!reports) {
-			// 	return API.v1.failure('No reports found');
-			// }
 
-			// console.log('reports', reports);
+			if (!reports) {
+				return API.v1.failure('No reports found');
+			}
 
 			return API.v1.success({
 				reports,

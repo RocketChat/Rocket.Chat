@@ -21,6 +21,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	findReportsBetweenDates(latest: Date, oldest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
+			_archived: {
+				$ne: true,
+			},
 			ts: {
 				$lt: latest,
 				$gt: oldest,
@@ -38,6 +41,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	findReportsByRoom(roomId: string, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
+			'_archived': {
+				$ne: true,
+			},
 			'message.rid': roomId,
 		};
 
@@ -52,6 +58,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	findReportsByUser(userId: string, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
+			_archived: {
+				$ne: true,
+			},
 			userId,
 		};
 
@@ -64,8 +73,11 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsBeforeDate(oldest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
+	findReportsAfterDate(oldest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
+			_archived: {
+				$ne: true,
+			},
 			ts: {
 				$gt: oldest,
 			},
@@ -80,8 +92,11 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsAfterDate(latest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
+	findReportsBeforeDate(latest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
+			_archived: {
+				$ne: true,
+			},
 			ts: {
 				$lt: latest,
 			},
