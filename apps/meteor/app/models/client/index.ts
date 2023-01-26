@@ -30,7 +30,7 @@ const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
 /** @deprecated */
 const Messages = _.extend({}, ChatMessage) as typeof ChatMessage;
 /** @deprecated */
-const Rooms = _.extend({}, ChatRoom);
+const Rooms = _.extend({}, ChatRoom) as typeof ChatRoom;
 
 export {
 	Base,
