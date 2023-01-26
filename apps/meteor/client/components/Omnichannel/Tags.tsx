@@ -22,13 +22,17 @@ const Tags = ({
 	const t = useTranslation();
 	const forms = useFormsSubscription() as any;
 
-	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data: tagsResult, isLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }));
-
 	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
 	const { useCurrentChatTags } = forms;
 	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
 	const EETagsComponent = useCurrentChatTags?.();
+
+	const getTags = useEndpoint('GET', '/v1/livechat/tags');
+	const {
+		data: tagsResult,
+		isLoading,
+		isFetching,
+	} = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), { enabled: !!EETagsComponent });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -61,7 +65,7 @@ const Tags = ({
 		handleTagValue('');
 	});
 
-	if (isLoading) {
+	if (isLoading && isFetching) {
 		return <FormSkeleton />;
 	}
 

@@ -9,7 +9,7 @@ import TagEditWithDepartmentData from './TagEditWithDepartmentData';
 
 function TagEditWithData({ tagId, reload, title }) {
 	const getTag = useEndpoint('GET', '/v1/livechat/tags/:tagId', { tagId });
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/tags/:tagId'], () => getTag(), { enabled: Boolean(tagId) });
+	const { data, isLoading, isError } = useQuery(['/v1/livechat/tags/:tagId', tagId], () => getTag(), { enabled: Boolean(tagId) });
 	const t = useTranslation();
 
 	if (isLoading && tagId) {
