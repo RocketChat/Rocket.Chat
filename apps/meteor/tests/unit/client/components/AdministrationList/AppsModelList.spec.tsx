@@ -5,6 +5,7 @@ import proxyquire from 'proxyquire';
 import React from 'react';
 
 import RouterContextMock from '../../../../mocks/client/RouterContextMock';
+import QueryClientProviderMock from '../../../../../client/stories/contexts/QueryClientProviderMock';
 
 const mockAppsModelListModule = (stubs = {}) => {
 	return proxyquire.load('../../../../../client/components/AdministrationList/AppsModelList', {
@@ -20,7 +21,11 @@ const mockAppsModelListModule = (stubs = {}) => {
 describe('components/AdministrationList/AppsModelList', () => {
 	it('should render apps', async () => {
 		const AppsModelList = mockAppsModelListModule().default;
-		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} />);
+		render(
+			<QueryClientProviderMock>
+				<AppsModelList onDismiss={() => null} appBoxItems={[]} />
+			</QueryClientProviderMock>,
+		);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
@@ -33,9 +38,11 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const handleDismiss = spy();
 			const AppsModelList = mockAppsModelListModule().default;
 			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
-				</RouterContextMock>,
+				<QueryClientProviderMock>
+					<RouterContextMock pushRoute={pushRoute}>
+						<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
+					</RouterContextMock>
+				</QueryClientProviderMock>,
 			);
 			const button = screen.getByText('Marketplace');
 			userEvent.click(button);
@@ -48,9 +55,11 @@ describe('components/AdministrationList/AppsModelList', () => {
 			const handleDismiss = spy();
 			const AppsModelList = mockAppsModelListModule().default;
 			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
-				</RouterContextMock>,
+				<QueryClientProviderMock>
+					<RouterContextMock pushRoute={pushRoute}>
+						<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
+					</RouterContextMock>
+				</QueryClientProviderMock>,
 			);
 			const button = screen.getByText('Installed');
 
@@ -70,9 +79,11 @@ describe('components/AdministrationList/AppsModelList', () => {
 				},
 			}).default;
 			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
-				</RouterContextMock>,
+				<QueryClientProviderMock>
+					<RouterContextMock pushRoute={pushRoute}>
+						<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
+					</RouterContextMock>
+				</QueryClientProviderMock>,
 			);
 			const button = screen.getByText('Custom App');
 
