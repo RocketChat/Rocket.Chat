@@ -110,11 +110,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					{roomOpen && transcriptRequest ? (
+					{roomOpen && transcriptRequest && (
 						<Button danger onClick={handleDiscard}>
 							{t('Discard')}
 						</Button>
-					) : (
+					)}
+					{roomOpen && !transcriptRequest && (
 						<Button disabled={!canSave} primary onClick={handleRequest}>
 							{t('Request')}
 						</Button>
