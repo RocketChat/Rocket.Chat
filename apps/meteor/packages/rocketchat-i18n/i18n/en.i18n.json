@@ -5119,7 +5119,7 @@
   "Verify_your_email_for_the_code_we_sent": "Verify your email for the code we sent",
   "Version": "Version",
   "Version_version": "Version __version__",
-  "App_Request_Admin_Message": "Hi __admin_name__, __user_name__ submitted a request to install __app_name__ app on this workspace. \n \n This is the message they included: \n >__message__ \n \n To learn more and install the __app_name__ app, [click here](__learn_more__).",
+  "App_Request_Admin_Message": "Hi __admin_name__, __user_name__ submitted a request to install __app_name__ app on this workspace. \n \n This is the message they included: \n>__message__ \n \n To learn more and install the __app_name__ app, [click here](__learn_more__).",
   "App_version_incompatible_tooltip": "App incompatible with Rocket.Chat version",
   "App_request_enduser_message": "The app you requested, __appname__ has just been installed on this workspace.  [Click here to learn more](__learnmore__).",
   "Video_Conference_Description": "Configure conferencing calls for your workspace.",
