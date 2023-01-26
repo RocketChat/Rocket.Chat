@@ -23,12 +23,9 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private lostConTimeout?: NodeJS.Timeout;
 
-	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
-		const affectedUsers = await this.removeLostConnections(node.id);
-		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
-	}
+	constructor() {
+		super();
 
-	async created(): Promise<void> {
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
 			if (clientAction === 'removed') {
 				connsPerInstance.delete(id);
@@ -51,6 +48,11 @@ export class Presence extends ServiceClass implements IPresence {
 				this.hasLicense = valid;
 			}
 		});
+	}
+
+	async onNodeDisconnected({ node }: { node: IBrokerNode }): Promise<void> {
+		const affectedUsers = await this.removeLostConnections(node.id);
+		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
 	async started(): Promise<void> {

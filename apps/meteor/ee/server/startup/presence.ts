@@ -1,12 +1,13 @@
+import { throttle } from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Presence } from '@rocket.chat/core-services';
 
-// TODO add throttle
-const updateConns = function () {
+// update connections count every 30 seconds
+const updateConns = throttle(function _updateConns() {
 	InstanceStatus.updateConnections(Meteor.server.sessions.size);
-};
+}, 30000);
 
 Meteor.startup(function () {
 	const nodeId = InstanceStatus.id();
