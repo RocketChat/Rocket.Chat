@@ -2,43 +2,39 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, spy } from 'chai';
 import proxyquire from 'proxyquire';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-import RouterContextMock from '../../../../mocks/client/RouterContextMock';
+import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
+import type * as AdministrationModelListModule from './AdministrationModelList';
 
-const mockAdministrationModelListModule = (stubs = {}) => {
-	return proxyquire.load('../../../../../client/components/AdministrationList/AdministrationModelList', {
-		'../../../app/ui-utils/client': {
-			'@noCallThru': true,
-		},
-		'meteor/kadira:flow-router': {
-			'FlowRouter': {},
-			'@noCallThru': true,
-		},
-		'../../views/hooks/useUpgradeTabParams': {
-			'useUpgradeTabParams': () => ({
-				isLoading: false,
-				tabType: 'Upgrade',
-				trialEndDate: '2020-01-01',
-			}),
-			'@noCallThru': true,
-		},
-		'../../../lib/upgradeTab': {
-			getUpgradeTabLabel: () => 'Upgrade',
-			isFullyFeature: () => true,
-		},
-		'../../../app/authorization/client': {
-			'userHasAllPermission': () => true,
-			'@noCallThru': true,
-		},
-		...stubs,
-		// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-	}) as typeof import('../../../../../client/components/AdministrationList/AdministrationModelList');
-};
+describe('AdministrationModelList', () => {
+	const loadMock = (stubs?: Record<string, unknown>) => {
+		return proxyquire.noCallThru().load<typeof AdministrationModelListModule>('./AdministrationModelList', {
+			'../../../app/ui-utils/client': {},
+			'meteor/kadira:flow-router': {
+				FlowRouter: {},
+			},
+			'../../views/hooks/useUpgradeTabParams': {
+				useUpgradeTabParams: () => ({
+					isLoading: false,
+					tabType: 'Upgrade',
+					trialEndDate: '2020-01-01',
+				}),
+			},
+			'../../../lib/upgradeTab': {
+				getUpgradeTabLabel: () => 'Upgrade',
+				isFullyFeature: () => true,
+			},
+			'../../../app/authorization/client': {
+				userHasAllPermission: () => true,
+			},
+			...stubs,
+		}).default;
+	};
 
-describe('components/AdministrationList/AdministrationModelList', () => {
 	it('should render administration', async () => {
-		const AdministrationModelList = mockAdministrationModelListModule().default;
+		const AdministrationModelList = loadMock();
 		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={() => null} />);
 
 		expect(screen.getByText('Administration')).to.exist;
@@ -47,7 +43,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 	});
 
 	it('should not render workspace', async () => {
-		const AdministrationModelList = mockAdministrationModelListModule().default;
+		const AdministrationModelList = loadMock();
 		render(<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={() => null} />);
 
 		expect(screen.getByText('Administration')).to.exist;
@@ -56,15 +52,18 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 	});
 
 	context('when clicked', () => {
+		const pushRoute = spy();
+		const handleDismiss = spy();
+
+		const ProvidersMock = ({ children }: { children: ReactNode }) => {
+			return <RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>;
+		};
+
 		it('should go to admin info', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
-			const AdministrationModelList = mockAdministrationModelListModule().default;
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />
-				</RouterContextMock>,
-			);
+			const AdministrationModelList = loadMock();
+
+			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Workspace');
 
 			userEvent.click(button);
@@ -73,19 +72,14 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 		});
 
 		it('should go to admin index if no permission', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
-			const AdministrationModelList = mockAdministrationModelListModule({
+			const AdministrationModelList = loadMock({
 				'../../../app/authorization/client': {
-					'userHasAllPermission': () => false,
-					'@noCallThru': true,
+					userHasAllPermission: () => false,
 				},
-			}).default;
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />
-				</RouterContextMock>,
-			);
+			});
+
+			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Workspace');
 
 			userEvent.click(button);
@@ -94,14 +88,10 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 		});
 
 		it('should call upgrade route', async () => {
-			const handleDismiss = spy();
-			const pushRoute = spy();
-			const AdministrationModelList = mockAdministrationModelListModule().default;
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={handleDismiss} />
-				</RouterContextMock>,
-			);
+			const AdministrationModelList = loadMock();
+
+			render(<AdministrationModelList accountBoxItems={[]} showWorkspace={false} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Upgrade');
 
 			userEvent.click(button);
@@ -113,14 +103,13 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 		it('should render admin box and call router', async () => {
 			const router = spy();
 			const handleDismiss = spy();
-			const AdministrationModelList = mockAdministrationModelListModule({
+			const AdministrationModelList = loadMock({
 				'meteor/kadira:flow-router': {
-					'FlowRouter': {
+					FlowRouter: {
 						go: router,
 					},
-					'@noCallThru': true,
 				},
-			}).default;
+			});
 
 			render(
 				<AdministrationModelList
@@ -133,13 +122,14 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);
+
 			await waitFor(() => expect(router).to.have.been.called.with('admin-item'));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should render admin box and call sidenav', async () => {
-			const handleDismiss = spy();
-			const AdministrationModelList = mockAdministrationModelListModule().default;
+			const AdministrationModelList = loadMock();
+
 			render(
 				<AdministrationModelList
 					accountBoxItems={[{ name: 'Admin Item', sideNav: 'admin' } as any]}
@@ -147,6 +137,7 @@ describe('components/AdministrationList/AdministrationModelList', () => {
 					onDismiss={handleDismiss}
 				/>,
 			);
+
 			const button = screen.getByText('Admin Item');
 
 			userEvent.click(button);
