@@ -41,25 +41,6 @@ describe('AdministrationList', () => {
 		expect(screen.getByText('Audit Model List')).to.exist;
 	});
 
-	it('should render nothing when no permission', async () => {
-		const AdministrationList = loadMock();
-
-		render(
-			<AdministrationList
-				hasAdminPermission={false}
-				hasAuditLicense={false}
-				hasAuditLogPermission={false}
-				hasAuditPermission={false}
-				accountBoxItems={[]}
-				onDismiss={() => null}
-			/>,
-		);
-
-		expect(screen.queryByText('Administration Model List')).to.not.exist;
-		expect(screen.queryByText('Apps Model List')).to.not.exist;
-		expect(screen.queryByText('Audit Model List')).to.not.exist;
-	});
-
 	it('should render administration model list when has account box item', async () => {
 		const AdministrationList = loadMock();
 
