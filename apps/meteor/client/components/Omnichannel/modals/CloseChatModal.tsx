@@ -191,7 +191,7 @@ const CloseChatModal = ({
 										<Field marginBlockStart='x14'>
 											<Field.Label required>{t('Contact_email')}</Field.Label>
 											<Field.Row>
-												<EmailInput value={visitorEmail} className='active' required disabled flexGrow={1} />
+												<EmailInput value={visitorEmail} required disabled flexGrow={1} />
 											</Field.Row>
 										</Field>
 										<Field marginBlockStart='x12'>
