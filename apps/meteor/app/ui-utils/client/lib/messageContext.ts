@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
 
 import { Subscriptions, Rooms, Users } from '../../../models/client';
@@ -10,11 +9,6 @@ import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
-import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
-import { actionLinks } from '../../../action-links/client';
-import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
-import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
-import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { CommonRoomTemplateInstance } from '../../../ui/client/views/app/lib/CommonRoomTemplateInstance';
 
 const fields = {
@@ -55,8 +49,6 @@ export const createMessageContext = ({
 			},
 		},
 	),
-	instance = Template.instance(),
-	embeddedLayout = isLayoutEmbedded(),
 	translateLanguage = AutoTranslate.getLanguage(rid),
 	autoImageLoad = getUserPreference(user, 'autoImageLoad'),
 	useLegacyMessageTemplate = getUserPreference(user, 'useLegacyMessageTemplate'),
@@ -113,86 +105,10 @@ export const createMessageContext = ({
 	API_EmbedDisabledFor?: unknown;
 	Message_GroupingPeriod?: unknown;
 }) => {
-	const openThread = (event: Event) => {
-		const { rid, mid, tmid } = (event.currentTarget as HTMLElement | null)?.dataset ?? {};
-		if (!rid) {
-			throw new Error('Missing rid');
-		}
-
-		const context = tmid || mid;
-
-		if (!context) {
-			throw new Error('Missing mid');
-		}
-
-		const room = Rooms.findOne({ _id: rid });
-		FlowRouter.go(
-			FlowRouter.getRouteName(),
-			{
-				rid,
-				name: room.name,
-				tab: 'thread',
-				context,
-			},
-			!!tmid && !!mid && tmid !== mid
-				? {
-						jump: mid,
-				  }
-				: {},
-		);
-		event.preventDefault();
-		event.stopPropagation();
-	};
-
-	const runAction = embeddedLayout
-		? (msg: IMessage, actionlink: string) =>
-				fireGlobalEvent('click-action-link', {
-					actionlink,
-					value: msg._id,
-					message: msg,
-				})
-		: (msg: IMessage, actionlink: string) => actionLinks.run(actionlink, msg, instance);
-
-	const openDiscussion = (event: Event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		const { drid } = (event.currentTarget as HTMLElement | null)?.dataset ?? {};
-		if (!drid) {
-			throw new Error('Missing drid');
-		}
-		goToRoomById(drid);
-	};
-
-	const replyBroadcast = (event: Event) => {
-		const { username, mid } = (event.currentTarget as HTMLElement | null)?.dataset ?? {};
-		if (!mid) {
-			throw new Error('Missing mid');
-		}
-		roomCoordinator.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
-	};
-
 	return {
 		u: user,
 		room,
 		subscription,
-		actions: {
-			openThread() {
-				return openThread;
-			},
-			runAction(msg: IMessage) {
-				return () => (actionlink: string) => (event: Event) => {
-					event.preventDefault();
-					event.stopPropagation();
-					runAction(msg, actionlink);
-				};
-			},
-			openDiscussion() {
-				return openDiscussion;
-			},
-			replyBroadcast() {
-				return replyBroadcast;
-			},
-		},
 		settings: {
 			translateLanguage,
 			autoImageLoad,
@@ -216,7 +132,3 @@ export const createMessageContext = ({
 		},
 	} as const;
 };
-
-export function messageContext({ rid }: { rid?: IRoom['_id'] } = {}) {
-	return createMessageContext({ rid });
-}
