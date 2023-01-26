@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, ProgressBar } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
@@ -11,7 +11,7 @@ import CustomUserStatusTable from './CustomUserStatusTable';
 
 const CustomUserStatusRoute = (): ReactElement => {
 	const t = useTranslation();
-	const route = useRoute('custom-user-status');
+	const route = useRoute('user-status');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
@@ -43,11 +43,19 @@ const CustomUserStatusRoute = (): ReactElement => {
 
 	return (
 		<Page flexDirection='row'>
-			<Page name='admin-custom-user-status'>
-				<Page.Header title={t('Custom_User_Status')}>
-					<Button primary onClick={handleNewButtonClick} aria-label={t('New')}>
-						<Icon name='plus' /> {t('New')}
-					</Button>
+			<Page name='admin-user-status'>
+				<Page.Header title={t('User_Status')}>
+					<Box w='x180' h='x40' mi='x8' fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around'>
+						<Box display='flex' justifyContent='space-between'>
+							<Box color='default'>{t('Active_connections')}</Box>
+							<Box color='hint'>100/200</Box>
+						</Box>
+						<ProgressBar percentage={50} variant='success' />
+					</Box>
+					<ButtonGroup>
+						<Button>{t('Presence_service')}</Button>
+						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>
+					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
 					<CustomUserStatusTable reload={reload} onClick={handleItemClick} />

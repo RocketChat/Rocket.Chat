@@ -70,8 +70,8 @@ registerAdminRoute('/integrations/:context?/:type?/:id?', {
 	component: lazy(() => import('./integrations/IntegrationsRoute')),
 });
 
-registerAdminRoute('/custom-user-status/:context?/:id?', {
-	name: 'custom-user-status',
+registerAdminRoute('/user-status/:context?/:id?', {
+	name: 'user-status',
 	component: lazy(() => import('./customUserStatus/CustomUserStatusRoute')),
 });
 
