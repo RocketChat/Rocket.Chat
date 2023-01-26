@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
 
-import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { createMessageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
@@ -23,7 +23,7 @@ Template.starredMessages.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
-	messageContext,
+	messageContext: createMessageContext,
 });
 
 Template.starredMessages.onCreated(function () {

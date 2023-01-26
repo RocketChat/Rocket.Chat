@@ -1,12 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, spy } from 'chai';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-import AuditModelList from '../../../../../client/components/AdministrationList/AuditModelList';
-import RouterContextMock from '../../../../mocks/client/RouterContextMock';
+import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
+import AuditModelList from './AuditModelList';
 
-describe('components/AdministrationList/AuditModelList', () => {
+describe('AuditModelList', () => {
 	it('should render audit', async () => {
 		render(<AuditModelList showAudit={true} showAuditLog={true} onDismiss={() => null} />);
 
@@ -24,14 +25,16 @@ describe('components/AdministrationList/AuditModelList', () => {
 	});
 
 	context('when clicked', () => {
+		const pushRoute = spy();
+		const handleDismiss = spy();
+
+		const ProvidersMock = ({ children }: { children: ReactNode }) => (
+			<RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>
+		);
+
 		it('should go to audit home', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AuditModelList showAudit={true} showAuditLog={false} onDismiss={handleDismiss} />
-				</RouterContextMock>,
-			);
+			render(<AuditModelList showAudit={true} showAuditLog={false} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Messages');
 
 			userEvent.click(button);
@@ -40,13 +43,8 @@ describe('components/AdministrationList/AuditModelList', () => {
 		});
 
 		it('should go to audit log', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AuditModelList showAudit={false} showAuditLog={true} onDismiss={handleDismiss} />
-				</RouterContextMock>,
-			);
+			render(<AuditModelList showAudit={false} showAuditLog={true} onDismiss={handleDismiss} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Logs');
 
 			userEvent.click(button);

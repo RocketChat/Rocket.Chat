@@ -4,20 +4,19 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import GenericModal from '../../../../components/GenericModal';
-import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
+import { useUserCard } from '../../../../hooks/useUserCard';
 import Reactions from './Reactions';
 
 type ReactionListProps = {
-	rid: string;
 	reactions: Required<IMessage>['reactions'];
-	tabBar: ToolboxContextValue;
 	onClose: () => void;
 };
 
-const ReactionList = ({ rid, reactions, tabBar, onClose }: ReactionListProps): ReactElement => {
+const ReactionList = ({ reactions, onClose }: ReactionListProps): ReactElement => {
 	const t = useTranslation();
+
+	const { open: openUserCard } = useUserCard();
 
 	const onClick = useMutableCallback((e) => {
 		const { username } = e.currentTarget.dataset;
@@ -26,16 +25,7 @@ const ReactionList = ({ rid, reactions, tabBar, onClose }: ReactionListProps): R
 			return;
 		}
 
-		openUserCard({
-			username,
-			rid,
-			target: e.currentTarget,
-			open: (e: React.MouseEvent<HTMLElement>) => {
-				e.preventDefault();
-				onClose();
-				tabBar.openRoomInfo(username);
-			},
-		});
+		openUserCard(username)(e);
 	});
 
 	return (
