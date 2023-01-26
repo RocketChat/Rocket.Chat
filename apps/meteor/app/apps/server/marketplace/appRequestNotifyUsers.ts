@@ -68,7 +68,7 @@ export const appRequestNotififyForUsers = async (
 		// Calculate the number of loops - 1 because the first request was already made
 		const loops = Math.ceil(total / pagination.limit) - 1;
 		const requestsCollection = [];
-		const learnMore = `${workspaceUrl}admin/marketplace/all/info/${appId}`;
+		const learnMore = `${workspaceUrl}marketplace/explore/info/${appId}`;
 
 		// Notify first batch
 		requestsCollection.push(
