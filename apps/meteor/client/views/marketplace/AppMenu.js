@@ -49,6 +49,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const [loading, setLoading] = useState(false);
 
@@ -76,6 +77,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		},
 		[setModal, action, app, setLoading],
 	);
+
+	const requestConfirmAction = (postMessage) => {
+		setModal(null);
+		setLoading(false);
+
+		notifyAdmins({
+			appId: app.id,
+			appName: app.name,
+			message: postMessage.message,
+		});
+	};
 
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
@@ -142,7 +154,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={undefined} />);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}

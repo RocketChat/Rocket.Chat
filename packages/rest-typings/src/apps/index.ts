@@ -162,6 +162,10 @@ export type AppsEndpoints = {
 		GET: (params: { appId: string; q: AppRequestFilter; sort: string; pagination: Pagination }) => IRestResponse<AppRequest>;
 	};
 
+	'/apps/notify-admins': {
+		POST: (params: { appId: string; message: string }) => void;
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {

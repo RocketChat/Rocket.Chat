@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { usePermission, useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo, Fragment } from 'react';
 
@@ -13,6 +13,11 @@ import IframeModal from '../../../IframeModal';
 import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+
+type AppRequestPostMessage = {
+	message: string;
+	status: string;
+};
 
 type AppStatusProps = {
 	app: App;
@@ -30,6 +35,18 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
 	const statuses = appMultiStatusProps(app, isAppDetailsPage);
+
+	const notifyAdmins = useEndpoint('POST', '/apps/notify-admins');
+	const requestConfirmAction = (postMessage: AppRequestPostMessage) => {
+		setModal(null);
+		setLoading(false);
+
+		notifyAdmins({
+			appId: app.id,
+			appName: app.name,
+			message: postMessage.message,
+		});
+	};
 
 	if (button?.action === undefined && button?.action) {
 		throw new Error('action must not be null');
@@ -115,7 +132,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} cancel={cancelAction} confirm={undefined} />);
+				setModal(<IframeModal url={data?.url} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
