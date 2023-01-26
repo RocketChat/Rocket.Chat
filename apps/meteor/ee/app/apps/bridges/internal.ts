@@ -11,12 +11,12 @@ export class AppInternalBridge extends InternalBridge {
 		super();
 	}
 
-	protected getUsernamesOfRoomById(roomId: string): Array<string> {
+	protected async getUsernamesOfRoomById(roomId: string): Promise<Array<string>> {
 		if (!roomId) {
 			return [];
 		}
 
-		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+		const records = await Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
 			projection: {
 				'u.username': 1,
 			},
@@ -26,7 +26,7 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
-		return records.map((s: ISubscription) => s.u.username);
+		return records.map((s: ISubscription) => s.u.username).filter((username) => username) as Array<string>;
 	}
 
 	protected async getWorkspacePublicKey(): Promise<ISetting> {
