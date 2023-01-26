@@ -15,6 +15,7 @@ type GenericModalProps = RequiredModalProps & {
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
 	title?: string | ReactElement;
+	tagline?: string;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
 	onCancel?: () => void;
@@ -62,6 +63,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	cancelText,
 	confirmText,
 	title,
+	tagline,
 	icon,
 	onCancel,
 	onClose = onCancel,
@@ -77,6 +79,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.HeaderText>
+					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />

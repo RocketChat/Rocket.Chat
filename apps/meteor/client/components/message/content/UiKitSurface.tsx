@@ -3,6 +3,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitMessage, kitContext, messageParser } from '@rocket.chat/fuselage-ui-kit';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import type { ContextType, ReactElement } from 'react';
 import React from 'react';
@@ -17,6 +18,7 @@ import {
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
 import { renderMessageBody } from '../../../lib/utils/renderMessageBody';
+import CalendarAuthModal from '../../../views/calendarIntegration/CalendarAuthModal';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/useVideoConfWarning';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 
@@ -56,6 +58,7 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 	const isRinging = useVideoConfIsRinging();
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const setModal = useSetModal();
 
 	const videoConfManager = useVideoConfManager();
 
@@ -78,6 +81,11 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 	const context: ContextType<typeof kitContext> = {
 		// @ts-expect-error Property 'mid' does not exist on type 'ActionParams'.
 		action: ({ actionId, value, blockId, mid = _mid, appId }, event) => {
+			console.log(appId);
+			if (appId === 'outlook') {
+				return setModal(<CalendarAuthModal onCancel={() => setModal(null)} />);
+			}
+
 			if (appId === 'videoconf-core') {
 				event.preventDefault();
 				setPreferences({ mic: true, cam: false });
