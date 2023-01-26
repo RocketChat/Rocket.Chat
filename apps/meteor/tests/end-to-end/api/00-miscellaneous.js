@@ -4,6 +4,7 @@ import { getCredentials, api, login, request, credentials } from '../../data/api
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('miscellaneous', function () {
 	this.retries(0);
@@ -597,11 +598,14 @@ describe('miscellaneous', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const {
-						instances: [instance],
-					} = res.body;
+					// ddp-streamer registers itself as an instance, so for EE we have 2 instances
+					const totalInstances = IS_EE ? 2 : 1;
+					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(totalInstances);
+
+					const { instances } = res.body;
+
+					const instance = instances.filter((i) => i.name === 'rocket.chat')[0];
 
 					expect(instance).to.have.property('_id');
 					expect(instance).to.have.property('extraInformation');
