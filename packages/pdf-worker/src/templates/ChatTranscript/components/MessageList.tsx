@@ -18,7 +18,7 @@ export const MessageList = ({ messages, invalidFileMessage }: { messages: ChatTr
 		{messages.map((message, index) => (
 			<View style={styles.wrapper} key={index} wrap={false}>
 				{message.divider && <Divider divider={message.divider} />}
-				<MessageHeader name={message.u.name} time={message.ts} />
+				<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
 				<MessageContent message={message.msg} />
 				{message.files && <Files files={message.files} invalidMessage={invalidFileMessage} />}
 			</View>
