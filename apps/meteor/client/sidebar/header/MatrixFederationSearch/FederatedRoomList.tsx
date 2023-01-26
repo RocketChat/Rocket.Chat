@@ -6,6 +6,8 @@ import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 
 type FederatedRoomListProps = {
@@ -23,7 +25,7 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 	const { data, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteQuery(
 		['federation/searchPublicRooms', serverName, roomName, count],
 		async ({ pageParam }) => fetchRoomList({ serverName, roomName, count, pageToken: pageParam }),
-		{ getNextPageParam: (lastPage) => lastPage.nextPageToken },
+		{ getNextPageParam: (lastPage) => lastPage.nextPageToken, useErrorBoundary: true },
 	);
 
 	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
@@ -31,7 +33,18 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 		async (id: string) => {
 			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}` });
 		},
-		{ onSuccess: () => setModal(null) },
+		{
+			onSuccess: (_, id) => {
+				setModal(null);
+				roomCoordinator.openRouteLink('c', { rid: id });
+			},
+			onError: (error, id) => {
+				if (error instanceof Error && error.message === 'already-joined') {
+					setModal(null);
+					roomCoordinator.openRouteLink('c', { rid: id });
+				}
+			},
+		},
 	);
 
 	if (isLoading) {
@@ -44,8 +57,13 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 			<Virtuoso
 				data={flattenedData || []}
 				totalCount={data?.pages[data?.pages.length - 1].total || 0}
+				computeItemKey={(index, room) => room.id || index}
 				overscan={4}
-				components={{ Footer: isFetchingNextPage ? Throbber : undefined, Scroller: ScrollableContentWrapper }}
+				components={{
+					Footer: isFetchingNextPage ? Throbber : undefined,
+					Scroller: ScrollableContentWrapper,
+					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
+				}}
 				endReached={() => fetchNextPage()}
 				itemContent={(_, { id, ...props }) => (
 					<FederatedRoomListItem onClickJoin={() => onClickJoin(id)} disabled={isLoadingMutation} {...props} key={id} />

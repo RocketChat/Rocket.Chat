@@ -1,4 +1,4 @@
-import { Divider, Modal, ButtonGroup, Button, Field, TextInput } from '@rocket.chat/fuselage';
+import { Divider, Modal, ButtonGroup, Button, Field, TextInput, Throbber } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { VFC, FormEvent } from 'react';
@@ -42,9 +42,15 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 				<Field>
 					<Field.Label>{t('Server_name')}</Field.Label>
 					<Field.Row>
-						<TextInput value={serverName} onChange={(e: FormEvent<HTMLInputElement>) => setServerName(e.currentTarget.value)} mie='x4' />
+						<TextInput
+							disabled={isLoading}
+							value={serverName}
+							onChange={(e: FormEvent<HTMLInputElement>) => setServerName(e.currentTarget.value)}
+							mie='x4'
+						/>
 						<Button onClick={() => addServer()} primary disabled={isLoading}>
-							{t('Add')}
+							{!isLoading && t('Add')}
+							{isLoading && <Throbber inheritColor />}
 						</Button>
 					</Field.Row>
 					{isError && <Field.Error>{t('Server_doesnt_exist')}</Field.Error>}

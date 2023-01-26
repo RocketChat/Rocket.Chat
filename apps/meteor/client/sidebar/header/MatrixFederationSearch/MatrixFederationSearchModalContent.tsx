@@ -6,6 +6,7 @@ import type { VFC, FormEvent } from 'react';
 import React, { useCallback, useState, useMemo } from 'react';
 
 import FederatedRoomList from './FederatedRoomList';
+import FederatedRoomListErrorBoundary from './FederatedRoomListErrorBoundary';
 import MatrixFederationManageServersModal from './MatrixFederationManageServerModal';
 import MatrixFederationSearch from './MatrixFederationSearch';
 
@@ -55,7 +56,9 @@ const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContent
 			<Box is='a' display='flex' flexDirection='row' mbe='x16' onClick={manageServers}>
 				{t('Manage_server_list')}
 			</Box>
-			<FederatedRoomList serverName={serverName} roomName={debouncedRoomName} />
+			<FederatedRoomListErrorBoundary>
+				<FederatedRoomList serverName={serverName} roomName={debouncedRoomName} />
+			</FederatedRoomListErrorBoundary>
 		</>
 	);
 };
