@@ -39,7 +39,7 @@ export class AppUserBridge extends UserBridge {
 
 	protected async create(userDescriptor: Partial<IUser>, appId: string, options?: IUserCreationOptions): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is requesting to create a new user.`);
-		const user = this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
+		const user = await this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
 
 		if (!user._id) {
 			user._id = uuid();

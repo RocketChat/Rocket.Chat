@@ -168,8 +168,8 @@ export class AppCommandsBridge extends CommandBridge {
 		triggerId?: string,
 		userId?: string,
 	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(userId);
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = await this.orch.getConverters()?.get('users').convertById(userId);
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -190,8 +190,8 @@ export class AppCommandsBridge extends CommandBridge {
 		message: IMessage,
 		userId?: string,
 	): Promise<SlashCommandPreviews> {
-		const user = this.orch.getConverters()?.get('users').convertById(userId);
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = await this.orch.getConverters()?.get('users').convertById(userId);
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -208,8 +208,8 @@ export class AppCommandsBridge extends CommandBridge {
 		triggerId: string,
 		userId?: string,
 	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(userId);
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = await this.orch.getConverters()?.get('users').convertById(userId);
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 

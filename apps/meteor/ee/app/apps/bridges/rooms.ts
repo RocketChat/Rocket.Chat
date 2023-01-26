@@ -19,7 +19,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async create(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 		let roomType: CoreRoomType;
 
 		switch (room.type) {
@@ -86,7 +86,10 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {}).toArray();
-		return subscriptions.map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id));
+		const promisedMembers = subscriptions.map(async (sub: ISubscription) =>
+			this.orch.getConverters()?.get('users').convertById(sub.u?._id),
+		);
+		return Promise.all(promisedMembers);
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -105,7 +108,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('A room must exist to update.');
 		}
 
-		const rm = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		// @ts-ignore Circular reference on field 'value'
 		await Rooms.update(rm._id, rm);
@@ -135,11 +138,11 @@ export class AppRoomBridge extends RoomBridge {
 	): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new discussion.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		let rcMessage;
 		if (parentMessage) {
-			rcMessage = this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
+			rcMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
 		}
 
 		if (!rcRoom.prid || !(await Rooms.findOneById(rcRoom.prid))) {
@@ -180,6 +183,7 @@ export class AppRoomBridge extends RoomBridge {
 		const subsUids = subs.map((user: { uid: string }) => user.uid);
 		const users = await Users.findByIds(subsUids).toArray();
 		const userConverter = this.orch.getConverters()?.get('users');
-		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
+		const promisedUsers = users.map(async (user: ICoreUser) => userConverter.convertToApp(user));
+		return Promise.all(promisedUsers);
 	}
 }

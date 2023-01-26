@@ -44,7 +44,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 	}
 
 	async triggerEvent(event: string, ...payload: any): Promise<any> {
-		return this.apps.triggerEvent(event, payload);
+		return this.apps.triggerEvent(event, ...payload);
 	}
 
 	async updateAppsMarketplaceInfo(apps: Array<IAppInfo>): Promise<ProxiedApp[] | undefined> {
