@@ -9,7 +9,6 @@ import type {
 	App,
 	FeaturedAppsSection,
 	ILogItem,
-	Pagination,
 	AppRequestFilter,
 	AppRequestsStats,
 	PaginatedAppRequests,
@@ -159,7 +158,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; q: AppRequestFilter; sort: string; pagination: Pagination }) => PaginatedAppRequests;
+		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => PaginatedAppRequests;
 	};
 
 	'/apps/app-request/stats': {

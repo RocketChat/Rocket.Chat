@@ -4,5 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 export const useAppRequestStats = () => {
 	const fetchRequestStats = useEndpoint('GET', '/apps/app-request/stats');
 
-	return useQuery(['app-requests-stats'], async () => fetchRequestStats());
+	return useQuery({
+		queryKey: ['app-requests-stats'],
+		queryFn: async () => fetchRequestStats(),
+		refetchOnWindowFocus: false,
+	});
 };

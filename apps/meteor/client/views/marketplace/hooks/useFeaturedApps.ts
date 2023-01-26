@@ -6,5 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 export const useFeaturedApps = (): UseQueryResult<OperationResult<'GET', '/apps/featured-apps'>> => {
 	const featuredApps = useEndpoint('GET', '/apps/featured-apps');
 
-	return useQuery(['featured-apps'], () => featuredApps());
+	return useQuery({
+		queryKey: ['featured-apps'],
+		queryFn: () => featuredApps(),
+		refetchOnWindowFocus: false,
+	});
 };

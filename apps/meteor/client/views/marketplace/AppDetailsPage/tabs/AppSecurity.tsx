@@ -1,7 +1,7 @@
 import type { AppPermission } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import AppPermissionsList from '../../components/AppPermissionsList';
@@ -13,7 +13,7 @@ type AppSecurityProps = {
 	privacyLink?: string;
 };
 
-const AppSecurity: FC<AppSecurityProps> = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }) => {
+const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }: AppSecurityProps): ReactElement => {
 	const t = useTranslation();
 
 	return (

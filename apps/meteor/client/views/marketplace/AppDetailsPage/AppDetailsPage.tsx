@@ -17,6 +17,7 @@ import AppDetailsPageTabs from './AppDetailsPageTabs';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
+import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 
@@ -66,7 +67,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	}, [dispatchToastMessage, id, name, settings]);
 
 	return (
-		<Page flexDirection='column'>
+		<Page flexDirection='column' h='full'>
 			<Page.Header title={t('App_Info')} onClickBack={handleReturn}>
 				<ButtonGroup>
 					{installed && (
@@ -77,8 +78,8 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow padding='x24'>
-				<Box w='full' alignSelf='center'>
+			<Page.ScrollableContentWithShadow pi='x24' pbs='x24' pbe='0' h='full'>
+				<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
 					{!appData && <AppDetailsPageLoading />}
 					{appData && (
 						<>
@@ -91,6 +92,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 								tab={tab}
 							/>
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
+							{tab === 'requests' && <AppRequests id={id} />}
 							{tab === 'security' && isSecurityVisible && (
 								<AppSecurity
 									privacyPolicySummary={privacyPolicySummary}

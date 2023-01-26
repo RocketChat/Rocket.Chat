@@ -160,7 +160,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
-		if (status.label !== 'Requested') {
+		if (status.label !== 'Requested' && !installed) {
 			return isAppRequestsPage && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests;
 		}
 

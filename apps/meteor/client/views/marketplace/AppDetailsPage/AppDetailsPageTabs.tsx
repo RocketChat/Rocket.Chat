@@ -24,7 +24,7 @@ const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, setting
 	const router = useRoute(currentRouteName);
 
 	const [, urlParams] = useCurrentRoute();
-	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs'): void => {
+	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs' | 'requests'): void => {
 		router.replace({ ...urlParams, tab });
 	};
 
@@ -32,6 +32,9 @@ const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, setting
 		<Tabs>
 			<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 				{t('Details')}
+			</Tabs.Item>
+			<Tabs.Item onClick={(): void => handleTabClick('requests')} selected={tab === 'requests'}>
+				{t('Requests')}
 			</Tabs.Item>
 			{Boolean(installed) && isSecurityVisible && (
 				<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
