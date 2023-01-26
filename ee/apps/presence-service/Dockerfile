@@ -4,8 +4,8 @@ ARG SERVICE
 
 WORKDIR /app
 
-COPY ./packages/presence/package.json packages/presence/package.json
-COPY ./packages/presence/dist packages/presence/dist
+COPY ./ee/packages/presence/package.json ee/packages/presence/package.json
+COPY ./ee/packages/presence/dist ee/packages/presence/dist
 
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
