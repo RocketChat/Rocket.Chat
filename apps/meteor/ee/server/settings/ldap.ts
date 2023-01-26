@@ -38,6 +38,12 @@ export function addSettings(): void {
 						invalidValue: true,
 					});
 
+					this.add('LDAP_Background_Sync_Remove_Deleted_Users', false, {
+						type: 'boolean',
+						enableQuery: backgroundSyncQuery,
+						invalidValue: false,
+					});
+
 					this.add('LDAP_Background_Sync_Avatars', false, {
 						type: 'boolean',
 						enableQuery,

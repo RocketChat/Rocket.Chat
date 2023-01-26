@@ -53,6 +53,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 				interval: settings.get('LDAP_Background_Sync_Interval'),
 				newUsers: settings.get('LDAP_Background_Sync_Import_New_Users'),
 				existingUsers: settings.get('LDAP_Background_Sync_Keep_Existant_Users_Updated'),
+				deletedUsers: settings.get('LDAP_Background_Sync_Remove_Deleted_Users'),
 			},
 			ee: {
 				syncActiveState: settings.get('LDAP_Sync_User_Active_State'),

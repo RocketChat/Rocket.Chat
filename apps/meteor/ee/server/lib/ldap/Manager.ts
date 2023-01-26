@@ -14,6 +14,7 @@ import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/l
 import { syncUserRoles } from '../syncUserRoles';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
+import { deleteUser } from '/app/lib/server';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -23,9 +24,10 @@ export class LDAPEEManager extends LDAPManager {
 
 		const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
 		const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+		const removeDeletedUsers = settings.get<boolean>('LDAP_Background_Sync_Remove_Deleted_Users') ?? false;
 
 		const options = this.getConverterOptions();
-		options.skipExistingUsers = !updateExistingUsers;
+		options.skipExistingUsers = !(updateExistingUsers || removeDeletedUsers);
 
 		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
@@ -35,8 +37,9 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (createNewUsers) {
 				await this.importNewUsers(ldap, converter);
-			} else if (updateExistingUsers) {
-				await this.updateExistingUsers(ldap, converter);
+			}
+			if (!options.skipExistingUsers) {
+				await this.reviewExistingUsers(ldap, converter, { updateExistingUsers, removeDeletedUsers });
 			}
 
 			converter.convertUsers({
@@ -552,16 +555,35 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
+	private static async reviewExistingUsers(
+		ldap: LDAPConnection,
+		converter: LDAPDataConverter,
+		settings: {
+			updateExistingUsers: boolean;
+			removeDeletedUsers: boolean;
+		},
+	): Promise<void> {
 		const users = await UsersRaw.findLDAPUsers().toArray();
+		const { updateExistingUsers, removeDeletedUsers } = settings;
+
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 
-			if (ldapUser) {
-				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUser(userData);
+			if (updateExistingUsers && ldapUser) {
+				this.updateExistingUser(ldapUser, user, converter);
+			} else if (removeDeletedUsers && !ldapUser) {
+				await this.removeDeletedUser(user);
 			}
 		}
+	}
+
+	private static updateExistingUser(ldapUser: ILDAPEntry, user: IUser, converter: LDAPDataConverter): void {
+		const userData = this.mapUserData(ldapUser, user.username);
+		converter.addUser(userData);
+	}
+
+	private static async removeDeletedUser(user: IUser): Promise<void> {
+		await deleteUser(user._id, true);
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
