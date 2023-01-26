@@ -110,6 +110,6 @@ export function watchAppsSettingsChanges(apps: AppServerOrchestrator) {
 
 		const model = apps._logModel;
 
-		model.resetTTLIndex(expireAfterSeconds);
+		model?.resetTTLIndex(expireAfterSeconds);
 	});
 }
