@@ -101,7 +101,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 	};
 
 	return (
-		<Modal {...props}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={nextStep} {...props} />} {...props}>
 			{currentStep === 1 && (
 				<>
 					<Modal.Header>
@@ -198,7 +198,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props
 				)}
 				<Modal.FooterControllers>
 					<Button onClick={previousStep}>{currentStep === 1 ? t('Cancel') : t('Back')}</Button>
-					<Button primary onClick={nextStep}>
+					<Button primary type='submit'>
 						{currentStep === 3 ? t('Finish') : t('Next')}
 					</Button>
 				</Modal.FooterControllers>
