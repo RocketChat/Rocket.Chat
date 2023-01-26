@@ -18,7 +18,7 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('reports');
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -35,7 +35,7 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('reports');
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -51,7 +51,7 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('reports');
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -67,7 +67,7 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('reports');
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
 				})
 				.end(done);
 		});

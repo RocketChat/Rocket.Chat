@@ -22,10 +22,6 @@ API.v1.addRoute(
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			if (!reports) {
-				return API.v1.failure('No reports found');
-			}
-
 			return API.v1.success({
 				reports,
 				count: reports.length,
