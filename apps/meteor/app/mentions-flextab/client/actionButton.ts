@@ -26,7 +26,7 @@ Meteor.startup(function () {
 						tab: 'thread',
 						context: message.tmid,
 						rid: message.rid,
-						name: Rooms.findOne({ _id: message.rid }).name,
+						name: Rooms.findOne({ _id: message.rid })?.name ?? '',
 					},
 					{
 						jump: message._id,

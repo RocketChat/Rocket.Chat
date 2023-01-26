@@ -3,7 +3,7 @@ import type { Options, Root } from '@rocket.chat/message-parser';
 import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { parseMessageTextToAstMarkdown } from '../../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown } from '../../../../../../../client/lib/parseMessageTextToAstMarkdown';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 
