@@ -1454,7 +1454,7 @@
   "Custom_Sounds": "Custom Sounds",
   "Custom_Status": "Custom Status",
   "Custom_Translations": "Custom Translations",
-  "Custom_Translations_Description": "Should be a valid JSON where keys are languages containing a dictionary of key and translations. Example:<br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code> ",
+  "Custom_Translations_Description": "Should be a valid JSON where keys are languages containing a dictionary of key and translations. Example:{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n}",
   "Custom_User_Status": "Custom User Status",
   "Custom_User_Status_Add": "Add Custom User Status",
   "Custom_User_Status_Added_Successfully": "Custom User Status Added Successfully",

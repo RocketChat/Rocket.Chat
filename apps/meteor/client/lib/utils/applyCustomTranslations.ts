@@ -5,7 +5,15 @@ import { settings } from '../../../app/settings/client';
 export const applyCustomTranslations = (): void => {
 	const customTranslations: string | undefined = settings.get('Custom_Translations');
 
-	if (!customTranslations) {
+	const parseToJSON = (customTranslations: string) => {
+		try {
+			return JSON.parse(customTranslations);
+		} catch (e) {
+			return false;
+		}
+	};
+
+	if (!customTranslations || !parseToJSON(customTranslations)) {
 		return;
 	}
 

@@ -34,7 +34,6 @@ const useI18next = (lng: string): typeof i18next => {
 
 	const parse = useMutableCallback((data: string, lngs?: string | string[], namespaces: string | string[] = []): { [key: string]: any } => {
 		const parsedCustomTranslations = typeof customTranslations === 'string' && parseToJSON(customTranslations);
-
 		const source = JSON.parse(data);
 		const result: { [key: string]: any } = {};
 
@@ -89,7 +88,7 @@ const useI18next = (lng: string): typeof i18next => {
 	}, [i18n, lng]);
 
 	useEffect(() => {
-		if (!customTranslations || typeof customTranslations !== 'string') {
+		if (!customTranslations || typeof customTranslations !== 'string' || !parseToJSON(customTranslations)) {
 			return;
 		}
 

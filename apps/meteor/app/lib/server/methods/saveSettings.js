@@ -6,6 +6,17 @@ import { hasPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
+const parseToJSON = (customTranslations) => {
+	try {
+		JSON.parse(customTranslations);
+		return true;
+	} catch (e) {
+		throw new Meteor.Error('error-action-not-allowed', 'Invalid JSON Format', {
+			method: 'saveSettings',
+		});
+	}
+};
+
 Meteor.methods({
 	saveSettings: twoFactorRequired(async function (params = []) {
 		const uid = Meteor.userId();
@@ -40,6 +51,9 @@ Meteor.methods({
 						break;
 					case 'multiSelect':
 						check(value, Array);
+						break;
+					case 'code':
+						parseToJSON(value);
 						break;
 					default:
 						check(value, String);
