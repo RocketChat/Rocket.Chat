@@ -6,8 +6,8 @@ export const useAppRequests = (appId: string, limit?: number, offset?: number, s
 	const fetchAppRequests = useEndpoint('GET', '/apps/app-request');
 
 	return useQuery({
-		queryKey: ['app-requests'],
-		queryFn: async () => fetchAppRequests({ appId, q: filter, sort, limit, offset }),
+		queryKey: ['app-requests', limit, offset],
+		queryFn: async () => fetchAppRequests({ appId, q: filter, sort, limit: 1, offset }),
 		refetchOnWindowFocus: false,
 		cacheTime: 0,
 	});
