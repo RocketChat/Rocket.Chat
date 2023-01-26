@@ -29,6 +29,7 @@ import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService'
 import type { IUploadService } from './types/IUploadService';
 import type { ICloudService } from './types/ICloudService';
 import type { IUserService } from './types/IUserService';
+import type { IFetchService } from './types/IFetchService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -58,6 +59,7 @@ export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
 export const AppsListener = proxifyWithWait<IAppsListenerService>('apps');
 export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
+export const FetchService = proxifyWithWait<IFetchService>('fetch');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
