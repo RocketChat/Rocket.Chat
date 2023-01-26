@@ -2,24 +2,25 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, spy } from 'chai';
 import proxyquire from 'proxyquire';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-import RouterContextMock from '../../../../mocks/client/RouterContextMock';
+import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
+import type * as AppsModelListModel from './AppsModelList';
 
-const mockAppsModelListModule = (stubs = {}) => {
-	return proxyquire.load('../../../../../client/components/AdministrationList/AppsModelList', {
-		'../../../app/ui-message/client/ActionManager': {
-			'triggerActionButtonAction': {},
-			'@noCallThru': true,
-		},
-		...stubs,
-		// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-	}) as typeof import('../../../../../client/components/AdministrationList/AppsModelList');
-};
+describe('AppsModelList', () => {
+	const loadMock = (stubs?: Record<string, unknown>) => {
+		return proxyquire.noCallThru().load<typeof AppsModelListModel>('./AppsModelList', {
+			'../../../app/ui-message/client/ActionManager': {
+				triggerActionButtonAction: {},
+			},
+			...stubs,
+		}).default;
+	};
 
-describe('components/AdministrationList/AppsModelList', () => {
 	it('should render apps', async () => {
-		const AppsModelList = mockAppsModelListModule().default;
+		const AppsModelList = loadMock();
+
 		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
@@ -28,15 +29,18 @@ describe('components/AdministrationList/AppsModelList', () => {
 	});
 
 	context('when clicked', () => {
-		it('should go to marketplace', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
-			const AppsModelList = mockAppsModelListModule().default;
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
-				</RouterContextMock>,
-			);
+		const pushRoute = spy();
+		const handleDismiss = spy();
+
+		const ProvidersMock = ({ children }: { children: ReactNode }) => {
+			return <RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>;
+		};
+
+		it('should go to admin marketplace', async () => {
+			const AppsModelList = loadMock();
+
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Marketplace');
 			userEvent.click(button);
 			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'explore', page: 'list' }));
@@ -44,14 +48,10 @@ describe('components/AdministrationList/AppsModelList', () => {
 		});
 
 		it('should go to installed', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
-			const AppsModelList = mockAppsModelListModule().default;
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
-				</RouterContextMock>,
-			);
+			const AppsModelList = loadMock();
+
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
+
 			const button = screen.getByText('Installed');
 
 			userEvent.click(button);
@@ -60,20 +60,19 @@ describe('components/AdministrationList/AppsModelList', () => {
 		});
 
 		it('should render apps and trigger action', async () => {
-			const pushRoute = spy();
-			const handleDismiss = spy();
 			const triggerActionButtonAction = spy();
-			const AppsModelList = mockAppsModelListModule({
+
+			const AppsModelList = loadMock({
 				'../../../app/ui-message/client/ActionManager': {
 					triggerActionButtonAction,
 					'@noCallThru': true,
 				},
-			}).default;
-			render(
-				<RouterContextMock pushRoute={pushRoute}>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
-				</RouterContextMock>,
-			);
+			});
+
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />, {
+				wrapper: ProvidersMock,
+			});
+
 			const button = screen.getByText('Custom App');
 
 			userEvent.click(button);
