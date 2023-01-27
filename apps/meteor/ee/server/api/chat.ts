@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../app/api/server/api';
-import { isEnterprise } from '../../app/license/server';
+import { hasLicense } from '../../app/license/server/license';
 
 API.v1.addRoute(
 	'chat.getMessageReadReceipts',
 	{ authRequired: true },
 	{
 		async get() {
-			if (!isEnterprise()) {
+			if (!hasLicense('message-read-receipt')) {
 				throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 			}
 
