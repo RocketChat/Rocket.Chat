@@ -1,9 +1,9 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useClipboard } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath, useTooltipOpen } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEventHandler } from 'react';
-import React, { memo, useRef } from 'react';
+import React, { memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
@@ -25,11 +25,9 @@ type roomType = {
 
 const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): ReactElement => {
 	const t = useTranslation();
-	const ref = useRef<HTMLElement>(null);
-	const openTooltip = useTooltipOpen();
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { copy } = useClipboard(permalink);
+	const { copy, hasCopied } = useClipboard(permalink);
 
 	const { control, watch } = useForm({
 		defaultValues: {
@@ -83,10 +81,9 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 	};
 
 	const handleCopy = (): void => {
-		if (ref.current) {
-			openTooltip(<div>{t('Copied')}</div>, ref.current);
+		if (!hasCopied) {
+			copy();
 		}
-		copy();
 	};
 
 	return (
@@ -120,8 +117,8 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup>
-					<Button ref={ref} onClick={handleCopy}>
-						{t('Copy_Link')}
+					<Button onClick={handleCopy} disabled={hasCopied}>
+						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
 					<Button disabled={!rooms.length} onClick={handleShareMessage} primary>
 						{t('Share')}
