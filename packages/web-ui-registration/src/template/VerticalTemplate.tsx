@@ -1,4 +1,4 @@
-import { VerticalWizardLayout, VerticalWizardLayoutTitle, VerticalWizardLayoutFooter, VerticalWizardLayoutForm } from '@rocket.chat/layout';
+import { VerticalWizardLayout, VerticalWizardLayoutTitle, VerticalWizardLayoutFooter } from '@rocket.chat/layout';
 import type { ReactElement, ReactNode } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
@@ -23,7 +23,7 @@ const VerticalTemplate = ({ children }: { children: ReactNode }): ReactElement =
 				<RegisterTitle />
 			</VerticalWizardLayoutTitle>
 			<LoginPoweredBy />
-			<VerticalWizardLayoutForm>{children}</VerticalWizardLayoutForm>
+			{children}
 			<VerticalWizardLayoutFooter>
 				<LoginTerms />
 				<LoginSwitchLanguageFooter />
