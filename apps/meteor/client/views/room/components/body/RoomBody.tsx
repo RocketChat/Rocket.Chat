@@ -66,7 +66,6 @@ const RoomBody = (): ReactElement => {
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
-	const viewMode = useUserPreference<number>('messageViewMode');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
@@ -127,11 +126,6 @@ const RoomBody = (): ReactElement => {
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
 	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
-
-	const messageViewMode = useMemo(() => {
-		const modes = ['', 'cozy', 'compact'] as const;
-		return modes[viewMode ?? 0] ?? modes[0];
-	}, [viewMode]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
@@ -565,10 +559,7 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div
-								ref={messagesBoxRef}
-								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
-							>
+							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
 								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
