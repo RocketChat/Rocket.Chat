@@ -1,18 +1,12 @@
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useSearchItems } from '../../sidebar/search/useSearchItems';
 import UserAvatar from '../avatar/UserAvatar';
 
-// const query = (
-// 	term = '',
-// ): {
-// 	selector: string;
-// } => ({ selector: JSON.stringify({ term }) });
+const query = { open: { $ne: false } };
 
 type roomType = {
 	label: string;
@@ -31,38 +25,20 @@ type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoCompl
 const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	// const { value: usersData } = useEndpointData(
-	// 	'/v1/users.autocomplete',
-	// 	useMemo(() => query(debouncedFilter), [debouncedFilter]),
-	// );
-	// const { value: roomsData } = useEndpointData(
-	// 	'/v1/rooms.autocomplete.channelAndPrivate',
-	// 	useMemo(() => query(filter), [filter]),
-	// );
-
-	const query = useMemo(() => debouncedFilter, [debouncedFilter]);
-
-	const searchSpotlight = useEndpoint('GET', '/v1/spotlight');
-	const { data } = useQuery(['spotlight', query], () => searchSpotlight({ query }));
-
-	const { data: items = [], isLoading } = useSearchItems(debouncedFilter);
-
-	// console.log(items);
+	const rooms = useUserSubscriptions(query).filter((item) => item.name.toLocaleLowerCase().includes(debouncedFilter.toLocaleLowerCase()));
 
 	const parseItems = useMemo(
 		() =>
-			items.map((subscription) => {
+			rooms.map((subscription) => {
 				return {
-					...(subscription.t === 'd' ? { _id: subscription._id } : { _id: subscription.rid }),
+					_id: subscription.rid,
 					value: subscription.name,
 					label: subscription.name,
 					t: subscription.t,
 				};
 			}),
-		[items],
+		[rooms],
 	);
-
-	// console.log(data);
 
 	const options = [...parseItems];
 

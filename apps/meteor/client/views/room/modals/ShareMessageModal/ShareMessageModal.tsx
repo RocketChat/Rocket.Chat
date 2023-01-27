@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath, useTooltipOpen } from '@rocket.chat/ui-contexts';
@@ -53,35 +53,21 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 		const optionalMessage = '';
 		const curMsg = await prependReplies(optionalMessage, [message]);
 
-		const messages = rooms.map(async (room: roomType) => {
-			const sendPayload = {
-				roomId: room._id,
-				text: curMsg,
-			};
+		try {
+			rooms.map(async (room: roomType) => {
+				const sendPayload = {
+					roomId: room._id,
+					text: curMsg,
+				};
 
-			await sendMessage(sendPayload);
-		});
-
-		const result = await Promise.allSettled(messages);
-		const failedRequests = result.filter((request) => request.status === 'rejected');
-
-		console.log(failedRequests);
-
-		if (failedRequests.length) {
-			dispatchToastMessage({ type: 'error', message: `${failedRequests.length} could not be sent` });
-			return onClose();
+				await sendMessage(sendPayload);
+			});
+			dispatchToastMessage({ type: 'success', message: t('Message_has_been_shared') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			onClose();
 		}
-
-		dispatchToastMessage({ type: 'success', message: `${result.length} has been shared` });
-
-		// try {
-		// 	// console.log(result);
-		// 	// dispatchToastMessage({ type: 'success', message: t('Message_has_been_shared') });
-		// } catch (error) {
-		// } finally {
-		// }
-
-		onClose();
 	};
 
 	const avatarUrl = getUserAvatarPath(message.u.username);
@@ -92,9 +78,11 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 		author_icon: avatarUrl,
 		message_link: '',
 		text: message.msg,
-		attachments: message.attachments,
+		attachments: message.attachments as MessageQuoteAttachment[],
 		md: message.md,
 	};
+
+	console.log(attachment);
 
 	const handleCopy = (): void => {
 		if (ref.current) {
