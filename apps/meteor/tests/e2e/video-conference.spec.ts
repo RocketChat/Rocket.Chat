@@ -7,10 +7,12 @@ test.use({ storageState: 'user1-session.json' });
 test.describe('video conference', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetReadOnlyChannel: string;
 	let targetTeam: string;
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
+		targetReadOnlyChannel = await createTargetChannel(api, { readOnly: true });
 		targetTeam = await createTargetTeam(api);
 		await createDirectMessage(api);
 	});
@@ -83,5 +85,11 @@ test.describe('video conference', () => {
 			await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user1');
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
+	});
+
+	test('expect create video conference not available in a "targetReadOnlyChannel"', async () => {
+		await poHomeChannel.sidenav.openChat(targetReadOnlyChannel);
+
+		await expect(poHomeChannel.content.btnCall).hasAttribute('disabled');
 	});
 });
