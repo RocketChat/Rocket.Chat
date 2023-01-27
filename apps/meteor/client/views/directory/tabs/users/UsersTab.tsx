@@ -2,7 +2,7 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
+import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import UsersTable from './UsersTable';
 
 const UsersTab = (props: { workspace?: 'external' | 'local' }): ReactElement => {
