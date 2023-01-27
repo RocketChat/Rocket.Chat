@@ -104,7 +104,7 @@ export const createMessageContext = ({
 	API_Embed?: unknown;
 	API_EmbedDisabledFor?: unknown;
 	Message_GroupingPeriod?: unknown;
-}) => {
+} = {}) => {
 	return {
 		u: user,
 		room,
