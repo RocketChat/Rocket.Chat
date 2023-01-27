@@ -27,11 +27,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
-	const { price, purchaseType, pricingPlans } = app;
 	const isAdminUser = usePermission('manage-apps');
-	const button = appButtonProps({ ...app, isAdminUser });
 	const context = useRouteParameter('context');
 
+	const { price, purchaseType, pricingPlans } = app;
+
+	const button = appButtonProps({ ...app, isAdminUser });
 	const isAppRequestsPage = context === 'requested';
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
@@ -61,7 +62,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		},
 		[setModal, action, app, setLoading],
 	);
-
 	const cancelAction = useCallback(() => {
 		setLoading(false);
 		setModal(null);
@@ -160,14 +160,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
-		if (status.label !== 'Requested' && !installed) {
+		if ((status.label === 'request' || status.label === 'requests') && !installed) {
 			return isAppRequestsPage && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests;
 		}
 
 		return null;
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button && !isAppRequestsPage;
+	const shouldShowPriceDisplay = isAppDetailsPage && button;
 
 	return (
 		<Box {...props} display='flex' alignItems='center'>
@@ -180,7 +180,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary small disabled={loading} onClick={handleClick} mie='x8'>
+					<Button primary small disabled={loading || (action === 'request' && app.requestedEndUser)} onClick={handleClick} mie='x8'>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
@@ -198,7 +198,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineEnd='x8' key={index}>
+				<Margins inline='x8' key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>

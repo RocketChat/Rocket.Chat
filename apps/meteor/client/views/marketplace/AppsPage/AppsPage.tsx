@@ -1,5 +1,13 @@
 import { Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
-import { useRoute, useSetting, useMethod, useTranslation, useCurrentRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import {
+	useRoute,
+	useSetting,
+	useMethod,
+	useTranslation,
+	useCurrentRoute,
+	useRouteParameter,
+	usePermission,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState } from 'react';
 
@@ -16,6 +24,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
 	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+	const isAdminUser = usePermission('manage-apps');
 
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -46,7 +55,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 		<Page background='tint'>
 			<Page.Header title={t('Apps')}>
 				<ButtonGroup>
-					{isMarketplace && !isLoggedInCloud && (
+					{isMarketplace && !isLoggedInCloud && isAdminUser && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
 							{isLoggedInCloud === undefined ? (
 								<Skeleton width='x80' />
@@ -57,7 +66,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					{Boolean(isDevelopmentMode) && (
+					{Boolean(isDevelopmentMode) && isAdminUser && (
 						<Button primary onClick={handleUploadButtonClick}>
 							<Icon size='x20' name='upload' /> {t('Upload_app')}
 						</Button>

@@ -97,9 +97,15 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
+					const customQueryParams = new URLSearchParams();
+
+					if (!this.queryParams.isAdminUser) {
+						customQueryParams.set('endUserID', this.user._id);
+					}
+
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps`, {
+						result = HTTP.get(`${baseUrl}/v1/apps?${customQueryParams.toString()}`, {
 							headers,
 						});
 					} catch (e) {

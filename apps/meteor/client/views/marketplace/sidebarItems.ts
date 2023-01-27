@@ -1,3 +1,4 @@
+import { hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -25,5 +26,6 @@ export const {
 		href: 'marketplace/requested/list',
 		icon: 'cube',
 		i18nLabel: 'Requested',
+		permissionGranted: (): boolean => hasPermission('manage-apps'),
 	},
 ]);

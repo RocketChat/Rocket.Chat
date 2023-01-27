@@ -1,5 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
@@ -11,6 +12,8 @@ const AppRequests = ({ id }: { id: App['id'] }): ReactElement => {
 	const [limit, setLimit] = useState();
 	const [offset, setOffset] = useState();
 	const appRequests = useAppRequests(id, limit, offset);
+
+	const t = useTranslation();
 
 	const onSetItemsPerPage = (itemsPerPageOption: any) => {
 		setLimit(itemsPerPageOption);
@@ -33,18 +36,25 @@ const AppRequests = ({ id }: { id: App['id'] }): ReactElement => {
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36' flexGrow='1'>
-				{appRequests.data?.data.map((request) => (
-					<AppRequestItem
-						key={request.id}
-						seen={request.seen}
-						name={request.requester.name}
-						createdDate={request.createdDate}
-						message={request.message}
-						username={request.requester.username}
-					/>
-				))}
+				{appRequests.data?.data?.length ? (
+					appRequests.data?.data.map((request) => (
+						<AppRequestItem
+							key={request.id}
+							seen={request.seen}
+							name={request.requester.name}
+							createdDate={request.createdDate}
+							message={request.message}
+							username={request.requester.username}
+						/>
+					))
+				) : (
+					<States>
+						<StatesTitle>{t('No_requests')}</StatesTitle>
+						<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
+					</States>
+				)}
 			</Box>
-			{appRequests.isSuccess && (
+			{appRequests.isSuccess && appRequests.data?.data?.length && (
 				<Pagination
 					divider
 					count={appRequests.data.meta.total}

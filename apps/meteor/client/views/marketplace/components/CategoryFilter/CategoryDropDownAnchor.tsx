@@ -17,7 +17,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLInputElement, { selectedCategories
 				flexGrow='1'
 				flexShrink='1'
 				borderColor={selectedCategoriesCount ? 'none' : 'light'}
-				borderWidth={selectedCategoriesCount ? 'none' : 'x2'}
+				borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
 				{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
 			>
 				{selectedCategoriesCount > 0 && (

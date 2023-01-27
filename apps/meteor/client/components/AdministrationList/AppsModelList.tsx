@@ -1,5 +1,5 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -16,6 +16,7 @@ type AppsModelListProps = {
 const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('marketplace');
+	const canManageApps = usePermission('manage-apps');
 	const page = 'list';
 
 	const appRequestStats = useAppRequestStats();
@@ -41,16 +42,18 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 							onDismiss();
 						}}
 					/>
-					<ListItem
-						icon='cube'
-						text={t('Requested')}
-						action={(): void => {
-							marketplaceRoute.push({ context: 'requested', page });
-							onDismiss();
-						}}
-						loading={appRequestStats.isLoading}
-						notifications={appRequestStats?.data?.data.totalUnseen}
-					/>
+					{canManageApps && (
+						<ListItem
+							icon='cube'
+							text={t('Requested')}
+							action={(): void => {
+								marketplaceRoute.push({ context: 'requested', page });
+								onDismiss();
+							}}
+							loading={appRequestStats.isLoading}
+							notifications={appRequestStats?.data?.data.totalUnseen}
+						/>
+					)}
 				</>
 				{appBoxItems.length > 0 && (
 					<>

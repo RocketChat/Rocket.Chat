@@ -98,8 +98,8 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(): Promise<App[]> {
-		const result = await APIClient.get('/apps/marketplace');
+	public async getAppsFromMarketplace(isAdminUser: boolean | undefined): Promise<App[]> {
+		const result = await APIClient.get('/apps/marketplace', { isAdminUser });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -107,7 +107,7 @@ class AppClientOrchestrator {
 		}
 
 		return (result as App[]).map((app: App) => {
-			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn } = app;
+			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn, requestedEndUser } = app;
 			return {
 				...latest,
 				appRequestStats,
@@ -117,6 +117,7 @@ class AppClientOrchestrator {
 				isEnterpriseOnly,
 				modifiedAt,
 				bundledIn,
+				requestedEndUser,
 			};
 		});
 	}

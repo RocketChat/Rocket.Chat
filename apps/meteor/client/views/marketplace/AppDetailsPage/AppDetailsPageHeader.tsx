@@ -81,7 +81,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 								|
 							</Box>
 
-							<Box mi='x16'>
+							<Box>
 								<Tag
 									title={incompatibleStatus?.tooltipText}
 									variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}

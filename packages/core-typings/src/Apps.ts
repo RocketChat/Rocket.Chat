@@ -121,4 +121,5 @@ export type App = {
 	permissions: AppPermission[];
 	languages: string[];
 	createdDate: string;
+	requestedEndUser?: boolean;
 };
