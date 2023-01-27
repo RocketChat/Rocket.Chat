@@ -6,6 +6,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import RemoveUnitButton from './RemoveUnitButton';
 import UnitEdit from './UnitEdit';
 import UnitEditWithData from './UnitEditWithData';
@@ -31,6 +32,7 @@ const useQueryFilter = ({ text, itemsPerPage, current }, [column, direction]) =>
 function UnitsRoute() {
 	const t = useTranslation();
 	const canViewUnits = usePermission('manage-livechat-units');
+	const license = useHasLicenseModule('livechat-enterprise');
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -105,7 +107,7 @@ function UnitsRoute() {
 		return <UnitEdit title={t('New_Unit')} reload={reload} isNew={true} />;
 	}
 
-	if (!canViewUnits) {
+	if ((license && !canViewUnits) || !license) {
 		return <NotAuthorizedPage />;
 	}
 
