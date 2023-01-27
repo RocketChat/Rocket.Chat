@@ -2,17 +2,17 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
-import TeamsTable from './TeamsTable';
+import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
+import ChannelsTable from './ChannelsTable';
 
-function TeamsTab(): ReactElement {
+const ChannelsTab = (): ReactElement => {
 	const canViewPublicRooms = usePermission('view-c-room');
 
 	if (canViewPublicRooms) {
-		return <TeamsTable />;
+		return <ChannelsTable />;
 	}
 
 	return <NotAuthorizedPage />;
-}
+};
 
-export default TeamsTab;
+export default ChannelsTab;
