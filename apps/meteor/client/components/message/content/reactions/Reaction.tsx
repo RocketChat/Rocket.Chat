@@ -7,6 +7,7 @@ import React, { useRef } from 'react';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import MarkdownText from '../../../MarkdownText';
 
+// TODO: replace it with proper usage of i18next plurals
 const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 	if (users.length === 0) {
 		if (mine) {
@@ -29,13 +30,13 @@ const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 
 type ReactionProps = {
 	hasReacted: (name: string) => boolean;
-	reactToMessage: (name: string) => void;
 	counter: number;
 	name: string;
 	names: string[];
+	onClick: () => void;
 };
 
-const Reaction = ({ hasReacted, reactToMessage, counter, name, names, ...props }: ReactionProps): ReactElement => {
+const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps): ReactElement => {
 	const t = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
@@ -46,12 +47,12 @@ const Reaction = ({ hasReacted, reactToMessage, counter, name, names, ...props }
 	const key = getTranslationKey(names, mine);
 
 	const emojiProps = getEmojiClassNameAndDataTitle(name);
+
 	return (
 		<MessageReactionTemplate
 			ref={ref}
 			key={name}
 			mine={mine}
-			onClick={(): void => reactToMessage(name)}
 			tabIndex={0}
 			role='button'
 			onMouseOver={(e): void => {
