@@ -10,7 +10,7 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { tmid: 1 } }];
+		return [{ key: { tmid: 1, userId: 1 }, unique: true }];
 	}
 
 	async findOneByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<Reads | null> {
@@ -43,5 +43,13 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 		};
 
 		return this.updateOne(query, update, { upsert: true });
+	}
+
+	async countByThreadAndUserIds(tmid: IMessage['_id'], userIds: IUser['_id'][]): Promise<number> {
+		const query = {
+			tmid,
+			userId: { $in: userIds },
+		};
+		return this.col.countDocuments(query);
 	}
 }
