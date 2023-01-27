@@ -18,7 +18,7 @@ export const EnterpriseCheck: ServiceSchema = {
 			const services: {
 				name: string;
 				nodes: string[];
-			}[] = await this.broker.call('$node.services');
+			}[] = await this.broker.call('$node.services', { skipInternal: true });
 
 			const currentService = services.find((service) => {
 				return service.name === this.name;
@@ -33,16 +33,21 @@ export const EnterpriseCheck: ServiceSchema = {
 
 			const firstNode = nodes.sort().shift();
 
-			// if the first node is the current node and there are others nodes running the same service, then it should shutdown
-			return firstNode === this.broker.nodeID && nodes.length > 0;
+			// if the first node is the current node and there are others nodes running the same service or
+			// if this is the only one node online, then we should shutdown
+			return firstNode === this.broker.nodeID && (nodes.length > 0 || services.length === 1);
 		},
 	},
 	async started(): Promise<void> {
 		setInterval(async () => {
-			const hasLicense = await this.broker.call('license.hasLicense', ['scalability']);
-			if (hasLicense) {
-				checkFails = 0;
-				return;
+			try {
+				const hasLicense = await this.broker.call('license.hasLicense', ['scalability']);
+				if (hasLicense) {
+					checkFails = 0;
+					return;
+				}
+			} catch (e: unknown) {
+				// check failed, so continue
 			}
 
 			if (++checkFails < maxFails) {
