@@ -11,4 +11,3 @@ export async function getUserCreatedByApp(
 	const users = await Users.find({ appId, type }, options).toArray();
 	return users ?? [];
 }
-
