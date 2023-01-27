@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { createMessageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../models/client';
@@ -125,7 +125,7 @@ Template.DefaultSearchResultTemplate.helpers({
 		return { customClass: 'search', actionContext: 'search', ...msg, groupable: false };
 	},
 	messageContext() {
-		const result = messageContext.call(this, { rid: Session.get('openedRoom') });
+		const result = createMessageContext.call(this, { rid: Session.get('openedRoom') });
 		return {
 			...result,
 			settings: {

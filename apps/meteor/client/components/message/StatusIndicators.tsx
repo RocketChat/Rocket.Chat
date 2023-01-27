@@ -5,12 +5,7 @@ import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import {
-	useMessageDateFormatter,
-	useShowStarred,
-	useShowTranslated,
-	useShowFollowing,
-} from '../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';
 
 type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
