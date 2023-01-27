@@ -2,9 +2,9 @@ import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Flex, TableRow, TableCell } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import MarkdownText from '../../../components/MarkdownText';
-import UserAvatar from '../../../components/avatar/UserAvatar';
-import { useFormatDate } from '../../../hooks/useFormatDate';
+import MarkdownText from '../../../../../components/MarkdownText';
+import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
 
 type UsersTableRowProps = {
 	user: Serialized<IUser> & { domain?: string };
