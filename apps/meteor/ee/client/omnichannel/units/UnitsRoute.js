@@ -1,10 +1,10 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveUnitButton from './RemoveUnitButton';
 import UnitEdit from './UnitEdit';
@@ -13,7 +13,7 @@ import UnitsPage from './UnitsPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useQueryFilter = ({ text, itemsPerPage, current }, [column, direction]) =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1 }),
@@ -37,7 +37,7 @@ function UnitsRoute() {
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useQueryFilter(debouncedParams, debouncedSort);
 	const unitsRoute = useRoute('omnichannel-units');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -60,7 +60,9 @@ function UnitsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/units', { params: query });
+	// const { value: data = {}, reload } = useEndpointData('/v1/livechat/units', { params: query });
+	const getUnits = useEndpoint('GET', '/v1/livechat/units', { params: query });
+	const { data, refetch: reload } = useQuery(['/v1/livechat/units'], () => getUnits(), { enabled: true });
 
 	const header = useMemo(
 		() =>
@@ -113,7 +115,6 @@ function UnitsRoute() {
 			params={params}
 			onHeaderClick={onHeaderClick}
 			data={data}
-			useQuery={useQuery}
 			reload={reload}
 			header={header}
 			renderRow={renderRow}
