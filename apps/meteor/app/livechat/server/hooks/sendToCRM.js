@@ -106,12 +106,15 @@ function sendToCRM(type, room, includeMessages = true) {
 
 callbacks.add(
 	'livechat.closeRoom',
-	(room) => {
+	(params) => {
+		const { room } = params;
 		if (!settings.get('Livechat_webhook_on_close')) {
-			return room;
+			return params;
 		}
 
-		return sendToCRM('LivechatSession', room);
+		sendToCRM('LivechatSession', room);
+
+		return params;
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-close-room',

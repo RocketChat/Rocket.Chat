@@ -1,10 +1,16 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
+import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped.d';
+
+type LivechatCloseCallbackParams = {
+	room: IOmnichannelRoom;
+	options: CloseRoomParams['options'];
+};
 
 let autoTransferTimeout = 0;
 
@@ -56,23 +62,25 @@ const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => 
 	return message;
 };
 
-const handleAfterCloseRoom = (room: any = {}): IRoom => {
+const handleAfterCloseRoom = (params: LivechatCloseCallbackParams): LivechatCloseCallbackParams => {
+	const { room } = params;
+
 	const { _id: rid, autoTransferredAt, autoTransferOngoing } = room;
 
 	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
-		return room;
+		return params;
 	}
 
 	if (autoTransferredAt) {
-		return room;
+		return params;
 	}
 
 	if (!autoTransferOngoing) {
-		return room;
+		return params;
 	}
 
 	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
-	return room;
+	return params;
 };
 
 settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {

@@ -58,20 +58,22 @@ const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 
 callbacks.add(
 	'livechat.closeRoom',
-	(room) => {
+	(params) => {
+		const { room } = params;
+
 		const closedByAgent = room.closer !== 'visitor';
 		const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
 		if (!closedByAgent || !wasTheLastMessageSentByAgent) {
-			return;
+			return params;
 		}
 		const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
 		if (!agentLastMessage) {
-			return;
+			return params;
 		}
 		const secondsSinceLastAgentResponse = Promise.await(getSecondsSinceLastAgentResponse(room, agentLastMessage));
 		LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
 
-		return room;
+		return params;
 	},
 	callbacks.priority.HIGH,
 	'process-room-abandonment',

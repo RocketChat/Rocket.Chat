@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
@@ -6,12 +6,12 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import type { CloseRoomParams } from '../lib/LivechatTyped.d';
 
-type SendEmailTranscriptOnCloseParams = {
-	room: IRoom;
+type LivechatCloseCallbackParams = {
+	room: IOmnichannelRoom;
 	options: CloseRoomParams['options'];
 };
 
-const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnCloseParams): Promise<SendEmailTranscriptOnCloseParams> => {
+const sendEmailTranscriptOnClose = async (params: LivechatCloseCallbackParams): Promise<LivechatCloseCallbackParams> => {
 	const { room, options } = params;
 
 	if (!isOmnichannelRoom(room)) {
@@ -45,7 +45,7 @@ const sendEmailTranscriptOnClose = async (params: SendEmailTranscriptOnClosePara
 
 const resolveTranscriptData = (
 	room: IOmnichannelRoom,
-	options: SendEmailTranscriptOnCloseParams['options'] = {},
+	options: LivechatCloseCallbackParams['options'] = {},
 ): IOmnichannelRoom['transcriptRequest'] | undefined => {
 	const { transcriptRequest: roomTranscriptRequest } = room;
 

@@ -216,6 +216,11 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 		serviceTimeDuration?: number;
 		chatDuration?: number;
 	};
+
+	// Both fields are being used for the auto transfer feature for unanswered chats
+	// which is controlled by Livechat_auto_transfer_chat_timeout setting
+	autoTransferredAt?: Date;
+	autoTransferOngoing?: boolean;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
