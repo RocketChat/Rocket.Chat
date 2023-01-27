@@ -82,8 +82,6 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 		md: message.md,
 	};
 
-	console.log(attachment);
-
 	const handleCopy = (): void => {
 		if (ref.current) {
 			openTooltip(<div>{t('Copied')}</div>, ref.current);

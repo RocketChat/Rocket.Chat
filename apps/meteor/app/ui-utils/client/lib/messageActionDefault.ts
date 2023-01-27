@@ -80,15 +80,9 @@ Meteor.startup(async function () {
 					onClose: (): void => {
 						imperativeModal.close();
 					},
-					// 	onSubmit: (fileName, description) => {
-					// },
-					// 	invalidContentType: file.file.type && !fileUploadIsValidContentType(file.file.type),
 				},
 			});
 		},
-		// condition({ message }) {
-		// 	return message.u._id === Meteor.userId();
-		// },
 		order: 0,
 		group: ['message', 'menu'],
 	});
