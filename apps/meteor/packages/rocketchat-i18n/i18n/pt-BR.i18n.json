@@ -3031,7 +3031,6 @@
   "Message_VideoRecorderEnabled": "Gravação de vídeo habilitada",
   "Message_VideoRecorderEnabledDescription": "Requer arquivos de 'vídeo/webm' para ser um tipo de mídia aceito nas configurações de 'Upload de arquivo'.",
   "Message_view_mode_info": "Isso muda o espaço que as mensagens ocupam na tela.",
-  "MessageBox_view_mode": "Modo de visualização MessageBox",
   "messages": "mensagens",
   "Messages": "Mensagens",
   "Messages_sent": "Mensagens enviadas",

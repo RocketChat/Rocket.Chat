@@ -2995,7 +2995,6 @@
   "Message_VideoRecorderEnabled": "Gravadora de vídeo habilitat",
   "Message_VideoRecorderEnabledDescription": "Requereix que els fitxers de tipus 'video/webm' siguin admesos a la configuració de  'Puja fitxers'.",
   "Message_view_mode_info": "Això canvia l'espai que ocupen els missatges en pantalla.",
-  "MessageBox_view_mode": "Mode de visualització de el panell de missatges",
   "messages": "Missatges",
   "Messages": "Missatges",
   "Messages_sent": "Missatges enviats",

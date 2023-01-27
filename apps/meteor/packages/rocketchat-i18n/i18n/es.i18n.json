@@ -2990,7 +2990,6 @@
   "Message_VideoRecorderEnabled": "Habilitar grabadora de vídeo",
   "Message_VideoRecorderEnabledDescription": "Requiere que los archivos de \"video/webm\" sean de un tipo de medio que se acepte en la configuración de \"Subida de archivos\".",
   "Message_view_mode_info": "Esta opción cambia la cantidad de espacio que los mensajes ocupan en la pantalla.",
-  "MessageBox_view_mode": "Modo de visualización del cuadro de mensaje",
   "messages": "mensajes",
   "Messages": "Mensajes",
   "Messages_sent": "Mensajes enviados",

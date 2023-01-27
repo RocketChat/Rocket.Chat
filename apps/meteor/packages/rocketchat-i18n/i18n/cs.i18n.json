@@ -2515,7 +2515,6 @@
   "Message_VideoRecorderEnabled": "Video nahrávání povoleno",
   "Message_VideoRecorderEnabledDescription": "Vyžaduje přidání 'video/webm' mezi povolené typy souborů v nastavení",
   "Message_view_mode_info": "Tím se změní místo, které zprávy zabírají na obrazovce.",
-  "MessageBox_view_mode": "Režim zobrazení MessageBoxu",
   "messages": "zprávy",
   "Messages": "Zprávy",
   "Messages_sent": "Zpráva odeslána",

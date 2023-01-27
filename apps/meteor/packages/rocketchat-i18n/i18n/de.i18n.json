@@ -3306,7 +3306,6 @@
   "Message_VideoRecorderEnabled": "Videoaufnahme eingeschaltet",
   "Message_VideoRecorderEnabledDescription": "Erfordert, dass der Medientyp 'video/webm' in den \"Datei-Upload\"-Einstellungen als Medientyp akzeptiert wird",
   "Message_view_mode_info": "Dadurch ändert sich der Platzbedarf für Nachrichten auf dem Bildschirm",
-  "MessageBox_view_mode": "MessageBox-Ansichtsmodus",
   "messages": "Nachrichten",
   "Messages": "Nachrichten",
   "Messages_selected": "Ausgewählte Nachrichten",

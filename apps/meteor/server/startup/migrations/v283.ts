@@ -1,3 +1,5 @@
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 import { Users } from '../../../app/models/server';
 
@@ -13,5 +15,7 @@ addMigration({
 			},
 			{ multi: true },
 		);
+
+		return Settings.removeById('Accounts_Default_User_Preferences_messageViewMode');
 	},
 });

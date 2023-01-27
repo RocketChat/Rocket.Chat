@@ -2528,7 +2528,6 @@
   "Message_VideoRecorderEnabled": "Videooptager aktiveret",
   "Message_VideoRecorderEnabledDescription": "Kræver 'video / webm'-filer for at være en accepteret medietype inden for' Filopload '-indstillinger.",
   "Message_view_mode_info": "Dette ændrer mængden af ​​mellemrumsmeddelelser, der optages på skærmen.",
-  "MessageBox_view_mode": "MessageBox-visningstilstand",
   "messages": "Meddelelser",
   "Messages": "Meddelelser",
   "Messages_sent": "Besked sendt",

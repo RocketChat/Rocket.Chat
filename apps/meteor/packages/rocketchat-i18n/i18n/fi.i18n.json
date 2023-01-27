@@ -3279,7 +3279,6 @@
   "Message_VideoRecorderEnabled": "Videotallennus käytössä",
   "Message_VideoRecorderEnabledDescription": "Vaatii 'video/webm'-tiedostot hyväksytyksi mediatyypiksi 'Tiedoston lataus'-asetuksissa.",
   "Message_view_mode_info": "Tämä muuttaa sitä, kuinka paljon tilaa viestit vievät ruudulla.",
-  "MessageBox_view_mode": "MessageBox-näkymätila",
   "messages": "viestit",
   "Messages": "Viestit",
   "Messages_selected": "Valitut viestit",

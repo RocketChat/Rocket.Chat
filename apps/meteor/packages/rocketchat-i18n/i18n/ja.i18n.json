@@ -2992,7 +2992,6 @@
   "Message_VideoRecorderEnabled": "ビデオレコーダーが有効",
   "Message_VideoRecorderEnabledDescription": "「ファイルのアップロード」設定で、「video / webm」ファイルを受け入れ可能なメディアタイプにする必要があります。",
   "Message_view_mode_info": "これにより、メッセージが画面上で占める領域の量が変更されます。",
-  "MessageBox_view_mode": "メッセージボックス表示モード",
   "messages": "メッセージ",
   "Messages": "メッセージ",
   "Messages_sent": "送信されたメッセージ",

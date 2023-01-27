@@ -2573,7 +2573,6 @@
   "Message_VideoRecorderEnabled": "비디오 레코더 사용",
   "Message_VideoRecorderEnabledDescription": "'파일 업로드' 설정에서 허용된 미디어 유형에 'video/webm' 형식을 설정해야 합니다.",
   "Message_view_mode_info": "화면상의 대량의 메시지 공간이 변경됩니다.",
-  "MessageBox_view_mode": "메시지박스 보기 모드",
   "messages": "메시지",
   "Messages": "메시지",
   "Messages_sent": "보낸 메시지",

@@ -3024,7 +3024,6 @@
   "Message_VideoRecorderEnabled": "تم تمكين مُسجّل الفيديو",
   "Message_VideoRecorderEnabledDescription": "يتطلب أن تكون ملفات \"video/webm\" نوع وسائط مقبولاً ضمن إعدادات \"تحميل الملف\".",
   "Message_view_mode_info": "هذا يغير مقدار المساحة التي تشغلها الرسائل على الشاشة.",
-  "MessageBox_view_mode": "وضع عرض MessageBox",
   "messages": "الرسائل",
   "Messages": "الرسائل",
   "Messages_sent": "تم إرسال الرسائل",

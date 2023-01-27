@@ -3126,7 +3126,6 @@
   "Message_VideoRecorderEnabled": "Запись видео включена",
   "Message_VideoRecorderEnabledDescription": "Тип файлов 'video/webm' должен быть в списке разрешенных к передаче файлов в разделе настроек \"загрузка файлов\"",
   "Message_view_mode_info": "Сколько места сообщения занимают на экране.",
-  "MessageBox_view_mode": "MessageBox опции отображения",
   "messages": "Сообщения",
   "Messages": "Сообщения",
   "Messages_sent": "Сообщения отправлены",

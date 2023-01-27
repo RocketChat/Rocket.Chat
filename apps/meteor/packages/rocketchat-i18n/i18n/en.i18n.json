@@ -3318,7 +3318,6 @@
   "Message_VideoRecorderEnabled": "Video Recorder Enabled",
   "Message_VideoRecorderEnabledDescription": "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings.",
   "Message_view_mode_info": "This changes the amount of space messages take up on screen.",
-  "MessageBox_view_mode": "MessageBox View Mode",
   "messages": "messages",
   "Messages": "Messages",
   "Messages_selected": "Messages selected",

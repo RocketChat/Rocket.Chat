@@ -3312,7 +3312,6 @@
   "Message_VideoRecorderEnabled": "Videórögzítő engedélyezve",
   "Message_VideoRecorderEnabledDescription": "Azt igényli, hogy a „video/webm” fájlok elfogadott médiatípus legyen a „Fájlfeltöltés” beállításaiban.",
   "Message_view_mode_info": "Ez megváltoztatja az üzenetek által a képernyőn elfoglalt hely mennyiségét.",
-  "MessageBox_view_mode": "Üzenetdoboz-nézet mód",
   "messages": "üzenetek",
   "Messages": "Üzenetek",
   "Messages_selected": "Üzenetek kijelölve",

@@ -3000,7 +3000,6 @@
   "Message_VideoRecorderEnabled": "Enregistreur vidéo activé",
   "Message_VideoRecorderEnabledDescription": "Nécessite que \"vidéo/webm\" soit un type de média accepté dans les paramètres de chargement de fichiers.",
   "Message_view_mode_info": "Cela modifie l'espace occupé par les messages à l'écran.",
-  "MessageBox_view_mode": "Mode d'affichage MessageBox",
   "messages": "messages",
   "Messages": "Messages",
   "Messages_sent": "Messages envoyés",

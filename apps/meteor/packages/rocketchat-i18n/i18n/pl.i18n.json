@@ -3236,7 +3236,6 @@
   "Message_VideoRecorderEnabled": "Nagrywanie wideo włączone",
   "Message_VideoRecorderEnabledDescription": "Wymaga plików \"wideo / webm\", aby były akceptowanym typem mediów w ustawieniach \"Przesyłanie pliku\".",
   "Message_view_mode_info": "Zmienia ilość wiadomości przestrzeni zajmują na ekranie.",
-  "MessageBox_view_mode": "Tryb widoku MessageBox",
   "messages": "Wiadomości",
   "Messages": "Wiadomości",
   "Messages_selected": "Wybrane wiadomości",

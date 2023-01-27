@@ -3308,7 +3308,6 @@
   "Message_VideoRecorderEnabled": "Videobandspelare aktiverad",
   "Message_VideoRecorderEnabledDescription": "Kräver \"video/webm\"-filer för att vara en accepterad medietyp inom inställningarna \"Filuppladdning\".",
   "Message_view_mode_info": "Detta ändrar mängden utrymme meddelanden tar upp på skärmen.",
-  "MessageBox_view_mode": "Visningsläge för MessageBox",
   "messages": "Meddelanden",
   "Messages": "Meddelanden",
   "Messages_selected": "Valda meddelanden",

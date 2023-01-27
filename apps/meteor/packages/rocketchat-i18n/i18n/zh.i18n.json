@@ -2622,7 +2622,6 @@
   "Message_VideoRecorderEnabled": "录像机启用",
   "Message_VideoRecorderEnabledDescription": "要求 'video/webm' 文件在 '文件上传' 设置中成为可接受的媒体类型。",
   "Message_view_mode_info": "这会改变消息在屏幕上占用的空间。",
-  "MessageBox_view_mode": "消息框查看模式",
   "messages": "消息",
   "Messages": "消息",
   "Messages_sent": "已发送消息",
