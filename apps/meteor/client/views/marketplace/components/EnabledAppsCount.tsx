@@ -1,7 +1,9 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useContext } from 'react';
+import React from 'react';
+
+import { useNumberOfEnabledApps } from '../AppsContext';
 
 const getVariant = (numberOfEnabledApps: number): 'success' | 'warning' | 'danger' => {
 	if (numberOfEnabledApps < 4) {
@@ -17,8 +19,7 @@ const getVariant = (numberOfEnabledApps: number): 'success' | 'warning' | 'dange
 
 const EnabledAppsCount = (): ReactElement => {
 	const t = useTranslation();
-	// TODO: get from some context;
-	const numberOfEnabledApps = useContext(numberOfEnabledAppsContext);
+	const numberOfEnabledApps = useNumberOfEnabledApps();
 
 	return (
 		<Box display='flex' flexDirection='column' mi='16px' minWidth='200px' justifyContent='center'>
