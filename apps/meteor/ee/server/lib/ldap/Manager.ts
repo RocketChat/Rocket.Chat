@@ -10,11 +10,10 @@ import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
-import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
+import { addUserToRoom, removeUserFromRoom, createRoom, deleteUser } from '../../../../app/lib/server/functions';
 import { syncUserRoles } from '../syncUserRoles';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import { deleteUser } from '/app/lib/server';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
