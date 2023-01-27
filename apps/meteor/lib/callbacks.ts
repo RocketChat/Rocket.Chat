@@ -1,4 +1,4 @@
-import type Url from 'url';
+import type { UrlWithParsedQuery } from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
@@ -124,10 +124,10 @@ type ChainedCallbackSignatures = {
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: {
-		urlObj: Omit<Url.UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
+		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
 		parsedUrl: ParsedUrl;
 	}) => {
-		urlObj: Url.UrlWithParsedQuery;
+		urlObj: UrlWithParsedQuery;
 		parsedUrl: ParsedUrl;
 	};
 	'oembed:afterParseContent': (data: {
@@ -387,14 +387,6 @@ class Callbacks {
 		this.setCallbacks(hook, hooks);
 	}
 
-	/**
-	 * Successively run all of a hook's callbacks on an item
-	 *
-	 * @param hook the name of the hook
-	 * @param item the post, comment, modifier, etc. on which to run the callbacks
-	 * @param constant an optional constant that will be passed along to each callback
-	 * @returns returns the item after it's been through all the callbacks for this hook
-	 */
 	run<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
 
 	run<THook extends keyof ChainedCallbackSignatures>(
@@ -404,10 +396,20 @@ class Callbacks {
 
 	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
 
+	/**
+	 * Successively run all of a hook's callbacks on an item
+	 *
+	 * @param hook the name of the hook
+	 * @param item the post, comment, modifier, etc. on which to run the callbacks
+	 * @param constant an optional constant that will be passed along to each callback
+	 * @returns returns the item after it's been through all the callbacks for this hook
+	 */
 	run(hook: Hook, item: unknown, constant?: unknown): unknown {
 		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item, in async mode (only works on server)
@@ -417,8 +419,6 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns the post, comment, modifier, etc. on which to run the callbacks
 	 */
-	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
-
 	runAsync(hook: Hook, item: unknown, constant?: unknown): unknown {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);

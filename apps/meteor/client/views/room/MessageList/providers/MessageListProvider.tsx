@@ -6,10 +6,10 @@ import React, { useMemo, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
+import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
+import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
-import type { MessageListContextValue } from '../contexts/MessageListContext';
-import { MessageListContext } from '../contexts/MessageListContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 
@@ -33,7 +33,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 	const { isMobile } = useLayout();
 
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
-	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
 	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
 	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
@@ -90,7 +89,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
@@ -107,11 +105,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 					regex: getRegexHighlight(highlight),
 					urlRegex: getRegexHighlightUrl(highlight),
 				})),
-			useReactToMessage: uid
-				? (message) =>
-						(reaction): void =>
-							reactToMessage({ messageId: message._id, reaction }) as unknown as void
-				: () => (): void => undefined,
 
 			useOpenEmojiPicker: uid
 				? (message) =>
@@ -133,7 +126,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
 			katexEnabled,
 			katexDollarSyntaxEnabled,
 			katexParenthesisSyntaxEnabled,
