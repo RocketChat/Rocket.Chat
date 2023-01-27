@@ -7,6 +7,7 @@ const ajv = new Ajv({ coerceTypes: true });
 
 export type ArchiveReportProps = {
 	reportId: IReport['_id'];
+	messageId?: IReport['message']['_id'];
 };
 
 const archiveReportPropsSchema = {
@@ -14,6 +15,10 @@ const archiveReportPropsSchema = {
 	properties: {
 		reportId: {
 			type: 'string',
+		},
+		messageId: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['reportId'],

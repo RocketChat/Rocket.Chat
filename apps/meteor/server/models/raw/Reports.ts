@@ -128,4 +128,18 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 		return this.updateOne(query, update);
 	}
+
+	hideReportByMessageId(messageId: string): Promise<UpdateResult | Document> {
+		const query = {
+			'message._id': messageId,
+		};
+
+		const update = {
+			$set: {
+				_hidden: true,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
 }

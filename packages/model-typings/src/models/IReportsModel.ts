@@ -21,4 +21,6 @@ export interface IReportsModel extends IBaseModel<IReport> {
 	findReportsBeforeDate(oldest: Date, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
 	hideReportById(reportId: IReport['_id']): Promise<UpdateResult | Document>;
+
+	hideReportsByMessageId(messageId: IReport['message']['_id']): Promise<UpdateResult | Document>;
 }
