@@ -1,9 +1,14 @@
 import { Random } from 'meteor/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
-import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 
-import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
+import {
+	setUserAvatar,
+	checkUsernameAvailability,
+	deleteUser,
+	getUserCreatedByApp,
+} from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 
@@ -31,6 +36,24 @@ export class AppUserBridge extends UserBridge {
 		const user = Users.findOneByAppId(appId, {});
 
 		return this.orch.getConverters()?.get('users').convertToApp(user);
+	}
+
+	/**
+	 * Deletes all bot or app users created by the App.
+	 * @param appId the App's ID.
+	 * @param type the type of the user to be deleted.
+	 * @returns true if any user was deleted, false otherwise.
+	 */
+	protected async deleteUsersCreatedByApp(appId: string, type: UserType.APP | UserType.BOT): Promise<boolean> {
+		this.orch.debugLog(`The App ${appId} is deleting all bot users`);
+
+		const appUsers = await getUserCreatedByApp(appId, type);
+		if (appUsers.length) {
+			this.orch.debugLog(`The App ${appId} is deleting ${appUsers.length} users`);
+			await Promise.all(appUsers.map((appUser) => deleteUser(appUser._id)));
+			return true;
+		}
+		return false;
 	}
 
 	protected async create(userDescriptor: Partial<IUser>, appId: string, options?: IUserCreationOptions): Promise<string> {
