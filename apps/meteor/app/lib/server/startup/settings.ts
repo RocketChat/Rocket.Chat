@@ -1575,7 +1575,7 @@ settingsRegistry.addGroup('Layout', function () {
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Home_Custom_Block_Visible', true, {
+		this.add('Layout_Home_Custom_Block_Visible', false, {
 			type: 'boolean',
 			invalidValue: false,
 			public: true,
