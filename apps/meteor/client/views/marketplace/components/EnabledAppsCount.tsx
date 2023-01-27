@@ -3,16 +3,16 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-const getBarColor = (numberOfEnabledApps: number): string => {
+const getVariant = (numberOfEnabledApps: number): 'success' | 'warning' | 'danger' => {
 	if (numberOfEnabledApps < 4) {
-		return 'font-on-success';
+		return 'success';
 	}
 
 	if (numberOfEnabledApps === 4) {
-		return 'font-on-warning';
+		return 'warning';
 	}
 
-	return 'font-on-danger';
+	return 'danger';
 };
 
 const EnabledAppsCount = (): ReactElement => {
@@ -29,13 +29,7 @@ const EnabledAppsCount = (): ReactElement => {
 					{`${numberOfEnabledApps} / 5`}
 				</Box>
 			</Box>
-			<ProgressBar
-				borderRadius='full'
-				overflow='hidden'
-				percentage={numberOfEnabledApps <= 5 ? numberOfEnabledApps * 20 : 100}
-				barColor={getBarColor(numberOfEnabledApps)}
-				animated={false}
-			/>
+			<ProgressBar variant={getVariant(numberOfEnabledApps)} percentage={numberOfEnabledApps <= 5 ? numberOfEnabledApps * 20 : 100} />
 		</Box>
 	);
 };
