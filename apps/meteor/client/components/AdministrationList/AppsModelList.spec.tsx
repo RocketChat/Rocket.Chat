@@ -6,7 +6,6 @@ import type { ReactNode } from 'react';
 import React from 'react';
 
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
-import QueryClientProviderMock from '../../stories/contexts/QueryClientProviderMock';
 import type * as AppsModelListModel from './AppsModelList';
 
 describe('AppsModelList', () => {
@@ -15,6 +14,18 @@ describe('AppsModelList', () => {
 			'../../../app/ui-message/client/ActionManager': {
 				triggerActionButtonAction: {},
 			},
+			'../../views/marketplace/hooks/useAppRequestStats': {
+				useAppRequestStats: () => {
+					return {
+						isLoading: false,
+						data: {
+							data: {
+								totalUnseen: 5,
+							},
+						},
+					};
+				},
+			},
 			...stubs,
 		}).default;
 	};
@@ -22,15 +33,12 @@ describe('AppsModelList', () => {
 	it('should render apps', async () => {
 		const AppsModelList = loadMock();
 
-		render(
-			<QueryClientProviderMock>
-				<AppsModelList onDismiss={() => null} appBoxItems={[]} />
-			</QueryClientProviderMock>,
-		);
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
 		expect(screen.getByText('Installed')).to.exist;
+		expect(screen.getByText('Requested')).to.exist;
 	});
 
 	context('when clicked', () => {
@@ -44,12 +52,7 @@ describe('AppsModelList', () => {
 		it('should go to admin marketplace', async () => {
 			const AppsModelList = loadMock();
 
-			render(
-				<QueryClientProviderMock>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
-				</QueryClientProviderMock>,
-				{ wrapper: ProvidersMock },
-			);
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
 
 			const button = screen.getByText('Marketplace');
 			userEvent.click(button);
@@ -60,12 +63,7 @@ describe('AppsModelList', () => {
 		it('should go to installed', async () => {
 			const AppsModelList = loadMock();
 
-			render(
-				<QueryClientProviderMock>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />
-				</QueryClientProviderMock>,
-				{ wrapper: ProvidersMock },
-			);
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
 
 			const button = screen.getByText('Installed');
 
@@ -84,14 +82,9 @@ describe('AppsModelList', () => {
 				},
 			});
 
-			render(
-				<QueryClientProviderMock>
-					<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />
-				</QueryClientProviderMock>,
-				{
-					wrapper: ProvidersMock,
-				},
-			);
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />, {
+				wrapper: ProvidersMock,
+			});
 
 			const button = screen.getByText('Custom App');
 
