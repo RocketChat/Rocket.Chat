@@ -760,7 +760,7 @@ describe('[Chat]', function () {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: 'GENERAL',
-					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					msg: 'http://localhost:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
 
@@ -808,7 +808,7 @@ describe('[Chat]', function () {
 						.expect((res) => {
 							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/jpeg');
+							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/png');
 						})
 						.end(done);
 				}, 200);
