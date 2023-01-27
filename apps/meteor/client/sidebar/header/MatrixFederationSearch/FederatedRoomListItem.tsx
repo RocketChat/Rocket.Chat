@@ -33,10 +33,10 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, c
 				</Box>
 			)}
 
-			<Box mbs='x4' fontScale='micro' fontWeight='bolder' verticalAlign='center'>
+			<Box mbs='x4' fontScale='micro' fontWeight='bolder' verticalAlign='top'>
 				{canonicalAlias}{' '}
-				<Box color='hint' is='span'>
-					<Icon name='user' size='x12' />
+				<Box color='hint' is='span' verticalAlign='top'>
+					<Icon name='user' size='x12' mbe='x1' />
 					{joinedMembers}
 				</Box>
 			</Box>

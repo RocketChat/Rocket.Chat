@@ -21,7 +21,7 @@ const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose, def
 				<Modal.Title>{t('Federation_Federated_room_search')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content display='flex' flexDirection='column' h='full' maxHeight={'x400'}>
+			<Modal.Content display='flex' flexDirection='column'>
 				{isLoading && (
 					<>
 						<Skeleton />
