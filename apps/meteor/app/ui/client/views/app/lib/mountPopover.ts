@@ -16,6 +16,9 @@ export const mountPopover = async (event: JQuery.TriggeredEvent, template: Commo
 	const messageContext = messageArgs(outerContext);
 
 	const room = Rooms.findOne({ _id: messageContext.msg.rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	context = federationContext || context;
 
