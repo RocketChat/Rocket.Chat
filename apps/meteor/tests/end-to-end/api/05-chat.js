@@ -750,13 +750,27 @@ describe('[Chat]', function () {
 			let imgUrlMsgId;
 
 			before(async () => {
+				await Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]);
+			});
+			after(async () => {
+				await Promise.all([
+					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
+					updateSetting('API_EmbedSafePorts', '80, 443'),
+				]);
+			});
+
+			before(async () => {
 				const ytEmbedMsgPayload = {
 					_id: `id-${Date.now()}`,
 					rid: 'GENERAL',
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
 					emoji: ':smirk:',
 				};
+				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
+				ytEmbedMsgId = ytPostResponse.body.message._id;
+			});
 
+			before(async () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: 'GENERAL',
@@ -764,12 +778,8 @@ describe('[Chat]', function () {
 					emoji: ':smirk:',
 				};
 
-				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
-
 				const imgUrlResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: imgUrlMsgPayload });
 
-				ytEmbedMsgId = ytPostResponse.body.message._id;
-				imgUrlMsgId = imgUrlResponse.body.message._id;
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
