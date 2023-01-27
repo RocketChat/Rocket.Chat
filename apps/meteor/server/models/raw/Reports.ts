@@ -1,6 +1,6 @@
 import type { IMessage, IReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindCursor } from 'mongodb';
+import type { Db, Collection, FindCursor, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -18,6 +18,8 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		};
 		return this.insertOne(record);
 	}
+
+	// find
 
 	findReportsBetweenDates(latest: Date, oldest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
@@ -109,5 +111,21 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			skip: offset,
 			limit: count,
 		});
+	}
+
+	// update
+
+	hideReportById(_id: string): Promise<UpdateResult | Document> {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				_hidden: true,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

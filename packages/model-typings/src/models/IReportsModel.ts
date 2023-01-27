@@ -1,5 +1,5 @@
 import type { IReport, IMessage } from '@rocket.chat/core-typings';
-import type { FindCursor } from 'mongodb';
+import type { Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -19,4 +19,6 @@ export interface IReportsModel extends IBaseModel<IReport> {
 	findReportsAfterDate(latest: Date, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
 	findReportsBeforeDate(oldest: Date, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
+
+	hideReportById(reportId: IReport['_id']): Promise<UpdateResult | Document>;
 }

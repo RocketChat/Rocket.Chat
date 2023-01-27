@@ -1,6 +1,7 @@
 import type { IReport } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { ArchiveReportProps } from './ArchiveReportProps';
 import type { ReportHistoryProps } from './ReportHistoryProps';
 
 export type ModerationEndpoints = {
@@ -9,5 +10,10 @@ export type ModerationEndpoints = {
 		GET: (params: ReportHistoryProps) => PaginatedResult<{
 			reports: IReport[];
 		}>;
+	};
+	'/v1/moderation.hide': {
+		POST: (params: ArchiveReportProps) => {
+			report: IReport | null;
+		};
 	};
 };
