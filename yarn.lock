@@ -7087,8 +7087,6 @@ __metadata:
     katex: ^0.11.1
     ldap-escape: ^2.0.6
     ldapjs: ^2.3.3
-    less: ~3.0.3
-    less-plugin-autoprefixer: ^2.1.0
     limax: ^3.0.0
     localforage: ^1.10.0
     lodash.clonedeep: ^4.5.0
@@ -12266,7 +12264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asap@npm:^2.0.0, asap@npm:~2.0.3":
+"asap@npm:^2.0.0":
   version: 2.0.6
   resolution: "asap@npm:2.0.6"
   checksum: b296c92c4b969e973260e47523207cd5769abd27c245a68c26dc7a0fe8053c55bb04360237cb51cab1df52be939da77150ace99ad331fb7fb13b3423ed73ff3d
@@ -12487,7 +12485,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:^9.5.1, autoprefixer@npm:^9.8.6, autoprefixer@npm:^9.8.8":
+"autoprefixer@npm:^9.8.6, autoprefixer@npm:^9.8.8":
   version: 9.8.8
   resolution: "autoprefixer@npm:9.8.8"
   dependencies:
@@ -17265,7 +17263,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"errno@npm:^0.1.1, errno@npm:^0.1.3, errno@npm:~0.1.7":
+"errno@npm:^0.1.3, errno@npm:~0.1.7":
   version: 0.1.8
   resolution: "errno@npm:0.1.8"
   dependencies:
@@ -21173,15 +21171,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:~0.5.0":
-  version: 0.5.5
-  resolution: "image-size@npm:0.5.5"
-  bin:
-    image-size: bin/image-size.js
-  checksum: 6709d5cb73e96d5097ae5e9aa746dd36d6a9c8cf645e7eecac72ea07dbd6f312a65183752762fa92e2f3b698d4ed8d85dd55bf5207b6367245996bd16576d8fe
-  languageName: node
-  linkType: hard
-
 "image-webpack-loader@npm:^6.0.0":
   version: 6.0.0
   resolution: "image-webpack-loader@npm:6.0.0"
@@ -24324,51 +24313,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"less-plugin-autoprefixer@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "less-plugin-autoprefixer@npm:2.1.0"
-  dependencies:
-    autoprefixer: ^9.5.1
-    postcss: ^7.0.16
-  checksum: 4a212c1be0ae5a8d091b8230694d705116724c4ab8db5bc2f4d2bb5e40f8fcb9f23232a898b8cfefcbd24531f7f7ca5eeef77276481a133f16a4c357dc15ad1a
-  languageName: node
-  linkType: hard
-
-"less@npm:~3.0.3":
-  version: 3.0.4
-  resolution: "less@npm:3.0.4"
-  dependencies:
-    errno: ^0.1.1
-    graceful-fs: ^4.1.2
-    image-size: ~0.5.0
-    mime: ^1.4.1
-    mkdirp: ^0.5.0
-    promise: ^7.1.1
-    request: ^2.83.0
-    source-map: ~0.6.0
-  dependenciesMeta:
-    errno:
-      optional: true
-    graceful-fs:
-      optional: true
-    image-size:
-      optional: true
-    mime:
-      optional: true
-    mkdirp:
-      optional: true
-    promise:
-      optional: true
-    request:
-      optional: true
-    source-map:
-      optional: true
-  bin:
-    lessc: ./bin/lessc
-  checksum: cc397bd3cd3d24f5d4be659fa25d2e7f38c664435b0d7ca1dcfbdd551444f594c1ab050852d961364c06e830da3c2103a17b0bfda66b2b96d11be4841a8435b5
-  languageName: node
-  linkType: hard
-
 "leven@npm:2.1.0":
   version: 2.1.0
   resolution: "leven@npm:2.1.0"
@@ -25724,7 +25668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:1.6.0, mime@npm:^1.3.4, mime@npm:^1.4.1":
+"mime@npm:1.6.0, mime@npm:^1.3.4":
   version: 1.6.0
   resolution: "mime@npm:1.6.0"
   bin:
@@ -26042,7 +25986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^0.5.0, mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.3, mkdirp@npm:^0.5.5, mkdirp@npm:~0.5.1":
+"mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.3, mkdirp@npm:^0.5.5, mkdirp@npm:~0.5.1":
   version: 0.5.6
   resolution: "mkdirp@npm:0.5.6"
   dependencies:
@@ -29506,7 +29450,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^7.0.0, postcss@npm:^7.0.1, postcss@npm:^7.0.14, postcss@npm:^7.0.16, postcss@npm:^7.0.17, postcss@npm:^7.0.2, postcss@npm:^7.0.26, postcss@npm:^7.0.27, postcss@npm:^7.0.32, postcss@npm:^7.0.35, postcss@npm:^7.0.36, postcss@npm:^7.0.5, postcss@npm:^7.0.6":
+"postcss@npm:^7.0.0, postcss@npm:^7.0.1, postcss@npm:^7.0.14, postcss@npm:^7.0.17, postcss@npm:^7.0.2, postcss@npm:^7.0.26, postcss@npm:^7.0.27, postcss@npm:^7.0.32, postcss@npm:^7.0.35, postcss@npm:^7.0.36, postcss@npm:^7.0.5, postcss@npm:^7.0.6":
   version: 7.0.39
   resolution: "postcss@npm:7.0.39"
   dependencies:
@@ -29842,15 +29786,6 @@ __metadata:
     define-properties: ^1.1.3
     es-abstract: ^1.19.1
   checksum: aba8af6ae8d076e2c344d2674409b44c8f98b3aba98b78619739aeb4a74ebac80dbba5f9338da7cf0108a34384799d3996c46697d2e21c6e998c04d68041213c
-  languageName: node
-  linkType: hard
-
-"promise@npm:^7.1.1":
-  version: 7.3.1
-  resolution: "promise@npm:7.3.1"
-  dependencies:
-    asap: ~2.0.3
-  checksum: 475bb069130179fbd27ed2ab45f26d8862376a137a57314cf53310bdd85cc986a826fd585829be97ebc0aaf10e9d8e68be1bfe5a4a0364144b1f9eedfa940cf1
   languageName: node
   linkType: hard
 
@@ -31359,7 +31294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"request@npm:^2.68.0, request@npm:^2.82.0, request@npm:^2.83.0, request@npm:^2.85.0, request@npm:^2.88.0, request@npm:^2.88.2":
+"request@npm:^2.68.0, request@npm:^2.82.0, request@npm:^2.85.0, request@npm:^2.88.0, request@npm:^2.88.2":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
   dependencies:
