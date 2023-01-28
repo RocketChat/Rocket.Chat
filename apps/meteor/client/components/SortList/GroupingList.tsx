@@ -28,16 +28,19 @@ const GroupingList = function GroupingList(): ReactElement {
 				<ListItem
 					icon={'flag'}
 					text={t('Unread')}
+					clickAction={handleChangeShowUnread}
 					input={<CheckBox pis='x24' onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />}
 				/>
 				<ListItem
 					icon={'star'}
 					text={t('Favorites')}
+					clickAction={handleChangeShoFavorite}
 					input={<CheckBox pis='x24' onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />}
 				/>
 				<ListItem
 					icon={'group-by-type'}
 					text={t('Types')}
+					clickAction={handleChangeGroupByType}
 					input={<CheckBox pis='x24' onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />}
 				/>
 			</ul>
