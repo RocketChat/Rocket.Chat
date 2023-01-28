@@ -1,5 +1,5 @@
-import { isReportHistoryProps } from '@rocket.chat/rest-typings';
-import { Reports, isArchiveReportProps } from '@rocket.chat/models';
+import { isReportHistoryProps, isArchiveReportProps } from '@rocket.chat/rest-typings';
+import { Reports } from '@rocket.chat/models';
 
 import { API } from '../api';
 
