@@ -4,7 +4,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { createMessageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
 import { Messages, Users } from '../../../models/client';
@@ -23,7 +23,7 @@ Template.mentionsFlexTab.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
-	messageContext,
+	messageContext: createMessageContext,
 });
 
 Template.mentionsFlexTab.onCreated(function () {
