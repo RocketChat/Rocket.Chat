@@ -48,7 +48,7 @@ const CustomCard = (): ReactElement | null => {
 						{willNotShowCustomContent ? t('Not_Visible_To_Workspace') : t('Visible_To_Workspace')}
 					</Tag>
 				</Card.Title>
-				<Box mb='x8' color='info'>
+				<Box mb='x8' color='info' data-qa-id='homepage-custom-content-body'>
 					{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}
 				</Box>
 				<Card.FooterWrapper>
@@ -82,7 +82,7 @@ const CustomCard = (): ReactElement | null => {
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb='x8' color='info'>
+				<Box mb='x8' color='info' data-qa-id='homepage-custom-content-body'>
 					<CustomHomepageContent />
 				</Box>
 			</Card>

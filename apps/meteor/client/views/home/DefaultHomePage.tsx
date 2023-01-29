@@ -36,7 +36,7 @@ const DefaultHomePage = (): ReactElement => {
 				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
-				<Grid margin='neg-x8'>
+				<Grid margin='neg-x8' data-qa-id='homepage-default-cards'>
 					{canAddUsers && (
 						<HomepageGridItem>
 							<AddUsersCard />
