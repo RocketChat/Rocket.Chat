@@ -7,10 +7,11 @@ type ListItemProps = {
 	icon?: ComponentProps<typeof OptionIcon>['name'];
 	input?: any;
 	action?: MouseEventHandler<HTMLOrSVGElement>;
+	clickAction?: MouseEventHandler<HTMLOrSVGElement>;
 };
 
-const ListItem = ({ text, icon, input, action }: ListItemProps): ReactElement => (
-	<Option onClick={action}>
+const ListItem = ({ text, icon, input, action, clickAction }: ListItemProps): ReactElement => (
+	<Option onClick={action || clickAction}>
 		{icon && <OptionIcon name={icon} />}
 		<OptionContent>{text}</OptionContent>
 		{input && <OptionColumn>{input}</OptionColumn>}
