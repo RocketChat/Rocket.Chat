@@ -227,7 +227,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
+        uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
@@ -356,7 +356,7 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml stop rocketchat
 
-            docker exec mongodb bash -c 'if command -v mongosh &> /dev/null ; then mongosh --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
+            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh rocketchat --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -394,7 +394,7 @@ jobs:
 
           docker compose -f docker-compose-ci.yml stop rocketchat
 
-          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb bash -c 'if command -v mongosh ; then mongosh rocketchat --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -428,7 +428,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
+        uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ matrix.mongodb-version-ee }}
           mongodb-replica-set: rs0
@@ -548,7 +548,7 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml stop
 
-            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh rocketchat --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -571,7 +571,7 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml stop
 
-          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb bash -c 'if command -v mongosh ; then mongosh rocketchat --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
