@@ -11,6 +11,7 @@ export type OmnichannelContextValue = {
 		data: Serialized<ILivechatPriority>[];
 		isLoading: boolean;
 		isError: boolean;
+		enabled: boolean;
 	};
 };
 
@@ -23,5 +24,6 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 		data: [],
 		isLoading: false,
 		isError: false,
+		enabled: false,
 	},
 });

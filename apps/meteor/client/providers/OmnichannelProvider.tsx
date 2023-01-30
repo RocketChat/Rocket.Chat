@@ -10,10 +10,10 @@ import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatI
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { Notifications } from '../../app/notifications/client';
+import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useIsEnterprise } from '../hooks/useIsEnterprise';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {
@@ -22,6 +22,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
 	livechatPriorities: {
+		enabled: false,
 		data: [],
 		isLoading: false,
 		isError: false,
@@ -49,7 +50,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
-	const { data: { isEnterprise } = {} } = useIsEnterprise();
+	const isEnterprise = useHasLicenseModule('livechat-enterprise') === true;
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
 
@@ -59,7 +60,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		isError: isErrorPriorities,
 	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
 		staleTime: millisecondsToMinutes(10),
-		enabled: !!isEnterprise && accessible,
+		enabled: isEnterprise && accessible,
 	});
 
 	useEffect(() => {
@@ -127,6 +128,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 
 		const livechatPriorities = {
+			enabled: isEnterprise && accessible,
 			data: priorities,
 			isLoading: isLoadingPriorities,
 			isError: isErrorPriorities,
@@ -160,15 +162,17 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 	}, [
 		enabled,
+		isEnterprise,
+		accessible,
+		priorities,
+		isLoadingPriorities,
+		isErrorPriorities,
 		manuallySelected,
 		agentAvailable,
 		voipCallAvailable,
 		routeConfig,
 		queue,
 		showOmnichannelQueueLink,
-		priorities,
-		isLoadingPriorities,
-		isErrorPriorities,
 	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
