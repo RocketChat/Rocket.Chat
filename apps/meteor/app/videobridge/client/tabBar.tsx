@@ -1,6 +1,6 @@
 import { useMemo, lazy } from 'react';
 import { useStableArray, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../client/contexts/VideoConfContext';
@@ -11,6 +11,7 @@ import { useVideoConfWarning } from '../../../client/views/room/contextualBar/Vi
 import { useHasLicenseModule } from '../../../ee/client/hooks/useHasLicenseModule';
 
 addAction('calls', ({ room }) => {
+	const t = useTranslation();
 	const hasLicense = useHasLicenseModule('videoconference-enterprise');
 	const federated = isRoomFederated(room);
 
@@ -23,24 +24,26 @@ addAction('calls', ({ room }) => {
 						icon: 'phone',
 						title: 'Calls',
 						...(federated && {
-							'data-tooltip': 'Video_Call_unavailable_for_federation',
+							'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
 							'disabled': true,
 						}),
 						template: lazy(() => import('../../../client/views/room/contextualBar/VideoConference/VideoConfList')),
 						order: 999,
 				  }
 				: null,
-		[hasLicense, federated],
+		[hasLicense, federated, t],
 	);
 });
 
 addAction('start-call', ({ room }) => {
+	const t = useTranslation();
 	const user = useUser();
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 	const federated = isRoomFederated(room);
+	const canPostReadOnly = usePermission('post-readonly', room._id);
 
 	const ownUser = room.uids && room.uids.length === 1;
 
@@ -89,15 +92,15 @@ addAction('start-call', ({ room }) => {
 						title: 'Call',
 						icon: 'phone',
 						action: handleOpenVideoConf,
-						...(federated && {
+						...((federated || (room.ro && !canPostReadOnly)) && {
+							'data-tooltip': t('Video_Call_unavailable_for_this_type_of_room'),
 							'disabled': true,
-							'data-tooltip': 'Video_Call_unavailable_for_federation',
 						}),
 						full: true,
 						order: live ? -1 : 4,
 						featured: true,
 				  }
 				: null,
-		[groups, enableOption, live, handleOpenVideoConf, ownUser, federated],
+		[groups, enableOption, live, handleOpenVideoConf, ownUser, canPostReadOnly, federated, t, room.ro],
 	);
 });
