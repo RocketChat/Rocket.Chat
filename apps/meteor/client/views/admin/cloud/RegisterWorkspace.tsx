@@ -51,24 +51,29 @@ const RegisterWorkspace = (): ReactNode => {
 		acceptWorkspaceToken();
 	}, [reload, connectWorkspace, dispatchToastMessage, t, token]);
 
-	const handleRegisterWorkspaceClick = (): void => {
-		const handleModalClose = (): void => {
-			setModal(null);
-			reload();
-		};
-		setModal(<RegisterWorkspaceModal onClose={handleModalClose} />);
-	};
 
 	if (result.isLoading || result.isError) {
 		return null;
 	}
 
 	const {
-		connectToCloud: isConnectToCloudDesired,
+		connectToCloud: isConnectedToCloud,
 		workspaceRegistered: isWorkspaceRegistered,
 	} = result.data;
 
-	console.log('connect', isConnectToCloudDesired, 'workspaceRegistered', isWorkspaceRegistered, 'result.data', result.data)
+	const handleRegisterWorkspaceClick = (): void => {
+		const handleModalClose = (): void => {
+			setModal(null);
+			reload();
+		};
+		setModal(<RegisterWorkspaceModal
+			onClose={handleModalClose}
+			onStatusChange={reload}
+			isConnectedToCloud={isConnectedToCloud}
+		/>);
+	};
+
+	console.log('result.data', result.data)
 
 	return (
 		<Page background='tint'>
@@ -78,7 +83,7 @@ const RegisterWorkspace = (): ReactNode => {
 			
 			<Page.ScrollableContentWithShadow>
 				{isWorkspaceRegistered ? (
-					<Tag variant='primary'>{t('RegisterWorkspace_Registered_Title')}</Tag>
+					<Tag variant='primary'>{t('Workspace_registered')}</Tag>
 				) : (
 					<Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>
 				)}

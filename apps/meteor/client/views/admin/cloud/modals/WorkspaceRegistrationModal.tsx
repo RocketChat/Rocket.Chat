@@ -7,21 +7,23 @@ import useFeatureBullets from '../hooks/useFeatureBullets';
 
 type WorkspaceRegistrationModalProps = {
   onClose: () => void,
+  onStatusChange?: () => void,
+  isConnectedToCloud: boolean | string,
 }
 
-const WorkspaceRegistrationModal = ({ onClose, ...props }: WorkspaceRegistrationModalProps) => {
+const WorkspaceRegistrationModal = ({ onClose, onStatusChange, isConnectedToCloud, ...props }: WorkspaceRegistrationModalProps) => {
   const setModal = useSetModal();
   const bulletFeatures = useFeatureBullets();
   const t = useTranslation();
 
   const handleTokenModal = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<RegisterWorkspaceTokenModal onClose={handleModalClose} />);
+		setModal(<RegisterWorkspaceTokenModal onClose={handleModalClose} onStatusChange={onStatusChange} isConnectedToCloud={isConnectedToCloud} />);
 	};
 
   const handleSetupModal = (): void => {
     const handleModalClose = (): void => setModal(null);
-    setModal(<RegisterWorkspaceSetupModal onClose={handleModalClose} />);
+    setModal(<RegisterWorkspaceSetupModal onClose={handleModalClose} onStatusChange={onStatusChange} isConnectedToCloud={isConnectedToCloud} />);
   };
 
   return (
@@ -34,7 +36,7 @@ const WorkspaceRegistrationModal = ({ onClose, ...props }: WorkspaceRegistration
 			</Modal.Header>
       <Modal.Content>
 				<Box withRichContent>
-					<span>`${t('RegisterWorkspace_NotRegistered_Subtitle')}:`</span>
+					<span>{`${t('RegisterWorkspace_NotRegistered_Subtitle')}:`}</span>
           <ul>
             {
               bulletFeatures.map(features => (

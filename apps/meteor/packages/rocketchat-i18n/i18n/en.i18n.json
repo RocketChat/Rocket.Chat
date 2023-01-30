@@ -5559,7 +5559,7 @@
   "Security_code": "Security code",
   "Registration_Token": "Registration Token",
   "RegisterWorkspace_Button": "Register workspace",
-  "RegisterWorkspace_Registered_Title": "Workspace registered",
+  "Workspace_registered": "Workspace registered",
   "RegisterWorkspace_Registered_Description": "These services are available",
   "RegisterWorkspace_Registered_Subtitle": "Because this workspace is registered the following is available",
   "RegisterWorkspace_Registered_Benefits": "Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared with Rocket.Chat.",

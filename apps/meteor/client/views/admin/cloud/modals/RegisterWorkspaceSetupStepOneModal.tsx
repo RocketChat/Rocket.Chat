@@ -1,6 +1,6 @@
 import React from 'react'
 import { Modal, Box, Field, TextInput, CheckBox, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import WorkspaceRegistrationModal from './WorkspaceRegistrationModal';
 
 type Props = {
@@ -12,6 +12,9 @@ type Props = {
   setTerms: (terms: boolean) => void,
   onClose: () => void,
   validInfo: boolean,
+  onStatusChange?: () => void,
+  setIntentData: (intentData: any) => void,
+  isConnectedToCloud: boolean | string,
 }
 
 const RegisterWorkspaceSetupStepOneModal = ({ 
@@ -23,17 +26,31 @@ const RegisterWorkspaceSetupStepOneModal = ({
   setTerms, 
   onClose,
   validInfo,
+  onStatusChange,
+  setIntentData,
+  isConnectedToCloud,
   ...props
 }: Props) => {
   const setModal = useSetModal();
   const t = useTranslation();
+  const dispatchToastMessage = useToastMessageDispatch();
+
+  const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
   const handleBack = (): void => {
     const handleModalClose = (): void => setModal(null);
-		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} />);
+		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} isConnectedToCloud={isConnectedToCloud}  />);
   };
 
-  const handleNext = (): void => setStep(step + 1);
+  const handleRegisterWorkspace = async () => {
+    try {
+      const { intentData } = await createRegistrationIntent({ resend: false, email });
+      setIntentData(intentData);
+      setStep(step + 1);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+  };
 
   return (
     <Modal { ...props }>
@@ -46,7 +63,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
       </Modal.Header>
       <Modal.Content>
         <Box>
-          <Box is='p' fontSize='p2'>{t('RegisterWorkspace_Setup_Subtitle')}</Box>
+          <Box is='p' fontSize='p2' withRichContent>{t('RegisterWorkspace_Setup_Subtitle')}</Box>
           <Field pbs={10}>
             <Field.Label>{t('RegisterWorkspace_Setup_Label')}</Field.Label>
             <Field.Row>
@@ -65,7 +82,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
             <CheckBox
               checked={terms}
               onChange={() => setTerms(!terms)} />
-            <Box is='p' fontSize='c1' pis={8}>{t('RegisterWorkspace_Setup_Terms_Privacy')}</Box>
+            <Box is='p' fontSize='c1' pis={8} withRichContent>{t('RegisterWorkspace_Setup_Terms_Privacy')}</Box>
           </Box>
         </Box>
       </Modal.Content>
@@ -74,7 +91,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
           <Button onClick={handleBack}>
             {t('Back')}
           </Button>
-          <Button primary onClick={handleNext} disabled={!validInfo}>
+          <Button primary onClick={handleRegisterWorkspace} disabled={!validInfo}>
             {t('Next')}
           </Button>
         </ButtonGroup>
