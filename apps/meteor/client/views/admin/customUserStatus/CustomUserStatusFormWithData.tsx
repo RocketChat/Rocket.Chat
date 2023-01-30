@@ -1,11 +1,10 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import CustomUserStatusForm from './CustomUserStatusForm';
 
 type CustomUserStatusFormWithDataProps = {
@@ -18,18 +17,23 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-user-status.list', { params: query });
+	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
+
+	const { data, isLoading, error, refetch } = useQuery(['custom-user-statuses', query], async () => {
+		const customUserStatus = await getCustomUserStatus(query);
+		return customUserStatus;
+	});
 
 	const handleReload = (): void => {
 		onReload?.();
-		reload?.();
+		refetch?.();
 	};
 
 	if (!_id) {
 		return <CustomUserStatusForm onReload={handleReload} onClose={onClose} />;
 	}
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return (
 			<Box p='x20'>
 				<Skeleton mbs='x8' />
@@ -53,7 +57,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 		);
 	}
 
-	if (error || !data || data.statuses.length < 1) {
+	if (error || !data || data.count < 1) {
 		return (
 			<Box p='x20'>
 				<Callout type='danger'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Callout>
