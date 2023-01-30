@@ -11,14 +11,9 @@ import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import DepartmentItemMenu from './DepartmentItemMenu';
 import DepartmentsTable from './DepartmentsTable';
 
-type DepartmentsPageWithDataProps = {
-	_id?: string;
-};
-
-const DepartmentsPageWithData = ({ _id }: DepartmentsPageWithDataProps): ReactElement => {
+const DepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
 
-	const onlyMyDepartments = true;
 	const departmentsRoute = useRoute('omnichannel-departments');
 
 	const onRowClick = useMutableCallback(
@@ -35,14 +30,14 @@ const DepartmentsPageWithData = ({ _id }: DepartmentsPageWithDataProps): ReactEl
 	const query = useDebouncedValue(
 		useMemo(() => {
 			return {
-				onlyMyDepartments: onlyMyDepartments ? 'true' : 'false',
+				onlyMyDepartments: 'true' as const,
 				text,
 				sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
 				...(pagination.current && { offset: pagination.current }),
 				...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
 				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 			};
-		}, [onlyMyDepartments, pagination, sort.sortBy, sort.sortDirection, text]),
+		}, [pagination, sort.sortBy, sort.sortDirection, text]),
 		500,
 	);
 
@@ -50,13 +45,12 @@ const DepartmentsPageWithData = ({ _id }: DepartmentsPageWithDataProps): ReactEl
 
 	const { data, refetch, isLoading } = useQuery(['getDepartments', query], async () => getDepartments(query));
 
-	const removeButton = (dep: ILivechatDepartment) => <DepartmentItemMenu dep={dep} reload={() => refetch()} />;
+	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <DepartmentItemMenu dep={dep} reload={() => refetch()} />;
 
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
 			<DepartmentsTable
-				_id={_id}
 				onRowClick={onRowClick}
 				data={data}
 				sort={sort}

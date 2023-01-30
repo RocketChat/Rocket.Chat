@@ -31,7 +31,7 @@ const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElemen
 		data: availableDepartments,
 		isLoading: availableDepartmentsState,
 		error: availableDepartmentsError,
-	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: true }));
+	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: 'true' }));
 
 	if (state || availableDepartmentsState || userDepartmentsState || !userDepartments || !availableDepartments) {
 		return <FormSkeleton />;

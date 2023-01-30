@@ -1,7 +1,7 @@
 import { Box, Input } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
 import React, { useState, useMemo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -24,7 +24,7 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 	const onSubmit = useMutableCallback(async () => {
 		try {
 			await removeDepartment();
-			dispatchToast({ type: 'success', message: t('Department_removed_successfully') });
+			dispatchToast({ type: 'success', message: t('Department_removed') });
 			reset();
 			onClose();
 		} catch (error) {
@@ -48,7 +48,7 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 		>
 			<Box mbe='x16'>{t('Are_you_sure_delete_department')}</Box>
 			<Box mbe='x16' display='flex' justifyContent='stretch'>
-				<Input value={text} onChange={(event) => setText(event.currentTarget.value)} />
+				<Input value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value)} />
 			</Box>
 		</GenericModal>
 	);

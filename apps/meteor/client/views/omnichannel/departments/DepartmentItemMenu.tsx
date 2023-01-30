@@ -7,7 +7,7 @@ import React from 'react';
 
 import PermanentDepartmentRemovalModal from './PermanentDepartmentRemovalModal';
 
-const DepartmentItemMenu = ({ dep, reload }: { dep: ILivechatDepartment; reload: () => void }): ReactElement => {
+const DepartmentItemMenu = ({ dep, reload }: { dep: Omit<ILivechatDepartment, '_updatedAt'>; reload: () => void }): ReactElement => {
 	const archiveDepartment = useEndpoint('POST', '/v1/livechat/department/:_id/archive', { _id: dep._id });
 
 	const t = useTranslation();
@@ -23,7 +23,7 @@ const DepartmentItemMenu = ({ dep, reload }: { dep: ILivechatDepartment; reload:
 	const handleArchiveDepartment = useMutableCallback(() => {
 		archiveDepartment();
 		reload();
-		dispatchToast({ type: 'success', message: t('Department_archived_successfully') });
+		dispatchToast({ type: 'success', message: t('Department_archived') });
 	});
 
 	const handlePermanentDepartmentRemoval = useMutableCallback(() => {
@@ -39,7 +39,7 @@ const DepartmentItemMenu = ({ dep, reload }: { dep: ILivechatDepartment; reload:
 			label: { label: t('Archive'), icon: 'arrow-down-box' },
 			action: (): void => handleArchiveDepartment(),
 		},
-		...(departmentRemovalEnabled && {
+		...(departmentRemovalEnabled === true && {
 			delete: {
 				label: { label: t('Delete'), icon: 'trash' },
 				action: (): void => handlePermanentDepartmentRemoval(),

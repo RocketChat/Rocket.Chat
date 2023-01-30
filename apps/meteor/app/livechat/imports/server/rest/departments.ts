@@ -153,7 +153,7 @@ API.v1.addRoute(
 	'livechat/department/archived',
 	{
 		authRequired: true,
-		// validateParams: { GET: isGETLivechatDepartmentProps},
+		validateParams: { GET: isGETLivechatDepartmentProps },
 		permissionsRequired: {
 			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
 		},

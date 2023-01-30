@@ -1,8 +1,8 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Button, Icon, Pagination, Table } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo } from 'react';
+import { Pagination } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import {
 	GenericTable,
@@ -14,10 +14,19 @@ import {
 	GenericTableRow,
 } from '../../../components/GenericTable';
 
-function DepartmentsTable({ data = {}, _id, removeButton, onRowClick, pagination, sort, loading }) {
+type DepartmentsTableProps = {
+	data?: { departments: Omit<ILivechatDepartment, '_updatedAt'>[]; count?: number; offset?: number; total: number };
+	removeButton: (department: Omit<ILivechatDepartment, '_updatedAt'>) => ReactElement;
+	onRowClick: (id: string) => void;
+	pagination: any;
+	sort: any;
+	loading: boolean;
+};
+
+function DepartmentsTable({ data, removeButton, onRowClick, pagination, sort, loading }: DepartmentsTableProps) {
 	const t = useTranslation();
 
-	const { departments } = data;
+	const { departments } = data || {};
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
 
@@ -48,8 +57,8 @@ function DepartmentsTable({ data = {}, _id, removeButton, onRowClick, pagination
 			<GenericTable>
 				<GenericTableHeader>{headers}</GenericTableHeader>
 				<GenericTableBody>
-					{!loading ? (
-						departments.map((department: ILivechatDepartment) => (
+					{departments && !loading ? (
+						departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (
 							<GenericTableRow
 								key={department._id}
 								onKeyDown={() => onRowClick(department._id)}
@@ -76,7 +85,7 @@ function DepartmentsTable({ data = {}, _id, removeButton, onRowClick, pagination
 				divider
 				current={current}
 				itemsPerPage={itemsPerPage}
-				count={data.count}
+				count={data?.count || 0}
 				onSetItemsPerPage={onSetItemsPerPage}
 				onSetCurrent={onSetCurrent}
 				{...paginationProps}

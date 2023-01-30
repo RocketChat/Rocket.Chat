@@ -61,9 +61,7 @@ function DepartmentsRoute() {
 					</Tabs.Item>
 				</Tabs>
 
-				<Page.Content>
-					{context === 'archived' ? <ArchivedDepartmentsPageWithData _id={id} /> : <DepartmentsPageWithData _id={id} />}
-				</Page.Content>
+				<Page.Content>{context === 'archived' ? <ArchivedDepartmentsPageWithData /> : <DepartmentsPageWithData />}</Page.Content>
 			</Page>
 		</Page>
 	);

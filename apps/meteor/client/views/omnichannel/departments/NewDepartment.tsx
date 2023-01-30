@@ -1,6 +1,6 @@
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, from 'react';
+import React from 'react';
 
 import PageSkeleton from '../../../components/PageSkeleton';
 import EditDepartment from './EditDepartment';
@@ -12,14 +12,14 @@ type NewDepartmentProps = {
 
 const NewDepartment = ({ id }: NewDepartmentProps) => {
 	const getDepartmentCreationAvailable = useEndpoint('GET', '/v1/livechat/department/isDepartmentCreationAvailable');
-	const { data = {}, isLoading } = useQuery(['getDepartments'], async () => getDepartmentCreationAvailable());
+	const { data, isLoading } = useQuery(['getDepartments'], async () => getDepartmentCreationAvailable());
 
 	const t = useTranslation();
 
-	if (isLoading) {
+	if (!data || isLoading) {
 		return <PageSkeleton />;
 	}
-	if (data.isDepartmentCreationAvailable === false) {
+	if (data.departmentCreationAvailable === false) {
 		return <UpgradeDepartments />;
 	}
 	// TODO: remove allowedToForwardData and data props once the EditDepartment component is migrated to TS

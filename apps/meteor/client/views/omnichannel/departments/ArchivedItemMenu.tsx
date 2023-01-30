@@ -12,7 +12,7 @@ const ArchivedItemMenu = ({
 	dep,
 	handlePageDepartmentsReload,
 }: {
-	dep: ILivechatDepartment;
+	dep: Omit<ILivechatDepartment, '_updatedAt'>;
 	handlePageDepartmentsReload: () => void;
 }): ReactElement => {
 	const unarchiveDepartment = useEndpoint('POST', '/v1/livechat/department/:_id/unarchive', { _id: dep._id });
@@ -25,7 +25,7 @@ const ArchivedItemMenu = ({
 	const handleUnarchiveDepartment = useMutableCallback(() => {
 		unarchiveDepartment();
 		handlePageDepartmentsReload();
-		dispatchToast({ type: 'success', message: t('Department_unarchived_successfully') });
+		dispatchToast({ type: 'success', message: t('Department_unarchived') });
 	});
 
 	const handlePermanentDepartmentRemoval = useMutableCallback(() => {
@@ -45,7 +45,7 @@ const ArchivedItemMenu = ({
 			action: (): void => handleUnarchiveDepartment(),
 		},
 
-		...(departmentRemovalEnabled && {
+		...(departmentRemovalEnabled === true && {
 			delete: {
 				label: { label: t('Delete'), icon: 'trash' },
 				action: (): void => handlePermanentDepartmentRemoval(),
