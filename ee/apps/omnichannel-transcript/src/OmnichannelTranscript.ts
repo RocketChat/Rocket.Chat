@@ -131,15 +131,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						if (attachment.type !== 'file') {
 							// @ts-expect-error - messages...
 							this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
-							// @ts-expect-error - messages...
-							this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
 							// ignore other types of attachments
 							return;
 						}
 						// @ts-expect-error - messages...
 						if (!this.worker.isMimeTypeValid(attachment.image_type)) {
-							// @ts-expect-error - messages...
-							this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 							// @ts-expect-error - messages...
 							this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 							// ignore invalid mime types
@@ -161,16 +157,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 						if (!file) {
 							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
-							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
 							// ignore attachments without file
-							return { name: attachment.title, buffer: null };
 							return { name: attachment.title, buffer: null };
 						}
 
-
 						const uploadedFile = await Uploads.findOneById(file._id);
 						if (!uploadedFile) {
-							this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 							this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 							// ignore attachments without file
 							return { name: file.name, buffer: null };
