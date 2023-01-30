@@ -1,11 +1,12 @@
 import { Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import Page from '../../../../client/components/Page';
+import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
 import type { PriorityFormData } from './PriorityEditForm';
@@ -26,17 +27,12 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 
 	const [isResetting, setResetting] = useState(false);
 
-	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
 	const savePriority = useEndpoint('PUT', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	const resetPriorities = useEndpoint('POST', '/v1/livechat/priorities.reset');
 
-	const { data, refetch } = useQuery(['/v1/livechat/priorities'], () =>
-		getPriorities({
-			sort: JSON.stringify({ sortItem: 1 }),
-		}),
-	);
+	const { data: priorities } = useOmnichannelPriorities();
 
-	const isPrioritiesDirty = useMemo(() => data?.priorities.length && data?.priorities.some((p) => p.dirty), [data]);
+	const isPrioritiesDirty = useMemo(() => !!priorities.length && priorities.some((p) => p.dirty), [priorities]);
 
 	const handleReset = (): void => {
 		const onReset = async (): Promise<void> => {
@@ -45,7 +41,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				setModal(null);
 
 				await resetPriorities();
-				await refetch();
+				await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
 
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
 			} catch (error) {
@@ -71,7 +67,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		await queryClient.invalidateQueries(['/v1/livechat/priorities']);
 
 		dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
-		refetch();
+		await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
 		prioritiesRoute.push({});
 	};
 
@@ -86,7 +82,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<PrioritiesTable data={data} onRowClick={onRowClick} />
+					<PrioritiesTable data={priorities} onRowClick={onRowClick} />
 				</Page.Content>
 			</Page>
 
