@@ -2290,7 +2290,7 @@
   "since_creation": "%s оноос хойш",
   "Site_Name": "Сайтын нэр",
   "Site_Url": "Сайтын URL",
-  "Site_Url_Description": "Жишээ нь: https://chat.domain.com/",
+  "Site_Url_Description": "Жишээ нь: https://chat.domain.com",
   "Size": "Хэмжээ",
   "Skip": "Алгасах",
   "Slack_Users": "Slack-н хэрэглэгчид CSV",

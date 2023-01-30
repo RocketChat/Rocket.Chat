@@ -3065,7 +3065,7 @@
   "since_creation": "%s -დან",
   "Site_Name": "საიტის სახელი",
   "Site_Url": "საიტის URL",
-  "Site_Url_Description": "მაგალითი:https://chat.domain.com/",
+  "Site_Url_Description": "მაგალითი:https://chat.domain.com",
   "Size": "ზომა",
   "Skip": "გამოტოვება",
   "Slack_Users": "Slack- ის მომხმარებლები CSV",

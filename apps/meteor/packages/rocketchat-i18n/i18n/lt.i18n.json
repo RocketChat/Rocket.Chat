@@ -2350,7 +2350,7 @@
   "since_creation": "nuo%s",
   "Site_Name": "Svetainės pavadinimas",
   "Site_Url": "Svetainės URL",
-  "Site_Url_Description": "Pavyzdys: https://chat.domain.com/",
+  "Site_Url_Description": "Pavyzdys: https://chat.domain.com",
   "Size": "Dydis",
   "Skip": "Praleisti",
   "Slack_Users": "Slack's Users CSV",

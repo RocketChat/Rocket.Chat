@@ -4399,7 +4399,7 @@
   "since_creation": "sedan %s",
   "Site_Name": "Webbplatsnamn",
   "Site_Url": "Webbadress",
-  "Site_Url_Description": "Example: https://chat.domain.com/",
+  "Site_Url_Description": "Example: https://chat.domain.com",
   "Size": "Storlek",
   "Skip": "Hoppa över",
   "Slack_Users": "Slack-användare CSV",

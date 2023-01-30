@@ -2293,7 +2293,7 @@
   "since_creation": "që nga %s",
   "Site_Name": "Emri faqes",
   "Site_Url": "Site URL",
-  "Site_Url_Description": "Shembull: https://chat.domain.com/",
+  "Site_Url_Description": "Shembull: https://chat.domain.com",
   "Size": "madhësi",
   "Skip": "Kalo",
   "Slack_Users": "Përdoruesit e xhiruar të CSV",

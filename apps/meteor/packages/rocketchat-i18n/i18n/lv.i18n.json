@@ -2304,7 +2304,7 @@
   "since_creation": "kopš %s",
   "Site_Name": "Vietnes nosaukums",
   "Site_Url": "Vietnes URL",
-  "Site_Url_Description": "Piemērs: https://chat.domain.com/",
+  "Site_Url_Description": "Piemērs: https://chat.domain.com",
   "Size": "Izmērs",
   "Skip": "Izlaist",
   "Slack_Users": "Slack lietotāju CSV",

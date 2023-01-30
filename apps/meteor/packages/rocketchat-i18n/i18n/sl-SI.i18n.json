@@ -2283,7 +2283,7 @@
   "since_creation": "od %s",
   "Site_Name": "Ime strani",
   "Site_Url": "URL strani",
-  "Site_Url_Description": "Primer: https://chat.domain.com/",
+  "Site_Url_Description": "Primer: https://chat.domain.com",
   "Size": "Velikost",
   "Skip": "Preskoči",
   "Slack_Users": "CSV-ji uporabnikov Slack-a ",

@@ -2291,7 +2291,7 @@
   "since_creation": "от %s",
   "Site_Name": "Име на Сайта",
   "Site_Url": "URL адрес на сайта",
-  "Site_Url_Description": "Пример: https://chat.domain.com/",
+  "Site_Url_Description": "Пример: https://chat.domain.com",
   "Size": "размер",
   "Skip": "Прескочи",
   "Slack_Users": "Потребителите на Slack CSV",

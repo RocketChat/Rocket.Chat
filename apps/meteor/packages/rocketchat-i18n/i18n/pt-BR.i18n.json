@@ -4003,7 +4003,7 @@
   "since_creation": "desde %s",
   "Site_Name": "Nome do site",
   "Site_Url": "URL do site",
-  "Site_Url_Description": "Exemplo: https://chat.dominio.com.br/",
+  "Site_Url_Description": "Exemplo: https://chat.dominio.com.br",
   "Size": "Tamanho",
   "Skip": "Pular",
   "Slack_Users": "Usuários do Slack CSV",

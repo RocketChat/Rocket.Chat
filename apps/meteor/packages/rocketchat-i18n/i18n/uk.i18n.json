@@ -2839,7 +2839,7 @@
   "since_creation": "з %s",
   "Site_Name": "Назва сайту",
   "Site_Url": "URL сайту",
-  "Site_Url_Description": "Приклад: https://chat.domain.com/",
+  "Site_Url_Description": "Приклад: https://chat.domain.com",
   "Size": "Розмір",
   "Skip": "Пропустити",
   "Slack_Users": "Користувачі Slack's CSV",

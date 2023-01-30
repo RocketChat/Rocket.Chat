@@ -2374,7 +2374,7 @@
   "since_creation": "da %s",
   "Site_Name": "Nome del sito",
   "Site_Url": "URL del sito",
-  "Site_Url_Description": "Esempio: https://chat.domain.com/",
+  "Site_Url_Description": "Esempio: https://chat.domain.com",
   "Size": "Dimensione",
   "Skip": "Salta",
   "Slack_Users": "Utenti di Slack CSV",

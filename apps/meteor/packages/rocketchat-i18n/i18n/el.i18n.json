@@ -2302,7 +2302,7 @@
   "since_creation": "από %s",
   "Site_Name": "Όνομα ιστοσελίδας",
   "Site_Url": "URL Ιστοσελίδας",
-  "Site_Url_Description": "Παράδειγμα: https://chat.domain.com/",
+  "Site_Url_Description": "Παράδειγμα: https://chat.domain.com",
   "Size": "Μέγεθος",
   "Skip": "Παραλείπω",
   "Slack_Users": "Χρήστες του Slack CSV",

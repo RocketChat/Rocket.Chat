@@ -4412,7 +4412,7 @@
   "since_creation": "since %s",
   "Site_Name": "Site Name",
   "Site_Url": "Site URL",
-  "Site_Url_Description": "Example: https://chat.domain.com/",
+  "Site_Url_Description": "Example: https://chat.domain.com",
   "Size": "Size",
   "Skip": "Skip",
   "Slack_Users": "Slack's Users CSV",

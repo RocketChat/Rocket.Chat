@@ -2302,7 +2302,7 @@
   "since_creation": "sejak %s",
   "Site_Name": "Nama Situs",
   "Site_Url": "URL Situs",
-  "Site_Url_Description": "Contoh: https://chat.domain.com/",
+  "Site_Url_Description": "Contoh: https://chat.domain.com",
   "Size": "Ukuran",
   "Skip": "Melewatkan",
   "Slack_Users": "Pengguna Slack CSV",

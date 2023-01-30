@@ -2330,7 +2330,7 @@
   "since_creation": "ນັບຕັ້ງແ​​ຕ່ %s",
   "Site_Name": "ຊື່ເວັບໄຊ",
   "Site_Url": "URL ຂອງເວັບໄຊ",
-  "Site_Url_Description": "ຍົກຕົວຢ່າງ: https://chat.domain.com/",
+  "Site_Url_Description": "ຍົກຕົວຢ່າງ: https://chat.domain.com",
   "Size": "ຂະຫນາດ",
   "Skip": "ຂ້າມ",
   "Slack_Users": "Slack ຂອງຜູ້ໃຊ້ CSV",

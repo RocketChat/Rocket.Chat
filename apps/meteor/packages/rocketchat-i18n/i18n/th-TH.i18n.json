@@ -2287,7 +2287,7 @@
   "since_creation": "ตั้งแต่%s",
   "Site_Name": "ชื่อไซต์",
   "Site_Url": "URL ของไซต์",
-  "Site_Url_Description": "ตัวอย่าง: https://chat.domain.com/",
+  "Site_Url_Description": "ตัวอย่าง: https://chat.domain.com",
   "Size": "ขนาด",
   "Skip": "กระโดด",
   "Slack_Users": "ผู้ใช้ Slack ของ CSV",

@@ -2292,7 +2292,7 @@
   "since_creation": "de la %s",
   "Site_Name": "Numele site-ului",
   "Site_Url": "URL-ul site-ului",
-  "Site_Url_Description": "Exemplu: https://chat.domain.com/",
+  "Site_Url_Description": "Exemplu: https://chat.domain.com",
   "Size": "mărimea",
   "Skip": "Sari peste asta",
   "Slack_Users": "Slack Utilizatorii CSV",

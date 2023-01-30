@@ -2294,7 +2294,7 @@
   "since_creation": "%s முதல்",
   "Site_Name": "தளத்தின் பெயர்",
   "Site_Url": "தள URL",
-  "Site_Url_Description": "உதாரணம்: https://chat.domain.com/",
+  "Site_Url_Description": "உதாரணம்: https://chat.domain.com",
   "Size": "அளவு",
   "Skip": "செல்க",
   "Slack_Users": "ஸ்லாக்கின் பயனர்கள் CSV",

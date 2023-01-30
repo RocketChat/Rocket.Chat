@@ -2715,7 +2715,7 @@
   "since_creation": "tarih %s",
   "Site_Name": "Site adı",
   "Site_Url": "Site URL'si",
-  "Site_Url_Description": "Örnek: https://chat.domain.com/",
+  "Site_Url_Description": "Örnek: https://chat.domain.com",
   "Size": "Boyut",
   "Skip": "Atla",
   "Slack_Users": "Gevşek Kullanıcılar CSV",

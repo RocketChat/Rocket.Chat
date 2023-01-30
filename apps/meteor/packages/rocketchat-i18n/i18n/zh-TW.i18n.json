@@ -3794,7 +3794,7 @@
   "since_creation": "來自 %s",
   "Site_Name": "網站名稱",
   "Site_Url": "網址",
-  "Site_Url_Description": "Example: https://chat.domain.com/",
+  "Site_Url_Description": "Example: https://chat.domain.com",
   "Size": "尺寸",
   "Skip": "跳過",
   "Slack_Users": "Slack 的用戶 CSV",
