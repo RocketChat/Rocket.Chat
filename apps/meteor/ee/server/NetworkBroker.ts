@@ -2,6 +2,8 @@ import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
+import { EnterpriseCheck } from './lib/EnterpriseCheck';
+
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
 	onNodeUpdated: '$node.updated',
@@ -90,17 +92,6 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		if (!instance.isInternal()) {
-			instance.onEvent('shutdown', async (services) => {
-				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.info({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
-					return;
-				}
-				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
-				this.destroyService(instance);
-			});
-		}
-
 		const instanceEvents = instance.getEvents();
 		if (!instanceEvents && !methods.length) {
 			return;
@@ -111,6 +102,7 @@ export class NetworkBroker implements IBroker {
 		const service: ServiceSchema = {
 			name,
 			actions: {},
+			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
 			...dependencies,
 			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
