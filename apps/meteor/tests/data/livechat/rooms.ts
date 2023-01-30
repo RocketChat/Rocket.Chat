@@ -105,7 +105,7 @@ export const deleteDepartment = (departmentId: string): Promise<unknown> => {
 					if (err) {
 						return reject(err);
 					}
-					resolve(res.body.user);
+					resolve(res.body);
 				});
 	});
 }

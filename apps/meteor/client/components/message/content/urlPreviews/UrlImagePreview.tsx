@@ -2,12 +2,11 @@ import { Box, MessageGenericPreviewImage } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useMessageOembedMaxHeight, useMessageOembedMaxWidth } from '../../../../views/room/contexts/MessageContext';
+import { useOembedLayout } from '../../hooks/useOembedLayout';
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 
 const UrlImagePreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>): ReactElement => {
-	const oembedMaxWidth = useMessageOembedMaxWidth();
-	const oembedMaxHeight = useMessageOembedMaxHeight();
+	const { maxWidth: oembedMaxWidth, maxHeight: oembedMaxHeight } = useOembedLayout();
 
 	return (
 		<Box maxHeight={oembedMaxHeight} maxWidth={oembedMaxWidth}>
