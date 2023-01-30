@@ -36,8 +36,8 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 			onSuccess: (_, data) => {
 				dispatchToastMessage({
 					type: 'success',
-					message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_a_minute_to_be_processed', {
-						room_name: data.name,
+					message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed', {
+						roomName: data.name,
 					}),
 				});
 				setModal(null);
