@@ -9,7 +9,7 @@ type GetMessageReadReceiptsProps = {
 	messageId: IMessage['_id'];
 };
 
-const roleUpdatePropsSchema = {
+const getMessageReadReceiptsPropsSchema = {
 	type: 'object',
 	properties: {
 		messageId: {
@@ -20,7 +20,7 @@ const roleUpdatePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isGetMessageReadReceiptsProps = ajv.compile<GetMessageReadReceiptsProps>(roleUpdatePropsSchema);
+export const isGetMessageReadReceiptsProps = ajv.compile<GetMessageReadReceiptsProps>(getMessageReadReceiptsPropsSchema);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
