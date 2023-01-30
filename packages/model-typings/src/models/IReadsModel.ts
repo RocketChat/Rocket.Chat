@@ -8,4 +8,5 @@ export interface IReadsModel extends IBaseModel<Reads> {
 	getMinimumLastSeenByThreadId(tmid: string): Promise<Reads | null>;
 	updateReadTimestampByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<UpdateResult>;
 	countByThreadAndUserIds(tmid: IMessage['_id'], userIds: IUser['_id'][]): Promise<number>;
+	countByThreadId(tmid: IMessage['_id']): Promise<number>;
 }

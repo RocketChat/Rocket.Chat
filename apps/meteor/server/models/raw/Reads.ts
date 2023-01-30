@@ -52,4 +52,11 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 		};
 		return this.col.countDocuments(query);
 	}
+
+	async countByThreadId(tmid: IMessage['_id']): Promise<number> {
+		const query = {
+			tmid,
+		};
+		return this.col.countDocuments(query);
+	}
 }

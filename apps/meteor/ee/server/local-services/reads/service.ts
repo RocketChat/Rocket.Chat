@@ -5,6 +5,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IReadsService } from '../../sdk/types/IReadsService';
 import { Messages, Subscriptions } from '../../../../app/models/server';
 import { ReadReceipt } from '../../lib/message-read-receipt/ReadReceipt';
+import { MAX_ROOM_SIZE_CHECK_INDIVIDUAL_READ_RECEIPTS } from '../../lib/constants';
 
 export class ReadsService extends ServiceClassInternal implements IReadsService {
 	protected name = 'reads';
@@ -26,9 +27,17 @@ export class ReadsService extends ServiceClassInternal implements IReadsService 
 		});
 		const members = subscriptions.map((s: ISubscription) => !s?.archived && s.u?._id);
 
-		const totalReads = await Reads.countByThreadAndUserIds(tmid, members);
-		if (totalReads < members.length) {
-			return;
+		if (members.length <= MAX_ROOM_SIZE_CHECK_INDIVIDUAL_READ_RECEIPTS) {
+			const totalReads = await Reads.countByThreadAndUserIds(tmid, members);
+			if (totalReads < members.length) {
+				return;
+			}
+		} else {
+			// for large rooms, mark as read if there are as many reads as room members (instead of checking each user's read receipts)
+			const totalReads = await Reads.countByThreadId(tmid);
+			if (totalReads < members.length) {
+				return;
+			}
 		}
 
 		const firstRead = await Reads.getMinimumLastSeenByThreadId(tmid);
