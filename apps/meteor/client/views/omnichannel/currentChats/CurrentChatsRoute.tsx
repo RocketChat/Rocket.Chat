@@ -6,6 +6,8 @@ import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
+import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import {
 	GenericTableBody,
 	GenericTableCell,
@@ -116,7 +118,10 @@ const currentChatQuery: useQueryType = (
 };
 
 const CurrentChatsRoute = (): ReactElement => {
-	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts', 'desc');
+	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'priorityWeight' | 'ts' | 'lm' | 'open'>(
+		'ts',
+		'desc',
+	);
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 
 	const t = useTranslation();
@@ -125,6 +130,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const directoryRoute = useRoute('omnichannel-current-chats');
+	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const { data: allCustomFields } = useAllCustomFields();
 
@@ -163,7 +169,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	});
 
 	const renderRow = useCallback(
-		({ _id, fname, servedBy, ts, lm, department, open, onHold }) => {
+		({ _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight }) => {
 			const getStatusText = (open: boolean, onHold: boolean): string => {
 				if (!open) return t('Closed');
 				return onHold ? t('On_Hold_Chats') : t('Open');
@@ -171,6 +177,11 @@ const CurrentChatsRoute = (): ReactElement => {
 
 			return (
 				<GenericTableRow key={_id} onClick={(): void => onRowClick(_id)} action>
+					{isPriorityEnabled && (
+						<GenericTableCell withTruncatedText data-qa='current-chats-cell-priority'>
+							<PriorityIcon level={priorityWeight} />
+						</GenericTableCell>
+					)}
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-name'>
 						{fname}
 					</GenericTableCell>
@@ -193,7 +204,7 @@ const CurrentChatsRoute = (): ReactElement => {
 				</GenericTableRow>
 			);
 		},
-		[canRemoveClosedChats, onRowClick, t],
+		[canRemoveClosedChats, onRowClick, isPriorityEnabled, t],
 	);
 
 	if (!canViewCurrentChats) {
@@ -217,6 +228,19 @@ const CurrentChatsRoute = (): ReactElement => {
 				<Page.Content>
 					<GenericTable>
 						<GenericTableHeader>
+							{isPriorityEnabled && (
+								<GenericTableHeaderCell
+									key='priorityWeight'
+									direction={sortDirection}
+									active={sortBy === 'priorityWeight'}
+									onClick={setSort}
+									sort='priorityWeight'
+									w='x100'
+									alignItems='center'
+								>
+									{t('Priority')}
+								</GenericTableHeaderCell>
+							)}
 							<GenericTableHeaderCell
 								key='fname'
 								direction={sortDirection}
