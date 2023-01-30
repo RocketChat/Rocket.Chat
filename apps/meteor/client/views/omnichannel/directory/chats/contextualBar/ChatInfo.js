@@ -9,13 +9,13 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
-import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
+import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -29,7 +29,7 @@ function ChatInfo({ id, route }) {
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const room = useOmnichannelRoom();
+	const { data: room } = useOmnichannelRoomInfo(id);
 
 	const {
 		ts,
@@ -89,6 +89,8 @@ function ChatInfo({ id, route }) {
 				  },
 		);
 	});
+
+	const customFieldEntries = Object.entries(livechatData || {}).filter(([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key]);
 
 	return (
 		<>
@@ -165,11 +167,7 @@ function ChatInfo({ id, route }) {
 							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 						</Field>
 					)}
-					{canViewCustomFields &&
-						livechatData &&
-						Object.keys(livechatData).map(
-							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
-						)}
+					{canViewCustomFields && customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>

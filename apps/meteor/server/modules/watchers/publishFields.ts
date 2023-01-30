@@ -96,6 +96,7 @@ export const roomFields = {
 	priorityId: 1,
 	priorityWeight: 1,
 	slaId: 1,
+	estimatedWaitingTimeQueue: 1,
 	v: 1,
 	departmentId: 1,
 	servedBy: 1,

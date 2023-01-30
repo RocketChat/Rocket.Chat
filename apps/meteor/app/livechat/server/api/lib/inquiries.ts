@@ -4,7 +4,7 @@ import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { Filter } from 'mongodb';
 
-import { getInquirySortQuery } from '../../../lib/inquiries';
+import { getOmniChatSortQuery } from '../../../lib/inquiries';
 import { getInquirySortMechanismSetting } from '../../lib/settings';
 
 const agentDepartments = async (userId: IUser['_id']): Promise<string[]> => {
@@ -43,7 +43,7 @@ export async function findInquiries({
 	pagination: { offset: number; count: number; sort: Record<string, number> };
 }): Promise<PaginatedResult<{ inquiries: Array<ILivechatInquiryRecord> }>> {
 	const department = await applyDepartmentRestrictions(userId, filterDepartment);
-	const defaultSort = getInquirySortQuery(getInquirySortMechanismSetting());
+	const defaultSort = getOmniChatSortQuery(getInquirySortMechanismSetting());
 	const options = {
 		limit: count,
 		skip: offset,

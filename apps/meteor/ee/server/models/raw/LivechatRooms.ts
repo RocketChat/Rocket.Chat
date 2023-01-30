@@ -1,5 +1,5 @@
 import type { ILivechatPriority, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, UpdateResult, Document, FindOptions } from 'mongodb';
 
@@ -136,7 +136,17 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	async unsetPriorityByRoomId(roomId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $unset: { priorityId: 1, priorityWeight: 1 } });
+		return this.updateOne(
+			{ _id: roomId },
+			{
+				$unset: {
+					priorityId: 1,
+				},
+				$set: {
+					priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+				},
+			},
+		);
 	}
 
 	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
