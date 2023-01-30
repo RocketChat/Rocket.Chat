@@ -5559,5 +5559,7 @@
 	"User_Status": "User Status",
 	"Active_connections": "Active connections",
 	"Presence_service": "Presence service",
-	"New_custom_status": "New custom status"
+	"New_custom_status": "New custom status",
+  "Service_disabled": "The service is now disabled",
+  "Service_disabled_description": "You can’t reenable it again until there’s less than 200 active connections at the same time"
 }

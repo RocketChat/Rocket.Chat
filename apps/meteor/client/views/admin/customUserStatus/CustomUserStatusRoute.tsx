@@ -74,7 +74,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 						{context === 'presence-service' && t('Presence_service_cap')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'presence-service' && <CustomUserStatusService />}
+					{context === 'presence-service' && <CustomUserStatusService usage={120} total={100} />}
 					{(context === 'new' || context === 'edit') && (
 						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
 					)}
