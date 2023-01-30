@@ -1,6 +1,7 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 
 import { hasPermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
@@ -93,7 +94,7 @@ roomCoordinator.add(PrivateRoomType, {
 	},
 
 	findRoom(identifier) {
-		const query = {
+		const query: Mongo.Selector<IRoom> = {
 			t: 'p',
 			name: identifier,
 		};
