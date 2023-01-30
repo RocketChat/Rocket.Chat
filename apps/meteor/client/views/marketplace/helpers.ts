@@ -38,7 +38,7 @@ type appButtonResponseProps = {
 
 export type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
-	icon?: 'warning' | 'ban' | 'checkmark-circled' | 'check';
+	icon?: 'warning' | 'checkmark-circled' | 'check';
 	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests' | 'Requested';
 	tooltipText?: string;
 };

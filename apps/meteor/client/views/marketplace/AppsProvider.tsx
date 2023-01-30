@@ -157,97 +157,94 @@ const AppsProvider: FC = ({ children }) => {
 
 	const isAdminUser = usePermission('manage-apps');
 
-	const fetch = useCallback(
-		async (isAdminUser?: boolean | undefined): Promise<void> => {
-			dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
-			dispatchInstalledApps({ type: 'request', reload: async () => undefined });
+	const fetch = useCallback(async (isAdminUser?: string): Promise<void> => {
+		dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
+		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
 
-			let installedApps: App[] = [];
-			let marketplaceApps: App[] = [];
-			let marketplaceError = false;
-			let installedAppsError = false;
+		let installedApps: App[] = [];
+		let marketplaceApps: App[] = [];
+		let marketplaceError = false;
+		let installedAppsError = false;
 
-			try {
-				marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
-			} catch (e) {
-				dispatchMarketplaceApps({
-					type: 'failure',
-					error: e instanceof Error ? e : new Error(String(e)),
-					reload: fetch,
-				});
-				marketplaceError = true;
-			}
+		try {
+			marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
+		} catch (e) {
+			dispatchMarketplaceApps({
+				type: 'failure',
+				error: e instanceof Error ? e : new Error(String(e)),
+				reload: fetch,
+			});
+			marketplaceError = true;
+		}
 
-			try {
-				installedApps = await Apps.getInstalledApps().then((result: App[]) =>
-					result.map((current: App) => ({
-						...current,
-						installed: true,
-						marketplace: false,
-					})),
-				);
-			} catch (e) {
-				dispatchInstalledApps({
-					type: 'failure',
-					error: e instanceof Error ? e : new Error(String(e)),
-					reload: fetch,
-				});
-				installedAppsError = true;
-			}
+		try {
+			installedApps = await Apps.getInstalledApps().then((result: App[]) =>
+				result.map((current: App) => ({
+					...current,
+					installed: true,
+					marketplace: false,
+				})),
+			);
+		} catch (e) {
+			dispatchInstalledApps({
+				type: 'failure',
+				error: e instanceof Error ? e : new Error(String(e)),
+				reload: fetch,
+			});
+			installedAppsError = true;
+		}
 
-			const installedAppsData: App[] = [];
-			const marketplaceAppsData: App[] = [];
+		const installedAppsData: App[] = [];
+		const marketplaceAppsData: App[] = [];
 
-			if (!marketplaceError) {
-				marketplaceApps.forEach((app) => {
-					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-					if (!installedApps[appIndex]) {
-						marketplaceAppsData.push({
-							...app,
-							status: undefined,
-							marketplaceVersion: app.version,
-							bundledIn: app.bundledIn,
-						});
-
-						return;
-					}
-					const [installedApp] = installedApps.splice(appIndex, 1);
-					const appData = {
+		if (!marketplaceError) {
+			marketplaceApps.forEach((app) => {
+				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+				if (!installedApps[appIndex]) {
+					marketplaceAppsData.push({
 						...app,
-						installed: true,
-						...(installedApp && {
-							status: installedApp.status,
-							version: installedApp.version,
-							licenseValidation: installedApp.licenseValidation,
-						}),
-						bundledIn: app.bundledIn,
+						status: undefined,
 						marketplaceVersion: app.version,
-					};
+						bundledIn: app.bundledIn,
+					});
 
-					installedAppsData.push(appData);
-					marketplaceAppsData.push(appData);
-				});
-				dispatchMarketplaceApps({
-					type: 'success',
-					reload: fetch,
-					apps: marketplaceAppsData,
-				});
-			}
-
-			if (!installedAppsError) {
-				if (installedApps.length) {
-					installedAppsData.push(...installedApps);
+					return;
 				}
+				const [installedApp] = installedApps.splice(appIndex, 1);
+				const appData = {
+					...app,
+					installed: true,
+					...(installedApp && {
+						status: installedApp.status,
+						version: installedApp.version,
+						licenseValidation: installedApp.licenseValidation,
+					}),
+					bundledIn: app.bundledIn,
+					marketplaceVersion: app.version,
+				};
 
-				dispatchInstalledApps({
-					type: 'success',
-					reload: fetch,
-					apps: installedAppsData,
-				});
+				installedAppsData.push(appData);
+				marketplaceAppsData.push(appData);
+			});
+			dispatchMarketplaceApps({
+				type: 'success',
+				reload: fetch,
+				apps: marketplaceAppsData,
+			});
+		}
+
+		if (!installedAppsError) {
+			if (installedApps.length) {
+				installedAppsData.push(...installedApps);
 			}
-		},
-		[isAdminUser],
-	);
+
+			dispatchInstalledApps({
+				type: 'success',
+				reload: fetch,
+				apps: installedAppsData,
+			});
+		}
+	}, []);
 
 	const getCurrentData = useMutableCallback(function getCurrentData() {
 		return [marketplaceAppsState, installedAppsState];
@@ -373,7 +370,7 @@ const AppsProvider: FC = ({ children }) => {
 		};
 		const unregisterListeners = registerListeners(listeners);
 		try {
-			fetch(isAdminUser);
+			fetch(isAdminUser ? 'true' : 'false');
 		} finally {
 			// eslint-disable-next-line no-unsafe-finally
 			return unregisterListeners;

@@ -40,8 +40,8 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 		const initialize = async (): Promise<void> => {
 			setIsLoggedInCloud(await checkUserLoggedIn());
 		};
-		initialize();
-	}, [checkUserLoggedIn]);
+		if (isAdminUser) initialize();
+	}, [checkUserLoggedIn, isAdminUser]);
 
 	const handleLoginButtonClick = (): void => {
 		cloudRoute.push();

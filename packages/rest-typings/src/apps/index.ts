@@ -133,7 +133,7 @@ export type AppsEndpoints = {
 			version?: string;
 			appId?: string;
 			details?: 'true' | 'false';
-			isAdminUser: boolean | undefined;
+			isAdminUser?: string;
 		}) => App[];
 	};
 

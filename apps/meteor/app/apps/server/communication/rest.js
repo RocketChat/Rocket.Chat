@@ -99,7 +99,7 @@ export class AppsRestApi {
 
 					const customQueryParams = new URLSearchParams();
 
-					if (!this.queryParams.isAdminUser) {
+					if (this.queryParams.isAdminUser === 'false') {
 						customQueryParams.set('endUserID', this.user._id);
 					}
 

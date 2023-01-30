@@ -110,7 +110,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setLoading(true);
 
 		let isLoggedIn = true;
-		if (action !== 'request') {
+		if (isAdminUser) {
 			isLoggedIn = await checkUserLoggedIn();
 		}
 

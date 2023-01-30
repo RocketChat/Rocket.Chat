@@ -64,7 +64,7 @@ export const useFilteredApps = ({
 		}
 
 		if (context && context === 'requested') {
-			filtered = apps.filter(({ appRequestStats }) => Boolean(appRequestStats));
+			filtered = apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed);
 		}
 
 		if (sortingMethod) {

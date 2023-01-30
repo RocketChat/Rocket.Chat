@@ -126,7 +126,7 @@ const AppsPageContent = (): ReactElement => {
 
 			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
 				<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
-					<Box overflowY='scroll'>
+					<Box overflowY='scroll' height='100%'>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
 						<AppsList apps={appsResult.value.items} title={isRequested ? '' : t('All_Apps')} />
 					</Box>
