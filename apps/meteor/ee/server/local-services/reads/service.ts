@@ -33,7 +33,7 @@ export class ReadsService extends ServiceClassInternal implements IReadsService 
 				return;
 			}
 		} else {
-			// for large rooms, mark as read if there are as many reads as room members (instead of checking each user's read receipts)
+			// for large rooms, mark as read if there are as many reads as room members to improve performance (instead of checking each read)
 			const totalReads = await Reads.countByThreadId(tmid);
 			if (totalReads < members.length) {
 				return;
