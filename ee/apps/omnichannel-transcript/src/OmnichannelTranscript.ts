@@ -57,9 +57,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
-
-		this.log.level('debug');
-		// your stuff
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
@@ -79,7 +76,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
-		return Messages.findLivechatMessages(rid, {
+		// Closing message should not appear :)
+		return Messages.findLivechatMessagesWithoutClosing(rid, {
 			sort: { ts: 1 },
 			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1 },
 		}).toArray();
@@ -128,7 +126,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 				const files = await Promise.all(
 					message.attachments.map(async (attachment) => {
-						this.log.error(JSON.stringify(attachment, null, 2));
 						// @ts-expect-error - messages...
 						if (attachment.type !== 'file') {
 							// @ts-expect-error - messages...
@@ -145,7 +142,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						}
 						let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
 						if (!file) {
-							this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
 							// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
 							// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
 							const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
@@ -225,17 +221,24 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
 			const messagesFiles = await this.getFiles(details.userId, messages);
-			this.log.error('messagesFiles', messagesFiles);
+
+			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
+				this.settingsService.get<string>('Site_Name'),
+				this.settingsService.get<string>('Message_DateFormat'),
+				this.settingsService.get<string>('Message_TimeAndDateFormat'),
+				this.getTimezone(agent),
+				this.getTranslations(),
+			]);
 			const data = {
 				visitor,
 				agent,
 				closedAt: room.closedAt,
-				siteName: await this.settingsService.get<string>('Site_Name'),
+				siteName,
 				messages: messagesFiles,
-				dateFormat: await this.settingsService.get<string>('Message_DateFormat'),
-				timeAndDateFormat: await this.settingsService.get<string>('Message_TimeAndDateFormat'),
-				timezone: await this.getTimezone(agent),
-				translations: await this.getTranslations(),
+				dateFormat,
+				timeAndDateFormat,
+				timezone,
+				translations,
 			};
 
 			await this.doRender({ template, data, details });
