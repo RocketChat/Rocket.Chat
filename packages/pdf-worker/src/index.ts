@@ -1,7 +1,7 @@
+import { ChatTranscript } from './strategies/ChatTranscript';
 import type { IStrategy } from './types/IStrategy';
-import { OmnichannelPDF } from './strategies/OmnichannelPDF';
 
-export type Templates = 'omnichannel-transcript';
+export type Templates = 'chat-transcript';
 
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png'];
@@ -21,15 +21,18 @@ export class PdfWorker {
 
 	getWorkerClass(): IStrategy {
 		switch (this.mode) {
-			case 'omnichannel-transcript':
-				return new OmnichannelPDF();
+			case 'chat-transcript':
+				return new ChatTranscript();
 			default:
 				throw new Error('Invalid mode');
 		}
 	}
 
-	isMimeTypeValid(mimeType: string): boolean {
-		return this.validMimeTypes.includes(mimeType);
+	isMimeTypeValid(mimeType?: string): boolean {
+		if (!mimeType) {
+			return false;
+		}
+		return this.validMimeTypes.includes(mimeType?.toLowerCase());
 	}
 
 	async renderToStream({ data }: { template: Templates; data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {

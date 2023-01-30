@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
 		paddingRight: 10,
 		flexGrow: 1,
 		flexShrink: 1,
+		width: '50%',
 	},
 	key: {
 		fontWeight: fontScales.c2.fontWeight,
@@ -56,8 +57,8 @@ export const Header = ({ title, subtitle, values }: { title: string; subtitle: s
 		<Text style={styles.subtitle}>{subtitle}</Text>
 		<View style={styles.container}>
 			{values.map((value, index) => (
-				<Text style={{ ...styles.item, width: index % 2 === 0 ? '30%' : '60%' }} key={index}>
-					<Text style={styles.key}>{value.key}</Text>
+				<Text style={styles.item} key={index}>
+					<Text style={styles.key}>{value.key}: </Text>
 					<Text>{value.value}</Text>
 				</Text>
 			))}
