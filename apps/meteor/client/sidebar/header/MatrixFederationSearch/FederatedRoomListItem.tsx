@@ -1,14 +1,10 @@
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { VFC } from 'react';
 import React from 'react';
 
-type FederatedRoomListItemProps = {
-	name: string;
-	canJoin: boolean;
-	canonicalAlias: string;
-	joinedMembers: number;
-	topic?: string;
+type FederatedRoomListItemProps = IFederationPublicRooms & {
 	disabled: boolean;
 	onClickJoin: () => void;
 };

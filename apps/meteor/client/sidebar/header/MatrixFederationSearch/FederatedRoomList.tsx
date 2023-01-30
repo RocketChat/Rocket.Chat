@@ -1,5 +1,6 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
-import { useSetModal, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
+import { useSetModal, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { VFC } from 'react';
 import React from 'react';
@@ -22,20 +23,31 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 	const joinExternalPublicRoom = useEndpoint('POST', '/v1/federation/joinExternalPublicRoom');
 
 	const setModal = useSetModal();
+	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const { data, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteFederationSearchPublicRooms(serverName, roomName, count);
 
 	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
 		['federation/joinExternalPublicRoom'],
-		async (id: string) => {
+		async ({ id }: IFederationPublicRooms) => {
 			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}` });
 		},
 		{
-			onSuccess: (_, id) => {
+			onSuccess: (_, data) => {
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_a_minute_to_be_processed', {
+						room_name: data.name,
+					}),
+				});
 				setModal(null);
-				roomCoordinator.openRouteLink('c', { rid: id });
 			},
-			onError: (error, id) => {
-				if (error instanceof Error && error.message === 'already-joined') {
+			onError: (error, { id }) => {
+				if (!(error instanceof Error)) {
+					console.warn(error);
+					return;
+				}
+				if (error.message === 'already-joined') {
 					setModal(null);
 					roomCoordinator.openRouteLink('c', { rid: id });
 				}
@@ -61,8 +73,8 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 				}}
 				endReached={() => fetchNextPage()}
-				itemContent={(_, { id, ...props }) => (
-					<FederatedRoomListItem onClickJoin={() => onClickJoin(id)} disabled={isLoadingMutation} {...props} key={id} />
+				itemContent={(_, room) => (
+					<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
 				)}
 			/>
 		</Box>
