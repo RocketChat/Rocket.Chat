@@ -6,62 +6,64 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import QueryClientProviderMock from '../../../../../../client/stories/contexts/QueryClientProviderMock';
+import ServerProviderMock, { makeCallEndpoint } from '../../../../../mocks/client/ServerProviderMock';
 
 const fetchRoomList = async ({ serverName, roomName, count }: any): Promise<any> => {
-	return new Promise(
-		(resolve) => () =>
-			resolve({
-				rooms: Array.from({ length: count || 100 }).map((index) => ({
-					id: `Matrix${index}`,
-					name: `${roomName}${index}` || `Matrix${index}`,
-					canJoin: true,
-					canonicalAlias: `#${serverName}:matrix.org`,
-					joinedMembers: 44461,
-					topic:
-						'The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room | The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room | The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room',
-				})),
-				count: 1,
-				total: 73080,
-				nextPageToken: 'g6FtzZa3oXK+IUpkemFiTlVQUFh6bENKQWhFbDpmYWJyaWMucHVioWTD',
-				prevPageToken: 'g6FtzYqIoXK+IWNOd2pkUXdWcFJNc0lNa1VweDptYXRyaXgub3JnoWTC',
-				success: true,
-			}),
+	return new Promise((resolve) =>
+		resolve({
+			rooms: Array.from({ length: count || 100 }).map((index) => ({
+				id: `Matrix${index}`,
+				name: `${roomName}${index}` || `Matrix${index}`,
+				canJoin: true,
+				canonicalAlias: `#${serverName}:matrix.org`,
+				joinedMembers: 44461,
+				topic:
+					'The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room | The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room | The Official Matrix HQ - chat about Matrix here! | https://matrix.org | https://spec.matrix.org | To support Matrix.org development: https://patreon.com/matrixdotorg | Code of Conduct: https://matrix.org/legal/code-of-conduct/ | This is an English speaking room',
+			})),
+			count: 1,
+			total: 73080,
+			nextPageToken: 'g6FtzZa3oXK+IUpkemFiTlVQUFh6bENKQWhFbDpmYWJyaWMucHVioWTD',
+			prevPageToken: 'g6FtzYqIoXK+IWNOd2pkUXdWcFJNc0lNa1VweDptYXRyaXgub3JnoWTC',
+			success: true,
+		}),
 	);
 };
 
-const joinExternalPublicRoom = () => ({ success: true });
+const joinExternalPublicRoom: any = async () => ({ success: true });
 
-const serverList = [
+let serverList = [
 	{ name: `server-1`, default: true, local: false },
 	{ name: `server-2`, default: false, local: false },
 	{ name: `server-3`, default: false, local: false },
 ];
 
-const fetchServerList = () => ({
+const fetchServerList = async () => ({
 	servers: serverList,
 });
 
-const removeMatrixServer = ({ serverName }: any) => serverList.filter((server) => server.name !== serverName);
-const addMatrixServer = ({ serverName }: any) => serverList.push({ name: serverName, default: false, local: false });
+const removeMatrixServer: any = async ({ serverName }: any) => {
+	serverList = serverList.filter((server) => server.name !== serverName);
+};
+const addMatrixServer: any = async ({ serverName }: any) => serverList.push({ name: serverName, default: false, local: false });
 
 const COMPONENT_PATH = '../../../../../../client/sidebar/header/MatrixFederationSearch';
 
 const defaultConfig = {
 	'@rocket.chat/ui-contexts': {
-		useEndpoint: (_: any, path: string) => {
-			switch (path) {
-				case '/v1/federation/listServersByUser':
-					return fetchServerList;
-				case '/v1/federation/searchPublicRooms':
-					return fetchRoomList;
-				case '/v1/federation/joinExternalPublicRoom':
-					return joinExternalPublicRoom;
-				case '/v1/federation/addServerByUser':
-					return addMatrixServer;
-				case '/v1/federation/removeServerByUser':
-					return removeMatrixServer;
-			}
-		},
+		// useEndpoint: (_: any, path: string) => {
+		// 	switch (path) {
+		// 		case '/v1/federation/listServersByUser':
+		// 			return fetchServerList;
+		// 		case '/v1/federation/searchPublicRooms':
+		// 			return fetchRoomList;
+		// 		case '/v1/federation/joinExternalPublicRoom':
+		// 			return joinExternalPublicRoom;
+		// 		case '/v1/federation/addServerByUser':
+		// 			return addMatrixServer;
+		// 		case '/v1/federation/removeServerByUser':
+		// 			return removeMatrixServer;
+		// 	}
+		// },
 		useSetModal: () => (modal: ReactElement) => {
 			cleanup();
 			if (!modal) {
@@ -71,7 +73,35 @@ const defaultConfig = {
 		},
 		// '@noCallThru': true,
 	},
+	'meteor/kadira:flow-router': { '@global': true },
+	'meteor/meteor': { '@global': true },
+	'meteor/check': { '@global': true },
+	'meteor/mongo': { '@global': true },
+	'../../../lib/rooms/roomCoordinator': {
+		'@global': true,
+		'roomCoordinator': {
+			openRouteLink: () => null,
+		},
+	},
+	// './MatrixFederationSearchModalContent': {
+	// 	'./FederatedRoomList': {
+	// 		'../../../lib/rooms/roomCoordinator': {
+	// 			openRouteLink: () => null,
+	// 			// '@noCallThru': true,
+	// 		},
+	// 		// '@noCallThru': true,
+	// 	},
+	// 	// '@noCallThru': true,
+	// },
 };
+
+const [callEndpoint, registerEndpoint] = makeCallEndpoint();
+
+registerEndpoint('GET', '/v1/federation/listServersByUser', fetchServerList);
+registerEndpoint('GET', '/v1/federation/searchPublicRooms', fetchRoomList);
+registerEndpoint('GET', '/v1/federation/joinExternalPublicRoom', joinExternalPublicRoom);
+registerEndpoint('POST', '/v1/federation/addServerByUser', addMatrixServer);
+registerEndpoint('POST', '/v1/federation/removeServerByUser', removeMatrixServer);
 
 const openManageServers = () => {
 	const manageServerLink = screen.getByRole('a');
@@ -85,13 +115,15 @@ const renderMatrixFederationSearch = () => {
 	const MatrixFederationSearch = proxyquire.noCallThru().load(COMPONENT_PATH, defaultConfig).default;
 
 	render(
-		<QueryClientProviderMock>
-			<MatrixFederationSearch />
-		</QueryClientProviderMock>,
+		<ServerProviderMock callEndpoint={callEndpoint}>
+			<QueryClientProviderMock>
+				<MatrixFederationSearch />
+			</QueryClientProviderMock>
+		</ServerProviderMock>,
 	);
 };
 
-describe.skip('sidebar/header/MatrixFederationSearch', () => {
+describe('sidebar/header/MatrixFederationSearch', () => {
 	it('should render Federated Room search modal', async () => {
 		renderMatrixFederationSearch();
 
