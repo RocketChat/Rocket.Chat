@@ -12,7 +12,7 @@ type RoomLayoutProps = {
 } & ComponentProps<typeof Box>;
 
 const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps): ReactElement => (
-	<Box is='main' h='full' display='flex' flexDirection='column' {...props}>
+	<Box is='main' h='full' display='flex' flexDirection='column' bg='room' {...props}>
 		{header}
 		<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 			<Box display='flex' flexDirection='column' flexGrow={1}>
