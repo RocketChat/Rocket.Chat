@@ -37,14 +37,13 @@ import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
+import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
-
-type MessageBoxProps = MessageBoxTemplateInstance['data'];
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -81,7 +80,9 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-export const MessageBox = ({
+type MessageBoxProps = Omit<MessageBoxTemplateInstance['data'], 'chatContext'>;
+
+const MessageBox = ({
 	rid,
 	tmid,
 	onSend,
@@ -110,6 +111,7 @@ export const MessageBox = ({
 	}
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
 
 	const callbackRef = useCallback(
@@ -242,6 +244,11 @@ export const MessageBox = ({
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
 
+	const isRecordingVideo = useSubscription({
+		getCurrentValue: chat.composer?.recordingVideo.get ?? getEmptyFalse,
+		subscribe: chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
+	});
+
 	const formatters = useSubscription({
 		getCurrentValue: chat.composer?.formatters.get ?? getEmptyArray,
 		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
@@ -307,7 +314,8 @@ export const MessageBox = ({
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}
-			<MessageComposer variant={isEditing ? 'editing' : undefined}>
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
+			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				<MessageComposerInput
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}

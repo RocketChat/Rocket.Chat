@@ -50,6 +50,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 
 	const contextValue = useMemo(
 		() => ({
+			manager: VideoConfManager,
 			dispatchOutgoing: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: (): void => setOutgoing(undefined),
 			startCall: (rid: IRoom['_id'], confTitle?: string): Promise<void> => VideoConfManager.startCall(rid, confTitle),
