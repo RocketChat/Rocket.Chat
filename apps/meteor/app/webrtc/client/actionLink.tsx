@@ -8,7 +8,11 @@ import { Notifications } from '../../notifications/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
-	const { callStatus, _id } = Rooms.findOne({ _id: message.rid });
+	const room = Rooms.findOne({ _id: message.rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
+	const { callStatus, _id } = room;
 	if (callStatus === 'declined' || callStatus === 'ended') {
 		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call_Already_Ended') });
 		return;
@@ -17,7 +21,11 @@ actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
 });
 
 actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
-	const { callStatus, _id } = Rooms.findOne({ _id: message.rid });
+	const room = Rooms.findOne({ _id: message.rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
+	const { callStatus, _id } = room;
 	if (callStatus === 'declined' || callStatus === 'ended') {
 		dispatchToastMessage({ type: 'info', message: TAPi18n.__('Call_Already_Ended') });
 		return;
