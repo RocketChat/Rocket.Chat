@@ -201,6 +201,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const buf: Uint8Array[] = [];
 		let outBuff = Buffer.alloc(0);
+		const transcriptText = await this.translationService.translateToServerLanguage('Transcript');
 
 		const stream = await this.worker.renderToStream({ template, data });
 		stream.on('data', (chunk) => {
@@ -214,7 +215,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					userId: details.userId,
 					buffer: outBuff,
 					details: {
-						name: 'transcript.pdf',
+						name: `${new Intl.DateTimeFormat('en-US').format(new Date())}_${transcriptText}_${
+							data.visitor?.name || data.visitor?.username || 'Visitor'
+						}.pdf`,
 						type: 'application/pdf',
 						rid: details.rid,
 						// Rocket.cat is the goat
