@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import React, { forwardRef, ComponentProps, useRef, useState, useEffect } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef, useRef, useState, useEffect } from 'react';
 
 const DropDownListWrapper = forwardRef<Element, ComponentProps<typeof Box> & { onClose: (e: MouseEvent) => void }>(
 	function CategoryDropDownListWrapper({ children, onClose }) {
