@@ -41,9 +41,10 @@ export const useTeamsChannelList = (
 			});
 
 			return {
-				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, webRtcCallStartTime, ...room }) => ({
+				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, closedAt, webRtcCallStartTime, ...room }) => ({
 					...(lm && { lm: new Date(lm) }),
 					...(ts && { ts: new Date(ts) }),
+					...(closedAt && { closedAt: new Date(closedAt) }),
 					_updatedAt: new Date(_updatedAt),
 					...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
 					...(webRtcCallStartTime && { webRtcCallStartTime: new Date(webRtcCallStartTime) }),
