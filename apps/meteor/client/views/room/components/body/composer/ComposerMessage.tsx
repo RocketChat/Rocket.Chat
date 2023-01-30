@@ -1,124 +1,70 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { Blaze } from 'meteor/blaze';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Template } from 'meteor/templating';
-import type { ContextType, ReactElement } from 'react';
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
-import type { MessageBoxTemplateInstance } from '../../../../../../app/ui-message/client/messageBox/messageBox';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
-import { useEmbeddedLayout } from '../../../../../hooks/useEmbeddedLayout';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
-import type { ChatContext } from '../../../contexts/ChatContext';
+import { useChat } from '../../../contexts/ChatContext';
+import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+	children?: ReactNode;
 	subscription?: ISubscription;
-	chatMessagesInstance: ContextType<typeof ChatContext>;
+	readOnly?: boolean;
+	tshow?: boolean;
 	onResize?: () => void;
 	onEscape?: () => void;
+	onSend?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({
-	rid,
-	subscription,
-	chatMessagesInstance,
-	onResize,
-	onEscape,
-	onNavigateToNextMessage,
-	onNavigateToPreviousMessage,
-	onUploadFiles,
-}: ComposerMessageProps): ReactElement => {
-	const isLayoutEmbedded = useEmbeddedLayout();
-	const showFormattingTips = useSetting('Message_ShowFormattingTips') as boolean;
-
-	const messageBoxViewRef = useRef<Blaze.View>();
-	const messageBoxViewDataRef = useRef(
-		new ReactiveVar<MessageBoxTemplateInstance['data']>({
-			rid,
-			subscription,
-			isEmbedded: isLayoutEmbedded,
-			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
-			onResize,
-			onEscape,
-			onNavigateToNextMessage,
-			onNavigateToPreviousMessage,
-			onUploadFiles,
-			chatContext: chatMessagesInstance,
-		}),
-	);
-
-	useEffect(() => {
-		messageBoxViewDataRef.current.set({
-			rid,
-			subscription,
-			isEmbedded: isLayoutEmbedded,
-			showFormattingTips: showFormattingTips && !isLayoutEmbedded,
-			onResize,
-			onEscape,
-			onNavigateToNextMessage,
-			onNavigateToPreviousMessage,
-			onUploadFiles,
-			chatContext: chatMessagesInstance,
-		});
-	}, [
-		isLayoutEmbedded,
-		onResize,
-		rid,
-		showFormattingTips,
-		subscription,
-		chatMessagesInstance,
-		onEscape,
-		onNavigateToNextMessage,
-		onNavigateToPreviousMessage,
-		onUploadFiles,
-	]);
-
+const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
+	const chat = useChat();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const footerRef = useCallback(
-		(footer: HTMLElement | null) => {
-			if (footer) {
-				messageBoxViewRef.current = Blaze.renderWithData(
-					Template.messageBox,
-					(): MessageBoxTemplateInstance['data'] => ({
-						...messageBoxViewDataRef.current.get(),
-						onSend: async (
-							_event: Event,
-							{
-								value: text,
-								tshow,
-							}: {
-								value: string;
-								tshow?: boolean;
-							},
-						): Promise<void> => {
-							try {
-								await chatMessagesInstance?.flows.sendMessage({
-									text,
-									tshow,
-								});
-							} catch (error) {
-								dispatchToastMessage({ type: 'error', message: error });
-							}
-						},
-					}),
-					footer,
-				);
-				return;
-			}
+	const composerProps = useMemo(
+		() => ({
+			onJoin: async (): Promise<void> => {
+				try {
+					await chat?.data?.joinRoom();
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+					throw error;
+				}
+			},
 
-			if (messageBoxViewRef.current) {
-				Blaze.remove(messageBoxViewRef.current);
-				messageBoxViewRef.current = undefined;
-			}
-		},
-		[chatMessagesInstance, dispatchToastMessage],
+			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
+				try {
+					await chat?.flows.action.stop('typing');
+					const newMessageSent = await chat?.flows.sendMessage({
+						text,
+						tshow,
+					});
+					if (newMessageSent) onSend?.();
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			},
+			onTyping: async (): Promise<void> => {
+				if (chat?.composer?.text?.trim() === '') {
+					await chat?.flows.action.stop('typing');
+					return;
+				}
+				await chat?.flows.action.start('typing');
+			},
+			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
+			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
+			onUploadFiles: (files: readonly File[]) => {
+				return chat?.flows.uploadFiles(files);
+			},
+		}),
+		[chat?.data, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
@@ -131,7 +77,7 @@ const ComposerMessage = ({
 		);
 	}
 
-	return <footer ref={footerRef} className='footer' />;
+	return <MessageBox readOnly={readOnly ?? false} rid={rid} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);
