@@ -286,7 +286,7 @@ export class FederationRoomServiceSender extends FederationService {
 		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
 		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
 		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
-			throw new Error('You are not allowed to change the owner');
+			throw new Error('Federation_Matrix_not_allowed_to_change_owner');
 		}
 
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
@@ -327,7 +327,7 @@ export class FederationRoomServiceSender extends FederationService {
 		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
 		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
 		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
-			throw new Error('You are not allowed to change the owner');
+			throw new Error('Federation_Matrix_not_allowed_to_change_owner');
 		}
 
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
@@ -371,7 +371,7 @@ export class FederationRoomServiceSender extends FederationService {
 			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
 			!myself
 		) {
-			throw new Error('You are not allowed to change the moderator');
+			throw new Error('Federation_Matrix_not_allowed_to_change_moderator');
 		}
 
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
@@ -417,7 +417,7 @@ export class FederationRoomServiceSender extends FederationService {
 			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
 			!myself
 		) {
-			throw new Error('You are not allowed to change the moderator');
+			throw new Error('Federation_Matrix_not_allowed_to_change_moderator');
 		}
 
 		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(

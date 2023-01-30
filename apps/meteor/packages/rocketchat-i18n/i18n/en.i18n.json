@@ -2151,6 +2151,8 @@
   "Federation_Matrix_giving_same_permission_warning": "You're giving this user the same privileges as yourself, you will not be able to undo this change. Do you want to proceed?",
   "Federation_Matrix_losing_privileges": "Losing privileges",
   "Federation_Matrix_losing_privileges_warning": "You won't be able to undo this action, as you're demoting yourself. If you're the last privileged user you won't be able to regain this privilege. Do you want to proceed still?",
+  "Federation_Matrix_not_allowed_to_change_moderator": "You are not allowed to change the moderator",
+  "Federation_Matrix_not_allowed_to_change_owner": "You are not allowed to change the owner",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",
