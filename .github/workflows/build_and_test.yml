@@ -223,7 +223,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.21.2']
-        mongodb-version: ['4.2', '4.4', '5.0']
+        mongodb-version: ['4.4', '5.0', '6.0']
 
     steps:
       - name: Launch MongoDB
@@ -693,7 +693,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"14.21.2\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"14.21.2\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
