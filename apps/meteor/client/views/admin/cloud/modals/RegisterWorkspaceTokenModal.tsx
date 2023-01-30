@@ -1,24 +1,57 @@
-import React from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { Box, Button, ButtonGroup, Field, Modal, TextInput } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import WorkspaceRegistrationModal from './WorkspaceRegistrationModal';
 
 type RegisterWorkspaceTokenModalProps = {
   onClose: () => void,
+  onStatusChange?: () => void,
+  isConnectedToCloud: boolean
 }
 
-const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTokenModalProps) => {
+const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToCloud, ...props }: RegisterWorkspaceTokenModalProps) => {
   const setModal = useSetModal();
   const t = useTranslation();
+  const dispatchToastMessage = useToastMessageDispatch();
+  const connectWorkspace = useMethod('cloud:connectWorkspace');
+  const syncWorkspace = useMethod('cloud:syncWorkspace');
+  
+  const [token, setToken] = useState('');
+  const [processing, setProcessing] = useState(false);
 
   const handleBackAction = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} />);
+		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} isConnectedToCloud={isConnectedToCloud} />);
 	};
 
-  const handleToken = (): void => {
-    // here should be the connection to the service
-  }
+  const handleTokenChange = (event: ChangeEvent<HTMLInputElement>) => {
+		setToken(event.target.value);
+	};
+
+  const handleConnectButtonClick = async () => {
+		setProcessing(true);
+
+		try {
+			const isConnected = await connectWorkspace(token);
+
+			if (!isConnected) {
+				throw Error(t('An error occured connecting'));
+			}
+
+			dispatchToastMessage({ type: 'success', message: t('Connected') });
+
+			const isSynced = await syncWorkspace();
+
+			if (!isSynced) {
+				throw Error(t('An error occured syncing'));
+			}
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			await (onStatusChange && onStatusChange());
+			setProcessing(false);
+		}
+	};
 
   return (
     <Modal {...props}>
@@ -34,7 +67,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
         <Field pbs={10}>
           <Field.Label>{t('Registration_Token')}</Field.Label>
           <Field.Row>
-            <TextInput />
+            <TextInput onChange={handleTokenChange} value={token} />
           </Field.Row>
         </Field>
 			</Modal.Content>
@@ -43,7 +76,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, ...props }: RegisterWorkspaceTok
           <Button onClick={handleBackAction}>
             {t('Back')}
           </Button>
-          <Button primary onClick={handleToken}>
+          <Button primary disabled={processing} onClick={handleConnectButtonClick}>
             {t('Next')}
           </Button>
         </ButtonGroup>
