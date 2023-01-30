@@ -12,7 +12,7 @@ const iframeMsgListener = (confirm, cancel) => (e) => {
 	data.result ? confirm(data) : cancel();
 };
 
-const IframeModal = ({ url, confirm, cancel, ...props }) => {
+const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }) => {
 	useEffect(() => {
 		const listener = iframeMsgListener(confirm, cancel);
 
@@ -24,7 +24,7 @@ const IframeModal = ({ url, confirm, cancel, ...props }) => {
 	}, [confirm, cancel]);
 
 	return (
-		<Modal height='x360' {...props}>
+		<Modal height={wrapperHeight} {...props}>
 			<Box padding='x12' w='full' h='full' flexGrow={1}>
 				<iframe style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
 			</Box>

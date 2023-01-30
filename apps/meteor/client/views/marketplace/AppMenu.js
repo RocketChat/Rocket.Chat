@@ -81,6 +81,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const requestConfirmAction = (postMessage) => {
 		setModal(null);
 		setLoading(false);
+		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
 
 		notifyAdmins({
 			appId: app.id,
@@ -154,7 +155,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}

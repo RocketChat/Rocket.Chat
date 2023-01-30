@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { usePermission, useSetModal, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal, useMethod, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo, Fragment } from 'react';
 
@@ -35,11 +35,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
 	const statuses = appMultiStatusProps(app, isAppDetailsPage);
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const notifyAdmins = useEndpoint('POST', '/apps/notify-admins');
 	const requestConfirmAction = (postMessage: AppRequestPostMessage) => {
 		setModal(null);
 		setLoading(false);
+		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
 
 		notifyAdmins({
 			appId: app.id,
@@ -132,7 +134,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} cancel={cancelAction} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data?.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
