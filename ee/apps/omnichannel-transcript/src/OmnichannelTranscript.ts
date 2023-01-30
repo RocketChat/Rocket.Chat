@@ -126,7 +126,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 				const files = await Promise.all(
 					message.attachments.map(async (attachment) => {
-						this.log.error(JSON.stringify(attachment, null, 2));
 						// @ts-expect-error - messages...
 						if (attachment.type !== 'file') {
 							// @ts-expect-error - messages...
