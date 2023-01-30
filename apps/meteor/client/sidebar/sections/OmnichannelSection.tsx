@@ -1,5 +1,4 @@
-import type { Box } from '@rocket.chat/fuselage';
-import { Sidebar } from '@rocket.chat/fuselage';
+import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -35,7 +34,9 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	// The className is a paliative while we make TopBar.ToolBox optional on fuselage
 	return (
 		<Sidebar.TopBar.ToolBox className='omnichannel-sidebar' {...props}>
-			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
+			<Sidebar.TopBar.Title>
+				<Box color='default'>{t('Omnichannel')}</Box>
+			</Sidebar.TopBar.Title>
 			<Sidebar.TopBar.Actions>
 				{showOmnichannelQueueLink && (
 					<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
