@@ -2,6 +2,7 @@ import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSort
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { millisecondsToMinutes } from 'date-fns';
 import type { FC } from 'react';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
@@ -57,6 +58,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		isLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
 	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
+		staleTime: millisecondsToMinutes(10),
 		enabled: !!isEnterprise && accessible,
 	});
 
