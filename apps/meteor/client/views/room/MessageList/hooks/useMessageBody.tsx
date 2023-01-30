@@ -3,7 +3,7 @@ import type { Options, Root } from '@rocket.chat/message-parser';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { parseMessageTextToAstMarkdown } from '../lib/parseMessageTextToAstMarkdown';
+import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoTranslate } from './useAutoTranslate';
 
 export const useMessageBody = (message: IMessage | undefined, rid: string): string | Root => {
