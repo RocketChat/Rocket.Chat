@@ -6,11 +6,7 @@ import React from 'react';
 import Page from '../../../../components/Page';
 import AppsPageContent from './AppsPageContent';
 
-type AppsPageProps = {
-	isMarketplace: boolean;
-};
-
-const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
+const AppsPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const [currentRouteName] = useCurrentRoute();
