@@ -25,7 +25,6 @@ export const useFilteredApps = ({
 	itemsPerPage,
 	categories = [],
 	purchaseType,
-	isEnterpriseOnly,
 	sortingMethod,
 	status,
 }: {
@@ -62,24 +61,14 @@ export const useFilteredApps = ({
 			filtered = sortingMethods[sortingMethod]();
 		}
 
+		const filterByPurchaseType: Record<string, () => App[]> = {
+			paid: () => filtered.filter(filterAppsByPaid),
+			enterprise: () => filtered.filter(filterAppsByEnterprise),
+			free: () => filtered.filter(filterAppsByFree),
+		};
+
 		if (purchaseType && purchaseType !== 'all') {
-			switch (purchaseType) {
-				case 'paid':
-					filtered = filtered.filter(filterAppsByPaid);
-					break;
-
-				case 'enterprise':
-					filtered = filtered.filter(filterAppsByEnterprise);
-					break;
-
-				case 'free':
-					filtered = filtered.filter(filterAppsByFree);
-					break;
-
-				default:
-					filtered = filtered.filter(filterAppsByFree);
-					break;
-			}
+			filterByPurchaseType[purchaseType]();
 
 			if (!filtered.length) shouldShowSearchText = false;
 		}
@@ -111,7 +100,7 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return { items: slice, offset, total: apps.length, count: slice.length, shouldShowSearchText, allApps: filtered };
-	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage, isEnterpriseOnly]);
+	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, current, itemsPerPage]);
 
 	if (appsData.phase === AsyncStatePhase.RESOLVED) {
 		if (!value) {
