@@ -17,12 +17,8 @@ import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import appButtonProps from './helpers/appButtonProps';
-import handleAPIError from './helpers/handleAPIError';
-import handleInstallError from './helpers/handleInstallError';
-import marketplaceActions from './helpers/marketplaceActions';
-import warnEnableDisableApp from './helpers/warnEnableDisableApp';
-import appEnabledStatuses from './utils/appEnabledStatuses';
+import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
+import { marketplaceActions } from './helpers/marketplaceActions';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -69,12 +65,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const confirmAction = useCallback(
-		(permissionsGranted) => {
+		async (permissionsGranted) => {
 			setModal(null);
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
+			await marketplaceActions[action]({ ...app, permissionsGranted });
+
+			setLoading(false);
 		},
 		[setModal, action, app, setLoading],
 	);
@@ -82,10 +78,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
 			setPurchased(true);
-		}
-
-		if (!Array.isArray(app.permissions)) {
-			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
@@ -343,7 +335,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAppEnabled && {
 					disable: {
 						label: (
-							<Box color='warning'>
+							<Box color='on-warning'>
 								<Icon name='ban' size='x16' marginInlineEnd='x4' />
 								{t('Disable')}
 							</Box>
@@ -371,7 +363,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(app.installed && {
 				uninstall: {
 					label: (
-						<Box color='danger'>
+						<Box color='on-danger'>
 							<Icon name='trash' size='x16' marginInlineEnd='x4' />
 							{t('Uninstall')}
 						</Box>

@@ -23,7 +23,6 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	if (!isEnabled) {
 		return {
 			type: 'warning',
-			icon: 'ban',
 			label: 'Disabled',
 		};
 	}

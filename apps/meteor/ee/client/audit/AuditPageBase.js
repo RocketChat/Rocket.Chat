@@ -43,9 +43,7 @@ export const AuditPageBase = ({
 			handleType(type);
 		});
 
-	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
-		params: [{ eventName: 'updateCounter', settingsId: 'Message_Auditing_Apply_Count', timestamp: Date.now() }],
-	});
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
 	return (
 		<Page>
@@ -93,7 +91,16 @@ export const AuditPageBase = ({
 								<VisitorsTab errors={errors} visitor={visitor} handleVisitor={handleVisitor} agent={agent} handleAgent={handleAgent} />
 							)}
 							<ButtonGroup mis='x8' align='end'>
-								<Button primary onClick={() => apply(eventStats)}>
+								<Button
+									primary
+									onClick={() =>
+										apply(() =>
+											eventStats({
+												params: [{ eventName: 'updateCounter', settingsId: 'Message_Auditing_Apply_Count', timestamp: Date.now() }],
+											}),
+										)
+									}
+								>
 									{t('Apply')}
 								</Button>
 							</ButtonGroup>

@@ -1,11 +1,12 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, AllHTMLAttributes } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AudioRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { AudioRecorder } from '../../../../app/ui/client';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
@@ -13,11 +14,11 @@ const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	tmid: IMessage['_id'];
+	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
-};
+} & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
-const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
@@ -36,7 +37,10 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		setTime('00:00');
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+
+		chat?.flows.action.stop('recording');
+
+		chat?.composer?.setRecordingMode(false);
 
 		setState('idle');
 
@@ -114,12 +118,12 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
-
+		chat?.composer?.setRecordingMode(true);
 		setState('recording');
 
 		try {
 			await audioRecorder.start();
-			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+			chat?.flows.action.performContinuously('recording');
 			const startTime = new Date();
 			setRecordingInterval(
 				setInterval(() => {
@@ -134,6 +138,7 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		} catch (error) {
 			console.log(error);
 			setIsMicrophoneDenied(true);
+			chat?.composer?.setRecordingMode(false);
 			setState('idle');
 		}
 	});
@@ -159,26 +164,38 @@ const AudioMessageRecorder = ({ rid, tmid, chatContext }: AudioMessageRecorderPr
 		return null;
 	}
 
+	if (state === 'idle') {
+		return (
+			<MessageComposerAction
+				title={t('Audio_message')}
+				icon='mic'
+				className='rc-message-box__icon rc-message-box__audio-message-mic'
+				data-qa-id='audio-record'
+				onClick={handleRecordButtonClick}
+				{...props}
+			/>
+		);
+	}
+
 	return (
 		<div className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
-					<div className='rc-message-box__icon rc-message-box__audio-message-cancel' onClick={handleCancelButtonClick}>
-						<Icon name='circle-cross' size={24} />
-					</div>
-					<div className='rc-message-box__audio-message-timer'>
+					<MessageComposerAction
+						icon='circle-cross'
+						className='rc-message-box__icon rc-message-box__audio-message-cancel'
+						onClick={handleCancelButtonClick}
+					/>
+					<Box className='rc-message-box__audio-message-timer' color='default'>
 						<span className='rc-message-box__audio-message-timer-dot'></span>
 						<span className='rc-message-box__audio-message-timer-text'>{time}</span>
-					</div>
-					<div className='rc-message-box__icon rc-message-box__audio-message-done' onClick={handleDoneButtonClick}>
-						<Icon name='circle-check' size={24} />
-					</div>
+					</Box>
+					<MessageComposerAction
+						icon='circle-check'
+						className='rc-message-box__icon rc-message-box__audio-message-done'
+						onClick={handleDoneButtonClick}
+					/>
 				</>
-			)}
-			{state === 'idle' && (
-				<div className='rc-message-box__icon rc-message-box__audio-message-mic' data-qa-id='audio-record' onClick={handleRecordButtonClick}>
-					<Icon name='mic' size={24} />
-				</div>
 			)}
 			{state === 'loading' && (
 				<div className='rc-message-box__icon'>
