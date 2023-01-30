@@ -65,7 +65,7 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
+					const baseUrl = Apps.getMarketplaceUrl();
 					const workspaceId = settings.get('Cloud_Workspace_Id');
 					const { action, appId, appVersion } = this.queryParams;
 
@@ -781,7 +781,7 @@ export class AppsRestApi {
 					const updated = [];
 					this.bodyParams.settings.forEach((s) => {
 						if (settings[s.id]) {
-							Promise.await(AppsManager.getSettingsManager().updateAppSetting(this.urlParams.id, s));
+							Promise.await(AppsManager.updateAppSetting(this.urlParams.id, s));
 							// Updating?
 							updated.push(s);
 						}
@@ -842,7 +842,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							apis: await AppsManager.apiManager.listApis(this.urlParams.id),
+							apis: await AppsManager.listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
