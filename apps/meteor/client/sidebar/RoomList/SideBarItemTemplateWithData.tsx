@@ -7,6 +7,7 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
+import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
@@ -126,6 +127,7 @@ function SideBarItemTemplateWithData({
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
+	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const threadUnread = tunread.length > 0;
 	const message = extended && getMessage(room, lastMessage, t);
@@ -143,7 +145,7 @@ function SideBarItemTemplateWithData({
 						{unread + tunread?.length}
 					</Badge>
 				)}
-			{isOmnichannelRoom(room) && room.priorityWeight && <PriorityIcon level={room.priorityWeight} />}
+			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
 		</>
 	);
 
@@ -170,7 +172,7 @@ function SideBarItemTemplateWithData({
 			actions={actions}
 			menu={
 				!isAnonymous &&
-				!isQueued &&
+				!(isQueued && !isPriorityEnabled) &&
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
@@ -181,6 +183,7 @@ function SideBarItemTemplateWithData({
 						type={type}
 						cl={cl}
 						name={title}
+						hideDefaultOptions={isQueued}
 					/>
 				))
 			}
