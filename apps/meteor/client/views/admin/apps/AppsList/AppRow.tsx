@@ -76,6 +76,7 @@ const AppRow = (props: AppRowProps): ReactElement => {
 			pi='x16'
 			borderRadius='x4'
 			className={hoverClass}
+			bg='light'
 		>
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />
@@ -96,7 +97,11 @@ const AppRow = (props: AppRowProps): ReactElement => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' width='20%' alignItems='center' justifyContent='flex-end' onClick={preventClickPropagation}>
-				{canUpdate && <Badge small variant='primary' />}
+				{canUpdate && (
+					<Box mie='x8'>
+						<Badge small variant='primary' />
+					</Box>
+				)}
 				<AppStatus app={props} isAppDetailsPage={false} installed={installed} />
 				<Box minWidth='x32'>
 					<AppMenu app={props} isAppDetailsPage={false} mis='x4' />
