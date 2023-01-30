@@ -7,4 +7,6 @@ export interface IReport extends IRocketChatRecord {
 	ts: Date;
 	userId: string;
 	_hidden?: boolean;
+	_hiddenAt?: Date;
+	_hiddenBy?: string;
 }

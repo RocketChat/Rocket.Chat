@@ -75,6 +75,23 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
+	findReportsByMessageId(messageId: string, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
+		const query = {
+			'_hidden': {
+				$ne: true,
+			},
+			'message._id': messageId,
+		};
+
+		return this.findPaginated(query, {
+			sort: {
+				ts: -1,
+			},
+			skip: offset,
+			limit: count,
+		});
+	}
+
 	findReportsAfterDate(oldest: Date, offset = 0, count = 20): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			_hidden: {
@@ -115,7 +132,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	// update
 
-	hideReportById(_id: string): Promise<UpdateResult | Document> {
+	hideReportById(_id: string, userId: string): Promise<UpdateResult | Document> {
 		const query = {
 			_id,
 		};
@@ -123,13 +140,15 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const update = {
 			$set: {
 				_hidden: true,
+				_hiddenAt: new Date(),
+				_hiddenBy: userId,
 			},
 		};
 
 		return this.updateOne(query, update);
 	}
 
-	hideReportsByMessageId(messageId: string): Promise<UpdateResult | Document> {
+	hideReportsByMessageId(messageId: string, userId: string): Promise<UpdateResult | Document> {
 		const query = {
 			'message._id': messageId,
 		};
@@ -137,6 +156,8 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const update = {
 			$set: {
 				_hidden: true,
+				_hiddenAt: new Date(),
+				_hiddenBy: userId,
 			},
 		};
 

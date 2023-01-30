@@ -10,7 +10,7 @@ export type ArchiveReportProps = {
 	messageId?: IReport['message']['_id'];
 };
 
-const archiveReportPropsSchema = {
+const ArchiveReportPropsSchema = {
 	type: 'object',
 	properties: {
 		reportId: {
@@ -25,4 +25,4 @@ const archiveReportPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isArchiveReportProps = ajv.compile<ArchiveReportProps>(archiveReportPropsSchema);
+export const isArchiveReportProps = ajv.compile<ArchiveReportProps>(ArchiveReportPropsSchema);

@@ -43,6 +43,8 @@ API.v1.addRoute(
 		async post() {
 			const { reportId } = this.queryParams;
 
+			const { userId } = this;
+
 			const reportDoc = await Reports.findOneById(reportId);
 
 			if (!reportDoc) {
@@ -53,11 +55,40 @@ API.v1.addRoute(
 				return API.v1.failure('Report is already hidden');
 			}
 
-			const update = await Reports.hideReportById(reportId);
+			const update = await Reports.hideReportById(reportId, userId);
 
 			const report = await Reports.findOneById(reportId);
 
 			return API.v1.success({ report, update });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'moderation.info',
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			const { msgId } = this.queryParams;
+
+			const { count = 20, offset = 0 } = this.getPaginationItems();
+
+			if (!msgId) {
+				return API.v1.failure('The required "msgId" query param is missing.');
+			}
+
+			const { cursor, totalCount } = Reports.findReportsByMessageId(msgId, offset, count);
+
+			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				reports,
+				count: reports.length,
+				offset,
+				total,
+			});
 		},
 	},
 );

@@ -16,11 +16,13 @@ export interface IReportsModel extends IBaseModel<IReport> {
 
 	findReportsByUser(userId: string, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
+	findReportsByMessageId(messageId: IReport['message']['_id'], offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
+
 	findReportsAfterDate(latest: Date, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
 	findReportsBeforeDate(oldest: Date, offset?: number, count?: number): FindPaginated<FindCursor<IReport>>;
 
-	hideReportById(reportId: IReport['_id']): Promise<UpdateResult | Document>;
+	hideReportById(reportId: IReport['_id'], userId: string): Promise<UpdateResult | Document>;
 
-	hideReportsByMessageId(messageId: IReport['message']['_id']): Promise<UpdateResult | Document>;
+	hideReportsByMessageId(messageId: IReport['message']['_id'], userId: string): Promise<UpdateResult | Document>;
 }
