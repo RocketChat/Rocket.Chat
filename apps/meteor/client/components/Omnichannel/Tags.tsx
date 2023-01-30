@@ -32,7 +32,7 @@ const Tags = ({
 		data: tagsResult,
 		isLoading,
 		isFetching,
-	} = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), { enabled: !!EETagsComponent });
+	} = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), { enabled: Boolean(EETagsComponent) });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 

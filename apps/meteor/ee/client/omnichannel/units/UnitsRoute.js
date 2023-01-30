@@ -62,9 +62,8 @@ function UnitsRoute() {
 			}),
 	);
 
-	// const { value: data = {}, reload } = useEndpointData('/v1/livechat/units', { params: query });
 	const getUnits = useEndpoint('GET', '/v1/livechat/units', { params: query });
-	const { data, refetch: reload } = useQuery(['/v1/livechat/units'], () => getUnits(), { enabled: true });
+	const { data, refetch: reload } = useQuery(['/v1/livechat/units'], () => getUnits());
 
 	const header = useMemo(
 		() =>
