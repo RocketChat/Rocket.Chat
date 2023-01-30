@@ -57,6 +57,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
+
+		this.log.level('debug');
 		// your stuff
 	}
 
@@ -126,24 +128,44 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 				const files = await Promise.all(
 					message.attachments.map(async (attachment) => {
+						this.log.error(JSON.stringify(attachment, null, 2));
 						// @ts-expect-error - messages...
 						if (attachment.type !== 'file') {
+							// @ts-expect-error - messages...
+							this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
 							// ignore other types of attachments
 							return;
 						}
 						// @ts-expect-error - messages...
 						if (!this.worker.isMimeTypeValid(attachment.image_type)) {
+							// @ts-expect-error - messages...
+							this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 							// ignore invalid mime types
 							return { name: attachment.title, buffer: null };
 						}
-						const file = message.files?.find((file) => file.name === attachment.title);
+						let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
 						if (!file) {
-							// ignore attachments without file
-							// This shouldn't happen, but just in case :)
-							return;
+							this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
+							// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
+							// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
+							const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
+							if (!fileId) {
+								this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+								// ignore attachments without file
+								return { name: attachment.title, buffer: null };
+							}
+							file = { _id: fileId, name: attachment.title || 'upload' };
 						}
+
+						if (!file) {
+							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+							// ignore attachments without file
+							return { name: attachment.title, buffer: null };
+						}
+
 						const uploadedFile = await Uploads.findOneById(file._id);
 						if (!uploadedFile) {
+							this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 							// ignore attachments without file
 							return { name: file.name, buffer: null };
 						}
@@ -202,12 +224,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
+			const messagesFiles = await this.getFiles(details.userId, messages);
+			this.log.error('messagesFiles', messagesFiles);
 			const data = {
 				visitor,
 				agent,
 				closedAt: room.closedAt,
 				siteName: await this.settingsService.get<string>('Site_Name'),
-				messages: await this.getFiles(details.userId, messages),
+				messages: messagesFiles,
 				dateFormat: await this.settingsService.get<string>('Message_DateFormat'),
 				timeAndDateFormat: await this.settingsService.get<string>('Message_TimeAndDateFormat'),
 				timezone: await this.getTimezone(agent),

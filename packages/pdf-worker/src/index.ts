@@ -28,8 +28,11 @@ export class PdfWorker {
 		}
 	}
 
-	isMimeTypeValid(mimeType: string): boolean {
-		return this.validMimeTypes.includes(mimeType);
+	isMimeTypeValid(mimeType?: string): boolean {
+		if (!mimeType) {
+			return false;
+		}
+		return this.validMimeTypes.includes(mimeType?.toLowerCase());
 	}
 
 	async renderToStream({ data }: { template: Templates; data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {
