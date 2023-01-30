@@ -1,4 +1,4 @@
-import type { OmichannelRoutingConfig, Inquiries } from '@rocket.chat/core-typings';
+import type { OmichannelRoutingConfig, Inquiries, ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 export type OmnichannelContextValue = {
@@ -7,6 +7,11 @@ export type OmnichannelContextValue = {
 	agentAvailable: boolean;
 	routeConfig?: OmichannelRoutingConfig;
 	showOmnichannelQueueLink: boolean;
+	livechatPriorities: {
+		data: Serialized<ILivechatPriority>[];
+		isLoading: boolean;
+		isError: boolean;
+	};
 };
 
 export const OmnichannelContext = createContext<OmnichannelContextValue>({
@@ -14,4 +19,9 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 	enabled: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
+	livechatPriorities: {
+		data: [],
+		isLoading: false,
+		isError: false,
+	},
 });

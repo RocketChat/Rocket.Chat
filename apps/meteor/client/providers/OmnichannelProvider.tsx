@@ -1,6 +1,7 @@
 import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { useUser, useSetting, usePermission, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
@@ -11,6 +12,7 @@ import { Notifications } from '../../app/notifications/client';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
+import { useIsEnterprise } from '../hooks/useIsEnterprise';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const emptyContextValue: OmnichannelContextValue = {
@@ -18,6 +20,11 @@ const emptyContextValue: OmnichannelContextValue = {
 	enabled: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
+	livechatPriorities: {
+		data: [],
+		isLoading: false,
+		isError: false,
+	},
 };
 
 const OmnichannelProvider: FC = ({ children }) => {
@@ -41,6 +48,17 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
+	const { data: { isEnterprise } = {} } = useIsEnterprise();
+
+	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
+
+	const {
+		data: { priorities = [] } = {},
+		isLoading: isLoadingPriorities,
+		isError: isErrorPriorities,
+	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
+		enabled: !!isEnterprise && accessible,
+	});
 
 	useEffect(() => {
 		if (!accessible) {
@@ -106,6 +124,12 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return emptyContextValue;
 		}
 
+		const livechatPriorities = {
+			data: priorities,
+			isLoading: isLoadingPriorities,
+			isError: isErrorPriorities,
+		};
+
 		if (!manuallySelected) {
 			return {
 				...emptyContextValue,
@@ -113,6 +137,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				agentAvailable,
 				voipCallAvailable,
 				routeConfig,
+				livechatPriorities,
 			};
 		}
 
@@ -129,8 +154,20 @@ const OmnichannelProvider: FC = ({ children }) => {
 				  }
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
+			livechatPriorities,
 		};
-	}, [agentAvailable, voipCallAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
+	}, [
+		enabled,
+		manuallySelected,
+		agentAvailable,
+		voipCallAvailable,
+		routeConfig,
+		queue,
+		showOmnichannelQueueLink,
+		priorities,
+		isLoadingPriorities,
+		isErrorPriorities,
+	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
 };
