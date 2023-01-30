@@ -23,10 +23,14 @@ import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 
+/** @deprecated */
 const Users = _.extend({}, users, Meteor.users);
+/** @deprecated */
 const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
-const Messages = _.extend({}, ChatMessage);
-const Rooms = _.extend({}, ChatRoom);
+/** @deprecated */
+const Messages = _.extend({}, ChatMessage) as typeof ChatMessage;
+/** @deprecated */
+const Rooms = _.extend({}, ChatRoom) as typeof ChatRoom;
 
 export {
 	Base,

@@ -3059,6 +3059,7 @@
   "Reactions": "反应",
   "Read_by": "阅读",
   "Read_only": "只读",
+  "This_room_is_read_only": "这个聊天室是只读的",
   "Read_only_changed_successfully": "只读更改成功",
   "Read_only_channel": "只读频道",
   "Read_only_group": "只读组",

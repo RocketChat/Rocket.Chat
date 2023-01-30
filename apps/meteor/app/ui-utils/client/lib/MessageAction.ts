@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { Icon } from '@rocket.chat/fuselage';
-import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -13,6 +13,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import { APIClient } from '../../../utils/client';
+import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
@@ -51,6 +52,7 @@ type MessageActionConditionProps = {
 	subscription?: ISubscription;
 	context?: MessageActionContext;
 	settings: { [key: string]: SettingValue };
+	chat: ContextType<typeof ChatContext>;
 };
 
 export type MessageActionConfig = {
@@ -70,9 +72,16 @@ export type MessageActionConfig = {
 			tabbar,
 			room,
 			chat,
-		}: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom; chat: ContextType<typeof ChatContext> },
+			autoTranslateOptions,
+		}: {
+			message?: IMessage & Partial<ITranslatedMessage>;
+			tabbar: ToolboxContextValue;
+			room?: IRoom;
+			chat: ContextType<typeof ChatContext>;
+			autoTranslateOptions?: AutoTranslateOptions;
+		},
 	) => any;
-	condition?: (props: MessageActionConditionProps) => boolean;
+	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
 };
 
 type MessageActionConfigList = MessageActionConfig[];
@@ -138,11 +147,19 @@ export const MessageAction = new (class {
 
 	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 });
 
-	getButtonsByCondition(
+	async getButtonsByCondition(
 		prop: MessageActionConditionProps,
 		arr: MessageActionConfigList = MessageAction._getButtons(),
-	): MessageActionConfigList {
-		return arr.filter((button) => !button.condition || button.condition(prop));
+	): Promise<MessageActionConfigList> {
+		return (
+			await Promise.all(
+				arr.map(async (button) => {
+					return [button, !button.condition || (await button.condition(prop))] as const;
+				}),
+			)
+		)
+			.filter(([, condition]) => condition)
+			.map(([button]) => button);
 	}
 
 	getButtonsByGroup = mem(
@@ -156,7 +173,11 @@ export const MessageAction = new (class {
 		return !context ? arr : arr.filter((button) => !button.context || button.context.includes(context));
 	}
 
-	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
+	async getButtons(
+		props: MessageActionConditionProps,
+		context: MessageActionContext,
+		group: MessageActionGroup,
+	): Promise<MessageActionConfigList> {
 		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
 
 		if (props.message) {

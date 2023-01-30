@@ -42,7 +42,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 		500,
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list.all', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list.all', { params: query });
 
 	useEffect(() => {
 		reloadRef.current = reload;
@@ -91,7 +91,6 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 						deviceName={session?.device?.name}
 						deviceType={session?.device?.type}
 						deviceOSName={session?.device?.os?.name}
-						deviceOSVersion={session?.device?.os?.version}
 						loginAt={session.loginAt}
 						onReload={reload}
 					/>
