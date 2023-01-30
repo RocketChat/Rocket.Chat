@@ -86,6 +86,7 @@ Meteor.startup(function () {
 						name: Rooms.findOne({ _id: message.rid })?.name ?? '',
 					},
 					{
+						...FlowRouter.current().queryParams,
 						jump: message._id,
 					},
 				);
