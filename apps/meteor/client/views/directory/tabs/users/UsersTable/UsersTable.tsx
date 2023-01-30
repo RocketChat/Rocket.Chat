@@ -1,22 +1,22 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
+import FilterByText from '../../../../../components/FilterByText';
 import {
 	GenericTable,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { useDirectoryQuery } from '../hooks/useDirectoryQuery';
+} from '../../../../../components/GenericTable';
+import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
+import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 import UsersTableRow from './UsersTableRow';
 
 const UsersTable = ({ workspace = 'local' }): ReactElement => {
@@ -81,7 +81,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
-	const { data, isFetched, isLoading } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
+	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
 	const handleClick = useCallback(
 		(username) => (e: React.KeyboardEvent | React.MouseEvent) => {
@@ -135,6 +135,15 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 				<States>
 					<StatesIcon name='magnifier' />
 					<StatesTitle>{t('No_results_found')}</StatesTitle>
+				</States>
+			)}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
 				</States>
 			)}
 		</>
