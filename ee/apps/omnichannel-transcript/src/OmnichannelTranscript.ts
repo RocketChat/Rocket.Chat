@@ -5,6 +5,7 @@ import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent 
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { Upload, Message, QueueWorker, Translation, IOmnichannelTranscriptService, Settings } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
@@ -30,6 +31,7 @@ type WorkerData = {
 	timezone: string;
 	dateFormat: string;
 	timeAndDateFormat: string;
+	translations: { key: TranslationKey; value: string }[];
 };
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -52,12 +54,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		loggerClass: typeof Logger,
 	) {
 		super();
-		this.worker = new PdfWorker('omnichannel-transcript');
+		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
-
-		this.log.level('debug');
-		// your stuff
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
@@ -77,7 +76,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
-		return Messages.findLivechatMessages(rid, {
+		// Closing message should not appear :)
+		return Messages.findLivechatMessagesWithoutClosing(rid, {
 			sort: { ts: 1 },
 			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1 },
 		}).toArray();
@@ -131,11 +131,15 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						if (attachment.type !== 'file') {
 							// @ts-expect-error - messages...
 							this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+							// @ts-expect-error - messages...
+							this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
 							// ignore other types of attachments
 							return;
 						}
 						// @ts-expect-error - messages...
 						if (!this.worker.isMimeTypeValid(attachment.image_type)) {
+							// @ts-expect-error - messages...
+							this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 							// @ts-expect-error - messages...
 							this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 							// ignore invalid mime types
@@ -157,12 +161,16 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 						if (!file) {
 							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
 							// ignore attachments without file
+							return { name: attachment.title, buffer: null };
 							return { name: attachment.title, buffer: null };
 						}
 
+
 						const uploadedFile = await Uploads.findOneById(file._id);
 						if (!uploadedFile) {
+							this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 							this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 							// ignore attachments without file
 							return { name: file.name, buffer: null };
@@ -178,6 +186,27 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
 				// Remove nulls from final array
 				return { _id: message._id, msg, u: message.u, files: files.filter(Boolean), ts: message.ts };
+			}),
+		);
+	}
+
+	private async getTranslations(): Promise<Array<{ key: TranslationKey; value: string }>> {
+		const keys: TranslationKey[] = [
+			'Agent',
+			'Date',
+			'Customer',
+			'Omnichannel_Agent',
+			'Time',
+			'Chat_transcript',
+			'This_attachment_is_not_supported',
+		];
+
+		return Promise.all(
+			keys.map(async (key) => {
+				return {
+					key,
+					value: await this.translationService.translateToServerLanguage(key),
+				};
 			}),
 		);
 	}
@@ -202,16 +231,24 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
 			const messagesFiles = await this.getFiles(details.userId, messages);
-			this.log.error('messagesFiles', messagesFiles);
+
+			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
+				this.settingsService.get<string>('Site_Name'),
+				this.settingsService.get<string>('Message_DateFormat'),
+				this.settingsService.get<string>('Message_TimeAndDateFormat'),
+				this.getTimezone(agent),
+				this.getTranslations(),
+			]);
 			const data = {
 				visitor,
 				agent,
 				closedAt: room.closedAt,
-				siteName: await this.settingsService.get<string>('Site_Name'),
+				siteName,
 				messages: messagesFiles,
-				dateFormat: await this.settingsService.get<string>('Message_DateFormat'),
-				timeAndDateFormat: await this.settingsService.get<string>('Message_TimeAndDateFormat'),
-				timezone: await this.getTimezone(agent),
+				dateFormat,
+				timeAndDateFormat,
+				timezone,
+				translations,
 			};
 
 			await this.doRender({ template, data, details });
