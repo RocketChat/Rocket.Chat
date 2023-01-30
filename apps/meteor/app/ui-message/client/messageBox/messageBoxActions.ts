@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
@@ -21,8 +20,10 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		(!settings.get('FileUpload_MediaTypeBlackList') || !settings.get('FileUpload_MediaTypeBlackList').match(/video\/webm|video\/\*/i)) &&
 		(!settings.get('FileUpload_MediaTypeWhiteList') || settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)) &&
 		window.MediaRecorder.isTypeSupported('video/webm; codecs=vp8,opus'),
-	action: ({ rid, tmid, messageBox, chat }) => {
-		VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid, chat });
+	action: ({ chat }) => {
+		if (!chat?.composer?.recordingVideo.get()) {
+			chat?.composer?.setRecordingVideo(true);
+		}
 	},
 });
 

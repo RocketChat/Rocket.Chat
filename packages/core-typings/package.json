@@ -26,5 +26,8 @@
 		"@rocket.chat/icons": "next",
 		"@rocket.chat/message-parser": "next",
 		"@rocket.chat/ui-kit": "next"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

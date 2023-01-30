@@ -73,7 +73,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	getRoomTypeById(rid: string): RoomType | undefined {
-		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null as any } }, { fields: { t: 1 } });
 		return room?.t;
 	}
 
