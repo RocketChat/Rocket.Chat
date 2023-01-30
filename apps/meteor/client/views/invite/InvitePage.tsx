@@ -1,3 +1,4 @@
+import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -91,21 +92,9 @@ const InvitePage = (): ReactElement => {
 	}
 
 	return (
-		<section className='rc-old full-page color-tertiary-font-color'>
-			<div className='wrapper'>
-				<header>
-					<a className='logo' href='/'>
-						<img src='images/logo/logo.svg?v=3' />
-					</a>
-				</header>
-				<div className='content'>
-					<div className='attention-message'>
-						<i className='icon-attention'></i>
-						{t('Invalid_or_expired_invite_token')}
-					</div>
-				</div>
-			</div>
-		</section>
+		<HeroLayout>
+			<HeroLayoutTitle>{t('Invalid_or_expired_invite_token')}</HeroLayoutTitle>
+		</HeroLayout>
 	);
 };
 
