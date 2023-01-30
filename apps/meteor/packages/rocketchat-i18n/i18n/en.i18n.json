@@ -5554,5 +5554,10 @@
 	"Community_cap_description": "Community workspaces have a cap of 200 concurrent connections, although you can have more connections active, once you hit that limit you won’t be able to see users’ status. This doesn’t affect their ability to send & receive messages.",
 	"Enterprise_cap_description": "Enterprise workspaces have no cap on the presence service.",
   "Service_status": "Service status",
-  "More_about_Enterprise_Edition": "More about Enterprise Edition"
+  "More_about_Enterprise_Edition": "More about Enterprise Edition",
+	"Presence_service_cap": "Presence service cap",
+	"User_Status": "User Status",
+	"Active_connections": "Active connections",
+	"Presence_service": "Presence service",
+	"New_custom_status": "New custom status"
 }

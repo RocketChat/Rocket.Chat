@@ -75,8 +75,9 @@ const CustomUserStatusRoute = (): ReactElement => {
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
 					{context === 'presence-service' && <CustomUserStatusService />}
-					{context === 'new' ||
-						(context === 'edit' && <CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />)}
+					{(context === 'new' || context === 'edit') && (
+						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
+					)}
 				</VerticalBar>
 			)}
 		</Page>
