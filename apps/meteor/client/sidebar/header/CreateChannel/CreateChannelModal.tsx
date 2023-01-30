@@ -164,13 +164,12 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				<Modal.Title>{t('Create_channel')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe='x2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Name')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								autoFocus
 								data-qa-type='channel-name-input'
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),
@@ -305,6 +304,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
+
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>

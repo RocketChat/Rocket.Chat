@@ -4,10 +4,10 @@ import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+	busy: 'on-danger',
+	away: 'on-warning',
+	online: 'on-success',
+	offline: 'annotation',
 };
 
 const iconMap = {
