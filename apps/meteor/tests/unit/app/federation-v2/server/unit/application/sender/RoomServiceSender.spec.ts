@@ -721,7 +721,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
 
 			await expect(service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
-				'You are not allowed to change the owner',
+				'Federation_Matrix_not_allowed_to_change_owner',
 			);
 
 			expect(bridge.setRoomPowerLevels.called).to.be.false;
@@ -841,7 +841,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
 
 			await expect(service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
-				'You are not allowed to change the owner',
+				'Federation_Matrix_not_allowed_to_change_owner',
 			);
 
 			expect(bridge.setRoomPowerLevels.called).to.be.false;
@@ -942,7 +942,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
 
 			await expect(service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
-				'You are not allowed to change the moderator',
+				'Federation_Matrix_not_allowed_to_change_moderator',
 			);
 
 			expect(bridge.setRoomPowerLevels.called).to.be.false;
@@ -1094,7 +1094,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
 
 			await expect(service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
-				'You are not allowed to change the moderator',
+				'Federation_Matrix_not_allowed_to_change_moderator',
 			);
 
 			expect(bridge.setRoomPowerLevels.called).to.be.false;
