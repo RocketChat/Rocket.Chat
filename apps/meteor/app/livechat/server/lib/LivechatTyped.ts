@@ -14,7 +14,7 @@ import { Logger } from '../../../logger/server';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './LivechatTyped.d';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../apps/server';
-import { Messages as LegacyMessage } from '../../../models/server';
+import { Messages as LegacyMessage, Users } from '../../../models/server';
 
 class LivechatClass {
 	logger: Logger;
@@ -34,7 +34,7 @@ class LivechatClass {
 		}
 
 		const { updatedOptions: options } = await this.resolveChatTags(room, params.options);
-		this.logger.debug(`Resolved chat tags for room ${room._id}`, { updatedOptions: options });
+		this.logger.debug(`Resolved chat tags for room ${room._id}`);
 
 		const now = new Date();
 		const { _id: rid, servedBy, transcriptRequest } = room;
@@ -56,6 +56,16 @@ class LivechatClass {
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
+			// Save user preferences
+			this.logger.debug(
+				`Setting user preferences for user ${user._id} (emailTranscript: ${!!options?.emailTranscript
+					?.sendToVisitor}, pdfTranscript: ${!!options?.pdfTranscript})`,
+			);
+			Users.setPreferences(user._id, {
+				omnichannelTranscriptEmail: !!options?.emailTranscript?.sendToVisitor,
+				omnichannelTranscriptPDF: !!options?.pdfTranscript,
+			});
+
 			this.logger.debug(`Closing by user ${user._id}`);
 			closeData.closer = 'user';
 			closeData.closedBy = {
@@ -76,7 +86,7 @@ class LivechatClass {
 			throw new Error('Error: Please provide details of the user or visitor who closed the room');
 		}
 
-		this.logger.debug(`Updating DB for room ${room._id} with close data`, closeData);
+		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
 		await Promise.all([
 			LivechatRooms.closeRoomById(rid, closeData),
@@ -123,7 +133,7 @@ class LivechatClass {
 		room: IOmnichannelRoom,
 		options: CloseRoomParams['options'] = {},
 	): Promise<{ updatedOptions: CloseRoomParams['options'] }> {
-		this.logger.debug(`Resolving chat tags for room ${room._id}`, { options });
+		this.logger.debug(`Resolving chat tags for room ${room._id}`);
 
 		const concatUnique = (...arrays: (string[] | undefined)[]): string[] => [
 			...new Set(([] as string[]).concat(...arrays.filter((a): a is string[] => !!a))),

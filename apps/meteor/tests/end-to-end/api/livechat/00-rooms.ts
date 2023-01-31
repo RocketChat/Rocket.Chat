@@ -17,6 +17,8 @@ import {
 	getLivechatRoomInfo,
 	sendMessage,
 	closeRoom,
+	takeInquiry,
+	fetchInquiry,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
@@ -1444,6 +1446,99 @@ describe('LIVECHAT - rooms', function () {
 			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
 			expect(response.body).to.have.property('filters').and.to.be.an('array');
 			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;
+		});
+	});
+
+	describe('livechat/room.closeByUser', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('livechat/room.closeByUser')).expect(401);
+		});
+		it('should fail if not all required params are passed (rid)', async () => {
+			await request.post(api('livechat/room.closeByUser')).set(credentials).expect(400);
+		});
+		it('should fail if user doesnt have close-livechat-room permission', async () => {
+			await updatePermission('close-livechat-room', []);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: 'invalid-room-id' }).expect(403);
+		});
+		it('should fail if room is not found', async () => {
+			await updatePermission('close-livechat-room', ['admin']);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: 'invalid-room-id' }).expect(400);
+		});
+		it('should fail if room is closed', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await closeRoom(_id);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+		});
+		it('should fail if user is not serving and doesnt have close-others-livechat-room permission', async () => {
+			await updatePermission('close-others-livechat-room', []);
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+		});
+		it('should close room if user has permission', async () => {
+			await updatePermission('close-others-livechat-room', ['admin']);
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+		});
+	});
+
+	describe('omnichannel/:rid/request-transcript', () => {
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('omnichannel/rid/request-transcript')).expect(401);
+		});
+		it('should fail if :rid doesnt exists', async () => {
+			await request.post(api('omnichannel/rid/request-transcript')).set(credentials).expect(400);
+		});
+		it('should fail if user doesnt have request-pdf-transcript permission', async () => {
+			await updatePermission('request-pdf-transcript', []);
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`omnichannel/${_id}/request-transcript`))
+				.set(credentials)
+				.expect(403);
+		});
+		it('should fail if room is not closed', async () => {
+			await updatePermission('request-pdf-transcript', ['admin', 'livechat-agent', 'livechat-manager']);
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`omnichannel/${_id}/request-transcript`))
+				.set(credentials)
+				.expect(400);
+		});
+		it('should fail if no one is serving the room', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			await closeRoom(_id);
+			await request
+				.post(api(`omnichannel/${_id}/request-transcript`))
+				.set(credentials)
+				.expect(400);
+		});
+		let roomId: string;
+		it('should request a pdf transcript when all conditions are met', async () => {
+			await createAgent();
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+			const inq = await fetchInquiry(_id);
+			roomId = _id;
+			await takeInquiry(inq._id);
+			await closeRoom(_id);
+
+			await request
+				.post(api(`omnichannel/${_id}/request-transcript`))
+				.set(credentials)
+				.expect(200);
+		});
+		it('should return immediately if transcript was already requested', async () => {
+			await request
+				.post(api(`omnichannel/${roomId}/request-transcript`))
+				.set(credentials)
+				.expect(200);
 		});
 	});
 });

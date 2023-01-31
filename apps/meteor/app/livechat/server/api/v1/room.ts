@@ -25,6 +25,7 @@ import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoom, hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
@@ -143,7 +144,7 @@ API.v1.addRoute(
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
-			if (!subscription && !hasPermission(this.userId, 'close-others-livechat-room')) {
+			if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
 				throw new Error('error-not-authorized');
 			}
 

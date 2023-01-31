@@ -20,7 +20,6 @@ import './hooks/afterUserActions';
 import './methods/addAgent';
 import './methods/addManager';
 import './methods/changeLivechatStatus';
-import './methods/closeByVisitor';
 import './methods/closeRoom';
 import './methods/discardTranscript';
 import './methods/facebook';
