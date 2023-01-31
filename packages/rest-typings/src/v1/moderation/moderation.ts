@@ -16,7 +16,7 @@ export type ModerationEndpoints = {
 			report: IReport | null;
 		};
 	};
-	'/v1/moderation.info': {
+	'/v1/moderation.reportsByMessage': {
 		GET: (params: { msgId: string }) => PaginatedResult<{
 			reports: IReport[];
 		}>;

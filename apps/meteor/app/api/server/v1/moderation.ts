@@ -65,7 +65,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.info',
+	'moderation.reportsByMessage',
 	{
 		authRequired: true,
 	},

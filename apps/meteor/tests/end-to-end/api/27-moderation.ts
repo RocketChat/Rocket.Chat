@@ -187,9 +187,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.info endpoint
+	// test for testing out the moderation.reportsByMessage endpoint
 
-	describe('[/moderation.info]', () => {
+	describe('[/moderation.reportsByMessage]', () => {
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
@@ -246,7 +246,7 @@ describe('[Moderation]', function () {
 
 		it('should return the report information', (done) => {
 			request
-				.get(api('moderation.info'))
+				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
 					msgId: message._id,
@@ -263,7 +263,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the msgId is not provided', (done) => {
 			request
-				.get(api('moderation.info'))
+				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
 				.query({
 					msgId: '',
