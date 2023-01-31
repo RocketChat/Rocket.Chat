@@ -35,7 +35,7 @@ type LivechatCloseRoomOptions = Omit<CloseRoomOptions, 'generateTranscriptPdf'> 
 };
 
 Meteor.methods({
-	'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
+	async 'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
 		methodDeprecationLogger.warn(
 			'livechat:closeRoom is deprecated and will be removed in next major version. Use /api/v1/livechat/room.closeByUser API instead.',
 		);
@@ -78,14 +78,12 @@ Meteor.methods({
 			});
 		}
 
-		Promise.await(
-			Livechat.closeRoom({
-				user,
-				room,
-				comment,
-				options: resolveOptions(user, options),
-			}),
-		);
+		await Livechat.closeRoom({
+			user,
+			room,
+			comment,
+			options: resolveOptions(user, options),
+		});
 	},
 });
 
