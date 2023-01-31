@@ -216,7 +216,6 @@ export const LivechatEnterprise = {
 	},
 
 	/**
-	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} fields
 	 * @param {string} _id - The department id
 	 * @param {{
 	 * 	enabled: boolean,
