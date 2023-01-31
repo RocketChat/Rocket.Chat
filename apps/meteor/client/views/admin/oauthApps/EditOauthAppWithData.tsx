@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditOauthApp from './EditOauthApp';
 
 const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement => {
@@ -12,13 +11,26 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 
 	const params = useMemo(() => ({ appId: _id }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/oauth-apps.get', { params });
+	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.get');
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, refetch } = useQuery(
+		['oauth-apps', params],
+		async () => {
+			const oauthApps = await getOauthApps(params);
+			return oauthApps;
+		},
+		{
+			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+		},
+	);
 
 	const onChange = useCallback(() => {
-		reload();
-	}, [reload]);
+		refetch();
+	}, [refetch]);
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return (
 			<Box pb='x20' maxWidth='x600' w='full' alignSelf='center'>
 				<Skeleton mbs='x8' />
