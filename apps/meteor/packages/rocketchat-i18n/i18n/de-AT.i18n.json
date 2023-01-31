@@ -2804,5 +2804,10 @@
   "registration.component.form.email": "E-Mail",
   "registration.component.form.password": "Passwort",
   "registration.component.form.divider": "oder",
-  "registration.component.form.submit": "Abschicken"
+  "registration.component.form.submit": "Abschicken",
+  "Something_Went_Wrong": "Etwas ist schief gelaufen",
+  "Toolbox_room_actions": "Primäre Room-Aktionen",
+  "Theme_light": "Hell",
+  "Theme_dark": "Dunkel",
+  "Create_an_account": "Ein Konto erstellen"
 }
