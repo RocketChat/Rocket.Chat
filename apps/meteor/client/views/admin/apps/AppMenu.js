@@ -17,8 +17,11 @@ import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
-import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
+import appButtonProps from './helpers/appButtonProps';
+import handleAPIError from './helpers/handleAPIError';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import warnEnableDisableApp from './helpers/warnEnableDisableApp';
+import appEnabledStatuses from './utils/appEnabledStatuses';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
