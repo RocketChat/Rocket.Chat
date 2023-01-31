@@ -1,5 +1,4 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { FC } from 'react';
 import React, { useRef, useCallback } from 'react';
 
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
@@ -9,11 +8,13 @@ import DropDownListWrapper from '../DropDownListWrapper';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
 
-const CategoryDropDown: FC<{
+type CategoryDropDownprops = {
 	data: CategoryDropDownListProps['groups'];
 	onSelected: CategoryDropDownListProps['onSelected'];
 	selectedCategories: (CategoryDropdownItem & { checked: true })[];
-}> = ({ data, onSelected, selectedCategories, ...props }) => {
+};
+
+const CategoryDropDown = ({ data, onSelected, selectedCategories, ...props }: CategoryDropDownprops) => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 

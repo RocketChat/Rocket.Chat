@@ -1,4 +1,4 @@
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -45,13 +45,17 @@ const AppsFilters = ({
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
 
-	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
-	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
-	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
+	const breakpoints = useBreakpoints();
+	const hasFilterStackMargin = !breakpoints.includes('lg') ? '' : 'x8';
+	const hasNotFilterStackMargin = !breakpoints.includes('lg') ? 'x8' : '';
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
+			<FilterByText
+				placeholder={t('Search_Apps')}
+				onChange={({ text }): void => setText(text)}
+				shouldFiltersStack={!breakpoints.includes('lg')}
+			>
 				<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} mb={hasNotFilterStackMargin} />
 				<RadioDropDown
 					group={statusFilterStructure}

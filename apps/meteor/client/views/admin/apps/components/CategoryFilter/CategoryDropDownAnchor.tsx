@@ -1,4 +1,5 @@
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler } from 'react';
 import React, { forwardRef } from 'react';
@@ -6,6 +7,7 @@ import React, { forwardRef } from 'react';
 const CategoryDropDownAnchor = forwardRef<HTMLInputElement, { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> }>(
 	function CategoryDropDownAnchor({ onClick, selectedCategoriesCount }, ref) {
 		const t = useTranslation();
+		const breakpoints = useBreakpoints();
 
 		return (
 			<Button
@@ -19,7 +21,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLInputElement, { selectedCategories
 				borderColor={selectedCategoriesCount ? 'none' : 'light'}
 				borderWidth={selectedCategoriesCount ? 'none' : 'x2'}
 				{...(selectedCategoriesCount ? { primary: true } : { bg: 'surface-light' })}
-				mis='x8'
+				mis={breakpoints.includes('lg') ? 'x8' : ''}
 			>
 				{selectedCategoriesCount > 0 && (
 					<Box
