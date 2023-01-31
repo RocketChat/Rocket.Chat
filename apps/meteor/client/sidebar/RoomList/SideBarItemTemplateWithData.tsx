@@ -139,11 +139,11 @@ function SideBarItemTemplateWithData({
 		<>
 			{showBadge &&
 				isUnread && ( // TODO: Remove any
-					<Badge {...({ style: { flexShrink: 0 } } as any)} variant={variant}>
+					<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
 						{unread + tunread?.length}
 					</Badge>
 				)}
-			{isOmnichannelRoom(room) && room.priorityWeight && <PriorityIcon level={room.priorityWeight} />}
+			{isOmnichannelRoom(room) && room.priorityWeight && <PriorityIcon mis='8px' level={room.priorityWeight} />}
 		</>
 	);
 
