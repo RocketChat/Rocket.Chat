@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
-import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { createMessageContext } from '../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../utils/client';
 import { Messages } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
@@ -22,7 +22,7 @@ Template.pinnedMessages.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
-	messageContext,
+	messageContext: createMessageContext,
 });
 
 Template.pinnedMessages.onCreated(function () {
