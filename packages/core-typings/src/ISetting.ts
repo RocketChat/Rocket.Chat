@@ -25,6 +25,7 @@ type EnableQuery = string | { _id: string; value: any } | { _id: string; value: 
 
 export interface ISettingBase {
 	_id: SettingId;
+	_updatedAt: Date;
 	type:
 		| 'boolean'
 		| 'timezone'
@@ -70,7 +71,6 @@ export interface ISettingBase {
 	meteorSettingsValue?: SettingValue;
 	ts: Date;
 	createdAt: Date;
-	_updatedAt?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;

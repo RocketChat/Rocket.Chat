@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 
 const getCustomSoundId = (sound) => `custom-sound-${sound}`;

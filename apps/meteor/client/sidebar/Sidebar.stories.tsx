@@ -25,6 +25,7 @@ const settings: Record<string, ISetting> = {
 		type: 'boolean',
 		value: true,
 		public: true,
+		_updatedAt: new Date(),
 	},
 };
 

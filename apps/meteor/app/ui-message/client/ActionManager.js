@@ -6,7 +6,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
 
 import Notifications from '../../notifications/client/lib/Notifications';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { CachedCollectionManager } from '../../ui-cached-collection/client';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient, t } from '../../utils/client';
 import * as banners from '../../../client/lib/banners';

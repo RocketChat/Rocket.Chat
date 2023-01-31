@@ -12,7 +12,7 @@ import type { AppScreenshot, AppRequestFilter, Pagination, IRestResponse, Serial
 import type { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { settings } from '../../settings/client';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { CachedCollectionManager } from '../../ui-cached-collection/client';
 import { createDeferredValue } from '../lib/misc/DeferredValue';
 import type {
 	// IAppFromMarketplace,

@@ -1,8 +1,8 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import type { LoginService } from '@rocket.chat/ui-contexts';
 import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
+import type { LoginService } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { FC } from 'react';
+import type { ContextType, FC } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
 import { Subscriptions, Rooms } from '../../app/models/client';
@@ -76,19 +76,23 @@ const UserProvider: FC = ({ children }) => {
 	}, [isLdapEnabled, isCrowdEnabled, loginMethod]);
 
 	const contextValue = useMemo(
-		() => ({
+		(): ContextType<typeof UserContext> => ({
 			userId,
 			user,
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
 			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) =>
-				Subscriptions.findOne(query, { fields }),
+			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
+				Subscriptions.findOne(query, { fields, sort }),
 			),
 			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
-			querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>((query, options) =>
-				(userId ? Subscriptions : Rooms).find(query, options).fetch(),
-			),
+			querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>((query, options) => {
+				if (userId) {
+					return Subscriptions.find(query, options).fetch();
+				}
+
+				return Rooms.find(query, options).fetch();
+			}),
 			loginWithToken: (token: string): Promise<void> =>
 				new Promise((resolve, reject) =>
 					Meteor.loginWithToken(token, (err) => {

@@ -1,4 +1,4 @@
-import { Base } from './_Base';
+import { Base } from './Base';
 
 export class Avatars extends Base {
 	constructor() {

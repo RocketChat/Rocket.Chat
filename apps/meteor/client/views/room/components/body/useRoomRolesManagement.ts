@@ -1,11 +1,10 @@
-import type { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
-import type { Mongo } from 'meteor/mongo';
 import { useEffect } from 'react';
 
 import { RoomRoles, ChatMessage } from '../../../../../app/models/client';
 
-const roomRoles = RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>;
+// const roomRoles = RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>;
 
 export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 	const getRoomRoles = useMethod('getRoomRoles');
@@ -17,7 +16,7 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 					rid,
 					u: { _id: uid },
 				} = data;
-				roomRoles.upsert({ rid, 'u._id': uid }, data);
+				RoomRoles.upsert({ rid, 'u._id': uid }, { $set: data });
 			});
 		});
 	}, [getRoomRoles, rid]);
@@ -74,7 +73,7 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 
 					switch (type) {
 						case 'added':
-							roomRoles.upsert({ 'rid': role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
+							RoomRoles.upsert({ 'rid': role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
 							break;
 
 						case 'removed':
@@ -89,7 +88,7 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 	useEffect(
 		() =>
 			subscribeToNotifyLoggedIn('Users:NameChanged', ({ _id: uid, name }: Partial<IUser>) => {
-				roomRoles.update(
+				RoomRoles.update(
 					{
 						'u._id': uid,
 					},

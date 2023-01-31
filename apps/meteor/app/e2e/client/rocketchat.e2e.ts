@@ -8,7 +8,7 @@ import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
-import type { IE2EEMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
@@ -447,16 +447,16 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decryptSubscription(rid: IRoom['_id']): Promise<void> {
-		const e2eRoom = await this.getInstanceByRoomId(rid);
-		this.log('decryptSubscription ->', rid);
+	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
+		const e2eRoom = await this.getInstanceByRoomId(subscriptionId);
+		this.log('decryptSubscription ->', subscriptionId);
 		e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions(): Promise<void> {
 		Subscriptions.find({
 			encrypted: true,
-		}).forEach((room: IRoom) => this.decryptSubscription(room._id));
+		}).forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {

@@ -6,9 +6,9 @@ import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/
 import { SettingsBase } from '../../lib/settings';
 
 class Settings extends SettingsBase {
-	cachedCollection = PublicSettingsCachedCollection.get();
+	cachedCollection = PublicSettingsCachedCollection;
 
-	collection = PublicSettingsCachedCollection.get().collection;
+	collection = PublicSettingsCachedCollection.collection;
 
 	dict = new ReactiveDict('settings');
 

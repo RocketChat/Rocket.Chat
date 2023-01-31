@@ -138,6 +138,9 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			close(type + FlowRouter.getParam('name'));
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });
+			if (!subscription) {
+				throw new Error('Subscription not found');
+			}
 			const route = subscription.t === 'c' ? 'channel' : 'group';
 			FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
 		}

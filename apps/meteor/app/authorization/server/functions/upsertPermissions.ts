@@ -269,12 +269,12 @@ export const upsertPermissions = async (): Promise<void> => {
 		},
 	): Promise<void> {
 		const permissionId = getSettingPermissionId(setting._id);
-		const permission: Omit<IPermission, '_id'> = {
+		const permission: Omit<IPermission, '_id' | '_updatedAt'> = {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
-			section: setting.section,
+			section: setting.section ?? undefined,
 			sorter: setting.sorter,
 			roles: [],
 		};

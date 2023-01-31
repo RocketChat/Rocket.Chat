@@ -33,7 +33,7 @@ const AuthorizationProvider: FC = ({ children }) => {
 					.reduce((ret, obj) => {
 						ret[obj._id] = obj;
 						return ret;
-					}, {}),
+					}, {} as Record<string, IRole>),
 			[],
 		),
 	);

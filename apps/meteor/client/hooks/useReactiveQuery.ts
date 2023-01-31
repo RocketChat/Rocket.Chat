@@ -1,4 +1,4 @@
-import type { IRole, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRole } from '@rocket.chat/core-typings';
 import type { UseQueryOptions, QueryKey, UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
@@ -8,11 +8,11 @@ import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 // For convenience as we want to minimize references to the old client models
 const queryableCollections = {
-	users: Users as Mongo.Collection<IUser>,
-	rooms: Rooms as Mongo.Collection<IRoom>,
-	subscriptions: Subscriptions as Mongo.Collection<ISubscription>,
+	users: Users,
+	rooms: Rooms,
+	subscriptions: Subscriptions,
 	roles: Roles as Mongo.Collection<IRole>,
-	roomRoles: RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>,
+	roomRoles: RoomRoles,
 } as const;
 
 export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(
