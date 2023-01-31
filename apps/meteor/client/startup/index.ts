@@ -34,7 +34,6 @@ import './setupWizard';
 import './slashCommands';
 import './startup';
 import './streamMessage';
-import './theme';
 import './unread';
 import './UserDeleted';
 import './userRoles';
