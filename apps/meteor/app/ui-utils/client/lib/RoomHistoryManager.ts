@@ -58,7 +58,7 @@ export async function upsertMessage(
 		);
 	}
 
-	return direct.upsert({ _id }, messageToUpsert);
+	return direct.upsert({ _id }, { $set: messageToUpsert });
 }
 
 export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
