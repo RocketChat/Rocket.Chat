@@ -12,7 +12,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { latest, oldest } = this.requestParams();
+			const { latest, oldest } = this.queryParams;
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 
@@ -41,7 +41,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { reportId } = this.queryParams;
+			const { reportId } = this.requestParams();
 
 			const { userId } = this;
 

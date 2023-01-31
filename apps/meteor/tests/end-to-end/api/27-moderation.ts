@@ -83,17 +83,18 @@ describe('[Moderation]', function () {
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before((done) => {
 			request
-				.post(api('chat.postMessage'))
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
-					channel: 'general',
-					text: 'messageId',
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message 0',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('message').and.to.be.an('object');
 					message = res.body.message;
 				})
 				.end(done);
@@ -112,8 +113,24 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('report').and.to.be.an('object');
-					reportedMessage = res.body.report;
+				})
+				.end(done);
+		});
+
+		before((done) => {
+			request
+				.get(api('moderation.history'))
+				.set(credentials)
+				.query({
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+					reportedMessage = res.body.reports[0];
 				})
 				.end(done);
 		});
@@ -123,7 +140,7 @@ describe('[Moderation]', function () {
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
-					roomId: 'general',
+					roomId: 'GENERAL',
 					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
@@ -173,7 +190,6 @@ describe('[Moderation]', function () {
 	// test for testing out the moderation.info endpoint
 
 	describe('[/moderation.info]', () => {
-		let reportedMessage: IReport;
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
@@ -208,8 +224,6 @@ describe('[Moderation]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('report').and.to.be.an('object');
-					reportedMessage = res.body.report;
 				})
 				.end(done);
 		});
@@ -219,7 +233,7 @@ describe('[Moderation]', function () {
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
-					roomId: 'general',
+					roomId: 'GENERAL',
 					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
@@ -235,7 +249,7 @@ describe('[Moderation]', function () {
 				.get(api('moderation.info'))
 				.set(credentials)
 				.query({
-					reportId: reportedMessage._id,
+					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
