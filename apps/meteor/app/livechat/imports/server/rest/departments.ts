@@ -62,7 +62,7 @@ API.v1.addRoute(
 			if (department) {
 				return API.v1.success({
 					department,
-					agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
+					agents: await LivechatDepartmentAgents.find({ departmentId: department._id }).toArray(),
 				});
 			}
 
@@ -129,8 +129,8 @@ API.v1.addRoute(
 
 			if (success) {
 				return API.v1.success({
-					department: LivechatDepartment.findOneById(_id),
-					agents: LivechatDepartmentAgents.find({ departmentId: _id }).fetch(),
+					department: await LivechatDepartment.findOneById(_id),
+					agents: await LivechatDepartmentAgents.find({ departmentId: _id }).toArray(),
 				});
 			}
 
@@ -150,7 +150,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/department/archived',
+	'livechat/departments/archived',
 	{
 		authRequired: true,
 		validateParams: { GET: isGETLivechatDepartmentProps },
@@ -199,6 +199,8 @@ API.v1.addRoute(
 			if (Livechat.archiveOrUnarchiveDepartment(this.urlParams._id, true)) {
 				return API.v1.success();
 			}
+
+			return API.v1.failure();
 		},
 	},
 );
@@ -220,6 +222,8 @@ API.v1.addRoute(
 			if (Livechat.archiveOrUnarchiveDepartment(this.urlParams._id, false)) {
 				return API.v1.success();
 			}
+
+			return API.v1.failure();
 		},
 	},
 );

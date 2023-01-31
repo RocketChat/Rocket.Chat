@@ -41,7 +41,7 @@ const ArchivedDepartmentsPageWithData = (): ReactElement => {
 		500,
 	);
 
-	const getArchivedDepartments = useEndpoint('GET', '/v1/livechat/department/archived');
+	const getArchivedDepartments = useEndpoint('GET', '/v1/livechat/departments/archived');
 
 	const { data, refetch, isLoading } = useQuery(['getDepartments', query], async () => getArchivedDepartments(query));
 

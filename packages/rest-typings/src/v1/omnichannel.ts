@@ -95,6 +95,7 @@ export const isLivechatDepartmentIdProps = ajv.compile<LivechatDepartmentId>(Liv
 type LivechatDepartmentAutocomplete = {
 	selector: string;
 	onlyMyDepartments: booleanString;
+	showArchived?: booleanString;
 };
 
 const LivechatDepartmentAutocompleteSchema = {
@@ -105,6 +106,10 @@ const LivechatDepartmentAutocompleteSchema = {
 		},
 		onlyMyDepartments: {
 			type: 'string',
+		},
+		showArchived: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['selector', 'onlyMyDepartments'],
@@ -2770,12 +2775,12 @@ export type OmnichannelEndpoints = {
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
-			department: ILivechatDepartment;
+			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
 		};
 		DELETE: () => void;
 	};
-	'/v1/livechat/department/archived': {
+	'/v1/livechat/departments/archived': {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
@@ -2820,7 +2825,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/department/isDepartmentCreationAvailable': {
-		GET: () => { departmentCreationAvailable: boolean };
+		GET: () => { isDepartmentCreationAvailable: boolean };
 	};
 
 	'/v1/livechat/custom-fields': {
