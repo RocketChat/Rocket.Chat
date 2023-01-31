@@ -31,7 +31,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 			try {
 				const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
-				Rooms.upsert({ _id: room._id }, omit(room, '_id'));
+				Rooms.upsert({ _id: room._id }, { $set: room });
 
 				if (room._id !== name && type === 'd') {
 					// Redirect old url using username to rid

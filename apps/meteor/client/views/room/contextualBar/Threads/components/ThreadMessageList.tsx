@@ -16,7 +16,6 @@ import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
-import MessageProvider from '../../../providers/MessageProvider';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
@@ -77,35 +76,33 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 					</li>
 				) : (
 					<MessageListProvider>
-						<MessageProvider>
-							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
-								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-								const newDay = isMessageNewDay(message, previous);
-								const firstUnread = isMessageFirstUnread(subscription, message, previous);
-								const showDivider = newDay || firstUnread;
+						{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
+							const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+							const newDay = isMessageNewDay(message, previous);
+							const firstUnread = isMessageFirstUnread(subscription, message, previous);
+							const showDivider = newDay || firstUnread;
 
-								const shouldShowAsSequential = sequential && !newDay;
+							const shouldShowAsSequential = sequential && !newDay;
 
-								const system = MessageTypes.isSystemMessage(message);
+							const system = MessageTypes.isSystemMessage(message);
 
-								return (
-									<Fragment key={message._id}>
-										{showDivider && (
-											<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-												{newDay && formatDate(message.ts)}
-											</MessageDivider>
+							return (
+								<Fragment key={message._id}>
+									{showDivider && (
+										<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+											{newDay && formatDate(message.ts)}
+										</MessageDivider>
+									)}
+									<li>
+										{system ? (
+											<SystemMessage message={message} />
+										) : (
+											<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
 										)}
-										<li>
-											{system ? (
-												<SystemMessage message={message} />
-											) : (
-												<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
-											)}
-										</li>
-									</Fragment>
-								);
-							})}
-						</MessageProvider>
+									</li>
+								</Fragment>
+							);
+						})}
 					</MessageListProvider>
 				)}
 			</ul>
