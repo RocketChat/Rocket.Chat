@@ -10,6 +10,7 @@ export type ReportHistoryProps = PaginatedRequest<{
 	latest?: string;
 	oldest?: string;
 	count?: number;
+	offset?: number;
 }>;
 
 const reportHistoryPropsSchema = {
@@ -31,6 +32,10 @@ const reportHistoryPropsSchema = {
 		},
 		sort: {
 			type: 'string',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
 			nullable: true,
 		},
 	},
