@@ -28,12 +28,16 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 			</Box>
 			<Box is='section' display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='flex-start' mbe='x4'>
-					<Box fontScale='p2b' mie='x4' lineHeight='initial'>
+					<Box fontScale='p2b' mie='x4' lineHeight='initial' color='title-labels'>
 						{name}
 					</Box>
-					<Box fontScale='c1'>{formatDateAndTime(createdDate)}</Box>
+					<Box fontScale='c1' color='annotation'>
+						{formatDateAndTime(createdDate)}
+					</Box>
 				</Box>
-				<Box fontScale='p2'>{message}</Box>
+				<Box fontScale='p2' color='default'>
+					{message}
+				</Box>
 			</Box>
 		</Box>
 	);

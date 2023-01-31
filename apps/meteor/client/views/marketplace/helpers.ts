@@ -33,7 +33,7 @@ export type Actions = 'update' | 'install' | 'purchase' | 'request';
 type appButtonResponseProps = {
 	action: Actions;
 	icon?: 'reload' | 'warning';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request' | 'Requested';
 };
 
 export type appStatusSpanResponseProps = {
@@ -163,8 +163,16 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
+	requestedEndUser,
 }: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
 	if (!isAdminUser) {
+		if (requestedEndUser) {
+			return {
+				action: 'request',
+				label: 'Requested',
+			};
+		}
+
 		return {
 			action: 'request',
 			label: 'Request',

@@ -8,5 +8,6 @@ export const useAppRequestStats = () => {
 		queryKey: ['app-requests-stats'],
 		queryFn: async () => fetchRequestStats(),
 		refetchOnWindowFocus: false,
+		retry: false,
 	});
 };

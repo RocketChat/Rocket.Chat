@@ -41,7 +41,7 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
 			<Box withTruncatedText fontScale='p2' mi='x4' display='flex' alignItems='center' justifyContent='space-between' width='100%'>
 				{label} {tag && <Tag>{tag}</Tag>}
-				{currentPath?.includes('marketplace') && label === 'Requested' && (
+				{currentPath?.includes('marketplace') && label === 'Requested' && Boolean(appRequestStats.data?.data.totalUnseen) && (
 					<Box>
 						<Badge variant='primary'>{appRequestStats.data?.data.totalUnseen}</Badge>
 					</Box>
