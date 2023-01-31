@@ -87,7 +87,7 @@ const MemoizedSetting = ({
 	const InputComponent = inputsByType[type];
 
 	return (
-		<Field className={className} flexDirection='row' justifyContent='space-between'>
+		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
 			<Box flexDirection='column' flexGrow={1}>
 				<InputComponent
 					value={value}
@@ -105,11 +105,9 @@ const MemoizedSetting = ({
 				)}
 			</Box>
 			{enterpriseCallout && (
-				<>
-					<ExternalLink to={''}>
-						<Button>{t('See_Paid_Plan')}</Button>
-					</ExternalLink>
-				</>
+				<ExternalLink to={''}>
+					<Button>{t('See_Paid_Plan')}</Button>
+				</ExternalLink>
 			)}
 		</Field>
 	);
