@@ -10,6 +10,7 @@ const CardIds = {
 	Mobile: 'homepage-mobile-apps-card',
 	Desktop: 'homepage-desktop-apps-card',
 	Docs: 'homepage-documentation-card',
+	Custom: 'homepage-custom-card',
 };
 test.use({ storageState: 'admin-session.json' });
 
@@ -41,10 +42,6 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			});
 
-			test('expect show custom content card', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]')).toBeVisible();
-			});
-
 			test('expect default value in custom body', async () => {
 				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-body"]')).toContainText(
 					'Admins may insert content html to be rendered in this white space.',
@@ -52,8 +49,8 @@ test.describe.serial('homepage', () => {
 			});
 
 			test('expect both change visibility and show only custom content buttons to be disabled', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-visibility-button"]')).toBeDisabled();
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-only-button"]')).toBeDisabled();
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).toBeDisabled();
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
 			});
 
 			test('expect visibility tag to show "not visible"', async () => {
@@ -74,8 +71,8 @@ test.describe.serial('homepage', () => {
 
 			test.describe('hidden custom body', () => {
 				test('expect correct state for card buttons', async () => {
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-content-visibility-button"]')).not.toBeDisabled();
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-content-only-button"]')).toBeDisabled();
+					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
+					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
 				});
 			});
 
@@ -85,8 +82,8 @@ test.describe.serial('homepage', () => {
 				});
 
 				test('expect correct state for card buttons', async () => {
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-content-visibility-button"]')).not.toBeDisabled();
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-content-only-button"]')).toBeDisabled();
+					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
+					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
 				});
 			});
 
@@ -98,8 +95,13 @@ test.describe.serial('homepage', () => {
 						expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 					});
 
-					test('expect to show only the custom content', async () => {
-						await expect(adminPage.locator('[data-qa-id="homepage-default-cards"]')).not.toBeVisible();
+					test('expect default layout to not be visible (show only custom content card)', async () => {
+						await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
+					});
+
+					test('expect correct state for card buttons', async () => {
+						await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).toBeDisabled();
+						await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).not.toBeDisabled();
 					});
 				});
 			});
@@ -129,7 +131,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('cards', () => {
 			for (const id of Object.values(CardIds)) {
-				if (id === CardIds.Users) {
+				if (id === CardIds.Users || id === CardIds.Custom) {
 					// eslint-disable-next-line no-loop-func
 					test(`expect ${id} card to not be visible`, async () => {
 						await expect(regularUserPage.locator(`[data-qa-id="${id}"]`)).not.toBeVisible();
@@ -225,6 +227,7 @@ test.describe.serial('homepage', () => {
 
 			test.afterAll(async ({ api }) => {
 				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
 			});
 		});
 	});
