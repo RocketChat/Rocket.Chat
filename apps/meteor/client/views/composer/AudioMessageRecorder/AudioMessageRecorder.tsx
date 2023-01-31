@@ -42,8 +42,6 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 
 		chat?.composer?.setRecordingMode(false);
 
-		chat?.composer?.setRecordingMode(false);
-
 		setState('idle');
 
 		return blob;
@@ -169,6 +167,7 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 	if (state === 'idle') {
 		return (
 			<MessageComposerAction
+				title={t('Audio_message')}
 				icon='mic'
 				className='rc-message-box__icon rc-message-box__audio-message-mic'
 				data-qa-id='audio-record'
