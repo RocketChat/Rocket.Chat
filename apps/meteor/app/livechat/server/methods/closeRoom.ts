@@ -2,7 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Users, LivechatRooms, Subscriptions as SubscriptionRaw } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -41,13 +41,13 @@ Meteor.methods({
 		);
 
 		const userId = Meteor.userId();
-		if (!userId || !hasPermission(userId, 'close-livechat-room')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'close-livechat-room'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:closeRoom',
 			});
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(roomId));
+		const room = await LivechatRooms.findOneById(roomId);
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:closeRoom',
@@ -58,21 +58,19 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:closeRoom' });
 		}
 
-		const user = Promise.await(Users.findOneById(userId));
+		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:closeRoom',
 			});
 		}
 
-		const subscription = Promise.await(
-			SubscriptionRaw.findOneByRoomIdAndUserId(roomId, user._id, {
-				projection: {
-					_id: 1,
-				},
-			}),
-		);
-		if (!subscription && !hasPermission(userId, 'close-others-livechat-room')) {
+		const subscription = await SubscriptionRaw.findOneByRoomIdAndUserId(roomId, user._id, {
+			projection: {
+				_id: 1,
+			},
+		});
+		if (!subscription && !(await hasPermissionAsync(userId, 'close-others-livechat-room'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:closeRoom',
 			});

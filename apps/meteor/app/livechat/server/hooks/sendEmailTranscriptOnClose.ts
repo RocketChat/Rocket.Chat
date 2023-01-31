@@ -65,7 +65,7 @@ const resolveTranscriptData = (
 
 callbacks.add(
 	'livechat.closeRoom',
-	Promise.await(sendEmailTranscriptOnClose),
+	(params: LivechatCloseCallbackParams) => Promise.await(sendEmailTranscriptOnClose(params)),
 	callbacks.priority.HIGH,
 	'livechat-send-email-transcript-on-close-room',
 );

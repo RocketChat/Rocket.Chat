@@ -2,19 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 Meteor.methods({
-	'livechat:discardTranscript'(rid) {
+	async 'livechat:discardTranscript'(rid: string) {
 		check(rid, String);
 
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'send-omnichannel-chat-transcript')) {
+		const user = Meteor.userId();
+
+		if (!user || !(await hasPermissionAsync(user, 'send-omnichannel-chat-transcript'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:requestTranscript',
 			});
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(rid));
+		const room = await LivechatRooms.findOneById(rid);
 		if (!room || !room.open) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:discardTranscript',
@@ -27,7 +29,7 @@ Meteor.methods({
 			});
 		}
 
-		Promise.await(LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid));
+		await LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid);
 
 		return true;
 	},

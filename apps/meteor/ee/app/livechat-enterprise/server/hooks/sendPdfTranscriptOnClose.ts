@@ -36,7 +36,7 @@ const sendPdfTranscriptOnClose = async (params: LivechatCloseCallbackParams): Pr
 
 callbacks.add(
 	'livechat.closeRoom',
-	Promise.await(sendPdfTranscriptOnClose),
+	(params: LivechatCloseCallbackParams) => Promise.await(sendPdfTranscriptOnClose(params)),
 	callbacks.priority.HIGH,
 	'livechat-send-pdf-transcript-on-close-room',
 );

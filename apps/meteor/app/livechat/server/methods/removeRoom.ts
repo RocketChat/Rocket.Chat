@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:removeRoom'(rid) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'remove-closed-livechat-rooms')) {
+	async 'livechat:removeRoom'(rid: string) {
+		const user = Meteor.userId();
+		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-rooms'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
 		}
 
@@ -30,6 +31,6 @@ Meteor.methods({
 			});
 		}
 
-		Promise.await(Livechat.removeRoom(rid));
+		await Livechat.removeRoom(rid);
 	},
 });
