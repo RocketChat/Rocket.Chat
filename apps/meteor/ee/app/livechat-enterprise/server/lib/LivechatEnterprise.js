@@ -216,19 +216,9 @@ export const LivechatEnterprise = {
 	},
 
 	/**
-	 * @param {string} _id - The department id
-	 * @param {{
-	 * 	enabled: boolean,
-	 *  name: string,
-	 *  description?: string,
-	 *  showOnRegistration: boolean,
-	 * 	email: string,
-	 *  showOnOfflineForm: boolean,
-	 *  requestTagBeforeClosingChat?: boolean,
-	 *  chatClosingTags?: string,
-	 *  fallbackForwardDepartment?: string,
-	 * }} departmentData - The department id
-	 * @param {{upsert?: string[], remove?: string[]}} departmentAgents - The department agents
+	 * @param {string|null} _id - The department id
+	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
+	 * @param {{upsert?: string[], remove: string[]}} [departmentAgents] - The department agents
 	 */
 
 	async saveDepartment(_id, departmentData, departmentAgents) {
