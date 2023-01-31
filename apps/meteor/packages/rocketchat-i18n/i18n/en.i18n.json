@@ -5562,5 +5562,9 @@
 	"Presence_service": "Presence service",
 	"New_custom_status": "New custom status",
   "Service_disabled": "The service is now disabled",
-  "Service_disabled_description": "You can’t reenable it again until there’s less than 200 active connections at the same time"
+  "Service_disabled_description": "You can’t reenable it again until there’s less than 200 active connections at the same time",
+  "User_status_disabled": "User status temporarily disabled to maintain performance.",
+  "User_status_disabled_learn_more": "Keeping performance in mind",
+  "User_status_disabled_learn_more_description": "Due to high volume of active connections, the service that handles user status is temporarily disabled. Administrators can re-enable this manually in the workspace settings.",
+  "Go_to_workspace_settings": "Go to workspace settings"
 }
