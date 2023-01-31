@@ -110,7 +110,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							{errors && errors.email && <Field.Error>{errors.email}</Field.Error>}
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
-									<Box>{t('Verified')}</Box>
+									<Box color='default' fontScale='p2m'>
+										{t('Verified')}
+									</Box>
 									<ToggleSwitch checked={verified} onChange={handleVerified} />
 								</Box>
 							</Field.Row>
@@ -189,7 +191,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 						<Field>
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-									<Box>{t('Require_password_change')}</Box>
+									<Box color='default' fontScale='p2m'>
+										{t('Require_password_change')}
+									</Box>
 									<ToggleSwitch
 										disabled={setRandomPassword}
 										checked={setRandomPassword || requirePasswordChange}
@@ -206,7 +210,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 						<Field>
 							<Field.Row>
 								<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-									<Box>{t('Set_random_password_and_send_by_email')}</Box>
+									<Box color='default' fontScale='p2m'>
+										{t('Set_random_password_and_send_by_email')}
+									</Box>
 									<ToggleSwitch checked={setRandomPassword} onChange={handleSetRandomPassword} />
 								</Box>
 							</Field.Row>
@@ -237,7 +243,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field>
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-										<Box>{t('Join_default_channels')}</Box>
+										<Box color='default' fontScale='p2m'>
+											{t('Join_default_channels')}
+										</Box>
 										<ToggleSwitch checked={joinDefaultChannels} onChange={handleJoinDefaultChannels} />
 									</Box>
 								</Field.Row>
@@ -251,7 +259,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 							<Field>
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-										<Box>{t('Send_welcome_email')}</Box>
+										<Box color='default' fontScale='p2m'>
+											{t('Send_welcome_email')}
+										</Box>
 										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} disabled={!isSmtpEnabled} />
 									</Box>
 								</Field.Row>
