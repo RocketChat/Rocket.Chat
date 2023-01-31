@@ -4326,6 +4326,7 @@
   "Send_Visitor_navigation_history_as_a_message": "Send Visitor Navigation History as a Message",
   "Send_visitor_navigation_history_on_request": "Send Visitor Navigation History on Request",
   "Send_welcome_email": "Send welcome email",
+  "Send_Welcome_Email_SMTP_Warning": "To send welcome email you need to <a href=\"admin/settings/Email\">setup SMTP emailing server</a>",
   "Send_your_JSON_payloads_to_this_URL": "Send your JSON payloads to this URL.",
   "send-mail": "Send Emails",
   "send-mail_description": "Permission to send emails",

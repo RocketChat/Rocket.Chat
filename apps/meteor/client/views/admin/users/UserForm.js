@@ -10,7 +10,7 @@ import {
 	Divider,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -56,6 +56,8 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	} = formHandlers;
 
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
+
+	const isSmtpEnabled = Boolean(useSetting('SMTP_Host'));
 
 	return (
 		<VerticalBar.ScrollableContent {...props} is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} autoComplete='off'>
@@ -250,12 +252,13 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 								<Field.Row>
 									<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
 										<Box>{t('Send_welcome_email')}</Box>
-										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} />
+										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} disabled={!isSmtpEnabled} />
 									</Box>
 								</Field.Row>
+								{!isSmtpEnabled && <Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Welcome_Email_SMTP_Warning') }} />}
 							</Field>
 						),
-					[handleSendWelcomeEmail, t, sendWelcomeEmail],
+					[handleSendWelcomeEmail, t, sendWelcomeEmail, isSmtpEnabled],
 				)}
 				{hasCustomFields && (
 					<>
