@@ -1,6 +1,5 @@
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
