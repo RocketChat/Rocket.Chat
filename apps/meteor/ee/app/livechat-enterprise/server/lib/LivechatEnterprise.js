@@ -215,6 +215,23 @@ export const LivechatEnterprise = {
 		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
 	},
 
+	/**
+	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} fields
+	 * @param {string} _id - The department id
+	 * @param {{
+	 * 	enabled: boolean,
+	 *  name: string,
+	 *  description?: string,
+	 *  showOnRegistration: boolean,
+	 * 	email: string,
+	 *  showOnOfflineForm: boolean,
+	 *  requestTagBeforeClosingChat?: boolean,
+	 *  chatClosingTags?: string,
+	 *  fallbackForwardDepartment?: string,
+	 * }} departmentData - The department id
+	 * @param {{upsert?: string[], remove?: string[]}} departmentAgents - The department agents
+	 */
+
 	async saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
 
