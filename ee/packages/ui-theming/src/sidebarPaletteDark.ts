@@ -33,9 +33,9 @@ export const palette = [
 		description: 'Badge Background',
 		list: [
 			{ name: 'badge-background-level-1', token: '', color: '#484C51' },
-			{ name: 'badge-background-level-2', token: '', color: '#3070CF' },
-			{ name: 'badge-background-level-3', token: '', color: '#A9642D' },
-			{ name: 'badge-background-level-4', token: '', color: '#BB3E4E' },
+			{ name: 'badge-background-level-2', token: '', color: '#2C65BA' },
+			{ name: 'badge-background-level-3', token: '', color: '#955828' },
+			{ name: 'badge-background-level-4', token: '', color: '#B43C4C' },
 		],
 	},
 	{
