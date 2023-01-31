@@ -2958,6 +2958,7 @@
   "Omnichannel_On_Hold_manually": "The chat was manually placed On Hold by __user__",
   "Omnichannel_onHold_Chat": "Place chat On-Hold",
   "Omnichannel_quick_actions": "Omnichannel Quick Actions",
+  "Omnichannel_sorting_disclaimer": "Omnichannel conversations are sorted by __sortingMechanism__, edit a room to apply.",
   "Livechat_online": "Omnichannel on-line",
   "Omnichannel_placed_chat_on_hold": "Chat On Hold: __comment__",
   "Livechat_Queue": "Omnichannel Queue",

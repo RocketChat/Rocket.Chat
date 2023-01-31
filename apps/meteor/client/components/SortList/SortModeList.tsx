@@ -3,6 +3,7 @@ import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import { OmnichannelSortingDisclaimer } from '../Omnichannel/OmnichannelSortingDisclaimer';
 import ListItem from '../Sidebar/ListItem';
 
 function SortModeList(): ReactElement {
@@ -30,6 +31,8 @@ function SortModeList(): ReactElement {
 					text={t('Name')}
 					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
+
+				<OmnichannelSortingDisclaimer />
 			</ul>
 		</>
 	);

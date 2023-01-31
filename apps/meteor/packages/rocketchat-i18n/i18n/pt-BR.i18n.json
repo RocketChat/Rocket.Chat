@@ -2723,6 +2723,7 @@
   "Omnichannel_On_Hold_due_to_inactivity": "A conversa foi colocada em espera automaticamente porque não recebemos nenhuma resposta de __guest__ em __timeout__ segundos",
   "Omnichannel_On_Hold_manually": "A conversa foi colocada em espera manualmente por __user__",
   "Omnichannel_onHold_Chat": "Colocar conversa em espera",
+  "Omnichannel_sorting_disclaimer": "Conversar do Omnichannel são ordenadas por __sortingMechanism__, edite a sala para alterar.",
   "Livechat_online": "Omnichannel online",
   "Omnichannel_placed_chat_on_hold": "Conversa em espera: __comment__",
   "Livechat_Queue": "Fila omnichannel",
