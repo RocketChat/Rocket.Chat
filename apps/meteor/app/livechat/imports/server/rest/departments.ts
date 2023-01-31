@@ -187,16 +187,12 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: {
-			POST: { permissions: ['manage-livechat-departments'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-departments'] },
 		},
 	},
 	{
 		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
-			if (Livechat.archiveOrUnarchiveDepartment(this.urlParams._id, true)) {
+			if (await Livechat.archiveDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}
 
@@ -219,7 +215,7 @@ API.v1.addRoute(
 				_id: String,
 			});
 
-			if (Livechat.archiveOrUnarchiveDepartment(this.urlParams._id, false)) {
+			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}
 

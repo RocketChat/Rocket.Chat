@@ -1099,9 +1099,8 @@ export const Livechat = {
 		return ret;
 	},
 
-	archiveOrUnarchiveDepartment(_id, archive) {
+	unarchiveDepartment(_id) {
 		check(_id, String);
-		check(archive, Boolean);
 
 		const department = LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
 
@@ -1111,7 +1110,21 @@ export const Livechat = {
 			});
 		}
 
-		return LivechatDepartmentRaw.archiveOrUnarchiveDepartment(_id, archive);
+		return LivechatDepartmentRaw.unarchiveDepartment(_id);
+	},
+
+	archiveDepartment(_id) {
+		check(_id, String);
+
+		const department = LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.archiveDepartment(_id);
 	},
 
 	showConnecting() {
