@@ -20,7 +20,7 @@ type GenericModalProps = RequiredModalProps & {
 	confirmDisabled?: boolean;
 	onCancel?: () => void;
 	onClose?: () => void;
-	onConfirm: () => void;
+	onConfirm?: () => void;
 };
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
@@ -93,9 +93,11 @@ const GenericModal: FC<GenericModalProps> = ({
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
-					<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
-						{confirmText ?? t('Ok')}
-					</Button>
+					{onConfirm && (
+						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+							{confirmText ?? t('Ok')}
+						</Button>
+					)}
 				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
