@@ -25,6 +25,7 @@ import { CloudService } from './cloud/service';
 import { UserService } from './user/service';
 import { FederationService } from './federation/service';
 import { FetchService } from './fetch/service';
+import { LivechatService } from './livechat/service';
 import { MessageService } from './message/service';
 import { NotificationService } from './notification/service';
 
@@ -53,6 +54,7 @@ api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
 api.registerService(new FederationService());
 api.registerService(new FetchService());
+api.registerService(new LivechatService());
 api.registerService(new MessageService());
 api.registerService(new NotificationService());
 
