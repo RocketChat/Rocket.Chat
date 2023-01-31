@@ -5568,5 +5568,9 @@
   "Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description": "Always send the transcript to contacts at the end of the conversations.",
   "Omnichannel_transcript_pdf": "Export chat transcript as PDF.",
   "Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description": "Always export the transcript as PDF at the end of conversations.",
-  "Contact_email": "Contact email"
+  "Contact_email": "Contact email",
+  "Customer": "Customer",
+  "Time": "Time",
+  "Omnichannel_Agent": "Omnichannel Agent",
+  "This_attachment_is_not_supported": "This attachment is not supported"
 }
