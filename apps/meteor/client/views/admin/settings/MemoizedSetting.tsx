@@ -1,5 +1,7 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Callout, Field, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Field, Margins } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ElementType, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
@@ -77,6 +79,7 @@ const MemoizedSetting = ({
 	invisible = undefined,
 	...inputProps
 }: MemoizedSettingProps): ReactElement | null => {
+	const t = useTranslation();
 	if (invisible) {
 		return null;
 	}
@@ -84,25 +87,29 @@ const MemoizedSetting = ({
 	const InputComponent = inputsByType[type];
 
 	return (
-		<Field className={className}>
-			<InputComponent
-				value={value}
-				editor={editor}
-				onChangeValue={onChangeValue}
-				onChangeEditor={onChangeEditor}
-				{...inputProps}
-				disabled={disabled}
-			/>
-			{hint && <Field.Hint>{hint}</Field.Hint>}
-			{callout && (
-				<Margins block='x16'>
-					<Callout type='warning'>{callout}</Callout>
-				</Margins>
-			)}
+		<Field className={className} flexDirection='row' justifyContent='space-between'>
+			<Box flexDirection='column' flexGrow={1}>
+				<InputComponent
+					value={value}
+					editor={editor}
+					onChangeValue={onChangeValue}
+					onChangeEditor={onChangeEditor}
+					{...inputProps}
+					disabled={disabled}
+				/>
+				{hint && <Field.Hint>{hint}</Field.Hint>}
+				{callout && (
+					<Margins block='x16'>
+						<Callout type='warning'>{callout}</Callout>
+					</Margins>
+				)}
+			</Box>
 			{enterpriseCallout && (
-				<Margins block='x16'>
-					<Callout>{enterpriseCallout}</Callout>
-				</Margins>
+				<>
+					<ExternalLink to={''}>
+						<Button>{t('See_Paid_Plan')}</Button>
+					</ExternalLink>
+				</>
 			)}
 		</Field>
 	);
