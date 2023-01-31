@@ -34,7 +34,7 @@ test.describe.serial('omnichannel-departments', () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
-	test.skip('expect to not be possible adding a second department ', async () => {
+	test('expect to not be possible adding a second department ', async () => {
 		test.skip(IS_EE, 'Community Edition Only');
 
 		await poOmnichannelDepartments.btnNew.click();
