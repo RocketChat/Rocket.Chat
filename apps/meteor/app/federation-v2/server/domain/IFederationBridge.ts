@@ -48,6 +48,7 @@ export interface IFederationBridge {
 	createDirectMessageRoom(externalCreatorId: string, externalInviteeIds: string[], extraData?: Record<string, any>): Promise<string>;
 	inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void>;
 	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<string>;
+	sendThreadMessage(externalRoomId: string, externalSenderId: string, message: IMessage, relatesToEventId: string): Promise<string>;
 	createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string>;
 	isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean;
 	extractHomeserverOrigin(externalUserId: string): string;
@@ -66,6 +67,13 @@ export interface IFederationBridge {
 		content: Buffer,
 		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
 	): Promise<string>;
+	sendMessageFileToThread(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		relatesToEventId: string,
+	): Promise<string>;
 	uploadContent(externalSenderId: string, content: Buffer, options?: { name?: string; type?: string }): Promise<string | undefined>;
 	convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string;
 	sendReplyToMessage(
@@ -75,12 +83,28 @@ export interface IFederationBridge {
 		eventOriginalSender: string,
 		message: string,
 	): Promise<string>;
+	sendThreadReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		eventOriginalSender: string,
+		message: string,
+		relatesToEventId: string,
+	): Promise<string>;
 	sendReplyMessageFileToRoom(
 		externalRoomId: string,
 		externaSenderId: string,
 		content: Buffer,
 		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
 		eventToReplyTo: string,
+	): Promise<string>;
+	sendReplyMessageFileToThread(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+		relatesToEventId: string,
 	): Promise<string>;
 	notifyUserTyping(externalRoomId: string, externalUserId: string, isTyping: boolean): Promise<void>;
 	setUserDisplayName(externalUserId: string, displayName: string): Promise<void>;

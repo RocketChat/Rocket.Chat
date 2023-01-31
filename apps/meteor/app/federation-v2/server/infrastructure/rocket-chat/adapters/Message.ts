@@ -44,6 +44,49 @@ export class RocketChatMessageAdapter {
 		);
 	}
 
+	public async sendThreadMessage(
+		user: FederatedUser,
+		room: FederatedRoom,
+		messageText: string,
+		externalEventId: string,
+		parentMessageId: string,
+	): Promise<void> {
+		sendMessage(
+			user.getInternalReference(),
+			{ federation: { eventId: externalEventId }, msg: messageText, tmid: parentMessageId },
+			room.getInternalReference(),
+		);
+	}
+
+	public async sendThreadQuoteMessage(
+		user: FederatedUser,
+		federatedRoom: FederatedRoom,
+		messageText: string,
+		externalEventId: string,
+		messageToReplyTo: IMessage,
+		homeServerDomain: string,
+		parentMessageId: string,
+	): Promise<void> {
+		const room = federatedRoom.getInternalReference();
+		const messageToReplyToUrl = getURL(
+			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
+			{ full: true },
+		);
+		sendMessage(
+			user.getInternalReference(),
+			{
+				federation: { eventId: externalEventId },
+				msg: await toInternalQuoteMessageFormat({
+					messageToReplyToUrl,
+					message: messageText,
+					homeServerDomain,
+				}),
+				tmid: parentMessageId,
+			},
+			room,
+		);
+	}
+
 	public async editMessage(user: FederatedUser, newMessageText: string, originalMessage: IMessage): Promise<void> {
 		const updatedMessage = Object.assign({}, originalMessage, { msg: newMessageText });
 		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
@@ -99,6 +142,65 @@ export class RocketChatMessageAdapter {
 					message: '',
 					homeServerDomain,
 				}),
+			},
+			room,
+		);
+	}
+
+	public async sendThreadFileMessage(
+		user: FederatedUser,
+		room: FederatedRoom,
+		files: IMessage['files'],
+		attachments: IMessage['attachments'],
+		externalEventId: string,
+		parentMessageId: string,
+	): Promise<void> {
+		sendMessage(
+			user.getInternalReference(),
+			{
+				federation: { eventId: externalEventId },
+				rid: room.getInternalId(),
+				ts: new Date(),
+				file: (files || [])[0],
+				files,
+				attachments,
+				tmid: parentMessageId,
+			},
+			room.getInternalReference(),
+		);
+	}
+
+	public async sendThreadQuoteFileMessage(
+		user: FederatedUser,
+		federatedRoom: FederatedRoom,
+		files: IMessage['files'],
+		attachments: IMessage['attachments'],
+		externalEventId: string,
+		messageToReplyTo: IMessage,
+		homeServerDomain: string,
+		parentMessageId: string,
+	): Promise<void> {
+		const room = federatedRoom.getInternalReference();
+		const messageToReplyToUrl = getURL(
+			`${roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name })}?msg=${messageToReplyTo._id}`,
+			{ full: true },
+		);
+
+		sendMessage(
+			user.getInternalReference(),
+			{
+				federation: { eventId: externalEventId },
+				rid: federatedRoom.getInternalId(),
+				ts: new Date(),
+				file: (files || [])[0],
+				files,
+				attachments,
+				msg: await toInternalQuoteMessageFormat({
+					messageToReplyToUrl,
+					message: '',
+					homeServerDomain,
+				}),
+				tmid: parentMessageId,
 			},
 			room,
 		);

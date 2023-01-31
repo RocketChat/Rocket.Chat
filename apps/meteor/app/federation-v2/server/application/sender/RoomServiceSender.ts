@@ -151,7 +151,8 @@ export class FederationRoomServiceSender extends FederationService {
 	}
 
 	public async sendExternalMessage(roomSendExternalMessageInput: FederationRoomSendExternalMessageDto): Promise<void> {
-		const { internalRoomId, internalSenderId, message } = roomSendExternalMessageInput;
+		const { internalRoomId, internalSenderId, message, isThreadedMessage } = roomSendExternalMessageInput;
+
 		const federatedSender = await this.internalUserAdapter.getFederatedUserByInternalId(internalSenderId);
 		if (!federatedSender) {
 			throw new Error(`Could not find user id for ${internalSenderId}`);
@@ -187,6 +188,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 			await getExternalMessageSender(
 				message,
+				isThreadedMessage,
 				this.bridge,
 				this.internalFileAdapter,
 				this.internalMessageAdapter,
@@ -197,6 +199,7 @@ export class FederationRoomServiceSender extends FederationService {
 
 		await getExternalMessageSender(
 			message,
+			isThreadedMessage,
 			this.bridge,
 			this.internalFileAdapter,
 			this.internalMessageAdapter,

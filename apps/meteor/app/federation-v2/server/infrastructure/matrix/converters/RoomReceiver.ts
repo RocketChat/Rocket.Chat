@@ -145,6 +145,8 @@ export class MatrixRoomReceiverConverter {
 		homeServerDomain: string,
 	): FederationRoomReceiveExternalMessageDto {
 		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+		const isThreadedMessage = Boolean(externalEvent.content?.['m.relates_to']?.rel_type === MatrixEventType.MESSAGE_ON_THREAD);
+
 		return new FederationRoomReceiveExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
@@ -156,7 +158,19 @@ export class MatrixRoomReceiverConverter {
 				homeServerDomain,
 				isAReplyToAMessage,
 			}),
-			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
+			...(isThreadedMessage
+				? {
+						thread: {
+							rootEventId: externalEvent.content?.['m.relates_to']?.event_id || '',
+							replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id || '',
+						},
+						replyToEventId: !externalEvent.content?.['m.relates_to']?.is_falling_back
+							? externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id
+							: undefined,
+				  }
+				: {
+						replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
+				  }),
 		});
 	}
 
@@ -190,6 +204,8 @@ export class MatrixRoomReceiverConverter {
 		if (!externalEvent.content.info?.size) {
 			throw new Error('Missing size in the file message info');
 		}
+		const isThreadedMessage = Boolean(externalEvent.content?.['m.relates_to']?.rel_type === MatrixEventType.MESSAGE_ON_THREAD);
+
 		return new FederationRoomReceiveExternalFileMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
@@ -201,7 +217,19 @@ export class MatrixRoomReceiverConverter {
 			mimetype: externalEvent.content.info.mimetype,
 			size: externalEvent.content.info.size,
 			messageText: externalEvent.content.body,
-			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
+			...(isThreadedMessage
+				? {
+						thread: {
+							rootEventId: externalEvent.content?.['m.relates_to']?.event_id || '',
+							replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id || '',
+						},
+						replyToEventId: !externalEvent.content?.['m.relates_to']?.is_falling_back
+							? externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id
+							: undefined,
+				  }
+				: {
+						replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
+				  }),
 		});
 	}
 

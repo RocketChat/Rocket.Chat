@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
+import { htmlToText } from 'html-to-text';
 
 import { fetch } from '../../../../../server/lib/http/fetch';
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
@@ -13,7 +14,6 @@ import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 
 let MatrixUserInstance: any;
-
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
@@ -178,7 +178,42 @@ export class MatrixBridge implements IFederationBridge {
 					}),
 				),
 			);
+			return messageId;
+		} catch (e) {
+			throw new Error('User is not part of the room.');
+		}
+	}
 
+	public async sendThreadMessage(
+		externalRoomId: string,
+		externalSenderId: string,
+		message: IMessage,
+		relatesToEventId: string,
+	): Promise<string> {
+		const text = this.escapeEmojis(
+			await toExternalMessageFormat({
+				message: message.msg,
+				externalRoomId,
+				homeServerDomain: this.homeServerDomain,
+			}),
+		);
+		try {
+			const messageId = await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'msgtype': 'm.text',
+					'body': htmlToText(text, { wordwrap: false }),
+					'formatted_body': text,
+					'format': 'org.matrix.custom.html',
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': true,
+						'm.in_reply_to': {
+							event_id: relatesToEventId,
+						},
+					},
+				});
 			return messageId;
 		} catch (e) {
 			throw new Error('User is not part of the room.');
@@ -209,6 +244,41 @@ export class MatrixBridge implements IFederationBridge {
 					'm.in_reply_to': { event_id: eventToReplyTo },
 				},
 				'msgtype': MatrixEnumSendMessageType.TEXT,
+			});
+
+		return messageId;
+	}
+
+	public async sendThreadReplyToMessage(
+		externalRoomId: string,
+		externalUserId: string,
+		eventToReplyTo: string,
+		originalEventSender: string,
+		replyMessage: string,
+		relatesToEventId: string,
+	): Promise<string> {
+		const { formattedMessage, message } = await toExternalQuoteMessageFormat({
+			externalRoomId,
+			eventToReplyTo,
+			originalEventSender,
+			message: this.escapeEmojis(replyMessage),
+			homeServerDomain: this.homeServerDomain,
+		});
+		const messageId = await this.bridgeInstance
+			.getIntent(externalUserId)
+			.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+				'msgtype': 'm.text',
+				'body': message,
+				'format': 'org.matrix.custom.html',
+				'formatted_body': formattedMessage,
+				'm.relates_to': {
+					'rel_type': 'm.thread',
+					'event_id': relatesToEventId,
+					'is_falling_back': false,
+					'm.in_reply_to': {
+						event_id: eventToReplyTo,
+					},
+				},
 			});
 
 		return messageId;
@@ -348,6 +418,48 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
+	public async sendMessageFileToThread(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		relatesToEventId: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
+			const messageId = await this.bridgeInstance
+				.getIntent(externaSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'body': fileDetails.filename,
+					'filename': fileDetails.filename,
+					'info': {
+						size: fileDetails.fileSize,
+						mimetype: fileDetails.mimeType,
+						...(fileDetails.metadata?.height && fileDetails.metadata?.width
+							? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+							: {}),
+					},
+					'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+					'url': mxcUrl,
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': true,
+						'm.in_reply_to': {
+							event_id: relatesToEventId,
+						},
+					},
+				});
+
+			return messageId;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
 	public async sendReplyMessageFileToRoom(
 		externalRoomId: string,
 		externaSenderId: string,
@@ -373,6 +485,49 @@ export class MatrixBridge implements IFederationBridge {
 				'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
 				'url': mxcUrl,
 			});
+
+			return messageId;
+		} catch (e: any) {
+			if (e.body?.includes('413') || e.body?.includes('M_TOO_LARGE')) {
+				throw new Error('File is too large');
+			}
+			return '';
+		}
+	}
+
+	public async sendReplyMessageFileToThread(
+		externalRoomId: string,
+		externaSenderId: string,
+		content: Buffer,
+		fileDetails: { filename: string; fileSize: number; mimeType: string; metadata?: { width?: number; height?: number; format?: string } },
+		eventToReplyTo: string,
+		relatesToEventId: string,
+	): Promise<string> {
+		try {
+			const mxcUrl = await this.bridgeInstance.getIntent(externaSenderId).uploadContent(content);
+			const messageId = await this.bridgeInstance
+				.getIntent(externaSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					'body': fileDetails.filename,
+					'filename': fileDetails.filename,
+					'info': {
+						size: fileDetails.fileSize,
+						mimetype: fileDetails.mimeType,
+						...(fileDetails.metadata?.height && fileDetails.metadata?.width
+							? { h: fileDetails.metadata?.height, w: fileDetails.metadata?.width }
+							: {}),
+					},
+					'msgtype': this.getMsgTypeBasedOnMimeType(fileDetails.mimeType),
+					'url': mxcUrl,
+					'm.relates_to': {
+						'rel_type': 'm.thread',
+						'event_id': relatesToEventId,
+						'is_falling_back': true,
+						'm.in_reply_to': {
+							event_id: eventToReplyTo,
+						},
+					},
+				});
 
 			return messageId;
 		} catch (e: any) {

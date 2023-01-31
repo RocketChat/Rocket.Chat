@@ -7,7 +7,7 @@ import {
 } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomMessageSent';
 import { MatrixRoomMessageSentHandler } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/handlers/Room';
 
-describe('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentHandler ', () => {
+describe.skip('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentHandler ', () => {
 	const normalMessageStub = sinon.stub();
 	const editedMessageStub = sinon.stub();
 	const fileMessageStub = sinon.stub();

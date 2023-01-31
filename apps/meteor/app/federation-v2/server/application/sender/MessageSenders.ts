@@ -41,6 +41,59 @@ class TextExternalMessageSender implements IExternalMessageSender {
 	}
 }
 
+class ThreadTextExternalMessageSender implements IExternalMessageSender {
+	constructor(
+		private readonly bridge: IFederationBridge,
+		private readonly internalMessageAdapter: RocketChatMessageAdapter,
+		private readonly internalUserAdapter: RocketChatUserAdapter,
+	) {}
+
+	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
+		if (!message.tmid) {
+			return;
+		}
+		const parentMessage = await this.internalMessageAdapter.getMessageById(message.tmid);
+		if (!parentMessage || !parentMessage.federation?.eventId) {
+			return;
+		}
+		const externalMessageId = await this.bridge.sendThreadMessage(
+			externalRoomId,
+			externalSenderId,
+			message,
+			parentMessage.federation.eventId,
+		);
+		console.log({ externalMessageId });
+
+		await this.internalMessageAdapter.setExternalFederationEventOnMessage(message._id, externalMessageId);
+	}
+
+	public async sendQuoteMessage(
+		externalRoomId: string,
+		externalSenderId: string,
+		message: IMessage,
+		messageToReplyTo: IMessage,
+	): Promise<void> {
+		if (!message.tmid) {
+			return;
+		}
+		const parentMessage = await this.internalMessageAdapter.getMessageById(message.tmid);
+		if (!parentMessage || !parentMessage.federation?.eventId) {
+			return;
+		}
+
+		const originalSender = await this.internalUserAdapter.getFederatedUserByInternalId(messageToReplyTo?.u?._id);
+		const externalMessageId = await this.bridge.sendThreadReplyToMessage(
+			externalRoomId,
+			externalSenderId,
+			messageToReplyTo.federation?.eventId as string,
+			originalSender?.getExternalId() as string,
+			message.msg,
+			parentMessage.federation.eventId,
+		);
+		await this.internalMessageAdapter.setExternalFederationEventOnMessage(message._id, externalMessageId);
+	}
+}
+
 class FileExternalMessageSender implements IExternalMessageSender {
 	constructor(
 		private readonly bridge: IFederationBridge,
@@ -106,13 +159,107 @@ class FileExternalMessageSender implements IExternalMessageSender {
 	}
 }
 
+class ThreadFileExternalMessageSender implements IExternalMessageSender {
+	constructor(
+		private readonly bridge: IFederationBridge,
+		private readonly internalFileHelper: RocketChatFileAdapter,
+		private readonly internalMessageAdapter: RocketChatMessageAdapter,
+	) {}
+
+	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void> {
+		const file = await this.internalFileHelper.getFileRecordById((message.files || [])[0]?._id);
+		if (!file || !file.size || !file.type) {
+			return;
+		}
+
+		if (!message.tmid) {
+			return;
+		}
+		const parentMessage = await this.internalMessageAdapter.getMessageById(message.tmid);
+		if (!parentMessage || !parentMessage.federation?.eventId) {
+			return;
+		}
+
+		const buffer = await this.internalFileHelper.getBufferFromFileRecord(file);
+		const metadata = await this.internalFileHelper.extractMetadataFromFile(file);
+
+		const externalMessageId = await this.bridge.sendMessageFileToThread(
+			externalRoomId,
+			externalSenderId,
+			buffer,
+			{
+				filename: file.name,
+				fileSize: file.size,
+				mimeType: file.type,
+				metadata: {
+					width: metadata?.width,
+					height: metadata?.height,
+					format: metadata?.format,
+				},
+			},
+			parentMessage.federation.eventId,
+		);
+
+		await this.internalMessageAdapter.setExternalFederationEventOnMessage(message._id, externalMessageId);
+	}
+
+	public async sendQuoteMessage(
+		externalRoomId: string,
+		externalSenderId: string,
+		message: IMessage,
+		messageToReplyTo: IMessage,
+	): Promise<void> {
+		const file = await this.internalFileHelper.getFileRecordById((message.files || [])[0]?._id);
+		if (!file || !file.size || !file.type) {
+			return;
+		}
+
+		if (!message.tmid) {
+			return;
+		}
+		const parentMessage = await this.internalMessageAdapter.getMessageById(message.tmid);
+		if (!parentMessage || !parentMessage.federation?.eventId) {
+			return;
+		}
+
+		const buffer = await this.internalFileHelper.getBufferFromFileRecord(file);
+		const metadata = await this.internalFileHelper.extractMetadataFromFile(file);
+
+		const externalMessageId = await this.bridge.sendReplyMessageFileToThread(
+			externalRoomId,
+			externalSenderId,
+			buffer,
+			{
+				filename: file.name,
+				fileSize: file.size,
+				mimeType: file.type,
+				metadata: {
+					width: metadata?.width,
+					height: metadata?.height,
+					format: metadata?.format,
+				},
+			},
+			messageToReplyTo.federation?.eventId as string,
+			parentMessage.federation.eventId,
+		);
+
+		await this.internalMessageAdapter.setExternalFederationEventOnMessage(message._id, externalMessageId);
+	}
+}
+
 export const getExternalMessageSender = (
 	message: IMessage,
+	isThreadedMessage: boolean,
 	bridge: IFederationBridge,
 	internalFileHelper: RocketChatFileAdapter,
 	internalMessageAdapter: RocketChatMessageAdapter,
 	internalUserAdapter: RocketChatUserAdapter,
 ): IExternalMessageSender => {
+	if (isThreadedMessage) {
+		return message.files
+			? new ThreadFileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
+			: new ThreadTextExternalMessageSender(bridge, internalMessageAdapter, internalUserAdapter);
+	}
 	return message.files
 		? new FileExternalMessageSender(bridge, internalFileHelper, internalMessageAdapter)
 		: new TextExternalMessageSender(bridge, internalMessageAdapter, internalUserAdapter);
