@@ -11,7 +11,7 @@ export type ModerationEndpoints = {
 			reports: IReport[];
 		}>;
 	};
-	'/v1/moderation.hide': {
+	'/v1/moderation.markChecked': {
 		POST: (params: ArchiveReportProps) => {
 			report: IReport | null;
 		};

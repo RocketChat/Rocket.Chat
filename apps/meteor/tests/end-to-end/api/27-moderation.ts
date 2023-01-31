@@ -74,9 +74,9 @@ describe('[Moderation]', function () {
 		});
 	});
 
-	// test for testing out the moderation.hide endpoint
+	// test for testing out the moderation.markChecked endpoint
 
-	describe('[/moderation.hide]', () => {
+	describe('[/moderation.markChecked]', () => {
 		let reportedMessage: IReport;
 		let message: IMessage;
 
@@ -153,7 +153,7 @@ describe('[Moderation]', function () {
 
 		it('should hide a report', (done) => {
 			request
-				.post(api('moderation.hide'))
+				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
 					reportId: reportedMessage._id,
@@ -172,7 +172,7 @@ describe('[Moderation]', function () {
 
 		it('should return an error when the reportId is not provided', (done) => {
 			request
-				.post(api('moderation.hide'))
+				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
 					reportId: '',

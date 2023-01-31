@@ -33,7 +33,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'moderation.hide',
+	'moderation.markChecked',
 	{
 		authRequired: true,
 		validateParams: isArchiveReportProps,
