@@ -6,7 +6,7 @@ import type { ReportHistoryProps } from './ReportHistoryProps';
 
 export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages
-	'/v1/moderation.history': {
+	'/v1/moderation.getReports': {
 		GET: (params: ReportHistoryProps) => PaginatedResult<{
 			reports: IReport[];
 		}>;

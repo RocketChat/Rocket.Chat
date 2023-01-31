@@ -4,7 +4,7 @@ import { Reports } from '@rocket.chat/models';
 import { API } from '../api';
 
 API.v1.addRoute(
-	'moderation.history',
+	'moderation.getReports',
 	{
 		authRequired: true,
 		validateParams: isReportHistoryProps,

@@ -3,17 +3,17 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-// test for the /moderation.history endpoint
+// test for the /moderation.getReports endpoint
 
 describe('[Moderation]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	describe('[/moderation.history]', () => {
+	describe('[/moderation.getReports]', () => {
 		it('should return an array of reports', (done) => {
 			request
-				.get(api('moderation.history'))
+				.get(api('moderation.getReports'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -26,7 +26,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports even requested with count and offset params', (done) => {
 			request
-				.get(api('moderation.history'))
+				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
 					count: 5,
@@ -43,7 +43,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports even requested with oldest param', (done) => {
 			request
-				.get(api('moderation.history'))
+				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
 					oldest: new Date(),
@@ -59,7 +59,7 @@ describe('[Moderation]', function () {
 
 		it('should return an array of reports even requested with latest param', (done) => {
 			request
-				.get(api('moderation.history'))
+				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
 					latest: new Date(),
@@ -119,7 +119,7 @@ describe('[Moderation]', function () {
 
 		before((done) => {
 			request
-				.get(api('moderation.history'))
+				.get(api('moderation.getReports'))
 				.set(credentials)
 				.query({
 					count: 5,
