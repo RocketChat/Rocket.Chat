@@ -10,7 +10,7 @@ import { getTagColor } from './getTagColor';
 import type { ILicense, LicenseAppSources } from '../definitions/ILicense';
 import type { ILicenseTag } from '../definitions/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import { Apps } from '../../../../app/apps/server';
+import type { AppServerOrchestrator } from '../../../../app/apps/server/orchestrator';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -37,6 +37,21 @@ class LicenseClass {
 		maxPrivateApps: 3,
 		maxMarketplaceApps: 5,
 	};
+
+	private Apps: AppServerOrchestrator;
+
+	constructor() {
+		/**
+		 * Importing the Apps variable statically at the top of the file causes a change
+		 * in the import order and ends up causing an error during the server initialization
+		 *
+		 * We added a dynamic import here to avoid this issue
+		 */
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		import('../../../../app/apps/server').then(({ Apps }) => {
+			this.Apps = Apps;
+		});
+	}
 
 	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
@@ -215,8 +230,12 @@ class LicenseClass {
 		return maxActiveUsers > Users.getActiveLocalUserCount();
 	}
 
-	canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		return isUnderAppLimits({ appManager: Apps.getManager() as AppManager }, this.appsConfig, source);
+	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
+		if (!this.Apps?.isInitialized()) {
+			return false;
+		}
+
+		return isUnderAppLimits({ appManager: this.Apps.getManager() as AppManager }, this.appsConfig, source);
 	}
 
 	showLicenses(): void {
@@ -323,27 +342,7 @@ export function canAddNewUser(): boolean {
 }
 
 export async function canEnableApp(source: LicenseAppSources): Promise<boolean> {
-	if (!Apps.isInitialized()) {
-		return false;
-	}
-
 	return License.canEnableApp(source);
-}
-
-export async function canInstallMarketplaceApp(): Promise<boolean> {
-	if (!Apps.isInitialized()) {
-		return false;
-	}
-
-	return License.canEnableApp('marketplace');
-}
-
-export async function canInstallPrivateApp(): Promise<boolean> {
-	if (!Apps.isInitialized()) {
-		return false;
-	}
-
-	return License.canEnableApp('private');
 }
 
 export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
