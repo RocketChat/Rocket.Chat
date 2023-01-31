@@ -70,11 +70,7 @@ export const createMessageContext = ({
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	Message_AllowEditing_BlockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes'),
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	Message_ShowEditedStatus = settings.get('Message_ShowEditedStatus'),
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	API_Embed = settings.get('API_Embed'),
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	API_EmbedDisabledFor = settings.get('API_EmbedDisabledFor'),
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	Message_GroupingPeriod = settings.get('Message_GroupingPeriod') * 1000,
 }: {
@@ -100,9 +96,7 @@ export const createMessageContext = ({
 	AutoTranslate_Enabled?: unknown;
 	Message_AllowEditing?: unknown;
 	Message_AllowEditing_BlockEditInMinutes?: unknown;
-	Message_ShowEditedStatus?: unknown;
 	API_Embed?: unknown;
-	API_EmbedDisabledFor?: unknown;
 	Message_GroupingPeriod?: unknown;
 }) => {
 	return {
@@ -125,9 +119,7 @@ export const createMessageContext = ({
 			AutoTranslate_Enabled,
 			Message_AllowEditing,
 			Message_AllowEditing_BlockEditInMinutes,
-			Message_ShowEditedStatus,
 			API_Embed,
-			API_EmbedDisabledFor,
 			Message_GroupingPeriod,
 		},
 	} as const;

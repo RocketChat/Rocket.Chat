@@ -9,7 +9,6 @@ import { marked } from './parser/marked/marked';
 import { original } from './parser/original/original';
 import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
-import { settings } from '../../settings';
 
 const parsers = {
 	original,
@@ -33,29 +32,11 @@ class MarkdownClass {
 	}
 
 	parseMessageNotEscaped(message) {
-		const parser = settings.get('Markdown_Parser');
-
-		if (parser === 'disabled') {
-			return message;
-		}
-
 		const options = {
-			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
-			headers: settings.get('Markdown_Headers'),
 			rootUrl: Meteor.absoluteUrl(),
-			marked: {
-				gfm: settings.get('Markdown_Marked_GFM'),
-				tables: settings.get('Markdown_Marked_Tables'),
-				breaks: settings.get('Markdown_Marked_Breaks'),
-				pedantic: settings.get('Markdown_Marked_Pedantic'),
-				smartLists: settings.get('Markdown_Marked_SmartLists'),
-				smartypants: settings.get('Markdown_Marked_Smartypants'),
-			},
 		};
 
-		const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
-
-		return parse(message, options);
+		return parsers.original(message, options);
 	}
 
 	mountTokensBackRecursively(message, tokenList, useHtml = true) {
@@ -92,7 +73,7 @@ class MarkdownClass {
 
 	filterMarkdownFromMessage(message) {
 		return parsers.filtered(message, {
-			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+			supportSchemesForLink: 'http,https',
 		});
 	}
 }
@@ -101,19 +82,13 @@ export const Markdown = new MarkdownClass();
 
 export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
-export const createMarkdownMessageRenderer = ({ parser, ...options }) => {
-	if (!parser || parser === 'disabled') {
-		return (message) => message;
-	}
-
-	const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
-
+export const createMarkdownMessageRenderer = ({ ...options }) => {
 	return (message) => {
 		if (!message?.html?.trim()) {
 			return message;
 		}
 
-		return parse(message, options);
+		return parsers.original(message, options);
 	};
 };
 

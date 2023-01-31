@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps, FC } from 'react';
@@ -89,7 +88,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 	let markedOptions: marked.MarkedOptions;
 
-	const schemes = useSetting('Markdown_SupportSchemesForLink') as string;
+	const schemes = 'http,https';
 
 	switch (variant) {
 		case 'inline':

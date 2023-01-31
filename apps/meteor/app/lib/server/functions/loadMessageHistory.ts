@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
@@ -33,12 +32,6 @@ export function loadMessageHistory({
 		skip: offset,
 		fields: {},
 	};
-
-	if (!settings.get('Message_ShowEditedStatus')) {
-		options.fields = {
-			editedAt: 0,
-		};
-	}
 
 	const records =
 		end != null

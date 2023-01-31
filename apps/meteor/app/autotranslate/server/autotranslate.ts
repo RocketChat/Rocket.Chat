@@ -165,7 +165,7 @@ export abstract class AutoTranslate {
 	tokenizeURLs(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
 
-		const schemes = settings.get<string>('Markdown_SupportSchemesForLink')?.split(',').join('|');
+		const schemes = 'http,https';
 
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(

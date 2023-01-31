@@ -548,13 +548,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
-
-		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'This_is_a_deprecated_feature_alert',
-		});
 	});
 
 	this.section('Avatar', function () {
@@ -1145,13 +1138,6 @@ settingsRegistry.addGroup('General', function () {
 
 settingsRegistry.addGroup('Message', function () {
 	this.section('Message_Attachments', function () {
-		this.add('Message_Attachments_GroupAttach', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Message_Attachments_GroupAttachDescription',
-			alert: 'This_is_a_deprecated_feature_alert',
-		});
-
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
@@ -1226,11 +1212,6 @@ settingsRegistry.addGroup('Message', function () {
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean',
 	});
-	this.add('Message_ShowEditedStatus', true, {
-		type: 'boolean',
-		public: true,
-		alert: 'This_is_a_deprecated_feature_alert',
-	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
 		public: true,
@@ -1263,14 +1244,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
-	/**
-	 * @deprecated
-	 */
-	this.add('Message_ShowFormattingTips', true, {
-		type: 'boolean',
-		public: true,
-		alert: 'This_is_a_deprecated_feature_alert',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1296,13 +1269,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'action',
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
-	});
-	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedDisabledFor', '', {
-		type: 'string',
-		public: true,
-		i18nDescription: 'API_EmbedDisabledFor_Description',
-		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {

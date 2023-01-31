@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 
 import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
-import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	loadMissedMessages(rid, start) {
@@ -25,12 +24,6 @@ Meteor.methods({
 				ts: -1,
 			},
 		};
-
-		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = {
-				editedAt: 0,
-			};
-		}
 
 		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
 	},

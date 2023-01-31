@@ -3,7 +3,6 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Messages, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { getValue } from '../../../settings/server/raw';
 
 export async function findMentionedMessages({
 	uid,
@@ -84,10 +83,6 @@ export async function findStarredMessages({
 }
 
 export async function findSnippetedMessageById({ uid, messageId }: { uid: string; messageId: string }): Promise<IMessage> {
-	if (!(await getValue('Message_AllowSnippeting'))) {
-		throw new Error('error-not-allowed');
-	}
-
 	if (!uid) {
 		throw new Error('invalid-user');
 	}
@@ -125,9 +120,6 @@ export async function findSnippetedMessages({
 	offset: number;
 	total: number;
 }> {
-	if (!(await getValue('Message_AllowSnippeting'))) {
-		throw new Error('error-not-allowed');
-	}
 	const room = await Rooms.findOneById(roomId);
 
 	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
