@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,6 +9,10 @@ type FederatedRoomListItemProps = IFederationPublicRooms & {
 	disabled: boolean;
 	onClickJoin: () => void;
 };
+
+const clampLine = css`
+	line-clamp: 6;
+`;
 
 const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, canonicalAlias, joinedMembers, onClickJoin, disabled }) => {
 	const t = useTranslation();
@@ -24,7 +29,7 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, c
 			</Box>
 
 			{topic && (
-				<Box is='p' fontScale='c1' mb='x4' maxHeight='x120' overflow='hidden'>
+				<Box is='p' fontScale='c1' mb='x4' maxHeight='x120' overflow='hidden' withTruncatedText className={[clampLine]}>
 					{topic}
 				</Box>
 			)}
