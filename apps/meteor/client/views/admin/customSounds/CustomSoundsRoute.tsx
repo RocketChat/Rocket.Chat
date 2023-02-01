@@ -1,6 +1,6 @@
 import { Button, Icon, Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
@@ -45,8 +45,25 @@ const CustomSoundsRoute = (): ReactElement => {
 		500,
 	);
 
-	const getCustomSoundsList = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, isSuccess, isLoading, isError, refetch } = useQuery(['custom-sounds', query], () => getCustomSoundsList(query));
+	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, refetch, isLoading, isError, isSuccess } = useQuery(
+		['custom-sounds', query],
+		async () => {
+			const { sounds } = await getSounds(query);
+
+			if (sounds.length === 0) {
+				throw new Error(t('No_results_found'));
+			}
+			return sounds;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const handleItemClick = useCallback(
 		(_id) => (): void => {
@@ -102,13 +119,13 @@ const CustomSoundsRoute = (): ReactElement => {
 								</GenericTableBody>
 							</GenericTable>
 						)}
-						{isSuccess && data && data.sounds.length > 0 && (
+						{isSuccess && data && data.length > 0 && (
 							<>
 								<FilterByText onChange={({ text }): void => setParams(text)} />
 								<GenericTable>
 									<GenericTableHeader>{headers}</GenericTableHeader>
 									<GenericTableBody>
-										{data?.sounds.map((sound) => (
+										{data?.map((sound) => (
 											<CustomSoundRow key={sound._id} sound={sound} onClick={handleItemClick} />
 										))}
 									</GenericTableBody>
@@ -117,14 +134,14 @@ const CustomSoundsRoute = (): ReactElement => {
 									divider
 									current={current}
 									itemsPerPage={itemsPerPage}
-									count={data.total || 0}
+									count={data.length || 0}
 									onSetItemsPerPage={onSetItemsPerPage}
 									onSetCurrent={onSetCurrent}
 									{...paginationProps}
 								/>
 							</>
 						)}
-						{isSuccess && data?.sounds.length === 0 && (
+						{isSuccess && data?.length === 0 && (
 							<States>
 								<StatesIcon name='magnifier' />
 								<StatesTitle>{t('No_results_found')}</StatesTitle>
