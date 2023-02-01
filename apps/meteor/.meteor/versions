@@ -60,7 +60,6 @@ jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
 jquery@3.0.0
 kadira:flow-router@2.12.1
-konecty:multiple-instances-status@1.1.0
 konecty:user-presence@2.6.3
 launch-screen@1.3.0
 littledata:synced-cron@1.5.1

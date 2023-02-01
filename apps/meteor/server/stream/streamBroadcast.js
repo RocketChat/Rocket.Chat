@@ -1,6 +1,6 @@
 import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
@@ -49,11 +49,8 @@ function _authorizeConnection(instance) {
 }
 
 function authorizeConnection(instance) {
-	const query = {
-		_id: InstanceStatus.id(),
-	};
-
-	if (!InstanceStatus.getCollection().findOne(query)) {
+	const record = Promise.await(InstanceStatusRaw.findOneById(InstanceStatus.id(), { projection: { _id: 1 } }));
+	if (!record) {
 		return Meteor.setTimeout(function () {
 			return authorizeConnection(instance);
 		}, 500);
@@ -130,10 +127,13 @@ function startMatrixBroadcast() {
 				'extraInformation.port': record.extraInformation.port,
 			};
 
-			if (connections[instance] && !InstanceStatus.getCollection().findOne(query)) {
-				connLogger.info({ msg: 'disconnecting from', instance });
-				connections[instance].disconnect();
-				return delete connections[instance];
+			if (connections[instance]) {
+				const found = Promise.await(InstanceStatusRaw.findOne(query, { projection: { _id: 1 } }));
+				if (!found) {
+					connLogger.info({ msg: 'disconnecting from', instance });
+					connections[instance].disconnect();
+					return delete connections[instance];
+				}
 			}
 		},
 	};
@@ -322,12 +322,11 @@ Meteor.methods({
 		check(selfId, String);
 		check(remoteId, String);
 
-		const query = {
-			_id: remoteId,
-		};
-
-		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
-			this.connection.broadcastAuth = true;
+		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id()) {
+			const found = Promise.await(InstanceStatusRaw.findOneById(remoteId, { projection: { _id: 1 } }));
+			if (found) {
+				this.connection.broadcastAuth = true;
+			}
 		}
 
 		return this.connection.broadcastAuth === true;

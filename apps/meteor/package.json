@@ -225,6 +225,7 @@
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/icons": "next",
+		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/layout": "next",
 		"@rocket.chat/logo": "next",
 		"@rocket.chat/memo": "next",

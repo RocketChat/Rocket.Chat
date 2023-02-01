@@ -1,7 +1,7 @@
 import os from 'os';
 
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { startStreamBroadcast } from '../stream/streamBroadcast';
 
