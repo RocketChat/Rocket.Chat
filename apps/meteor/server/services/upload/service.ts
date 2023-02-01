@@ -33,4 +33,16 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	async sendFileLivechatMessage({ roomId, visitorToken, file, message }: ISendFileLivechatMessageParams): Promise<IMessage> {
 		return Meteor.call('sendFileLivechatMessage', roomId, visitorToken, file, message);
 	}
+
+	async getBuffer(cb: Function): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			FileUpload.getBuffer(cb, (error: Error, result: Buffer) => {
+				if (error) {
+					return reject(error);
+				}
+
+				resolve(result);
+			});
+		});
+	}
 }

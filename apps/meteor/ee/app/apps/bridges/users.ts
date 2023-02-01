@@ -3,8 +3,7 @@ import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { checkUsernameAvailability, deleteUser } from '../../../../app/lib/server/functions';
-import { User as UserService } from '../../../../server/sdk';
+import { User as UserService, MeteorService } from '../../../../server/sdk';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppUserBridge extends UserBridge {
@@ -51,7 +50,7 @@ export class AppUserBridge extends UserBridge {
 
 		switch (user.type) {
 			case 'app':
-				if (!checkUsernameAvailability(user.username)) {
+				if (!(await MeteorService.checkUsernameAvailability(user.username))) {
 					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
 				}
 
@@ -79,7 +78,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		try {
-			deleteUser(user.id);
+			await MeteorService.deleteUser(user.id);
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${err}`);
 		}

@@ -1,3 +1,5 @@
+import type { IUser } from '@rocket.chat/core-typings';
+
 import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import type { IServiceClass } from './ServiceClass';
 
@@ -19,4 +21,12 @@ export interface IMeteor extends IServiceClass {
 	callMethodWithToken(userId: string | undefined, token: string | undefined, method: string, args: any[]): Promise<void | any>;
 	notifyGuestStatusChanged(token: string, status: string): Promise<void>;
 	getRoutingManagerConfig(): IRoutingManagerConfig;
+	checkUsernameAvailability(username: string): Promise<boolean>;
+	deleteUser(userId: string, confirmRelinquish?: boolean): Promise<void>;
+	addUserToRoom(
+		rid: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | unknown>;
 }

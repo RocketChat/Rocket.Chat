@@ -7,8 +7,7 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
-import { Room } from '../../../../server/sdk';
+import { Room, MeteorService } from '../../../../server/sdk';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -117,7 +116,7 @@ export class AppRoomBridge extends RoomBridge {
 			const member = await Users.findOneByUsername(username, {});
 
 			if (member) {
-				return addUserToRoom(rm._id, member);
+				return MeteorService.addUserToRoom(rm._id, member);
 			}
 		});
 

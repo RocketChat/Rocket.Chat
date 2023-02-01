@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { MongoInternals } from 'meteor/mongo';
 import { Users } from '@rocket.chat/models';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
@@ -19,6 +19,11 @@ import { ListenersModule } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { use } from '../../../app/settings/server/Middleware';
+import {
+	checkUsernameAvailability,
+	deleteUser as meteorDeleteUser,
+	addUserToRoom as meteorAddUserToRoom,
+} from '../../../app/lib/server/functions';
 import type { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
 type Callbacks = {
@@ -298,5 +303,22 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		// this will cause that oplog events received on early stages of server startup
 		// won't be fired (at least, inquiry events)
 		return RoutingManager.isMethodSet() && RoutingManager.getConfig();
+	}
+
+	async checkUsernameAvailability(username: string): Promise<boolean> {
+		return checkUsernameAvailability(username);
+	}
+
+	async deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
+		return meteorDeleteUser(userId, confirmRelinquish);
+	}
+
+	async addUserToRoom(
+		rid: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | unknown> {
+		return meteorAddUserToRoom(rid, user, inviter, silenced);
 	}
 }
