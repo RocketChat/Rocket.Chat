@@ -5,6 +5,7 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 285,
 	async up() {
+		// migrate old priority history messages to new sla history messages
 		const legacySlaSysMsgIds = await Messages.find(
 			{ t: 'livechat_priority_history' },
 			{
@@ -16,10 +17,6 @@ addMigration({
 			.map(({ _id }) => _id)
 			.toArray();
 
-		// rename the type to 'omnichannel_sla_change_history'
-		// rename field 'priorityData' to 'slaData'
-		// rename field 'priorityData.definedBy' to 'slaData.definedBy'
-		// rename field 'priorityData.priority' to 'slaData.sla'
 		await Messages.updateMany(
 			{ _id: { $in: legacySlaSysMsgIds } },
 			{
