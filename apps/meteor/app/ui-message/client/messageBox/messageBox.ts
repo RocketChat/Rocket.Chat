@@ -3,7 +3,6 @@ import type { Blaze } from 'meteor/blaze';
 import type { ContextType } from 'react';
 
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
-import './messageBoxActions';
 
 export type MessageBoxTemplateInstance = Blaze.TemplateInstance<{
 	rid: IRoom['_id'];
