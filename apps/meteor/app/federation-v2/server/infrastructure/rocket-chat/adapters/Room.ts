@@ -5,9 +5,9 @@ import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import { createRoom, addUserToRoom, removeUserFromRoom } from '../../../../../lib/server';
 import type { FederatedUser } from '../../../domain/FederatedUser';
-import { saveRoomName } from '../../../../../channel-settings/server/functions/saveRoomName';
 import { saveRoomTopic } from '../../../../../channel-settings/server/functions/saveRoomTopic';
 import { getFederatedUserByInternalUsername } from './User';
+import { Messages } from '../../../../../models/server';
 
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
@@ -42,7 +42,7 @@ export class RocketChatRoomAdapter {
 		if (!usernameOrId) {
 			throw new Error('Cannot create a room without a creator');
 		}
-		const { rid, _id } = createRoom(federatedRoom.getRoomType(), federatedRoom.getName(), usernameOrId);
+		const { rid, _id } = createRoom(federatedRoom.getRoomType(), federatedRoom.getDisplayName(), usernameOrId);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
@@ -71,7 +71,7 @@ export class RocketChatRoomAdapter {
 		const extraData = undefined;
 		const { rid, _id } = createRoom(
 			federatedRoom.getRoomType(),
-			federatedRoom.getName(),
+			federatedRoom.getDisplayName(),
 			usernameOrId,
 			federatedRoom.getMembersUsernames(),
 			readonly,
@@ -121,8 +121,27 @@ export class RocketChatRoomAdapter {
 		await Subscriptions.updateAllRoomTypesByRoomId(federatedRoom.getRoomType(), federatedRoom.getRoomType());
 	}
 
-	public async updateRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomName(federatedRoom.getInternalId(), federatedRoom.getName(), federatedUser.getInternalReference());
+	public async updateDisplayRoomName(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
+		await Rooms.setFnameById(federatedRoom.getInternalId(), federatedRoom.getDisplayName());
+		await Subscriptions.updateNameAndFnameByRoomId(
+			federatedRoom.getInternalId(),
+			federatedRoom.getName() || '',
+			federatedRoom.getDisplayName() || '',
+		);
+		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(
+			federatedRoom.getInternalId(),
+			federatedRoom.getDisplayName(),
+			federatedUser.getInternalReference(),
+		);
+	}
+
+	public async updateRoomName(federatedRoom: FederatedRoom): Promise<void> {
+		await Rooms.setRoomNameById(federatedRoom.getInternalId(), federatedRoom.getName());
+		await Subscriptions.updateNameAndFnameByRoomId(
+			federatedRoom.getInternalId(),
+			federatedRoom.getName() || '',
+			federatedRoom.getDisplayName() || '',
+		);
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {

@@ -35,14 +35,15 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 			options: {
 				name: roomName,
 				topic: roomTopic,
+				room_alias_name: `${roomName}${Date.now()}`,
 				visibility,
 				preset: matrixRoomType,
-				room_alias_name: `${roomName}${Date.now()}`,
 				creation_content: {
 					was_internally_programatically_created: true,
 				},
 			},
 		});
+		intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
 
 		return matrixRoom.room_id;
 	}

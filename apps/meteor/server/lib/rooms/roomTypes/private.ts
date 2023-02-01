@@ -41,7 +41,7 @@ roomCoordinator.add(PrivateRoomType, {
 	},
 
 	roomName(room, _userId?) {
-		if (room.prid) {
+		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {

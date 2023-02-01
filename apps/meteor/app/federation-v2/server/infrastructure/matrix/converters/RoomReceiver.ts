@@ -25,11 +25,15 @@ import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
-	return matrixIdentifier.replace('@', '').replace('!', '');
+	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
 };
 
 export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''): string => {
 	return matrixUserId.split(':')[0]?.replace('@', '');
+};
+
+export const formatExternalAliasIdToInternalFormat = (alias = ''): string => {
+	return alias.split(':')[0]?.replace('#', '');
 };
 
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
@@ -76,7 +80,7 @@ const tryToExtractExternalRoomNameFromTheRoomState = (roomState: AbstractMatrixE
 	)?.content?.name;
 
 	return {
-		...(externalRoomName ? { externalRoomName } : {}),
+		...(externalRoomName ? { externalRoomName: removeExternalSpecificCharsFromExternalIdentifier(externalRoomName) } : {}),
 	};
 };
 
