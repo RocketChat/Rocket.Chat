@@ -4768,7 +4768,6 @@
   "Video_Conference_Description": "Настройте звонки для вашего сервера.",
   "Video_Chat_Window": "Видеочат",
   "Video_Conference": "Видеоконференция",
-  "Video_Call_unavailable_for_federation": "Видеозвонки не доступны для федеративных чатов",
   "Video_Conferences": "Звонки",
   "video-conf-provider-not-configured": "**Функция звонков не включена**: Администратору сервера необходимо сначала активировать данную функцию.",
   "Video_message": "Видеосообщение",

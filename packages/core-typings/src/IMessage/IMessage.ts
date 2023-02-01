@@ -186,6 +186,8 @@ export interface IMessage extends IRocketChatRecord {
 	};
 }
 
+export type ToolboxMessageType = 'message' | 'thread' | 'federated';
+
 export type MessageSystem = {
 	t: 'system';
 };

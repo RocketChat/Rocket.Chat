@@ -82,28 +82,20 @@ Meteor.startup(function () {
 				return;
 			}
 
-			let fileUploadDate = undefined;
-			if (file.uploadDate != null) {
-				fileUploadDate = file.uploadDate.toUTCString();
-			}
+			const fileUploadDate = file.uploadDate != null ? file.uploadDate.toUTCString() : undefined;
 
 			const reqModifiedHeader = req.headers['if-modified-since'];
-			if (reqModifiedHeader != null) {
-				if (reqModifiedHeader === fileUploadDate) {
-					res.setHeader('Last-Modified', reqModifiedHeader);
-					res.writeHead(304);
-					res.end();
-					return;
-				}
+			if (reqModifiedHeader != null && reqModifiedHeader === fileUploadDate) {
+				res.setHeader('Last-Modified', reqModifiedHeader);
+				res.writeHead(304);
+				res.end();
+				return;
 			}
 
-			res.setHeader('Cache-Control', 'public, max-age=0');
-			res.setHeader('Expires', '-1');
-			if (fileUploadDate != null) {
-				res.setHeader('Last-Modified', fileUploadDate);
-			} else {
-				res.setHeader('Last-Modified', new Date().toUTCString());
-			}
+			res.setHeader('Cache-Control', 'public, max-age=31536000');
+			res.setHeader('Last-Modified', fileUploadDate || new Date().toUTCString());
+			res.setHeader('Content-Length', file.length);
+
 			if (/^svg$/i.test(params.emoji.split('.').pop())) {
 				res.setHeader('Content-Type', 'image/svg+xml');
 			} else if (/^png$/i.test(params.emoji.split('.').pop())) {
@@ -111,7 +103,6 @@ Meteor.startup(function () {
 			} else {
 				res.setHeader('Content-Type', 'image/jpeg');
 			}
-			res.setHeader('Content-Length', file.length);
 
 			file.readStream.pipe(res);
 		}),
