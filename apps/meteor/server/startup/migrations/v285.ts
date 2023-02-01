@@ -7,7 +7,8 @@ addMigration({
 	async up() {
 		// migrate old priority history messages to new sla history messages
 		const legacySlaSysMsgIds = await Messages.find(
-			{ t: 'livechat_priority_history' },
+			// intentionally using any since this is a legacy type which we've removed
+			{ t: 'livechat_priority_history' as any },
 			{
 				projection: {
 					_id: 1,
