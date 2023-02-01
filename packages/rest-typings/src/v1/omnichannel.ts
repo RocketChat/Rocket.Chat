@@ -2797,7 +2797,7 @@ export type OmnichannelEndpoints = {
 			items: ILivechatDepartment[];
 		};
 	};
-	'/v1/livechat/department/:departmentId/agents': {
+	'/v1/livechat/department/:_id/agents': {
 		GET: (params: LivechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: LivechatDepartmentDepartmentIdAgentsPOST) => void;
 	};

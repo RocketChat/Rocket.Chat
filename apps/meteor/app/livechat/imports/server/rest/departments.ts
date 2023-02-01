@@ -239,7 +239,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/department/:departmentId/agents',
+	'livechat/department/:_id/agents',
 	{
 		authRequired: true,
 		permissionsRequired: {
@@ -250,7 +250,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(this.urlParams, {
-				departmentId: String,
+				_id: String,
 			});
 
 			const { offset, count } = this.getPaginationItems();
@@ -258,7 +258,7 @@ API.v1.addRoute(
 
 			const agents = await findDepartmentAgents({
 				userId: this.userId,
-				departmentId: this.urlParams.departmentId,
+				departmentId: this.urlParams._id,
 				pagination: {
 					offset,
 					count,
