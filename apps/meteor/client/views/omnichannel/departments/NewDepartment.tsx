@@ -19,7 +19,7 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 	if (!data || isLoading) {
 		return <PageSkeleton />;
 	}
-	if (data.departmentCreationAvailable === false) {
+	if (data.isDepartmentCreationAvailable === false) {
 		return <UpgradeDepartments />;
 	}
 	// TODO: remove allowedToForwardData and data props once the EditDepartment component is migrated to TS
