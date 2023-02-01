@@ -21,14 +21,6 @@ const UpdateOAuthAppParamsSchema = {
 		active: {
 			type: 'boolean',
 		},
-		clientId: {
-			type: 'string',
-			nullable: true,
-		},
-		clientSecret: {
-			type: 'string',
-			nullable: true,
-		},
 		redirectUri: {
 			type: 'string',
 		},
