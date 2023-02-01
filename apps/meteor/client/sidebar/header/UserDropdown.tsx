@@ -12,10 +12,10 @@ import {
 	RadioButton,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useRoute, useLogout, useSetting, useTranslation, useSetModal, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useLayout, useRoute, useLogout, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { AccountBox } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
@@ -56,15 +56,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const userStatusRoute = useRoute('user-status');
 	const logout = useLogout();
 	const { isMobile } = useLayout();
-
-	const getConnections = useEndpoint('GET', '/v1/presence.getConnections');
-	const [connections, setConnections] = useState<{ current: number; max: number }>();
-
-	useEffect(() => {
-		(async () => setConnections(await getConnections()))();
-	}, [getConnections]);
-
-	const isStatusDisabled = connections && connections.current >= connections.max;
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -129,7 +121,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			</Box>
 			<OptionDivider />
 			<OptionTitle>{t('Status')}</OptionTitle>
-			{isStatusDisabled && (
+			{presenceDisabled && (
 				<Box fontScale='p2' mi='x12' mb='x4'>
 					<Box mbe='x4'>{t('User_status_disabled')}</Box>
 					<Box
@@ -164,7 +156,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					return (
 						<Option
 							key={i}
-							disabled={isStatusDisabled}
+							disabled={presenceDisabled}
 							onClick={(): void => {
 								setStatus(status);
 								onClose();
@@ -179,7 +171,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						</Option>
 					);
 				})}
-			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} disabled={isStatusDisabled}></Option>
+			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} disabled={presenceDisabled}></Option>
 			<OptionDivider />
 
 			<OptionTitle>{t('Theme')}</OptionTitle>

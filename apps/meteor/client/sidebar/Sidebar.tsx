@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState } from 'react';
+import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import React from 'react';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
@@ -12,15 +12,7 @@ const Sidebar = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { isMobile, sidebar } = useLayout();
-
-	const getConnections = useEndpoint('GET', '/v1/presence.getConnections');
-	const [connections, setConnections] = useState<{ current: number; max: number }>();
-
-	useEffect(() => {
-		(async () => setConnections(await getConnections()))();
-	}, [getConnections]);
-
-	const isStatusDisabled = connections && connections.current >= connections.max;
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	const sideBarStyle = css`
 		position: relative;
@@ -104,7 +96,7 @@ const Sidebar = () => {
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
 					<SidebarHeader />
-					{isStatusDisabled && <StatusDisabledSection />}
+					{presenceDisabled && <StatusDisabledSection />}
 					<SidebarRoomList />
 					<SidebarFooter />
 				</Box>
