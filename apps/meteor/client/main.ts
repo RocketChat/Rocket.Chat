@@ -19,4 +19,5 @@ import './startup';
 import './views/admin';
 import './views/account';
 import './views/teams';
+import './views/outlookCalendar';
 import './templates';
