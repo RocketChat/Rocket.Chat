@@ -750,26 +750,36 @@ describe('[Chat]', function () {
 			let imgUrlMsgId;
 
 			before(async () => {
+				await Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]);
+			});
+			after(async () => {
+				await Promise.all([
+					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
+					updateSetting('API_EmbedSafePorts', '80, 443'),
+				]);
+			});
+
+			before(async () => {
 				const ytEmbedMsgPayload = {
 					_id: `id-${Date.now()}`,
 					rid: 'GENERAL',
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
 					emoji: ':smirk:',
 				};
+				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
+				ytEmbedMsgId = ytPostResponse.body.message._id;
+			});
 
+			before(async () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: 'GENERAL',
-					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					msg: 'http://localhost:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
 
-				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
-
 				const imgUrlResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: imgUrlMsgPayload });
 
-				ytEmbedMsgId = ytPostResponse.body.message._id;
-				imgUrlMsgId = imgUrlResponse.body.message._id;
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
@@ -808,7 +818,7 @@ describe('[Chat]', function () {
 						.expect((res) => {
 							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/jpeg');
+							expect(res.body.message.urls[0]).to.have.property('headers').to.have.property('contentType', 'image/png');
 						})
 						.end(done);
 				}, 200);
