@@ -131,14 +131,7 @@ export class FederationRoomServiceListener extends FederationService {
 				return this.handleDMRoomInviteWhenNotifiedByRegularEventsOnly(federatedInviteeUser, federatedInviterUser, externalRoomId);
 			}
 
-			const newFederatedRoom = FederatedRoom.createInstance(
-				externalRoomId,
-				normalizedRoomId,
-				federatedInviterUser,
-				roomType,
-				externalRoomName,
-			);
-
+			const newFederatedRoom = FederatedRoom.createInstance(externalRoomId, normalizedRoomId, federatedInviterUser, roomType);
 			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
 
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);

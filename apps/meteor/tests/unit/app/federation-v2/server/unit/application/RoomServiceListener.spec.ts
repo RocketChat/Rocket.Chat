@@ -473,7 +473,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 				externalRoomName: 'externalRoomName',
 			} as any);
 
-			const createdRoom = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', invitee, RoomType.CHANNEL, 'externalRoomName');
+			const createdRoom = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', invitee, RoomType.CHANNEL);
 
 			expect(roomAdapter.createFederatedRoom.calledWith(createdRoom)).to.be.true;
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
@@ -518,6 +518,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.getRoomHistoricalJoinEvents.resolves([]);
 			const spy = sinon.spy(service, 'onChangeRoomName');
 			await service.onChangeRoomMembership({
 				externalRoomId: 'externalRoomId',
