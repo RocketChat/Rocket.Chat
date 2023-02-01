@@ -6352,16 +6352,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-in-js@npm:~0.31.23-dev.39":
-  version: 0.31.23-dev.39
-  resolution: "@rocket.chat/css-in-js@npm:0.31.23-dev.39"
+"@rocket.chat/css-in-js@npm:~0.31.23-dev.42":
+  version: 0.31.23-dev.42
+  resolution: "@rocket.chat/css-in-js@npm:0.31.23-dev.42"
   dependencies:
     "@emotion/hash": ^0.9.0
-    "@rocket.chat/css-supports": ~0.31.23-dev.39
-    "@rocket.chat/memo": ~0.31.23-dev.39
-    "@rocket.chat/stylis-logical-props-middleware": ~0.31.23-dev.39
+    "@rocket.chat/css-supports": ~0.31.23-dev.42
+    "@rocket.chat/memo": ~0.31.23-dev.42
+    "@rocket.chat/stylis-logical-props-middleware": ~0.31.23-dev.42
     stylis: ~4.1.3
-  checksum: 15ee4bc8a9867f43b8bf9a9ceaf5e547e8ad881e743b7ef454c3e6031b9ab7b98a2b26a1dba6179b9ddf098765f18f4d576146128bb25c43704b950caba88ddf
+  checksum: 9f400f702885a21052a51aa6a26a3299bd9f25f4dad266b5a9c56f1617b0620cbfea50968196a1f39348bafc6a504dfbb81291ee301c7aedfca5b0e85e151f89
   languageName: node
   linkType: hard
 
@@ -6374,12 +6374,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:~0.31.23-dev.39":
-  version: 0.31.23-dev.39
-  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.39"
+"@rocket.chat/css-supports@npm:~0.31.23-dev.42":
+  version: 0.31.23-dev.42
+  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.42"
   dependencies:
-    "@rocket.chat/memo": ~0.31.23-dev.39
-  checksum: bfdd8bedcd15be170a08714406a9b7a752371c6479c1bc332a178320dbdeccf7d72f9392a2fc2cf583cc2caecc03c9cacad0f224e6c72c1b9b1a61479a226ec2
+    "@rocket.chat/memo": ~0.31.23-dev.42
+  checksum: ec624c058d21992d6853a5e934aba18c46231152b23855c447cf2506c55e63b7eb62dc66f6b45f4f5e8c5ac3fccf4d3cefdc9b708fd990a54cd19aa90f0051fe
   languageName: node
   linkType: hard
 
@@ -6566,10 +6566,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.215":
-  version: 0.32.0-dev.215
-  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.215"
-  checksum: a7acef2232258d35ff254a137d190a5da2d1c3a950678f73649572c8d70e15cba141865f9e6cb9a0e9d75f9a053b1c2fbb93834ed718e610d5d5e551a684a110
+"@rocket.chat/fuselage-tokens@npm:~0.32.0-dev.218":
+  version: 0.32.0-dev.218
+  resolution: "@rocket.chat/fuselage-tokens@npm:0.32.0-dev.218"
+  checksum: 0a80caa5b53e44579d9aafba45a8562b5b29aa1338a37947dff48bc9f02dbc69a30e71bc8bc3260bc44f85d895bd631a05a78467ac387ba0dd608cecd0164e94
   languageName: node
   linkType: hard
 
@@ -6629,14 +6629,14 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/fuselage@npm:next":
-  version: 0.32.0-dev.265
-  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.265"
+  version: 0.32.0-dev.268
+  resolution: "@rocket.chat/fuselage@npm:0.32.0-dev.268"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.39
-    "@rocket.chat/css-supports": ~0.31.23-dev.39
-    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.215
-    "@rocket.chat/memo": ~0.31.23-dev.39
-    "@rocket.chat/styled": ~0.31.23-dev.39
+    "@rocket.chat/css-in-js": ~0.31.23-dev.42
+    "@rocket.chat/css-supports": ~0.31.23-dev.42
+    "@rocket.chat/fuselage-tokens": ~0.32.0-dev.218
+    "@rocket.chat/memo": ~0.31.23-dev.42
+    "@rocket.chat/styled": ~0.31.23-dev.42
     invariant: ^2.2.4
     react-aria: ~3.19.0
     react-keyed-flatten-children: ^1.3.0
@@ -6648,7 +6648,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 5697152fd532bf561ee59a0b74c83a091b166fae075e542beeb80de08bf0e08fc5cc7a1ff7d174f65fa5485d4312bce7b22ad0a0e1b94b903031947f1f41b8e9
+  checksum: 5b3cc82a6b1b8e24573620e6ba66feea8769f403e68a079190ad98b5585bda9b51f071614732d54857e5673c61054799c71d78ee769be2d5c80838c01f67fa98
   languageName: node
   linkType: hard
 
@@ -6836,10 +6836,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:~0.31.23-dev.39":
-  version: 0.31.23-dev.39
-  resolution: "@rocket.chat/memo@npm:0.31.23-dev.39"
-  checksum: 5e6e4af04905c8ca7a9126a08d5d1532f161f595c7e41633b8288fa8e5e7a9212bdcb0740d5b62f41cb90c878894b7190ff19a2e22bc4bce6ab37bb56cbc4b0f
+"@rocket.chat/memo@npm:~0.31.23-dev.42":
+  version: 0.31.23-dev.42
+  resolution: "@rocket.chat/memo@npm:0.31.23-dev.42"
+  checksum: eafa52eb00d0d4a41069beb312109aa897b3c66b9cf0ce2bb4316f3229c155a56f8eaa6739bafba88487f034a9730185f223b8d2b1794b70418e1dd11f76de93
   languageName: node
   linkType: hard
 
@@ -7401,13 +7401,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:~0.31.23-dev.39":
-  version: 0.31.23-dev.39
-  resolution: "@rocket.chat/styled@npm:0.31.23-dev.39"
+"@rocket.chat/styled@npm:~0.31.23-dev.42":
+  version: 0.31.23-dev.42
+  resolution: "@rocket.chat/styled@npm:0.31.23-dev.42"
   dependencies:
-    "@rocket.chat/css-in-js": ~0.31.23-dev.39
+    "@rocket.chat/css-in-js": ~0.31.23-dev.42
     tslib: ^2.3.1
-  checksum: b88b7c6c420fb41a39c5f1c07305aa7efd1c5337af88726e53db768ef5b411bf7a2683333135cf77cb7be79e7b1cb443cb3ca17aa6cfe154826469f11aa1a551
+  checksum: a88e0eeef57fe3eb0b7f4c63fb63f304cc6af6b0b716c54e2b1825dbd7237a6bb1cc074ad0ecb20bbd232f3a401efb4b8886f960dde115bc72a3637aa6b69e52
   languageName: node
   linkType: hard
 
@@ -7423,15 +7423,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.23-dev.39":
-  version: 0.31.23-dev.39
-  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.39"
+"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.23-dev.42":
+  version: 0.31.23-dev.42
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.42"
   dependencies:
-    "@rocket.chat/css-supports": ~0.31.23-dev.39
+    "@rocket.chat/css-supports": ~0.31.23-dev.42
     tslib: ^2.3.1
   peerDependencies:
     stylis: 4.0.10
-  checksum: 955942b422fcc5370e4fab3ec5274c4425c29a96108b26737d4dbb4427ec0f3eff341bae8a1b2bf7775482eb9bfc1ce4fba69f56eaf7f9b0a013ba5b21f29025
+  checksum: f43344c293ccf76a91285eb889a6b2d3fc295bb95740e2072d381754aa17017c22f12e3fa5f35304cc9e9b6487242388d3d47f2dfd4d1cbb5f4c370f170a9424
   languageName: node
   linkType: hard
 
