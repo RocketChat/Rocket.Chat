@@ -34,6 +34,7 @@
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
 		"test:e2e": "playwright test",
+		"test:e2e:federation": "playwright test --config=playwright-federation.config.ts",
 		"test:e2e:nyc": "nyc report --reporter=text-summary --reporter=lcov",
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testunit": "npm run .testunit:definition && npm run .testunit:client && npm run .testunit:server",
