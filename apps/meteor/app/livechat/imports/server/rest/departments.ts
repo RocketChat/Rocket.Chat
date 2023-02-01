@@ -186,9 +186,7 @@ API.v1.addRoute(
 	'livechat/department/:_id/archive',
 	{
 		authRequired: true,
-		permissionsRequired: {
-			POST: { permissions: ['manage-livechat-departments'] },
-		},
+		permissionsRequired: ['manage-livechat-departments'],
 	},
 	{
 		async post() {
@@ -205,9 +203,7 @@ API.v1.addRoute(
 	'livechat/department/:_id/unarchive',
 	{
 		authRequired: true,
-		permissionsRequired: {
-			POST: { permissions: ['manage-livechat-departments'], operation: 'hasAny' },
-		},
+		permissionsRequired: ['manage-livechat-departments'],
 	},
 	{
 		async post() {
