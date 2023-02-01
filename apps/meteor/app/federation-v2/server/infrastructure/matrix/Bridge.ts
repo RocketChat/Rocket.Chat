@@ -5,7 +5,7 @@ import { fetch } from '../../../../../server/lib/http/fetch';
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/MessageTextParser';
-import { convertEmojisRCFormatToMatrixFormat } from './converters/MessageReceiver';
+import { convertEmojisFromRCFormatToMatrixFormat } from './converters/MessageReceiver';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import { MatrixEventType } from './definitions/MatrixEventType';
@@ -241,7 +241,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	private escapeEmojis(text: string): string {
-		return convertEmojisRCFormatToMatrixFormat(text);
+		return convertEmojisFromRCFormatToMatrixFormat(text);
 	}
 
 	public async getReadStreamForFileFromUrl(externalUserId: string, fileUrl: string): Promise<ReadableStream> {
@@ -307,7 +307,7 @@ export class MatrixBridge implements IFederationBridge {
 			.matrixClient.sendEvent(externalRoomId, MatrixEventType.MESSAGE_REACTED, {
 				'm.relates_to': {
 					event_id: externalEventId,
-					key: convertEmojisRCFormatToMatrixFormat(reaction),
+					key: convertEmojisFromRCFormatToMatrixFormat(reaction),
 					rel_type: 'm.annotation',
 				},
 			});
@@ -330,7 +330,7 @@ export class MatrixBridge implements IFederationBridge {
 			'format': 'org.matrix.custom.html',
 			'formatted_body': messageInExternalFormat,
 			'm.new_content': {
-				body: messageInExternalFormat,
+				body: newMessageText,
 				format: 'org.matrix.custom.html',
 				formatted_body: messageInExternalFormat,
 				msgtype: MatrixEnumSendMessageType.TEXT,

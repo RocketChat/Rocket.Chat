@@ -1,5 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
 import { FederatedUser } from '../domain/FederatedUser';
@@ -41,49 +40,18 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onCreateRoom(roomCreateInput: FederationRoomCreateInputDto): Promise<void> {
-		const {
-			externalRoomId,
-			externalInviterId,
-			normalizedInviterId,
-			externalRoomName,
-			normalizedRoomId,
-			roomType,
-			wasInternallyProgramaticallyCreated = false,
-			internalRoomId = '',
-		} = roomCreateInput;
-
+		const { externalRoomId, wasInternallyProgramaticallyCreated = false, internalRoomId = '' } = roomCreateInput;
 		if (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId)) {
 			return;
 		}
-		if (wasInternallyProgramaticallyCreated) {
-			const room = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
-			if (!room || !isDirectMessageRoom(room)) {
-				return;
-			}
-			await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
+		if (!wasInternallyProgramaticallyCreated) {
 			return;
 		}
-
-		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId);
-		if (!creatorUser) {
-			await this.createFederatedUserInternallyOnly(externalInviterId, normalizedInviterId);
+		const room = await this.internalRoomAdapter.getInternalRoomById(internalRoomId);
+		if (!room || !isDirectMessageRoom(room)) {
+			return;
 		}
-		const creator = creatorUser || (await this.internalUserAdapter.getFederatedUserByExternalId(externalInviterId));
-		if (!creator) {
-			throw new Error('Creator user not found');
-		}
-		const newFederatedRoom = FederatedRoom.createInstance(
-			externalRoomId,
-			normalizedRoomId,
-			creator,
-			roomType || RoomType.CHANNEL,
-			externalRoomName,
-		);
-		const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
-		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-			createdInternalRoomId,
-			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-		);
+		await this.internalRoomAdapter.updateFederatedRoomByInternalRoomId(internalRoomId, externalRoomId);
 	}
 
 	public async onChangeRoomMembership(roomChangeMembershipInput: FederationRoomChangeMembershipDto): Promise<void> {
@@ -92,7 +60,6 @@ export class FederationRoomServiceListener extends FederationService {
 			normalizedInviteeId,
 			normalizedRoomId,
 			normalizedInviterId,
-			externalRoomName,
 			externalInviteeId,
 			externalInviterId,
 			inviteeUsernameOnly,
@@ -102,6 +69,8 @@ export class FederationRoomServiceListener extends FederationService {
 			leave,
 			userProfile,
 			allInviteesExternalIdsWhenDM,
+			externalRoomName,
+			externalEventId,
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
@@ -173,6 +142,15 @@ export class FederationRoomServiceListener extends FederationService {
 			const createdInternalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
 
 			await this.bridge.joinRoom(externalRoomId, externalInviteeId);
+			if (externalRoomName) {
+				await this.onChangeRoomName({
+					externalRoomId,
+					normalizedRoomName: externalRoomName,
+					externalEventId,
+					externalSenderId: externalInviterId,
+					normalizedRoomId,
+				});
+			}
 			await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
 				createdInternalRoomId,
 				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
@@ -306,8 +284,8 @@ export class FederationRoomServiceListener extends FederationService {
 	}
 
 	public async onExternalMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, messageText, externalEventId, replyToEventId } = roomReceiveExternalMessageInput;
-
+		const { externalRoomId, externalSenderId, rawMessage, externalFormattedText, externalEventId, replyToEventId } =
+			roomReceiveExternalMessageInput;
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
 			return;
@@ -330,7 +308,8 @@ export class FederationRoomServiceListener extends FederationService {
 			await this.internalMessageAdapter.sendQuoteMessage(
 				senderUser,
 				federatedRoom,
-				messageText,
+				externalFormattedText,
+				rawMessage,
 				externalEventId,
 				messageToReplyTo,
 				this.internalHomeServerDomain,
@@ -338,11 +317,18 @@ export class FederationRoomServiceListener extends FederationService {
 			return;
 		}
 
-		await this.internalMessageAdapter.sendMessage(senderUser, federatedRoom, messageText, externalEventId);
+		await this.internalMessageAdapter.sendMessage(
+			senderUser,
+			federatedRoom,
+			rawMessage,
+			externalFormattedText,
+			externalEventId,
+			this.internalHomeServerDomain,
+		);
 	}
 
 	public async onExternalMessageEditedReceived(roomEditExternalMessageInput: FederationRoomEditExternalMessageDto): Promise<void> {
-		const { externalRoomId, externalSenderId, editsEvent, newMessageText } = roomEditExternalMessageInput;
+		const { externalRoomId, externalSenderId, editsEvent, newExternalFormattedText, newRawMessage } = roomEditExternalMessageInput;
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
@@ -358,12 +344,46 @@ export class FederationRoomServiceListener extends FederationService {
 		if (!message) {
 			return;
 		}
-		// TODO: create an entity to abstract all the message logic
-		if (!FederatedRoom.shouldUpdateMessage(newMessageText, message)) {
+
+		// TODO: leaked business logic, move this to its proper place
+		const isAQuotedMessage = message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link));
+		if (isAQuotedMessage) {
+			const wasGeneratedLocally = FederatedUser.isOriginalFromTheProxyServer(
+				this.bridge.extractHomeserverOrigin(externalSenderId),
+				this.internalHomeServerDomain,
+			);
+			if (wasGeneratedLocally) {
+				return;
+			}
+			const internalFormattedMessageToBeEdited = await this.internalMessageAdapter.getMessageToEditWhenReplyAndQuote(
+				message,
+				newExternalFormattedText,
+				newRawMessage,
+				this.internalHomeServerDomain,
+			);
+			// TODO: create an entity to abstract all the message logic
+			if (!FederatedRoom.shouldUpdateMessage(internalFormattedMessageToBeEdited, message)) {
+				return;
+			}
+			await this.internalMessageAdapter.editQuotedMessage(
+				senderUser,
+				newRawMessage,
+				newExternalFormattedText,
+				message,
+				this.internalHomeServerDomain,
+			);
 			return;
 		}
-
-		await this.internalMessageAdapter.editMessage(senderUser, newMessageText, message);
+		if (!FederatedRoom.shouldUpdateMessage(newRawMessage, message)) {
+			return;
+		}
+		await this.internalMessageAdapter.editMessage(
+			senderUser,
+			newRawMessage,
+			newExternalFormattedText,
+			message,
+			this.internalHomeServerDomain,
+		);
 	}
 
 	public async onExternalFileMessageReceived(roomReceiveExternalMessageInput: FederationRoomReceiveExternalFileMessageDto): Promise<void> {
@@ -436,13 +456,8 @@ export class FederationRoomServiceListener extends FederationService {
 
 	public async onChangeRoomName(roomChangeNameInput: FederationRoomChangeNameDto): Promise<void> {
 		const { externalRoomId, normalizedRoomName, externalSenderId } = roomChangeNameInput;
-
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (!federatedRoom) {
-			return;
-		}
-
-		if (!federatedRoom.shouldUpdateRoomName(normalizedRoomName)) {
 			return;
 		}
 
@@ -450,10 +465,21 @@ export class FederationRoomServiceListener extends FederationService {
 		if (!federatedUser) {
 			return;
 		}
+		const shouldUseExternalRoomIdAsRoomName = !FederatedRoom.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(externalRoomId),
+			this.internalHomeServerDomain,
+		);
+		if (shouldUseExternalRoomIdAsRoomName) {
+			federatedRoom.changeRoomName(externalRoomId);
+			await this.internalRoomAdapter.updateRoomName(federatedRoom);
+		}
+		if (!federatedRoom.shouldUpdateDisplayRoomName(normalizedRoomName)) {
+			return;
+		}
 
-		federatedRoom.changeRoomName(normalizedRoomName);
+		federatedRoom.changeDisplayRoomName(normalizedRoomName);
 
-		await this.internalRoomAdapter.updateRoomName(federatedRoom, federatedUser);
+		await this.internalRoomAdapter.updateDisplayRoomName(federatedRoom, federatedUser);
 	}
 
 	public async onChangeRoomTopic(roomChangeTopicInput: FederationRoomChangeTopicDto): Promise<void> {

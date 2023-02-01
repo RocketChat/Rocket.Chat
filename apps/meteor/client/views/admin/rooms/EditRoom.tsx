@@ -1,4 +1,5 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -210,7 +211,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 		<VerticalBar.ScrollableContent is='form' onSubmit={useMutableCallback((e) => e.preventDefault())}>
 			{room.t !== 'd' && (
 				<Box pbe='x24' display='flex' justifyContent='center'>
-					<RoomAvatarEditor roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
+					<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={roomAvatar} room={room} onChangeAvatar={handleRoomAvatar} />
 				</Box>
 			)}
 			<Field>
@@ -233,7 +234,13 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleting} value={roomDescription} onChange={handleRoomDescription} flexGrow={1} />
+								<TextAreaInput
+									rows={4}
+									disabled={deleting || isRoomFederated(room)}
+									value={roomDescription}
+									onChange={handleRoomDescription}
+									flexGrow={1}
+								/>
 							</Field.Row>
 						</Field>
 					)}
@@ -241,7 +248,13 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 						<Field>
 							<Field.Label>{t('Announcement')}</Field.Label>
 							<Field.Row>
-								<TextAreaInput rows={4} disabled={deleting} value={roomAnnouncement} onChange={handleRoomAnnouncement} flexGrow={1} />
+								<TextAreaInput
+									rows={4}
+									disabled={deleting || isRoomFederated(room)}
+									value={roomAnnouncement}
+									onChange={handleRoomAnnouncement}
+									flexGrow={1}
+								/>
 							</Field.Row>
 						</Field>
 					)}
@@ -258,7 +271,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('Private')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch disabled={deleting} checked={roomType === 'p'} onChange={changeRoomType} />
+									<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={roomType === 'p'} onChange={changeRoomType} />
 								</Field.Row>
 							</Box>
 							<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
@@ -269,7 +282,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('Read_only')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch disabled={deleting} checked={readOnly} onChange={handleReadOnly} />
+									<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={readOnly} onChange={handleReadOnly} />
 								</Field.Row>
 							</Box>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -280,7 +293,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('React_when_read_only')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly} />
+									<ToggleSwitch checked={reactWhenReadOnly || isRoomFederated(room)} onChange={handleReactWhenReadOnly} />
 								</Field.Row>
 							</Box>
 							<Field.Hint>{t('React_when_read_only_changed_successfully')}</Field.Hint>
@@ -291,7 +304,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch disabled={deleting} checked={archived} onChange={handleArchived} />
+									<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={archived} onChange={handleArchived} />
 								</Field.Row>
 							</Box>
 						</Field>
@@ -302,7 +315,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 					<Field.Label>{t('Default')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch disabled={deleting} checked={isDefault} onChange={handleIsDefault} />
+						<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={isDefault} onChange={handleIsDefault} />
 					</Field.Row>
 				</Box>
 			</Field>
@@ -318,7 +331,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 				<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 					<Field.Label>{t('Featured')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch disabled={deleting} checked={featured} onChange={handleFeatured} />
+						<ToggleSwitch disabled={deleting || isRoomFederated(room)} checked={featured} onChange={handleFeatured} />
 					</Field.Row>
 				</Box>
 			</Field>
@@ -338,7 +351,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 			</Field>
 			<Field>
 				<Field.Row>
-					<Button flexGrow={1} danger disabled={deleting || !canDelete} onClick={handleDelete}>
+					<Button flexGrow={1} danger disabled={deleting || !canDelete || isRoomFederated(room)} onClick={handleDelete}>
 						<Icon name='trash' size='x16' />
 						{t('Delete')}
 					</Button>

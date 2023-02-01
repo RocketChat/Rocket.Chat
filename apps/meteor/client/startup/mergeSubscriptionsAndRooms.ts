@@ -62,7 +62,6 @@ const mergeSubRoom = (subscription: ISubscription): SubscriptionWithRoom => {
 	};
 
 	const room = (Rooms as Mongo.Collection<IRoom>).findOne({ _id: subscription.rid }, options);
-
 	const lastRoomUpdate = room?.lm || subscription.ts || subscription._updatedAt;
 
 	return {
