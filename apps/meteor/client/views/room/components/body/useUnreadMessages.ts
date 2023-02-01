@@ -7,10 +7,12 @@ import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 interface IUnreadMessages {
 	count: number;
-	since?: Date;
+	since: Date;
 }
 
-export const useUnreadMessages = (room: IRoom): readonly [data: IUnreadMessages, setUnreadCount: Dispatch<SetStateAction<number>>] => {
+export const useUnreadMessages = (
+	room: IRoom,
+): readonly [data: IUnreadMessages | undefined, setUnreadCount: Dispatch<SetStateAction<number>>] => {
 	const notLoadedCount = useReactiveValue(useCallback(() => RoomHistoryManager.getRoom(room._id).unreadNotLoaded.get(), [room._id]));
 	const [loadedCount, setLoadedCount] = useState(0);
 
@@ -23,6 +25,6 @@ export const useUnreadMessages = (room: IRoom): readonly [data: IUnreadMessages,
 			return [{ count, since }, setLoadedCount];
 		}
 
-		return [{ count: loadedCount, since: undefined }, setLoadedCount];
-	}, [count, loadedCount, since]);
+		return [undefined, setLoadedCount];
+	}, [count, since]);
 };

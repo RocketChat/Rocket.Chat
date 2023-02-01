@@ -299,7 +299,7 @@ const RoomBody = (): ReactElement => {
 
 	useEffect(() => {
 		if (!subscribed) {
-			setUnreadCount(0);
+			// setUnreadCount(0);
 			// console.log(`Não inscrito`);
 			return;
 		}
@@ -309,27 +309,25 @@ const RoomBody = (): ReactElement => {
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		setUnreadCount(count);
+		count && setUnreadCount(count);
 		// console.log(`Contador de mensagens: ${count}`);
-		// console.log(`Mudando: ${lastMessageDate}`);
-		// console.log(`igual: ${room._id} ${room._id} ${room._id}`)
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
 		if (!unread?.count) {
 			return debouncedReadMessageRead();
 		}
-		readMessage.refreshUnreadMark(room._id);
+		// readMessage.refreshUnreadMark(room._id);
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
 
-	useEffect(() => {
-		const handleReadMessage = (): void => setUnreadCount(0);
-		readMessage.on(room._id, handleReadMessage);
+	// useEffect(() => {
+	// 	const handleReadMessage = (): void => console.log(0);
+	// 	readMessage.on(room._id, handleReadMessage);
 
-		return () => {
-			readMessage.off(room._id, handleReadMessage);
-		};
-	}, [room._id, setUnreadCount]);
+	// 	return () => {
+	// 		readMessage.off(room._id, handleReadMessage);
+	// 	};
+	// }, [room._id, setUnreadCount]);
 
 	useLegacyMessageEvents({
 		messageListRef: {
@@ -386,12 +384,10 @@ const RoomBody = (): ReactElement => {
 				const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 				if (!lastMessage) {
 					setUnreadCount(0);
-					// console.log('maldito');
 					return;
 				}
 
 				setLastMessageDate(lastMessage.ts);
-				console.log(`Última mensagem: ${lastMessage.ts}`);
 			});
 		});
 
@@ -554,14 +550,15 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
-								{unread?.since ? (
+								{unread && (
 									<UnreadMessagesIndicator
 										count={unread.count}
 										since={unread.since}
 										onJumpButtonClick={handleUnreadBarJumpToButtonClick}
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
-								) : null}
+								)}
+
 								{uploads.map((upload) => (
 									<UploadProgressIndicator
 										key={upload.id}
