@@ -1,5 +1,6 @@
-export interface IInstanceStatus {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IInstanceStatus extends IRocketChatRecord {
 	extraInformation?: {
 		port?: number;
 	};
