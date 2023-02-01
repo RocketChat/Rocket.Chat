@@ -16,7 +16,7 @@ const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentP
 
 	return (
 		<>
-			{items.map(({ href, pathSection, i18nLabel, name, icon, permissionGranted, pathGroup, tag, divider, textColor, externalUrl }) => (
+			{items.map(({ href, pathSection, i18nLabel, name, icon, permissionGranted, pathGroup, tag, divider, externalUrl }) => (
 				<Box key={i18nLabel || name}>
 					{divider && (
 						<Box mi='24px'>
@@ -31,7 +31,6 @@ const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentP
 						label={t((i18nLabel || name) as Parameters<typeof t>[0])}
 						currentPath={currentPath}
 						tag={t.has(tag as Parameters<typeof t>[0]) ? t(tag as Parameters<typeof t>[0]) : undefined}
-						textColor={textColor}
 						externalUrl={externalUrl}
 					/>
 				</Box>

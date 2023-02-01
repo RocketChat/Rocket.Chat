@@ -10,7 +10,6 @@ export type SidebarItem = {
 	pathGroup?: string;
 	name?: string;
 	divider?: boolean;
-	textColor?: 'stroke-dark' | 'stroke-extra-dark';
 	externalUrl?: boolean;
 };
 
