@@ -127,7 +127,7 @@ export const createRoom = function <T extends RoomType>(
 	} else {
 		for (const username of [...new Set(members as string[])]) {
 			const member = Users.findOneByUsername(username, {
-				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
 			});
 			if (!member) {
 				continue;
@@ -135,6 +135,7 @@ export const createRoom = function <T extends RoomType>(
 
 			try {
 				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+				callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 			} catch (error) {
 				continue;
 			}

@@ -1975,6 +1975,7 @@ describe('Meteor.methods', function () {
 		});
 		after(async () => {
 			await deleteUser(user);
+			await deleteUser(guestUser);
 			user = undefined;
 		});
 
