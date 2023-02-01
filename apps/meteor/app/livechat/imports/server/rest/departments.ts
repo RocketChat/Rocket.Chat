@@ -207,10 +207,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}

@@ -525,4 +525,42 @@ describe('LIVECHAT - Departments', function () {
 				});
 		});
 	});
+
+	describe('Department archivation', () => {
+		let departmentForTest: ILivechatDepartment;
+		it('should fail if user is not logged in', async () => {
+			await request.post(api('livechat/department/123/archive')).expect(401);
+		});
+		it('should fail if user doesnt have manage-livechat-departments permission', async () => {
+			await updatePermission('manage-livechat-departments', []);
+			await request.post(api('livechat/department/123/archive')).set(credentials).expect(403);
+		});
+		it('should fail if departmentId is not valid', async () => {
+			await updatePermission('manage-livechat-departments', ['admin']);
+			await request.post(api('livechat/department/123/archive')).set(credentials).expect(400);
+		});
+		it('should archive a department', async () => {
+			await updatePermission('manage-livechat-departments', ['admin']);
+			const department = await createDepartment();
+			await request
+				.post(api(`livechat/department/${department._id}/archive`))
+				.set(credentials)
+				.expect(200);
+			departmentForTest = department;
+		});
+		it('should return a list of archived departments', async () => {
+			const { body } = await request.get(api('livechat/departments/archived')).set(credentials).expect(200);
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('departments');
+			expect(body.departments).to.be.an('array');
+			expect(body.departments[0]).to.have.property('_id', departmentForTest._id);
+			expect(body.departments.length).to.be.equal(1);
+		});
+		it('should unarchive a department', async () => {
+			await request
+				.post(api(`livechat/department/${departmentForTest._id}/unarchive`))
+				.set(credentials)
+				.expect(200);
+		});
+	});
 });

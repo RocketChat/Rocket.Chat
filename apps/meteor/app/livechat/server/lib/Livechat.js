@@ -1099,10 +1099,10 @@ export const Livechat = {
 		return ret;
 	},
 
-	unarchiveDepartment(_id) {
+	async unarchiveDepartment(_id) {
 		check(_id, String);
 
-		const department = LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', {
@@ -1113,10 +1113,10 @@ export const Livechat = {
 		return LivechatDepartmentRaw.unarchiveDepartment(_id);
 	},
 
-	archiveDepartment(_id) {
+	async archiveDepartment(_id) {
 		check(_id, String);
 
-		const department = LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', {

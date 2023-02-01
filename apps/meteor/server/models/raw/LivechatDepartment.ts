@@ -116,10 +116,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 	}
 
 	unarchiveDepartment(_id: string): Promise<Document | UpdateResult> {
-		return this.updateOne({ _id }, { $set: { archived: true } });
+		return this.updateOne({ _id }, { $set: { archived: false } });
 	}
 
 	archiveDepartment(_id: string): Promise<Document | UpdateResult> {
-		return this.updateOne({ _id }, { $set: { archived: false } });
+		return this.updateOne({ _id }, { $set: { archived: true } });
 	}
 }
