@@ -3,13 +3,9 @@ import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import {
-	useOpenEmojiPicker,
-	useReactionsFilter,
-	useReactToMessage,
-	useUserHasReacted,
-} from '../../../views/room/MessageList/contexts/MessageListContext';
+import { useOpenEmojiPicker, useReactionsFilter, useUserHasReacted } from '../list/MessageListContext';
 import Reaction from './reactions/Reaction';
+import { useToggleReactionMutation } from './reactions/useToggleReactionMutation';
 
 type ReactionsProps = {
 	message: IMessage;
@@ -17,9 +13,10 @@ type ReactionsProps = {
 
 const Reactions = ({ message }: ReactionsProps): ReactElement => {
 	const hasReacted = useUserHasReacted(message);
-	const reactToMessage = useReactToMessage(message);
 	const filterReactions = useReactionsFilter(message);
 	const openEmojiPicker = useOpenEmojiPicker(message);
+
+	const toggleReactionMutation = useToggleReactionMutation();
 
 	return (
 		<MessageReactions>
@@ -29,9 +26,9 @@ const Reactions = ({ message }: ReactionsProps): ReactElement => {
 						key={name}
 						counter={reactions.usernames.length}
 						hasReacted={hasReacted}
-						reactToMessage={reactToMessage}
 						name={name}
 						names={filterReactions(name)}
+						onClick={() => toggleReactionMutation.mutate({ mid: message._id, reaction: name })}
 					/>
 				))}
 			<MessageReactionAction onClick={openEmojiPicker} />
