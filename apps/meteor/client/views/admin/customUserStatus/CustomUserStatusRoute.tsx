@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, ProgressBar } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -16,6 +16,14 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
+
+	const getConnections = useEndpoint('GET', '/v1/presence.getConnections');
+	const [connections, setConnections] = useState<{ current: number; max: number }>();
+	const percentage = connections ? (connections?.current / connections?.max) * 100 : 0;
+
+	useEffect(() => {
+		(async () => setConnections(await getConnections()))();
+	}, [getConnections]);
 
 	const handleItemClick = (id: string): void => {
 		route.push({
@@ -53,9 +61,11 @@ const CustomUserStatusRoute = (): ReactElement => {
 					<Box w='x180' h='x40' mi='x8' fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around'>
 						<Box display='flex' justifyContent='space-between'>
 							<Box color='default'>{t('Active_connections')}</Box>
-							<Box color='hint'>100/200</Box>
+							<Box color='hint'>
+								{connections?.current}/{connections?.max}
+							</Box>
 						</Box>
-						<ProgressBar percentage={50} variant='success' />
+						<ProgressBar percentage={percentage} variant={percentage < 80 ? 'success' : 'danger'} />
 					</Box>
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
@@ -74,7 +84,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 						{context === 'presence-service' && t('Presence_service_cap')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'presence-service' && <CustomUserStatusService usage={120} total={100} />}
+					{context === 'presence-service' && <CustomUserStatusService connections={connections} />}
 					{(context === 'new' || context === 'edit') && (
 						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
 					)}

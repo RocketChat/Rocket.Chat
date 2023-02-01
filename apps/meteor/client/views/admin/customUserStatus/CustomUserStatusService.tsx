@@ -4,9 +4,15 @@ import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 
-const CustomUserStatusService = ({ usage, total }: { usage: number; total: number }) => {
+const CustomUserStatusService = ({ connections }: { connections: { current: number; max: number } | undefined }) => {
 	const t = useTranslation();
-	const percentage = (usage / total) * 100;
+
+	if (!connections) {
+		return null;
+	}
+
+	const { current, max } = connections;
+	const percentage = (current / max) * 100;
 
 	return (
 		<>
@@ -19,7 +25,7 @@ const CustomUserStatusService = ({ usage, total }: { usage: number; total: numbe
 					<Box display='flex' fontScale='c1' justifyContent='space-between' mb='x16'>
 						<Box>{t('Active_connections')}</Box>
 						<Box>
-							{usage}/{total}
+							{current}/{max}
 						</Box>
 					</Box>
 					<ProgressBar percentage={percentage} variant='success' />

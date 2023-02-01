@@ -16,7 +16,7 @@ const StatusDisabledSection = () => {
 	});
 
 	return (
-		<Box h='x100' bg='hover' color='pure-white' p='x16' display='flex' alignItems='center'>
+		<Box h='x100' bg='hover' color='pure-white' p='x16' display='flex' alignItems='center' justifyContent='space-between'>
 			<Box>
 				<Box fontScale='h5'>{t('User_status_temporarily_disabled')}</Box>
 				<Box
