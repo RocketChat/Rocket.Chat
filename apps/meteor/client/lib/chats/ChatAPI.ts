@@ -46,6 +46,9 @@ export type ComposerAPI = {
 	setRecordingMode(recording: boolean): void;
 	readonly recording: Subscribable<boolean>;
 
+	setRecordingVideo(recording: boolean): void;
+	readonly recordingVideo: Subscribable<boolean>;
+
 	readonly formatters: Subscribable<FormattingButton[]>;
 };
 
