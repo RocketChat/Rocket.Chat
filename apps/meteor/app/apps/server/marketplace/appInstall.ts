@@ -7,15 +7,11 @@ import { Info } from '../../../utils/server';
 export type installAction = 'install' | 'update' | 'uninstall';
 
 export async function notifyAppInstall(marketplaceBaseUrl: string, action: installAction, appInfo: IAppInfo): Promise<void> {
-	let headers = {
-		Authorization: '',
-	};
+	const headers: { Authorization?: string } = {};
 
 	try {
 		const token = await getWorkspaceAccessToken();
-		headers = {
-			Authorization: `Bearer ${token}`,
-		};
+		headers.Authorization = `Bearer ${token}`;
 
 		// eslint-disable-next-line no-empty
 	} catch {}
