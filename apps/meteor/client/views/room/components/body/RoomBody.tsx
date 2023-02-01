@@ -312,6 +312,7 @@ const RoomBody = (): ReactElement => {
 		setUnreadCount(count);
 		// console.log(`Contador de mensagens: ${count}`);
 		// console.log(`Mudando: ${lastMessageDate}`);
+		// console.log(`igual: ${room._id} ${room._id} ${room._id}`)
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
@@ -385,11 +386,12 @@ const RoomBody = (): ReactElement => {
 				const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 				if (!lastMessage) {
 					setUnreadCount(0);
+					// console.log('maldito');
 					return;
 				}
 
 				setLastMessageDate(lastMessage.ts);
-				// console.log(`Última mensagem: ${lastMessage.ts}`);
+				console.log(`Última mensagem: ${lastMessage.ts}`);
 			});
 		});
 
@@ -552,7 +554,7 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
-								{unread ? (
+								{unread?.since ? (
 									<UnreadMessagesIndicator
 										count={unread.count}
 										since={unread.since}
