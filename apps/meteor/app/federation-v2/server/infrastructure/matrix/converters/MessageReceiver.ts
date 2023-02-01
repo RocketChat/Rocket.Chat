@@ -5,7 +5,7 @@ import { FederationMessageReactionEventDto } from '../../../application/input/Me
 import { convertExternalRoomIdToInternalRoomIdFormat } from './RoomReceiver';
 
 const convertEmojisMatrixFormatToRCFormat = (emoji: string): string => emojione.toShort(emoji);
-export const convertEmojisRCFormatToMatrixFormat = (emoji: string): string => emojione.shortnameToUnicode(emoji);
+export const convertEmojisFromRCFormatToMatrixFormat = (emoji: string): string => emojione.shortnameToUnicode(emoji);
 
 export class MatrixMessageReceiverConverter {
 	public static toMessageReactionDto(externalEvent: MatrixEventMessageReact): FederationMessageReactionEventDto {

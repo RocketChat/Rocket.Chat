@@ -81,7 +81,13 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{
+					$and: [
+						{
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+						},
+					],
+				},
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -131,7 +137,13 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{
+					$and: [
+						{
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+						},
+					],
+				},
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -258,6 +270,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.find(query, options);
@@ -290,6 +303,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.findPaginated(query, options);
@@ -309,6 +323,7 @@ export class RoomsRaw extends BaseRaw {
 				$in: groupsToAccept,
 			},
 			name: nameRegex,
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 		return this.find(query, options);
 	}
@@ -533,8 +548,20 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
-	setRoomNameById(roomId, name, fname) {
-		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
+	setRoomNameById(roomId, name) {
+		return this.updateOne({ _id: roomId }, { $set: { name } });
+	}
+
+	setFnameById(_id, fname) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	setRoomTopicById(roomId, topic) {

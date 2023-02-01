@@ -61,13 +61,14 @@ export class FederationFactory {
 		return new InMemoryQueue();
 	}
 
-	public static buildRoomServiceReceiver(
+	public static buildRoomServiceListener(
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		rocketNotificationAdapter: RocketChatNotificationAdapter,
+		federationQueueInstance: InMemoryQueue,
 		bridge: IFederationBridge,
 	): FederationRoomServiceListener {
 		return new FederationRoomServiceListener(
@@ -77,6 +78,7 @@ export class FederationFactory {
 			rocketFileAdapter,
 			rocketSettingsAdapter,
 			rocketNotificationAdapter,
+			federationQueueInstance,
 			bridge,
 		);
 	}
@@ -199,7 +201,7 @@ export class FederationFactory {
 		return [
 			new MatrixRoomCreatedHandler(roomServiceReceiver),
 			new MatrixRoomMembershipChangedHandler(roomServiceReceiver, rocketSettingsAdapter),
-			new MatrixRoomMessageSentHandler(roomServiceReceiver, rocketSettingsAdapter),
+			new MatrixRoomMessageSentHandler(roomServiceReceiver),
 			new MatrixRoomJoinRulesChangedHandler(roomServiceReceiver),
 			new MatrixRoomNameChangedHandler(roomServiceReceiver),
 			new MatrixRoomTopicChangedHandler(roomServiceReceiver),
