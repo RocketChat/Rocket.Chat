@@ -8,7 +8,7 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { makeAgentAvailable, createAgent, createDepartment, deleteDepartment } from '../../../data/livechat/rooms';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - Departments', function () {
+(IS_EE ? describe : describe.skip)('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
 
 	before((done) => {
@@ -241,7 +241,7 @@ describe('LIVECHAT - Departments', function () {
 			expect(response.body.items[0]).to.have.property('name');
 			await deleteDepartment(department._id);
 		});
-		(IS_EE ? it : it.skip)('should return a list of departments excluding the ids on selector.exceptions', (done) => {
+		it('should return a list of departments excluding the ids on selector.exceptions', (done) => {
 			let dep1: ILivechatDepartment;
 
 			updatePermission('view-livechat-departments', ['admin'])
