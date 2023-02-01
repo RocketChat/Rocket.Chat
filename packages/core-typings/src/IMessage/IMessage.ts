@@ -48,7 +48,6 @@ type TeamMessageTypes =
 type LivechatMessageTypes =
 	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
-	| 'livechat_priority_history' // This is the legacy system message that is used to display the priority history of a chat before OLD Livechat Priority was changed to SLA. DO NOT use it for new features.
 	| 'omnichannel_priority_change_history'
 	| 'omnichannel_sla_change_history'
 	| 'livechat_transcript_history'
