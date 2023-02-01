@@ -91,12 +91,16 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 	const fileAdapter = {
 		uploadFile: sinon.stub(),
 	};
+	const queueInstance = {
+		addToQueue: sinon.stub(),
+	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub().returns('localDomain'),
 		joinRoom: sinon.stub(),
 		convertMatrixUrlToHttp: sinon.stub().returns('toHttpUrl'),
 		getReadStreamForFileFromUrl: sinon.stub(),
+		getRoomHistoricalJoinEvents: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -107,6 +111,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			fileAdapter as any,
 			settingsAdapter as any,
 			notificationsAdapter as any,
+			queueInstance as any,
 			bridge as any,
 		);
 	});
@@ -144,7 +149,9 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		bridge.joinRoom.reset();
 		bridge.getUserProfileInformation.reset();
 		bridge.getReadStreamForFileFromUrl.reset();
+		bridge.getRoomHistoricalJoinEvents.reset();
 		fileAdapter.uploadFile.reset();
+		queueInstance.addToQueue.reset();
 	});
 
 	describe('#onCreateRoom()', () => {
@@ -324,12 +331,18 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.createFederatedRoom.called).to.be.false;
 		});
 
-		it('should create a room for DM if the room type is equal a direct message', async () => {
+		it('should create a room for DM if the room type is equal a direct message and it is handling regular events (m.room.member)(not using the property extracted from the invite_room_state)', async () => {
 			const inviter = user;
-			const invitee = user;
+			const invitee = FederatedUser.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: false,
+			});
 			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
-			userAdapter.getFederatedUserByExternalId.resolves(user);
+			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(inviter);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.extractHomeserverOrigin.returns('localDomain');
 			await service.onChangeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
@@ -342,10 +355,105 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			const createdRoom = DirectMessageFederatedRoom.createInstance('externalRoomId', inviter, [inviter, invitee]);
 			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(createdRoom)).to.be.true;
 			expect(roomAdapter.createFederatedRoom.called).to.be.false;
-			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
+			expect(bridge.joinRoom.calledOnceWith('externalRoomId', 'externalInviteeId')).to.be.true;
 		});
 
-		it('should create a room (not DM) if the room type is NOT equal a direct message', async () => {
+		it('should create a room for DM if the room type is equal a direct message and it is handling regular events (m.room.member)(not using the property extracted from the invite_room_state), but not automatically join the invitee if he/she is not from the proxy homeserver', async () => {
+			const inviter = user;
+			const invitee = FederatedUser.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: false,
+			});
+			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(inviter);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.REMOTE,
+				roomType: RoomType.DIRECT_MESSAGE,
+				externalInviteeId: 'externalInviteeId',
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			const createdRoom = DirectMessageFederatedRoom.createInstance('externalRoomId', inviter, [inviter, invitee]);
+			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(createdRoom)).to.be.true;
+			expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			expect(bridge.joinRoom.called).to.be.false;
+		});
+
+		it('should create a room for DM if the room type is equal a direct message handling the property extracted from the invite_room_state', async () => {
+			const inviter = user;
+			const invitee = FederatedUser.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: false,
+			});
+			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(inviter);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.REMOTE,
+				roomType: RoomType.DIRECT_MESSAGE,
+				externalInviteeId: 'externalInviteeId',
+				normalizedInviteeId: 'normalizedInviteeId',
+				allInviteesExternalIdsWhenDM: [
+					{
+						externalInviteeId: 'externalInviteeId',
+						normalizedInviteeId: 'normalizedInviteeId',
+						inviteeUsernameOnly: 'inviteeUsernameOnly',
+					},
+				],
+			} as any);
+
+			const createdRoom = DirectMessageFederatedRoom.createInstance('externalRoomId', inviter, [inviter, invitee]);
+			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(createdRoom)).to.be.true;
+			expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			expect(bridge.joinRoom.calledOnceWith('externalRoomId', 'externalInviteeId')).to.be.true;
+		});
+
+		it('should create a room for DM if the room type is equal a direct message handling the property extracted from the invite_room_state, but not automatically join the user if he/she is not from the proxy homeserver', async () => {
+			const inviter = user;
+			const invitee = FederatedUser.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: false,
+			});
+			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.onCall(0).resolves(inviter);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.REMOTE,
+				roomType: RoomType.DIRECT_MESSAGE,
+				externalInviteeId: 'externalInviteeId',
+				normalizedInviteeId: 'normalizedInviteeId',
+				allInviteesExternalIdsWhenDM: [
+					{
+						externalInviteeId: 'externalInviteeId',
+						normalizedInviteeId: 'normalizedInviteeId',
+						inviteeUsernameOnly: 'inviteeUsernameOnly',
+					},
+				],
+			} as any);
+
+			const createdRoom = DirectMessageFederatedRoom.createInstance('externalRoomId', inviter, [inviter, invitee]);
+			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(createdRoom)).to.be.true;
+			expect(roomAdapter.createFederatedRoom.called).to.be.false;
+			expect(bridge.joinRoom.called).to.be.false;
+		});
+
+		it('should create a room (not DM) if the room type is NOT equal a direct message AND to add the historical room events to the processing queue when they exists', async () => {
 			const invitee = FederatedUser.createInstance('externalInviteeId', {
 				name: 'normalizedInviteeId',
 				username: 'normalizedInviteeId',
@@ -354,6 +462,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.getRoomHistoricalJoinEvents.resolves(['event1', 'event2']);
 			await service.onChangeRoomMembership({
 				externalRoomId: 'externalRoomId',
 				normalizedRoomId: 'normalizedRoomId',
@@ -369,6 +478,35 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.createFederatedRoom.calledWith(createdRoom)).to.be.true;
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
 			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
+			['event1', 'event2'].forEach((event) => expect(queueInstance.addToQueue.calledWith(event)).to.be.true);
+		});
+
+		it('should create a room (not DM) if the room type is NOT equal a direct message AND NOT to add the historical room events to the processing queue when they exists', async () => {
+			const invitee = FederatedUser.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: false,
+			});
+			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.getRoomHistoricalJoinEvents.resolves([]);
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.REMOTE,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				normalizedInviteeId: 'normalizedInviteeId',
+				externalRoomName: 'externalRoomName',
+			} as any);
+
+			const createdRoom = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', invitee, RoomType.CHANNEL);
+
+			expect(roomAdapter.createFederatedRoom.calledWith(createdRoom)).to.be.true;
+			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
+			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
+			expect(queueInstance.addToQueue.called).to.be.false;
 		});
 
 		it('should call the update name function if the name is inside the received input', async () => {
@@ -380,6 +518,7 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			roomAdapter.getFederatedRoomByExternalId.onCall(0).resolves(undefined);
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(invitee);
+			bridge.getRoomHistoricalJoinEvents.resolves([]);
 			const spy = sinon.spy(service, 'onChangeRoomName');
 			await service.onChangeRoomMembership({
 				externalRoomId: 'externalRoomId',
@@ -543,6 +682,42 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
 			expect(bridge.joinRoom.called).to.be.false;
 			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+		});
+
+		it('should join the room using the bridge if its NOT a leave event AND the invitee is from the proxy home server', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
+		});
+
+		it('should NOT join the room using the bridge if its NOT a leave event AND the invitee is NOT from the proxy home server', async () => {
+			roomAdapter.getFederatedRoomByExternalId.resolves(room);
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			await service.onChangeRoomMembership({
+				externalRoomId: 'externalRoomId',
+				normalizedRoomId: 'normalizedRoomId',
+				eventOrigin: EVENT_ORIGIN.LOCAL,
+				roomType: RoomType.CHANNEL,
+				externalInviteeId: 'externalInviteeId',
+				leave: false,
+				normalizedInviteeId: 'normalizedInviteeId',
+			} as any);
+
+			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+			expect(bridge.joinRoom.called).to.be.false;
 		});
 
 		describe('User profile changed event', () => {

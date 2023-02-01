@@ -100,6 +100,40 @@ const tryToExtractAndConvertRoomTypeFromTheRoomState = (
 	};
 };
 
+const getInviteesFromRoomState = (
+	roomState: AbstractMatrixEvent[] = [],
+): {
+	externalInviteeId: string;
+	normalizedInviteeId: string;
+	inviteeUsernameOnly: string;
+}[] => {
+	const inviteesFromRoomState = (
+		roomState?.find((stateEvent) => stateEvent.type === MatrixEventType.ROOM_CREATED) as MatrixEventRoomCreated
+	)?.content.inviteesExternalIds;
+	if (inviteesFromRoomState) {
+		return inviteesFromRoomState.map((inviteeExternalId) => ({
+			externalInviteeId: inviteeExternalId,
+			normalizedInviteeId: removeExternalSpecificCharsFromExternalIdentifier(inviteeExternalId),
+			inviteeUsernameOnly: formatExternalUserIdToInternalUsernameFormat(inviteeExternalId),
+		}));
+	}
+	return [];
+};
+
+const extractAllInviteeIdsWhenDM = (
+	externalEvent: MatrixEventRoomMembershipChanged,
+): {
+	externalInviteeId: string;
+	normalizedInviteeId: string;
+	inviteeUsernameOnly: string;
+}[] => {
+	if (!externalEvent.invite_room_state && !externalEvent.unsigned?.invite_room_state) {
+		return [];
+	}
+
+	return getInviteesFromRoomState(externalEvent.invite_room_state || externalEvent.unsigned?.invite_room_state || []);
+};
+
 export class MatrixRoomReceiverConverter {
 	public static toRoomCreateDto(externalEvent: MatrixEventRoomCreated): FederationRoomCreateInputDto {
 		return new FederationRoomCreateInputDto({
@@ -140,6 +174,7 @@ export class MatrixRoomReceiverConverter {
 				avatarUrl: externalEvent.content?.avatar_url,
 				displayName: externalEvent.content?.displayname,
 			},
+			...(externalEvent.content?.is_direct ? { allInviteesExternalIdsWhenDM: extractAllInviteeIdsWhenDM(externalEvent) } : {}),
 		});
 	}
 

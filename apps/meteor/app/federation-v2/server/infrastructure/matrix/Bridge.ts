@@ -11,6 +11,7 @@ import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definit
 import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
+import { RoomMembershipChangedEventType } from './definitions/events/RoomMembershipChanged';
 
 let MatrixUserInstance: any;
 
@@ -106,6 +107,29 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).join(externalRoomId);
 	}
 
+	public async getRoomHistoricalJoinEvents(
+		externalRoomId: string,
+		externalUserId: string,
+		excludingUserIds: string[] = [],
+	): Promise<any[]> {
+		const events = await this.bridgeInstance.getIntent(externalUserId).matrixClient.getRoomState(externalRoomId);
+		const roomCreator = events.find((event) => event.type === MatrixEventType.ROOM_CREATED)?.content?.creator;
+		if (!roomCreator) {
+			return [];
+		}
+		return events
+			.filter(
+				(event) =>
+					event.type === MatrixEventType.ROOM_MEMBERSHIP_CHANGED &&
+					event.content.membership === RoomMembershipChangedEventType.JOIN &&
+					!excludingUserIds.includes(event.state_key),
+			)
+			.map((event) => ({
+				...event,
+				sender: roomCreator,
+			}));
+	}
+
 	public async inviteToRoom(externalRoomId: string, externalInviterId: string, externalInviteeId: string): Promise<void> {
 		try {
 			await this.bridgeInstance.getIntent(externalInviterId).invite(externalRoomId, externalInviteeId);
@@ -143,23 +167,25 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async createDirectMessageRoom(
 		externalCreatorId: string,
-		externalInviteeIds: string[],
+		inviteesExternalIds: string[],
 		extraData: Record<string, any> = {},
 	): Promise<string> {
 		const intent = this.bridgeInstance.getIntent(externalCreatorId);
 
 		const visibility = MatrixRoomVisibility.PRIVATE;
 		const preset = MatrixRoomType.PRIVATE;
+
 		const matrixRoom = await intent.createRoom({
 			createAsClient: true,
 			options: {
 				visibility,
 				preset,
 				is_direct: true,
-				invite: externalInviteeIds,
+				invite: inviteesExternalIds,
 				creation_content: {
 					was_internally_programatically_created: true,
 					...extraData,
+					inviteesExternalIds,
 				},
 			},
 		});
