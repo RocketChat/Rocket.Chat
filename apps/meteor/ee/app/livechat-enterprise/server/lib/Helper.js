@@ -10,7 +10,7 @@ import {
 import { api } from '@rocket.chat/core-services';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users, Messages } from '../../../../../app/models/server';
+import { Users } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
@@ -203,17 +203,6 @@ export const updateQueueInactivityTimeout = () => {
 			logger.error({ err: e });
 		}
 	});
-};
-
-export const updateRoomSLAHistory = async (rid, user, sla) => {
-	const history = {
-		slaData: {
-			definedBy: user,
-			sla: sla || {},
-		},
-	};
-
-	Messages.createSLAHistoryWithRoomIdMessageAndUser(rid, '', user, history);
 };
 
 export const updateSLAInquiries = async (sla) => {

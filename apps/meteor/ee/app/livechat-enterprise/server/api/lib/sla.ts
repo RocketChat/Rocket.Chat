@@ -1,8 +1,16 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
-import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+
+import {
+	addSlaChangeHistoryToRoom,
+	removeInquiryQueueSla,
+	removeSlaFromRoom,
+	updateInquiryQueueSla,
+	updateRoomSlaWeights,
+} from '../../lib/SlaNPriorityHelper';
 
 type FindSLAParams = {
 	text?: string;
@@ -36,3 +44,11 @@ export async function findSLA({
 		total,
 	};
 }
+
+export const updateRoomSLA = async (roomId: string, user: IUser, sla: IOmnichannelServiceLevelAgreements) => {
+	await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSlaWeights(roomId, sla), addSlaChangeHistoryToRoom(roomId, user, sla)]);
+};
+
+export const removeRoomSLA = async (roomId: string, user: IUser) => {
+	await Promise.all([removeInquiryQueueSla(roomId), removeSlaFromRoom(roomId), addSlaChangeHistoryToRoom(roomId, user)]);
+};

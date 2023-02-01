@@ -3,17 +3,21 @@ import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { removePriorityFromRoom, updateRoomPriority } from '../api/lib/priorities';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { removeRoomSLA, updateRoomSLA } from '../api/lib/sla';
 import { cbLogger } from '../lib/logger';
 
 const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) => {
 	if (!slaId) {
-		await LivechatEnterprise.removeRoomSLA(room._id);
+		await removeRoomSLA(room._id, user);
 		return;
 	}
 
 	const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId);
-	await LivechatEnterprise.updateRoomSLA(room._id, user, sla);
+	if (!sla) {
+		throw new Error(`SLA not found with id: ${slaId}`);
+	}
+
+	await updateRoomSLA(room._id, user, sla);
 };
 
 const updatePriority = async (room: IOmnichannelRoom, priorityId?: string) => {
