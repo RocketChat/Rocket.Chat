@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type WebSocket from 'ws';
+import WebSocket from 'ws';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -54,6 +54,10 @@ export class Server extends EventEmitter {
 	};
 
 	async call(client: Client, packet: IPacket): Promise<void> {
+		// if client is not connected we don't need to do anything
+		if (client.ws.readyState !== WebSocket.OPEN) {
+			return;
+		}
 		try {
 			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
@@ -87,6 +91,10 @@ export class Server extends EventEmitter {
 	}
 
 	async subscribe(client: Client, packet: IPacket): Promise<void> {
+		// if client is not connected we don't need to do anything
+		if (client.ws.readyState !== WebSocket.OPEN) {
+			return;
+		}
 		try {
 			if (!this._subscriptions.has(packet.name)) {
 				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
