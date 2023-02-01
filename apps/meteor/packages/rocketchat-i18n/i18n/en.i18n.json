@@ -5566,5 +5566,6 @@
   "User_status_disabled": "User status temporarily disabled to maintain performance.",
   "User_status_disabled_learn_more": "Keeping performance in mind",
   "User_status_disabled_learn_more_description": "Due to high volume of active connections, the service that handles user status is temporarily disabled. Administrators can re-enable this manually in the workspace settings.",
-  "Go_to_workspace_settings": "Go to workspace settings"
+  "Go_to_workspace_settings": "Go to workspace settings",
+  "User_status_temporarily_disabled": "User status temporarily disabled"
 }
