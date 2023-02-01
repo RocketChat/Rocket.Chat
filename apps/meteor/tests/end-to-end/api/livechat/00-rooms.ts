@@ -1447,7 +1447,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('it should mark room as unread when a new message arrives and the config is activated', () => {
+	// TODO: Implement proper department data cleanup after each test to run in CE
+	(IS_EE ? describe : describe.skip)('it should mark room as unread when a new message arrives and the config is activated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
@@ -1476,7 +1477,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
+	(IS_EE ? describe : describe.skip)('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
