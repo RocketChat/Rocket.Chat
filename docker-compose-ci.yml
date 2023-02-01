@@ -116,7 +116,7 @@ services:
     build:
       dockerfile: ee/apps/queue-worker/Dockerfile
       args:
-        SERVICE: queue-worker-service
+        SERVICE: queue-worker
     image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
@@ -132,7 +132,7 @@ services:
     build:
       dockerfile: ee/apps/omnichannel-transcript/Dockerfile
       args:
-        SERVICE: omnichannel-transcript-service
+        SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
