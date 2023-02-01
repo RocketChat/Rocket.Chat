@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import '../lib/messageTypes';
 import './methods/addMonitor';
 import './methods/getUnitsFromUserRoles';
 import './methods/removeMonitor';
