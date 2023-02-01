@@ -73,14 +73,14 @@ API.v1.addRoute(
 			const { rid } = this.urlParams;
 			const { priorityId } = this.bodyParams;
 
-			await updateRoomPriority(rid, priorityId);
+			await updateRoomPriority(rid, this.user, priorityId);
 
 			return API.v1.success();
 		},
 		async delete() {
 			const { rid } = this.urlParams;
 
-			await removePriorityFromRoom(rid);
+			await removePriorityFromRoom(rid, this.user);
 
 			return API.v1.success();
 		},
