@@ -1,11 +1,12 @@
-import { Box, Button, ButtonGroup, ProgressBar } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusService from './CustomUserStatusService';
 import CustomUserStatusTable from './CustomUserStatusTable';
@@ -16,14 +17,6 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
-
-	const getConnections = useEndpoint('GET', '/v1/presence.getConnections');
-	const [connections, setConnections] = useState<{ current: number; max: number }>();
-	const percentage = connections ? (connections?.current / connections?.max) * 100 : 0;
-
-	useEffect(() => {
-		(async () => setConnections(await getConnections()))();
-	}, [getConnections]);
 
 	const handleItemClick = (id: string): void => {
 		route.push({
@@ -58,15 +51,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
 				<Page.Header title={t('User_Status')}>
-					<Box w='x180' h='x40' mi='x8' fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around'>
-						<Box display='flex' justifyContent='space-between'>
-							<Box color='default'>{t('Active_connections')}</Box>
-							<Box color='hint'>
-								{connections?.current}/{connections?.max}
-							</Box>
-						</Box>
-						<ProgressBar percentage={percentage} variant={percentage < 80 ? 'success' : 'danger'} />
-					</Box>
+					<CustomUserActiveConnections />
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>
@@ -84,7 +69,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 						{context === 'presence-service' && t('Presence_service_cap')}
 						<VerticalBar.Close onClick={handleClose} />
 					</VerticalBar.Header>
-					{context === 'presence-service' && <CustomUserStatusService connections={connections} />}
+					{context === 'presence-service' && <CustomUserStatusService />}
 					{(context === 'new' || context === 'edit') && (
 						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
 					)}
