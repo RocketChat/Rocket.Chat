@@ -72,9 +72,7 @@ class MarkdownClass {
 	}
 
 	filterMarkdownFromMessage(message) {
-		return parsers.filtered(message, {
-			supportSchemesForLink: 'http,https',
-		});
+		return parsers.filtered(message);
 	}
 }
 
@@ -92,4 +90,4 @@ export const createMarkdownMessageRenderer = ({ ...options }) => {
 	};
 };
 
-export const createMarkdownNotificationRenderer = (options) => (message) => parsers.filtered(message, options);
+export const createMarkdownNotificationRenderer = () => (message) => parsers.filtered(message);
