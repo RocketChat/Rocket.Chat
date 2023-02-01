@@ -56,7 +56,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const {
 		data: { priorities = [] } = {},
-		isLoading: isLoadingPriorities,
+		isInitialLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
 	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
 		staleTime: millisecondsToMinutes(10),

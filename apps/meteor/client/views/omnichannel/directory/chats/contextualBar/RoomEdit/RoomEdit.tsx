@@ -51,8 +51,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
-	const { data: slaPolicies, isLoading: isSlaPoliciesLoading } = useSlaPolicies();
-	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
+	const { data: slaPolicies, isInitialLoading: isSlaPoliciesLoading } = useSlaPolicies();
+	const { data: customFieldsMetadata, isInitialLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
 		scope: 'room',
 		enabled: canViewCustomFields,
 	});

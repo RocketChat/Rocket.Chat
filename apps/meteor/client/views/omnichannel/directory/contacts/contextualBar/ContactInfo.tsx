@@ -45,7 +45,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contact');
 	const {
 		data: { contact } = {},
-		isLoading,
+		isInitialLoading,
 		isError,
 	} = useQuery(['/v1/omnichannel/contact', contactId], () => getContact({ contactId }), {
 		enabled: canViewCustomFields && !!contactId,
@@ -71,7 +71,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 		);
 	});
 
-	if (isLoading) {
+	if (isInitialLoading) {
 		return (
 			<Box pi='x24'>
 				<FormSkeleton />

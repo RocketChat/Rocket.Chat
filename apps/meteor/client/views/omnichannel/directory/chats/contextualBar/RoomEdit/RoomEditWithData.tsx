@@ -20,7 +20,11 @@ function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditW
 	const { data: room, isLoading: isRoomLoading, isError: isRoomError } = useOmnichannelRoomInfo(roomId);
 	const { _id: visitorId } = room?.v ?? {};
 
-	const { data: visitor, isLoading: isVisitorLoading, isError: isVisitorError } = useVisitorInfo(visitorId, { enabled: !!visitorId });
+	const {
+		data: visitor,
+		isInitialLoading: isVisitorLoading,
+		isError: isVisitorError,
+	} = useVisitorInfo(visitorId, { enabled: !!visitorId });
 
 	if (isRoomLoading || isVisitorLoading) {
 		return <FormSkeleton />;
