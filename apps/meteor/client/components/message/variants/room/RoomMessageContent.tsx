@@ -1,93 +1,78 @@
-import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
+import type { MessageWithMdEnforced } from '../../../../lib/parseMessageTextToAstMarkdown';
 import type { UserPresence } from '../../../../lib/presence';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
+import { useRoomSubscription } from '../../../../views/room/contexts/RoomContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
-import DicussionMetrics from '../../content/DicussionMetrics';
+import DiscussionMetrics from '../../content/DiscussionMetrics';
 import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
+import { useOembedLayout } from '../../hooks/useOembedLayout';
 
 type RoomMessageContentProps = {
-	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
+	message: MessageWithMdEnforced<IMessage>;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
 };
 
 const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
+	const encrypted = isE2EEMessage(message);
+	const { enabled: oembedEnabled } = useOembedLayout();
+	const broadcast = useRoomSubscription()?.broadcast ?? false;
 	const uid = useUserId();
-	const {
-		broadcast,
-		actions: { openRoom, openThread, replyBroadcast },
-	} = useMessageActions();
+	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 
 	const t = useTranslation();
-
-	const runActionLink = useMessageRunActionLink();
-
-	const oembedIsEnabled = useMessageOembedIsEnabled();
-	const shouldShowReadReceipt = useMessageListShowReadReceipt();
-	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
-
-	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
-
-	const mineUid = useUserId();
-
-	const isEncryptedMessage = isE2EEMessage(message);
-
-	const messageAttachments = useTranslateAttachments({ message });
 
 	return (
 		<>
 			{!message.blocks?.length && !!message.md?.length && (
 				<>
-					{(!isEncryptedMessage || message.e2e === 'done') && (
+					{(!encrypted || message.e2e === 'done') && (
 						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 					)}
-					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+					{encrypted && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</>
 			)}
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
+			{!!message?.attachments?.length && <Attachments attachments={message.attachments} file={message.file} />}
 
-			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
+			{oembedEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
 			{message.actionLinks?.length && (
 				<MessageActions
-					mid={message._id}
+					message={message}
 					actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 						methodId,
 						i18nLabel: i18nLabel as TranslationKey,
 						...action,
 					}))}
-					runAction={runActionLink(message)}
 				/>
 			)}
 
-			{shouldShowReactionList && <Reactions message={message} />}
+			{message.reactions && Object.keys(message.reactions).length && <Reactions message={message} />}
 
 			{isThreadMainMessage(message) && (
 				<ThreadMetrics
-					openThread={openThread(message._id)}
 					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
+					following={Boolean(uid && message?.replies?.indexOf(uid) > -1)}
 					mid={message._id}
 					rid={message.rid}
 					lm={message.tlm}
@@ -98,23 +83,15 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 				/>
 			)}
 
-			{isDiscussionMessage(message) && (
-				<DicussionMetrics
-					count={message.dcount}
-					drid={message.drid}
-					lm={message.dlm}
-					rid={message.rid}
-					openDiscussion={openRoom(message.drid)}
-				/>
-			)}
+			{isDiscussionMessage(message) && <DiscussionMetrics count={message.dcount} drid={message.drid} lm={message.dlm} rid={message.rid} />}
 
 			{message.location && <Location location={message.location} />}
 
-			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+			{broadcast && !!messageUser.username && message.u._id !== uid && (
+				<BroadcastMetrics username={messageUser.username} message={message} />
 			)}
 
-			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator unread={message.unread} />}
 		</>
 	);
 };

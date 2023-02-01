@@ -1,8 +1,8 @@
-import { useCallback } from 'react';
+import { useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { UserPresenceContext } from '../contexts/UserPresenceContext';
 import type { UserPresence } from '../lib/presence';
-import { Presence } from '../lib/presence';
 
 /**
  * Hook to fetch and subscribe users data
@@ -12,17 +12,25 @@ import { Presence } from '../lib/presence';
  * @public
  */
 export const useUserData = (uid: string): UserPresence | undefined => {
-	const subscription = useCallback(
-		(callback: () => void): (() => void) => {
-			Presence.listen(uid, callback);
-			return (): void => {
-				Presence.stop(uid, callback);
-			};
-		},
-		[uid],
+	const userPresence = useContext(UserPresenceContext);
+	// const subscription = useCallback(
+	// 	(callback: () => void): (() => void) => {
+	// 		Presence.listen(uid, callback);
+	// 		return (): void => {
+	// 			Presence.stop(uid, callback);
+	// 		};
+	// 	},
+	// 	[uid],
+	// );
+
+	// const getSnapshot = (): UserPresence | undefined => Presence.store.get(uid);
+
+	// return useSyncExternalStore(subscription, getSnapshot);
+
+	const { subscribe, get } = useMemo(
+		() => userPresence?.queryUserData(uid) ?? { subscribe: () => () => undefined, get: () => undefined },
+		[userPresence, uid],
 	);
 
-	const getSnapshot = (): UserPresence | undefined => Presence.store.get(uid);
-
-	return useSyncExternalStore(subscription, getSnapshot);
+	return useSyncExternalStore(subscribe, get);
 };

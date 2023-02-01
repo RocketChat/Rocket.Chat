@@ -4,14 +4,13 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import type { RefCallback } from 'react';
 import { useEffect, useMemo, useState, useContext, useCallback, useRef } from 'react';
 
+import type { BlazePortalsSubscription } from '../../../../../lib/portals/blazePortals';
 import MessageHighlightContext from '../../../MessageList/contexts/MessageHighlightContext';
 import { useRoomMessageContext } from '../../../components/body/useRoomMessageContext';
 import { ChatContext } from '../../../contexts/ChatContext';
-import { MessageContext } from '../../../contexts/MessageContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
-export const useLegacyThreadMessageRef = () => {
-	const messageContext = useContext(MessageContext);
+export const useLegacyThreadMessageRef = (portalsSubscription: BlazePortalsSubscription) => {
 	const chatContext = useContext(ChatContext);
 	const messageHighlightContext = useContext(MessageHighlightContext);
 	const room = useRoom();
@@ -33,7 +32,6 @@ export const useLegacyThreadMessageRef = () => {
 			new ReactiveVar({
 				...threadMessageContext,
 				'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
-				messageContext,
 				chatContext,
 			}),
 	);
@@ -41,10 +39,9 @@ export const useLegacyThreadMessageRef = () => {
 		reactiveThreadMessageContext.set({
 			...threadMessageContext,
 			'messageHighlightContext.highlightMessageId': messageHighlightContext.highlightMessageId,
-			messageContext,
 			chatContext,
 		});
-	}, [chatContext, messageContext, messageHighlightContext.highlightMessageId, reactiveThreadMessageContext, threadMessageContext]);
+	}, [chatContext, messageHighlightContext.highlightMessageId, reactiveThreadMessageContext, threadMessageContext]);
 
 	const cache = useRef<Map<IMessage['_id'], { callback: RefCallback<HTMLLIElement>; reactiveMessage: ReactiveVar<IMessage> }>>(new Map());
 
@@ -77,7 +74,6 @@ export const useLegacyThreadMessageRef = () => {
 								settings: reactiveThreadMessageContext.get().settings,
 								u: reactiveThreadMessageContext.get().u,
 								chatContext: reactiveThreadMessageContext.get().chatContext,
-								messageContext: reactiveThreadMessageContext.get().messageContext,
 								hideRoles: true,
 								shouldCollapseReplies: true,
 								templatePrefix: 'thread-',
@@ -91,6 +87,7 @@ export const useLegacyThreadMessageRef = () => {
 											customClass: editing ? 'editing' : '',
 											context: 'threads',
 									  }),
+								portalsSubscription: () => portalsSubscription,
 							};
 						},
 						node.parentElement,
@@ -107,6 +104,6 @@ export const useLegacyThreadMessageRef = () => {
 
 			return callback;
 		},
-		[reactiveThreadMessageContext],
+		[portalsSubscription, reactiveThreadMessageContext],
 	);
 };

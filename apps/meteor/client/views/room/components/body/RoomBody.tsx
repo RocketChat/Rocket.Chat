@@ -11,21 +11,19 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
-import type { CommonRoomTemplateInstance } from '../../../../../app/ui/client/views/app/lib/CommonRoomTemplateInstance';
-import { getCommonRoomEvents } from '../../../../../app/ui/client/views/app/lib/getCommonRoomEvents';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
+import { useUserCard } from '../../../../hooks/useUserCard';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -35,6 +33,7 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
+import { useLegacyMessageEvents } from '../../hooks/useLegacyMessageEvents';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
@@ -177,19 +176,17 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
+	const { open: openUserCard } = useUserCard();
+
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
-			openUserCard({
-				username,
-				rid: room._id,
-				target: event.currentTarget,
-				open: (event: MouseEvent) => {
-					event.preventDefault();
-					if (username) toolbox.openRoomInfo(username);
-				},
-			});
+			if (!username) {
+				return;
+			}
+
+			openUserCard(username)(event);
 		},
-		[room._id, toolbox],
+		[openUserCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -328,47 +325,18 @@ const RoomBody = (): ReactElement => {
 		};
 	}, [room._id, setUnreadCount]);
 
-	useEffect(() => {
-		const messageList = wrapperRef.current?.querySelector('ul');
+	useLegacyMessageEvents({
+		messageListRef: {
+			get current() {
+				if (!useLegacyMessageTemplate) {
+					return null;
+				}
 
-		if (!messageList) {
-			return;
-		}
-
-		const messageEvents: Record<string, (event: any, template: CommonRoomTemplateInstance) => void> = {
-			...getCommonRoomEvents(useLegacyMessageTemplate),
-			'click .toggle-hidden'(event: JQuery.ClickEvent) {
-				const mid = event.target.dataset.message;
-				if (mid) document.getElementById(mid)?.classList.toggle('message--ignored');
+				return wrapperRef.current?.querySelector('ul') ?? null;
 			},
-			'load .gallery-item'() {
-				sendToBottomIfNecessary();
-			},
-			'rendered .js-block-wrapper'() {
-				sendToBottomIfNecessary();
-			},
-		};
-
-		const eventHandlers = Object.entries(messageEvents).map(([key, handler]) => {
-			const [, event, selector] = key.match(/^(.+?)\s(.+)$/) ?? [key, key];
-			return {
-				event,
-				selector,
-				listener: (e: JQuery.TriggeredEvent<HTMLUListElement, undefined>) =>
-					handler.call(null, e, { data: { rid: room._id, tabBar: toolbox, chatContext: chat } }),
-			};
-		});
-
-		for (const { event, selector, listener } of eventHandlers) {
-			$(messageList).on(event, selector, listener);
-		}
-
-		return () => {
-			for (const { event, selector, listener } of eventHandlers) {
-				$(messageList).off(event, selector, listener);
-			}
-		};
-	}, [chat, room._id, sendToBottomIfNecessary, toolbox, useLegacyMessageTemplate]);
+		},
+		onRequestScrollToBottom: sendToBottomIfNecessary,
+	});
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -564,6 +532,21 @@ const RoomBody = (): ReactElement => {
 		chat.uploads.wipeFailedOnes();
 	}, [chat]);
 
+	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
+		(e): void => {
+			if (!hideFlexTab) {
+				return;
+			}
+
+			if (e.target instanceof HTMLButtonElement) {
+				return;
+			}
+
+			toolbox.close();
+		},
+		[toolbox, hideFlexTab],
+	);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -572,7 +555,7 @@ const RoomBody = (): ReactElement => {
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					aria-label={t('Channel')}
-					onClick={hideFlexTab ? toolbox.close : undefined}
+					onClick={handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
@@ -653,7 +636,6 @@ const RoomBody = (): ReactElement => {
 							<ComposerContainer
 								rid={room._id}
 								subscription={subscription}
-								chatMessagesInstance={chat}
 								onResize={handleComposerResize}
 								onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 								onNavigateToNextMessage={handleNavigateToNextMessage}

@@ -13,14 +13,14 @@
 		"@rocket.chat/styled": "next",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/addon-actions": "~6.5.14",
-		"@storybook/addon-docs": "~6.5.14",
-		"@storybook/addon-essentials": "~6.5.14",
-		"@storybook/addon-interactions": "~6.5.14",
-		"@storybook/addon-links": "~6.5.14",
-		"@storybook/builder-webpack4": "~6.5.14",
-		"@storybook/manager-webpack4": "~6.5.14",
-		"@storybook/react": "~6.5.14",
+		"@storybook/addon-actions": "~6.5.15",
+		"@storybook/addon-docs": "~6.5.15",
+		"@storybook/addon-essentials": "~6.5.15",
+		"@storybook/addon-interactions": "~6.5.15",
+		"@storybook/addon-links": "~6.5.15",
+		"@storybook/builder-webpack4": "~6.5.15",
+		"@storybook/manager-webpack4": "~6.5.15",
+		"@storybook/react": "~6.5.15",
 		"@storybook/testing-library": "~0.0.13",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~12.1.5",
@@ -43,7 +43,7 @@
 		"outdent": "^0.8.0",
 		"react-dom": "~17.0.2",
 		"ts-jest": "^27.1.4",
-		"typescript": "~4.5.5"
+		"typescript": "~4.6.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -75,5 +75,8 @@
 	"dependencies": {
 		"highlight.js": "^11.5.1",
 		"react-error-boundary": "^3.1.4"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

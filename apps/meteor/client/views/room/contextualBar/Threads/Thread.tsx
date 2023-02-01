@@ -12,14 +12,12 @@ import VerticalBarActions from '../../../../components/VerticalBar/VerticalBarAc
 import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
 import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
 import VerticalBarInnerContent from '../../../../components/VerticalBar/VerticalBarInnerContent';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
-import MessageProvider from '../../providers/MessageProvider';
 import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
-import { useGoToThreadList } from './hooks/useGoToThreadList';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 
@@ -28,7 +26,7 @@ type ThreadProps = {
 };
 
 const Thread: VFC<ThreadProps> = ({ tmid }) => {
-	const goToThreadList = useGoToThreadList();
+	const goToThreadList = useGoToThreadList({ replace: true });
 	const closeTabBar = useTabBarClose();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
@@ -36,9 +34,6 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 			closeTabBar();
 		},
 	});
-
-	const room = useRoom();
-	const subscription = useRoomSubscription();
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -125,9 +120,7 @@ const Thread: VFC<ThreadProps> = ({ tmid }) => {
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (
 							<ChatProvider tmid={tmid}>
-								<MessageProvider rid={room._id} broadcast={subscription?.broadcast ?? false}>
-									<ThreadChat mainMessage={mainMessageQueryResult.data} />
-								</MessageProvider>
+								<ThreadChat mainMessage={mainMessageQueryResult.data} />
 							</ChatProvider>
 						)) ||
 						null}
