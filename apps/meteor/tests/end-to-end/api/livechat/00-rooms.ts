@@ -1484,7 +1484,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('omnichannel/:rid/request-transcript', () => {
+	(IS_EE ? describe : describe.skip)('omnichannel/:rid/request-transcript', () => {
 		it('should fail if user is not logged in', async () => {
 			await request.post(api('omnichannel/rid/request-transcript')).expect(401);
 		});
