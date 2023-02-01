@@ -1,10 +1,10 @@
-import type { ToolboxMessageType } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useUserCard } from '../../../hooks/useUserCard';
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -27,7 +27,7 @@ type RoomMessageProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
-	context?: ToolboxMessageType;
+	context?: MessageActionContext;
 };
 
 const RoomMessage = ({ message, sequential, all, mention, unread, context }: RoomMessageProps): ReactElement => {

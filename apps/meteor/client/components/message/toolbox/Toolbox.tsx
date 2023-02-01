@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ITranslatedMessage, ToolboxMessageType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -15,7 +15,11 @@ import { useRoom, useRoomSubscription } from '../../../views/room/contexts/RoomC
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
-const getMessageContext = (message: IMessage, room: IRoom, context: ToolboxMessageType = 'message'): MessageActionContext => {
+const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
+	if (context) {
+		return context;
+	}
+
 	if (message.t === 'videoconf') {
 		return 'videoconf';
 	}
@@ -24,16 +28,16 @@ const getMessageContext = (message: IMessage, room: IRoom, context: ToolboxMessa
 		return 'federated';
 	}
 
-	if (isThreadMessage(message) || context === 'thread') {
+	if (isThreadMessage(message)) {
 		return 'threads';
 	}
 
-	return context;
+	return 'message';
 };
 
 type ToolboxProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
-	messageContext?: ToolboxMessageType;
+	messageContext?: MessageActionContext;
 };
 
 const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null => {
