@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('starred-messages', {
@@ -5,6 +7,6 @@ addAction('starred-messages', {
 	id: 'starred-messages',
 	title: 'Starred_Messages',
 	icon: 'star',
-	template: 'starredMessages',
+	template: lazy(() => import('../../../client/views/room/contextualBar/StarredMessages')),
 	order: 10,
 });

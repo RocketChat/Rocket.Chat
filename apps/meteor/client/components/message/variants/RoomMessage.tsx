@@ -1,3 +1,4 @@
+import type { ToolboxMessageType } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
@@ -26,9 +27,10 @@ type RoomMessageProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
+	context?: ToolboxMessageType;
 };
 
-const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({ message, sequential, all, mention, unread, context }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored ?? false);
@@ -79,7 +81,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} />
 				)}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context={context} />}
 		</Message>
 	);
 };

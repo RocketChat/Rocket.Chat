@@ -9,6 +9,7 @@ import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../models/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { queryClient } from '../../../client/lib/queryClient';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -21,7 +22,10 @@ Meteor.startup(function () {
 			Meteor.call('starMessage', { ...message, starred: true }, function (error: any) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
+
+				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			});
 		},
 		condition({ message, subscription, user, room }) {
@@ -50,7 +54,10 @@ Meteor.startup(function () {
 			Meteor.call('starMessage', { ...message, starred: false }, function (error?: any) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
+
+				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			});
 		},
 		condition({ message, subscription, user }) {
@@ -70,8 +77,8 @@ Meteor.startup(function () {
 		label: 'Jump_to_message',
 
 		context: ['starred', 'threads', 'message-mobile'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				(Template.instance() as any).tabBar.close();
 			}

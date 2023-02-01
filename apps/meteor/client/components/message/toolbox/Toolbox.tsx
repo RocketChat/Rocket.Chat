@@ -15,17 +15,20 @@ import { useRoom, useRoomSubscription } from '../../../views/room/contexts/RoomC
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
-const getMessageContext = (message: IMessage, room: IRoom, context?: ToolboxMessageType): MessageActionContext => {
+const getMessageContext = (message: IMessage, room: IRoom, context: ToolboxMessageType = 'message'): MessageActionContext => {
 	if (message.t === 'videoconf') {
 		return 'videoconf';
 	}
+
 	if (isRoomFederated(room)) {
 		return 'federated';
 	}
+
 	if (isThreadMessage(message) || context === 'thread') {
 		return 'threads';
 	}
-	return 'message';
+
+	return context;
 };
 
 type ToolboxProps = {

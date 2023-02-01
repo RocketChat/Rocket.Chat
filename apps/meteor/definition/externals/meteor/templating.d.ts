@@ -1,6 +1,10 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { Meteor } from 'meteor/meteor';
+
+import type { MinimongoCollection } from '../../../client/definitions/MinimongoCollection';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -42,7 +46,16 @@ declare module 'meteor/templating' {
 		pinnedMessages: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		snippetPage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		snippetedMessages: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		starredMessages: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		starredMessages: Blaze.Template<
+			{ rid: IRoom['_id']; messages?: IMessage[] },
+			Blaze.TemplateInstance<{ rid: IRoom['_id']; messages?: IMessage[] }> & {
+				rid: IRoom['_id'];
+				messages: MinimongoCollection<IMessage>;
+				hasMore: ReactiveVar<boolean>;
+				limit: ReactiveVar<number>;
+				cursor: Meteor.LiveQueryHandle | undefined;
+			}
+		>;
 		inputAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		textareaAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		_autocompleteContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
