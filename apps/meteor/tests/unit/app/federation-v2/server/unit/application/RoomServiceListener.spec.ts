@@ -78,6 +78,8 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		unreactToMessage: sinon.stub(),
 		sendQuoteMessage: sinon.stub(),
 		sendQuoteFileMessage: sinon.stub(),
+		editQuotedMessage: sinon.stub(),
+		getMessageToEditWhenReplyAndQuote: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -800,15 +802,19 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			expect(messageAdapter.sendMessage.called).to.be.false;
 		});
 
-		it('should send a message if the room, the sender already exists and the message does not, because it was sent originally from RC', async () => {
+		it('should send a message if the room, the sender already exists and the message does not exists, because it was sent originally from Matrix', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves({} as any);
 			userAdapter.getFederatedUserByExternalId.resolves({} as any);
 			messageAdapter.getMessageByFederationId.resolves(undefined);
 			await service.onExternalMessageReceived({
 				messageText: 'text',
+				rawMessage: 'rawMessage',
+				externalFormattedText: 'externalFormattedText',
+				externalEventId: 'externalEventId',
 			} as any);
 
-			expect(messageAdapter.sendMessage.calledWith({}, {}, 'text')).to.be.true;
+			expect(messageAdapter.sendMessage.calledWith({}, {}, 'rawMessage', 'externalFormattedText', 'externalEventId', 'localDomain')).to.be
+				.true;
 			expect(messageAdapter.sendQuoteMessage.called).to.be.false;
 		});
 
@@ -835,9 +841,13 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 					messageText: 'text',
 					externalEventId: 'externalEventId',
 					replyToEventId: 'replyToEventId',
+					rawMessage: 'rawMessage',
+					externalFormattedText: 'externalFormattedText',
 				} as any);
 
-				expect(messageAdapter.sendQuoteMessage.calledWith({}, {}, 'text', 'externalEventId', {}, 'localDomain')).to.be.true;
+				expect(
+					messageAdapter.sendQuoteMessage.calledWith({}, {}, 'externalFormattedText', 'rawMessage', 'externalEventId', {}, 'localDomain'),
+				).to.be.true;
 				expect(messageAdapter.sendMessage.called).to.be.false;
 			});
 		});
@@ -1130,10 +1140,10 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 		it('should NOT update the message if the content of the message is equal of the oldest one', async () => {
 			roomAdapter.getFederatedRoomByExternalId.resolves(room);
 			userAdapter.getFederatedUserByExternalId.resolves(user);
-			messageAdapter.getMessageByFederationId.resolves({ msg: 'newMessageText' });
+			messageAdapter.getMessageByFederationId.resolves({ msg: 'newRawMessage' });
 			await service.onExternalMessageEditedReceived({
 				editsEvent: 'editsEvent',
-				newMessageText: 'newMessageText',
+				newRawMessage: 'newRawMessage',
 			} as any);
 
 			expect(messageAdapter.editMessage.called).to.be.false;
@@ -1146,9 +1156,76 @@ describe('Federation - Application - FederationRoomServiceListener', () => {
 			await service.onExternalMessageEditedReceived({
 				editsEvent: 'editsEvent',
 				newMessageText: 'newMessageText',
+				newRawMessage: 'newRawMessage',
+				newExternalFormattedText: 'newExternalFormattedText',
 			} as any);
 
-			expect(messageAdapter.editMessage.calledWith(user, 'newMessageText', { msg: 'differentOne' })).to.be.true;
+			expect(
+				messageAdapter.editMessage.calledWith(user, 'newRawMessage', 'newExternalFormattedText', { msg: 'differentOne' }, 'localDomain'),
+			).to.be.true;
+		});
+
+		describe('Editing quoted messages', () => {
+			it('should NOT edit the quoted message if the event was generated locally (the message edited was on local server only)', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.resolves({ msg: 'differentOne', attachments: [{ message_link: 'link' }] });
+				bridge.extractHomeserverOrigin.returns('localDomain');
+				await service.onExternalMessageEditedReceived({
+					editsEvent: 'editsEvent',
+					newMessageText: 'newMessageText',
+					newRawMessage: 'newRawMessage',
+					newExternalFormattedText: 'newExternalFormattedText',
+					externalSenderId: 'externalSenderId:localDomain',
+				} as any);
+
+				expect(messageAdapter.editMessage.called).to.be.false;
+				expect(messageAdapter.editQuotedMessage.called).to.be.false;
+			});
+
+			it('should NOT edit the quoted message if the event was remotely generated but the message content is the same as the current one (the message is already up to date)', async () => {
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.resolves({
+					msg: 'internalFormattedMessageToBeEdited',
+					attachments: [{ message_link: 'link' }],
+				});
+				bridge.extractHomeserverOrigin.returns('externalDomain');
+				messageAdapter.getMessageToEditWhenReplyAndQuote.resolves('internalFormattedMessageToBeEdited');
+				await service.onExternalMessageEditedReceived({
+					editsEvent: 'editsEvent',
+					newMessageText: 'newMessageText',
+					newRawMessage: 'newRawMessage',
+					newExternalFormattedText: 'newExternalFormattedText',
+					externalSenderId: 'externalSenderId:externalDomain',
+				} as any);
+
+				expect(messageAdapter.editMessage.called).to.be.false;
+				expect(messageAdapter.editQuotedMessage.called).to.be.false;
+			});
+
+			it('should edit the quoted message if the event was remotely the message content is outdated', async () => {
+				const message = {
+					msg: 'differentOne',
+					attachments: [{ message_link: 'link' }],
+				};
+				roomAdapter.getFederatedRoomByExternalId.resolves(room);
+				userAdapter.getFederatedUserByExternalId.resolves(user);
+				messageAdapter.getMessageByFederationId.resolves(message);
+				bridge.extractHomeserverOrigin.returns('externalDomain');
+				messageAdapter.getMessageToEditWhenReplyAndQuote.resolves('internalFormattedMessageToBeEdited');
+				await service.onExternalMessageEditedReceived({
+					editsEvent: 'editsEvent',
+					newMessageText: 'newMessageText',
+					newRawMessage: 'newRawMessage',
+					newExternalFormattedText: 'newExternalFormattedText',
+					externalSenderId: 'externalSenderId:externalDomain',
+				} as any);
+
+				expect(messageAdapter.editMessage.called).to.be.false;
+				expect(messageAdapter.editQuotedMessage.calledWith(user, 'newRawMessage', 'newExternalFormattedText', message, 'localDomain')).to.be
+					.true;
+			});
 		});
 	});
 });

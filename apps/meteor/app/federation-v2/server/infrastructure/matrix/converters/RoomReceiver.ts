@@ -23,7 +23,6 @@ import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameC
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
-import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
@@ -144,42 +143,28 @@ export class MatrixRoomReceiverConverter {
 		});
 	}
 
-	public static toSendRoomMessageDto(
-		externalEvent: MatrixEventRoomMessageSent,
-		homeServerDomain: string,
-	): FederationRoomReceiveExternalMessageDto {
-		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
 		return new FederationRoomReceiveExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: toInternalMessageFormat({
-				message: externalEvent.content.formatted_body || externalEvent.content.body,
-				homeServerDomain,
-				isAReplyToAMessage,
-			}),
+			externalFormattedText: externalEvent.content.formatted_body || '',
+			rawMessage: externalEvent.content.body,
 			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 
-	public static toEditRoomMessageDto(
-		externalEvent: MatrixEventRoomMessageSent,
-		homeServerDomain: string,
-	): FederationRoomEditExternalMessageDto {
-		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+	public static toEditRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomEditExternalMessageDto {
 		return new FederationRoomEditExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			newMessageText: toInternalMessageFormat({
-				message: (externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
-				homeServerDomain,
-				isAReplyToAMessage,
-			}),
+			newExternalFormattedText: externalEvent.content['m.new_content']?.formatted_body || '',
+			newRawMessage: externalEvent.content['m.new_content']?.body as string,
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
 		});
 	}
