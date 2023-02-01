@@ -35,12 +35,18 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 		avatarUrl?: string;
 		displayName?: string;
 	};
+	allInviteesExternalIdsWhenDM?: {
+		externalInviteeId: string;
+		normalizedInviteeId: string;
+		inviteeUsernameOnly: string;
+	}[];
 }
 
 export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
-	messageText: string;
+	rawMessage: string;
+	externalFormattedText: string;
 	replyToEventId?: string;
 }
 
@@ -138,6 +144,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		externalRoomName,
 		externalEventId,
 		userProfile,
+		allInviteesExternalIdsWhenDM = [],
 	}: IFederationChangeMembershipInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalInviterId = externalInviterId;
@@ -151,6 +158,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
 		this.userProfile = userProfile;
+		this.allInviteesExternalIdsWhenDM = allInviteesExternalIdsWhenDM;
 	}
 
 	externalInviterId: string;
@@ -173,6 +181,12 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 
 	externalRoomName?: string;
 
+	allInviteesExternalIdsWhenDM?: {
+		externalInviteeId: string;
+		normalizedInviteeId: string;
+		inviteeUsernameOnly: string;
+	}[];
+
 	userProfile?: { avatarUrl?: string; displayName?: string };
 }
 
@@ -194,14 +208,16 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 		normalizedRoomId,
 		externalSenderId,
 		normalizedSenderId,
-		messageText,
+		externalFormattedText,
+		rawMessage,
 		externalEventId,
 		replyToEventId,
 	}: IFederationSendInternalMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
-		this.messageText = messageText;
+		this.externalFormattedText = externalFormattedText;
+		this.rawMessage = rawMessage;
 		this.replyToEventId = replyToEventId;
 		this.externalEventId = externalEventId;
 	}
@@ -210,7 +226,9 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 
 	normalizedSenderId: string;
 
-	messageText: string;
+	externalFormattedText: string;
+
+	rawMessage: string;
 
 	replyToEventId?: string;
 }
@@ -221,14 +239,20 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 		normalizedRoomId,
 		externalSenderId,
 		normalizedSenderId,
-		newMessageText,
+		newRawMessage,
+		newExternalFormattedText,
 		editsEvent,
 		externalEventId,
-	}: IFederationSendInternalMessageBaseInputDto & { newMessageText: string; editsEvent: string }) {
+	}: IFederationSendInternalMessageBaseInputDto & {
+		newRawMessage: string;
+		newExternalFormattedText: string;
+		editsEvent: string;
+	}) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
-		this.newMessageText = newMessageText;
+		this.newRawMessage = newRawMessage;
+		this.newExternalFormattedText = newExternalFormattedText;
 		this.editsEvent = editsEvent;
 	}
 
@@ -236,7 +260,9 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 
 	normalizedSenderId: string;
 
-	newMessageText: string;
+	newExternalFormattedText: string;
+
+	newRawMessage: string;
 
 	editsEvent: string;
 }

@@ -39,8 +39,12 @@ export abstract class AbstractFederatedRoom {
 		return this.internalId;
 	}
 
+	public getDisplayName(): string | undefined {
+		return this.internalReference.fname;
+	}
+
 	public getName(): string | undefined {
-		return this.internalReference.fname || this.internalReference.name;
+		return this.internalReference.name;
 	}
 
 	public getTopic(): string | undefined {
@@ -73,12 +77,18 @@ export abstract class AbstractFederatedRoom {
 		this.internalReference.t = type;
 	}
 
+	public changeDisplayRoomName(displayName: string): void {
+		if (this.isDirectMessage()) {
+			throw new Error('Its not possible to change a direct message name');
+		}
+		this.internalReference.fname = displayName;
+	}
+
 	public changeRoomName(name: string): void {
 		if (this.isDirectMessage()) {
 			throw new Error('Its not possible to change a direct message name');
 		}
 		this.internalReference.name = name;
-		this.internalReference.fname = name;
 	}
 
 	public changeRoomTopic(topic: string): void {
@@ -88,8 +98,8 @@ export abstract class AbstractFederatedRoom {
 		this.internalReference.topic = topic;
 	}
 
-	public shouldUpdateRoomName(aRoomName: string): boolean {
-		return this.internalReference?.name !== aRoomName && !this.isDirectMessage();
+	public shouldUpdateDisplayRoomName(aRoomName: string): boolean {
+		return this.internalReference?.fname !== aRoomName && !this.isDirectMessage();
 	}
 
 	public shouldUpdateRoomTopic(aRoomTopic: string): boolean {
@@ -111,18 +121,19 @@ export class FederatedRoom extends AbstractFederatedRoom {
 		normalizedExternalId: string,
 		creator: FederatedUser,
 		type: RoomType,
+		displayName?: string,
 		name?: string,
 	): FederatedRoom {
 		if (type === RoomType.DIRECT_MESSAGE) {
 			throw new Error('For DMs please use the specific class');
 		}
-		const roomName = name || FederatedRoom.generateTemporaryName(normalizedExternalId);
+		const roomName = displayName || FederatedRoom.generateTemporaryName(normalizedExternalId);
 		return new FederatedRoom({
 			externalId,
 			internalReference: {
 				t: type,
-				name: roomName,
 				fname: roomName,
+				name,
 				u: creator.getInternalReference(),
 			},
 		});

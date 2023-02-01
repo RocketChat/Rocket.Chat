@@ -5,7 +5,6 @@ import { FederationFactory } from './infrastructure/Factory';
 export const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
 export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
-export const queueInstance = FederationFactory.buildFederationQueue();
 rocketSettingsAdapter.initialize();
 export const federationQueueInstance = FederationFactory.buildFederationQueue();
 export const rocketFileAdapter = FederationFactory.buildRocketFileAdapter();
@@ -15,13 +14,14 @@ const rocketUserAdapter = FederationFactory.buildRocketUserAdapter();
 export const rocketNotificationAdapter = FederationFactory.buildRocketNotificationAdapter();
 export const rocketMessageAdapter = FederationFactory.buildRocketMessageAdapter();
 
-const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
+const federationRoomServiceListener = FederationFactory.buildRoomServiceListener(
 	rocketRoomAdapter,
 	rocketUserAdapter,
 	rocketMessageAdapter,
 	rocketFileAdapter,
 	rocketSettingsAdapter,
 	rocketNotificationAdapter,
+	federationQueueInstance,
 	federationBridge,
 );
 
@@ -44,7 +44,7 @@ const federationUserServiceReceiver = FederationFactory.buildUserServiceReceiver
 );
 
 const federationEventsHandler = FederationFactory.buildFederationEventHandler(
-	federationRoomServiceReceiver,
+	federationRoomServiceListener,
 	federationMessageServiceReceiver,
 	federationUserServiceReceiver,
 	rocketSettingsAdapter,

@@ -27,7 +27,7 @@ export const addUserToRoom = function (
 	}
 
 	try {
-		callbacks.run('federation.beforeAddUserAToRoom', { user, inviter }, room);
+		callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

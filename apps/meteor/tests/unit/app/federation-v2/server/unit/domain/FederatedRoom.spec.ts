@@ -175,6 +175,23 @@ describe('Federation - Domain - FederatedRoom', () => {
 			});
 		});
 
+		describe('#changeDisplayRoomName()', () => {
+			it('should set the room fname if the original type is not equal a DM', () => {
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { fname: 'fname' } });
+				expect(federatedRoom.getDisplayName()).to.be.equal('fname');
+				federatedRoom.changeDisplayRoomName('new room fname');
+				expect(federatedRoom.getDisplayName()).to.be.equal('new room fname');
+			});
+
+			it('should throw an error if the room is a DM', () => {
+				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: {} });
+				expect(() => federatedRoom.changeDisplayRoomName('new room name')).to.throw(
+					Error,
+					'Its not possible to change a direct message name',
+				);
+			});
+		});
+
 		describe('#changeRoomTopic()', () => {
 			it('should set the room topic if the original type is not equal a DM', () => {
 				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { topic: 'topic' } });
@@ -189,20 +206,20 @@ describe('Federation - Domain - FederatedRoom', () => {
 			});
 		});
 
-		describe('#shouldUpdateRoomName()', () => {
+		describe('#shouldUpdateDisplayRoomName()', () => {
 			it('should return true if the old name is different from the new one and the room type is not equal DM', () => {
-				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { name: 'name' } });
-				expect(federatedRoom.shouldUpdateRoomName('new name')).to.be.equal(true);
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { fname: 'name' } });
+				expect(federatedRoom.shouldUpdateDisplayRoomName('new name')).to.be.equal(true);
 			});
 
 			it('should return false if the old name is EQUAL from the new one and the room type is not equal DM', () => {
-				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { name: 'name' } });
-				expect(federatedRoom.shouldUpdateRoomName('name')).to.be.equal(false);
+				const federatedRoom = new MyClass({ externalId: 'externalId', internalReference: { fname: 'name' } });
+				expect(federatedRoom.shouldUpdateDisplayRoomName('name')).to.be.equal(false);
 			});
 
 			it('should return false if room type is not equal DM', () => {
-				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: { name: 'name' } });
-				expect(federatedRoom.shouldUpdateRoomName('new name')).to.be.equal(false);
+				const federatedRoom = new MyDMClass({ externalId: 'externalId', internalReference: { fname: 'name' } });
+				expect(federatedRoom.shouldUpdateDisplayRoomName('new name')).to.be.equal(false);
 			});
 		});
 
@@ -239,12 +256,12 @@ describe('Federation - Domain - FederatedRoom', () => {
 		describe('#createInstance()', () => {
 			it('should set the internal room name when it was provided', () => {
 				const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', creator as any, 'p' as any, 'myRoomName');
-				expect(federatedRoom.getName()).to.be.equal('myRoomName');
+				expect(federatedRoom.getDisplayName()).to.be.equal('myRoomName');
 			});
 
 			it('should generate automatically a room name when it was not provided', () => {
 				const federatedRoom = FederatedRoom.createInstance('!externalId@id', 'externalId', creator as any, 'p' as any);
-				expect(federatedRoom.getName()).to.be.equal('Federation-externalId');
+				expect(federatedRoom.getDisplayName()).to.be.equal('Federation-externalId');
 			});
 
 			it('should set the creator properly equal to the provided one', () => {

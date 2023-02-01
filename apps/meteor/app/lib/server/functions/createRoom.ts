@@ -134,7 +134,7 @@ export const createRoom = function <T extends RoomType>(
 			}
 
 			try {
-				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+				callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
 			} catch (error) {
 				continue;
 			}
@@ -168,7 +168,7 @@ export const createRoom = function <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
 	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);

@@ -14,22 +14,17 @@ export class FederationSidenav {
 	}
 
 	get checkboxFederatedChannel(): Locator {
-		// TODO: move this to data-qa
 		return this.page.locator(
 			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Federated")]/../following-sibling::label/i',
 		);
 	}
 
 	get autocompleteUser(): Locator {
-		// TODO: move this to data-qa, we are using x path here because we don't have a dedicated server to run tests yet
 		return this.page.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full") and contains(text(), "Add Members")]/..//input');
-		// return this.page.locator('[data-qa="create-channel-users-autocomplete"]');
 	}
 
 	get autocompleteUserDM(): Locator {
-		// TODO: move this to data-qa, we are using x path here because we don't have a dedicated server to run tests yet
 		return this.page.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full")]/..//input');
-		// return this.page.locator('[data-qa="create-channel-users-autocomplete"]');
 	}
 
 	get inputChannelName(): Locator {

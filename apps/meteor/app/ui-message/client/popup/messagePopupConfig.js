@@ -7,6 +7,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { Messages, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
@@ -382,6 +383,7 @@ Template.messagePopupConfig.helpers({
 					.find(
 						{
 							name: exp,
+							federated: { $exists: false },
 							t: {
 								$in: ['c', 'p'],
 							},
@@ -405,7 +407,8 @@ Template.messagePopupConfig.helpers({
 				const record = _.findWhere(records, {
 					_id,
 				});
-				return record && record.name;
+
+				return record && isRoomFederated(record) ? record.fname : record.name;
 			},
 		};
 	},

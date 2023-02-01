@@ -67,12 +67,12 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 
 	const type = useMemo(() => {
 		if (searchForChannels) {
-			return { users: false, rooms: true };
+			return { users: false, rooms: true, includeFederatedRooms: true };
 		}
 		if (searchForDMs) {
 			return { users: true, rooms: false };
 		}
-		return { users: true, rooms: true };
+		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
 	const getSpotlight = useMethod('spotlight');

@@ -34,12 +34,11 @@ export class FederationHooks {
 
 	public static canAddFederatedUserToNonFederatedRoom(callback: (user: IUser | string, room: IRoom) => Promise<void>): void {
 		callbacks.add(
-			'federation.beforeAddUserAToRoom',
+			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
 				if (!params || !params.user || !room) {
 					return;
 				}
-
 				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,
@@ -49,7 +48,7 @@ export class FederationHooks {
 
 	public static canAddFederatedUserToFederatedRoom(callback: (user: IUser | string, inviter: IUser, room: IRoom) => Promise<void>): void {
 		callbacks.add(
-			'federation.beforeAddUserAToRoom',
+			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
 				if (!params || !params.user || !room) {
 					return;
@@ -152,7 +151,7 @@ export class FederationHooks {
 	}
 
 	public static removeCEValidation(): void {
-		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-can-add-federated-user-to-federated-room');
+		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
 	}
 }

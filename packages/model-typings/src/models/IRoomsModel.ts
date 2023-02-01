@@ -73,7 +73,9 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setRoomTypeById(roomId: any, roomType: any): any;
 
-	setRoomNameById(roomId: any, name: any, fname: any): any;
+	setRoomNameById(roomId: any, name: any): any;
+
+	setFnameById(roomId: any, fname: any): any;
 
 	setRoomTopicById(roomId: any, topic: any): any;
 

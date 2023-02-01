@@ -10,6 +10,7 @@ import {
 	FederationRoomChangeNameDto,
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomRedactEventDto,
+	FederationRoomEditExternalMessageDto,
 } from '../../../../../../../../../app/federation-v2/server/application/input/RoomReceiverDto';
 import { MatrixEventType } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { EVENT_ORIGIN } from '../../../../../../../../../app/federation-v2/server/domain/IFederationBridge';
@@ -207,6 +208,84 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 			});
 		});
 
+		it('should add the allInviteesExternalIdsWhenDM as an empty array property when the event is a direct message but the event does not contain room histocial data', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{
+					...event,
+					content: {
+						avatar_url: 'avatarUrl',
+						displayname: 'displayname',
+						membership: 'join',
+						is_direct: true,
+					},
+				} as any,
+				'domain',
+			);
+			expect(result.allInviteesExternalIdsWhenDM).to.be.eql([]);
+		});
+
+		it('should add the allInviteesExternalIdsWhenDM property when the event is a direct message and the event contains the room historical data inside of invite_room_state', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{
+					...event,
+					content: {
+						avatar_url: 'avatarUrl',
+						displayname: 'displayname',
+						membership: 'join',
+						is_direct: true,
+					},
+					invite_room_state: [
+						{
+							type: MatrixEventType.ROOM_CREATED,
+							content: {
+								inviteesExternalIds: ['@a:matrix.org'],
+							},
+						},
+					],
+				} as any,
+				'domain',
+			);
+			expect(result.allInviteesExternalIdsWhenDM).to.be.eql([
+				{
+					externalInviteeId: '@a:matrix.org',
+					normalizedInviteeId: 'a:matrix.org',
+					inviteeUsernameOnly: 'a',
+				},
+			]);
+		});
+
+		it('should add the allInviteesExternalIdsWhenDM property when the event is a direct message and the event contains the room historical data inside of unsigned.invite_room_state', () => {
+			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(
+				{
+					...event,
+					content: {
+						avatar_url: 'avatarUrl',
+						displayname: 'displayname',
+						membership: 'join',
+						is_direct: true,
+					},
+					unsigned: {
+						invite_room_state: [
+							{
+								type: MatrixEventType.ROOM_CREATED,
+								content: {
+									inviteesExternalIds: ['@a:matrix.org'],
+								},
+							},
+						],
+					},
+				} as any,
+				'domain',
+			);
+			expect(result.allInviteesExternalIdsWhenDM).to.be.eql([
+				{
+					externalInviteeId: '@a:matrix.org',
+					normalizedInviteeId: 'a:matrix.org',
+					inviteeUsernameOnly: 'a',
+				},
+			]);
+		});
+
 		it('should convert the event properly', () => {
 			const result = MatrixRoomReceiverConverter.toChangeRoomMembershipDto(event as any, 'domain');
 			expect(result).to.be.eql({
@@ -223,6 +302,7 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 				leave: false,
 				externalRoomName: undefined,
 				roomType: undefined,
+				allInviteesExternalIdsWhenDM: [],
 				userProfile: {
 					avatarUrl: undefined,
 					displayName: undefined,
@@ -234,38 +314,82 @@ describe('Federation - Infrastructure - Matrix - MatrixRoomReceiverConverter', (
 	describe('#toSendRoomMessageDto()', () => {
 		const event = {
 			event_id: 'eventId',
-			content: { 'body': 'msg', 'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } } },
+			content: {
+				'body': 'rawMessage',
+				'formatted_body': 'externalFormattedText',
+				'm.relates_to': { 'm.in_reply_to': { event_id: 'replyToEventId' } },
+			},
 			room_id: '!roomId:matrix.org',
 			sender: '@marcos.defendi:matrix.org',
 		};
 
 		it('should return an instance of FederationRoomReceiveExternalMessageDto', () => {
-			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain')).to.be.instanceOf(
-				FederationRoomReceiveExternalMessageDto,
-			);
+			expect(MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any)).to.be.instanceOf(FederationRoomReceiveExternalMessageDto);
 		});
 
 		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any);
 			expect(result.externalRoomId).to.be.equal('!roomId:matrix.org');
 			expect(result.normalizedRoomId).to.be.equal('roomId');
 		});
 
 		it('should convert the sender id to the a rc-format like (without any @ in it)', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any);
 			expect(result.normalizedSenderId).to.be.equal('marcos.defendi:matrix.org');
 		});
 
 		it('should convert the event properly', () => {
-			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any, 'domain');
+			const result = MatrixRoomReceiverConverter.toSendRoomMessageDto(event as any);
 			expect(result).to.be.eql({
 				externalEventId: 'eventId',
 				externalRoomId: '!roomId:matrix.org',
 				normalizedRoomId: 'roomId',
 				externalSenderId: '@marcos.defendi:matrix.org',
 				normalizedSenderId: 'marcos.defendi:matrix.org',
-				messageText: 'msg',
+				externalFormattedText: 'externalFormattedText',
+				rawMessage: 'rawMessage',
 				replyToEventId: 'replyToEventId',
+			});
+		});
+	});
+	describe('#toEditRoomMessageDto()', () => {
+		const event = {
+			event_id: 'eventId',
+			content: {
+				'body': 'msg',
+				'm.relates_to': { event_id: 'editsEventId' },
+				'm.new_content': { body: 'newRawMessage', formatted_body: 'newExternalFormattedText' },
+			},
+			room_id: '!roomId:matrix.org',
+			sender: '@marcos.defendi:matrix.org',
+		};
+
+		it('should return an instance of FederationRoomEditExternalMessageDto', () => {
+			expect(MatrixRoomReceiverConverter.toEditRoomMessageDto(event as any)).to.be.instanceOf(FederationRoomEditExternalMessageDto);
+		});
+
+		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
+			const result = MatrixRoomReceiverConverter.toEditRoomMessageDto(event as any);
+			expect(result.externalRoomId).to.be.equal('!roomId:matrix.org');
+			expect(result.normalizedRoomId).to.be.equal('roomId');
+		});
+
+		it('should convert the sender id to the a rc-format like (without any @ in it)', () => {
+			const result = MatrixRoomReceiverConverter.toEditRoomMessageDto(event as any);
+			expect(result.normalizedSenderId).to.be.equal('marcos.defendi:matrix.org');
+		});
+
+		it('should convert the event properly', () => {
+			const result = MatrixRoomReceiverConverter.toEditRoomMessageDto(event as any);
+			expect(result).to.be.eql({
+				externalEventId: 'eventId',
+				externalRoomId: '!roomId:matrix.org',
+				normalizedRoomId: 'roomId',
+				externalSenderId: '@marcos.defendi:matrix.org',
+				normalizedSenderId: 'marcos.defendi:matrix.org',
+				newRawMessage: 'newRawMessage',
+				newExternalFormattedText: 'newExternalFormattedText',
+				editsEvent: 'editsEventId',
 			});
 		});
 	});

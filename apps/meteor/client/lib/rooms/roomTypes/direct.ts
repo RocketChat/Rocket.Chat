@@ -122,6 +122,10 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	getIcon(room) {
+		if (isRoomFederated(room)) {
+			return 'globe';
+		}
+
 		if (this.isGroupChat(room)) {
 			return 'balloon';
 		}
