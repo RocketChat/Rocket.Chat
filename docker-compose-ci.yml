@@ -130,7 +130,7 @@ services:
   omnichannel-transcript-service:
     platform: linux/amd64
     build:
-      dockerfile: ee/apps/omnichannel-transcript-service/Dockerfile
+      dockerfile: ee/apps/omnichannel-transcript/Dockerfile
       args:
         SERVICE: omnichannel-transcript-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
