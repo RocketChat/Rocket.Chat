@@ -67,7 +67,7 @@ API.v1.addRoute(
 		validateParams: isDeleteOAuthAppParams,
 	},
 	{
-		async delete() {
+		async post() {
 			const { appId } = this.bodyParams;
 
 			const result = Meteor.call('deleteOAuthApp', appId);

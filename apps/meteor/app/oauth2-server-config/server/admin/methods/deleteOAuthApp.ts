@@ -7,7 +7,7 @@ import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationW
 Meteor.methods({
 	async deleteOAuthApp(applicationId) {
 		methodDeprecationLogger.warn(
-			'deleteOAuthApp is deprecated and will be in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.delete instead.',
+			'deleteOAuthApp is deprecated and will be removed in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.delete instead.',
 		);
 
 		if (!this.userId || !hasPermission(this.userId, 'manage-oauth-apps')) {

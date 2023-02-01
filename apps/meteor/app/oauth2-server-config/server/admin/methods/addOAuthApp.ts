@@ -68,7 +68,9 @@ export async function addOAuthApp(
 
 Meteor.methods({
 	async addOAuthApp(application) {
-		methodDeprecationLogger.warn('addOAuthApp is deprecated and will be removed in future versions of Rocket.Chat');
+		methodDeprecationLogger.warn(
+			'addOAuthApp is deprecated and will be removed in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.create instead.',
+		);
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 		}

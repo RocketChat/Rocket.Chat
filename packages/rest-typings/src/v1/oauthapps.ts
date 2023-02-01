@@ -24,6 +24,6 @@ export type OAuthAppsEndpoint = {
 	};
 
 	'/v1/oauth-apps.delete': {
-		DELETE: (params: DeleteOAuthAppParams) => boolean;
+		POST: (params: DeleteOAuthAppParams) => boolean;
 	};
 };
