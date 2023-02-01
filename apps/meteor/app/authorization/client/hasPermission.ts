@@ -5,7 +5,13 @@ import { ChatPermissions } from './lib/ChatPermissions';
 import * as Models from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
-const isValidScope = (scope: IRole['scope']): boolean => typeof scope === 'string' && scope in Models;
+const isValidScope = (scope: unknown): scope is keyof typeof Models => typeof scope === 'string' && scope in Models;
+
+const hasIsUserInRole = (
+	model: unknown,
+): model is {
+	isUserInRole: (this: any, uid: IUser['_id'], roleId: IRole['_id'], scope: string | undefined) => boolean;
+} => typeof model === 'object' && model !== null && typeof (model as { isUserInRole?: unknown }).isUserInRole === 'function';
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
@@ -21,7 +27,7 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission: IPermission | null = ChatPermissions.findOne(permissionId, {
+			const permission = ChatPermissions.findOne(permissionId, {
 				fields: { roles: 1 },
 			});
 			const roles = permission?.roles ?? [];
@@ -34,8 +40,13 @@ const createPermissionValidator =
 					return false;
 				}
 
-				const model = Models[roleScope as keyof typeof Models];
-				return model.isUserInRole?.(userId, roleId, scope);
+				const model = Models[roleScope];
+
+				if (hasIsUserInRole(model)) {
+					return model.isUserInRole(userId, roleId, scope);
+				}
+
+				return undefined;
 			});
 		});
 	};
