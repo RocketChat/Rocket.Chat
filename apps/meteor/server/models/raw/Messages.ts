@@ -435,6 +435,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid: roomId,
 			msg: '',
 			ts: new Date(),
+			groupable: false,
 			u: {
 				_id: user._id,
 				username: user.username,
@@ -460,6 +461,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid: roomId,
 			msg: '',
 			ts: new Date(),
+			groupable: false,
 			u: {
 				_id: user._id,
 				username: user.username,
