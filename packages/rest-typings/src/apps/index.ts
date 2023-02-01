@@ -171,6 +171,10 @@ export type AppsEndpoints = {
 		GET: () => AppRequestsStats;
 	};
 
+	'/apps/app-request/markAsSeen': {
+		POST: (params: { unseenRequests: Array<string> }) => { succes: boolean };
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {

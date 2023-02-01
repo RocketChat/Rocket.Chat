@@ -1125,5 +1125,33 @@ export class AppsRestApi {
 				},
 			},
 		);
+
+		this.api.addRoute(
+			'app-request/markAsSeen',
+			{ authRequired: true },
+			{
+				async post() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					const { unseenRequests } = this.bodyParams;
+
+					try {
+						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: unseenRequests.toJSON() });
+
+						return API.v1.success(result.data);
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
+
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
 	}
 }
