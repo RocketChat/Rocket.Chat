@@ -29,6 +29,15 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
 
+	function validateRegex(regexString: string): string {
+		try {
+			new RegExp(regexString);
+			return regexString;
+		} catch (e) {
+			return '';
+		}
+	}
+
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
@@ -43,9 +52,9 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 				}),
 				query: JSON.stringify({
 					$or: [
-						{ 'emails.address': { $regex: text || '', $options: 'i' } },
-						{ username: { $regex: text || '', $options: 'i' } },
-						{ name: { $regex: text || '', $options: 'i' } },
+						{ 'emails.address': { $regex: validateRegex(text), $options: 'i' } },
+						{ username: { $regex: validateRegex(text), $options: 'i' } },
+						{ name: { $regex: validateRegex(text), $options: 'i' } },
 					],
 				}),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
