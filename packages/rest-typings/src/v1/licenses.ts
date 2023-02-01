@@ -35,6 +35,12 @@ export type LicensesEndpoints = {
 	'/v1/licenses.requestSeatsLink': {
 		GET: () => { url: string };
 	};
+	'/v1/licenses.maxGuestUsers': {
+		GET: () => { maxGuestUsers: number | null; activeGuests: number };
+	};
+	'/v1/licenses.maxRoomsPerGuest': {
+		GET: () => { maxRoomsPerGuest: number | null };
+	};
 	'/v1/licenses.isEnterprise': {
 		GET: () => { isEnterprise: boolean };
 	};
