@@ -38,7 +38,7 @@ const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartm
 	const email = getUserEmailAddress(user);
 
 	const options: [string, string][] = useMemo(() => {
-		const archivedDepartment = (name: string, archived: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
+		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
 
 		return availableDepartments?.departments
 			? availableDepartments.departments.map(({ _id, name, archived }) =>
