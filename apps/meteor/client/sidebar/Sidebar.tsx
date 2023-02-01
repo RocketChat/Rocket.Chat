@@ -6,11 +6,14 @@ import React from 'react';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
+import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { isMobile, sidebar } = useLayout();
+
+	const isStatusDisabled = true;
 
 	const sideBarStyle = css`
 		position: relative;
@@ -94,6 +97,7 @@ const Sidebar = () => {
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
 					<SidebarHeader />
+					{isStatusDisabled && <StatusDisabledSection />}
 					<SidebarRoomList />
 					<SidebarFooter />
 				</Box>

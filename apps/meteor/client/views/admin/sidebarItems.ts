@@ -106,8 +106,8 @@ export const {
 	},
 	{
 		icon: 'user',
-		href: 'custom-user-status',
-		i18nLabel: 'Custom_User_Status',
+		href: 'user-status',
+		i18nLabel: 'User_Status',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status']),
 	},
 	{
