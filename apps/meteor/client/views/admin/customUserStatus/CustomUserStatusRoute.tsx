@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
 
