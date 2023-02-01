@@ -98,7 +98,7 @@ export const createMessageContext = ({
 	Message_AllowEditing_BlockEditInMinutes?: unknown;
 	API_Embed?: unknown;
 	Message_GroupingPeriod?: unknown;
-}) => {
+} = {}) => {
 	return {
 		u: user,
 		room,

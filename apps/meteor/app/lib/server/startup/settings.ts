@@ -938,6 +938,20 @@ settingsRegistry.addGroup('General', function () {
 		],
 		public: true,
 	});
+	this.add('Unread_Count_Omni', 'all_messages', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages',
+			},
+			{
+				key: 'mentions_only',
+				i18nLabel: 'Mentions_only',
+			},
+		],
+		public: true,
+	});
 
 	this.add('DeepLink_Url', 'https://go.rocket.chat', {
 		type: 'string',
