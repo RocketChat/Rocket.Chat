@@ -1500,6 +1500,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.expect(403);
 		});
+		// Increasing a bit the timeout since service calls + other calls are a bit slow on pipe
 		it('should fail if room is not closed', async () => {
 			await updatePermission('request-pdf-transcript', ['admin', 'livechat-agent', 'livechat-manager']);
 			const visitor = await createVisitor();
@@ -1508,7 +1509,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(400);
-		});
+		}).timeout(15000);
 		it('should fail if no one is serving the room', async () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const visitor = await createVisitor();
@@ -1518,7 +1519,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(400);
-		});
+		}).timeout(15000);
 		let roomId: string;
 		it('should request a pdf transcript when all conditions are met', async () => {
 			await createAgent();
@@ -1533,12 +1534,12 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(200);
-		});
+		}).timeout(15000);
 		it('should return immediately if transcript was already requested', async () => {
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))
 				.set(credentials)
 				.expect(200);
-		});
+		}).timeout(15000);
 	});
 });
