@@ -16,11 +16,15 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 		headers = {
 			Authorization: `Bearer ${token}`,
 		};
+
+		// eslint-disable-next-line no-empty
 	} catch {}
 
 	let siteUrl = '';
 	try {
 		siteUrl = settings.get<string>('Site_Url');
+
+		// eslint-disable-next-line no-empty
 	} catch {}
 
 	const data = {
@@ -40,5 +44,7 @@ export async function notifyAppInstall(marketplaceBaseUrl: string, action: insta
 			headers,
 			data,
 		});
+
+		// eslint-disable-next-line no-empty
 	} catch {}
 }
