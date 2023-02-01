@@ -29,7 +29,6 @@ import { createComposerAPI } from '../../../../../../../app/ui-message/client/me
 import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
@@ -42,8 +41,11 @@ import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
+import FileUploadAction from './FileUploadAction';
+import MessageBoxDropdown from './MessageBoxDropdown';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import VideoMessageAction from './VideoMessageAction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -92,7 +94,6 @@ const MessageBox = ({
 	onUploadFiles,
 	onEscape,
 	onTyping,
-	subscription,
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
@@ -342,48 +343,10 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
+						<VideoMessageAction isRecording={isRecording} />
 						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
-						<MessageComposerAction
-							disabled={isRecording}
-							onClick={(event): void => {
-								const groups = messageBox.actions.get();
-								const config = {
-									popoverClass: 'message-box',
-									columns: [
-										{
-											groups: Object.entries(groups).map(([name, group]) => {
-												const items = group.map((item) => ({
-													icon: item.icon,
-													name: t(item.label),
-													type: 'messagebox-action',
-													id: item.id,
-													action: item.action,
-												}));
-												return {
-													title: t.has(name) && t(name),
-													items,
-												};
-											}),
-										},
-									],
-									offsetVertical: 10,
-									direction: 'top-inverted',
-									currentTarget: event.currentTarget,
-									data: {
-										rid,
-										tmid,
-										prid: subscription?.prid,
-										messageBox: textareaRef.current,
-										chat,
-									},
-									activeElement: event.currentTarget,
-								};
-
-								popover.open(config);
-							}}
-							icon='plus'
-							data-qa-id='menu-more-actions'
-						/>
+						<FileUploadAction isRecording={isRecording} />
+						<MessageBoxDropdown rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
