@@ -28,11 +28,9 @@ const Tags = ({
 	const EETagsComponent = useCurrentChatTags?.();
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const {
-		data: tagsResult,
-		isLoading,
-		isFetching,
-	} = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), { enabled: Boolean(EETagsComponent) });
+	const { data: tagsResult, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
+		enabled: Boolean(EETagsComponent),
+	});
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -65,7 +63,7 @@ const Tags = ({
 		handleTagValue('');
 	});
 
-	if (isLoading && isFetching) {
+	if (isInitialLoading) {
 		return <FormSkeleton />;
 	}
 

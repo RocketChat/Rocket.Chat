@@ -32,7 +32,7 @@ const useQueryFilter = ({ text, itemsPerPage, current }, [column, direction]) =>
 function UnitsRoute() {
 	const t = useTranslation();
 	const canViewUnits = usePermission('manage-livechat-units');
-	const license = useHasLicenseModule('livechat-enterprise');
+	const isEnterprise = useHasLicenseModule('livechat-enterprise');
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['name', 'asc']);
@@ -106,7 +106,7 @@ function UnitsRoute() {
 		return <UnitEdit title={t('New_Unit')} reload={reload} isNew={true} />;
 	}
 
-	if ((license && !canViewUnits) || !license) {
+	if (!(isEnterprise && canViewUnits)) {
 		return <NotAuthorizedPage />;
 	}
 
