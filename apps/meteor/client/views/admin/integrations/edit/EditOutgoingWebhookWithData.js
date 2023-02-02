@@ -1,22 +1,37 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import EditOutgoingWebhook from './EditOutgoingWebhook';
 
 function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/integrations.get', { params });
+
+	const getIntegrations = useEndpoint('GET', '/v1/integrations.get');
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, refetch } = useQuery(
+		['integrations', params],
+		async () => {
+			const integrations = await getIntegrations(params);
+			return integrations;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	const onChange = () => {
-		reload();
+		refetch();
 	};
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return (
 			<Box w='full' pb='x24' {...props}>
 				<Skeleton mbe='x4' />
