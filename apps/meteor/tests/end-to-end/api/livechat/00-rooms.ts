@@ -1485,6 +1485,12 @@ describe('LIVECHAT - rooms', function () {
 	});
 
 	(IS_EE ? describe : describe.skip)('omnichannel/:rid/request-transcript', () => {
+		before(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			// Wait for one sec to be sure routing stops
+			await sleep(1000);
+		});
+
 		it('should fail if user is not logged in', async () => {
 			await request.post(api('omnichannel/rid/request-transcript')).expect(401);
 		});
@@ -1511,7 +1517,6 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400);
 		}).timeout(15000);
 		it('should fail if no one is serving the room', async () => {
-			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await closeRoom(_id);
