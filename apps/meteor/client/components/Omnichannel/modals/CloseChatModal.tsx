@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { dispatchToastMessage } from '../../../lib/toast';
 import GenericModal from '../../GenericModal';
-import MarkdownText from '../../MarkdownText';
 import Tags from '../Tags';
 
 const CloseChatModal = ({
@@ -126,7 +125,7 @@ const CloseChatModal = ({
 		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
 			<Modal.Header>
 				<Modal.Icon name='baloon-close-top-right' />
-				<Modal.Title>{t('Closing_chat')}</Modal.Title>
+				<Modal.Title>{t('Wrap_up_conversation')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
@@ -157,17 +156,9 @@ const CloseChatModal = ({
 						<Field>
 							<Divider />
 							<Field.Label>{t('Chat_transcript')}</Field.Label>
-							<MarkdownText
-								variant='inline'
-								fontScale='c1'
-								color='annotation'
-								content={t('Configure_recurring_email_sending_in_My_Account_Omnichannel')}
-								marginBlockStart={2}
-								marginBlockEnd={8}
-							/>
 						</Field>
 						{canSendTranscriptPDF && hasLicense && (
-							<Field>
+							<Field marginBlockStart='x10'>
 								<Field.Row>
 									<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
 									<Field.Label htmlFor='transcript-pdf' color='default' fontScale='c1'>
@@ -178,7 +169,7 @@ const CloseChatModal = ({
 						)}
 						{canSendTranscriptEmail && visitorEmail && (
 							<>
-								<Field marginBlockStart='x6'>
+								<Field marginBlockStart='x10'>
 									<Field.Row>
 										<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
 										<Field.Label htmlFor='transcript-email' color='default' fontScale='c1'>
@@ -217,6 +208,11 @@ const CloseChatModal = ({
 						)}
 					</>
 				)}
+				<Field marginBlockStart='x16'>
+					<Field.Label color='annotation' fontScale='c1'>
+						{t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')}
+					</Field.Label>
+				</Field>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
