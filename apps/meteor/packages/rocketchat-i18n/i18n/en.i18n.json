@@ -1438,7 +1438,7 @@
   "Custom_oauth_unique_name": "Custom OAuth unique name",
   "Custom_roles": "Custom roles",
   "Custom_roles_upsell_add_custom_roles_workspace": "Add custom roles to suit your workspace",
-  "Custom_roles_upsell_add_custom_roles_workspace_description": "Custom roles allow you to set access limits for the people in your workspace. Set all the roles you need to make sure people have a safe environment to work on.",
+  "Custom_roles_upsell_add_custom_roles_workspace_description": "Custom roles allow you to set permissions for the people in your workspace. Set all the roles you need to make sure people have a safe environment to work on.",
   "Custom_Script_Logged_In": "Custom Script for Logged In Users",
   "Custom_Script_Logged_In_Description": "Custom Script that will run ALWAYS and to ANY user that is logged in. e.g. (whenever you enter the chat and you are logged in)",
   "Custom_Script_Logged_Out": "Custom Script for Logged Out Users",
