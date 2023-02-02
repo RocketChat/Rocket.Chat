@@ -57,7 +57,10 @@ new Promise((resolve, reject) => {
 		});
 });
 
-export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: IUser}> => {
+export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: ILivechatDepartment, agent: {
+	credentials: { 'X-Auth-Token': string; 'X-User-Id': string; };
+	user: IUser;
+}}> => {
 	const agent: IUser = await createUser();
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
@@ -69,7 +72,10 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{department: 
 
 	return {
 		department,
-		agent,
+		agent: {
+			credentials: createdUserCredentials,
+			user: agent,
+		}
 	};
 };
 

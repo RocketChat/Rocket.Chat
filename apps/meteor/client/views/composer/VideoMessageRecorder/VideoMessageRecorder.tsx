@@ -113,7 +113,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 				<Box mbs='x4' display='flex' justifyContent='space-between'>
 					<Button small onClick={handleRecord}>
 						<Box display='flex' alignItems='center'>
-							<Icon mie='x4' name={isRecording ? 'add-user' : 'rec'} />
+							<Icon size='x16' mie='x4' name={isRecording ? 'stop-unfilled' : 'rec'} />
 							<span>{time}</span>
 						</Box>
 					</Button>

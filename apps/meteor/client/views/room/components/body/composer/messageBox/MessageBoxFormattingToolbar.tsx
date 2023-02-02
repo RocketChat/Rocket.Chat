@@ -72,6 +72,10 @@ export const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer
 						data-id={formatter.label}
 						title={t(formatter.label)}
 						onClick={(): void => {
+							if ('link' in formatter) {
+								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
+								return;
+							}
 							composer.wrapSelection(formatter.pattern);
 						}}
 					/>
