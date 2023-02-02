@@ -27,8 +27,4 @@ export type MessageAttachmentDefault = {
 	thumb_url?: string;
 
 	color?: string;
-
-	translations?: {
-		[language: string]: string;
-	};
 } & MessageAttachmentBase;

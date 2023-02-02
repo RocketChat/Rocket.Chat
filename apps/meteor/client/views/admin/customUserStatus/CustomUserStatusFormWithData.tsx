@@ -18,7 +18,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-user-status.list', query);
+	const { value: data, phase: state, error, reload } = useEndpointData('/v1/custom-user-status.list', { params: query });
 
 	const handleReload = (): void => {
 		onReload?.();

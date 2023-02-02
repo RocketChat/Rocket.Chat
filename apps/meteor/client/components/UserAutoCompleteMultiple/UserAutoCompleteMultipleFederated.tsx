@@ -24,7 +24,7 @@ type UserAutoCompleteOptions = {
 	[k: string]: UserAutoCompleteOptionType;
 };
 
-const matrixRegex = new RegExp('(.*:.*)');
+const matrixRegex = new RegExp('@(.*:.*)');
 
 const UserAutoCompleteMultipleFederated = ({
 	onChange,

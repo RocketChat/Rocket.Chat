@@ -31,10 +31,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 		phase: state,
 		error,
 		reload: reloadUserInfo,
-	} = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId: uid }), [uid]),
-	);
+	} = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid }), [uid]) });
 
 	const onChange = useMutableCallback(() => {
 		onReload();

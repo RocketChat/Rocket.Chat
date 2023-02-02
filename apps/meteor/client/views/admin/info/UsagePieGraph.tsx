@@ -1,7 +1,6 @@
 import type { DatumId } from '@nivo/pie';
 import { Pie } from '@nivo/pie';
-import { Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement, CSSProperties, ReactNode } from 'react';
 import React, { useMemo, useCallback } from 'react';
 
@@ -10,8 +9,8 @@ import { useLocalePercentage } from '../../../hooks/useLocalePercentage';
 type GraphColorsReturn = { [key: string]: string };
 
 const graphColors = (color: CSSProperties['color']): GraphColorsReturn => ({
-	used: color || colors.p500,
-	free: colors.n300,
+	used: color || Palette.stroke['stroke-highlight'].toString(),
+	free: Palette.stroke['stroke-extra-light'].toString(),
 });
 
 type UsageGraphProps = {

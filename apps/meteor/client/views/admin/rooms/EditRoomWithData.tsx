@@ -12,10 +12,7 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		phase: state,
 		error,
 		reload,
-	} = useEndpointData(
-		'/v1/rooms.adminRooms.getRoom',
-		useMemo(() => ({ rid }), [rid]),
-	);
+	} = useEndpointData('/v1/rooms.adminRooms.getRoom', { params: useMemo(() => ({ rid }), [rid]) });
 
 	if (state === AsyncStatePhase.LOADING) {
 		return (

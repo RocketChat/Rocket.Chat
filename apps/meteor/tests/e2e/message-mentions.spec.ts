@@ -16,7 +16,7 @@ test.describe.serial('message-mentions', () => {
 		await poHomeChannel.sidenav.openChat('general');
 		await poHomeChannel.content.inputMessage.type('@');
 
-		await expect(poHomeChannel.content.messagePopUpItems.locator('text=all')).toBeVisible();
-		await expect(poHomeChannel.content.messagePopUpItems.locator('text=here')).toBeVisible();
+		await expect(poHomeChannel.content.messagePopUpItems.locator('strong >> text=all')).toBeVisible();
+		await expect(poHomeChannel.content.messagePopUpItems.locator('strong >> text=here')).toBeVisible();
 	});
 });

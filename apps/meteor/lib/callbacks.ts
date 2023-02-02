@@ -15,6 +15,7 @@ import type {
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
+	Username,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -46,7 +47,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
-	'afterSaveMessage': (message: IMessage, room: IRoom, uid: string) => void;
+	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (room: IRoom) => void;
@@ -71,7 +72,8 @@ type EventLikeCallbackSignatures = {
 		message: IMessage,
 		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
 	) => void;
-	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'federation.beforeAddUserToARoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 };

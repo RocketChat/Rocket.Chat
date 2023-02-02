@@ -6,14 +6,6 @@ class ChatMessageCollection extends Mongo.Collection<IMessage & { ignored?: bool
 		super(null);
 	}
 
-	setReactions(messageId: IMessage['_id'], reactions: IMessage['reactions']) {
-		return this.update({ _id: messageId }, { $set: { reactions } });
-	}
-
-	unsetReactions(messageId: IMessage['_id']) {
-		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
-	}
-
 	findOneByRoomIdAndMessageId(rid: IRoom['_id'], messageId: IMessage['_id'], options?: Mongo.Options<IMessage>) {
 		const query = {
 			rid,

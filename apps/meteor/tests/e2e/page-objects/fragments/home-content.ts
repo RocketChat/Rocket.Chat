@@ -59,7 +59,7 @@ export class HomeContent {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get fileNameInput(): Locator {
@@ -203,5 +203,33 @@ export class HomeContent {
 
 	get btnOnHold(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
+	}
+
+	get btnCall(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	}
+
+	get btnStartCall(): Locator {
+		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+	}
+
+	get btnDeclineCall(): Locator {
+		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
+	}
+
+	ringCallText(text: string): Locator {
+		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
+	}
+
+	get videoConfMessageBlock(): Locator {
+		return this.page.locator('.rcx-videoconf-message-block');
+	}
+
+	get btnAnonymousSignIn(): Locator {
+		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
+	}
+
+	get btnAnonymousTalk(): Locator {
+		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 }

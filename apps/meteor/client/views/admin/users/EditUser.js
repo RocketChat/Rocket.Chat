@@ -65,40 +65,22 @@ function EditUser({ data, roles, onReload, ...props }) {
 		[router],
 	);
 
-	const saveQuery = useMemo(
-		() => ({
-			userId: data._id,
-			data: values,
-		}),
-		[data._id, values],
-	);
-
-	const saveAvatarQuery = useMemo(
-		() => ({
-			userId: data._id,
-			avatarUrl: avatarObj && avatarObj.avatarUrl,
-		}),
-		[data._id, avatarObj],
-	);
-
-	const resetAvatarQuery = useMemo(
-		() => ({
-			userId: data._id,
-		}),
-		[data._id],
-	);
-
-	const saveAction = useEndpointAction('POST', '/v1/users.update', saveQuery, t('User_updated_successfully'));
+	const saveAction = useEndpointAction('POST', '/v1/users.update', { successMessage: t('User_updated_successfully') });
 	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', t('Avatar_changed_successfully'));
-	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', saveAvatarQuery, t('Avatar_changed_successfully'));
-	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', resetAvatarQuery, t('Avatar_changed_successfully'));
+	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', { successMessage: t('Avatar_changed_successfully') });
+	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', { successMessage: t('Avatar_changed_successfully') });
 
 	const updateAvatar = useCallback(async () => {
 		if (avatarObj === 'reset') {
-			return resetAvatarAction();
+			return resetAvatarAction({
+				userId: data._id,
+			});
 		}
 		if (avatarObj.avatarUrl) {
-			return saveAvatarUrlAction();
+			return saveAvatarUrlAction({
+				userId: data._id,
+				avatarUrl: avatarObj && avatarObj.avatarUrl,
+			});
 		}
 		avatarObj.set('userId', data._id);
 		return saveAvatarAction(avatarObj);
@@ -115,7 +97,10 @@ function EditUser({ data, roles, onReload, ...props }) {
 		}
 
 		if (hasUnsavedChanges) {
-			const result = await saveAction();
+			const result = await saveAction({
+				userId: data._id,
+				data: values,
+			});
 			if (result.success && avatarObj) {
 				await updateAvatar();
 			}

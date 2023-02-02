@@ -10,7 +10,7 @@ function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
-	const { value: data, phase: state, error, reload } = useEndpointData('/v1/integrations.get', params);
+	const { value: data, phase: state, error, reload } = useEndpointData('/v1/integrations.get', { params });
 
 	const onChange = () => {
 		reload();

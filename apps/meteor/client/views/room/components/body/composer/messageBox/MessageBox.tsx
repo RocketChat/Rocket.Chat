@@ -44,8 +44,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 
-type MessageBoxProps = MessageBoxTemplateInstance['data'];
-
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
 
@@ -81,7 +79,9 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-export const MessageBox = ({
+type MessageBoxProps = Omit<MessageBoxTemplateInstance['data'], 'chatContext'>;
+
+const MessageBox = ({
 	rid,
 	tmid,
 	onSend,

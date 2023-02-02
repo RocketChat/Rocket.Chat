@@ -30,7 +30,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 		[itemsPerPage, current, sortBy, sortDirection],
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', { params: query });
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 

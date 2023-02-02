@@ -33,6 +33,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const isTeam = room && isTeamRoom(room);
 	const isDirect = room && isDirectMessageRoom(room);
+	const isFederated = room && isRoomFederated(room);
 
 	const canCreateInviteLinks = usePermission('create-invite-links');
 
@@ -55,7 +56,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	);
 
 	const canAddUsers =
-		room && user && isRoomFederated(room) ? Federation.isEditableByTheUser(user, room) && hasPermissionToAddUsers : hasPermissionToAddUsers;
+		room && user && isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToAddUsers : hasPermissionToAddUsers;
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -98,6 +99,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
+			isFederated={isFederated}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}

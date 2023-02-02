@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useMessageListShowReadReceipt, useTranslateAttachments } from '../../../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
 import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
 import MessageContentBody from '../../MessageContentBody';
@@ -26,10 +26,7 @@ type ThreadMessageContentProps = {
 
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
 	const uid = useUserId();
-	const {
-		broadcast,
-		actions: { replyBroadcast },
-	} = useMessageActions();
+	const { broadcast } = useMessageActions();
 
 	const t = useTranslation();
 
@@ -42,8 +39,6 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
 
 	const isEncryptedMessage = isE2EEMessage(message);
-
-	const messageAttachments = useTranslateAttachments({ message });
 
 	return (
 		<>
@@ -58,7 +53,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 
 			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 
-			{messageAttachments && <Attachments attachments={messageAttachments} file={message.file} />}
+			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
 			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
 
@@ -79,7 +74,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			{message.location && <Location location={message.location} />}
 
 			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+				<BroadcastMetrics mid={message._id} username={user.username} message={message} />
 			)}
 
 			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 
 import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
 import { Messages, Rooms } from '../../../models/server';
@@ -10,38 +10,58 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-const getParentRoom = (rid) => {
+const getParentRoom = (rid: IRoom['_id']) => {
 	const room = Rooms.findOne(rid);
 	return room && (room.prid ? Rooms.findOne(room.prid, { fields: { _id: 1 } }) : room);
 };
 
-const createDiscussionMessage = (rid, user, drid, msg, message_embedded) => {
+const createDiscussionMessage = (
+	rid: IRoom['_id'],
+	user: IUser,
+	drid: IRoom['_id'],
+	msg: IMessage['msg'],
+	messageEmbedded?: MessageAttachmentDefault,
+): IMessage => {
 	const welcomeMessage = {
 		msg,
 		rid,
 		drid,
-		attachments: [message_embedded].filter((e) => e),
+		attachments: [messageEmbedded].filter((e) => e),
 	};
-	return Messages.createWithTypeRoomIdMessageAndUser('discussion-created', rid, '', user, welcomeMessage);
+	return Messages.createWithTypeRoomIdMessageAndUser('discussion-created', rid, '', user, welcomeMessage) as IMessage;
 };
 
-const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
+const mentionMessage = (
+	rid: IRoom['_id'],
+	{ _id, username, name }: Pick<IUser, '_id' | 'name' | 'username'>,
+	messageEmbedded?: MessageAttachmentDefault,
+) => {
 	const welcomeMessage = {
 		rid,
 		u: { _id, username, name },
 		ts: new Date(),
 		_updatedAt: new Date(),
-		attachments: [message_embedded].filter((e) => e),
+		attachments: [messageEmbedded].filter((e) => e),
 	};
 
 	return Messages.insert(welcomeMessage);
 };
 
-const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
+type CreateDiscussionProperties = {
+	prid: IRoom['_id'];
+	pmid?: IMessage['_id'];
+	t_name: string;
+	reply?: string;
+	users: Array<Exclude<IUser['username'], undefined>>;
+	user: IUser;
+	encrypted?: boolean;
+};
+
+const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
-	let message = false;
+	let message: undefined | IMessage;
 	if (pmid) {
-		message = Messages.findOne({ _id: pmid });
+		message = Messages.findOne({ _id: pmid }) as IMessage | undefined;
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'DiscussionCreation',
@@ -49,7 +69,9 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 		}
 		if (prid) {
 			if (prid !== getParentRoom(message.rid)._id) {
-				throw new Meteor.Error('error-invalid-arguments', { method: 'DiscussionCreation' });
+				throw new Meteor.Error('error-invalid-arguments', 'Root message room ID does not match parent room ID ', {
+					method: 'DiscussionCreation',
+				});
 			}
 		} else {
 			prid = message.rid;
@@ -57,30 +79,24 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	}
 
 	if (!prid) {
-		throw new Meteor.Error('error-invalid-arguments', { method: 'DiscussionCreation' });
+		throw new Meteor.Error('error-invalid-arguments', 'Missing parent room ID', { method: 'DiscussionCreation' });
 	}
 
-	let p_room;
+	let parentRoom;
 	try {
-		p_room = canSendMessage(prid, { uid: user._id, username: user.username, type: user.type });
+		parentRoom = canSendMessage(prid, { uid: user._id, username: user.username, type: user.type });
 	} catch (error) {
-		throw new Meteor.Error(error.message);
+		throw new Meteor.Error((error as Error).message);
 	}
 
-	if (p_room.prid) {
+	if (parentRoom.prid) {
 		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', {
 			method: 'DiscussionCreation',
 		});
 	}
 
-	if (!Match.Maybe(encrypted, Boolean)) {
-		throw new Meteor.Error('error-invalid-arguments', 'Invalid encryption state', {
-			method: 'DiscussionCreation',
-		});
-	}
-
 	if (typeof encrypted !== 'boolean') {
-		encrypted = p_room.encrypted;
+		encrypted = Boolean(parentRoom.encrypted);
 	}
 
 	if (encrypted && reply) {
@@ -111,18 +127,24 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	const type = roomCoordinator.getRoomDirectives(p_room.t)?.getDiscussionType();
-	const description = p_room.encrypted ? '' : message.msg;
-	const topic = p_room.name;
+	const type = roomCoordinator.getRoomDirectives(parentRoom.t)?.getDiscussionType(parentRoom);
+	const description = parentRoom.encrypted ? '' : message?.msg;
+	const topic = parentRoom.name;
+
+	if (!type) {
+		throw new Meteor.Error('error-invalid-type', 'Cannot define discussion room type', {
+			method: 'DiscussionCreation',
+		});
+	}
 
 	const discussion = createRoom(
 		type,
 		name,
-		user.username,
-		[...new Set(invitedUsers)],
+		user.username as string,
+		[...new Set(invitedUsers)].filter(Boolean),
 		false,
 		{
-			fname: t_name,
+			fname: discussionName,
 			description, // TODO discussions remove
 			topic, // TODO discussions remove
 			prid,
@@ -130,23 +152,24 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 		},
 		{
 			// overrides name validation to allow anything, because discussion's name is randomly generated
-			nameValidationRegex: /.*/,
+			nameValidationRegex: '.*',
+			creator: user._id,
 		},
 	);
 
 	let discussionMsg;
-	if (pmid) {
-		if (p_room.encrypted) {
+	if (message) {
+		if (parentRoom.encrypted) {
 			message.msg = TAPi18n.__('Encrypted_message');
 		}
-		mentionMessage(discussion._id, user, attachMessage(message, p_room));
+		mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 
-		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
+		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, discussionName, attachMessage(message, parentRoom));
 	} else {
-		discussionMsg = createDiscussionMessage(prid, user, discussion._id, t_name);
+		discussionMsg = createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
-	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room);
+	callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
 
 	if (reply) {
 		sendMessage(user, { msg: reply }, discussion);
@@ -165,7 +188,7 @@ Meteor.methods({
 	 * @param {string[]} users - users to be added
 	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	 */
-	createDiscussion({ prid, pmid, t_name, reply, users, encrypted }) {
+	createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
@@ -181,6 +204,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user(), encrypted });
+		return create({ prid, pmid, t_name: discussionName, reply, users, user: Meteor.user() as IUser, encrypted });
 	},
 });

@@ -13,7 +13,7 @@ const AddUser = ({ onReload, ...props }) => {
 
 	const router = useRoute('admin-users');
 
-	const { value: roleData } = useEndpointData('/v1/roles.list', '');
+	const { value: roleData } = useEndpointData('/v1/roles.list');
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -77,10 +77,8 @@ const AddUser = ({ onReload, ...props }) => {
 		[router],
 	);
 
-	const saveAction = useEndpointAction('POST', '/v1/users.create', values, t('User_created_successfully!'));
-	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry', {
-		params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
-	});
+	const saveAction = useEndpointAction('POST', '/v1/users.create', { successMessage: t('User_created_successfully!') });
+	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
@@ -95,9 +93,11 @@ const AddUser = ({ onReload, ...props }) => {
 			return false;
 		}
 
-		const result = await saveAction();
+		const result = await saveAction(values);
 		if (result.success) {
-			eventStats();
+			eventStats({
+				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
+			});
 			goToUser(result.user._id);
 			onReload();
 		}

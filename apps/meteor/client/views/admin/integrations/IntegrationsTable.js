@@ -36,7 +36,7 @@ function IntegrationsTable({ type }) {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery({ ...params, text: debouncedText, type }, debouncedSort);
 
-	const { value: data } = useEndpointData('/v1/integrations.list', query);
+	const { value: data } = useEndpointData('/v1/integrations.list', { params: query });
 
 	const router = useRoute('admin-integrations');
 

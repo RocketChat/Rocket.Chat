@@ -13,7 +13,7 @@ import ThreadMessage from '../../../../../components/message/variants/ThreadMess
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { isMessageFirstUnread } from '../../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
-import { MessageListProvider } from '../../../MessageList/providers/MessageListProvider';
+import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
 import MessageProvider from '../../../providers/MessageProvider';
@@ -76,8 +76,8 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 						<LoadingMessagesIndicator />
 					</li>
 				) : (
-					<MessageListProvider rid={mainMessage.rid}>
-						<MessageProvider rid={mainMessage.rid} broadcast={subscription?.broadcast ?? false}>
+					<MessageListProvider>
+						<MessageProvider>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);

@@ -22,7 +22,7 @@
     "eslint-plugin-storybook": "^0.6.7",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
-    "typescript": "~4.5.5"
+    "typescript": "~4.6.4"
   },
   "peerDependencies": {
     "@rocket.chat/fuselage": "*",

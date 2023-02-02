@@ -25,7 +25,7 @@ const MenuItem = ({ _id, name, url, onClickDelete }) => {
 		...(onClickDelete && {
 			delete: {
 				label: (
-					<Box display='flex' alignItems='center' color='danger'>
+					<Box display='flex' alignItems='center' color='on-danger'>
 						<Icon mie='x4' name='trash' size='x16' />
 						{t('Delete')}
 					</Box>
