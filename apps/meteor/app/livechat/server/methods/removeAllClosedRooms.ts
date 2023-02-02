@@ -15,19 +15,16 @@ Meteor.methods({
 			});
 		}
 
-		let count = 0;
 		// These are not debug logs since we want to know when the action is performed
 		Livechat.logger.info(`User ${Meteor.userId()} is removing all closed rooms`);
 
-		const rooms: IOmnichannelRoom[] = LivechatRooms.findClosedRooms(departmentIds);
 		const promises: Promise<void>[] = [];
-		rooms.forEach(({ _id }) => {
+		LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }: IOmnichannelRoom) => {
 			promises.push(Livechat.removeRoom(_id));
-			count++;
 		});
 		await Promise.all(promises);
 
-		Livechat.logger.info(`User ${Meteor.userId()} removed ${count} closed rooms`);
-		return count;
+		Livechat.logger.info(`User ${Meteor.userId()} removed ${promises.length} closed rooms`);
+		return promises.length;
 	},
 });
