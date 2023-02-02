@@ -1,4 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
@@ -10,7 +11,7 @@ const initialData = Array.from({ length: 3 }).map(() => ({ title: '', value: '' 
 const conversationsInitialData = [initialData, initialData];
 const productivityInitialData = [initialData];
 
-const Overview = ({ type, dateRange, departmentId }) => {
+const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: { start: string; end: string }; departmentId: string }) => {
 	const t = useTranslation();
 
 	const { start, end } = dateRange;
@@ -62,7 +63,7 @@ const Overview = ({ type, dateRange, departmentId }) => {
 							pb='x8'
 							flexBasis='100%'
 							key={i}
-							title={title ? t(title) : <Skeleton width='x60' />}
+							title={title ? t(title as TranslationKey) : <Skeleton width='x60' />}
 							count={value}
 						/>
 					))}
