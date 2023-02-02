@@ -213,12 +213,13 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 									<Box color='default' fontScale='p2m'>
 										{t('Set_random_password_and_send_by_email')}
 									</Box>
-									<ToggleSwitch checked={setRandomPassword} onChange={handleSetRandomPassword} />
+									<ToggleSwitch checked={setRandomPassword} disabled={!isSmtpEnabled} onChange={handleSetRandomPassword} />
 								</Box>
 							</Field.Row>
+							{!isSmtpEnabled && <Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Welcome_Email_SMTP_Warning') }} />}
 						</Field>
 					),
-					[t, setRandomPassword, handleSetRandomPassword],
+					[t, setRandomPassword, handleSetRandomPassword, isSmtpEnabled],
 				)}
 				{useMemo(
 					() => (
