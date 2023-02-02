@@ -40,9 +40,11 @@
 	"dependencies": {
 		"@react-pdf/renderer": "^3.0.1",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/fuselage-tokens": "next",
 		"@types/react": "^18.0.26",
 		"emoji-assets": "^7.0.1",
 		"emojione": "^4.5.0",
+		"moment": "^2.29.4",
 		"react": "^18.2.0"
 	}
 }

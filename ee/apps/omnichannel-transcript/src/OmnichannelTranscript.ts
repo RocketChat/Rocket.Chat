@@ -144,6 +144,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						}
 						let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
 						if (!file) {
+							this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
 							// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
 							// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
 							const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
@@ -254,6 +255,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	async doRender({ template, data, details }: { template: Templates; data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
 		const buf: Uint8Array[] = [];
 		let outBuff = Buffer.alloc(0);
+		const transcriptText = await this.translationService.translateToServerLanguage('Transcript');
 
 		const stream = await this.worker.renderToStream({ template, data });
 		stream.on('data', (chunk) => {
@@ -267,7 +269,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					userId: details.userId,
 					buffer: outBuff,
 					details: {
-						name: 'transcript.pdf',
+						// transcript_{company-name)_{date}_{hour}.pdf
+						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+							data.visitor?.name || data.visitor?.username || 'Visitor'
+						}.pdf`,
 						type: 'application/pdf',
 						rid: details.rid,
 						// Rocket.cat is the goat

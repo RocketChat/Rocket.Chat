@@ -1323,4 +1323,64 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		);
 	}
+
+	setEmailTranscriptRequestedByRoomId(roomId, transcriptInfo) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					transcriptRequest: {
+						requestedAt,
+						requestedBy,
+						email,
+						subject,
+					},
+				},
+			},
+		);
+	}
+
+	unsetEmailTranscriptRequestedByRoomId(roomId) {
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$unset: {
+					transcriptRequest: 1,
+				},
+			},
+		);
+	}
+
+	closeRoomById(roomId, closeInfo) {
+		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
+
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					closedAt,
+					'metrics.chatDuration': chatDuration,
+					'metrics.serviceTimeDuration': serviceTimeDuration,
+					'v.status': 'offline',
+					...(closer && { closer }),
+					...(closedBy && { closedBy }),
+					...(tags && { tags }),
+				},
+				$unset: {
+					open: 1,
+				},
+			},
+		);
+	}
 }
