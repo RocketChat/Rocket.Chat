@@ -299,8 +299,7 @@ const RoomBody = (): ReactElement => {
 
 	useEffect(() => {
 		if (!subscribed) {
-			// setUnreadCount(0);
-			// console.log(`Não inscrito`);
+			setUnreadCount(0);
 			return;
 		}
 
@@ -310,24 +309,14 @@ const RoomBody = (): ReactElement => {
 		}).count();
 
 		count && setUnreadCount(count);
-		// console.log(`Contador de mensagens: ${count}`);
 	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
 		if (!unread?.count) {
 			return debouncedReadMessageRead();
 		}
-		// readMessage.refreshUnreadMark(room._id);
+		readMessage.refreshUnreadMark(room._id);
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
-
-	// useEffect(() => {
-	// 	const handleReadMessage = (): void => console.log(0);
-	// 	readMessage.on(room._id, handleReadMessage);
-
-	// 	return () => {
-	// 		readMessage.off(room._id, handleReadMessage);
-	// 	};
-	// }, [room._id, setUnreadCount]);
 
 	useLegacyMessageEvents({
 		messageListRef: {
