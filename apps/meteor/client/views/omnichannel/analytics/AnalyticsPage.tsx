@@ -70,13 +70,7 @@ const AnalyticsPage = () => {
 						</Box>
 						<Box maxWidth='40%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
-							<AutoCompleteDepartment
-								value={department}
-								onChange={setDepartment}
-								// placeholder={t('All')}
-								// label={t('All')}
-								onlyMyDepartments
-							/>
+							<AutoCompleteDepartment value={department} onChange={setDepartment} onlyMyDepartments />
 						</Box>
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
 					</Box>
