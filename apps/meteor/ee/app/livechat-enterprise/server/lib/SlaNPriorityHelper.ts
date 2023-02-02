@@ -28,7 +28,7 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 };
 
 export const updateRoomSlaWeights = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
-	await LivechatRooms.setEstimatedWaitingTimeQueueForRoomById(roomId, sla);
+	await LivechatRooms.setSlaForRoomById(roomId, sla);
 };
 
 export const removeInquiryQueueSla = async (roomId: string) => {
