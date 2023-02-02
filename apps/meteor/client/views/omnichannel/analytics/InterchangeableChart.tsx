@@ -1,12 +1,13 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { Chart as ChartType, TooltipItem } from 'chart.js';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
 import Chart from '../realTimeMonitoring/charts/Chart';
 
-const getChartTooltips = (chartName) => {
+const getChartTooltips = (chartName: string) => {
 	switch (chartName) {
 		case 'Avg_chat_duration':
 		case 'Avg_first_response_time':
@@ -15,13 +16,14 @@ const getChartTooltips = (chartName) => {
 		case 'Avg_reaction_time':
 			return {
 				callbacks: {
-					title([ctx]) {
+					title([ctx]: TooltipItem<'line'>[]) {
 						const { dataset } = ctx;
 						return dataset.label;
 					},
-					label(ctx) {
+					label(ctx: TooltipItem<'line'>) {
 						const { dataset, dataIndex } = ctx;
-						return secondsToHHMMSS(dataset.data[dataIndex]);
+						const item = dataset.data[dataIndex];
+						return secondsToHHMMSS(typeof item === 'number' ? item : 0);
 					},
 				},
 			};
@@ -30,12 +32,25 @@ const getChartTooltips = (chartName) => {
 	}
 };
 
-const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) => {
+const InterchangeableChart = ({
+	departmentId,
+	dateRange,
+	chartName,
+	...props
+}: {
+	departmentId: string;
+	dateRange: { start: string; end: string };
+	chartName: string;
+	flexShrink: number;
+	h: string;
+	w: string;
+	alignSelf: string;
+}) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canvas = useRef();
-	const context = useRef();
+	const canvas = useRef<HTMLCanvasElement | null>(null);
+	const context = useRef<ChartType<'line', number, string> | void>();
 
 	const { start, end } = dateRange;
 
@@ -51,9 +66,16 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 			if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
 				throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
 			}
-			context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints], {
-				tooltipCallbacks,
-			});
+			context.current = await drawLineChart(
+				canvas.current as HTMLCanvasElement,
+				context.current as ChartType<'line', number, string>,
+				[result.chartLabel],
+				result.dataLabels,
+				[result.dataPoints],
+				{
+					tooltipCallbacks,
+				},
+			);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -70,7 +92,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 		});
 	}, [chartName, departmentId, draw, end, start, t, loadData]);
 
-	return <Chart border='none' pi='none' ref={canvas} {...props} />;
+	return <Chart /* border='none' pi='none'*/ ref={canvas} {...props} />;
 };
 
 export default InterchangeableChart;

@@ -1,3 +1,4 @@
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
@@ -9,7 +10,15 @@ import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
 import Overview from './Overview';
 
-const useOptions = (type) => {
+type DepartmentType =
+	| string
+	| {
+			value: string;
+			label: string;
+	  }
+	| undefined;
+
+const useOptions = (type: string): SelectOption[] => {
 	const t = useTranslation();
 	return useMemo(() => {
 		if (type === 'Conversations') {
@@ -31,11 +40,11 @@ const useOptions = (type) => {
 const AnalyticsPage = () => {
 	const t = useTranslation();
 	const [type, setType] = useState('Conversations');
-	const [department, setDepartment] = useState(null);
-	const [dateRange, setDateRange] = useState({ start: null, end: null });
-	const [chartName, setChartName] = useState();
+	const [department, setDepartment] = useState<DepartmentType>('');
+	const [dateRange, setDateRange] = useState({ start: '', end: '' });
+	const [chartName, setChartName] = useState('');
 
-	const typeOptions = useMemo(
+	const typeOptions: SelectOption[] = useMemo(
 		() => [
 			['Conversations', t('Conversations')],
 			['Productivity', t('Productivity')],
@@ -43,7 +52,7 @@ const AnalyticsPage = () => {
 		[t],
 	);
 
-	const graphOptions = useOptions(type);
+	const graphOptions: SelectOption[] = useOptions(type);
 
 	useEffect(() => {
 		setChartName(graphOptions[0][0]);
@@ -64,15 +73,26 @@ const AnalyticsPage = () => {
 							<AutoCompleteDepartment
 								value={department}
 								onChange={setDepartment}
-								placeholder={t('All')}
-								label={t('All')}
+								// placeholder={t('All')}
+								// label={t('All')}
 								onlyMyDepartments
 							/>
 						</Box>
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
 					</Box>
 					<Box>
-						<Overview type={type} dateRange={dateRange} departmentId={department?.value} />
+						<Overview
+							type={type}
+							dateRange={dateRange}
+							departmentId={
+								(
+									department as {
+										value: string;
+										label: string;
+									}
+								)?.value
+							}
+						/>
 					</Box>
 					<Box display='flex' flexDirection='row'>
 						<Margins inline='x2'>
@@ -90,12 +110,30 @@ const AnalyticsPage = () => {
 							w='66%'
 							h='100%'
 							chartName={chartName}
-							departmentId={department?.value}
+							departmentId={
+								(
+									department as {
+										value: string;
+										label: string;
+									}
+								)?.value
+							}
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
 						<Box display='flex' w='33%' flexDirection='row' justifyContent='stretch' p='x10' mis='x4'>
-							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department?.value} />
+							<AgentOverview
+								type={chartName}
+								dateRange={dateRange}
+								departmentId={
+									(
+										department as {
+											value: string;
+											label: string;
+										}
+									)?.value
+								}
+							/>
 						</Box>
 					</Box>
 				</Margins>
