@@ -1,4 +1,5 @@
-import emojione from 'emojione';
+// import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import mem from 'mem';

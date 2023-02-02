@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import type { MatrixEventMessageReact } from '../definitions/events/MessageReacted';
 import { FederationMessageReactionEventDto } from '../../../application/input/MessageReceiverDto';

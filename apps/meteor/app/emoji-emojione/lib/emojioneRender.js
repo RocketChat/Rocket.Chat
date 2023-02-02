@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 export function emojioneRender(message) {
 	return emojione.toImage(message);

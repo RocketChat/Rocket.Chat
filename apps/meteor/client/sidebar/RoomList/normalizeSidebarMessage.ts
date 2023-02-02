@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
 
