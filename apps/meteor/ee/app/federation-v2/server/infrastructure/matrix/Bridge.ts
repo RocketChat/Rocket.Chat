@@ -37,9 +37,10 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 			createAsClient: true,
 			options: {
 				name: roomName,
+				topic: roomTopic,
+				room_alias_name: `${roomName}${Date.now()}`,
 				visibility,
 				preset: matrixRoomType,
-				room_alias_name: roomName,
 				creation_content: {
 					was_internally_programatically_created: true,
 				},

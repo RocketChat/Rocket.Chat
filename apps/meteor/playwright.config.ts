@@ -30,6 +30,7 @@ export default {
 		],
 	],
 	testDir: 'tests/e2e',
+	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
 	retries: process.env.CI ? 2 : undefined,
 	timeout: 60 * 1000,

@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
 import type { InMemoryQueue } from '../../../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
 import type { RocketChatSettingsAdapter } from '../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
@@ -130,7 +130,7 @@ export class FederationFactoryEE {
 				),
 			),
 		);
-		FederationHooksEE.onUsersAddedToARoom(async (room: IRoom, members: IUser[] | string[], owner?: IUser) =>
+		FederationHooksEE.onUsersAddedToARoom(async (room: IRoom, members: IUser[] | Username[], owner?: IUser) =>
 			roomInternalHooksServiceSender.onUsersAddedToARoom(
 				FederationRoomSenderConverterEE.toOnAddedUsersToARoomDto(
 					owner?._id || '',

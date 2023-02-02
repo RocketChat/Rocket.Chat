@@ -119,6 +119,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		bridge.getRoomTopic.reset();
 		bridge.joinRoom.reset();
 		bridge.getUserProfileInformation.reset();
+		bridge.joinRoom.reset();
 	});
 
 	describe('#onRoomCreated()', () => {
@@ -311,6 +312,38 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			} as any);
 
 			expect(bridge.inviteToRoom.calledWith(room.getExternalId(), user.getExternalId(), invitee.getExternalId())).to.be.true;
+		});
+
+		it('should automatically join the invitee if he/she is from the proxy homeserver', async () => {
+			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: true,
+			});
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+
+			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+
+			expect(bridge.joinRoom.calledWith(room.getExternalId(), invitee.getExternalId())).to.be.true;
+		});
+
+		it('should NOT automatically join the invitee if he/she is NOT from the proxy homeserver', async () => {
+			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: true,
+			});
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+
+			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0], ahahha: 'ahha' } as any);
+
+			expect(bridge.joinRoom.called).to.be.false;
 		});
 	});
 
