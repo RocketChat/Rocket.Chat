@@ -24,6 +24,10 @@ export class FederationChannel {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
+	get toastError(): Locator {
+		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
+	}
+
 	get btnVerticalBarClose(): Locator {
 		return this.page.locator('[data-qa="VerticalBarActionClose"]');
 	}
@@ -59,6 +63,17 @@ export class FederationChannel {
 		await this.page
 			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct Messages")]')
 			.click();
+		await this.sidenav.btnCreateChannel.click();
+	}
+
+	async createNonFederatedPublicChannelAndInviteUsersUsingCreationModal(channelName: string, usernamesToInvite: string[]) {
+		await this.sidenav.openNewByLabel('Channel');
+		await this.sidenav.checkboxPrivateChannel.click();
+		await this.sidenav.inputChannelName.type(channelName);
+		for await (const username of usernamesToInvite) {
+			await this.sidenav.inviteUserToChannel(username);
+		}
+
 		await this.sidenav.btnCreateChannel.click();
 	}
 }

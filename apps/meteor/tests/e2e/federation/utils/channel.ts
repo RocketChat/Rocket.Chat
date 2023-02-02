@@ -2,58 +2,74 @@ import faker from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import type { FederationChannel } from '../page-objects/channel';
-import * as constants from '../config/constants';
-import { formatIntoFullMatrixUsername } from './format';
 import { doLogin } from './auth';
 
 export const createChannelAndInviteRemoteUserToCreateLocalUser = async ({
 	page,
-	poFederationChannelServer1,
-	userFromServer2UsernameOnly,
+	poFederationChannelServer,
+	fullUsernameFromServer,
+	server,
+	closePageAfterCreation = true,
 }: {
 	page: Page;
-	poFederationChannelServer1: FederationChannel;
-	userFromServer2UsernameOnly: string;
+	poFederationChannelServer: FederationChannel;
+	fullUsernameFromServer: string;
+	server: {
+		url: string;
+		username: string;
+		password: string;
+	};
+	closePageAfterCreation?: boolean;
 }): Promise<string> => {
 	const channelName = faker.datatype.uuid();
 
-	const fullUsernameFromServer2 = await doLoginAndReturnFullUsername(page, userFromServer2UsernameOnly);
+	await doLoginAndGoToHome(page, server);
 
-	await poFederationChannelServer1.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
-	page.close();
+	await poFederationChannelServer.createPublicChannelAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer]);
+	if (closePageAfterCreation) {
+		await page.close();
+	}
 
 	return channelName;
 };
 
-const doLoginAndReturnFullUsername = async (page: Page, usernameOnly: string) => {
+const doLoginAndGoToHome = async (
+	page: Page,
+	server: {
+		url: string;
+		username: string;
+		password: string;
+	},
+): Promise<void> => {
 	await doLogin({
 		page,
-		server: {
-			url: constants.RC_SERVER_1.url,
-			username: constants.RC_SERVER_1.username,
-			password: constants.RC_SERVER_1.password,
-		},
+		server,
 	});
 
-	await page.goto(`${constants.RC_SERVER_1.url}/home`);
-
-	return formatIntoFullMatrixUsername(usernameOnly, constants.RC_SERVER_2.matrixServerName);
+	await page.goto(`${server.url}/home`);
 };
 
 export const createGroupAndInviteRemoteUserToCreateLocalUser = async ({
 	page,
-	poFederationChannelServer1,
-	userFromServer2UsernameOnly,
+	poFederationChannelServer,
+	fullUsernameFromServer,
+	server,
 }: {
 	page: Page;
-	poFederationChannelServer1: FederationChannel;
-	userFromServer2UsernameOnly: string;
+	poFederationChannelServer: FederationChannel;
+	fullUsernameFromServer: string;
+	server: {
+		url: string;
+		username: string;
+		password: string;
+		matrixServerName: string;
+	};
 }): Promise<string> => {
 	const groupName = faker.datatype.uuid();
 
-	const fullUsernameFromServer2 = await doLoginAndReturnFullUsername(page, userFromServer2UsernameOnly);
+	await doLoginAndGoToHome(page, server);
 
-	await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [fullUsernameFromServer2]);
+	await poFederationChannelServer.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [fullUsernameFromServer]);
 	page.close();
 
 	return groupName;

@@ -67,4 +67,24 @@ export class FederationHomeFlextab {
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
 	}
+
+	get btnFileList(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-clip"]');
+	}
+
+	get btnMentionedMessagesList(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-at"]');
+	}
+
+	get btnStarredMessagesList(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-star"]');
+	}
+
+	get btnPinnedMessagesList(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-pin"]');
+	}
+
+	get btnPruneMessages(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-eraser"]');
+	}
 }

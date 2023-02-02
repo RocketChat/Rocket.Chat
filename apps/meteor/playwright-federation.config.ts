@@ -13,14 +13,12 @@ export default {
 			// (even in headless mode)
 			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
 		},
-		permissions: ['microphone'],
+		permissions: ['microphone', 'camera'],
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: 'list',
 	testDir: 'tests/e2e/federation',
 	workers: 1,
 	retries: 2,
-	timeout: 60 * 1000,
-	globalTimeout: 40 * 60 * 1000,
-	maxFailures: 5,
+	timeout: 60 * 2000,
 } as PlaywrightTestConfig;
