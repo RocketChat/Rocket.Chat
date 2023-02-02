@@ -3441,6 +3441,7 @@
   "mobile-upload-file": "Allow file upload on mobile devices",
   "mobile-upload-file_description": "Permission to allow file upload on mobile devices",
   "Mobile_Push_Notifications_Default_Alert": "Push Notifications Default Alert",
+  "Moderation_Console": "Moderation Console",
   "Monday": "Monday",
   "Mongo_storageEngine": "Mongo Storage Engine",
   "Mongo_version": "Mongo Version",
