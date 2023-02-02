@@ -193,17 +193,19 @@ const RoomBody = (): ReactElement => {
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
 		const rid = room._id;
-		const { firstUnread } = RoomHistoryManager.getRoom(rid) ?? {};
+		const { firstUnread } = RoomHistoryManager.getRoom(rid);
 		let message = firstUnread?.get();
 		if (!message) {
-			message = ChatMessage.findOne({ rid, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 });
+			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
 		}
 		RoomHistoryManager.getSurroundingMessages(message, atBottomRef);
-	}, [room._id, subscription?.ls]);
+		setUnreadCount(0);
+	}, [room._id, unread?.since, setUnreadCount]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		readMessage.readNow(room._id);
-	}, [room._id]);
+		setUnreadCount(0);
+	}, [room._id, setUnreadCount]);
 
 	const handleUploadProgressClose = useCallback(
 		(id: Upload['id']) => {
@@ -369,6 +371,15 @@ const RoomBody = (): ReactElement => {
 					setUnreadCount(0);
 					return;
 				}
+
+				// const rid = room._id;
+				// const { firstUnread } = RoomHistoryManager.getRoom(rid);
+				// const firstUnreadMessage = firstUnread?.get();
+				// console.log(`Mensagem: ${firstUnreadMessage} Unread: ${firstUnreadMessage?.unread}`);
+				// if (!firstUnreadMessage?.unread) {
+				// 	setUnreadCount(0);
+				// 	return;
+				// }
 
 				const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 				if (!lastMessage) {
