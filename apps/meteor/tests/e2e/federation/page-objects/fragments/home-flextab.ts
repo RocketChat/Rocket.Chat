@@ -48,6 +48,20 @@ export class FederationHomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-discussion"]');
 	}
 
+	get btnTeam(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
+	}
+
+	get btnAddExistingChannelToTeam(): Locator {
+		return this.page.locator('//button[text()="Add Existing"]');
+	}
+
+	async searchForChannelOnAddChannelToTeam(channelName: string): Promise<void> {
+		await this.page.locator('//label[contains(text(), "Channels")]/..//input').focus();
+		await this.page.waitForTimeout(2000);
+		await this.page.locator('//label[contains(text(), "Channels")]/..//input').type(channelName);
+	}
+
 	get btnThread(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-thread"]');
 	}

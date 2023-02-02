@@ -65,6 +65,33 @@ export class FederationSidenav {
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
+	async countFilteredChannelsOnDirectory(name: string): Promise<number> {
+		await this.page.locator('button[title="Directory"]').click();
+		await this.page.locator('button:has-text("Channels")').click();
+		await this.page.locator('input[placeholder ="Search Channels"]').focus();
+		await this.page.locator('input[placeholder ="Search Channels"]').fill(name);
+		await this.page.waitForTimeout(5000);
+
+		return this.page.locator('table tbody tr').count();
+	}
+
+	async openChatWhenHaveMultipleWithTheSameName(name: string, item: number): Promise<void> {
+		await this.page.locator('[data-qa="sidebar-search"]').click();
+		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
+		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
+		await this.page.waitForTimeout(2000);
+		await this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).nth(item).click({ force: true });
+	}
+
+	async countRoomsByNameOnSearch(name: string): Promise<number> {
+		await this.page.locator('[data-qa="sidebar-search"]').click();
+		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
+		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
+		await this.page.waitForTimeout(2000);
+
+		return this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).count();
+	}
+
 	async openDMMultipleChat(name: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-search"]').click();
 		await this.page.locator('[data-qa="sidebar-search-input"]').focus();

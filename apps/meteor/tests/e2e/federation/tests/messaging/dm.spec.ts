@@ -1016,6 +1016,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await expect(poFederationChannelServerUser2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.deleteLastMessage();
+				await page.waitForTimeout(2000);
 				await poFederationChannelServerUser2.content.sendMessageUsingEnter('message from Server B');
 				await poFederationChannelServerUser2.content.deleteLastMessage();
 				await expect(poFederationChannelServerUser2.toastSuccess).toBeVisible();
@@ -1102,7 +1103,7 @@ test.describe.parallel('Federation - DM Messaging', () => {
 
 				await poFederationChannelServerUser2.content.starLastMessage();
 				await expect(
-					poFederationChannelServer2.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
+					poFederationChannelServerUser2.toastSuccess.locator('div.rcx-toastbar-content', { hasText: 'Message has been starred' }),
 				).toBeVisible();
 
 				await expect(poFederationChannelServerUser2.content.lastUserMessage.locator('.rcx-icon--name-star-filled')).toBeVisible();
