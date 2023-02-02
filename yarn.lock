@@ -7610,10 +7610,13 @@ __metadata:
     "@storybook/testing-library": ~0.0.13
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ~13.4.0
+    "@types/emojione": ^2.2.6
     "@types/jest": ^27.4.1
     "@types/react": ^18.0.26
     "@types/react-dom": ^18
     "@types/testing-library__jest-dom": ^5
+    emoji-assets: ^7.0.1
+    emojione: ^4.5.0
     eslint: ^8.12.0
     jest: ^27.5.1
     react: ^18.2.0
@@ -18824,6 +18827,13 @@ __metadata:
   version: 0.8.1
   resolution: "emittery@npm:0.8.1"
   checksum: 2457e8c7b0688bb006126f2c025b2655abe682f66b184954122a8a065b5277f9813d49d627896a10b076b81c513ec5f491fd9c14fbd42c04b95ca3c9f3c365ee
+  languageName: node
+  linkType: hard
+
+"emoji-assets@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "emoji-assets@npm:7.0.1"
+  checksum: b8a5239a3c429b7b5deb00411ed065c6d96bc2612b887ada513457ae639ea953ebc6e3af50d7666a29be2e53bbcde189092166cba1a502297467ea8473db3106
   languageName: node
   linkType: hard
 

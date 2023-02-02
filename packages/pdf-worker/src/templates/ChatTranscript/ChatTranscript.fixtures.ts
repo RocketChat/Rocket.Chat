@@ -111,6 +111,21 @@ export const exampleData = {
 				name: 'Christian Castro',
 				username: 'cristiano.castro',
 			},
+			md: [
+				{
+					type: 'UNORDERED_LIST',
+					value: [
+						{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'I am having trouble with my account;' }] },
+						{
+							type: 'LIST_ITEM',
+							value: [
+								{ type: 'PLAIN_TEXT', value: 'I am having trouble with my password. ' },
+								{ type: 'EMOJI', value: undefined, unicode: '🙂' },
+							],
+						},
+					],
+				},
+			],
 		},
 		{
 			msg: 'Can you please provide your account email?',
@@ -142,13 +157,21 @@ export const exampleData = {
 			files: [invalidFile],
 		},
 		{
-			msg: 'I have fixed the issue, is there anything else I can help you with?',
 			ts: '2022-11-21T16:00:00.000Z',
 			u: {
 				_id: '123',
 				name: 'Juanito De Ponce',
 				username: 'juanito.ponce',
 			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{ type: 'PLAIN_TEXT', value: 'I have fixed the issue, is there anything else I can help you with? ' },
+						{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'smile' } },
+					],
+				},
+			],
 		},
 		{
 			msg: 'No, that is all. Thank you for your help.',
