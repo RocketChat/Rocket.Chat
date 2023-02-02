@@ -17,6 +17,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import { validateRegex } from '../../../lib/utils/validateRegex';
 
 type CustomEmojiProps = {
 	reload: MutableRefObject<() => void>;
@@ -33,7 +34,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+				query: JSON.stringify({ name: { $regex: validateRegex(text), $options: 'i' } }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,

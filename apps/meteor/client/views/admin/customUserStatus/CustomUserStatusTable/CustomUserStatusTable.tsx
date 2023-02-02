@@ -15,6 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { validateRegex } from '../../../../lib/utils/validateRegex';
 import CustomUserStatusRow from './CustomUserStatusRow';
 
 type CustomUserStatusProps = {
@@ -31,7 +32,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+				query: JSON.stringify({ name: { $regex: validateRegex(text), $options: 'i' } }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,

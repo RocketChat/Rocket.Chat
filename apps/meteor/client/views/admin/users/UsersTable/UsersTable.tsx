@@ -15,6 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import { validateRegex } from '../../../../lib/utils/validateRegex';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
@@ -28,15 +29,6 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
-
-	function validateRegex(regexString: string): string {
-		try {
-			new RegExp(regexString);
-			return regexString;
-		} catch (e) {
-			return '';
-		}
-	}
 
 	const query = useDebouncedValue(
 		useMemo(

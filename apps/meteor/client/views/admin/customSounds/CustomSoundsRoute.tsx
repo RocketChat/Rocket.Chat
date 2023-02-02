@@ -15,6 +15,7 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
+import { validateRegex } from '../../../lib/utils/validateRegex';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundRow from './CustomSoundRow';
@@ -35,7 +36,7 @@ const CustomSoundsRoute = (): ReactElement => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+				query: JSON.stringify({ name: { $regex: validateRegex(text), $options: 'i' } }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				...(itemsPerPage && { count: itemsPerPage }),
 				...(current && { offset: current }),
