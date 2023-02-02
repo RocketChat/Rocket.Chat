@@ -9,6 +9,7 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple.tsx';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
+import RoomProvider from '../../providers/RoomProvider';
 
 type ShareMessageProps = {
 	onClose: () => void;
@@ -111,7 +112,10 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 						{!rooms.length && <Field.Hint>{t('Select_atleast_one_channel_to_share_the_messsage')}</Field.Hint>}
 					</Field>
 					<Field>
-						<QuoteAttachment attachment={attachment} />
+						{/* TODO: check for a better workaround */}
+						<RoomProvider rid={message.rid}>
+							<QuoteAttachment attachment={attachment} />
+						</RoomProvider>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
