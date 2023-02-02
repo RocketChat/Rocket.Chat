@@ -7,7 +7,7 @@ type ListItemProps = {
 	icon?: ComponentProps<typeof OptionIcon>['name'];
 	input?: any;
 	loading?: boolean;
-	notifications?: number;
+	notifications?: number | null;
 	action?: MouseEventHandler<HTMLOrSVGElement>;
 };
 

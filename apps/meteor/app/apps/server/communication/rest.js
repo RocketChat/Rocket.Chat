@@ -1142,7 +1142,7 @@ export class AppsRestApi {
 					const { unseenRequests } = this.bodyParams;
 
 					try {
-						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: unseenRequests.toJSON() });
+						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: { ids: unseenRequests } });
 
 						return API.v1.success(result.data);
 					} catch (e) {

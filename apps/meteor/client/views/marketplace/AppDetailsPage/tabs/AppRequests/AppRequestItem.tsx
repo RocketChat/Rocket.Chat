@@ -21,7 +21,7 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 	return (
 		<Box display='flex' flexDirection='row' pb='x12' pie='x24' mbe='x9' flexGrow='1'>
 			<Box is='section' mie='x8' mbs='x2' display='flex' flexDirection='row' alignItems='flex-start' h='full'>
-				<Box mie='x16' alignSelf='center'>
+				<Box mie='x16' alignSelf='center' height='100%' width='x8'>
 					{!seen && isAdminUser ? <Badge small variant='primary' /> : null}
 				</Box>
 				{username && <UserAvatar size='x36' username={username} />}

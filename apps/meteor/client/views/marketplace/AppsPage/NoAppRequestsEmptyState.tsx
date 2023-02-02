@@ -7,8 +7,8 @@ const NoAppRequestsEmptyState = () => {
 
 	return (
 		<States>
-			<StatesTitle>{t('No_requests')}</StatesTitle>
-			<StatesSubtitle>Requested apps will appear here</StatesSubtitle>
+			<StatesTitle>{t('No_requested_apps')}</StatesTitle>
+			<StatesSubtitle>{t('Requested_apps_will_appear_here')}</StatesSubtitle>
 		</States>
 	);
 };

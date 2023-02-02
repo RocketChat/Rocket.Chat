@@ -1,4 +1,4 @@
-import { Box, Icon, Menu, Throbber, Option } from '@rocket.chat/fuselage';
+import { Box, Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useMethod,
@@ -421,7 +421,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	]);
 
 	if (loading) {
-		return <Throbber disabled />;
+		return <Skeleton variant='rect' height='x28' width='x28' />;
 	}
 
 	if (!isAdminUser && app?.installed) {

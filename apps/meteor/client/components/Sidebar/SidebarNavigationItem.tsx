@@ -1,5 +1,5 @@
 import type { IconProps } from '@rocket.chat/fuselage';
-import { Badge, Box, Icon, Tag } from '@rocket.chat/fuselage';
+import { Badge, Skeleton, Box, Icon, Tag } from '@rocket.chat/fuselage';
 import { useRoutePath } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo, useMemo } from 'react';
@@ -30,22 +30,32 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	const path = useRoutePath(pathSection, params);
 	const isActive = currentPath?.includes(path as string);
 
-	const appRequestStats = useAppRequestStats();
+	const { data: appRequestStats, isLoading, isError } = useAppRequestStats();
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
+
+	const handleAppsRequestBadge = () => {
+		if (currentPath?.includes('marketplace') && label === 'Requested') {
+			if (isLoading) return <Skeleton variant='rect' height='x16' width='x16' />;
+
+			if (isError || !appRequestStats.data.totalUnseen) return null;
+
+			return (
+				<Box>
+					<Badge variant='primary'>{appRequestStats?.data.totalUnseen}</Badge>
+				</Box>
+			);
+		}
+	};
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} key={path}>
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
 			<Box withTruncatedText fontScale='p2' mi='x4' display='flex' alignItems='center' justifyContent='space-between' width='100%'>
 				{label} {tag && <Tag>{tag}</Tag>}
-				{currentPath?.includes('marketplace') && label === 'Requested' && Boolean(appRequestStats.data?.data.totalUnseen) && (
-					<Box>
-						<Badge variant='primary'>{appRequestStats.data?.data.totalUnseen}</Badge>
-					</Box>
-				)}
+				{handleAppsRequestBadge()}
 			</Box>
 		</SidebarGenericItem>
 	);

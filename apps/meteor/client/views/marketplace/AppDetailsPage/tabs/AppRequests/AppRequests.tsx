@@ -1,26 +1,51 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+import { queryClient } from '../../../../../lib/queryClient';
+import { useAppsReload } from '../../../AppsContext';
 import { useAppRequests } from '../../../hooks/useAppRequests';
-import { useMarkRequestsAsSeen } from '../../../hooks/useMarkRequestsAsSeen';
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
 
 type itemsPerPage = 25 | 50 | 100;
 
-const AppRequests = ({ id }: { id: App['id'] }): ReactElement => {
+const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean }): ReactElement => {
 	const [limit, setLimit] = useState<itemsPerPage>(25);
 	const [offset, setOffset] = useState<number>(0);
 
 	const { data: paginatedAppRequests, isSuccess, isLoading } = useAppRequests(id, limit, offset);
-	useMarkRequestsAsSeen(paginatedAppRequests?.data, isSuccess);
 	const t = useTranslation();
 
 	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
 	const onSetCurrent = (currentItemsOption: SetStateAction<number>) => setOffset(currentItemsOption);
+
+	const reloadApps = useAppsReload();
+	const markSeen = useEndpoint('POST', '/apps/app-request/markAsSeen');
+	const markAppRequestsAsSeen = useMutation({
+		mutationKey: ['mark-app-requests-as-seen'],
+		mutationFn: (unseenRequests: Array<string>) => markSeen({ unseenRequests }),
+		retry: false,
+	});
+	useEffect(() => {
+		return () => {
+			if (isAdminUser && isSuccess) {
+				const unseenRequests = paginatedAppRequests.data?.filter(({ id, seen }) => !seen && id).map(({ id }) => id);
+
+				if (unseenRequests.length) {
+					markAppRequestsAsSeen.mutate(unseenRequests, {
+						onSuccess: () => {
+							queryClient.refetchQueries({ queryKey: ['app-requests-stats'] });
+							reloadApps();
+						},
+					});
+				}
+			}
+		};
+	}, [isAdminUser, isSuccess, markAppRequestsAsSeen, paginatedAppRequests?.data, reloadApps]);
 
 	if (isLoading) {
 		return (

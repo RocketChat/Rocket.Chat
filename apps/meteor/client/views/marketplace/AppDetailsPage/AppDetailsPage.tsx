@@ -2,7 +2,14 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useCurrentRoute, useRoute, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import {
+	useTranslation,
+	useCurrentRoute,
+	useRoute,
+	useRouteParameter,
+	useToastMessageDispatch,
+	usePermission,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useCallback, useRef } from 'react';
 
@@ -30,6 +37,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 	const appData = useAppInfo(id);
+	const isAdminUser = usePermission('manage-apps');
 
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -92,7 +100,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 								tab={tab}
 							/>
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
-							{tab === 'requests' && <AppRequests id={id} />}
+							{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
 							{tab === 'security' && isSecurityVisible && (
 								<AppSecurity
 									privacyPolicySummary={privacyPolicySummary}

@@ -19,7 +19,7 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 	const canManageApps = usePermission('manage-apps');
 	const page = 'list';
 
-	const appRequestStats = useAppRequestStats();
+	const { data: appRequestStats, isLoading } = useAppRequestStats();
 
 	return (
 		<>
@@ -50,8 +50,8 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 								marketplaceRoute.push({ context: 'requested', page });
 								onDismiss();
 							}}
-							loading={appRequestStats.isLoading}
-							notifications={appRequestStats?.data?.data.totalUnseen}
+							loading={isLoading}
+							notifications={appRequestStats?.data.totalUnseen ? appRequestStats?.data.totalUnseen : null}
 						/>
 					)}
 				</>
