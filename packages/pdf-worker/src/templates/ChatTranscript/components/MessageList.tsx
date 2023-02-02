@@ -1,15 +1,21 @@
-import { View, StyleSheet } from '@react-pdf/renderer';
+import { Text, View, StyleSheet } from '@react-pdf/renderer';
+import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 
 import { Divider } from './Divider';
 import { MessageHeader } from './MessageHeader';
 import { Files } from './Files';
-import { MessageContent } from './MessageContent';
 import type { ChatTranscriptData } from '..';
+import { Markup } from '../markup';
 
 const styles = StyleSheet.create({
 	wrapper: {
 		marginBottom: 16,
 		paddingHorizontal: 32,
+	},
+	message: {
+		marginTop: 1,
+		fontSize: fontScales.p2.fontSize,
+		textAlign: 'justify',
 	},
 });
 
@@ -19,7 +25,7 @@ export const MessageList = ({ messages, invalidFileMessage }: { messages: ChatTr
 			<View style={styles.wrapper} key={index} wrap={false}>
 				{message.divider && <Divider divider={message.divider} />}
 				<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
-				<MessageContent message={message.msg} />
+				<View style={styles.message}>{message.md ? <Markup tokens={message.md} /> : <Text>{message.msg}</Text>}</View>
 				{message.files && <Files files={message.files} invalidMessage={invalidFileMessage} />}
 			</View>
 		))}

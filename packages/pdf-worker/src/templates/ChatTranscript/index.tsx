@@ -10,7 +10,7 @@ const FONT_PATH = path.resolve(__dirname, '../../../public');
 
 export type PDFFile = { name?: string; buffer: Buffer | null };
 
-export type PDFMessage = Serialized<Omit<Pick<IMessage, 'msg' | 'u' | 'ts'>, 'files'>> & {
+export type PDFMessage = Serialized<Omit<Pick<IMessage, 'msg' | 'u' | 'ts' | 'md'>, 'files'>> & {
 	files?: PDFFile[];
 } & { divider?: string };
 
@@ -72,8 +72,11 @@ export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> 
 		family: 'Inter',
 		fonts: [
 			{ src: `${FONT_PATH}/inter400.ttf` },
+			{ src: `${FONT_PATH}/inter400-italic.ttf`, fontStyle: 'italic' },
 			{ src: `${FONT_PATH}/inter500.ttf`, fontWeight: 500 },
+			{ src: `${FONT_PATH}/inter500-italic.ttf`, fontWeight: 500, fontStyle: 'italic' },
 			{ src: `${FONT_PATH}/inter700.ttf`, fontWeight: 700 },
+			{ src: `${FONT_PATH}/inter700-italic.ttf`, fontWeight: 700, fontStyle: 'italic' },
 		],
 	});
 	Font.registerHyphenationCallback((word) => [word]);

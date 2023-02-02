@@ -8,7 +8,14 @@ import { ChatTranscriptPDF } from '.';
 
 Font.register({
 	family: 'Inter',
-	fonts: [{ src: '/inter400.ttf' }, { src: '/inter500.ttf', fontWeight: 500 }, { src: '/inter700.ttf', fontWeight: 700 }],
+	fonts: [
+		{ src: '/inter400.ttf' },
+		{ src: '/inter400-italic.ttf', fontStyle: 'italic' },
+		{ src: '/inter500.ttf', fontWeight: 500 },
+		{ src: '/inter500-italic.ttf', fontWeight: 500, fontStyle: 'italic' },
+		{ src: '/inter700.ttf', fontWeight: 700 },
+		{ src: '/inter700-italic.ttf', fontWeight: 700, fontStyle: 'italic' },
+	],
 });
 
 Font.registerHyphenationCallback((word) => [word]);

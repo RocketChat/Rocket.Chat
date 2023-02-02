@@ -20,7 +20,9 @@ type WorkDetailsWithSource = WorkDetails & {
 	from: string;
 };
 
-type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg'> & { files: ({ name?: string; buffer: Buffer | null } | undefined)[] };
+type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
+	files: ({ name?: string; buffer: Buffer | null } | undefined)[];
+};
 
 type WorkerData = {
 	siteName: string;
@@ -79,7 +81,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Closing message should not appear :)
 		return Messages.findLivechatMessagesWithoutClosing(rid, {
 			sort: { ts: 1 },
-			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1 },
+			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1, md: 1 },
 		}).toArray();
 	}
 
@@ -121,7 +123,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			messages.map(async (message: IMessage) => {
 				if (!message.attachments || !message.attachments.length) {
 					// If there's no attachment and no message, what was sent? lol
-					return { _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg };
+					return { _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg, md: message.md };
 				}
 
 				const files = await Promise.all(
