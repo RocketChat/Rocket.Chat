@@ -39,6 +39,7 @@
 	"dependencies": {
 		"@react-pdf/renderer": "^3.0.1",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/fuselage-tokens": "next",
 		"@types/react": "^18.0.26",
 		"react": "^18.2.0",
 		"moment": "^2.29.4"
