@@ -372,15 +372,6 @@ const RoomBody = (): ReactElement => {
 					return;
 				}
 
-				// const rid = room._id;
-				// const { firstUnread } = RoomHistoryManager.getRoom(rid);
-				// const firstUnreadMessage = firstUnread?.get();
-				// console.log(`Mensagem: ${firstUnreadMessage} Unread: ${firstUnreadMessage?.unread}`);
-				// if (!firstUnreadMessage?.unread) {
-				// 	setUnreadCount(0);
-				// 	return;
-				// }
-
 				const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
 				if (!lastMessage) {
 					setUnreadCount(0);
