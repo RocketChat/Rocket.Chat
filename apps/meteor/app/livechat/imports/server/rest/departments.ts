@@ -270,7 +270,7 @@ API.v1.addRoute(
 		},
 		async post() {
 			check(this.urlParams, {
-				departmentId: String,
+				_id: String,
 			});
 
 			check(
@@ -280,7 +280,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			Livechat.saveDepartmentAgents(this.urlParams.departmentId, this.bodyParams);
+			Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},
