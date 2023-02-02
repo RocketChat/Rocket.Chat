@@ -38,7 +38,7 @@ describe('AppsModelList', () => {
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
 		expect(screen.getByText('Installed')).to.exist;
-		expect(screen.getByText('Requested')).to.exist;
+		await waitFor(() => expect(screen.getByText('Requested')).to.exist);
 	});
 
 	context('when clicked', () => {
