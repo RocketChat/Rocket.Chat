@@ -20,5 +20,8 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"dependencies": {
+		"moment-timezone": "^0.5.40"
+	}
 }
