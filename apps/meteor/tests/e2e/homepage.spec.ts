@@ -83,7 +83,7 @@ test.describe.serial('homepage', () => {
 
 				test('expect correct state for card buttons', async () => {
 					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
+					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).not.toBeDisabled();
 				});
 			});
 
