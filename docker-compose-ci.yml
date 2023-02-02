@@ -142,7 +142,6 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-      - queue-worker-service
 
   nats:
     image: nats:2.6-alpine
