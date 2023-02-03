@@ -166,9 +166,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
 							// ignore attachments without file
 							return { name: attachment.title, buffer: null };
-							return { name: attachment.title, buffer: null };
 						}
-
 
 						const uploadedFile = await Uploads.findOneById(file._id);
 						if (!uploadedFile) {
