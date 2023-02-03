@@ -13,7 +13,6 @@ type AppsPageProps = {
 const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
-	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
 	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
@@ -61,11 +60,9 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					{Boolean(isDevelopmentMode) && (
-						<Button primary onClick={handleUploadButtonClick}>
-							<Icon size='x20' name='upload' /> {t('Upload_app')}
-						</Button>
-					)}
+					<Button primary onClick={handleUploadButtonClick}>
+						<Icon size='x20' name='upload' /> {t('Upload_app')}
+					</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>

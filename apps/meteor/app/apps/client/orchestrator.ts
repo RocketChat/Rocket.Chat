@@ -6,14 +6,11 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import type { AppScreenshot, AppRequestFilter, Pagination, IRestResponse, Serialized, AppRequest } from '@rocket.chat/core-typings';
 
 import type { App } from '../../../client/views/admin/apps/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection/client';
-import { createDeferredValue } from '../lib/misc/DeferredValue';
 import type {
 	// IAppFromMarketplace,
 	IAppLanguage,
@@ -38,28 +35,19 @@ class AppClientOrchestrator {
 
 	private ws: AppWebsocketReceiver;
 
-	private setEnabled: (value: boolean | PromiseLike<boolean>) => void;
-
-	private deferredIsEnabled: Promise<boolean> | undefined;
-
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
-		const { promise, resolve } = createDeferredValue<boolean>();
-		this.deferredIsEnabled = promise;
-		this.setEnabled = resolve;
 	}
 
-	public async load(isEnabled: boolean): Promise<void> {
+	public async load(): Promise<void> {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver();
 			this.isLoaded = true;
 		}
 
 		await handleI18nResources();
-
-		this.setEnabled(isEnabled);
 	}
 
 	public getWsListener(): AppWebsocketReceiver {
@@ -82,10 +70,6 @@ class AppClientOrchestrator {
 	public async screenshots(appId: string): Promise<AppScreenshot[]> {
 		const { screenshots } = await APIClient.get(`/apps/${appId}/screenshots`);
 		return screenshots;
-	}
-
-	public isEnabled(): Promise<boolean> | undefined {
-		return this.deferredIsEnabled;
 	}
 
 	public async getApps(): Promise<App[]> {
@@ -275,19 +259,7 @@ export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('apps/is-enabled', (error: Error, isEnabled: boolean) => {
-			if (error) {
-				Apps.handleError(error);
-				return;
-			}
-
-			Apps.getAppClientManager().initialize();
-			Apps.load(isEnabled);
-		});
-	});
-
-	Tracker.autorun(() => {
-		const isEnabled = settings.get('/Apps_Framework_enabled');
-		Apps.load(isEnabled);
+		Apps.getAppClientManager().initialize();
+		Apps.load();
 	});
 });

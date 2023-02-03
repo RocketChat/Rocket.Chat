@@ -1,4 +1,4 @@
-import { useRouteParameter, useRoute, usePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
@@ -12,8 +12,6 @@ import AppsProvider from './AppsProvider';
 const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const canManageApps = usePermission('manage-apps');
-	const isAppsEngineEnabled = useMethod('apps/is-enabled');
-	const appsWhatIsItRoute = useRoute('admin-apps-disabled');
 	const marketplaceRoute = useRoute('admin-marketplace');
 
 	const context = useRouteParameter('context');
@@ -34,11 +32,6 @@ const AppsRoute = (): ReactElement => {
 				return;
 			}
 
-			if (!(await isAppsEngineEnabled())) {
-				appsWhatIsItRoute.push();
-				return;
-			}
-
 			if (!mounted) {
 				return;
 			}
@@ -51,7 +44,7 @@ const AppsRoute = (): ReactElement => {
 		return (): void => {
 			mounted = false;
 		};
-	}, [canManageApps, isAppsEngineEnabled, appsWhatIsItRoute, marketplaceRoute, context]);
+	}, [canManageApps, marketplaceRoute, context]);
 
 	if (!canManageApps) {
 		return <NotAuthorizedPage />;

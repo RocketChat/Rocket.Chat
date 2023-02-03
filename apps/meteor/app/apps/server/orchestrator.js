@@ -128,16 +128,12 @@ export class AppServerOrchestrator {
 		return this._isInitialized;
 	}
 
-	isEnabled() {
-		return settings.get('Apps_Framework_enabled');
-	}
-
 	isLoaded() {
 		return this.getManager().areAppsLoaded();
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
+		return !isTesting();
 	}
 
 	/**
@@ -253,21 +249,6 @@ settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Logs_TTL_Alert',
 		});
 
-		this.add('Apps_Framework_enabled', true, {
-			type: 'boolean',
-			hidden: false,
-		});
-
-		this.add('Apps_Framework_Development_Mode', false, {
-			type: 'boolean',
-			enableQuery: {
-				_id: 'Apps_Framework_enabled',
-				value: true,
-			},
-			public: true,
-			hidden: false,
-		});
-
 		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
 			values: [
@@ -313,19 +294,6 @@ settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) 
 	}
 });
 
-settings.watch('Apps_Framework_enabled', (isEnabled) => {
-	// In case this gets called before `Meteor.startup`
-	if (!Apps.isInitialized()) {
-		return;
-	}
-
-	if (isEnabled) {
-		Apps.load();
-	} else {
-		Apps.unload();
-	}
-});
-
 settings.watch('Apps_Logs_TTL', (value) => {
 	if (!Apps.isInitialized()) {
 		return;
@@ -357,7 +325,5 @@ settings.watch('Apps_Logs_TTL', (value) => {
 Meteor.startup(function _appServerOrchestrator() {
 	Apps.initialize();
 
-	if (Apps.isEnabled()) {
-		Apps.load();
-	}
+	Apps.load();
 });

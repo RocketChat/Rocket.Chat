@@ -178,10 +178,6 @@ export class AppsRestApi {
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Installation from url is disabled.' });
-						}
-
 						try {
 							const response = await fetch(this.bodyParams.url);
 
@@ -231,10 +227,6 @@ export class AppsRestApi {
 							return API.v1.failure(err.message);
 						}
 					} else {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
-						}
-
 						const app = await getUploadFormData(
 							{
 								request: this.request,
@@ -481,10 +473,6 @@ export class AppsRestApi {
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
-						}
-
 						const response = await fetch(this.bodyParams.url);
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -525,10 +513,6 @@ export class AppsRestApi {
 							return API.v1.internalError();
 						}
 					} else {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
-						}
-
 						const app = await getUploadFormData(
 							{
 								request: this.request,
