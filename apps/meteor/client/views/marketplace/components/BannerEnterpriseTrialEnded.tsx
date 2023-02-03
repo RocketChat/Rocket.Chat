@@ -7,11 +7,13 @@ import React from 'react';
 const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const t = useTranslation();
 	const isAdmin = usePermission('enable-unlimited-apps');
+
 	const bannerLink = {
-		// TODO: add link internal to upgrade page
-		link: '#',
+		link: '/admin/upgrade/go-fully-featured',
 		linkText: t('Upgrade_tab_upgrade_your_plan'),
+		linkTarget: '_self',
 	};
+
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 
 	const [showTrialBanner, setShowTrialBanner] = useLocalStorage('showAppsTrialEndBanner', cloudWorkspaceHadTrial);
@@ -30,7 +32,6 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 					{isAdmin
 						? t('Apps_disabled_when_Enterprise_trial_ended_description_admin')
 						: t('Apps_disabled_when_Enterprise_trial_ended_description')}
-					{}
 				</Banner>
 			)}
 		</>
