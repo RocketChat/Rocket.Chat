@@ -241,7 +241,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(response.body.items[0]).to.have.property('name');
 			await deleteDepartment(department._id);
 		});
-		it('should return a list of departments excluding the ids on selector.exceptions', (done) => {
+    
+		it('should return a list of departments excluding the ids on selector.exceptions', function (done) {
+			if (!IS_EE) {
+				this.skip();
+			}
+
 			let dep1: ILivechatDepartment;
 
 			updatePermission('view-livechat-departments', ['admin'])
