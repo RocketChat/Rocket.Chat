@@ -5,19 +5,16 @@ import { useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, memo } from 'react';
 
+import { useUserCard } from '../../../hooks/useUserCard';
+import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
-import {
-	parseMessageTextToAstMarkdown,
-	removePossibleNullMessageValues,
-} from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import StatusIndicators from '../StatusIndicators';
 import ToolboxHolder from '../ToolboxHolder';
+import { useMessageListContext } from '../list/MessageListContext';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
@@ -30,9 +27,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
+	const { open: openUserCard } = useUserCard();
 
 	const { katex, showColors } = useMessageListContext();
 	const subscription = useUserSubscription(message.rid);
@@ -87,7 +82,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 
 				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context={'thread'} />}
 		</Message>
 	);
 };

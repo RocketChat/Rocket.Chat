@@ -83,7 +83,7 @@ Meteor.startup(function () {
 						context: message.tmid,
 						rid: message.rid,
 						jump: message._id,
-						name: Rooms.findOne({ _id: message.rid }).name,
+						name: Rooms.findOne({ _id: message.rid })?.name ?? '',
 					},
 					{
 						jump: message._id,
