@@ -27,4 +27,5 @@ class ChatMessageCollection
 	public declare queries: MinimongoCollection<IMessage & { ignored?: boolean }>['queries'];
 }
 
+/** @deprecated */
 export const ChatMessage = new ChatMessageCollection();

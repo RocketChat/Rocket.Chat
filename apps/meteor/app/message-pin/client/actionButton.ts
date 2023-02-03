@@ -10,6 +10,7 @@ import { hasAtLeastOnePermission } from '../../authorization/client';
 import { Rooms } from '../../models/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { queryClient } from '../../../client/lib/queryClient';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -23,7 +24,10 @@ Meteor.startup(function () {
 			Meteor.call('pinMessage', message, function (error: Error) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
+
+				queryClient.invalidateQueries(['rooms', message.rid, 'pinned-messages']);
 			});
 		},
 		condition({ message, subscription, room }) {
@@ -51,7 +55,10 @@ Meteor.startup(function () {
 			Meteor.call('unpinMessage', message, function (error: Error) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
+					return;
 				}
+
+				queryClient.invalidateQueries(['rooms', message.rid, 'pinned-messages']);
 			});
 		},
 		condition({ message, subscription }) {

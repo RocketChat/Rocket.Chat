@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { lazy, useMemo } from 'react';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
@@ -15,7 +15,7 @@ addAction('pinned-messages', ({ room }) => {
 						id: 'pinned-messages',
 						title: 'Pinned_Messages',
 						icon: 'pin',
-						template: 'pinnedMessages',
+						template: lazy(() => import('../../../client/views/room/contextualBar/PinnedMessages')),
 						...(federated && {
 							'data-tooltip': 'Pinned_messages_unavailable_for_federation',
 							'disabled': true,
