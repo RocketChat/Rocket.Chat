@@ -14,10 +14,47 @@ export default async function injectInitialData() {
 		),
 	);
 
-	await connection
-		.db()
-		.collection('rocketchat_settings')
-		.updateOne({ _id: 'API_Enable_Rate_Limiter_Dev' }, { $set: { value: false } });
+	await Promise.all(
+		[
+			{
+				_id: 'API_Enable_Rate_Limiter_Dev',
+				value: false,
+			},
+			{
+				_id: 'Show_Setup_Wizard',
+				value: 'completed',
+			},
+			{
+				_id: 'Country',
+				value: 'brazil',
+			},
+			{
+				_id: 'Organization_Type',
+				value: 'community',
+			},
+			{
+				_id: 'Industry',
+				value: 'aerospaceDefense',
+			},
+			{
+				_id: 'Size',
+				value: 0,
+			},
+			{
+				_id: 'Organization_Name',
+				value: 'any_name',
+			},
+			{
+				_id: 'API_Enable_Rate_Limiter_Dev',
+				value: false,
+			},
+		].map((setting) =>
+			connection
+				.db()
+				.collection('rocketchat_settings')
+				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
+		),
+	);
 
 	return { usersFixtures };
 }
