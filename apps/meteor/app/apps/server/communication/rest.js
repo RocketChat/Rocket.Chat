@@ -15,6 +15,7 @@ import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../../ee/app/license/server/license';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -68,6 +69,7 @@ export class AppsRestApi {
 		};
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+		this.api.addRoute('count', ...appsCountHandler(this));
 
 		this.api.addRoute(
 			'incompatibleModal',
@@ -172,7 +174,6 @@ export class AppsRestApi {
 				},
 				async post() {
 					let buff;
-					let source;
 					let marketplaceInfo;
 					let permissionsGranted;
 
@@ -191,7 +192,6 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await response.arrayBuffer());
-							source = 'private';
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
@@ -227,7 +227,6 @@ export class AppsRestApi {
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
 							marketplaceInfo = await marketplaceResponse.json();
 							permissionsGranted = this.bodyParams.permissionsGranted;
-							source = 'marketplace';
 						} catch (err) {
 							return API.v1.failure(err.message);
 						}
@@ -254,7 +253,6 @@ export class AppsRestApi {
 								return undefined;
 							}
 						})();
-						source = 'private';
 					}
 
 					if (!buff) {
@@ -282,7 +280,7 @@ export class AppsRestApi {
 
 					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
 
-					if (await canEnableApp(source)) {
+					if (await canEnableApp(aff.getApp().getStorageItem())) {
 						const success = await manager.enable(info.id);
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					}
@@ -886,7 +884,7 @@ export class AppsRestApi {
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
-				post() {
+				async post() {
 					if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
@@ -898,9 +896,7 @@ export class AppsRestApi {
 					}
 
 					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
-						const source = !prl.getInfo().marketplaceInfo ? 'private' : 'marketplace';
-
-						if (!canEnableApp(source)) {
+						if (!(await canEnableApp(prl.getStorageItem()))) {
 							return API.v1.failure('Enabled apps have been maxed out');
 						}
 					}
