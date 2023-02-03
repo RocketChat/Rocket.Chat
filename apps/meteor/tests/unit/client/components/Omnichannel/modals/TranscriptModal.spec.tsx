@@ -24,12 +24,12 @@ const defaultProps = {
 };
 
 describe('components/Omnichannel/TranscriptModal', () => {
-	it('should show Discard button when roomOpen is true and transcriptRequest exist', () => {
+	it('should show Undo request button when roomOpen is true and transcriptRequest exist', () => {
 		const onDiscardMock = spy();
 		const { getByText } = render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />);
-		const discardButton = getByText('Discard');
+		const undoRequestButton = getByText('Undo_request');
 
-		fireEvent.click(discardButton);
+		fireEvent.click(undoRequestButton);
 
 		expect(onDiscardMock).to.have.been.called();
 	});
