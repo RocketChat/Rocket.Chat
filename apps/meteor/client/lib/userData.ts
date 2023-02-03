@@ -36,7 +36,7 @@ type RawUserData = Serialized<
 >;
 
 const updateUser = (userData: IUser): void => {
-	const user: IUser = Users.findOne({ _id: userData._id });
+	const user = Users.findOne({ _id: userData._id }) as IUser | undefined;
 
 	if (!user || !user._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
 		Meteor.users.upsert({ _id: userData._id }, userData as Meteor.User);
