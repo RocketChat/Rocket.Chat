@@ -4303,7 +4303,7 @@
   "Send_confirmation_email": "Send confirmation email",
   "Send_data_into_RocketChat_in_realtime": "Send data into Rocket.Chat in real-time.",
   "Send_email": "Send Email",
-  "Send_Email_SMTP_Warning": "To send this email you need to <a href=\"admin/settings/Email\">setup SMTP emailing server</a>",
+  "Send_Email_SMTP_Warning": "To send this email you need to <a href=\"__url__\">setup SMTP emailing server</a>",
   "Send_invitation_email": "Send invitation email",
   "Send_invitation_email_error": "You haven't provided any valid email address.",
   "Send_invitation_email_info": "You can send multiple email invitations at once.",

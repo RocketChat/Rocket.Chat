@@ -216,7 +216,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 									<ToggleSwitch checked={setRandomPassword} disabled={!isSmtpEnabled} onChange={handleSetRandomPassword} />
 								</Box>
 							</Field.Row>
-							{!isSmtpEnabled && <Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning') }} />}
+							{!isSmtpEnabled && (
+								<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
+							)}
 						</Field>
 					),
 					[t, setRandomPassword, handleSetRandomPassword, isSmtpEnabled],
@@ -266,7 +268,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 										<ToggleSwitch checked={sendWelcomeEmail} onChange={handleSendWelcomeEmail} disabled={!isSmtpEnabled} />
 									</Box>
 								</Field.Row>
-								{!isSmtpEnabled && <Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning') }} />}
+								{!isSmtpEnabled && (
+									<Field.Hint dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }} />
+								)}
 							</Field>
 						),
 					[handleSendWelcomeEmail, t, sendWelcomeEmail, isSmtpEnabled],
