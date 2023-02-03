@@ -376,8 +376,15 @@ const AppsProvider: FC = ({ children }) => {
 	return (
 		<AppsContext.Provider
 			children={children}
-			// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
-			value={{ installedApps: installedAppsState, marketplaceApps: marketplaceAppsState, reload: fetch, numberOfEnabledApps: 0 }}
+			value={{
+				installedApps: installedAppsState,
+				marketplaceApps: marketplaceAppsState,
+				reload: fetch,
+				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
+				numberOfMarketplaceEnabledApps: 0,
+				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
+				numberOfPrivateEnabledApps: 0,
+			}}
 		/>
 	);
 };
