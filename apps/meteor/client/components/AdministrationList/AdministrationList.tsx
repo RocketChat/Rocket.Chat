@@ -15,6 +15,7 @@ type AdministrationListProps = {
 	hasAuditLicense: boolean;
 	hasAuditPermission: boolean;
 	hasAuditLogPermission: boolean;
+	hasManageApps: boolean;
 };
 
 const AdministrationList: FC<AdministrationListProps> = ({
@@ -22,6 +23,7 @@ const AdministrationList: FC<AdministrationListProps> = ({
 	hasAuditPermission,
 	hasAuditLogPermission,
 	hasAdminPermission,
+	hasManageApps,
 	onDismiss,
 }) => {
 	const appBoxItems = accountBoxItems.filter((item): item is IAppAccountBoxItem => isAppAccountBoxItem(item));
@@ -32,7 +34,7 @@ const AdministrationList: FC<AdministrationListProps> = ({
 
 	const list = [
 		showAdmin && <AdministrationModelList showWorkspace={showWorkspace} accountBoxItems={adminBoxItems} onDismiss={onDismiss} />,
-		<AppsModelList appBoxItems={appBoxItems} onDismiss={onDismiss} />,
+		<AppsModelList appBoxItems={appBoxItems} onDismiss={onDismiss} appsManagementAllowed={hasManageApps} />,
 		showAudit && <AuditModelList showAudit={hasAuditPermission} showAuditLog={hasAuditLogPermission} onDismiss={onDismiss} />,
 	];
 

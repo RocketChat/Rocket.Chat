@@ -1,5 +1,5 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -10,13 +10,13 @@ import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
+	appsManagementAllowed?: boolean;
 	onDismiss: () => void;
 };
 
-const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('marketplace');
-	const canManageApps = usePermission('manage-apps');
 	const page = 'list';
 
 	const { data: appRequestStats, isLoading } = useAppRequestStats();
@@ -42,7 +42,8 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 							onDismiss();
 						}}
 					/>
-					{canManageApps && (
+
+					{appsManagementAllowed && (
 						<ListItem
 							icon='cube'
 							text={t('Requested')}
