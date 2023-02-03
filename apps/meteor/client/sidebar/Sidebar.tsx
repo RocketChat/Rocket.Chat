@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -13,7 +13,7 @@ const Sidebar = () => {
 	const { isMobile, sidebar } = useLayout();
 
 	const sideBarBackground = css`
-		background-color: var(--rcx-color-surface-tint);
+		background-color: ${Palette.surface['surface-tint']};
 	`;
 
 	const sideBarStyle = css`
