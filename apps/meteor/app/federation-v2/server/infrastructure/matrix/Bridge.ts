@@ -194,16 +194,20 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<string> {
 		try {
-			const messageId = await this.bridgeInstance.getIntent(externalSenderId).matrixClient.sendHtmlText(
-				externalRoomId,
-				this.escapeEmojis(
-					await toExternalMessageFormat({
-						message: message.msg,
-						externalRoomId,
-						homeServerDomain: this.homeServerDomain,
-					}),
-				),
-			);
+			const messageId = await this.bridgeInstance
+				.getIntent(externalSenderId)
+				.matrixClient.sendRawEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
+					msgtype: 'm.text',
+					body: this.escapeEmojis(message.msg),
+					formatted_body: this.escapeEmojis(
+						await toExternalMessageFormat({
+							message: message.msg,
+							externalRoomId,
+							homeServerDomain: this.homeServerDomain,
+						}),
+					),
+					format: 'org.matrix.custom.html',
+				});
 
 			return messageId;
 		} catch (e) {
@@ -326,11 +330,11 @@ export class MatrixBridge implements IFederationBridge {
 		);
 
 		await this.bridgeInstance.getIntent(externalUserId).matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
-			'body': ` * ${newMessageText}`,
+			'body': ` * ${this.escapeEmojis(newMessageText)}`,
 			'format': 'org.matrix.custom.html',
 			'formatted_body': messageInExternalFormat,
 			'm.new_content': {
-				body: newMessageText,
+				body: this.escapeEmojis(newMessageText),
 				format: 'org.matrix.custom.html',
 				formatted_body: messageInExternalFormat,
 				msgtype: MatrixEnumSendMessageType.TEXT,
