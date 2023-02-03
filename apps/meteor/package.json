@@ -320,8 +320,6 @@
 		"katex": "^0.11.1",
 		"ldap-escape": "^2.0.6",
 		"ldapjs": "^2.3.3",
-		"less": "~3.0.3",
-		"less-plugin-autoprefixer": "^2.1.0",
 		"limax": "^3.0.0",
 		"localforage": "^1.10.0",
 		"lodash.clonedeep": "^4.5.0",
