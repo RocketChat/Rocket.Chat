@@ -452,7 +452,7 @@ test.describe.parallel('Federation - Direct Messages', () => {
 
 				await poFederationChannelServer2.sidenav.openChat('general');
 
-				await poFederationChannelServer2.content.dispatchSlashCommand(`/federation dm @${fullUsernameFromServer1}`);
+				await poFederationChannelServer2.content.dispatchSlashCommand(`/federation dm ${fullUsernameFromServer1}`);
 
 				await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
 				await poFederationChannelServer2.tabs.btnUserInfo.click();
@@ -610,15 +610,14 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					});
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
-
-					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(constants.RC_SERVER_1.username);
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
-					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						createdUsernameFromServer2,
 						constants.RC_SERVER_2.matrixServerName,
 					);
+
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -701,15 +700,14 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					});
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
-
-					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(constants.RC_SERVER_1.username);
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
-					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
-
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						userFromServer2UsernameOnly,
 						constants.RC_SERVER_2.matrixServerName,
 					);
+
+					await poFederationChannel1ForUser2.sidenav.openDMMultipleChat(usernameWithDomainFromServer2);
+					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();

@@ -52,7 +52,7 @@ export class FederationChannel {
 		await this.sidenav.openNewByLabel('Discussion');
 		await this.page.locator('//label[text()="Parent channel or group"]/following-sibling::span//input').waitFor();
 		await this.page.locator('//label[text()="Parent channel or group"]/following-sibling::span//input').focus();
-		await this.page.locator('//label[text()="Parent channel or group"]/following-sibling::span//input').type(channelName);
+		await this.page.locator('//label[text()="Parent channel or group"]/following-sibling::span//input').type(channelName, { delay: 100 });
 	}
 
 	async createTeam(teamName: string) {

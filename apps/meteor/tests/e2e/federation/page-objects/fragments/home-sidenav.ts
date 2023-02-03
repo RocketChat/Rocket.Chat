@@ -62,6 +62,7 @@ export class FederationSidenav {
 		await this.page.locator('[data-qa="sidebar-search-input"]').focus();
 		await this.page.locator('[data-qa="sidebar-search-input"]').fill(name);
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().waitFor();
+		await this.page.waitForTimeout(2000);
 		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
 	}
 
@@ -69,7 +70,7 @@ export class FederationSidenav {
 		await this.page.locator('button[title="Directory"]').click();
 		await this.page.locator('button:has-text("Channels")').click();
 		await this.page.locator('input[placeholder ="Search Channels"]').focus();
-		await this.page.locator('input[placeholder ="Search Channels"]').fill(name);
+		await this.page.locator('input[placeholder ="Search Channels"]').type(name, { delay: 100 });
 		await this.page.waitForTimeout(5000);
 
 		return this.page.locator('table tbody tr').count();
