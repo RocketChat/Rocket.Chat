@@ -70,7 +70,16 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(!useQueryStringParameter('msg'));
+	const msgQueryString = useQueryStringParameter('msg');
+	const [atBottom, setAtBottom] = useState(() => !msgQueryString);
+	const [atBottomRef] = useState(() => ({
+		get current() {
+			return atBottom;
+		},
+		set current(value) {
+			setAtBottom(value);
+		},
+	}));
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -103,26 +112,36 @@ const RoomBody = (): ReactElement => {
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
+		if (!atBottom) {
 			sendToBottom();
 		}
-	}, [sendToBottom]);
+	}, [atBottom, sendToBottom]);
 
 	const checkIfScrollIsAtBottom = useCallback(() => {
-		atBottomRef.current = _isAtBottom(100);
+		setAtBottom(_isAtBottom(100));
 	}, [_isAtBottom]);
 
 	const handleNewMessageButtonClick = useCallback(() => {
-		atBottomRef.current = true;
+		setAtBottom(true);
 		sendToBottomIfNecessary();
 		chat.composer?.focus();
 	}, [chat, sendToBottomIfNecessary]);
 
-	const handleJumpToRecentButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		RoomHistoryManager.clear(room._id);
-		RoomHistoryManager.getMoreIfIsEmpty(room._id);
-	}, [room._id]);
+	const handleJumpToRecentButtonClick = useCallback(
+		(event: UIEvent) => {
+			event.preventDefault();
+
+			setAtBottom(true);
+
+			const wrapper = wrapperRef.current;
+			if (wrapper) {
+				wrapper.style.scrollBehavior = 'smooth';
+				wrapper.scrollTo(30, wrapper.scrollHeight);
+			}
+			RoomHistoryManager.getMoreIfIsEmpty(room._id);
+		},
+		[room._id],
+	);
 
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
@@ -197,7 +216,7 @@ const RoomBody = (): ReactElement => {
 			message = ChatMessage.findOne({ rid, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 });
 		}
 		RoomHistoryManager.getSurroundingMessages(message, atBottomRef);
-	}, [room._id, subscription?.ls]);
+	}, [atBottomRef, room._id, subscription?.ls]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		readMessage.readNow(room._id);
@@ -246,7 +265,7 @@ const RoomBody = (): ReactElement => {
 		}
 
 		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
+			sendToBottom();
 		});
 
 		observer.observe(messageList);
@@ -254,7 +273,7 @@ const RoomBody = (): ReactElement => {
 		return () => {
 			observer?.disconnect();
 		};
-	}, [sendToBottomIfNecessary]);
+	}, [sendToBottom]);
 
 	const [routeName] = useCurrentRoute();
 
@@ -418,7 +437,7 @@ const RoomBody = (): ReactElement => {
 			wrapper.removeEventListener('scroll', updateUnreadCount);
 			wrapper.removeEventListener('scroll', handleWrapperScroll);
 		};
-	}, [_isAtBottom, room._id, setUnreadCount]);
+	}, [_isAtBottom, atBottomRef, room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -464,7 +483,7 @@ const RoomBody = (): ReactElement => {
 		});
 
 		const handleTouchStart = (): void => {
-			atBottomRef.current = false;
+			setAtBottom(false);
 		};
 
 		let timer1s: ReturnType<typeof setTimeout> | undefined;
@@ -585,7 +604,7 @@ const RoomBody = (): ReactElement => {
 								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
 							>
 								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
-								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
+								<JumpToRecentMessagesBar visible={hasMoreNextMessages || !atBottom} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
