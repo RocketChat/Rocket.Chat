@@ -155,7 +155,7 @@ const CloseChatModal = ({
 					<>
 						<Field>
 							<Divider />
-							<Field.Label>{t('Chat_transcript')}</Field.Label>
+							<Field.Label marginBlockStart='x8'>{t('Chat_transcript')}</Field.Label>
 						</Field>
 						{canSendTranscriptPDF && hasLicense && (
 							<Field marginBlockStart='x10'>
@@ -208,7 +208,10 @@ const CloseChatModal = ({
 						)}
 						<Field marginBlockStart='x16'>
 							<Field.Label color='annotation' fontScale='c1'>
-								{t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')}
+								{canSendTranscriptPDF && hasLicense && canSendTranscriptEmail && visitorEmail
+									? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
+									: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
+								{}
 							</Field.Label>
 						</Field>
 					</>
