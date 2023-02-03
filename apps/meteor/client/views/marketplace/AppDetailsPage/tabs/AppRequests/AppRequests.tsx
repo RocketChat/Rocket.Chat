@@ -33,7 +33,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	useEffect(() => {
 		return () => {
 			if (isAdminUser && isSuccess) {
-				const unseenRequests = paginatedAppRequests.data?.filter(({ id, seen }) => !seen && id).map(({ id }) => id);
+				const unseenRequests = paginatedAppRequests.data?.filter(({ seen }) => !seen).map(({ id }) => id);
 
 				if (unseenRequests.length) {
 					markAppRequestsAsSeen.mutate(unseenRequests, {
