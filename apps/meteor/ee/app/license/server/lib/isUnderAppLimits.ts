@@ -7,7 +7,7 @@ export async function isUnderAppLimits(
 	licenseAppsConfig: NonNullable<ILicense['apps']>,
 	source: LicenseAppSources,
 ): Promise<boolean> {
-	const apps = appManager.get({ enabled: true });
+	const apps = appManager.get({ enabled: true }).filter((app) => app.getStorageItem().installationSource === source);
 	const configKey = `max${source.charAt(0).toUpperCase()}${source.slice(1)}Apps` as keyof typeof licenseAppsConfig;
 	const configLimit = licenseAppsConfig[configKey];
 

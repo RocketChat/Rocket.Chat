@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
@@ -66,7 +67,7 @@ class LicenseClass {
 		return !!regex.exec(url);
 	}
 
-	private _appsConfig(license: ILicense): void {
+	private _setAppsConfig(license: ILicense): void {
 		// If the license is valid, no limit is going to be applied to apps installation for now
 		// This guarantees that upgraded workspaces won't be affected by the new limit right away
 		// and gives us time to propagate the new limit schema to all licenses
@@ -169,6 +170,10 @@ class LicenseClass {
 		return [...this.tags];
 	}
 
+	getAppsConfig(): NonNullable<ILicense['apps']> {
+		return this.appsConfig;
+	}
+
 	setURL(url: string): void {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
@@ -206,7 +211,7 @@ class LicenseClass {
 				maxActiveUsers = license.maxActiveUsers;
 			}
 
-			this._appsConfig(license);
+			this._setAppsConfig(license);
 
 			this._validModules(license.modules);
 
@@ -337,12 +342,22 @@ export function getTags(): ILicenseTag[] {
 	return License.getTags();
 }
 
+export function getAppsConfig(): NonNullable<ILicense['apps']> {
+	return License.getAppsConfig();
+}
+
 export function canAddNewUser(): boolean {
 	return License.canAddNewUser();
 }
 
-export async function canEnableApp(source: LicenseAppSources): Promise<boolean> {
-	return License.canEnableApp(source);
+export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
+	// Migrated apps were installed before the validation was implemented
+	// so they're always allowed to be enabled
+	if (app.migrated) {
+		return true;
+	}
+
+	return License.canEnableApp(app.installationSource);
 }
 
 export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
