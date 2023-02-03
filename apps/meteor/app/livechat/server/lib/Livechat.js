@@ -1,3 +1,6 @@
+// Note: Please don't add any new methods to this file, since its still in js and we are migrating to ts
+// Please add new methods to LivechatTyped.ts
+
 import dns from 'dns';
 
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +12,16 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import {
+	Users as UsersRaw,
+	LivechatVisitors,
+	LivechatCustomField,
+	Settings,
+	LivechatRooms as LivechatRoomsRaw,
+	LivechatInquiry as LivechatInquiryRaw,
+	Subscriptions as SubscriptionsRaw,
+	Messages as MessagesRaw,
+} from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
@@ -40,6 +52,7 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 
 const logger = new Logger('Livechat');
 
@@ -421,76 +434,7 @@ export const Livechat = {
 		return ret;
 	},
 
-	closeRoom({ user, visitor, room, comment, options = {} }) {
-		Livechat.logger.debug(`Attempting to close room ${room._id}`);
-		if (!room || room.t !== 'l' || !room.open) {
-			return false;
-		}
-
-		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
-		const { extraData } = params;
-
-		const now = new Date();
-		const { _id: rid, servedBy, transcriptRequest } = room;
-		const serviceTimeDuration = servedBy && (now.getTime() - servedBy.ts) / 1000;
-
-		const closeData = {
-			closedAt: now,
-			chatDuration: (now.getTime() - room.ts) / 1000,
-			...(serviceTimeDuration && { serviceTimeDuration }),
-			...extraData,
-		};
-		Livechat.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
-
-		if (user) {
-			Livechat.logger.debug(`Closing by user ${user._id}`);
-			closeData.closer = 'user';
-			closeData.closedBy = {
-				_id: user._id,
-				username: user.username,
-			};
-		} else if (visitor) {
-			Livechat.logger.debug(`Closing by visitor ${visitor._id}`);
-			closeData.closer = 'visitor';
-			closeData.closedBy = {
-				_id: visitor._id,
-				username: visitor.username,
-			};
-		}
-
-		LivechatRooms.closeByRoomId(rid, closeData);
-		LivechatInquiry.removeByRoomId(rid);
-		Subscriptions.removeByRoomId(rid);
-
-		const message = {
-			t: 'livechat-close',
-			msg: comment,
-			groupable: false,
-			transcriptRequested: !!transcriptRequest,
-		};
-
-		// Retreive the closed room
-		room = LivechatRooms.findOneByIdOrName(rid);
-
-		Livechat.logger.debug(`Sending closing message to room ${room._id}`);
-		sendMessage(user || visitor, message, room);
-
-		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
-
-		Meteor.defer(() => {
-			/**
-			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
-			 * in the next major version of the Apps-Engine
-			 */
-			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
-			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
-		});
-		callbacks.runAsync('livechat.closeRoom', room);
-
-		return true;
-	},
-
-	removeRoom(rid) {
+	async removeRoom(rid) {
 		Livechat.logger.debug(`Deleting room ${rid}`);
 		check(rid, String);
 		const room = LivechatRooms.findOneById(rid);
@@ -500,10 +444,21 @@ export const Livechat = {
 			});
 		}
 
-		Messages.removeByRoomId(rid);
-		Subscriptions.removeByRoomId(rid);
-		LivechatInquiry.removeByRoomId(rid);
-		return LivechatRooms.removeById(rid);
+		const result = await Promise.allSettled([
+			MessagesRaw.removeByRoomId(rid),
+			SubscriptionsRaw.removeByRoomId(rid),
+			LivechatInquiryRaw.removeByRoomId(rid),
+			LivechatRoomsRaw.removeById(rid),
+		]);
+
+		const errors = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+		if (errors.length > 0) {
+			this.logger.error(`Error removing room ${rid}: ${errors.join(', ')}`);
+			throw new Meteor.Error('error-removing-room', 'Error removing room', {
+				method: 'livechat:removeRoom',
+				errors,
+			});
+		}
 	},
 
 	async setCustomFields({ token, key, value, overwrite } = {}) {
@@ -629,12 +584,17 @@ export const Livechat = {
 		}
 	},
 
-	closeOpenChats(userId, comment) {
+	async closeOpenChats(userId, comment) {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = Users.findOneById(userId);
-		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			this.closeRoom({ user, room, comment });
+
+		const openChats = LivechatRooms.findOpenByAgent(userId);
+		const promises = [];
+		openChats.forEach((room) => {
+			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
 		});
+
+		await Promise.all(promises);
 	},
 
 	forwardOpenChats(userId) {
@@ -1275,7 +1235,7 @@ export const Livechat = {
 		}).fetch();
 	},
 
-	requestTranscript({ rid, email, subject, user }) {
+	async requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
 		check(subject, String);
@@ -1312,7 +1272,7 @@ export const Livechat = {
 			subject,
 		};
 
-		LivechatRooms.requestTranscriptByRoomId(rid, transcriptRequest);
+		await LivechatRoomsRaw.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
 		return true;
 	},
 

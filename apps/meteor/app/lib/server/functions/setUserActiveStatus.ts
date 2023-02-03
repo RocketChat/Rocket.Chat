@@ -64,8 +64,12 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
-		closeOmnichannelConversations(user, livechatSubscribedRooms);
-		Promise.await(relinquishRoomOwnerships(user, chatSubscribedRooms, false));
+		Promise.await(
+			Promise.all([
+				closeOmnichannelConversations(user, livechatSubscribedRooms),
+				relinquishRoomOwnerships(user, chatSubscribedRooms, false),
+			]),
+		);
 	}
 
 	if (active && !user.active) {

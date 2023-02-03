@@ -11,6 +11,7 @@ import type {
 	Filter,
 	FindOptions,
 	IndexDescription,
+	DeleteResult,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -433,5 +434,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				)
 				.toArray()
 		)[0] as IMessage;
+	}
+
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
+		return this.deleteMany({ rid: roomId });
 	}
 }

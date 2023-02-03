@@ -3,6 +3,7 @@ import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
+import { IS_EE } from './config/constants';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage({ storageState });
@@ -60,6 +61,7 @@ test.describe('omnichannel-transcript', () => {
 		});
 
 		await test.step('Expect to be not able send transcript as PDF', async () => {
+			test.skip(!IS_EE, 'Enterprise Only');
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
 			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
