@@ -17,8 +17,8 @@ const StatusDisabledSection = () => {
 
 	return (
 		<SidebarBanner
-			title={t('User_status_temporarily_disabled')}
-			actionText={t('Learn_more')}
+			text={t('User_status_temporarily_disabled')}
+			description={t('Learn_more')}
 			onClose={() => undefined} // TO DO: dismiss warning and close
 			onClick={() =>
 				setModal(
