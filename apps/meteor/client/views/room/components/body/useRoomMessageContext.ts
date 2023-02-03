@@ -16,7 +16,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 	const { isMobile: mobile } = useLayout();
 	const translateLanguage = useReactiveValue(useCallback(() => AutoTranslate.getLanguage(rid), [rid]));
 	const autoImageLoad = useUserPreference('autoImageLoad');
-	const useLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
 	const saveMobileBandwidth = useUserPreference('saveMobileBandwidth');
 	const collapseMediaByDefault = useUserPreference('collapseMediaByDefault');
 	const hasPermissionDeleteMessage = usePermission('delete-message', rid);
@@ -41,7 +40,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 				subscription,
 				translateLanguage,
 				autoImageLoad,
-				useLegacyMessageTemplate,
 				saveMobileBandwidth: mobile && saveMobileBandwidth,
 				collapseMediaByDefault,
 				showreply: true,
@@ -77,7 +75,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 			subscription,
 			translateLanguage,
 			uid,
-			useLegacyMessageTemplate,
 			useRealName,
 			user,
 		],

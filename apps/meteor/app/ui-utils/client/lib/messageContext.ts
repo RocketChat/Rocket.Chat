@@ -14,7 +14,6 @@ import type { CommonRoomTemplateInstance } from '../../../ui/client/views/app/li
 const fields = {
 	'name': 1,
 	'username': 1,
-	'settings.preferences.useLegacyMessageTemplate': 1,
 	'settings.preferences.autoImageLoad': 1,
 	'settings.preferences.saveMobileBandwidth': 1,
 	'settings.preferences.collapseMediaByDefault': 1,
@@ -51,7 +50,6 @@ export const createMessageContext = ({
 	),
 	translateLanguage = AutoTranslate.getLanguage(rid),
 	autoImageLoad = getUserPreference(user, 'autoImageLoad'),
-	useLegacyMessageTemplate = getUserPreference(user, 'useLegacyMessageTemplate'),
 	saveMobileBandwidth = Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 	collapseMediaByDefault = getUserPreference(user, 'collapseMediaByDefault'),
 	showreply = true,
@@ -83,7 +81,6 @@ export const createMessageContext = ({
 	embeddedLayout?: boolean;
 	translateLanguage?: unknown;
 	autoImageLoad?: unknown;
-	useLegacyMessageTemplate?: unknown;
 	saveMobileBandwidth?: unknown;
 	collapseMediaByDefault?: unknown;
 	showreply?: unknown;
@@ -106,7 +103,6 @@ export const createMessageContext = ({
 		settings: {
 			translateLanguage,
 			autoImageLoad,
-			useLegacyMessageTemplate,
 			saveMobileBandwidth,
 			collapseMediaByDefault,
 			showreply,
