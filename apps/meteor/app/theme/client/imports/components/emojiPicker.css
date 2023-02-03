@@ -101,6 +101,10 @@
 				}
 			}
 
+			& li.emoji-picker-load-more {
+				text-align: center;
+			}
+
 			&.visible {
 				display: block;
 			}

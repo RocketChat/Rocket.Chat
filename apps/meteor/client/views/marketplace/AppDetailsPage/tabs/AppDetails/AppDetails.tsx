@@ -41,7 +41,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 				</>
 			)}
 
-			<Box display='flex' flexDirection='column' color='default'>
+			<Box display='flex' flexDirection='column'>
 				<Margins block='x17'>
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 

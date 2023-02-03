@@ -1,6 +1,5 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -48,46 +47,28 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' w='100%' h='100vh' bg={colors.n800} opacity='0.7' zIndex='2' marginBlock='-0.75px' />
+			<Box position='fixed' w='100%' h='100vh' bg='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
 
 			{!isFirstSlide && (
-				<Button
+				<IconButton
+					secondary
+					icon='chevron-right'
 					onClick={handlePrevSlide}
-					display='flex'
-					alignItems='center'
-					justifyContent='center'
 					style={{ top: '50%', left: '10px', cursor: 'pointer', transform: 'translateY(-50%)' }}
 					position='absolute'
 					zIndex={3}
-					borderRadius='x2'
-					w='x28'
-					h='x28'
-					margin='0'
-					bg={colors.n600}
-					borderColor={colors.n600}
-				>
-					<Icon name='chevron-right' size='x24' color='alternative' />
-				</Button>
+				/>
 			)}
 
 			{!isLastSlide && (
-				<Button
+				<IconButton
+					secondary
+					icon='chevron-left'
 					onClick={handleNextSlide}
-					display='flex'
-					alignItems='center'
-					justifyContent='center'
 					style={{ top: '50%', right: '10px', cursor: 'pointer', transform: 'translateY(-50%)' }}
 					position='absolute'
 					zIndex={3}
-					borderRadius='x2'
-					w='x28'
-					h='x28'
-					margin='0'
-					bg={colors.n600}
-					borderColor={colors.n600}
-				>
-					<Icon name='chevron-left' size='x24' color='alternative' />
-				</Button>
+				/>
 			)}
 
 			<Box
