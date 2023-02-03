@@ -3,6 +3,7 @@ import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { OmnichannelSortingDisclaimer } from '../Omnichannel/OmnichannelSortingDisclaimer';
 import ListItem from '../Sidebar/ListItem';
 
@@ -10,6 +11,7 @@ function SortModeList(): ReactElement {
 	const t = useTranslation();
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
+	const isOmnichannelEnabled = useOmnichannelEnabled();
 
 	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { sidebarSortby: value } }), [value]);
@@ -20,7 +22,7 @@ function SortModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Sort_By')}</OptionTitle>
-			<ul>
+			<ul aria-describedby='sortByList'>
 				<ListItem
 					icon={'clock'}
 					text={t('Activity')}
@@ -31,9 +33,9 @@ function SortModeList(): ReactElement {
 					text={t('Name')}
 					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
-
-				<OmnichannelSortingDisclaimer />
 			</ul>
+
+			{isOmnichannelEnabled && <OmnichannelSortingDisclaimer id='sortByList' />}
 		</>
 	);
 }
