@@ -82,8 +82,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid]);
 
+	const subscribed = !!subscriptionQuery.data;
+
 	useEffect(() => {
-		if (!subscriptionQuery.data) {
+		if (!subscribed) {
 			return;
 		}
 
@@ -95,7 +97,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 				// Do nothing
 			}
 		};
-	}, [rid, subscriptionQuery.data]);
+	}, [rid, subscribed]);
 
 	const api = useMemo(() => ({}), []);
 
