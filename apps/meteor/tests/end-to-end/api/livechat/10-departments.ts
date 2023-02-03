@@ -265,7 +265,10 @@ describe('LIVECHAT - Departments', function () {
 						.end(done);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return a list of departments excluding the ids on selector.exceptions', (done) => {
+		it('should return a list of departments excluding the ids on selector.exceptions', function (done) {
+			if (!IS_EE) {
+				this.skip();
+			}
 			let dep1: ILivechatDepartment;
 			let dep2: ILivechatDepartment;
 
