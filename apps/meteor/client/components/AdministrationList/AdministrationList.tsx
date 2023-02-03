@@ -1,5 +1,5 @@
 import { OptionDivider } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
 
 import type { AccountBoxItem, IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
@@ -18,14 +18,14 @@ type AdministrationListProps = {
 	hasManageApps: boolean;
 };
 
-const AdministrationList: FC<AdministrationListProps> = ({
+const AdministrationList = ({
 	accountBoxItems,
 	hasAuditPermission,
 	hasAuditLogPermission,
 	hasAdminPermission,
 	hasManageApps,
 	onDismiss,
-}) => {
+}: AdministrationListProps): ReactElement => {
 	const appBoxItems = accountBoxItems.filter((item): item is IAppAccountBoxItem => isAppAccountBoxItem(item));
 	const adminBoxItems = accountBoxItems.filter((item): item is AccountBoxItem => !isAppAccountBoxItem(item));
 	const showAudit = hasAuditPermission || hasAuditLogPermission;
