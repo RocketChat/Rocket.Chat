@@ -15,7 +15,7 @@ export default async function injectInitialData() {
 	);
 
 	await Promise.all(
-		[	
+		[
 			{
 				_id: 'API_Enable_Rate_Limiter_Dev',
 				value: false,
@@ -47,7 +47,7 @@ export default async function injectInitialData() {
 			{
 				_id: 'API_Enable_Rate_Limiter_Dev',
 				value: false,
-			}
+			},
 		].map((setting) =>
 			connection
 				.db()
