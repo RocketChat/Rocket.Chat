@@ -4,7 +4,6 @@ import querystring from 'querystring';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
-import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
