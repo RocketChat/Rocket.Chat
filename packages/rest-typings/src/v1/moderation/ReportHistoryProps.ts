@@ -11,6 +11,8 @@ export type ReportHistoryProps = PaginatedRequest<{
 	oldest?: string;
 	count?: number;
 	offset?: number;
+	sort?: string;
+	query?: string;
 }>;
 
 const reportHistoryPropsSchema = {
@@ -36,6 +38,10 @@ const reportHistoryPropsSchema = {
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
 			nullable: true,
 		},
 	},
