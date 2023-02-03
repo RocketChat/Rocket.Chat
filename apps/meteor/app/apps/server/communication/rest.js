@@ -4,7 +4,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
@@ -12,6 +12,7 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { notifyAppInstall } from '../marketplace/appInstall';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -147,7 +148,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getWorkspaceAccessTokenWithScope('marketplace:purchase');
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
@@ -272,6 +273,8 @@ export class AppsRestApi {
 					}
 
 					info.status = aff.getApp().getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
 
 					return API.v1.success({
 						app: info,
@@ -558,6 +561,8 @@ export class AppsRestApi {
 
 					info.status = aff.getApp().getStatus();
 
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'update', info);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -577,6 +582,8 @@ export class AppsRestApi {
 
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'uninstall', info);
 
 					return API.v1.success({ app: info });
 				},

@@ -40,7 +40,7 @@ export const {
 	{
 		icon: 'cloud-plus',
 		href: 'cloud',
-		i18nLabel: 'Connectivity_Services',
+		i18nLabel: 'Registration',
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{

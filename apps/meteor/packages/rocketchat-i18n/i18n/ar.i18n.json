@@ -292,7 +292,6 @@
   "Additional_emails": "رسائل بريد إلكتروني إضافية",
   "Additional_Feedback": "ملاحظات إضافية",
   "additional_integrations_Bots": "إذا كنت تبحث عن كيفية دمج الروبوت الخاص بك، فلن تجد أفضل من محول Hubot الخاص بنا. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "هل تتطلع إلى دمج البرامج والتطبيقات الأخرى مع Rocket.Chat ولكن ليس لديك الوقت للقيام بذلك يدويًا؟ ننصحك باستخدام Zapier الذي ندعمه بالكامل. يمكنك قراءة المزيد عنه على وثائقنا. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "لم يقوم المسؤول لديك بتمكين التشفير بين الوحدات الطرفية.",
   "Admin_Info": "معلومات المسؤول",
   "Administration": "الإدارة",
