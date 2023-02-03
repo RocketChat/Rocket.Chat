@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 import { api } from '@rocket.chat/core-services';
+import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/service-classes';
 
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
@@ -25,6 +26,8 @@ import { UploadService } from './upload/service';
 import { MessageService } from './messages/service';
 import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
+import { Logger } from '../lib/logger/Logger';
+import { hasLicense } from '../../ee/app/license/server/license';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -61,5 +64,12 @@ if (!isRunningMs()) {
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
+
+		if (hasLicense('livechat-enterprise')) {
+			// Run EE services defined outside of the main repo
+			// Otherwise, monolith would ignore them :(
+			api.registerService(new QueueWorker(db, Logger));
+			api.registerService(new OmnichannelTranscript(Logger));
+		}
 	})();
 }

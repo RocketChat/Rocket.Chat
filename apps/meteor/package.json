@@ -236,6 +236,7 @@
 		"@rocket.chat/poplib": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/service-classes": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-composer": "workspace:^",
