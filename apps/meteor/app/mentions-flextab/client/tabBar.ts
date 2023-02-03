@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('mentions', {
@@ -5,6 +7,6 @@ addAction('mentions', {
 	id: 'mentions',
 	title: 'Mentions',
 	icon: 'at',
-	template: 'mentionsFlexTab',
+	template: lazy(() => import('../../../client/views/room/contextualBar/Mentions')),
 	order: 9,
 });

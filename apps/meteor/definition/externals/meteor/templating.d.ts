@@ -38,7 +38,6 @@ declare module 'meteor/templating' {
 		liveStreamBroadcast: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamTab: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		mentionsFlexTab: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		snippetPage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		snippetedMessages: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		inputAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
