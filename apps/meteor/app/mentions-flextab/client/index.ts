@@ -1,2 +1,0 @@
-import './actionButton';
-import './tabBar';

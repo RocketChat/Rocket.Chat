@@ -1,10 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/client';
-import { ChatMessage, ChatSubscription } from '../../models/client';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { t } from '../../utils/client';
+import { ChatMessage, ChatSubscription } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
+import { t } from '../../app/utils/client';
+import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.methods({
 	starMessage(message: Omit<IMessage, 'starred'> & { starred: boolean }) {

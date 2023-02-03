@@ -1,12 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Box, Throbber, MessageDivider } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import type { Icon } from '@rocket.chat/fuselage';
+import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactElement, ComponentProps, ReactNode } from 'react';
+import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
+import type { MessageActionContext } from '../../../../../app/ui-utils/client/lib/MessageAction';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
 import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
@@ -16,19 +18,22 @@ import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText'
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import type { MessageWithMdEnforced } from '../../../../lib/parseMessageTextToAstMarkdown';
-import { removePossibleNullMessageValues, parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
-import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
-import { useAutoTranslate } from '../../MessageList/hooks/useAutoTranslate';
-import { useKatex } from '../../MessageList/hooks/useKatex';
 import { isMessageFirstUnread } from '../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 
-const PinnedMessages = (): ReactElement => {
+type MessageListTabProps = {
+	iconName: ComponentProps<typeof Icon>['name'];
+	title: ReactNode;
+	emptyResultMessage: ReactNode;
+	context: MessageActionContext;
+	queryResult: UseQueryResult<IMessage[]>;
+};
+
+const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
 
@@ -37,79 +42,40 @@ const PinnedMessages = (): ReactElement => {
 		closeTabBar();
 	}, [closeTabBar]);
 
-	const room = useRoom();
 	const subscription = useRoomSubscription();
-
-	const getPinnedMessages = useEndpoint('GET', '/v1/chat.getPinnedMessages');
-
-	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
-
-	const autoTranslateOptions = useAutoTranslate(subscription);
-	const showColors = Boolean(useSetting('HexColorPreview_Enabled'));
-
-	const normalizeMessage = useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(katexEnabled && {
-				katex: {
-					dollarSyntax: katexDollarSyntaxEnabled,
-					parenthesisSyntax: katexParenthesisSyntaxEnabled,
-				},
-			}),
-		};
-
-		return (message: IMessage): MessageWithMdEnforced =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [showColors, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, autoTranslateOptions]);
-
-	const pinnedMessagesQueryResult = useQuery(['rooms', room._id, 'pinned-messages'] as const, async () => {
-		const messages: IMessage[] = [];
-
-		for (
-			let offset = 0, result = await getPinnedMessages({ roomId: room._id, offset: 0 });
-			result.count > 0;
-			// eslint-disable-next-line no-await-in-loop
-			offset += result.count, result = await getPinnedMessages({ roomId: room._id, offset })
-		) {
-			messages.push(...result.messages.map(mapMessageFromApi));
-		}
-
-		return messages.map(normalizeMessage);
-	});
 
 	return (
 		<>
 			<VerticalBarHeader>
-				<VerticalBarIcon name='pin' />
-				<VerticalBarText>{t('Pinned_Messages')}</VerticalBarText>
+				<VerticalBarIcon name={iconName} />
+				<VerticalBarText>{title}</VerticalBarText>
 				<VerticalBarClose onClick={handleTabBarCloseButtonClick} />
 			</VerticalBarHeader>
 			<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0}>
-				{pinnedMessagesQueryResult.isLoading && (
+				{queryResult.isLoading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size={12} />
 					</Box>
 				)}
-				{pinnedMessagesQueryResult.isSuccess && (
+				{queryResult.isSuccess && (
 					<>
-						{pinnedMessagesQueryResult.data.length === 0 && (
+						{queryResult.data.length === 0 && (
 							<Box p={24} color='annotation' textAlign='center' width='full'>
-								{t('No_pinned_messages')}
+								{emptyResultMessage}
 							</Box>
 						)}
 
-						{pinnedMessagesQueryResult.data.length > 0 && (
+						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
 									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 										<Virtuoso
-											totalCount={pinnedMessagesQueryResult.data.length}
+											totalCount={queryResult.data.length}
 											overscan={25}
-											data={pinnedMessagesQueryResult.data}
+											data={queryResult.data}
 											components={{ Scroller: ScrollableContentWrapper }}
 											itemContent={(index, message) => {
-												const previous = pinnedMessagesQueryResult.data[index - 1];
+												const previous = queryResult.data[index - 1];
 
 												const newDay = isMessageNewDay(message, previous);
 												const firstUnread = isMessageFirstUnread(subscription, message, previous);
@@ -138,7 +104,7 @@ const PinnedMessages = (): ReactElement => {
 																unread={unread}
 																mention={mention}
 																all={all}
-																context='pinned'
+																context={context}
 															/>
 														)}
 													</>
@@ -156,4 +122,4 @@ const PinnedMessages = (): ReactElement => {
 	);
 };
 
-export default PinnedMessages;
+export default MessageListTab;
