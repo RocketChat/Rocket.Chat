@@ -60,7 +60,6 @@ const CustomCard = (): ReactElement | null => {
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 							title={!isCustomContentVisible ? t('Now_Its_Available_Only_For_Admins') : t('Now_Its_Available_For_Everyone')}
 							onClick={handleChangeCustomContentVisibility}
-							data-qa-id='homepage-custom-content-visibility-button'
 						>
 							<Icon mie='x4' name={willNotShowCustomContent ? 'eye' : 'eye-off'} size='x16' />
 							{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
@@ -69,7 +68,6 @@ const CustomCard = (): ReactElement | null => {
 							disabled={willNotShowCustomContent || !isEnterprise}
 							title={t('It_Will_Hide_All_Other_White_Blocks_In_The_Homepage')}
 							onClick={handleOnlyShowCustomContent}
-							data-qa-id='homepage-custom-content-only-button'
 						>
 							<Icon name='lightning' size='x16' /> {!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 						</Button>

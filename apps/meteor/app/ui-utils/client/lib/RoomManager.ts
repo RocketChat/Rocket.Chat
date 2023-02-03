@@ -144,6 +144,9 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 
 		if (msg.t === 'r') {
 			const room = ChatRoom.findOne(msg.rid);
+			if (!room) {
+				throw new Error('Room not found');
+			}
 			if (room.name !== FlowRouter.getParam('name')) {
 				close(room.t + FlowRouter.getParam('name'));
 				roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);

@@ -1,5 +1,6 @@
 import { CachedChatRoom } from './CachedChatRoom';
 
+/** @type {import('meteor/mongo').Mongo.Collection<import('@rocket.chat/core-typings').IRoom>} */
 export const ChatRoom = CachedChatRoom.collection;
 
 ChatRoom.setReactionsInLastMessage = function (roomId, lastMessage) {

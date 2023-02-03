@@ -236,10 +236,10 @@ Meteor.startup(async function () {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action(this: unknown, _, { tabbar, message: { reactions = {}, rid } = messageArgs(this).msg }) {
+		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReactionList,
-				props: { reactions, rid, tabBar: tabbar, onClose: imperativeModal.close },
+				props: { reactions, onClose: imperativeModal.close },
 			});
 		},
 		condition({ message: { reactions } }) {
