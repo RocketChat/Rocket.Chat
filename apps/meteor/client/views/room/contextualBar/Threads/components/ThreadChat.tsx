@@ -15,7 +15,6 @@ import { useFileUploadDropTarget } from '../../../components/body/useFileUploadD
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
-import LegacyThreadMessageList from './LegacyThreadMessageList';
 import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
