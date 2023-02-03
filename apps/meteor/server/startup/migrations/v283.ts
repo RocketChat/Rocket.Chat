@@ -31,6 +31,8 @@ addMigration({
 			'IssueLinks_Enabled',
 			'IssueLinks_Template',
 			'API_EmbedDisabledFor',
+			'API_EmbedIgnoredHosts',
+			'API_EmbedSafePorts',
 		];
 
 		Settings.deleteMany({
