@@ -178,7 +178,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return Boolean(room?.archived);
 	}
 
-	verifyCanSendMessage(rid: string, isFederationModuleEnabled = false): boolean {
+	verifyCanSendMessage(rid: string): boolean {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
 		if (!room?.t) {
 			return false;
@@ -187,7 +187,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return false;
 		}
 		if (isRoomFederated(room)) {
-			return isFederationModuleEnabled && settings.get('Federation_Matrix_enabled');
+			return settings.get('Federation_Matrix_enabled');
 		}
 		return true;
 	}

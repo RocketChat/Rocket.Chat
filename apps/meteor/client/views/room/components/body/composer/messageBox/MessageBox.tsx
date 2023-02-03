@@ -1,3 +1,4 @@
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -9,7 +10,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type {
 	MouseEventHandler,
@@ -39,6 +40,7 @@ import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
+import { useRoom } from '../../../../contexts/RoomContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
@@ -109,6 +111,7 @@ const MessageBox = ({
 	if (!chat) {
 		throw new Error('Chat context not found');
 	}
+	const room = useRoom();
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const shadowRef = useRef(null);
@@ -251,10 +254,11 @@ const MessageBox = ({
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
 
 	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+	const federationEnabled = useSetting('Federation_Matrix_enabled') === true;
 
-	const canSend = useReactiveValue(
-		useCallback(() => roomCoordinator.verifyCanSendMessage(rid, federationModuleEnabled), [rid, federationModuleEnabled]),
-	);
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
+
+	const canJoin = !isRoomFederated(room) || (isRoomFederated(room) && federationModuleEnabled && federationEnabled);
 
 	const sizes = useContentBoxSize(textareaRef);
 
@@ -317,7 +321,7 @@ const MessageBox = ({
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
-					disabled={isRecording}
+					disabled={isRecording || !canSend}
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={t('Message')}
@@ -328,20 +332,25 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
+						<MessageComposerAction
+							icon='emoji'
+							disabled={!useEmojis || isRecording || !canSend}
+							onClick={handleOpenEmojiPicker}
+							title={t('Emoji')}
+						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording}
+								disabled={isRecording || !canSend}
 							/>
 						)}
 						<MessageComposerActionsDivider />
 						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
 						<MessageComposerAction
-							disabled={isRecording}
+							disabled={isRecording || !canSend}
 							onClick={(event): void => {
 								const groups = messageBox.actions.get();
 								const config = {
@@ -383,7 +392,7 @@ const MessageBox = ({
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
-						{!canSend && (
+						{!canSend && canJoin && (
 							<Button small primary onClick={onJoin} disabled={joinMutation.isLoading}>
 								{t('Join')}
 							</Button>
