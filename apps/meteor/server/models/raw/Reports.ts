@@ -1,6 +1,6 @@
 import type { IMessage, IReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindCursor, UpdateResult, Document } from 'mongodb';
+import type { Db, Collection, FindCursor, UpdateResult, Document, Filter } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -21,7 +21,14 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	// find
 
-	findReportsBetweenDates(latest: Date, oldest: Date, offset = 0, count = 20, sort?: any): FindPaginated<FindCursor<IReport>> {
+	findReportsBetweenDates(
+		latest: Date,
+		oldest: Date,
+		offset = 0,
+		count = 20,
+		sort?: any,
+		cquery?: Filter<IReport>,
+	): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -30,6 +37,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$lt: latest,
 				$gt: oldest,
 			},
+			...cquery,
 		};
 
 		return this.findPaginated(query, {
@@ -41,12 +49,13 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsByRoom(roomId: string, offset = 0, count = 20, sort?: any): FindPaginated<FindCursor<IReport>> {
+	findReportsByRoom(roomId: string, offset = 0, count = 20, sort?: any, cquery?: Filter<IReport>): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			'_hidden': {
 				$ne: true,
 			},
 			'message.rid': roomId,
+			...cquery,
 		};
 
 		return this.findPaginated(query, {
@@ -58,12 +67,13 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsByUser(userId: string, offset = 0, count = 20, sort?: any): FindPaginated<FindCursor<IReport>> {
+	findReportsByUser(userId: string, offset = 0, count = 20, sort?: any, cquery?: Filter<IReport>): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			userId,
+			...cquery,
 		};
 
 		return this.findPaginated(query, {
@@ -75,12 +85,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsByMessageId(messageId: string, offset = 0, count = 20, sort?: any): FindPaginated<FindCursor<IReport>> {
+	findReportsByMessageId(
+		messageId: string,
+		offset = 0,
+		count = 20,
+		sort?: any,
+		cquery?: Filter<IReport>,
+	): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			'_hidden': {
 				$ne: true,
 			},
 			'message._id': messageId,
+			...cquery,
 		};
 
 		return this.findPaginated(query, {
@@ -92,7 +109,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any): FindPaginated<FindCursor<IReport>> {
+	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, cquery?: Filter<IReport>): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -100,6 +117,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			ts: {
 				$gt: oldest,
 			},
+			...cquery,
 		};
 
 		return this.findPaginated(query, {
@@ -111,7 +129,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		});
 	}
 
-	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any): FindPaginated<FindCursor<IReport>> {
+	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any, cquery?: Filter<IReport>): FindPaginated<FindCursor<IReport>> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -119,6 +137,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			ts: {
 				$lt: latest,
 			},
+			...cquery,
 		};
 
 		return this.findPaginated(query, {
