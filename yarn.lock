@@ -7599,6 +7599,7 @@ __metadata:
   dependencies:
     "@react-pdf/renderer": ^3.0.1
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/fuselage-tokens": next
     "@storybook/addon-actions": ~6.5.14
     "@storybook/addon-docs": ~6.5.14
     "@storybook/addon-essentials": ~6.5.14
@@ -7616,9 +7617,10 @@ __metadata:
     "@types/react-dom": ^18
     "@types/testing-library__jest-dom": ^5
     emoji-assets: ^7.0.1
-    emojione: ^4.5.0
+    emoji-toolkit: ^7.0.0
     eslint: ^8.12.0
     jest: ^27.5.1
+    moment: ^2.29.4
     react: ^18.2.0
     react-dom: ^18.2.0
     ts-jest: ^27.1.4
@@ -7861,6 +7863,7 @@ __metadata:
     "@types/jest": ^27.4.1
     eslint: ^8.12.0
     jest: ^27.5.1
+    moment-timezone: ^0.5.40
     ts-jest: ^27.1.4
     typescript: ~4.5.5
   languageName: unknown
@@ -18870,6 +18873,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"emoji-toolkit@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "emoji-toolkit@npm:7.0.0"
+  checksum: 0e1ad04dbbbd1ab6d0c735ed2ab24deb8ba2b9d9901367c5a7b12cf7c1f35803cd6082af26e96f7a2bd7371d8af7493aa24664e54df365729fdf6785f28860e3
+  languageName: node
+  linkType: hard
+
 "emojione-assets@npm:^4.5.0":
   version: 4.5.0
   resolution: "emojione-assets@npm:4.5.0"
@@ -28065,6 +28075,15 @@ __metadata:
   dependencies:
     moment: ">= 2.9.0"
   checksum: 12a1d3d52e4ba509cf1fa36bbda59d898a08fa80ab35f6c358747e93aec1f07e617cec647eaf2e8acf5f9132e581d4704d34a9edffa9a80c5cd04bf23b277595
+  languageName: node
+  linkType: hard
+
+"moment-timezone@npm:^0.5.40":
+  version: 0.5.40
+  resolution: "moment-timezone@npm:0.5.40"
+  dependencies:
+    moment: ">= 2.9.0"
+  checksum: 6f6be5412b37fd937bb143efe74bf65b2c3f115fd967a6dc13b717a126ed6dd198bff6db6e179d69a089e20ac03ce7622c6b5598dd585005195554487a91b528
   languageName: node
   linkType: hard
 
