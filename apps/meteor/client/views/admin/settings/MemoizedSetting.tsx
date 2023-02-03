@@ -65,6 +65,8 @@ type MemoizedSettingProps = {
 	actionText?: string;
 };
 
+const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
+
 const MemoizedSetting = ({
 	type,
 	hint = undefined,
@@ -105,7 +107,7 @@ const MemoizedSetting = ({
 				)}
 			</Box>
 			{enterpriseCallout && (
-				<ExternalLink to={''}>
+				<ExternalLink to={PRICING_URL}>
 					<Button>{t('See_Paid_Plan')}</Button>
 				</ExternalLink>
 			)}
