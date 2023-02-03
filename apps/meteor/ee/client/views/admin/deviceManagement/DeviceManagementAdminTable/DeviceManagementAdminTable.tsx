@@ -91,7 +91,6 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 						deviceName={session?.device?.name}
 						deviceType={session?.device?.type}
 						deviceOSName={session?.device?.os?.name}
-						deviceOSVersion={session?.device?.os?.version}
 						loginAt={session.loginAt}
 						onReload={reload}
 					/>

@@ -1,6 +1,7 @@
-import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 import { Session } from 'meteor/session';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
@@ -114,7 +115,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 		const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
 		if (sub?.name) {
-			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
+			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } }) as IUser | undefined;
 			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
 		}
 
@@ -139,7 +140,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	findRoom(identifier) {
-		const query = {
+		const query: Mongo.Selector<ISubscription> = {
 			t: 'd',
 			$or: [{ name: identifier }, { rid: identifier }],
 		};
