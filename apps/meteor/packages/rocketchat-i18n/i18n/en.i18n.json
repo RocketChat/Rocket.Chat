@@ -2567,6 +2567,7 @@
   "Invalid_password": "Invalid password",
   "Invalid_reason": "The reason to join must not be empty",
   "Invalid_room_name": "<strong>%s</strong> is not a valid room name",
+  "Invalid_search_terms": "Invalid search terms",
   "Invalid_secret_URL_message": "The URL provided is invalid.",
   "Invalid_setting_s": "Invalid setting: %s",
   "Invalid_two_factor_code": "Invalid two factor code",

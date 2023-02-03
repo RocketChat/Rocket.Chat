@@ -1,4 +1,4 @@
-import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, Pagination, Box } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { validateRegex } from '../../../../lib/utils/validateRegex';
+import { isValidRegex, validateRegex } from '../../../../lib/utils/validateRegex';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
@@ -131,7 +131,13 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText shouldFiltersStack onChange={({ text }): void => setText(text)}>
+				{!isValidRegex(text) && (
+					<Box mbs='x4' color='danger'>
+						{t('Invalid_search_terms')}
+					</Box>
+				)}
+			</FilterByText>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

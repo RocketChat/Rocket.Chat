@@ -17,7 +17,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { validateRegex } from '../../../lib/utils/validateRegex';
+import { isValidRegex, validateRegex } from '../../../lib/utils/validateRegex';
 
 type CustomEmojiProps = {
 	reload: MutableRefObject<() => void>;
@@ -65,7 +65,13 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			<FilterByText shouldFiltersStack onChange={({ text }): void => setText(text)}>
+				{!isValidRegex(text) && (
+					<Box mbs='x4' color='danger'>
+						{t('Invalid_search_terms')}
+					</Box>
+				)}
+			</FilterByText>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
