@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, Throbber, MessageDivider } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../app/ui-utils/client';
@@ -16,12 +16,8 @@ import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText'
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import type { MessageWithMdEnforced } from '../../../../lib/parseMessageTextToAstMarkdown';
-import { removePossibleNullMessageValues, parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
 import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
-import { useAutoTranslate } from '../../MessageList/hooks/useAutoTranslate';
-import { useKatex } from '../../MessageList/hooks/useKatex';
 import { isMessageFirstUnread } from '../../MessageList/lib/isMessageFirstUnread';
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
@@ -42,27 +38,6 @@ const Mentions = (): ReactElement => {
 
 	const getMentionedMessages = useEndpoint('GET', '/v1/chat.getMentionedMessages');
 
-	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
-
-	const autoTranslateOptions = useAutoTranslate(subscription);
-	const showColors = Boolean(useSetting('HexColorPreview_Enabled'));
-
-	const normalizeMessage = useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(katexEnabled && {
-				katex: {
-					dollarSyntax: katexDollarSyntaxEnabled,
-					parenthesisSyntax: katexParenthesisSyntaxEnabled,
-				},
-			}),
-		};
-
-		return (message: IMessage): MessageWithMdEnforced =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [showColors, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, autoTranslateOptions]);
-
 	const mentionedMessagesQueryResult = useQuery(['rooms', room._id, 'mentioned-messages'] as const, async () => {
 		const messages: IMessage[] = [];
 
@@ -75,7 +50,7 @@ const Mentions = (): ReactElement => {
 			messages.push(...result.messages.map(mapMessageFromApi));
 		}
 
-		return messages.map(normalizeMessage);
+		return messages;
 	});
 
 	return (
