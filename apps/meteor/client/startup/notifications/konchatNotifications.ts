@@ -94,11 +94,9 @@ Meteor.startup(() => {
 			notifyNewMessageAudio(notification.payload.rid);
 		});
 
-		CachedChatSubscription.onSyncData = ((action: 'changed' | 'removed', sub: ISubscription): void => {
-			if (action !== 'removed') {
-				notifyNewRoom(sub);
-			}
-		}) as () => void;
+		CachedChatSubscription.on('changed', (sub): void => {
+			notifyNewRoom(sub);
+		});
 
 		Notifications.onUser('subscriptions-changed', (_action: 'changed' | 'removed', sub: ISubscription) => {
 			notifyNewRoom(sub);
