@@ -102,6 +102,9 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 		let statusCode = (await api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`)).status();
 		expect(statusCode).toBe(200);
 
+		statusCode = (await api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`)).status();
+		expect(statusCode).toBe(200);
+
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
 		expect(statusCode).toBe(200);
 	});
