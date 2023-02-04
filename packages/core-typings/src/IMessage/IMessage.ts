@@ -89,6 +89,7 @@ export type MessageTypesValues =
 	| 'room-disallowed-reacting'
 	| 'command'
 	| 'videoconf'
+	| 'message_pinned'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -185,8 +186,6 @@ export interface IMessage extends IRocketChatRecord {
 		eventId: string;
 	};
 }
-
-export type ToolboxMessageType = 'message' | 'thread' | 'federated';
 
 export type MessageSystem = {
 	t: 'system';
