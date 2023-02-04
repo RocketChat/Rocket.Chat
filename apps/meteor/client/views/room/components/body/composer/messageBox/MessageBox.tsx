@@ -1,3 +1,4 @@
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -26,7 +27,6 @@ import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
-import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
@@ -80,7 +80,23 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-type MessageBoxProps = Omit<MessageBoxTemplateInstance['data'], 'chatContext'>;
+type MessageBoxProps = {
+	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+	readOnly: boolean;
+	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
+	onJoin?: () => Promise<void>;
+	onResize?: () => void;
+	onTyping?: () => void;
+	onEscape?: () => void;
+	onNavigateToPreviousMessage?: () => void;
+	onNavigateToNextMessage?: () => void;
+	onUploadFiles?: (files: readonly File[]) => void;
+	tshow?: IMessage['tshow'];
+	subscription?: ISubscription;
+	showFormattingTips: boolean;
+	isEmbedded?: boolean;
+};
 
 const MessageBox = ({
 	rid,
