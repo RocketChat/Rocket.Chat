@@ -83,12 +83,21 @@ const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWith
 	allMentionsWithRealNames.forEach(({ mention, realName }, mentionsIndex) => {
 		const negativeLookAhead = `(?!${realName.includes(':') ? MATCH_ANYTHING : MATCH_ANYTHING_BUT_COLON})`;
 		const realNameRegex = new RegExp(`(?<!\w)${realName}${negativeLookAhead}`);
-		const realNamePosition = toCompareAgain.search(realNameRegex);
-		const messageReplacedWithMention = toCompareAgain.replace(realNameRegex, mention);
+		let realNamePosition = toCompareAgain.search(realNameRegex);
+		const realNamePresentInMessage = realNamePosition !== -1;
+		let messageReplacedWithMention = realNamePresentInMessage ? toCompareAgain.replace(realNameRegex, mention) : '';
+		let positionRemovingLastMention = realNamePresentInMessage ? realNamePosition + realName.length + 1 : -1;
+		const mentionForRoom = realName.charAt(0) === '!';
+		if (!realNamePresentInMessage && mentionForRoom) {
+			const allMention = '@all';
+			const defaultRegexForRooms = new RegExp(`(?<!\w)${allMention}${negativeLookAhead}`);
+			realNamePosition = toCompareAgain.search(defaultRegexForRooms);
+			messageReplacedWithMention = toCompareAgain.replace(defaultRegexForRooms, mention);
+			positionRemovingLastMention = realNamePosition + allMention.length + 1;
+		}
 		const lastItem = allMentionsWithRealNames.length - 1;
 		const lastMentionToProcess = mentionsIndex === lastItem;
 		const lastMentionPosition = realNamePosition + mention.length + 1;
-		const positionRemovingLastMention = realNamePosition + realName.length + 1;
 
 		toCompareAgain = toCompareAgain.slice(positionRemovingLastMention);
 		parsedMessage += messageReplacedWithMention.slice(0, lastMentionToProcess ? undefined : lastMentionPosition);

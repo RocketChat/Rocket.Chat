@@ -17,6 +17,28 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 				}),
 			).to.be.equal('hey @user:server.com');
 		});
+		it('should parse the mentions correctly when there is some room mention in RC format', async () => {
+			expect(
+				await toInternalMessageFormat({
+					rawMessage: "hello @marcos.defendi:tests-b.fed.rocket.chat, here's from Server A, @all, @marcos.defendi:tests-b.fed.rocket.chat",
+					formattedMessage:
+						'<p>hello <a href="https://matrix.to/#/@marcos.defendi:tests-b.fed.rocket.chat">@marcos.defendi:tests-b.fed.rocket.chat</a>, here&#39;s from Server A, <a href="https://matrix.to/#/!nAWjvnrjAoUWVMpqTy:tests-b.fed.rocket.chat">!nAWjvnrjAoUWVMpqTy:tests-b.fed.rocket.chat</a>, <a href="https://matrix.to/#/@marcos.defendi:tests-b.fed.rocket.chat">@marcos.defendi:tests-b.fed.rocket.chat</a></p>',
+					homeServerDomain: 'localDomain',
+					senderExternalId: '@user:externalDomain.com',
+				}),
+			).to.be.equal("hello @marcos.defendi:tests-b.fed.rocket.chat, here's from Server A, @all, @marcos.defendi:tests-b.fed.rocket.chat");
+		});
+		it('should parse the mentions correctly when there is some room mention in Element format', async () => {
+			expect(
+				await toInternalMessageFormat({
+					rawMessage: "hello marcos.defendi, here's from Server A, #test-thread:matrix.org, marcos.defendi",
+					formattedMessage:
+						'hello <a href="https://matrix.to/#/@marcos.defendi:tests-b.fed.rocket.chat">marcos.defendi</a>, here\'s from Server A, <a href="https://matrix.to/#/#test-thread:matrix.org">#test-thread:matrix.org</a>, <a href="https://matrix.to/#/@marcos.defendi:tests-b.fed.rocket.chat">marcos.defendi</a>',
+					homeServerDomain: 'localDomain',
+					senderExternalId: '@user:externalDomain.com',
+				}),
+			).to.be.equal("hello @marcos.defendi:tests-b.fed.rocket.chat, here's from Server A, @all, @marcos.defendi:tests-b.fed.rocket.chat");
+		});
 
 		it('should parse the user mention correctly when using the RC format', async () => {
 			expect(
