@@ -22,7 +22,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
-		"@types/node": "^14.18.21",
+		"@types/node": "^17.0.45",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",

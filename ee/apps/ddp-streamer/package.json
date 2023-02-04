@@ -43,7 +43,7 @@
 		"@types/ejson": "^2.2.0",
 		"@types/eslint": "^8.4.10",
 		"@types/meteor": "2.7.1",
-		"@types/node": "^14.18.21",
+		"@types/node": "^17.0.45",
 		"@types/polka": "^0.5.4",
 		"@types/sharp": "^0.30.4",
 		"@types/uuid": "^8.3.4",
