@@ -358,6 +358,7 @@ export class FederationRoomServiceListener extends FederationService {
 				newExternalFormattedText,
 				newRawMessage,
 				this.internalHomeServerDomain,
+				senderUser,
 			);
 			// TODO: create an entity to abstract all the message logic
 			if (!FederatedRoom.shouldUpdateMessage(internalFormattedMessageToBeEdited, message)) {

@@ -30,6 +30,7 @@ export class RocketChatMessageAdapter {
 					rawMessage,
 					formattedMessage: externalFormattedMessage,
 					homeServerDomain,
+					senderExternalId: user.getExternalId(),
 				}),
 			},
 			room.getInternalReference(),
@@ -56,6 +57,7 @@ export class RocketChatMessageAdapter {
 					externalFormattedText,
 					rawMessage,
 					homeServerDomain,
+					user,
 				),
 			},
 			room,
@@ -75,6 +77,7 @@ export class RocketChatMessageAdapter {
 				rawMessage: newRawMessageText,
 				formattedMessage: newExternalFormattedMessage,
 				homeServerDomain,
+				senderExternalId: user.getExternalId(),
 			}),
 		};
 		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
@@ -86,6 +89,7 @@ export class RocketChatMessageAdapter {
 		externalFormattedMessage: string,
 		rawMessage: string,
 		homeServerDomain: string,
+		senderUser: FederatedUser,
 	): Promise<string> {
 		const room = federatedRoom.getInternalReference();
 		const messageToReplyToUrl = getURL(
@@ -97,6 +101,7 @@ export class RocketChatMessageAdapter {
 			formattedMessage: externalFormattedMessage,
 			rawMessage,
 			homeServerDomain,
+			senderExternalId: senderUser.getExternalId(),
 		});
 	}
 
@@ -105,6 +110,7 @@ export class RocketChatMessageAdapter {
 		newExternalFormattedMessage: string,
 		newRawMessageText: string,
 		homeServerDomain: string,
+		senderUser: FederatedUser,
 	): Promise<string> {
 		const quotedMessageUrl = editedMessage.attachments?.filter(isQuoteAttachment)?.[0]?.message_link;
 
@@ -113,6 +119,7 @@ export class RocketChatMessageAdapter {
 			formattedMessage: newExternalFormattedMessage,
 			rawMessage: newRawMessageText,
 			homeServerDomain,
+			senderExternalId: senderUser.getExternalId(),
 		});
 	}
 
@@ -125,7 +132,13 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const updatedMessage = {
 			...editedMessage,
-			msg: await this.getMessageToEditWhenReplyAndQuote(editedMessage, newExternalFormattedMessage, newRawMessageText, homeServerDomain),
+			msg: await this.getMessageToEditWhenReplyAndQuote(
+				editedMessage,
+				newExternalFormattedMessage,
+				newRawMessageText,
+				homeServerDomain,
+				user,
+			),
 		};
 		updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
 	}
@@ -171,7 +184,7 @@ export class RocketChatMessageAdapter {
 				file: (files || [])[0],
 				files,
 				attachments,
-				msg: await this.getMessageToReplyToWhenQuoting(federatedRoom, messageToReplyTo, '', '', homeServerDomain),
+				msg: await this.getMessageToReplyToWhenQuoting(federatedRoom, messageToReplyTo, '', '', homeServerDomain, user),
 			},
 			room,
 		);
