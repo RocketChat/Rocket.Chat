@@ -42,6 +42,7 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
+import type { FederationEndpoints } from './v1/federation';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
@@ -86,6 +87,7 @@ export interface Endpoints
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
+		FederationEndpoints,
 		ImportEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -204,22 +206,7 @@ export * from './v1/settings';
 export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
-export * from './v1/channels/ChannelsAddAllProps';
-export * from './v1/channels/ChannelsArchiveProps';
-export * from './v1/channels/ChannelsUnarchiveProps';
-export * from './v1/channels/ChannelsHistoryProps';
-export * from './v1/channels/ChannelsRolesProps';
-export * from './v1/channels/ChannelsJoinProps';
-export * from './v1/channels/ChannelsKickProps';
-export * from './v1/channels/ChannelsLeaveProps';
-export * from './v1/channels/ChannelsMessagesProps';
-export * from './v1/channels/ChannelsOpenProps';
-export * from './v1/channels/ChannelsSetAnnouncementProps';
-export * from './v1/channels/ChannelsGetAllUserMentionsByChannelProps';
-export * from './v1/channels/ChannelsModeratorsProps';
-export * from './v1/channels/ChannelsConvertToTeamProps';
-export * from './v1/channels/ChannelsSetReadOnlyProps';
-export * from './v1/channels/ChannelsDeleteProps';
+export * from './v1/channels';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';
@@ -255,3 +242,4 @@ export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/import';
 export * from './v1/voip';
 export * from './v1/email-inbox';
+export * from './v1/federation';

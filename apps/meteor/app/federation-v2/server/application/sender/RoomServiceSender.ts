@@ -16,7 +16,7 @@ import type {
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../input/RoomSenderDto';
+} from './input/RoomSenderDto';
 import { getExternalMessageSender } from './MessageSenders';
 
 export class FederationRoomServiceSender extends FederationService {

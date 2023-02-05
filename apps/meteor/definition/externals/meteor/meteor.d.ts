@@ -64,6 +64,8 @@ declare module 'meteor/meteor' {
 				allowConnection: () => void;
 			};
 
+			_outstandingMethodBlocks: unknown[];
+
 			onMessage(message: string): void;
 
 			status(): {

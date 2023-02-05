@@ -12,7 +12,7 @@ type MapViewProps = {
 };
 
 const MapView: FC<MapViewProps> = ({ latitude, longitude }) => {
-	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey') as string;
+	const googleMapsApiKey = useSetting<string>('MapView_GMapsAPIKey');
 
 	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
 

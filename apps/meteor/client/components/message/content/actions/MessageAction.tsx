@@ -18,7 +18,7 @@ type MessageActionProps = {
 	i18nLabel?: TranslationKey;
 	label?: string;
 	methodId: string;
-	runAction: (action: string) => () => void;
+	runAction: (actionId: string) => () => void;
 	danger?: boolean;
 };
 

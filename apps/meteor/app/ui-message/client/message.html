@@ -155,7 +155,7 @@
 				</div>
 			{{/unless}}
 			{{#unless hideActionLinks}}
-				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
+				{{> MessageActions message=msg actions=actionLinks }}
 			{{/unless}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
@@ -177,15 +177,15 @@
 			{{/unless}}
 
 			{{#if msg.drid}}
-				{{> DiscussionMetrics count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
+				{{> DiscussionMetrics count=msg.dcount drid=msg.drid lm=msg.dlm }}
 			{{/if}}
 
 			{{#if $and settings.showReplyButton msg.tcount}}
-				{{> ThreadMetrics counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
+				{{> ThreadMetrics counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all }}
 			{{/if}}
 
 			{{#if broadcast}}
-			 	{{> BroadcastMetrics mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
+			 	{{> BroadcastMetrics mid=msg._id username=msg.u.username }}
 			{{/if}}
 		{{/unless}}
 	</li>
