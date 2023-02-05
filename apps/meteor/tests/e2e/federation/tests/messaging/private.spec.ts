@@ -435,7 +435,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await expect(poFederationChannelServer1.content.lastMessageFileName).toContainText('test_pdf_file.pdf');
 			});
 
-			test.skip('expect to send a message mentioning an user from Server A to Server B', async ({ page }) => {
+			test('expect to send a message mentioning an user from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
@@ -467,7 +467,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				);
 			});
 
-			test.skip('expect to send a message mentioning an user Server B to Server A', async ({ page }) => {
+			test('expect to send a message mentioning an user Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
@@ -499,7 +499,7 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				);
 			});
 
-			test.skip('expect to send a message with multiple mentions, including @all from Server A to Server B', async ({ page }) => {
+			test('expect to send a message with multiple mentions, including @all from Server A to Server B', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 

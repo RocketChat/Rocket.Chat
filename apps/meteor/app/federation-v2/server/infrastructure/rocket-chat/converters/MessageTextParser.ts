@@ -70,8 +70,8 @@ export const toInternalMessageFormat = ({
 		getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain, senderExternalId),
 	);
 
-const MATCH_ANYTHING = '\\w';
-const MATCH_ANYTHING_BUT_COLON = '\\:';
+const MATCH_ANYTHING = 'w';
+const MATCH_ANYTHING_BUT_COLON = ':';
 const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWithRealNames: IInternalMention[]): string => {
 	let parsedMessage = '';
 	let toCompareAgain = message;
@@ -82,7 +82,7 @@ const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWith
 
 	allMentionsWithRealNames.forEach(({ mention, realName }, mentionsIndex) => {
 		const negativeLookAhead = `(?!${realName.includes(':') ? MATCH_ANYTHING : MATCH_ANYTHING_BUT_COLON})`;
-		const realNameRegex = new RegExp(`(?<!\w)${realName}${negativeLookAhead}`);
+		const realNameRegex = new RegExp(`(?<!w)${realName}${negativeLookAhead}`);
 		let realNamePosition = toCompareAgain.search(realNameRegex);
 		const realNamePresentInMessage = realNamePosition !== -1;
 		let messageReplacedWithMention = realNamePresentInMessage ? toCompareAgain.replace(realNameRegex, mention) : '';
@@ -90,7 +90,7 @@ const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWith
 		const mentionForRoom = realName.charAt(0) === '!';
 		if (!realNamePresentInMessage && mentionForRoom) {
 			const allMention = '@all';
-			const defaultRegexForRooms = new RegExp(`(?<!\w)${allMention}${negativeLookAhead}`);
+			const defaultRegexForRooms = new RegExp(`(?<!w)${allMention}${negativeLookAhead}`);
 			realNamePosition = toCompareAgain.search(defaultRegexForRooms);
 			messageReplacedWithMention = toCompareAgain.replace(defaultRegexForRooms, mention);
 			positionRemovingLastMention = realNamePosition + allMention.length + 1;
