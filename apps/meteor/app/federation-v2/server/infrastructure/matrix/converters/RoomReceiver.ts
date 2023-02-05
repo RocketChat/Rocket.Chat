@@ -1,6 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import type { IExternalRolesChangesToApplyInputDto } from '../../../application/input/RoomReceiverDto';
 import {
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
@@ -12,7 +11,8 @@ import {
 	FederationRoomReceiveExternalMessageDto,
 	FederationRoomRedactEventDto,
 	FederationRoomRoomChangePowerLevelsEventDto,
-} from '../../../application/input/RoomReceiverDto';
+} from '../../../application/listener/input/RoomReceiverDto';
+import type { IExternalRolesChangesToApplyInputDto } from '../../../application/listener/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
 import { RoomMembershipChangedEventType } from '../definitions/events/RoomMembershipChanged';
@@ -25,7 +25,6 @@ import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameC
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
 import type { AbstractMatrixEvent } from '../definitions/AbstractMatrixEvent';
 import type { MatrixEventRoomRedacted } from '../definitions/events/RoomEventRedacted';
-import { toInternalMessageFormat } from '../../rocket-chat/converters/MessageTextParser';
 import type {
 	IMatrixEventContentRoomPowerLevelsChanged,
 	MatrixEventRoomRoomPowerLevelsChanged,
@@ -34,11 +33,15 @@ import { MATRIX_POWER_LEVELS } from '../definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../rocket-chat/definitions/InternalFederatedRoomRoles';
 
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
-	return matrixIdentifier.replace('@', '').replace('!', '');
+	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
 };
 
 export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''): string => {
 	return matrixUserId.split(':')[0]?.replace('@', '');
+};
+
+export const formatExternalAliasIdToInternalFormat = (alias = ''): string => {
+	return alias.split(':')[0]?.replace('#', '');
 };
 
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
@@ -85,7 +88,7 @@ const tryToExtractExternalRoomNameFromTheRoomState = (roomState: AbstractMatrixE
 	)?.content?.name;
 
 	return {
-		...(externalRoomName ? { externalRoomName } : {}),
+		...(externalRoomName ? { externalRoomName: removeExternalSpecificCharsFromExternalIdentifier(externalRoomName) } : {}),
 	};
 };
 
@@ -190,6 +193,40 @@ const createExternalRolesChangesActions = (
 	return verifyIfNewRolesWereAddedForDefaultUsers(currentRolesState, previousRolesState, changesInRolesBasedOnPreviousState);
 };
 
+const getInviteesFromRoomState = (
+	roomState: AbstractMatrixEvent[] = [],
+): {
+	externalInviteeId: string;
+	normalizedInviteeId: string;
+	inviteeUsernameOnly: string;
+}[] => {
+	const inviteesFromRoomState = (
+		roomState?.find((stateEvent) => stateEvent.type === MatrixEventType.ROOM_CREATED) as MatrixEventRoomCreated
+	)?.content.inviteesExternalIds;
+	if (inviteesFromRoomState) {
+		return inviteesFromRoomState.map((inviteeExternalId) => ({
+			externalInviteeId: inviteeExternalId,
+			normalizedInviteeId: removeExternalSpecificCharsFromExternalIdentifier(inviteeExternalId),
+			inviteeUsernameOnly: formatExternalUserIdToInternalUsernameFormat(inviteeExternalId),
+		}));
+	}
+	return [];
+};
+
+const extractAllInviteeIdsWhenDM = (
+	externalEvent: MatrixEventRoomMembershipChanged,
+): {
+	externalInviteeId: string;
+	normalizedInviteeId: string;
+	inviteeUsernameOnly: string;
+}[] => {
+	if (!externalEvent.invite_room_state && !externalEvent.unsigned?.invite_room_state) {
+		return [];
+	}
+
+	return getInviteesFromRoomState(externalEvent.invite_room_state || externalEvent.unsigned?.invite_room_state || []);
+};
+
 export class MatrixRoomReceiverConverter {
 	public static toRoomCreateDto(externalEvent: MatrixEventRoomCreated): FederationRoomCreateInputDto {
 		return new FederationRoomCreateInputDto({
@@ -230,45 +267,32 @@ export class MatrixRoomReceiverConverter {
 				avatarUrl: externalEvent.content?.avatar_url,
 				displayName: externalEvent.content?.displayname,
 			},
+			...(externalEvent.content?.is_direct ? { allInviteesExternalIdsWhenDM: extractAllInviteeIdsWhenDM(externalEvent) } : {}),
 		});
 	}
 
-	public static toSendRoomMessageDto(
-		externalEvent: MatrixEventRoomMessageSent,
-		homeServerDomain: string,
-	): FederationRoomReceiveExternalMessageDto {
-		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+	public static toSendRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomReceiveExternalMessageDto {
 		return new FederationRoomReceiveExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			messageText: toInternalMessageFormat({
-				message: externalEvent.content.formatted_body || externalEvent.content.body,
-				homeServerDomain,
-				isAReplyToAMessage,
-			}),
+			externalFormattedText: externalEvent.content.formatted_body || '',
+			rawMessage: externalEvent.content.body,
 			replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
 		});
 	}
 
-	public static toEditRoomMessageDto(
-		externalEvent: MatrixEventRoomMessageSent,
-		homeServerDomain: string,
-	): FederationRoomEditExternalMessageDto {
-		const isAReplyToAMessage = Boolean(externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id);
+	public static toEditRoomMessageDto(externalEvent: MatrixEventRoomMessageSent): FederationRoomEditExternalMessageDto {
 		return new FederationRoomEditExternalMessageDto({
 			externalEventId: externalEvent.event_id,
 			externalRoomId: externalEvent.room_id,
 			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalEvent.room_id),
 			externalSenderId: externalEvent.sender,
 			normalizedSenderId: removeExternalSpecificCharsFromExternalIdentifier(externalEvent.sender),
-			newMessageText: toInternalMessageFormat({
-				message: (externalEvent.content['m.new_content']?.formatted_body || externalEvent.content['m.new_content']?.body) as string,
-				homeServerDomain,
-				isAReplyToAMessage,
-			}),
+			newExternalFormattedText: externalEvent.content['m.new_content']?.formatted_body || '',
+			newRawMessage: externalEvent.content['m.new_content']?.body as string,
 			editsEvent: externalEvent.content['m.relates_to']?.event_id as string,
 		});
 	}

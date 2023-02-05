@@ -1,6 +1,7 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { ChatRoom } from '../../../../app/models/client';
@@ -45,7 +46,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	roomName(roomData) {
-		if (roomData.prid) {
+		if (roomData.prid || isRoomFederated(roomData)) {
 			return roomData.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -87,12 +88,15 @@ roomCoordinator.add(PublicRoomType, {
 		if (room.teamMain) {
 			return 'team';
 		}
+		if (isRoomFederated(room)) {
+			return 'globe';
+		}
 
 		return PublicRoomType.icon;
 	},
 
 	findRoom(identifier) {
-		const query = {
+		const query: Mongo.Selector<IRoom> = {
 			t: 'c',
 			name: identifier,
 		};

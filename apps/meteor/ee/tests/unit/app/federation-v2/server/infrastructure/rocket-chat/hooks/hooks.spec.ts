@@ -99,12 +99,12 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 	});
 
-	describe('#onUsersAddedToARoom()', () => {
+	describe('#onUsersAddedToARoom() - afterAddedToRoom', () => {
 		it('should NOT execute the callback if no room was provided', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']();
+			hooks['federation-v2-after-add-user-to-a-room']();
 			expect(stub.called).to.be.false;
 		});
 
@@ -112,7 +112,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']({}, {});
+			hooks['federation-v2-after-add-user-to-a-room']({}, {});
 			expect(stub.called).to.be.false;
 		});
 
@@ -120,7 +120,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']({}, { federated: true });
+			hooks['federation-v2-after-add-user-to-a-room']({}, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
@@ -128,7 +128,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']({}, { federated: true }, {});
+			hooks['federation-v2-after-add-user-to-a-room']({}, { federated: true }, {});
 			expect(stub.called).to.be.false;
 		});
 
@@ -136,7 +136,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']({ user: 'user' }, { federated: true });
+			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user' }, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
@@ -144,7 +144,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(false);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
+			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
@@ -152,8 +152,65 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-users-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
-			expect(stub.calledWith({ federated: true }, 'inviter', ['user'])).to.be.true;
+			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
+			expect(stub.calledWith({ federated: true }, ['user'], 'inviter')).to.be.true;
+		});
+	});
+	describe('#onUsersAddedToARoom() - federation.onAddUsersToARoom', () => {
+		it('should NOT execute the callback if no room was provided', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']();
+			expect(stub.called).to.be.false;
+		});
+
+		it('should NOT execute the callback if the provided room is not federated', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']({}, {});
+			expect(stub.called).to.be.false;
+		});
+
+		it('should NOT execute the callback if no params were provided', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']({}, { federated: true });
+			expect(stub.called).to.be.false;
+		});
+
+		it('should NOT execute the callback if no user was provided', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']({}, { federated: true }, {});
+			expect(stub.called).to.be.false;
+		});
+
+		it('should NOT execute the callback if no inviter was provided', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'] }, { federated: true });
+			expect(stub.called).to.be.false;
+		});
+
+		it('should NOT execute the callback if federation module was disabled', () => {
+			get.returns(false);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'], inviter: 'inviter' }, { federated: true });
+			expect(stub.called).to.be.false;
+		});
+
+		it('should execute the callback when everything is correct', () => {
+			get.returns(true);
+			const stub = sinon.stub();
+			FederationHooksEE.onUsersAddedToARoom(stub);
+			hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'], inviter: 'inviter' }, { federated: true });
+			expect(stub.calledWith({ federated: true }, ['user'], 'inviter')).to.be.true;
 		});
 	});
 
@@ -292,7 +349,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	});
 
 	describe('#afterRoomNameChanged()', () => {
-		
 		it('should NOT execute the callback if no params was provided', () => {
 			get.returns(true);
 			const stub = sinon.stub();
@@ -335,7 +391,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	});
 
 	describe('#afterRoomTopicChanged()', () => {
-		
 		it('should NOT execute the callback if no params was provided', () => {
 			get.returns(true);
 			const stub = sinon.stub();
@@ -380,16 +435,17 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	describe('#removeAll()', () => {
 		it('should remove the specific validation for EE environments', () => {
 			FederationHooksEE.removeAll();
-			expect(remove.callCount).to.be.equal(7);
+			expect(remove.callCount).to.be.equal(8);
 			expect(remove.getCall(0).calledWith('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room')).to.be.equal(true);
 			expect(remove.getCall(1).calledWith('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room')).to.be.equal(true);
-			expect(remove.getCall(2).calledWith('afterAddedToRoom', 'federation-v2-after-add-users-to-a-room')).to.be.equal(true);
-			expect(remove.getCall(3).calledWith('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room')).to.be.equal(true);
-			expect(remove.getCall(4).calledWith('federation.beforeAddUserAToRoom', 'federation-v2-before-add-user-to-the-room')).to.be.equal(
+			expect(remove.getCall(2).calledWith('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room')).to.be.equal(true);
+			expect(remove.getCall(3).calledWith('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room')).to.be.equal(true);
+			expect(remove.getCall(4).calledWith('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room')).to.be.equal(true);
+			expect(remove.getCall(5).calledWith('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room')).to.be.equal(
 				true,
 			);
-			expect(remove.getCall(5).calledWith('afterRoomNameChange', 'federation-v2-after-room-name-changed')).to.be.equal(true);
-			expect(remove.getCall(6).calledWith('afterRoomTopicChange', 'federation-v2-after-room-topic-changed')).to.be.equal(true);
+			expect(remove.getCall(6).calledWith('afterRoomNameChange', 'federation-v2-after-room-name-changed')).to.be.equal(true);
+			expect(remove.getCall(7).calledWith('afterRoomTopicChange', 'federation-v2-after-room-topic-changed')).to.be.equal(true);
 		});
 	});
 });

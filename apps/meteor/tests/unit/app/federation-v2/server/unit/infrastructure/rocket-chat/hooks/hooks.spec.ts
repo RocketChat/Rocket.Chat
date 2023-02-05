@@ -598,16 +598,16 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		it('should call the correct handler with the correct parameters', () => {});
 	});
 
-	describe('#removeCEValidation()', () => {
-		it('should remove the specific validation for CE environments', () => {
-			FederationHooks.removeCEValidation();
-			expect(remove.calledTwice).to.be.equal(true);
-			expect(
-				remove.firstCall.calledWith('federation.beforeAddUserAToRoom', 'federation-v2-can-add-federated-user-to-federated-room'),
-			).to.be.equal(true);
-			expect(
-				remove.secondCall.calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
-			).to.be.equal(true);
-		});
-	});
+    describe('#removeCEValidation()', () => {
+        it('should remove the specific validation for CE environments', () => {
+            FederationHooks.removeCEValidation();
+            expect(remove.calledTwice).to.be.equal(true);
+            expect(
+                remove.firstCall.calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room'),
+            ).to.be.equal(true);
+            expect(
+                remove.secondCall.calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
+            ).to.be.equal(true);
+        });
+    });
 });

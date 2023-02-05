@@ -17,7 +17,7 @@ import type {
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../input/RoomSenderDto';
+} from './input/RoomSenderDto';
 import { getExternalMessageSender } from './MessageSenders';
 import { MATRIX_POWER_LEVELS } from '../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
