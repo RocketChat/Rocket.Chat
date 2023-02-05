@@ -12,6 +12,7 @@ export type FormattingButton =
 			pattern: string;
 			// text?: () => string | undefined;
 			command?: string;
+			link?: string;
 			condition: () => boolean;
 	  }
 	| {
@@ -69,6 +70,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	},
 	{
 		label: 'KaTeX' as TranslationKey,
+		icon: 'katex',
 		text: () => {
 			if (!settings.get('Katex_Enabled')) {
 				return;

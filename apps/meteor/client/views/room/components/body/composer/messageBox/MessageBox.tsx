@@ -1,4 +1,5 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -27,7 +28,6 @@ import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
-import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
@@ -39,6 +39,7 @@ import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
+import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useRoom } from '../../../../contexts/RoomContext';
 import BlazeTemplate from '../../../BlazeTemplate';
@@ -82,7 +83,23 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-type MessageBoxProps = Omit<MessageBoxTemplateInstance['data'], 'chatContext'>;
+type MessageBoxProps = {
+	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+	readOnly: boolean;
+	onSend?: (params: { value: string; tshow?: boolean }) => Promise<void>;
+	onJoin?: () => Promise<void>;
+	onResize?: () => void;
+	onTyping?: () => void;
+	onEscape?: () => void;
+	onNavigateToPreviousMessage?: () => void;
+	onNavigateToNextMessage?: () => void;
+	onUploadFiles?: (files: readonly File[]) => void;
+	tshow?: IMessage['tshow'];
+	subscription?: ISubscription;
+	showFormattingTips: boolean;
+	isEmbedded?: boolean;
+};
 
 const MessageBox = ({
 	rid,
@@ -114,6 +131,7 @@ const MessageBox = ({
 	const room = useRoom();
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
 
 	const callbackRef = useCallback(
@@ -246,6 +264,11 @@ const MessageBox = ({
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
 
+	const isRecordingVideo = useSubscription({
+		getCurrentValue: chat.composer?.recordingVideo.get ?? getEmptyFalse,
+		subscribe: chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
+	});
+
 	const formatters = useSubscription({
 		getCurrentValue: chat.composer?.formatters.get ?? getEmptyArray,
 		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
@@ -316,7 +339,8 @@ const MessageBox = ({
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}
-			<MessageComposer variant={isEditing ? 'editing' : undefined}>
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
+			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				<MessageComposerInput
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
