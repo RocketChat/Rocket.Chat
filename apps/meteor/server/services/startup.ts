@@ -53,11 +53,6 @@ api.registerService(new UploadService());
 api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
-// Run EE services defined outside of the main repo
-// Otherwise, monolith would ignore them :(
-// Always register the service and manage licensing inside the service (tbd)
-api.registerService(new QueueWorker(db, Logger));
-api.registerService(new OmnichannelTranscript(Logger));
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
@@ -68,5 +63,11 @@ if (!isRunningMs()) {
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
+
+		// Run EE services defined outside of the main repo
+		// Otherwise, monolith would ignore them :(
+		// Always register the service and manage licensing inside the service (tbd)
+		api.registerService(new QueueWorker(db, Logger));
+		api.registerService(new OmnichannelTranscript(Logger));
 	})();
 }
