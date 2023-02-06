@@ -14,7 +14,7 @@ const PreferencesConversationTranscript = ({ register }: FormSectionProps): Reac
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
 
 	return (
-		<Accordion.Item title={t('Conversational_transcript')}>
+		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
 				<Field>
 					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1} color='red'>
