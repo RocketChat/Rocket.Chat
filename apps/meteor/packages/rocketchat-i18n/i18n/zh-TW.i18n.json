@@ -291,7 +291,6 @@
   "Additional_emails": "其他電子郵件",
   "Additional_Feedback": "其他意見",
   "additional_integrations_Bots": "如果您正在尋找如何整合自己的機器人，那麼請選擇我們的Hubot介面。 <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat </a>",
-  "additional_integrations_Zapier": "您是否希望將其他軟體和應用程式與Rocket.Chat整合，但您沒有時間手動執行此動作？然後我們建議使用我們完全支援的Zapier。在我們的文件中閱讀更多相關訊息。 <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/ </a>",
   "Admin_disabled_encryption": "您的管理員無法啟用 E2E 加密。",
   "Admin_Info": "管理員訊息",
   "Administration": "管理",

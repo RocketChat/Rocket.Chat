@@ -215,7 +215,6 @@
   "Additional_emails": "Email tambahan",
   "Additional_Feedback": "tambahan Masukan",
   "additional_integrations_Bots": "Jika Anda mencari cara mengintegrasikan bot Anda sendiri, maka tidak perlu mencari lebih jauh dari adaptor Hubot kami. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Apakah Anda ingin mengintegrasikan perangkat lunak dan aplikasi lain dengan Rocket.Chat tetapi Anda tidak punya waktu untuk melakukannya secara manual? Kemudian kami sarankan menggunakan Zapier yang kami dukung sepenuhnya. Baca lebih lanjut tentang itu di dokumentasi kami. <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations / zapier / menggunakan-zaps /</a>",
   "Admin_Info": "Info Admin",
   "Administration": "Administrasi",
   "Adult_images_are_not_allowed": "Gambar dewasa tidak diperbolehkan",
