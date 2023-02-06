@@ -6230,7 +6230,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.36.0, @rocket.chat/apps-engine@npm:^1.32.0":
+"@rocket.chat/apps-engine@npm:1.37.0-alpha.133":
+  version: 1.37.0-alpha.133
+  resolution: "@rocket.chat/apps-engine@npm:1.37.0-alpha.133"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.11
+  checksum: c924517b8b88caad680d8e4bf86602c4318b7a10e0b47899faa6e81323226e7f36fb067674c2c8b8f66d38e3133c890e3efdd560b832fb000da8ef9e337dedf1
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.36.0
   resolution: "@rocket.chat/apps-engine@npm:1.36.0"
   dependencies:
@@ -6875,7 +6890,7 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.36.0
+    "@rocket.chat/apps-engine": 1.37.0-alpha.133
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
@@ -24232,7 +24247,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
   languageName: node
   linkType: hard
 
@@ -31624,6 +31639,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocket.chat@workspace:."
   dependencies:
+    "@rocket.chat/apps-engine": 1.37.0-alpha.133
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
