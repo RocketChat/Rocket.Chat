@@ -83,7 +83,7 @@ test.describe.serial('homepage', () => {
 					});
 
 					test('expect default layout to not be visible (show only custom content card)', async () => {
-						await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
+						await expect(adminPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
 					});
 
 					test('expect correct state for card buttons', async () => {
