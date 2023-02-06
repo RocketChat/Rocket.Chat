@@ -41,7 +41,7 @@ const options = {
 		lm: -1,
 		name: 1,
 	},
-};
+} as const;
 
 const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRoom)[] | undefined, Error> => {
 	const expression = /(@|#)?(.*)/i;

@@ -24,13 +24,13 @@ export const useUserIsSubscribed = (): boolean => {
 };
 
 export const useRoom = (): IRoom => {
-	const { room } = useContext(RoomContext) || {};
+	const context = useContext(RoomContext);
 
-	if (!room) {
+	if (!context) {
 		throw new Error('use useRoom only inside opened rooms');
 	}
 
-	return room;
+	return context.room;
 };
 
 export const useRoomSubscription = (): ISubscription | undefined => {
