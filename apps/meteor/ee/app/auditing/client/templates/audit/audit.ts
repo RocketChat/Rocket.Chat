@@ -1,21 +1,43 @@
+import type { TemplateStatic } from 'meteor/templating';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { Blaze } from 'meteor/blaze';
 
 import { hasAllPermission } from '../../../../../../app/authorization/client';
 import { createMessageContext } from '../../../../../../app/ui-utils/client/lib/messageContext';
-import { call } from '../../utils.js';
+import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 
 import './audit.html';
 
-const loadMessages = async function ({ rid, users, startDate, endDate = new Date(), msg, type, visitor, agent }) {
-	this.messages = this.messages || new ReactiveVar([]);
-	this.loading = this.loading || new ReactiveVar(true);
+const loadMessages = async function (
+	this: TemplateStatic['audit'] extends Blaze.Template<any, infer I> ? I : never,
+	{
+		rid,
+		users,
+		startDate,
+		endDate = new Date(),
+		msg,
+		type,
+		visitor,
+		agent,
+	}: {
+		rid: IRoom['_id'];
+		startDate: Date;
+		endDate?: Date;
+		users: IUser['username'][];
+		msg: IMessage['msg'];
+		type: string;
+		visitor: ILivechatVisitor;
+		agent: ILivechatAgent | 'all';
+	},
+) {
 	try {
 		this.loading.set(true);
 		const messages =
 			type === 'l'
-				? await call('auditGetOmnichannelMessages', {
+				? await callWithErrorHandling('auditGetOmnichannelMessages', {
 						rid,
 						users,
 						startDate,
@@ -25,7 +47,7 @@ const loadMessages = async function ({ rid, users, startDate, endDate = new Date
 						visitor,
 						agent,
 				  })
-				: await call('auditGetMessages', {
+				: await callWithErrorHandling('auditGetMessages', {
 						rid,
 						users,
 						startDate,
@@ -48,13 +70,13 @@ const loadMessages = async function ({ rid, users, startDate, endDate = new Date
 
 Template.audit.helpers({
 	isLoading() {
-		return Template.instance().loading.get();
+		return Template.instance<'audit'>().loading.get();
 	},
 	messageContext() {
-		return Template.instance().messagesContext.get();
+		return Template.instance<'audit'>().messagesContext.get();
 	},
 	hasResults() {
-		return Template.instance().hasResults.get();
+		return Template.instance<'audit'>().hasResults.get();
 	},
 });
 
@@ -62,6 +84,7 @@ Template.audit.onCreated(async function () {
 	this.messagesContext = new ReactiveVar({});
 	this.loading = new ReactiveVar(false);
 	this.hasResults = new ReactiveVar(false);
+	this.messages = new ReactiveVar([]);
 
 	if (!hasAllPermission('can-audit')) {
 		return FlowRouter.go('/home');
@@ -70,7 +93,7 @@ Template.audit.onCreated(async function () {
 	this.autorun(() => {
 		const messagesContext = this.messagesContext.get();
 
-		this.hasResults.set(messagesContext && messagesContext.messages && messagesContext.messages.length > 0);
+		this.hasResults.set(messagesContext?.messages ? messagesContext.messages.length > 0 : false);
 	});
 
 	this.loadMessages = loadMessages.bind(this);

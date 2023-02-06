@@ -1,11 +1,11 @@
 export { callWithErrorHandling as call } from '../../../../client/lib/utils/callWithErrorHandling';
 
-export const convertDate = (date) => {
+export const convertDate = (date: string) => {
 	const [y, m, d] = date.split('-');
-	return new Date(y, m - 1, d);
+	return new Date(Number(y), Number(m) - 1, Number(d));
 };
 
-export const scrollTo = function scrollTo(element, to, duration) {
+export const scrollTo = (element: HTMLElement, to: number, duration = 0) => {
 	if (duration <= 0) {
 		return;
 	}
