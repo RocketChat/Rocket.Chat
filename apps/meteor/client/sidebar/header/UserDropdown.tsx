@@ -153,7 +153,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				</OptionColumn>
 			</Option>
 			<Option>
-				<OptionIcon name='desktop' />
+				<OptionIcon name='computer' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
 				<OptionColumn>
 					<RadioButton checked={selectedTheme === 'auto'} onChange={(): void => setTheme('auto')} m='x4' />

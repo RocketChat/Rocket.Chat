@@ -3,9 +3,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
-	'browser': 'desktop',
+	'browser': 'computer',
 	'mobile': 'mobile',
-	'desktop-app': 'desktop',
+	'desktop-app': 'computer',
 	'mobile-app': 'mobile',
 };
 
