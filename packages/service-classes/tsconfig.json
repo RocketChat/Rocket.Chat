@@ -4,6 +4,6 @@
 		"outDir": "./dist",
 		"declaration": true,
 	},
-	"include": ["./src/**/*", "../../../apps/meteor/definition/externals/meteor", "node_modules"],
+	"include": ["./src/**/*", "../../../apps/meteor/definition/externals/meteor"],
 	"exclude": ["./dist"]
 }
