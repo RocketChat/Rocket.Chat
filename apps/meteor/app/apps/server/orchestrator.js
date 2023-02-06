@@ -7,7 +7,7 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
 import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -73,7 +73,6 @@ export class AppServerOrchestrator {
 		});
 
 		this._communicators = new Map();
-		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
