@@ -56,9 +56,11 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					<Button primary onClick={handleUploadButtonClick}>
-						<Icon size='x20' name='upload' /> {t('Upload_app')}
-					</Button>
+					{context === 'private' && (
+						<Button primary onClick={handleUploadButtonClick}>
+							<Icon size='x20' name='upload' /> {t('Upload_app')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
