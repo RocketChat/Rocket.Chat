@@ -8,7 +8,7 @@ export const {
 } = createSidebarItems([
 	{
 		href: 'marketplace/explore/list',
-		icon: 'cube',
+		icon: 'compass',
 		i18nLabel: 'Explore',
 	},
 	{
@@ -20,5 +20,18 @@ export const {
 		href: 'marketplace/installed/list',
 		icon: 'circle-arrow-down',
 		i18nLabel: 'Installed',
+	},
+	{
+		href: 'marketplace/private/list',
+		icon: 'lock',
+		i18nLabel: 'Private_Apps',
+		divider: true,
+	},
+	{
+		href: 'https://go.rocket.chat/i/developing-an-app',
+		icon: 'new-window',
+		i18nLabel: 'Documentation',
+		divider: true,
+		externalUrl: true,
 	},
 ]);
