@@ -29,7 +29,7 @@ messageBox.actions.add('Create_new', 'Video_message', {
 
 messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
-	icon: 'computer',
+	icon: 'desktop',
 	condition: () => settings.get('FileUpload_Enabled'),
 	action({ event, chat }) {
 		event.preventDefault();
