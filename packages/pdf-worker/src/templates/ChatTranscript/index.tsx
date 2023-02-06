@@ -6,7 +6,7 @@ import type { ILivechatAgent, ILivechatVisitor, IMessage, Serialized } from '@ro
 import { Header } from './components/Header';
 import { MessageList } from './components/MessageList';
 
-const FONT_PATH = path.resolve(__dirname, '../../../public');
+const FONT_PATH = path.resolve(__dirname, '../../public');
 
 export type PDFFile = { name?: string; buffer: Buffer | null };
 
