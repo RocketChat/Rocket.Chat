@@ -15,6 +15,7 @@ services:
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
+      - OVERWRITE_SETTING_Log_Level=2
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:

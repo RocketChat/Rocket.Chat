@@ -60,6 +60,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
+		this.log.level('debug');
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
