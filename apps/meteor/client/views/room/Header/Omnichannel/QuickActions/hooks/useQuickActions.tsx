@@ -15,6 +15,7 @@ import {
 import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
+import { RoomManager } from '../../../../../../../app/ui-utils/client';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
@@ -154,12 +155,13 @@ export const useQuickActions = (
 				}
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
 				homeRoute.push();
+				RoomManager.close(room.t + rid);
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, forwardChat, rid, homeRoute, t],
+		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, homeRoute, t],
 	);
 
 	const closeChat = useMethod('livechat:closeRoom');

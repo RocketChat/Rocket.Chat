@@ -11,18 +11,16 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../hooks/useFormatTime';
+import { useUserCard } from '../../hooks/useUserCard';
 import { useUserData } from '../../hooks/useUserData';
 import { getUserDisplayName } from '../../lib/getUserDisplayName';
 import type { UserPresence } from '../../lib/presence';
-import {
-	useMessageListShowUsername,
-	useMessageListShowRealName,
-	useMessageListShowRoles,
-} from '../../views/room/MessageList/contexts/MessageListContext';
-import { useMessageActions } from '../../views/room/contexts/MessageContext';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
+import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from './list/MessageListContext';
 
 type MessageHeaderProps = {
 	message: IMessage;
@@ -30,10 +28,10 @@ type MessageHeaderProps = {
 
 const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const t = useTranslation();
-	const {
-		actions: { openUserCard },
-		formatters,
-	} = useMessageActions();
+	const { open: openUserCard } = useUserCard();
+
+	const formatTime = useFormatTime();
+	const formatDateAndTime = useFormatDateAndTime();
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -72,7 +70,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 			</MessageNameContainer>
 
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
-			<MessageTimestamp title={formatters.dateAndTime(message.ts)}>{formatters.time(message.ts)}</MessageTimestamp>
+			<MessageTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<StatusIndicators message={message} />
 		</FuselageMessageHeader>

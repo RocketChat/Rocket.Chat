@@ -8,7 +8,6 @@ import React from 'react';
 import VerticalBar from '../../../components/VerticalBar';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { useTabBarClose } from '../contexts/ToolboxContext';
-import MessageProvider from '../providers/MessageProvider';
 import BlazeTemplate from './BlazeTemplate';
 
 type VerticalBarOldActionsProps = {
@@ -32,9 +31,7 @@ const VerticalBarOldActions = ({ name, rid, icon, tabBar, title, ...props }: Ver
 				{close && <VerticalBar.Close onClick={close} />}
 			</VerticalBar.Header>
 			<VerticalBar.Content>
-				<MessageProvider>
-					<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} rid={rid} {...props} />
-				</MessageProvider>
+				<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} rid={rid} {...props} />
 			</VerticalBar.Content>
 		</>
 	);

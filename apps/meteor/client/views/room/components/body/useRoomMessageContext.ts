@@ -13,7 +13,7 @@ export const useRoomMessageContext = (room: IRoom) => {
 	const user = useUser() ?? undefined;
 	const rid = room._id;
 	const subscription = useRoomSubscription();
-	const { isEmbedded: embeddedLayout, isMobile: mobile } = useLayout();
+	const { isMobile: mobile } = useLayout();
 	const translateLanguage = useReactiveValue(useCallback(() => AutoTranslate.getLanguage(rid), [rid]));
 	const autoImageLoad = useUserPreference('autoImageLoad');
 	const useLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
@@ -41,8 +41,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 				rid,
 				room,
 				subscription,
-				instance: () => undefined,
-				embeddedLayout,
 				translateLanguage,
 				autoImageLoad,
 				useLegacyMessageTemplate,
@@ -73,7 +71,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 			displayRoles,
 			embed,
 			embedDisabledFor,
-			embeddedLayout,
 			groupingPeriod,
 			hasPermissionDeleteMessage,
 			hasPermissionDeleteOwnMessage,

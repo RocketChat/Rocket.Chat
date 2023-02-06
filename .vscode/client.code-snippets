@@ -1,0 +1,36 @@
+{
+  "Storybook stories module for React component": {
+    "scope": "typescriptreact",
+    "prefix": "sbmodule",
+    "body": [
+      "import type { ComponentMeta, ComponentStory } from '@storybook/react';",
+      "import React from 'react';",
+      "",
+      "import $1 from './$1';",
+      "",
+      "export default {",
+      "\ttitle: '$2',",
+      "\tcomponent: $1,",
+      "} as ComponentMeta<typeof $1>;",
+      "",
+      "export const Example: ComponentStory<typeof $1> = (args) => <$1 {...args} />;",
+    ]
+  },
+  "Storybook meta": {
+    "scope": "typescriptreact",
+    "prefix": "sbmeta",
+    "body": [
+      "export default {",
+      "\ttitle: '$1',",
+      "\tcomponent: $2,",
+      "} as ComponentMeta<typeof $2>;"
+    ]
+  },
+  "Storybook story": {
+    "scope": "typescriptreact",
+    "prefix": "sbstory",
+    "body": [
+      "export const $1: ComponentStory<typeof $2> = (args) => <$2 {...args} />;"
+    ]
+  }
+}

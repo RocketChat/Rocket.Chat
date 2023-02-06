@@ -18,6 +18,7 @@ import {
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
 	{
@@ -29,7 +30,7 @@ export async function upsertMessage(
 		subscription?: ISubscription;
 		uid?: IUser['_id'];
 	},
-	{ direct } = ChatMessage,
+	{ direct }: MinimongoCollection<IMessage> = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -58,10 +59,13 @@ export async function upsertMessage(
 		);
 	}
 
-	return direct.upsert({ _id }, messageToUpsert);
+	return direct.upsert({ _id }, { $set: messageToUpsert });
 }
 
-export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
+export function upsertMessageBulk(
+	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
+	collection: MinimongoCollection<IMessage> = ChatMessage,
+) {
 	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
 	const { queries } = collection;
 	collection.queries = [];
@@ -169,7 +173,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, false);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
 
 		this.unqueue();
 
