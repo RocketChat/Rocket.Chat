@@ -67,7 +67,7 @@ Template.snippetedMessages.onCreated(function () {
 	});
 });
 
-Template.mentionsFlexTab.onDestroyed(function () {
+Template.snippetedMessages.onDestroyed(function () {
 	this.cursor.stop();
 });
 
