@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 import { api } from '@rocket.chat/core-services';
+import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/service-classes';
 
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
@@ -52,21 +53,20 @@ api.registerService(new UploadService());
 api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
+// Run EE services defined outside of the main repo
+// Otherwise, monolith would ignore them :(
+// Always register the service and manage licensing inside the service (tbd)
+api.registerService(new QueueWorker(db, Logger));
+api.registerService(new OmnichannelTranscript(Logger));
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
 	(async (): Promise<void> => {
 		const { Presence } = await import('@rocket.chat/presence');
-		const { OmnichannelTranscript, QueueWorker } = await import('@rocket.chat/service-classes');
 
 		const { Authorization } = await import('./authorization/service');
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
-
-		// Run EE services defined outside of the main repo
-		// Otherwise, monolith would ignore them :(
-		api.registerService(new QueueWorker(db, Logger));
-		api.registerService(new OmnichannelTranscript(Logger));
 	})();
 }
