@@ -266,6 +266,8 @@ export interface ServerMethods {
 	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
 	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
 	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
+	'pinMessage': (message: IMessage) => void;
+	'unpinMessage': (message: IMessage) => void;
 }
 
 export type ServerMethodName = keyof ServerMethods;

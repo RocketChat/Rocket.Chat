@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ITranslatedMessage, ToolboxMessageType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { MessageToolbox, MessageToolboxItem } from '@rocket.chat/fuselage';
 import { useUser, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
@@ -15,22 +15,29 @@ import { useRoom, useRoomSubscription } from '../../../views/room/contexts/RoomC
 import { useToolboxContext } from '../../../views/room/contexts/ToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
 
-const getMessageContext = (message: IMessage, room: IRoom, context?: ToolboxMessageType): MessageActionContext => {
+const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
+	if (context) {
+		return context;
+	}
+
 	if (message.t === 'videoconf') {
 		return 'videoconf';
 	}
+
 	if (isRoomFederated(room)) {
 		return 'federated';
 	}
-	if (isThreadMessage(message) || context === 'thread') {
+
+	if (isThreadMessage(message)) {
 		return 'threads';
 	}
+
 	return 'message';
 };
 
 type ToolboxProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
-	messageContext?: ToolboxMessageType;
+	messageContext?: MessageActionContext;
 };
 
 const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null => {
@@ -79,7 +86,7 @@ const Toolbox = ({ message, messageContext }: ToolboxProps): ReactElement | null
 				<MessageToolboxItem
 					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
 					key={action.id}
-					icon={action.icon}
+					icon={action.icon as any} // TODO: the union type coming from fuselage seems broken; it should be fix asap
 					title={t(action.label)}
 					data-qa-id={action.label}
 					data-qa-type='message-action-menu'

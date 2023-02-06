@@ -122,4 +122,5 @@ export type App = {
 	languages: string[];
 	createdDate: string;
 	requestedEndUser?: boolean;
+	private: boolean;
 };
