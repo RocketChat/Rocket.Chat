@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -50,7 +51,7 @@ const AppsFilters = ({
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
 	return (
-		<>
+		<Box pi='x24'>
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
 				<RadioDropDown
 					group={freePaidFilterStructure}
@@ -73,7 +74,7 @@ const AppsFilters = ({
 				/>
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
-		</>
+		</Box>
 	);
 };
 

@@ -73,7 +73,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Page.Content>
+			<Page.Content paddingInline='0'>
 				<AppsPageContent />
 			</Page.Content>
 		</Page>

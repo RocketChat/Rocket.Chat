@@ -45,7 +45,8 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 				}
 			}
 		};
-	}, [isAdminUser, isSuccess, markAppRequestsAsSeen, paginatedAppRequests?.data, reloadApps]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isAdminUser, isSuccess, paginatedAppRequests?.data, reloadApps]);
 
 	if (isLoading) {
 		return (

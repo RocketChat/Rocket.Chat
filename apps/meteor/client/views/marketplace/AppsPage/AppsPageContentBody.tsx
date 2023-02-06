@@ -41,13 +41,15 @@ const AppsPageContentBody = ({
 	const t = useTranslation();
 
 	return (
-		<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
-			{noErrorsOcurred && (
-				<Box overflowY='scroll' height='100%'>
-					{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult?.value?.allApps || []} />}
-					<AppsList apps={appsResult?.value?.items || []} title={isRequested ? '' : t('All_Apps')} />
-				</Box>
-			)}
+		<>
+			<Box display='flex' flexDirection='column' overflow='hidden' height='100%' pi='x24'>
+				{noErrorsOcurred && (
+					<Box overflowY='scroll' height='100%'>
+						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult?.value?.allApps || []} />}
+						<AppsList apps={appsResult?.value?.items || []} title={isRequested ? '' : t('All_Apps')} />
+					</Box>
+				)}
+			</Box>
 			{Boolean(appsResult?.value?.count) && (
 				<Pagination
 					divider
@@ -56,10 +58,11 @@ const AppsPageContentBody = ({
 					count={appsResult?.value?.total || 0}
 					onSetItemsPerPage={onSetItemsPerPage}
 					onSetCurrent={onSetCurrent}
+					bg='light'
 					{...paginationProps}
 				/>
 			)}
-		</Box>
+		</>
 	);
 };
 
