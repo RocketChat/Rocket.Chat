@@ -1,21 +1,21 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import PageSkeleton from '../../../components/PageSkeleton';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditTriggerPage from './EditTriggerPage';
 
 const EditTriggerPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData('/v1/livechat/triggers/:_id', { keys: { _id: id } });
+	const getTrigger = useEndpoint('GET', '/v1/livechat/triggers/:_id', { _id: id });
+	const { data, isInitialLoading, isError } = useQuery(['/v1/livechat/triggers/:_id', id], () => getTrigger());
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isInitialLoading) {
 		return <PageSkeleton />;
 	}
 
-	if (state === AsyncStatePhase.REJECTED || !data?.trigger) {
+	if (isError || !data?.trigger) {
 		return <Callout>{t('Error')}: error</Callout>;
 	}
 
