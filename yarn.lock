@@ -7599,6 +7599,7 @@ __metadata:
   dependencies:
     "@react-pdf/renderer": ^3.0.1
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/fuselage-tokens": next
     "@storybook/addon-actions": ~6.5.14
     "@storybook/addon-docs": ~6.5.14
     "@storybook/addon-essentials": ~6.5.14
@@ -7619,6 +7620,7 @@ __metadata:
     emojione: ^4.5.0
     eslint: ^8.12.0
     jest: ^27.5.1
+    moment: ^2.29.4
     react: ^18.2.0
     react-dom: ^18.2.0
     ts-jest: ^27.1.4
@@ -7861,6 +7863,7 @@ __metadata:
     "@types/jest": ^27.4.1
     eslint: ^8.12.0
     jest: ^27.5.1
+    moment-timezone: ^0.5.40
     ts-jest: ^27.1.4
     typescript: ~4.5.5
   languageName: unknown
@@ -28065,6 +28068,15 @@ __metadata:
   dependencies:
     moment: ">= 2.9.0"
   checksum: 12a1d3d52e4ba509cf1fa36bbda59d898a08fa80ab35f6c358747e93aec1f07e617cec647eaf2e8acf5f9132e581d4704d34a9edffa9a80c5cd04bf23b277595
+  languageName: node
+  linkType: hard
+
+"moment-timezone@npm:^0.5.40":
+  version: 0.5.40
+  resolution: "moment-timezone@npm:0.5.40"
+  dependencies:
+    moment: ">= 2.9.0"
+  checksum: 6f6be5412b37fd937bb143efe74bf65b2c3f115fd967a6dc13b717a126ed6dd198bff6db6e179d69a089e20ac03ce7622c6b5598dd585005195554487a91b528
   languageName: node
   linkType: hard
 
