@@ -21,26 +21,11 @@ describe('AppsModelList', () => {
 	it('should render apps', async () => {
 		const AppsModelList = loadMock();
 
-		render(<AppsModelList appsManagementAllowed onDismiss={() => null} appBoxItems={[]} />);
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
 		expect(screen.getByText('Installed')).to.exist;
-	});
-
-	it('should not render marketplace and installed when does not have permission', async () => {
-		const AppsModelList = loadMock({
-			'@rocket.chat/ui-contexts': {
-				'useAtLeastOnePermission': (): boolean => false,
-				'@noCallThru': false,
-			},
-		});
-
-		render(<AppsModelList appsManagementAllowed={false} onDismiss={() => null} appBoxItems={[]} />);
-
-		expect(screen.getByText('Apps')).to.exist;
-		expect(screen.queryByText('Marketplace')).to.not.exist;
-		expect(screen.queryByText('Installed')).to.not.exist;
 	});
 
 	context('when clicked', () => {
@@ -54,24 +39,23 @@ describe('AppsModelList', () => {
 		it('should go to admin marketplace', async () => {
 			const AppsModelList = loadMock();
 
-			render(<AppsModelList appsManagementAllowed onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
 
 			const button = screen.getByText('Marketplace');
-
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace'));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'explore', page: 'list' }));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
 		it('should go to installed', async () => {
 			const AppsModelList = loadMock();
 
-			render(<AppsModelList appsManagementAllowed onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
 
 			const button = screen.getByText('Installed');
 
 			userEvent.click(button);
-			await waitFor(() => expect(pushRoute).to.have.been.called.with('admin-marketplace', { context: 'installed', page: 'list' }));
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'installed', page: 'list' }));
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
@@ -85,7 +69,7 @@ describe('AppsModelList', () => {
 				},
 			});
 
-			render(<AppsModelList appsManagementAllowed onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />, {
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />, {
 				wrapper: ProvidersMock,
 			});
 

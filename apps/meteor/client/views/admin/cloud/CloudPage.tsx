@@ -22,12 +22,12 @@ import WorkspaceLoginSection from './WorkspaceLoginSection';
 import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import { cloudConsoleUrl } from './constants';
 
-const CloudPage = function CloudPage(): ReactNode {
+const CloudPage = (): ReactNode => {
 	const t = useTranslation();
+	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const cloudRoute = useRoute('cloud');
-
 	const page = useRouteParameter('page');
 
 	const errorCode = useQueryStringParameter('error_code');
@@ -36,12 +36,11 @@ const CloudPage = function CloudPage(): ReactNode {
 	const token = useQueryStringParameter('token');
 
 	const finishOAuthAuthorization = useMethod('cloud:finishOAuthAuthorization');
-
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
+	const connectWorkspace = useMethod('cloud:connectWorkspace');
+
 	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
 	const reload = useMutableCallback(() => result.refetch());
-
-	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
 	useEffect(() => {
 		const acceptOAuthAuthorization = async (): Promise<void> => {
@@ -61,7 +60,7 @@ const CloudPage = function CloudPage(): ReactNode {
 
 			try {
 				await finishOAuthAuthorization(code, state);
-			} catch (error: unknown) {
+			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				cloudRoute.push();
@@ -70,8 +69,6 @@ const CloudPage = function CloudPage(): ReactNode {
 
 		acceptOAuthAuthorization();
 	}, [errorCode, code, state, page, dispatchToastMessage, t, cloudRoute, finishOAuthAuthorization]);
-
-	const setModal = useSetModal();
 
 	useEffect(() => {
 		const acceptWorkspaceToken = async (): Promise<void> => {
@@ -85,7 +82,7 @@ const CloudPage = function CloudPage(): ReactNode {
 
 					dispatchToastMessage({ type: 'success', message: t('Connected') });
 				}
-			} catch (error: unknown) {
+			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				reload();

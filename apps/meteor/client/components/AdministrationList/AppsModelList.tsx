@@ -9,39 +9,36 @@ import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
-	appsManagementAllowed: boolean;
 	onDismiss: () => void;
 };
 
-const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
 
 	return (
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
-				{appsManagementAllowed && (
-					<>
-						<ListItem
-							icon='store'
-							text={t('Marketplace')}
-							action={(): void => {
-								marketplaceRoute.push({ context: 'all', page });
-								onDismiss();
-							}}
-						/>
-						<ListItem
-							icon='cube'
-							text={t('Installed')}
-							action={(): void => {
-								marketplaceRoute.push({ context: 'installed', page });
-								onDismiss();
-							}}
-						/>
-					</>
-				)}
+				<>
+					<ListItem
+						icon='store'
+						text={t('Marketplace')}
+						action={(): void => {
+							marketplaceRoute.push({ context: 'explore', page });
+							onDismiss();
+						}}
+					/>
+					<ListItem
+						icon='cube'
+						text={t('Installed')}
+						action={(): void => {
+							marketplaceRoute.push({ context: 'installed', page });
+							onDismiss();
+						}}
+					/>
+				</>
 				{appBoxItems.length > 0 && (
 					<>
 						{appBoxItems.map((item, key) => {

@@ -32,18 +32,6 @@ test.describe.serial('administration-menu', () => {
 		await expect(page).toHaveURL('omnichannel/current');
 	});
 
-	test('expect open app marketplace page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Marketplace');
-
-		await expect(page).toHaveURL('admin/marketplace/all/list');
-	});
-
-	test('expect open app installed page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Installed');
-
-		await expect(page).toHaveURL('admin/marketplace/installed/list');
-	});
-
 	test.describe('user', () => {
 		test.use({ storageState: 'user1-session.json' });
 
