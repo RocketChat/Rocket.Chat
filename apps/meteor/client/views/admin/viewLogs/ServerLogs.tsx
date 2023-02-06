@@ -175,8 +175,8 @@ const ServerLogs = (): ReactElement => {
 					padding='x8'
 					flexGrow={1}
 					fontFamily='mono'
-					color='alternative'
-					backgroundColor='neutral-800'
+					color='white'
+					bg='dark'
 					style={{ wordBreak: 'break-all' }}
 					onWheel={handleWheel}
 					onTouchStart={handleTouchStart}
@@ -198,7 +198,7 @@ const ServerLogs = (): ReactElement => {
 				paddingBlock='x8'
 				fontScale='c1'
 				borderRadius='full'
-				color='primary-500'
+				color='on-info'
 				backgroundColor='surface'
 				onClick={handleClick}
 				textAlign='center'

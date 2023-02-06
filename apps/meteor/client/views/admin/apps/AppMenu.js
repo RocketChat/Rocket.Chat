@@ -65,12 +65,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const confirmAction = useCallback(
-		(permissionsGranted) => {
+		async (permissionsGranted) => {
 			setModal(null);
 
-			marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
-				setLoading(false);
-			});
+			await marketplaceActions[action]({ ...app, permissionsGranted });
+
+			setLoading(false);
 		},
 		[setModal, action, app, setLoading],
 	);
@@ -335,7 +335,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAppEnabled && {
 					disable: {
 						label: (
-							<Box color='warning'>
+							<Box color='on-warning'>
 								<Icon name='ban' size='x16' marginInlineEnd='x4' />
 								{t('Disable')}
 							</Box>
@@ -363,7 +363,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(app.installed && {
 				uninstall: {
 					label: (
-						<Box color='danger'>
+						<Box color='on-danger'>
 							<Icon name='trash' size='x16' marginInlineEnd='x4' />
 							{t('Uninstall')}
 						</Box>

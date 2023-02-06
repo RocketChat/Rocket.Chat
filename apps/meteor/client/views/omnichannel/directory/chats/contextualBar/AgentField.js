@@ -14,10 +14,7 @@ import { FormSkeleton } from '../../Skeleton';
 const AgentField = ({ agent, isSmall = false }) => {
 	const t = useTranslation();
 	const { username } = agent;
-	const { value, phase: state } = useEndpointData(
-		`/v1/users.info`,
-		useMemo(() => ({ username }), [username]),
-	);
+	const { value, phase: state } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ username }), [username]) });
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;

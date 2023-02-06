@@ -9,7 +9,7 @@ import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import DeleteTeamModalWithRooms from '../../teams/contextualBar/info/Delete';
@@ -114,8 +114,10 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
 
-	const saveAction = useEndpointActionExperimental('POST', '/v1/rooms.saveRoomSettings', t('Room_updated_successfully'));
-	const archiveAction = useEndpointActionExperimental('POST', '/v1/rooms.changeArchivationState', t(archiveMessage));
+	const saveAction = useEndpointAction('POST', '/v1/rooms.saveRoomSettings', {
+		successMessage: t('Room_updated_successfully'),
+	});
+	const archiveAction = useEndpointAction('POST', '/v1/rooms.changeArchivationState', { successMessage: t(archiveMessage) });
 
 	const handleSave = useMutableCallback(async () => {
 		const save = (): Promise<{ success: boolean; rid: string }> =>
