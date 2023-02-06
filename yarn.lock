@@ -7186,6 +7186,7 @@ __metadata:
     "@nivo/pie": 0.79.1
     "@playwright/test": ^1.22.2
     "@react-aria/color": ^3.0.0-beta.15
+    "@react-pdf/renderer": ^3.0.1
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": 1.36.0
@@ -7215,10 +7216,13 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
     "@rocket.chat/onboarding-ui": next
+    "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/service-classes": "workspace:^"
     "@rocket.chat/string-helpers": next
+    "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-composer": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -7416,6 +7420,7 @@ __metadata:
     moleculer: ^0.14.21
     moment: ^2.29.4
     moment-timezone: ^0.5.34
+    mongo-message-queue: ^1.0.0
     mongodb: ^4.12.1
     mongodb-memory-server: ^7.6.3
     nats: ^2.6.1
@@ -7542,6 +7547,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/omnichannel-transcript@workspace:ee/apps/omnichannel-transcript"
   dependencies:
+    "@react-pdf/renderer": ^3.0.1
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.22
@@ -7549,8 +7555,7 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/service-classes": "workspace:^"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/eslint": ^8.4.10
@@ -7562,6 +7567,7 @@ __metadata:
     fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
+    mongo-message-queue: ^1.0.0
     mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^8.4.2
@@ -7704,14 +7710,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/queue-worker@workspace:ee/apps/queue-worker"
   dependencies:
+    "@react-pdf/renderer": ^3.0.1
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/service-classes": "workspace:^"
     "@types/eslint": ^8.4.10
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
@@ -7762,6 +7768,36 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/service-classes@workspace:^, @rocket.chat/service-classes@workspace:packages/service-classes":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/service-classes@workspace:packages/service-classes"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": 0.31.22
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/pdf-worker": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/tools": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/node": ^14.18.21
+    ejson: ^2.2.2
+    eslint: ^8.12.0
+    eventemitter3: ^4.0.7
+    fibers: ^5.0.3
+    jest: ^27.5.1
+    mem: ^8.1.1
+    mongo-message-queue: ^1.0.0
+    mongodb: ^4.12.1
+    pino: ^8.4.2
+    ts-jest: ^27.1.4
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
   version: 0.0.0-use.local
