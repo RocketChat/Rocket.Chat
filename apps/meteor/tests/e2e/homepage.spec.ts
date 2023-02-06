@@ -69,22 +69,9 @@ test.describe.serial('homepage', () => {
 				await expect(adminPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello admin');
 			});
 
-			test.describe('hidden custom body', () => {
-				test('expect correct state for card buttons', async () => {
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
-				});
-			});
-
-			test.describe('show custom body', () => {
-				test.beforeAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
-				});
-
-				test('expect correct state for card buttons', async () => {
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
-					await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).not.toBeDisabled();
-				});
+			test('expect correct state for card buttons', async () => {
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
+				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
 			});
 
 			test.describe('enterprise edition', () => {
