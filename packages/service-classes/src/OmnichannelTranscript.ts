@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { Logger } from '../../../apps/meteor/server/lib/logger/Logger';
 
@@ -40,7 +39,7 @@ type WorkerData = {
 	timezone: string;
 	dateFormat: string;
 	timeAndDateFormat: string;
-	translations: { key: TranslationKey; value: string }[];
+	translations: { key: string; value: string }[];
 };
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -190,8 +189,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	private async getTranslations(): Promise<Array<{ key: TranslationKey; value: string }>> {
-		const keys: TranslationKey[] = [
+	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
+		const keys: string[] = [
 			'Agent',
 			'Date',
 			'Customer',
