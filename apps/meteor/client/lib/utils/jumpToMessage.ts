@@ -20,6 +20,7 @@ export const jumpToMessage = (message: IMessage) => {
 				name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
 			},
 			{
+				...FlowRouter.current().queryParams,
 				jump: message._id,
 			},
 		);
