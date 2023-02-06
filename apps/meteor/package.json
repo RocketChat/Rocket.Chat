@@ -206,7 +206,7 @@
 		"@nivo/line": "0.79.1",
 		"@nivo/pie": "0.79.1",
 		"@react-aria/color": "^3.0.0-beta.15",
-		"@react-pdf/renderer": "^3.0.1",
+		"@react-pdf/renderer": "^3.1.3",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps-engine": "1.36.0",
