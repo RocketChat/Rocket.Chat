@@ -57,7 +57,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					{Boolean(isDevelopmentMode) && (
+					{Boolean(isDevelopmentMode) && context === 'private' && (
 						<Button primary onClick={handleUploadButtonClick}>
 							<Icon size='x20' name='upload' /> {t('Upload_app')}
 						</Button>
