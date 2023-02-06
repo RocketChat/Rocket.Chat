@@ -12,7 +12,7 @@ export type ReportHistoryProps = PaginatedRequest<{
 	count?: number;
 	offset?: number;
 	sort?: string;
-	query?: string;
+	selector?: string;
 }>;
 
 const reportHistoryPropsSchema = {
@@ -40,7 +40,7 @@ const reportHistoryPropsSchema = {
 			type: 'number',
 			nullable: true,
 		},
-		query: {
+		selector: {
 			type: 'string',
 			nullable: true,
 		},

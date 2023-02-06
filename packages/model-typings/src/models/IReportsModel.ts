@@ -1,5 +1,5 @@
 import type { IReport, IMessage } from '@rocket.chat/core-typings';
-import type { Document, Filter, FindCursor, UpdateResult } from 'mongodb';
+import type { Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -16,48 +16,24 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		offset?: number,
 		count?: number,
 		sort?: any,
-		cquery?: Filter<IReport>,
+		selector?: string,
 	): FindPaginated<FindCursor<IReport>>;
 
-	findReportsByRoom(
-		roomId: string,
-		offset?: number,
-		count?: number,
-		sort?: any,
-		cquery?: Filter<IReport>,
-	): FindPaginated<FindCursor<IReport>>;
+	findReportsByRoom(roomId: string, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
-	findReportsByUser(
-		userId: string,
-		offset?: number,
-		count?: number,
-		sort?: any,
-		cquery?: Filter<IReport>,
-	): FindPaginated<FindCursor<IReport>>;
+	findReportsByUser(userId: string, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
 	findReportsByMessageId(
 		messageId: IReport['message']['_id'],
 		offset?: number,
 		count?: number,
 		sort?: any,
-		cquery?: Filter<IReport>,
+		selector?: string,
 	): FindPaginated<FindCursor<IReport>>;
 
-	findReportsAfterDate(
-		latest: Date,
-		offset?: number,
-		count?: number,
-		sort?: any,
-		cquery?: Filter<IReport>,
-	): FindPaginated<FindCursor<IReport>>;
+	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
-	findReportsBeforeDate(
-		oldest: Date,
-		offset?: number,
-		count?: number,
-		sort?: any,
-		cquery?: Filter<IReport>,
-	): FindPaginated<FindCursor<IReport>>;
+	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
 	hideReportById(reportId: IReport['_id'], userId: string): Promise<UpdateResult | Document>;
 

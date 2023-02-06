@@ -15,11 +15,13 @@ API.v1.addRoute(
 			const { latest, oldest } = this.queryParams;
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { sort } = this.parseJsonQuery();
+
+			const { selector } = this.queryParams;
 
 			const { cursor, totalCount } = oldest
-				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), offset, count, sort, query)
-				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), offset, count, sort, query);
+				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), offset, count, sort, selector)
+				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), offset, count, sort, selector);
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -75,13 +77,14 @@ API.v1.addRoute(
 			const { msgId } = this.queryParams;
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { sort } = this.parseJsonQuery();
+			const { selector } = this.queryParams;
 
 			if (!msgId) {
 				return API.v1.failure('The required "msgId" query param is missing.');
 			}
 
-			const { cursor, totalCount } = Reports.findReportsByMessageId(msgId, offset, count, sort, query);
+			const { cursor, totalCount } = Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
 
 			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
