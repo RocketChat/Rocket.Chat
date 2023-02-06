@@ -53,6 +53,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	currentJobNumber = 0;
 
+	shouldWork = false;
+
 	constructor(loggerClass: typeof Logger) {
 		super();
 		this.worker = new PdfWorker('chat-transcript');

@@ -206,6 +206,7 @@
 		"@nivo/line": "0.79.1",
 		"@nivo/pie": "0.79.1",
 		"@react-aria/color": "^3.0.0-beta.15",
+		"@react-pdf/renderer": "^3.0.1",
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps-engine": "1.36.0",
@@ -338,9 +339,9 @@
 		"moleculer": "^0.14.21",
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.34",
+		"mongo-message-queue": "^1.0.0",
 		"mongodb": "^4.12.1",
 		"mongodb-memory-server": "^7.6.3",
-		"mongo-message-queue": "^1.0.0",
 		"nats": "^2.6.1",
 		"node-dogstatsd": "^0.0.7",
 		"node-gcm": "1.0.5",
@@ -397,8 +398,7 @@
 		"xml-crypto": "^2.1.4",
 		"xml-encryption": "2.0.0",
 		"xml2js": "0.4.23",
-		"yaqrcode": "^0.2.1",
-		"@react-pdf/renderer": "^3.0.1"
+		"yaqrcode": "^0.2.1"
 	},
 	"meteor": {
 		"mainModule": {
