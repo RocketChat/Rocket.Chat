@@ -33,12 +33,12 @@ export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof
 
 	return useMemo<ComponentProps<typeof Menu>['options']>(() => {
 		const menuHeading = {
-			type: 'heading' as const,
+			type: 'heading',
 			label: t('Priorities'),
 		};
 
 		const unprioritizedOption = {
-			type: 'option' as const,
+			type: 'option',
 			action: handlePriorityChange(''),
 			label: {
 				label: renderOption(t('Unprioritized'), LivechatPriorityWeight.NOT_SPECIFIED),
