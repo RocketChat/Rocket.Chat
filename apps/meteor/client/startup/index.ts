@@ -1,4 +1,6 @@
+import '../lib/rooms/roomTypes';
 import './absoluteUrl';
+import './actionButtons';
 import './afterLogoutCleanUp';
 import './appRoot';
 import './banners';
@@ -37,4 +39,3 @@ import './UserDeleted';
 import './userRoles';
 import './usersObserve';
 import './userStatusManuallySet';
-import '../lib/rooms/roomTypes';
