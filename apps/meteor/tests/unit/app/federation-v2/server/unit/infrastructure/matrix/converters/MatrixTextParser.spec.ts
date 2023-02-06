@@ -17,6 +17,30 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 			).to.be.equal('<p>hey <a href="https://matrix.to/#/@user:server.com">@user:server.com</a></p>');
 		});
 
+		it('should parse the mentions correctly when using the RC format', async () => {
+			expect(
+				await toExternalMessageFormat({
+					message: '@user:server.com @user',
+					externalRoomId: 'externalRoomId',
+					homeServerDomain: 'localDomain.com',
+				}),
+			).to.be.equal(
+				'<p><a href="https://matrix.to/#/@user:server.com">@user:server.com</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a></p>',
+			);
+		});
+
+		it('should parse the multiple mentions correctly when using the RC format', async () => {
+			expect(
+				await toExternalMessageFormat({
+					message: '@user @user:server.com @user @user:server.com',
+					externalRoomId: 'externalRoomId',
+					homeServerDomain: 'localDomain.com',
+				}),
+			).to.be.equal(
+				'<p><a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a> <a href="https://matrix.to/#/@user:server.com">@user:server.com</a> <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a> <a href="https://matrix.to/#/@user:server.com">@user:server.com</a></p>',
+			);
+		});
+
 		it('should parse the @all mention correctly', async () => {
 			expect(
 				await toExternalMessageFormat({
@@ -169,6 +193,30 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 				}),
 			).to.be.equal(
 				'<p>hey <a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, here its <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet marcos.defendi@email.com </code></pre>',
+			);
+		});
+
+		it('should parse correctly a message containing a mention in the beginning of the string + an email', async () => {
+			expect(
+				await toExternalMessageFormat({
+					message: `@user, hello @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
+					# List 1:
+					**Ordered List** 
+
+					1. List Item 
+					2. List Item 
+					3. List Item 
+					4. List Item
+					
+					> Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet 
+
+					marcos.defendi@email.com
+					`,
+					externalRoomId: 'externalRoomId',
+					homeServerDomain: 'localDomain.com',
+				}),
+			).to.be.equal(
+				'<p><a href="https://matrix.to/#/@user:localDomain.com">@user:localDomain.com</a>, hello <a href="https://matrix.to/#/@remoteuser:matrix.org">@remoteuser:matrix.org</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet marcos.defendi@email.com </code></pre>',
 			);
 		});
 

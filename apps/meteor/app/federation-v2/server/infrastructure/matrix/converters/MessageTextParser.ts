@@ -2,7 +2,7 @@ import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-
 import { marked } from 'marked';
 
 const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm; // @username:server.com excluding any <a> tags
-const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = /(?:(?!\S*@\S*\s).)@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm; // @username, @username.name excluding any <a> tags and emails
+const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = /(?:^|(?<=\s))@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm; // @username, @username.name excluding any <a> tags and emails
 const INTERNAL_GENERAL_REGEX = /(@all)|(@here)/gm;
 
 const replaceMessageMentions = async (
@@ -63,7 +63,7 @@ export const toExternalMessageFormat = async ({
 	homeServerDomain: string;
 }): Promise<string> =>
 	removeAllExtraBlankSpacesForASingleOne(
-		convertMarkdownToHTML(await replaceInternalWithExternalMentions(message, externalRoomId, homeServerDomain)),
+		convertMarkdownToHTML((await replaceInternalWithExternalMentions(message, externalRoomId, homeServerDomain)).trim()),
 	);
 
 export const toExternalQuoteMessageFormat = async ({

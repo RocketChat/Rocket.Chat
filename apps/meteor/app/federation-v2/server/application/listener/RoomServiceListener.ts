@@ -1,13 +1,13 @@
 import { isDirectMessageRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
-import { DirectMessageFederatedRoom, FederatedRoom } from '../domain/FederatedRoom';
-import { FederatedUser } from '../domain/FederatedUser';
-import { EVENT_ORIGIN } from '../domain/IFederationBridge';
-import type { IFederationBridge } from '../domain/IFederationBridge';
-import type { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
-import type { RocketChatRoomAdapter } from '../infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
-import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
+import { DirectMessageFederatedRoom, FederatedRoom } from '../../domain/FederatedRoom';
+import { FederatedUser } from '../../domain/FederatedUser';
+import { EVENT_ORIGIN } from '../../domain/IFederationBridge';
+import type { IFederationBridge } from '../../domain/IFederationBridge';
+import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
+import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
 import type {
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
@@ -19,11 +19,11 @@ import type {
 	FederationRoomRedactEventDto,
 	FederationRoomEditExternalMessageDto,
 } from './input/RoomReceiverDto';
-import { FederationService } from './AbstractFederationService';
-import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapters/File';
+import { FederationService } from '../AbstractFederationService';
+import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
-import type { RocketChatNotificationAdapter } from '../infrastructure/rocket-chat/adapters/Notification';
-import type { InMemoryQueue } from '../infrastructure/queue/InMemoryQueue';
+import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
+import type { InMemoryQueue } from '../../infrastructure/queue/InMemoryQueue';
 
 export class FederationRoomServiceListener extends FederationService {
 	constructor(
@@ -74,6 +74,7 @@ export class FederationRoomServiceListener extends FederationService {
 		} = roomChangeMembershipInput;
 		const wasGeneratedOnTheProxyServer = eventOrigin === EVENT_ORIGIN.LOCAL;
 		const affectedFederatedRoom = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
+		const isUserJoiningByHimself = externalInviterId === externalInviteeId && !leave;
 
 		if (userProfile?.avatarUrl) {
 			const federatedUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalInviteeId);
@@ -84,7 +85,7 @@ export class FederationRoomServiceListener extends FederationService {
 			federatedUser && (await this.updateUserDisplayNameInternally(federatedUser, userProfile?.displayName));
 		}
 
-		if (wasGeneratedOnTheProxyServer && !affectedFederatedRoom) {
+		if (wasGeneratedOnTheProxyServer && (isUserJoiningByHimself || !affectedFederatedRoom)) {
 			return;
 		}
 
@@ -196,6 +197,10 @@ export class FederationRoomServiceListener extends FederationService {
 				createdInternalRoomId,
 				this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
 			);
+			return;
+		}
+		if (isUserJoiningByHimself) {
+			await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
 			return;
 		}
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser, federatedInviterUser);
@@ -353,6 +358,7 @@ export class FederationRoomServiceListener extends FederationService {
 				newExternalFormattedText,
 				newRawMessage,
 				this.internalHomeServerDomain,
+				senderUser,
 			);
 			// TODO: create an entity to abstract all the message logic
 			if (!FederatedRoom.shouldUpdateMessage(internalFormattedMessageToBeEdited, message)) {

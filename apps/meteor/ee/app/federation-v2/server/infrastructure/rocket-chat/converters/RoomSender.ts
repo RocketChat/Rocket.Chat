@@ -2,6 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
 import {
+	convertExternalRoomIdToInternalRoomIdFormat,
 	extractServerNameFromExternalIdentifier,
 	formatExternalUserIdToInternalUsernameFormat,
 	isAnExternalIdentifierFormat,
@@ -17,8 +18,12 @@ import {
 	FederationOnUsersAddedToARoomDto,
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
-} from '../../../application/input/RoomSenderDto';
-import type { IFederationInviteeDto } from '../../../application/input/RoomSenderDto';
+} from '../../../application/sender/input/RoomSenderDto';
+import type { IFederationInviteeDto } from '../../../application/sender/input/RoomSenderDto';
+import {
+	FederationJoinExternalPublicRoomInputDto,
+	FederationJoinInternalPublicRoomInputDto,
+} from '../../../application/input/RoomInputDto';
 
 const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
 	return username?.includes(':') ? username : `${username}:${localHomeServer}`;
@@ -187,6 +192,22 @@ export class FederationRoomSenderConverterEE {
 		return new FederationCreateDirectMessageDto({
 			internalInviterId,
 			invitees,
+		});
+	}
+
+	public static toJoinExternalPublicRoomDto(internalUserId: string, externalRoomId: string): FederationJoinExternalPublicRoomInputDto {
+		return new FederationJoinExternalPublicRoomInputDto({
+			externalRoomId,
+			internalUserId,
+			normalizedRoomId: convertExternalRoomIdToInternalRoomIdFormat(externalRoomId),
+			externalRoomHomeServerName: extractServerNameFromExternalIdentifier(externalRoomId),
+		});
+	}
+
+	public static toJoinInternalPublicRoomDto(internalUserId: string, internalRoomId: string): FederationJoinInternalPublicRoomInputDto {
+		return new FederationJoinInternalPublicRoomInputDto({
+			internalRoomId,
+			internalUserId,
 		});
 	}
 }

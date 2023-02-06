@@ -66,9 +66,10 @@ export class FederationHomeContent {
 
 	async sendAudioRecordedMessage(): Promise<void> {
 		await this.btnRecordAudio.click();
-		await this.page.waitForTimeout(5000);
+		await this.page.waitForTimeout(2000);
 		await this.page.locator('.rc-message-box__icon.rc-message-box__audio-message-done').click();
 		await this.btnModalConfirm.click();
+		await this.page.waitForTimeout(5000);
 	}
 
 	async sendVideoRecordedMessage(): Promise<void> {
@@ -119,6 +120,18 @@ export class FederationHomeContent {
 
 	get lastMessageFileName(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
+	}
+
+	async getLastFileMessageByFileName(filename: string): Promise<Locator> {
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-message-container').last().locator(`div[title="${filename}"]`);
+	}
+
+	async getLastVideoMessageFileName(filename: string): Promise<Locator> {
+		return this.getLastFileMessageByFileName(filename);
+	}
+
+	get lastFileMessage(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child .rcx-message-container').last();
 	}
 
 	get waitForLastMessageTextAttachmentEqualsText(): Locator {

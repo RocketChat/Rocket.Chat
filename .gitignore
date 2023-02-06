@@ -45,3 +45,4 @@ yarn-error.log*
 .idea/
 .exrc
 .envrc
+.history

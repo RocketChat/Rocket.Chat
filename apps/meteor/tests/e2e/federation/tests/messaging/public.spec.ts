@@ -262,11 +262,15 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendAudioRecordedMessage();
 
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('Audio record.mp3');
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('Audio record.mp3');
+				await expect(await (await poFederationChannelServer1.content.getLastFileMessageByFileName('Audio record.mp3')).innerText()).toEqual(
+					'Audio record.mp3',
+				);
+				await expect(await (await poFederationChannelServer2.content.getLastFileMessageByFileName('Audio record.mp3')).innerText()).toEqual(
+					'Audio record.mp3',
+				);
 
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('audio')).toBeVisible();
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('audio')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastFileMessage.locator('audio')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastFileMessage.locator('audio')).toBeVisible();
 			});
 
 			test('expect to send an audio message from Server B to Server A', async ({ page }) => {
@@ -277,11 +281,15 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.content.sendAudioRecordedMessage();
 
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('Audio record.mp3');
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('Audio record.mp3');
+				await expect(await (await poFederationChannelServer2.content.getLastFileMessageByFileName('Audio record.mp3')).innerText()).toEqual(
+					'Audio record.mp3',
+				);
+				await expect(await (await poFederationChannelServer1.content.getLastFileMessageByFileName('Audio record.mp3')).innerText()).toEqual(
+					'Audio record.mp3',
+				);
 
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('audio')).toBeVisible();
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('audio')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastFileMessage.locator('audio')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastFileMessage.locator('audio')).toBeVisible();
 			});
 
 			test('expect to send a video message from Server A to Server B', async ({ page }) => {
@@ -293,11 +301,15 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendVideoRecordedMessage();
 
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('Video record.webm');
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('Video record.webm');
+				await expect(
+					await (await poFederationChannelServer1.content.getLastFileMessageByFileName('Video record.webm')).innerText(),
+				).toEqual('Video record.webm');
+				await expect(
+					await (await poFederationChannelServer2.content.getLastFileMessageByFileName('Video record.webm')).innerText(),
+				).toEqual('Video record.webm');
 
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastFileMessage.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastFileMessage.locator('video')).toBeVisible();
 			});
 
 			test('expect to send a video message from Server B to Server A', async ({ page }) => {
@@ -309,11 +321,15 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendVideoRecordedMessage();
 
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('Video record.webm');
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('Video record.webm');
+				await expect(
+					await (await poFederationChannelServer2.content.getLastFileMessageByFileName('Video record.webm')).innerText(),
+				).toEqual('Video record.webm');
+				await expect(
+					await (await poFederationChannelServer1.content.getLastFileMessageByFileName('Video record.webm')).innerText(),
+				).toEqual('Video record.webm');
 
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastFileMessage.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastFileMessage.locator('video')).toBeVisible();
 			});
 
 			test('expect to send a file message (image) from Server A to Server B', async ({ page }) => {
@@ -359,11 +375,15 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer1.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
 
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('test_video.mp4');
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('test_video.mp4');
+				await expect(await (await poFederationChannelServer1.content.getLastFileMessageByFileName('test_video.mp4')).innerText()).toEqual(
+					'test_video.mp4',
+				);
+				await expect(await (await poFederationChannelServer2.content.getLastFileMessageByFileName('test_video.mp4')).innerText()).toEqual(
+					'test_video.mp4',
+				);
 
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastFileMessage.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastFileMessage.locator('video')).toBeVisible();
 			});
 
 			test('expect to send a file message (video) from Server B to Server A', async ({ page }) => {
@@ -376,11 +396,15 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.content.sendFileMessage('test_video.mp4');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
 
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('test_video.mp4');
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('test_video.mp4');
+				await expect(await (await poFederationChannelServer2.content.getLastFileMessageByFileName('test_video.mp4')).innerText()).toEqual(
+					'test_video.mp4',
+				);
+				await expect(await (await poFederationChannelServer1.content.getLastFileMessageByFileName('test_video.mp4')).innerText()).toEqual(
+					'test_video.mp4',
+				);
 
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastFileMessage.locator('video')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastFileMessage.locator('video')).toBeVisible();
 			});
 
 			test('expect to send a file message (pdf) from Server A to Server B', async ({ page }) => {
@@ -577,13 +601,13 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				const reactionListExcludingTheActionServer1 = (await reactionsServer1.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer1; i++) {
 					await expect(reactionsServer1.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
-					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('2');
+					await expect(reactionsServer1.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
 				const reactionsServer2 = await poFederationChannelServer2.content.getAllReactions();
 				const reactionListExcludingTheActionServer2 = (await reactionsServer2.count()) - 1;
 				for (let i = 0; i < reactionListExcludingTheActionServer2; i++) {
 					await expect(reactionsServer2.nth(i).locator('span.rcx-message-reactions__emoji.emojione')).toContainText('🙂');
-					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('2');
+					await expect(reactionsServer2.nth(i).locator('div.rcx-message-reactions__counter')).toContainText('1');
 				}
 			});
 

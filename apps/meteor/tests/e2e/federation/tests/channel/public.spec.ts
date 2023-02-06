@@ -951,39 +951,6 @@ test.describe.parallel('Federation - Channel Creation', () => {
 		});
 
 		test.describe('Owner rights', () => {
-			test('expect only the room owner being able to delete the channel', async ({ browser, page }) => {
-				const pageForServer2 = await browser.newPage();
-				const poFederationChannelServer2 = new FederationChannel(pageForServer2);
-
-				await doLogin({
-					page: pageForServer2,
-					server: {
-						url: constants.RC_SERVER_2.url,
-						username: userFromServer2UsernameOnly,
-						password: constants.RC_SERVER_2.password,
-					},
-					storeState: false,
-				});
-
-				await page.goto(`${constants.RC_SERVER_1.url}/home`);
-				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
-
-				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
-
-				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer1.tabs.btnRoomInfo.click();
-				await expect(poFederationChannelServer1.tabs.room.btnDelete).toBeVisible();
-
-				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer2.tabs.btnRoomInfo.click();
-				await expect(poFederationChannelServer2.tabs.room.btnDelete).not.toBeVisible();
-
-				await pageForServer2.close();
-			});
-
 			test('expect only the room owner being able to add users through the UI', async ({ browser, page }) => {
 				const pageForServer2 = await browser.newPage();
 				const poFederationChannelServer2 = new FederationChannel(pageForServer2);

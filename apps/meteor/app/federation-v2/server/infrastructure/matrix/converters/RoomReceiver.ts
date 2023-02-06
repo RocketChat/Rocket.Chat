@@ -10,7 +10,7 @@ import {
 	FederationRoomReceiveExternalFileMessageDto,
 	FederationRoomReceiveExternalMessageDto,
 	FederationRoomRedactEventDto,
-} from '../../../application/input/RoomReceiverDto';
+} from '../../../application/listener/input/RoomReceiverDto';
 import { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
 import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
 import { RoomMembershipChangedEventType } from '../definitions/events/RoomMembershipChanged';

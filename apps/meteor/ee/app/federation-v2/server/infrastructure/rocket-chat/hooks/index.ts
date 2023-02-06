@@ -18,25 +18,25 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static onUsersAddedToARoom(callback: (room: IRoom, inviter: IUser, addedUsers: IUser[] | string[]) => Promise<void>): void {
+	public static onUsersAddedToARoom(callback: (room: IRoom, addedUsers: IUser[] | Username[], inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
 			'federation.onAddUsersToARoom',
 			(params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom): void => {
 				if (!room || !isRoomFederated(room)) {
 					return;
 				}
-				Promise.await(callback(room, params.inviter, params.invitees));
+				Promise.await(callback(room, params.invitees, params.inviter));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-on-add-users-to-a-room',
 		);
 		callbacks.add(
 			'afterAddedToRoom',
-			(params: { user: IUser; inviter: IUser }, room: IRoom): void => {
+			(params: { user: IUser; inviter?: IUser }, room: IRoom): void => {
 				if (!room || !isRoomFederated(room)) {
 					return;
 				}
-				Promise.await(callback(room, params.inviter, [params.user]));
+				Promise.await(callback(room, [params.user], params?.inviter));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-add-user-to-a-room',
