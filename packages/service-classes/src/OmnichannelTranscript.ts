@@ -9,6 +9,7 @@ import {
 	QueueWorker as queueService,
 	Translation as translationService,
 	Settings as settingsService,
+	License as licenseService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
@@ -60,7 +61,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
-		this.log.level('debug');
+
+		this.onEvent('license.module', ({ module, valid }) => {
+			if (module === 'scalability') {
+				this.shouldWork = valid;
+			}
+		});
+	}
+
+	async started(): Promise<void> {
+		try {
+			this.shouldWork = await licenseService.hasLicense('scalability');
+		} catch (e: unknown) {
+			// ignore
+		}
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
@@ -88,6 +102,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
+		if (!this.shouldWork) {
+			this.log.info(`Not requesting transcript for room ${details.rid} because scalability module is not enabled`);
+			return;
+		}
 		this.log.log(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
@@ -208,6 +226,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async workOnPdf({ template, details }: { template: Templates; details: WorkDetailsWithSource }): Promise<void> {
+		if (!this.shouldWork) {
+			this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Stopped (no scalability license found)`);
+			return;
+		}
 		this.log.log(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
 			this.log.error(`Processing transcript for room ${details.rid} by user ${details.userId} - Too many concurrent jobs, queuing again`);
