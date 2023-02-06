@@ -84,7 +84,10 @@ export class RoomsRaw extends BaseRaw {
 				{
 					$and: [
 						{
-							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
+								{ federated: true, fname: nameRegex },
+							],
 						},
 					],
 				},
@@ -140,7 +143,10 @@ export class RoomsRaw extends BaseRaw {
 				{
 					$and: [
 						{
-							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
+								{ federated: true, fname: nameRegex },
+							],
 						},
 					],
 				},

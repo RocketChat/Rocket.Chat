@@ -119,7 +119,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const endpointData = useQuery(
 		['rooms', query, 'admin'],
 		async () => {
-			const { rooms } = await getAdminRooms(params);
+			const { rooms } = await getAdminRooms({ filter: params.text, ...params });
 
 			if (rooms.length === 0) {
 				throw new Error(t('No_results_found'));
