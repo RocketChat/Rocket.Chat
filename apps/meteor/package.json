@@ -397,7 +397,8 @@
 		"xml-crypto": "^2.1.4",
 		"xml-encryption": "2.0.0",
 		"xml2js": "0.4.23",
-		"yaqrcode": "^0.2.1"
+		"yaqrcode": "^0.2.1",
+		"@react-pdf/renderer": "^3.0.1"
 	},
 	"meteor": {
 		"mainModule": {

@@ -21,6 +21,7 @@
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/service-classes": "workspace:^",
+		"mongo-message-queue": "^1.0.0",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
@@ -30,7 +31,8 @@
 		"mongodb": "^4.12.1",
 		"nats": "^2.4.0",
 		"pino": "^8.4.2",
-		"polka": "^0.5.2"
+		"polka": "^0.5.2",
+		"@react-pdf/renderer": "^3.0.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
