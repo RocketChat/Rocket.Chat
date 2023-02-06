@@ -37,8 +37,6 @@ export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps)
 		[key: string]: MessageActionConfigOption[];
 	};
 
-	const messagesContainer = document.querySelector('.messages-container') || document.body;
-
 	return (
 		<MessageToolboxItem
 			ref={ref}
@@ -52,7 +50,7 @@ export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps)
 			title={t('More')}
 		>
 			{visible && (
-				<ToolboxDropdown reference={ref} container={messagesContainer} {...props}>
+				<ToolboxDropdown reference={ref} {...props}>
 					{Object.entries(groupOptions).map(([, options], index, arr) => (
 						<Fragment key={index}>
 							{options.map((option) => (

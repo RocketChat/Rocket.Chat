@@ -55,7 +55,7 @@ export async function findStarredMessages({
 }): Promise<{
 	messages: IMessage[];
 	count: number;
-	offset: any;
+	offset: number;
 	total: number;
 }> {
 	const room = await Rooms.findOneById(roomId);

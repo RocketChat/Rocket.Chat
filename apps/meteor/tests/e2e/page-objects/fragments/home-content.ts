@@ -198,7 +198,7 @@ export class HomeContent {
 	}
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rcx-button--primary >> text=Resume');
+		return this.page.locator('button.rcx-button--primary >> text="Resume"');
 	}
 
 	get btnOnHold(): Locator {
