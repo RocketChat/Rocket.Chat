@@ -172,7 +172,7 @@ function SideBarItemTemplateWithData({
 			actions={actions}
 			menu={
 				!isAnonymous &&
-				!(isQueued && !isPriorityEnabled) &&
+				(!isQueued || (isQueued && isPriorityEnabled)) &&
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
