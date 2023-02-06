@@ -33,4 +33,8 @@ export class AppsConverterService extends ServiceClass implements IAppsConverter
 	async convertUserToApp(user: any): Promise<IUser> {
 		return this.apps.getConverters()?.get('users').convertToApp(user);
 	}
+
+	async convertUserById(id: string): Promise<IUser> {
+		return this.apps.getConverters()?.get('users').convertById(id);
+	}
 }

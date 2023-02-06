@@ -28,6 +28,7 @@ import { FetchService } from './fetch/service';
 import { LivechatService } from './livechat/service';
 import { MessageService } from './message/service';
 import { NotificationService } from './notification/service';
+import { SlashCommandService } from './slashcommand/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -57,6 +58,7 @@ api.registerService(new FetchService());
 api.registerService(new LivechatService());
 api.registerService(new MessageService());
 api.registerService(new NotificationService());
+api.registerService(new SlashCommandService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
