@@ -1,7 +1,6 @@
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -11,17 +10,12 @@ import UpgradeDepartments from './UpgradeDepartments';
 type NewDepartmentProps = {
 	id: string;
 	reload: () => void;
-	refetchRef: MutableRefObject<() => void>;
 };
 
-const NewDepartment = ({ id, reload, refetchRef }: NewDepartmentProps) => {
+const NewDepartment = ({ id, reload }: NewDepartmentProps) => {
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
-	const { data, refetch, isLoading } = useQuery(['getDepartments'], async () => getDepartments());
-
-	useEffect(() => {
-		refetchRef.current = refetch;
-	}, [refetchRef, refetch]);
+	const { data, isLoading } = useQuery(['omnichannel', 'departments', 'new'], async () => getDepartments());
 
 	const t = useTranslation();
 

@@ -1,8 +1,8 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useCallback, useState, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -13,7 +13,7 @@ import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useDepartmentsQuery = ({ text, itemsPerPage, current }, [column, direction], onlyMyDepartments) =>
+const useDepartmentsParams = ({ text, itemsPerPage, current }, [column, direction], onlyMyDepartments) =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -48,11 +48,11 @@ function DepartmentsRoute() {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const refetchRef = useRef(() => undefined);
+	const queryClient = useQueryClient();
 
-	const handleRefetch = useCallback(() => {
-		refetchRef.current();
-	}, [refetchRef]);
+	const onRefetch = useCallback(() => {
+		queryClient.invalidateQueries(['omnichannel', 'departments']);
+	}, [queryClient]);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -86,7 +86,7 @@ function DepartmentsRoute() {
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
-	const { data, refetch } = useQuery(['getDepartments', query], async () => getDepartments(query));
+	const { data, refetch } = useQuery(['omnichannel', 'departments', query], async () => getDepartments(query));
 
 	const reload = useCallback(() => refetch(), [refetch]);
 
@@ -143,10 +143,10 @@ function DepartmentsRoute() {
 				<Table.Cell withTruncatedText>{numAgents || '0'}</Table.Cell>
 				<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
 				<Table.Cell withTruncatedText>{showOnRegistration ? t('Yes') : t('No')}</Table.Cell>
-				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} refetch={handleRefetch} />}
+				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} onRefetch={onRefetch} />}
 			</Table.Row>
 		),
-		[canRemoveDepartments, handleRefetch, onRowClick, reload, t],
+		[canRemoveDepartments, onRefetch, onRowClick, reload, t],
 	);
 
 	if (!canViewDepartments) {
@@ -154,7 +154,7 @@ function DepartmentsRoute() {
 	}
 
 	if (context === 'new') {
-		return <NewDepartment id={id} reload={reload} refetchRef={refetchRef} title={t('New_Department')} />;
+		return <NewDepartment id={id} reload={reload} title={t('New_Department')} />;
 	}
 
 	if (context === 'edit') {
@@ -167,7 +167,7 @@ function DepartmentsRoute() {
 			params={params}
 			onHeaderClick={onHeaderClick}
 			data={data}
-			useQuery={useDepartmentsQuery}
+			useQuery={useDepartmentsParams}
 			reload={reload}
 			header={header}
 			renderRow={renderRow}
