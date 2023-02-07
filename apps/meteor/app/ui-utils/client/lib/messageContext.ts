@@ -22,7 +22,7 @@ const fields = {
 
 export const createMessageContext = ({
 	uid = Meteor.userId(),
-	user = Users.findOne({ _id: uid }, { fields }) || {},
+	user = (uid ? Users.findOne({ _id: uid }, { fields }) : {}) || {},
 	rid = (Template.instance() as CommonRoomTemplateInstance).data.rid,
 	room = Tracker.nonreactive(() =>
 		Rooms.findOne(
