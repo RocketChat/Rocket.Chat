@@ -2,8 +2,8 @@ import { Margins, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 
-import { useForm } from '../../../hooks/useForm';
 import TriggersForm from './TriggersForm';
 
 const getInitialValues = ({
@@ -45,8 +45,11 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	const save = useMethod('livechat:saveTrigger');
 
-	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
+	// const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
+	const methods = useForm({ defaultValues: getInitialValues(data) });
 
+	const values = methods.getValues();
+	const hasUnsavedChanges = methods.formState.isDirty;
 	const handleSave = useMutableCallback(async () => {
 		try {
 			const {
@@ -85,7 +88,9 @@ const EditTriggerPage = ({ data, onSave }) => {
 	return (
 		<>
 			<FieldGroup>
-				<TriggersForm values={values} handlers={handlers} />
+				<FormProvider {...methods}>
+					<TriggersForm values={values} />
+				</FormProvider>
 			</FieldGroup>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>

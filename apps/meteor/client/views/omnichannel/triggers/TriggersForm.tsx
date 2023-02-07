@@ -1,9 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FC, FormEvent } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useController, useFormContext } from 'react-hook-form';
 
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 
@@ -43,18 +43,45 @@ type TriggersFormProps = {
 	className?: ComponentProps<typeof Field>['className'];
 };
 
-const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) => {
+const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
+	const { register, control } = useFormContext();
+
+	const {
+		field: { onChange: handleEnabled, value: valueEnabled },
+	} = useController({
+		name: 'enabled',
+		control,
+	});
+	const {
+		field: { onChange: handleRunOnce, value: valueRunOnce },
+	} = useController({
+		name: 'runOnce',
+		control,
+	});
+	const {
+		field: { onChange: handleActionSender, value: valueActionSender },
+	} = useController({
+		name: 'actions.params.sender',
+		control,
+	});
+	const {
+		field: { onChange: handleConditionName, value: valueConditionName },
+	} = useController({
+		name: 'conditions.name',
+		control,
+	});
+
 	const [nameError, setNameError] = useState('');
 	const [msgError, setMsgError] = useState('');
 	const t = useTranslation();
-	const { name, description, enabled, runOnce, conditions, actions } = values;
+	const { name, conditions, actions } = values;
 
-	const { handleName, handleDescription, handleEnabled, handleRunOnce, handleConditions, handleActions } = handlers;
+	// const { /* handleName, handleDescription,*/ handleEnabled, handleRunOnce, handleConditions, handleActions } = handlers;
 
-	const { name: conditionName, value: conditionValue } = conditions;
+	const { name: conditionName } = conditions;
 
 	const {
-		params: { sender: actionSender, msg: actionMsg, name: actionAgentName },
+		params: { sender: actionSender, msg: actionMsg },
 	} = actions;
 
 	const conditionOptions: SelectOption[] = useMemo(
@@ -84,49 +111,49 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		[t],
 	);
 
-	const handleConditionName = useMutableCallback((name) => {
-		handleConditions({
-			name,
-			value: '',
-		});
-	});
+	// const handleConditionName = useMutableCallback((name) => {
+	// 	handleConditions({
+	// 		name,
+	// 		value: '',
+	// 	});
+	// });
 
-	const handleConditionValue = useMutableCallback(({ currentTarget: { value } }) => {
-		handleConditions({
-			...conditions,
-			value,
-		});
-	});
+	// const handleConditionValue = useMutableCallback(({ currentTarget: { value } }) => {
+	// 	handleConditions({
+	// 		...conditions,
+	// 		value,
+	// 	});
+	// });
 
-	const handleActionAgentName = useMutableCallback(({ currentTarget: { value: name } }) => {
-		handleActions({
-			...actions,
-			params: {
-				...actions.params,
-				name,
-			},
-		});
-	});
+	// const handleActionAgentName = useMutableCallback(({ currentTarget: { value: name } }) => {
+	// 	handleActions({
+	// 		...actions,
+	// 		params: {
+	// 			...actions.params,
+	// 			name,
+	// 		},
+	// 	});
+	// });
 
-	const handleActionSender = useMutableCallback((sender) => {
-		handleActions({
-			...actions,
-			params: {
-				...actions.params,
-				sender,
-			},
-		});
-	});
+	// const handleActionSender = useMutableCallback((sender) => {
+	// 	handleActions({
+	// 		...actions,
+	// 		params: {
+	// 			...actions.params,
+	// 			sender,
+	// 		},
+	// 	});
+	// });
 
-	const handleActionMessage = useMutableCallback(({ currentTarget: { value: msg } }) => {
-		handleActions({
-			...actions,
-			params: {
-				...actions.params,
-				msg,
-			},
-		});
-	});
+	// const handleActionMessage = useMutableCallback(({ currentTarget: { value: msg } }) => {
+	// 	handleActions({
+	// 		...actions,
+	// 		params: {
+	// 			...actions.params,
+	// 			msg,
+	// 		},
+	// 	});
+	// });
 	useComponentDidUpdate(() => {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
@@ -139,7 +166,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				<Box display='flex' flexDirection='row'>
 					<Field.Label>{t('Enabled')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch checked={enabled} onChange={handleEnabled} />
+						<ToggleSwitch checked={valueEnabled} onChange={handleEnabled} />
 					</Field.Row>
 				</Box>
 			</Field>
@@ -147,49 +174,49 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				<Box display='flex' flexDirection='row'>
 					<Field.Label>{t('Run_only_once_for_each_visitor')}</Field.Label>
 					<Field.Row>
-						<ToggleSwitch checked={runOnce} onChange={handleRunOnce} />
+						<ToggleSwitch checked={valueRunOnce} onChange={handleRunOnce} />
 					</Field.Row>
 				</Box>
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
-					<TextInput value={name} error={nameError} onChange={handleName} placeholder={t('Name')} />
+					<TextInput {...register('name')} error={nameError} placeholder={t('Name')} />
 				</Field.Row>
 				<Field.Error>{nameError}</Field.Error>
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Description')}</Field.Label>
 				<Field.Row>
-					<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} />
+					<TextInput {...register('description')} placeholder={t('Description')} />
 				</Field.Row>
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Condition')}</Field.Label>
 				<Field.Row>
-					<Select options={conditionOptions} value={conditionName} onChange={handleConditionName} />
+					<Select options={conditionOptions} value={valueConditionName} onChange={handleConditionName} />
 				</Field.Row>
 				{conditionValuePlaceholder && (
 					<Field.Row>
-						<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionValuePlaceholder} />
+						<TextInput {...register('conditions.value')} placeholder={conditionValuePlaceholder} />
 					</Field.Row>
 				)}
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Action')}</Field.Label>
 				<Field.Row>
-					<TextInput value={t('Send_a_message')} disabled />
+					<TextInput {...register(`${t('Send_a_message')}`)} disabled />
 				</Field.Row>
 				<Field.Row>
-					<Select options={senderOptions} value={actionSender} onChange={handleActionSender} placeholder={t('Select_an_option')} />
+					<Select options={senderOptions} value={valueActionSender} onChange={handleActionSender} placeholder={t('Select_an_option')} />
 				</Field.Row>
 				{actionSender === 'custom' && (
 					<Field.Row>
-						<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')} />
+						<TextInput {...register('actions.params.actionAgentName')} placeholder={t('Name_of_agent')} />
 					</Field.Row>
 				)}
 				<Field.Row>
-					<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${t('Message')}*`} />
+					<TextAreaInput rows={3} {...register('actions.params.msg')} placeholder={`${t('Message')}*`} />
 				</Field.Row>
 				<Field.Error>{msgError}</Field.Error>
 			</Field>
