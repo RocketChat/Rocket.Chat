@@ -64,6 +64,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		switch (user.type) {
+			case 'bot':
 			case 'app':
 				if (!checkUsernameAvailability(user.username)) {
 					throw new Error(`The username "${user.username}" is already being used. Rename or remove the user using it to install this App`);
