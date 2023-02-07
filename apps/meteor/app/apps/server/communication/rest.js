@@ -816,7 +816,10 @@ export class AppsRestApi {
 				async post() {
 					const { appId, appName, message } = this.bodyParams;
 					const workspaceUrl = settings.get('Site_Url');
-					const learnMore = `${workspaceUrl}/marketplace/explore/info/${appId}`;
+
+					const regex = new RegExp('\\/$', 'gm');
+					const safeWorkspaceUrl = workspaceUrl.replace(regex, '');
+					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}`;
 
 					try {
 						const msgs = ({ adminUser }) => {

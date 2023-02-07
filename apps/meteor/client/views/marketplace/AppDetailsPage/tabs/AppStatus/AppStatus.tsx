@@ -37,6 +37,7 @@ type AppStatusProps = {
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const t = useTranslation();
+	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
@@ -59,6 +60,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setModal(null);
 		setLoading(false);
 		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+		setEndUserRequested(true);
 
 		notifyAdmins({
 			appId: app.id,
@@ -207,7 +210,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary small disabled={loading || (action === 'request' && app.requestedEndUser)} onClick={handleClick} mie='x8'>
+					<Button
+						primary
+						small
+						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						onClick={handleClick}
+						mie='x8'
+					>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
