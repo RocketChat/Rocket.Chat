@@ -49,8 +49,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const [loading, setLoading] = useState(false);
+	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
@@ -76,6 +78,19 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		},
 		[setModal, action, app, setLoading],
 	);
+
+	const requestConfirmAction = (postMessage) => {
+		setModal(null);
+		setLoading(false);
+		setRequestedEndUser(true);
+		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+		notifyAdmins({
+			appId: app.id,
+			appName: app.name,
+			message: postMessage.message,
+		});
+	};
 
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
@@ -142,7 +157,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={undefined} />);
+				setModal(<IframeModal url={data.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -311,12 +326,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(!app.installed && {
 				acquire: {
 					label: (
-						<Option disabled={app.requestedEndUser}>
+						<Option disabled={requestedEndUser}>
 							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
 							{t(button.label.replace(' ', '_'))}
 						</Option>
 					),
-					action: app.requestedEndUser ? () => {} : handleAcquireApp,
+					action: requestedEndUser ? () => {} : handleAcquireApp,
 				},
 			}),
 		};
@@ -401,6 +416,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 	}, [
 		canAppBeSubscribed,
+		requestedEndUser,
 		isSubscribed,
 		incompatibleIconName,
 		app,

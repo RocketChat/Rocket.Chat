@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings, Users as UsersRaw } from '@rocket.chat/models';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { API } from '../../../api/server';
@@ -17,6 +18,7 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../../ee/app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
+import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -796,6 +798,42 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({ apps: result.data });
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'notify-admins',
+			{ authRequired: true },
+			{
+				async post() {
+					const { appId, appName, message } = this.bodyParams;
+					const workspaceUrl = settings.get('Site_Url');
+
+					const regex = new RegExp('\\/$', 'gm');
+					const safeWorkspaceUrl = workspaceUrl.replace(regex, '');
+					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}`;
+
+					try {
+						const msgs = ({ adminUser }) => {
+							return {
+								msg: TAPi18n.__('App_Request_Admin_Message', {
+									admin_name: adminUser.name,
+									app_name: appName,
+									user_name: this.user.name || this.user.username,
+									message,
+									learn_more: learnMore,
+								}),
+							};
+						};
+
+						await sendMessagesToAdmins({ msgs });
+
+						return API.v1.success();
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error when notifying admins that an user requested an app:', e);
+						return API.v1.failure();
+					}
 				},
 			},
 		);

@@ -5,7 +5,18 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { makeAgentAvailable, createAgent, createDepartment } from '../../../data/livechat/rooms';
+import {
+	makeAgentAvailable,
+	createAgent,
+	createDepartment,
+	createVisitor,
+	createLivechatRoom,
+	getLivechatRoomInfo,
+} from '../../../data/livechat/rooms';
+import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { IS_EE } from '../../../e2e/config/constants';
+import { createUser } from '../../../data/users.helper';
+import { createMonitor, createUnit } from '../../../data/livechat/units';
 
 describe('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
@@ -151,6 +162,129 @@ describe('LIVECHAT - Departments', function () {
 						.end(done);
 				});
 		});
+	});
+
+	describe('DELETE livechat/department/:_id', () => {
+		it('should return unauthorized error when the user does not have the necessary permission', async () => {
+			await updatePermission('manage-livechat-departments', []);
+			await updatePermission('remove-livechat-department', []);
+
+			await request
+				.delete(api('livechat/department/testetetetstetete'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+		});
+
+		it('should return an error when the department does not exist', async () => {
+			await updatePermission('manage-livechat-departments', ['admin']);
+
+			const resp: Response = await request
+				.delete(api('livechat/department/testesteteste'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(resp.body).to.have.property('success', false);
+			expect(resp.body).to.have.property('error', 'error-department-not-found');
+		});
+
+		it('it should remove the department', async () => {
+			const department = await createDepartment();
+
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(resp.body).to.have.property('success', true);
+		});
+
+		it('it should remove the department and disassociate the rooms from it', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+			const newVisitor = await createVisitor(department._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(resp.body).to.have.property('success', true);
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom.departmentId).to.be.undefined;
+		});
+
+		(IS_EE ? it : it.skip)('it should remove the department and disassociate the rooms from it which have its units', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+			const newVisitor = await createVisitor(department._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			const monitor = await createUser();
+			await createMonitor(monitor.username);
+			const unit = await createUnit(monitor._id, monitor.username, [department._id]);
+
+			// except the room to have the unit
+			let latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom.departmentId).to.be.equal(department._id);
+			expect(latestRoom.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(resp.body).to.have.property('success', true);
+
+			latestRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(latestRoom.departmentId).to.be.undefined;
+			expect(latestRoom.departmentAncestors).to.be.undefined;
+		});
+
+		(IS_EE ? it : it.skip)(
+			'contd from above test case: if a unit has more than 1 dept, then it should not disassociate rooms from other dept when any one dept is removed',
+			async () => {
+				const { department: department1 } = await createDepartmentWithAnOnlineAgent();
+				const newVisitor1 = await createVisitor(department1._id);
+				const newRoom1 = await createLivechatRoom(newVisitor1.token);
+
+				const { department: department2 } = await createDepartmentWithAnOnlineAgent();
+				const newVisitor2 = await createVisitor(department2._id);
+				const newRoom2 = await createLivechatRoom(newVisitor2.token);
+
+				const monitor = await createUser();
+				await createMonitor(monitor.username);
+				const unit = await createUnit(monitor._id, monitor.username, [department1._id, department2._id]);
+
+				// except the room to have the unit
+				let latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
+				let latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
+				expect(latestRoom1.departmentId).to.be.equal(department1._id);
+				expect(latestRoom1.departmentAncestors).to.be.an('array').that.includes(unit._id);
+				expect(latestRoom2.departmentId).to.be.equal(department2._id);
+				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+
+				const resp: Response = await request
+					.delete(api(`livechat/department/${department1._id}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(resp.body).to.have.property('success', true);
+
+				latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
+				expect(latestRoom1.departmentId).to.be.undefined;
+				expect(latestRoom1.departmentAncestors).to.be.undefined;
+
+				latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
+				expect(latestRoom2.departmentId).to.be.equal(department2._id);
+				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+			},
+		);
 	});
 
 	describe('GET livechat/department.autocomplete', () => {
