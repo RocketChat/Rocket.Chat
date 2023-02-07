@@ -1655,7 +1655,8 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
-				});
+				})
+				.end(done);
 		});
 
 		it('should not parse URLs inside markdown on update', (done) => {
