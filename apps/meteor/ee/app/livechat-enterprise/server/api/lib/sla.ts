@@ -10,7 +10,7 @@ import {
 	removeSlaFromRoom,
 	updateInquiryQueueSla,
 	updateRoomSlaWeights,
-} from '../../lib/SlaNPriorityHelper';
+} from '../../lib/SlaHelper';
 
 type FindSLAParams = {
 	text?: string;

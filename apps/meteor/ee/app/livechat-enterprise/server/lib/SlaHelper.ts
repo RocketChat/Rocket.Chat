@@ -1,4 +1,4 @@
-import type { ILivechatPriority, IMessage, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms, Messages } from '@rocket.chat/models';
 
 export const removeSLAFromRooms = async (slaId: string) => {
@@ -39,16 +39,10 @@ export const removeSlaFromRoom = async (roomId: string) => {
 	await LivechatRooms.removeSlaFromRoomById(roomId);
 };
 
-type UserProp = Pick<IUser, '_id' | 'name' | 'username'>;
-
-export const addPriorityChangeHistoryToRoom = async (
+export const addSlaChangeHistoryToRoom = async (
 	roomId: string,
-	user: UserProp,
-	priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
+	user: Pick<IUser, '_id' | 'name' | 'username'>,
+	sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
 ) => {
-	await Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, user as IMessage['u'], priority);
-};
-
-export const addSlaChangeHistoryToRoom = async (roomId: string, user: UserProp, sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>) => {
 	await Messages.createSLAHistoryWithRoomIdMessageAndUser(roomId, user as IMessage['u'], sla);
 };
