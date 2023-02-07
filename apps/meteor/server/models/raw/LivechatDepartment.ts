@@ -2,6 +2,7 @@ import type { ILivechatDepartmentRecord, RocketChatRecordDeleted } from '@rocket
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -121,5 +122,33 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 
 	archiveDepartment(_id: string): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, { $set: { archived: true } });
+  }
+
+	async createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<ILivechatDepartmentRecord> {
+		const current = await this.findOneById(_id);
+
+		const record = {
+			...data,
+		};
+
+		if (_id) {
+			await this.updateOne({ _id }, { $set: record });
+		} else {
+			_id = (await this.insertOne(record)).insertedId;
+		}
+
+		if (current?.enabled !== data.enabled) {
+			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+		}
+
+		return Object.assign(record, { _id });
+	}
+
+	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult> {
+		return this.updateMany({ fallbackDepartment: departmentId }, { $unset: { fallbackDepartment: 1 } });
+	}
+
+	removeDepartmentFromForwardListById(_departmentId: string): Promise<void> {
+		throw new Error('Method not implemented in Community Edition.');
 	}
 }
