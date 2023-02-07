@@ -123,4 +123,5 @@ export type App = {
 	createdDate: string;
 	requestedEndUser?: boolean;
 	private: boolean;
+	documentationUrl: string;
 };
