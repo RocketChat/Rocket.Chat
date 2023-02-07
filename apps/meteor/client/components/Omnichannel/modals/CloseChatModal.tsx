@@ -49,10 +49,12 @@ const CloseChatModal = ({
 	const userTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const userTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
-	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
-	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
+	const transcriptPDFPermission = usePermission('request-pdf-transcript');
+	const transcriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
 
-	const canSendTranscript = canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF);
+	const canSendTranscriptEmail = transcriptEmailPermission && visitorEmail;
+	const canSendTranscriptPDF = transcriptPDFPermission && hasLicense;
+	const canSendTranscript = canSendTranscriptEmail || canSendTranscriptPDF;
 
 	const handleTags = (value: string[]): void => {
 		setValue('tags', value);
@@ -157,7 +159,7 @@ const CloseChatModal = ({
 							<Divider />
 							<Field.Label marginBlockStart='x8'>{t('Chat_transcript')}</Field.Label>
 						</Field>
-						{canSendTranscriptPDF && hasLicense && (
+						{canSendTranscriptPDF && (
 							<Field marginBlockStart='x10'>
 								<Field.Row>
 									<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
@@ -167,7 +169,7 @@ const CloseChatModal = ({
 								</Field.Row>
 							</Field>
 						)}
-						{canSendTranscriptEmail && visitorEmail && (
+						{canSendTranscriptEmail && (
 							<>
 								<Field marginBlockStart='x10'>
 									<Field.Row>
@@ -177,38 +179,34 @@ const CloseChatModal = ({
 										</Field.Label>
 									</Field.Row>
 								</Field>
-								{transcriptEmail && (
-									<>
-										<Field marginBlockStart='x14'>
-											<Field.Label required>{t('Contact_email')}</Field.Label>
-											<Field.Row>
-												<EmailInput value={visitorEmail} required disabled flexGrow={1} />
-											</Field.Row>
-										</Field>
-										<Field marginBlockStart='x12'>
-											<Field.Label required>{t('Subject')}</Field.Label>
-											<Field.Row>
-												<TextInput
-													{...register('subject', { required: true })}
-													className='active'
-													error={
-														errors.subject &&
-														t('error-the-field-is-required', {
-															field: t('Subject'),
-														})
-													}
-													flexGrow={1}
-												/>
-											</Field.Row>
-											<Field.Error>{errors.subject?.message}</Field.Error>
-										</Field>
-									</>
-								)}
+								<Field marginBlockStart='x14'>
+									<Field.Label required>{t('Contact_email')}</Field.Label>
+									<Field.Row>
+										<EmailInput value={visitorEmail} required disabled flexGrow={1} />
+									</Field.Row>
+								</Field>
+								<Field marginBlockStart='x12'>
+									<Field.Label required>{t('Subject')}</Field.Label>
+									<Field.Row>
+										<TextInput
+											{...register('subject', { required: true })}
+											className='active'
+											error={
+												errors.subject &&
+												t('error-the-field-is-required', {
+													field: t('Subject'),
+												})
+											}
+											flexGrow={1}
+										/>
+									</Field.Row>
+									<Field.Error>{errors.subject?.message}</Field.Error>
+								</Field>
 							</>
 						)}
 						<Field marginBlockStart='x16'>
 							<Field.Label color='annotation' fontScale='c1'>
-								{canSendTranscriptPDF && hasLicense && canSendTranscriptEmail && visitorEmail
+								{canSendTranscriptPDF && canSendTranscriptEmail
 									? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
 									: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
 								{}
