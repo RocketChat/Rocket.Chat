@@ -1656,6 +1656,11 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
 				});
+
+			await Promise.all([
+				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
+			]);
 		});
 
 		it('should not parse URLs inside markdown on update', (done) => {
@@ -1778,35 +1783,43 @@ describe('Meteor.methods', function () {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg').that.is.an('string');
+					expect(data).to.have.a.property('msg', 'result');
+					expect(data).to.have.a.property('id', 'id');
 				})
 				.end(done);
 		});
 
-		it('should delete a message when bypass time limits permission is enabled', (done) => {
-			updatePermission('bypass-time-limit-edit-and-delete', ['admin'])
-				.then(() => updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01))
-				.then(() => {
-					request
-						.post(methodCall('deleteMessage'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'deleteMessage',
-								params: [{ _id: messageId, rid }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							console.log('🚀 ~ file: 24-methods.js:1805 ~ .expect ~ res', res.body);
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-						})
-						.end(done);
+		it('should delete a message when bypass time limits permission is enabled', async () => {
+			await Promise.all([
+				updatePermission('bypass-time-limit-edit-and-delete', ['admin']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01),
+			]);
+
+			await request
+				.post(methodCall('deleteMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'deleteMessage',
+						params: [{ _id: messageId, rid }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg', 'result');
+					expect(data).to.have.a.property('id', 'id');
 				});
+
+			await Promise.all([
+				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
+			]);
 		});
 	});
 
