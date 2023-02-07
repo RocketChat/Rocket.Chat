@@ -1,6 +1,6 @@
 import type { Document } from 'mongodb';
 import polka from 'polka';
-import { api, Message, QueueWorker, Upload, Translation, Settings } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 
 import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
@@ -19,9 +19,9 @@ const PORT = process.env.PORT || 3036;
 	api.setBroker(broker);
 
 	// need to import service after models are registered
-	const { OmnichannelTranscript } = await import('./OmnichannelTranscript');
+	const { OmnichannelTranscript } = await import('@rocket.chat/service-classes');
 
-	api.registerService(new OmnichannelTranscript(Upload, Message, QueueWorker, Translation, Settings, Logger), ['queue-worker']);
+	api.registerService(new OmnichannelTranscript(Logger), ['queue-worker']);
 
 	await api.start();
 

@@ -3,6 +3,7 @@ import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 
 import type { PDFFile } from '..';
+import { wrapBuffer } from '../../../utils/buffer';
 
 const styles = StyleSheet.create({
 	file: {
@@ -33,7 +34,7 @@ export const Files = ({ files, invalidMessage }: { files: PDFFile[]; invalidMess
 			<View style={styles.file} key={index}>
 				<Text>{file.name}</Text>
 				{file.buffer ? (
-					<Image style={styles.image} src={Buffer.from(file.buffer)} />
+					<Image style={styles.image} src={wrapBuffer(Buffer.from(file.buffer))} />
 				) : (
 					<Text style={styles.invalidMessage}>{invalidMessage}</Text>
 				)}

@@ -1299,6 +1299,10 @@ export class LivechatRoomsRaw extends BaseRaw {
 			{
 				$set: { pdfTranscriptRequested: true },
 			},
+			{},
+			{
+				bypassUnits: true,
+			},
 		);
 	}
 
@@ -1310,6 +1314,10 @@ export class LivechatRoomsRaw extends BaseRaw {
 			{
 				$unset: { pdfTranscriptRequested: 1 },
 			},
+			{},
+			{
+				bypassUnits: true,
+			},
 		);
 	}
 
@@ -1320,6 +1328,10 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 			{
 				$set: { pdfTranscriptFileId: fileId },
+			},
+			{},
+			{
+				bypassUnits: true,
 			},
 		);
 	}

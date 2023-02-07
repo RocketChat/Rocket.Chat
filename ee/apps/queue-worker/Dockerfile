@@ -19,6 +19,15 @@ COPY ./packages/model-typings/dist packages/model-typings/dist
 COPY ./packages/models/package.json packages/models/package.json
 COPY ./packages/models/dist packages/models/dist
 
+COPY ./packages/service-classes/package.json packages/service-classes/package.json
+COPY ./packages/service-classes/dist packages/service-classes/dist
+
+COPY ./packages/pdf-worker/package.json packages/pdf-worker/package.json
+COPY ./packages/pdf-worker/dist packages/pdf-worker/dist
+
+COPY ./packages/tools/package.json packages/tools/package.json
+COPY ./packages/tools/dist packages/tools/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
