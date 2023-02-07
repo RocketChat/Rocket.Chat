@@ -1,5 +1,4 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
-import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useCallback } from 'react';
 
@@ -14,8 +13,6 @@ export const useLegacyThreadMessages = (tmid: IThreadMainMessage['_id']) => {
 				{
 					$or: [{ tmid }, { _id: tmid }],
 					_hidden: { $ne: true },
-					tmid,
-					_id: { $ne: tmid },
 				},
 				{
 					fields: {
@@ -25,9 +22,7 @@ export const useLegacyThreadMessages = (tmid: IThreadMainMessage['_id']) => {
 					},
 					sort: { ts: 1 },
 				},
-			)
-				.fetch()
-				.filter(isThreadMessage);
+			).fetch();
 		}, [tmid]),
 	);
 

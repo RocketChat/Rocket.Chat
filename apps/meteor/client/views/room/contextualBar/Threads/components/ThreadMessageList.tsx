@@ -76,7 +76,7 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 					</li>
 				) : (
 					<MessageListProvider>
-						{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
+						{messages.map((message, index, { [index - 1]: previous }) => {
 							const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 							const newDay = isMessageNewDay(message, previous);
 							const firstUnread = isMessageFirstUnread(subscription, message, previous);
