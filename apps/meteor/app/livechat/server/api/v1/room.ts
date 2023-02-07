@@ -116,7 +116,22 @@ API.v1.addRoute(
 			const language = rcSettings.get<string>('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
-			await LivechatTyped.closeRoom({ visitor, room, comment });
+			const options: CloseRoomParams['options'] = {};
+			if (room.servedBy) {
+				const servingAgent = await Users.findOneById(room.servedBy._id, {
+					projection: {
+						settings: 1,
+					},
+				});
+
+				if (servingAgent?.settings?.preferences?.omnichannelTranscriptPDF) {
+					options.pdfTranscript = {
+						requestedBy: servingAgent._id,
+					};
+				}
+			}
+
+			await LivechatTyped.closeRoom({ visitor, room, comment, options });
 
 			return API.v1.success({ rid, comment });
 		},
