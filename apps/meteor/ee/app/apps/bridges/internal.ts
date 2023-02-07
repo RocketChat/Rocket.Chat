@@ -2,6 +2,7 @@ import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/Internal
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Settings, Subscriptions } from '@rocket.chat/models';
+import Future from 'fibers/future';
 
 import type { AppServerOrchestrator } from '../orchestrator';
 
@@ -16,11 +17,13 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
-		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
-			projection: {
-				'u.username': 1,
-			},
-		}).toArray();
+		const records = Future.fromPromise(
+			Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+				projection: {
+					'u.username': 1,
+				},
+			}).toArray(),
+		).wait();
 
 		if (!records || records.length === 0) {
 			return [];

@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import Future from 'fibers/future';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type {
 	ILivechatMessage,
@@ -24,7 +25,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		return Livechat.online(departmentId);
+		return Future.fromPromise(Livechat.online(departmentId)).wait() as boolean;
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
