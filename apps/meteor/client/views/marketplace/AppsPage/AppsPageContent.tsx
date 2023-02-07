@@ -1,4 +1,3 @@
-import { Pagination, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -7,7 +6,6 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useAppsReload, useAppsResult } from '../AppsContext';
-import AppsList from '../AppsList';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import type { appsDataType } from '../hooks/useFilteredApps';
@@ -15,8 +13,9 @@ import { useFilteredApps } from '../hooks/useFilteredApps';
 import { useRadioToggle } from '../hooks/useRadioToggle';
 import AppsFilters from './AppsFilters';
 import AppsPageConnectionError from './AppsPageConnectionError';
+import AppsPageContentBody from './AppsPageContentBody';
 import AppsPageContentSkeleton from './AppsPageContentSkeleton';
-import FeaturedAppsSections from './FeaturedAppsSections';
+import NoAppRequestsEmptyState from './NoAppRequestsEmptyState';
 import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
 import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
@@ -38,6 +37,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
+	const isRequested = context === 'requested';
 	const isPrivate = context === 'private';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
@@ -72,7 +72,7 @@ const AppsPageContent = (): ReactElement => {
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
 
 	const getAppsData = useCallback((): appsDataType => {
-		if (isMarketplace || isEnterprise) {
+		if (isMarketplace || isEnterprise || isRequested) {
 			return marketplaceApps;
 		}
 
@@ -81,7 +81,7 @@ const AppsPageContent = (): ReactElement => {
 		}
 
 		return installedApps;
-	}, [isMarketplace, isEnterprise, isPrivate, marketplaceApps, installedApps, privateApps]);
+	}, [isMarketplace, isEnterprise, isRequested, isPrivate, installedApps, marketplaceApps, privateApps]);
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
@@ -102,11 +102,13 @@ const AppsPageContent = (): ReactElement => {
 
 	const noInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED &&
-		!isMarketplace &&
+		context === 'installed' &&
 		appsResult.value.totalAppsLength !== 0 &&
 		appsResult.value.count === 0;
 
-	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps;
+	const noAppRequests = context === 'requested' && appsResult?.value?.totalAppsLength !== 0 && appsResult?.value?.count === 0;
+
+	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps && !noAppRequests;
 
 	const isFiltered =
 		Boolean(text.length) ||
@@ -134,30 +136,30 @@ const AppsPageContent = (): ReactElement => {
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
 			/>
+
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
 
 			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
-				<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
-					<Box overflowY='scroll'>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
-						<AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />
-					</Box>
-					{Boolean(appsResult.value.count) && (
-						<Pagination
-							divider
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={appsResult.value.total}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
-					)}
-				</Box>
+				<AppsPageContentBody
+					isMarketplace={isMarketplace}
+					isFiltered={isFiltered}
+					appsResult={appsResult}
+					isRequested={isRequested}
+					itemsPerPage={itemsPerPage}
+					current={current}
+					onSetItemsPerPage={onSetItemsPerPage}
+					onSetCurrent={onSetCurrent}
+					paginationProps={paginationProps}
+					noErrorsOcurred={noErrorsOcurred}
+				/>
 			)}
+
+			{noAppRequests && <NoAppRequestsEmptyState />}
+
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
 			)}
+
 			{noInstalledAppMatches && (
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={appsResult.value.shouldShowSearchText}
@@ -165,7 +167,9 @@ const AppsPageContent = (): ReactElement => {
 					onButtonClick={handleReturn}
 				/>
 			)}
+
 			{noInstalledApps && <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}
+
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);

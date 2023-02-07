@@ -28,18 +28,18 @@ const appErroredStatuses = [
 	AppStatus.INVALID_LICENSE_DISABLED,
 ];
 
-type Actions = 'update' | 'install' | 'purchase' | 'request';
+export type Actions = 'update' | 'install' | 'purchase' | 'request';
 
 type appButtonResponseProps = {
 	action: Actions;
 	icon?: 'reload' | 'warning';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request' | 'Requested';
 };
 
-type appStatusSpanResponseProps = {
+export type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
-	icon?: 'warning' | 'ban' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible';
+	icon?: 'warning' | 'checkmark-circled' | 'check';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests' | 'Requested';
 	tooltipText?: string;
 };
 
@@ -163,8 +163,16 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
+	requestedEndUser,
 }: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
 	if (!isAdminUser) {
+		if (requestedEndUser) {
+			return {
+				action: 'request',
+				label: 'Requested',
+			};
+		}
+
 		return {
 			action: 'request',
 			label: 'Request',
@@ -277,10 +285,18 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 	tooltipText: t('App_version_incompatible_tooltip'),
 });
 
-export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App): appStatusSpanResponseProps | undefined => {
-	if (!installed) {
-		return;
+export const appStatusSpanProps = (
+	{ installed, status, subscriptionInfo, appRequestStats }: App,
+	context?: string,
+	isAppDetailsPage?: boolean,
+): appStatusSpanResponseProps | undefined => {
+	if (installed) {
+		return {
+			icon: 'check',
+			label: 'Installed',
+		};
 	}
+
 	const isFailed = status && appErroredStatuses.includes(status);
 	if (isFailed) {
 		return {
@@ -291,7 +307,7 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 	}
 
 	const isEnabled = status && appEnabledStatuses.includes(status);
-	if (!isEnabled) {
+	if (!isEnabled && installed) {
 		return {
 			type: 'warning',
 			label: 'Disabled',
@@ -306,14 +322,21 @@ export const appStatusSpanProps = ({ installed, status, subscriptionInfo }: App)
 		};
 	}
 
-	return {
-		icon: 'check',
-		label: 'Installed',
-	};
+	if (context === 'requested' && appRequestStats) {
+		if (isAppDetailsPage) {
+			return {
+				label: 'Requested',
+			};
+		}
+
+		return {
+			label: appRequestStats.totalSeen > 1 ? 'requests' : 'request',
+		};
+	}
 };
 
-export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean): appStatusSpanResponseProps[] => {
-	const status = appStatusSpanProps(app);
+export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context: string): appStatusSpanResponseProps[] => {
+	const status = appStatusSpanProps(app, context, isAppDetailsPage);
 	const statuses = [];
 
 	if (app?.versionIncompatible !== undefined && !isAppDetailsPage) {

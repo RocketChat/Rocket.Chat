@@ -33,6 +33,8 @@ const AUDIT_LOG_PERMISSIONS = ['can-audit-log'];
 
 const AUDIT_LICENSE_MODULE = 'auditing';
 
+const MANAGE_APPS_PERMISSIONS = ['manage-apps'];
+
 const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -46,6 +48,7 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 	const hasAuditPermission = useAtLeastOnePermission(AUDIT_PERMISSIONS) && hasAuditLicense;
 	const hasAuditLogPermission = useAtLeastOnePermission(AUDIT_LOG_PERMISSIONS) && hasAuditLicense;
 	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
+	const hasManageApps = useAtLeastOnePermission(MANAGE_APPS_PERMISSIONS);
 
 	return (
 		<>
@@ -60,6 +63,7 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 							hasAuditLicense={hasAuditLicense}
 							hasAuditPermission={hasAuditPermission}
 							hasAuditLogPermission={hasAuditLogPermission}
+							hasManageApps={hasManageApps}
 						/>
 					</Dropdown>,
 					document.body,

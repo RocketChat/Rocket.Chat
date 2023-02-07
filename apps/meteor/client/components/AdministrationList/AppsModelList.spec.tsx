@@ -14,18 +14,47 @@ describe('AppsModelList', () => {
 			'../../../app/ui-message/client/ActionManager': {
 				triggerActionButtonAction: {},
 			},
+			'../../views/marketplace/hooks/useAppRequestStats': {
+				useAppRequestStats: () => {
+					return {
+						isLoading: false,
+						data: {
+							data: {
+								totalUnseen: 5,
+							},
+						},
+					};
+				},
+			},
 			...stubs,
 		}).default;
 	};
 
-	it('should render apps', async () => {
+	it('should render all apps options when a user has manage apps permission', async () => {
 		const AppsModelList = loadMock();
 
-		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} />);
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed />);
 
 		expect(screen.getByText('Apps')).to.exist;
 		expect(screen.getByText('Marketplace')).to.exist;
 		expect(screen.getByText('Installed')).to.exist;
+		expect(screen.getByText('Requested')).to.exist;
+	});
+
+	it('should render only marketplace and installed options when a user does not have manage apps permission', async () => {
+		const AppsModelList = loadMock({
+			'@rocket.chat/ui-contexts': {
+				'useAtLeastOnePermission': (): boolean => false,
+				'@noCallThru': false,
+			},
+		});
+
+		render(<AppsModelList onDismiss={() => null} appBoxItems={[]} appsManagementAllowed={false} />);
+
+		expect(screen.getByText('Apps')).to.exist;
+		expect(screen.getByText('Marketplace')).to.exist;
+		expect(screen.getByText('Installed')).to.exist;
+		expect(screen.queryByText('Requested')).to.not.exist;
 	});
 
 	context('when clicked', () => {
@@ -36,7 +65,7 @@ describe('AppsModelList', () => {
 			return <RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>;
 		};
 
-		it('should go to admin marketplace', async () => {
+		it('should go to marketplace', async () => {
 			const AppsModelList = loadMock();
 
 			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} />, { wrapper: ProvidersMock });
@@ -59,6 +88,18 @@ describe('AppsModelList', () => {
 			await waitFor(() => expect(handleDismiss).to.have.been.called());
 		});
 
+		it('should go to requested if user has manage apps permission', async () => {
+			const AppsModelList = loadMock();
+
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[]} appsManagementAllowed />, { wrapper: ProvidersMock });
+
+			const button = screen.getByText('Requested');
+
+			userEvent.click(button);
+			await waitFor(() => expect(pushRoute).to.have.been.called.with('marketplace', { context: 'requested', page: 'list' }));
+			await waitFor(() => expect(handleDismiss).to.have.been.called());
+		});
+
 		it('should render apps and trigger action', async () => {
 			const triggerActionButtonAction = spy();
 
@@ -69,7 +110,7 @@ describe('AppsModelList', () => {
 				},
 			});
 
-			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} />, {
+			render(<AppsModelList onDismiss={handleDismiss} appBoxItems={[{ name: 'Custom App' } as any]} appsManagementAllowed />, {
 				wrapper: ProvidersMock,
 			});
 

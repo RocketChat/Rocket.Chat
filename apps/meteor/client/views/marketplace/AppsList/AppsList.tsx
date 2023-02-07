@@ -8,17 +8,16 @@ import AppRow from './AppRow';
 type AppsListProps = {
 	apps: App[];
 	title: string;
-	isMarketplace: boolean;
 };
 
-const AppsList = ({ apps, title, isMarketplace }: AppsListProps): ReactElement => (
+const AppsList = ({ apps, title }: AppsListProps): ReactElement => (
 	<>
 		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
 			{title}
 		</Box>
 		<Box mbe='x24'>
 			{apps.map((app) => (
-				<AppRow key={app.id} isMarketplace={isMarketplace} {...app} />
+				<AppRow key={app.id} {...app} />
 			))}
 		</Box>
 	</>

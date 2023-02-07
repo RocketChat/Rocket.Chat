@@ -5,17 +5,21 @@ import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
 import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import { useAppRequestStats } from '../../views/marketplace/hooks/useAppRequestStats';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
+	appsManagementAllowed?: boolean;
 	onDismiss: () => void;
 };
 
-const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
+
+	const { data: appRequestStats, isLoading } = useAppRequestStats();
 
 	return (
 		<>
@@ -38,6 +42,19 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 							onDismiss();
 						}}
 					/>
+
+					{appsManagementAllowed && (
+						<ListItem
+							icon='cube'
+							text={t('Requested')}
+							action={(): void => {
+								marketplaceRoute.push({ context: 'requested', page });
+								onDismiss();
+							}}
+							loading={isLoading}
+							notifications={appRequestStats?.data.totalUnseen ? appRequestStats?.data.totalUnseen : null}
+						/>
+					)}
 				</>
 				{appBoxItems.length > 0 && (
 					<>

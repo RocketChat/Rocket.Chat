@@ -18,7 +18,7 @@ const AppLogsItem: FC<AppLogsItemProps> = ({ entries, instanceId, title, ...prop
 	return (
 		<Accordion.Item title={title} {...props}>
 			{instanceId && (
-				<Box>
+				<Box color='default'>
 					{t('Instance')}: {instanceId}
 				</Box>
 			)}
