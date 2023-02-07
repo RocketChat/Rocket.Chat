@@ -1,6 +1,6 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC, MutableRefObject } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -20,6 +20,7 @@ import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 
 const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ reload }) => {
 	const [text, setText] = useState('');
+	const moderationRoute = useRoute('moderation-console');
 
 	const { sortBy, sortDirection, setSort } = useSort<'ts' | 'u.username' | 'description'>('ts');
 	const {
@@ -52,10 +53,9 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 
 	const {
 		data,
-		reload: reloadReports,
+		refetch: reloadReports,
 		isLoading,
 		isSuccess,
-		isError,
 	} = useQuery(
 		['reports', query],
 		async () => {
@@ -75,10 +75,17 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 
 	console.log('data', data);
 
+	const handleClick = useMutableCallback((id): void => {
+		moderationRoute.push({
+			context: 'info',
+			id,
+		});
+	});
+
 	// header sequence would be: name, reportedMessage, room, postdate, reports, actions
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sort === 'u.username'} onClick={setSort} sort='u.username'>
+			<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'u.username'} onClick={setSort} sort='u.username'>
 				Name
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell
@@ -120,7 +127,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (
-								<ModerationConsoleTableRow key={report._id} report={report} />
+								<ModerationConsoleTableRow key={report._id} report={report} onClick={handleClick} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

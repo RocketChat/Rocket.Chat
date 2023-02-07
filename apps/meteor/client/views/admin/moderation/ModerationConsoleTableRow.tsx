@@ -7,7 +7,12 @@ import React, { useMemo, useState } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
 
-const ModerationConsoleTableRow = ({ report }: IReport): JSX.Element => {
+type MonderationConsoleRowProps = {
+	report: IReport;
+	onClick: (id: IReport['_id']) => void;
+};
+
+const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowProps): JSX.Element => {
 	const { _id, description, message, ts } = report;
 	const { username } = message.u;
 	const { rid } = message;
@@ -34,7 +39,7 @@ const ModerationConsoleTableRow = ({ report }: IReport): JSX.Element => {
 
 	const {
 		data: reportsByMessage,
-		reload: reloadReportsByMessage,
+		refetch: reloadReportsByMessage,
 		isLoading: isLoadingReportsByMessage,
 		isSuccess: isSuccessReportsByMessage,
 		isError: isErrorReportsByMessage,
@@ -52,7 +57,7 @@ const ModerationConsoleTableRow = ({ report }: IReport): JSX.Element => {
 	);
 
 	return (
-		<TableRow key={_id}>
+		<TableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<TableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={'x40'} username={username} />}
@@ -65,7 +70,7 @@ const ModerationConsoleTableRow = ({ report }: IReport): JSX.Element => {
 					</Box>
 				</Box>
 			</TableCell>
-			<TableCell withTruncatedText>{description}</TableCell>
+			<TableCell withTruncatedText>{msg}</TableCell>
 			<TableCell withTruncatedText>{rid}</TableCell>
 			<TableCell withTruncatedText>{ts}</TableCell>
 			<TableCell withTruncatedText>{isSuccessReportsByMessage ? reportsByMessage.total : '-'}</TableCell>

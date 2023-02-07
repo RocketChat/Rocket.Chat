@@ -1,11 +1,17 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
 import Page from '../../../components/Page';
+import VerticalBar from '../../../components/VerticalBar';
 import ModerationConsoleTable from './ModerationConsoleTable';
 
 const ModerationConsolePage = () => {
 	const t = useTranslation();
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+	const moderationRoute = useRoute('moderation-console');
+
+	console.log('context', context);
 
 	const reloadRef = useRef(() => null);
 
@@ -18,6 +24,16 @@ const ModerationConsolePage = () => {
 					<ModerationConsoleTable reload={reloadRef} />
 				</Page.Content>
 			</Page>
+			{context && (
+				<VerticalBar>
+					<VerticalBar.Header>
+						<VerticalBar.Icon name='info-circled' />
+						<VerticalBar.Text>{t('Report')}</VerticalBar.Text>
+						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
+						<VerticalBar.Action name='download' onClick={() => moderationRoute.push({})} />
+					</VerticalBar.Header>
+				</VerticalBar>
+			)}
 		</Page>
 	);
 };
