@@ -14,6 +14,7 @@ import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRes
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { notifyAppInstall } from '../marketplace/appInstall';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 
 const rocketChatVersion = Info.version;
@@ -99,9 +100,15 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
+					const customQueryParams = new URLSearchParams();
+
+					if (this.queryParams.isAdminUser === 'false') {
+						customQueryParams.set('endUserID', this.user._id);
+					}
+
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps`, {
+						result = HTTP.get(`${baseUrl}/v1/apps?${customQueryParams.toString()}`, {
 							headers,
 						});
 					} catch (e) {
@@ -396,6 +403,8 @@ export class AppsRestApi {
 					}
 
 					info.status = aff.getApp().getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
 
 					return API.v1.success({
 						app: info,
@@ -739,6 +748,8 @@ export class AppsRestApi {
 
 					info.status = aff.getApp().getStatus();
 
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'update', info);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -758,6 +769,8 @@ export class AppsRestApi {
 
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'uninstall', info);
 
 					return API.v1.success({ app: info });
 				},
@@ -803,7 +816,7 @@ export class AppsRestApi {
 				async post() {
 					const { appId, appName, message } = this.bodyParams;
 					const workspaceUrl = settings.get('Site_Url');
-					const learnMore = `${workspaceUrl}marketplace/explore/info/${appId}`;
+					const learnMore = `${workspaceUrl}/marketplace/explore/info/${appId}`;
 
 					try {
 						const msgs = ({ adminUser }) => {
@@ -1115,13 +1128,67 @@ export class AppsRestApi {
 					}
 
 					try {
-						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+						const result = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 							headers,
 						});
 
-						return API.v1.success({ data });
+						return API.v1.success(result.data);
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
+
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/stats',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const result = HTTP.get(`${baseUrl}/v1/app-request/stats`, { headers });
+
+						return API.v1.success(result.data);
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', e.message);
+
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/markAsSeen',
+			{ authRequired: true },
+			{
+				async post() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					const { unseenRequests } = this.bodyParams;
+
+					try {
+						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: { ids: unseenRequests } });
+
+						return API.v1.success(result.data);
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
 
 						return API.v1.failure(e.message);
 					}

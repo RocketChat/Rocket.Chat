@@ -36,9 +36,9 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement 
 	return (
 		<Accordion.Item title={title} {...props}>
 			{release.detailedChangelog?.rendered ? (
-				<Box dangerouslySetInnerHTML={{ __html: release.detailedChangelog?.rendered }} />
+				<Box dangerouslySetInnerHTML={{ __html: release.detailedChangelog?.rendered }} color='default' />
 			) : (
-				t('No_release_information_provided')
+				<Box color='default'>{t('No_release_information_provided')}</Box>
 			)}
 		</Accordion.Item>
 	);
