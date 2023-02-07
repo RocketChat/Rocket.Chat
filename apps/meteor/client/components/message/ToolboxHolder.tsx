@@ -1,14 +1,15 @@
-import type { IMessage, ToolboxMessageType } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageToolboxWrapper } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 
+import type { MessageActionContext } from '../../../app/ui-utils/client/lib/MessageAction';
 import { useIsVisible } from '../../views/room/hooks/useIsVisible';
 import Toolbox from './toolbox/Toolbox';
 
 type ToolboxHolderProps = {
 	message: IMessage;
-	context?: ToolboxMessageType;
+	context?: MessageActionContext;
 };
 
 export const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement => {
