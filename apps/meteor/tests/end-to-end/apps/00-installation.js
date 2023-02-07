@@ -32,22 +32,24 @@ describe('Apps - Installation', function () {
 			});
 		});
 		it('should install the app successfully from a URL', (done) => {
-			request
-				.post(apps())
-				.set(credentials)
-				.send({
-					url: APP_URL,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('app');
-					expect(res.body.app).to.have.a.property('id');
-					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
-				})
-				.end(done);
+			updatePermission('manage-apps', []).then(() => {
+				request
+					.post(apps())
+					.set(credentials)
+					.send({
+						url: APP_URL,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('app');
+						expect(res.body.app).to.have.a.property('id');
+						expect(res.body.app).to.have.a.property('version');
+						expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+					})
+					.end(done);
+			});
 		});
 		it('should have created the app user successfully', (done) => {
 			getUserByUsername(APP_USERNAME)
