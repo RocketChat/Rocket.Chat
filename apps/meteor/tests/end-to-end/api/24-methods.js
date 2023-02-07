@@ -1623,37 +1623,38 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
-		it('should update a message when bypass time limits permission is enabled', (done) => {
-			updatePermission('bypass-time-limit-edit-and-delete', ['admin'])
-				.then(() => updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01))
-				.then(() => {
-					request
-						.post(methodCall('updateMessage'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'updateMessage',
-								params: [{ _id: messageId, rid, msg: 'https://github.com updated with bypass' }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-							request
-								.get(api(`chat.getMessage?msgId=${messageId}`))
-								.set(credentials)
-								.expect('Content-Type', 'application/json')
-								.expect(200)
-								.expect((res) => {
-									expect(res.body).to.have.property('message').that.is.an('object');
-									expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
-								});
-						})
-						.end(done);
+		it('should update a message when bypass time limits permission is enabled', async (done) => {
+			await Promise.all([
+				updatePermission('bypass-time-limit-edit-and-delete', ['admin']),
+				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01),
+			]);
+
+			await request
+				.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'https://github.com updated with bypass' }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+				});
+
+			await request
+				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('message').that.is.an('object');
+					expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
 				});
 		});
 
