@@ -17,10 +17,13 @@ addMigration({
 
 		// close all open Fb Messenger rooms since the integration is no longer available
 		const openRoomsIds = (
-			await LivechatRooms.find({
-				open: true,
-				facebook: { $exists: true },
-			}).toArray()
+			await LivechatRooms.find(
+				{
+					open: true,
+					facebook: { $exists: true },
+				},
+				{ projection: { _id: 1 } },
+			).toArray()
 		).map((room) => room._id);
 		await Promise.all([
 			LivechatRooms.updateMany(
