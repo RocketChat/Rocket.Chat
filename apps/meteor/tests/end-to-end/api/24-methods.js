@@ -1623,7 +1623,7 @@ describe('Meteor.methods', function () {
 				.end(done);
 		});
 
-		it('should update a message when bypass time limits permission is enabled', async (done) => {
+		it('should update a message when bypass time limits permission is enabled', async () => {
 			await Promise.all([
 				updatePermission('bypass-time-limit-edit-and-delete', ['admin']),
 				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01),
@@ -1655,8 +1655,7 @@ describe('Meteor.methods', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('message').that.is.an('object');
 					expect(res.body.message.msg).to.equal('https://github.com updated with bypass');
-				})
-				.end(done);
+				});
 		});
 
 		it('should not parse URLs inside markdown on update', (done) => {
