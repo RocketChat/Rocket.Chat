@@ -1,9 +1,9 @@
 import { Base } from '../../../../app/models/server';
 
-class AudtitLog extends Base {
+class AuditLog extends Base {
 	constructor() {
 		super('audit_log');
 	}
 }
 
-export default new AudtitLog();
+export default new AuditLog();

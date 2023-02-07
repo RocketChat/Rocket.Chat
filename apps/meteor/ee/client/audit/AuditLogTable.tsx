@@ -1,12 +1,18 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericTable from '../../../client/components/GenericTable';
 import { useFormatDate } from '../../../client/hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../client/hooks/useFormatDateAndTime';
+import type { IAuditLog } from '../../definition/IAuditLog';
 import UserRow from './UserRow';
 
-function AuditLogTable({ data }) {
+type AuditLogTableProps = {
+	data: IAuditLog[] | undefined;
+};
+
+const AuditLogTable = ({ data }: AuditLogTableProps): ReactElement => {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -25,9 +31,9 @@ function AuditLogTable({ data }) {
 			}
 			results={data}
 		>
-			{(props) => <UserRow key={props._id} formatDateAndTime={formatDateAndTime} formatDate={formatDate} {...props} />}
+			{(props) => <UserRow key={props._id} formatDateAndTime={formatDateAndTime} formatDate={formatDate} mediaQuery={false} {...props} />}
 		</GenericTable>
 	);
-}
+};
 
 export default AuditLogTable;
