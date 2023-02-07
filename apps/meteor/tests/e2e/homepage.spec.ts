@@ -79,6 +79,9 @@ test.describe.serial('homepage', () => {
 
 				test.describe('display custom content only', () => {
 					test.beforeAll(async ({ api }) => {
+						expect(
+							(await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello admin</span>' })).status(),
+						).toBe(200);
 						expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 					});
 
