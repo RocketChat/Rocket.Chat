@@ -6,6 +6,7 @@ import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import StrikeSpan from './StrikeSpan';
 import EmojiSpan from './EmojiSpan';
+import CodeElement from './CodeElement';
 
 type InlineElementsProps = {
 	children: MessageParser.Inlines[];
@@ -32,6 +33,9 @@ const InlineElements = ({ children }: InlineElementsProps) => (
 
 				case 'EMOJI':
 					return <EmojiSpan key={index} {...child} />;
+
+				case 'INLINE_CODE':
+					return <CodeElement key={index} code={child.value.value} />;
 
 				case 'MENTION_USER':
 				case 'MENTION_CHANNEL':

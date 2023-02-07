@@ -6,6 +6,7 @@ import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 import BigEmojiBlock from './blocks/BigEmojiBlock';
+import CodeBlock from './blocks/CodeBlock';
 
 type MarkupProps = {
 	tokens: MessageParser.Root;
@@ -29,6 +30,9 @@ export const Markup = ({ tokens }: MarkupProps) => (
 
 				case 'BIG_EMOJI':
 					return <BigEmojiBlock key={index} emoji={child.value} />;
+
+				case 'CODE':
+					return <CodeBlock key={index} lines={child.value} />;
 
 				default:
 					return null;
