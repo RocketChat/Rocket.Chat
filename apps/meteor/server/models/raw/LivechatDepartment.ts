@@ -122,7 +122,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 
 	archiveDepartment(_id: string): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, { $set: { archived: true } });
-  }
+	}
 
 	async createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<ILivechatDepartmentRecord> {
 		const current = await this.findOneById(_id);
