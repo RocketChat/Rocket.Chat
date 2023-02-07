@@ -77,7 +77,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		licenseVersion: LICENSE_VERSION,
 		enterpriseReady: true,
 		setupComplete: setupWizardState === 'completed',
-		connectionDisable: registerServer,
+		connectionDisable: !registerServer,
 		npsEnabled,
 	};
 }
