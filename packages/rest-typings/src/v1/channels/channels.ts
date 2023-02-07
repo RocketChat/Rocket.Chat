@@ -4,12 +4,20 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
+import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
+import type { ChannelsCreateProps } from './ChannelsCreateProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
+import type { ChannelsJoinProps } from './ChannelsJoinProps';
+import type { ChannelsKickProps } from './ChannelsKickProps';
+import type { ChannelsLeaveProps } from './ChannelsLeaveProps';
 import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
+import type { ChannelsModeratorsProps } from './ChannelsModeratorsProps';
 import type { ChannelsOpenProps } from './ChannelsOpenProps';
+import type { ChannelsRolesProps } from './ChannelsRolesProps';
 import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProps';
+import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export type ChannelsEndpoints = {
@@ -39,21 +47,12 @@ export type ChannelsEndpoints = {
 		POST: (params: ChannelsUnarchiveProps) => void;
 	};
 	'/v1/channels.create': {
-		POST: (params: {
-			name: string;
-			members: string[];
-			readOnly: boolean;
-			extraData: {
-				broadcast: boolean;
-				encrypted: boolean;
-				teamId?: string;
-			};
-		}) => {
+		POST: (params: ChannelsCreateProps) => {
 			channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 		};
 	};
 	'/v1/channels.convertToTeam': {
-		POST: (params: { channelId: string; channelName: string }) => {
+		POST: (params: ChannelsConvertToTeamProps) => {
 			team: ITeam;
 		};
 	};
@@ -72,7 +71,7 @@ export type ChannelsEndpoints = {
 		};
 	};
 	'/v1/channels.join': {
-		POST: (params: { roomId: string; joinCode?: string } | { roomName: string; joinCode?: string }) => {
+		POST: (params: ChannelsJoinProps) => {
 			channel: IRoom;
 		};
 	};
@@ -80,7 +79,7 @@ export type ChannelsEndpoints = {
 		POST: (params: { roomId: string } | { roomName: string }) => void;
 	};
 	'/v1/channels.kick': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {
+		POST: (params: ChannelsKickProps) => {
 			channel: IRoom;
 		};
 	};
@@ -88,30 +87,30 @@ export type ChannelsEndpoints = {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'/v1/channels.leave': {
-		POST: (params: { roomId: string } | { roomName: string }) => {
+		POST: (params: ChannelsLeaveProps) => {
 			channel: IRoom;
 		};
 	};
 	'/v1/channels.addModerator': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.removeModerator': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.addOwner': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.removeOwner': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.addLeader': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.removeLeader': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => void;
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.roles': {
-		GET: (params: { roomId: string } | { roomName: string }) => { roles: IGetRoomRoles[] };
+		GET: (params: ChannelsRolesProps) => { roles: IGetRoomRoles[] };
 	};
 	'/v1/channels.messages': {
 		GET: (params: ChannelsMessagesProps) => PaginatedResult<{
@@ -122,7 +121,7 @@ export type ChannelsEndpoints = {
 		POST: (params: ChannelsOpenProps) => void;
 	};
 	'/v1/channels.setReadOnly': {
-		POST: (params: { roomId: string; readOnly: boolean } | { roomName: string; readOnly: boolean }) => {
+		POST: (params: ChannelsSetReadOnlyProps) => {
 			channel: IRoom;
 		};
 	};

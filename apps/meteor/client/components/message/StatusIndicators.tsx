@@ -1,17 +1,11 @@
 import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
-import { MessageStatusIndicator, MessageStatusIndicatorItem, MessageStatusIndicatorText } from '@rocket.chat/fuselage';
+import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import {
-	useMessageDateFormatter,
-	useShowStarred,
-	useShowTranslated,
-	useShowFollowing,
-	useTranslateProvider,
-} from '../../views/room/MessageList/contexts/MessageListContext';
+import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';
 
 type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
@@ -19,8 +13,7 @@ type StatusIndicatorsProps = {
 
 const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 	const t = useTranslation();
-	const translated = useShowTranslated({ message });
-	const translateProvider = useTranslateProvider({ message });
+	const translated = useShowTranslated(message);
 	const starred = useShowStarred({ message });
 	const following = useShowFollowing({ message });
 
@@ -33,11 +26,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 
 	return (
 		<MessageStatusIndicator>
-			{translated && (
-				<MessageStatusIndicatorText>
-					<MessageStatusIndicatorItem name='language' title={t('Translated')} /> {translateProvider}
-				</MessageStatusIndicatorText>
-			)}
+			{translated && <MessageStatusIndicatorItem name='language' title={t('Translated')} />}
 
 			{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
 
