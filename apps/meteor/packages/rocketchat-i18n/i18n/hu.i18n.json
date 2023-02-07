@@ -317,7 +317,6 @@
   "Additional_emails": "További e-mail-címek",
   "Additional_Feedback": "További visszajelzés",
   "additional_integrations_Bots": "Ha azt keresi, hogy saját robotokat hogyan lehet integrálni, akkor ne keresse tovább, hanem nézze meg a Hubot adapterünket: <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Szeretne más szoftvereket és alkalmazásokat integrálni a Rocket.Chat programmal, de nincs ideje kézzel megcsinálni? Akkor a Zapier használatát javasoljuk, amelyet teljes mértékben támogatunk. Tudjon meg többet róla a dokumentációnkból: <a href='https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "Az adminisztrátor nem engedélyezte a végpontok közötti titkosítást.",
   "Admin_Info": "Adminisztrátor-információk",
   "admin-no-active-video-conf-provider": "**A konferenciahívás nincs engedélyezve**: állítsa be a konferenciahívásokat, hogy elérhetővé tegye ezen a munkaterületen.",

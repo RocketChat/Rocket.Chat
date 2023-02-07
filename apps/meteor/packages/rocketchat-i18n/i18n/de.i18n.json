@@ -316,7 +316,6 @@
   "Additional_emails": "Zusätzliche E-Mails",
   "Additional_Feedback": "Zusätzliches Feedback",
   "additional_integrations_Bots": "Wenn Sie nach der Integration Ihres eigenen Bot suchen, dann suchen Sie nicht weiter als unseren Hubot-Adapter. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Möchten Sie andere Software und Anwendungen mit Rocket.Chat integrieren, aber Sie haben nicht die Zeit, es manuell zu tun? Dann empfehlen wir die Verwendung von Zapier, die wir vollständig unterstützen. Lesen Sie mehr darüber in unserer Dokumentation. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "Ihr Administrator hat Ende-zu-Ende-Verschlüsselung nicht aktiviert.",
   "Admin_Info": "Admin-Info",
   "admin-no-active-video-conf-provider": "**Conference call not enabled**: Konfigurieren Sie Telefonkonferenzen, um sie auf diesem Arbeitsbereich verfügbar zu machen",

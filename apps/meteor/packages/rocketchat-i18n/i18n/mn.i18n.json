@@ -215,7 +215,6 @@
   "Additional_emails": "Нэмэлт мэйлүүд",
   "Additional_Feedback": "Нэмэлт санал хүсэлт",
   "additional_integrations_Bots": "Хэрэв та өөрийн браузыг яаж нэгтгэхийг хайж байгаа бол манай Hubot адаптераас цааш харагдахгүй болно. <a href='https://github.com/RocketChat/hubot-rocketchat' target='_blank'>https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "Та бусад програм хангамж, програмыг Рокеттай холбохыг хүсч байна уу? Та гараар үүнийг хийх цаг байхгүй байна уу? Дараа нь бид бүрэн дэмждэг Zapier-г ашиглахыг санал болгож байна. Манай баримтжуулалтын талаар дэлгэрэнгүй уншина уу. <a href='https: //rocket.chat/docs/administrator-guides/integration/zapier/using-zaps/' target='_blank'>https://rocket.chat/docs/administrator-guides/integration / zapier / using-zaps /</a>",
   "Admin_Info": "Admin Info",
   "Administration": "Захиргаа",
   "Adult_images_are_not_allowed": "Насанд хүрэгчдийн зургийг зөвшөөрөхгүй",

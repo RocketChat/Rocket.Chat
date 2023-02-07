@@ -218,7 +218,6 @@
   "Additional_emails": "Ďalšie e-maily",
   "Additional_Feedback": "Ďalšia spätná väzba",
   "additional_integrations_Bots": "Ak hľadáte spôsob, ako integrovať svojho vlastného bota, potom nehľadajte nič iné než náš adaptér Hubot. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\"> https://github.com/RocketChat/hubot-rocketchat </a>",
-  "additional_integrations_Zapier": "Hľadáte integráciu iného softvéru a aplikácií s Rocket.Chat, ale nemáte čas to manuálne zariadiť? V takom prípade odporúčame použiť Zapier, ktorý plne podporujeme. Prečítajte si viac o ňom v našej dokumentácii. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_Info": "Informácia o Adminovi",
   "Administration": "Administrácia",
   "Adult_images_are_not_allowed": "Obrázky pre dospelých nie sú povolené",
