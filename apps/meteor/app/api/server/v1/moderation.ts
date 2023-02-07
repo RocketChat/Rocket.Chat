@@ -71,6 +71,7 @@ API.v1.addRoute(
 	'moderation.reportsByMessage',
 	{
 		authRequired: true,
+		permissionsRequired: ['view-moderation-console'],
 	},
 	{
 		async get() {
@@ -94,6 +95,33 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
+		},
+	},
+);
+
+// api endoint to get details about a single report
+
+API.v1.addRoute(
+	'moderation.getReportInfo',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-moderation-console'],
+	},
+	{
+		async get() {
+			const { reportId } = this.queryParams;
+
+			if (!reportId) {
+				return API.v1.failure('The required "reportId" query param is missing.');
+			}
+
+			const report = await Reports.findOneById(reportId);
+
+			if (!report) {
+				return API.v1.failure('Report not found');
+			}
+
+			return API.v1.success({ report });
 		},
 	},
 );
