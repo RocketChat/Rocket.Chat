@@ -1,4 +1,4 @@
-import { Box, Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
+import { Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useMethod,
@@ -297,10 +297,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isSubscribed && {
 					subscribe: {
 						label: (
-							<Box>
+							<Option>
 								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
-							</Box>
+							</Option>
 						),
 						action: handleSubscription,
 					},
