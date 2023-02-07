@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
-import type { ILivechatPriority } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatPriority, LivechatRooms, Messages } from '@rocket.chat/models';
+import type { ILivechatPriority, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { FindOptions, UpdateFilter } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
@@ -76,27 +76,41 @@ export async function updatePriority(
 	return createdResult.value;
 }
 
-export const updateRoomPriority = async (rid: string, priorityId: string): Promise<void> => {
+export const updateRoomPriority = async (rid: string, user: IUser, priorityId: string): Promise<void> => {
 	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
 
-	const priority: Pick<ILivechatPriority, '_id' | 'sortItem'> | null = await LivechatPriority.findOneById(priorityId, {
-		projection: { _id: 1, sortItem: 1 },
-	});
+	const priority = await LivechatPriority.findOneById(priorityId);
 	if (!priority) {
 		throw new Error('error-invalid-priority');
 	}
 
-	await Promise.all([LivechatRooms.setPriorityByRoomId(rid, priority), LivechatInquiry.setPriorityForRoom(rid, priority)]);
+	await Promise.all([
+		LivechatRooms.setPriorityByRoomId(rid, priority),
+		LivechatInquiry.setPriorityForRoom(rid, priority),
+		addPriorityChangeHistoryToRoom(room._id, user, priority),
+	]);
 };
 
-export const removePriorityFromRoom = async (rid: string): Promise<void> => {
+export const removePriorityFromRoom = async (rid: string, user: IUser): Promise<void> => {
 	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, priorityId: 1, priorityWeight: 1 } });
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
 
-	await Promise.all([LivechatRooms.unsetPriorityByRoomId(rid), LivechatInquiry.unsetPriorityForRoom(rid)]);
+	await Promise.all([
+		LivechatRooms.unsetPriorityByRoomId(rid),
+		LivechatInquiry.unsetPriorityForRoom(rid),
+		addPriorityChangeHistoryToRoom(room._id, user),
+	]);
+};
+
+export const addPriorityChangeHistoryToRoom = async (
+	roomId: string,
+	user: Pick<IUser, '_id' | 'name' | 'username'>,
+	priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
+) => {
+	await Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, user as IMessage['u'], priority);
 };

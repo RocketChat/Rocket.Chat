@@ -330,6 +330,7 @@ type LiveChatRoomSaveInfo = {
 		topic?: string;
 		tags?: string[];
 		livechatData?: { [k: string]: string };
+		// For priority and SLA, if the value is blank (ie ""), then system will remove the priority or SLA from the room
 		priorityId?: string;
 		slaId?: string;
 	};

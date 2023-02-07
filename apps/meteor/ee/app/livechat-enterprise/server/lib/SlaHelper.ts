@@ -1,5 +1,5 @@
-import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import type { IMessage, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
+import { LivechatInquiry, LivechatRooms, Messages } from '@rocket.chat/models';
 
 export const removeSLAFromRooms = async (slaId: string) => {
 	const openRooms = await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } }).toArray();
@@ -28,7 +28,7 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 };
 
 export const updateRoomSlaWeights = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
-	await LivechatRooms.setEstimatedWaitingTimeQueueForRoomById(roomId, sla);
+	await LivechatRooms.setSlaForRoomById(roomId, sla);
 };
 
 export const removeInquiryQueueSla = async (roomId: string) => {
@@ -37,4 +37,12 @@ export const removeInquiryQueueSla = async (roomId: string) => {
 
 export const removeSlaFromRoom = async (roomId: string) => {
 	await LivechatRooms.removeSlaFromRoomById(roomId);
+};
+
+export const addSlaChangeHistoryToRoom = async (
+	roomId: string,
+	user: Pick<IUser, '_id' | 'name' | 'username'>,
+	sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
+) => {
+	await Messages.createSLAHistoryWithRoomIdMessageAndUser(roomId, user as IMessage['u'], sla);
 };
