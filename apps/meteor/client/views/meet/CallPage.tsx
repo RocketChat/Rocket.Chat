@@ -156,7 +156,7 @@ const CallPage: FC<CallPageProps> = ({
 
 	const showCallPage = (localAvatar: any, remoteAvatar: any): any => (
 		<Flex.Container direction='column' justifyContent='center'>
-			<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
+			<Box width='full' minHeight='sh' alignItems='center' backgroundColor='dark' overflow='hidden' position='relative'>
 				<Box
 					position='absolute'
 					zIndex={1}
@@ -166,7 +166,7 @@ const CallPage: FC<CallPageProps> = ({
 					}}
 					className='Self_Video'
 					alignItems='center'
-					backgroundColor='#2F343D'
+					backgroundColor='dark'
 				>
 					<video
 						id='localVideo'
@@ -219,8 +219,8 @@ const CallPage: FC<CallPageProps> = ({
 					{layout === 'embedded' && (
 						<Button
 							square
-							backgroundColor='#2F343D'
-							borderColor='#2F343D'
+							backgroundColor='dark'
+							borderColor='stroke-extra-dark'
 							data-title={t('Expand_view')}
 							onClick={(): void => (parent as any)?.expandCall()}
 							size={parseInt(buttonSize)}
@@ -284,7 +284,7 @@ const CallPage: FC<CallPageProps> = ({
 		<>
 			{status === 'ringing' && (
 				<Flex.Container direction='column' justifyContent='center'>
-					<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
+					<Box width='full' minHeight='sh' alignItems='center' backgroundColor='dark' overflow='hidden' position='relative'>
 						<Box
 							position='absolute'
 							zIndex={1}
@@ -293,7 +293,7 @@ const CallPage: FC<CallPageProps> = ({
 								right: '2%',
 							}}
 							className='Self_Video'
-							backgroundColor='#2F343D'
+							backgroundColor='dark'
 							alignItems='center'
 						>
 							<UserAvatar

@@ -11,14 +11,15 @@ export const RoomIcon = ({
 	room,
 	size = 'x16',
 	isIncomingCall,
-	placement,
+	placement = 'default',
 }: {
 	room: IRoom;
 	size?: ComponentProps<typeof Icon>['size'];
 	isIncomingCall?: boolean;
-	placement: 'sidebar' | 'default';
+	placement?: 'sidebar' | 'default';
 }): ReactElement | null => {
 	const iconPropsOrReactNode = useRoomIcon(room);
+
 	if (isIncomingCall) {
 		return <Icon name='phone' size={size} />;
 	}

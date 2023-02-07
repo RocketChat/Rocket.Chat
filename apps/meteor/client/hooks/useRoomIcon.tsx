@@ -7,10 +7,10 @@ import React from 'react';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+	busy: 'on-danger',
+	away: 'on-warning',
+	online: 'on-success',
+	offline: 'annotation',
 };
 
 export const useRoomIcon = (

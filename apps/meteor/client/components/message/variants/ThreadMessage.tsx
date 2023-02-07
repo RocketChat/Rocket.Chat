@@ -1,17 +1,12 @@
-import type { ISubscription, IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, memo } from 'react';
+import React, { memo } from 'react';
 
+import { useUserCard } from '../../../hooks/useUserCard';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
-import {
-	parseMessageTextToAstMarkdown,
-	removePossibleNullMessageValues,
-} from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -21,7 +16,6 @@ import ThreadMessageContent from './thread/ThreadMessageContent';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
-	subscription?: ISubscription;
 	unread: boolean;
 	sequential: boolean;
 };
@@ -30,28 +24,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
-
-	const { autoTranslateLanguage, katex, showColors, useShowTranslated } = useMessageListContext();
-
-	const normalizeMessage = useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(Boolean(katex) && {
-				katex: {
-					dollarSyntax: katex?.dollarSyntaxEnabled,
-					parenthesisSyntax: katex?.parenthesisSyntaxEnabled,
-				},
-			}),
-		};
-		return <TMessage extends IThreadMessage | IThreadMainMessage>(message: TMessage) =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateLanguage, useShowTranslated);
-	}, [autoTranslateLanguage, katex, showColors, useShowTranslated]);
-
-	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
+	const { open: openUserCard } = useUserCard();
 
 	return (
 		<Message
@@ -83,9 +56,9 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
+				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context='threads' />}
 		</Message>
 	);
 };
