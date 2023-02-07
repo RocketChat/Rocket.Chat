@@ -10,7 +10,7 @@ import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoleForm from './RoleForm';
 
-const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
+const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -74,6 +74,8 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 			}
 		};
 
+		const deleteRoleMessage = isEnterprise ? t('Delete_Role_Warning') : t('Delete_Role_Warning_Community_Edition');
+
 		setModal(
 			<GenericModal
 				variant='danger'
@@ -82,7 +84,7 @@ const EditRolePage = ({ role }: { role?: IRole }): ReactElement => {
 				onCancel={(): void => setModal()}
 				confirmText={t('Delete')}
 			>
-				{t('Delete_Role_Warning')}
+				{deleteRoleMessage}
 			</GenericModal>,
 		);
 	});
