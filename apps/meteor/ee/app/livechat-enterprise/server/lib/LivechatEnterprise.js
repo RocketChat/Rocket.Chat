@@ -4,7 +4,7 @@ import { LivechatInquiry, Users, LivechatRooms, LivechatDepartment as LivechatDe
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages, LivechatDepartment } from '../../../../../app/models/server';
+import { Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
 import {
@@ -284,11 +284,11 @@ export const LivechatEnterprise = {
 			);
 		}
 
-		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
+		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
 			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
 		}
 
-		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
+		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
 			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
