@@ -1,4 +1,4 @@
-import { Box, Skeleton, Margins } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
 
@@ -16,8 +16,8 @@ const blogSpotStyleScriptImport = (src) =>
 	});
 
 export default function NewZapier({ ...props }) {
-	const t = useTranslation();
 	const [script, setScript] = useState();
+	const t = useTranslation();
 	useEffect(() => {
 		const importZapier = async () => {
 			const scriptEl = await blogSpotStyleScriptImport(
@@ -33,7 +33,9 @@ export default function NewZapier({ ...props }) {
 
 	return (
 		<>
-			<Box pb='x20' fontScale='h4' dangerouslySetInnerHTML={{ __html: t('additional_integrations_Zapier') }} />
+			<Callout bg='status-background-warning' icon={'warning'} title={t('Zapier_integration_has_been_deprecated')} mbs='x16' mbe='x4'>
+				{t('Install_Zapier_from_marketplace')}
+			</Callout>
 			{!script && (
 				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
 					<Margins blockEnd={14}>

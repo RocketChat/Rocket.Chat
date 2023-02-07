@@ -11,7 +11,8 @@ export type MessageType = {
 	message: TranslationKey;
 	data?: (message: IMessage) => Record<string, string>;
 };
-class MessageTypesClass {
+
+class MessageTypes {
 	private types = new Map<MessageTypesValues, MessageType>();
 
 	registerType(options: MessageType): MessageType {
@@ -34,4 +35,7 @@ class MessageTypesClass {
 		return Boolean(type?.system);
 	}
 }
-export const MessageTypes = new MessageTypesClass();
+
+const instance = new MessageTypes();
+
+export { instance as MessageTypes };

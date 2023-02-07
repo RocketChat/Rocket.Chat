@@ -12,6 +12,7 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { notifyAppInstall } from '../marketplace/appInstall';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -272,6 +273,8 @@ export class AppsRestApi {
 					}
 
 					info.status = aff.getApp().getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
 
 					return API.v1.success({
 						app: info,
@@ -558,6 +561,8 @@ export class AppsRestApi {
 
 					info.status = aff.getApp().getStatus();
 
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'update', info);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -577,6 +582,8 @@ export class AppsRestApi {
 
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'uninstall', info);
 
 					return API.v1.success({ app: info });
 				},
