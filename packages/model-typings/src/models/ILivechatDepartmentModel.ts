@@ -32,4 +32,6 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 
 	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<Document | UpdateResult>;
 	createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<ILivechatDepartmentRecord>;
+
+	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 }

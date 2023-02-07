@@ -135,4 +135,12 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> im
 
 		return Object.assign(record, { _id });
 	}
+
+	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult> {
+		return this.updateMany({ fallbackDepartment: departmentId }, { $unset: { fallbackDepartment: 1 } });
+	}
+
+	removeDepartmentFromForwardListById(_departmentId: string): Promise<void> {
+		throw new Error('Method not implemented in Community Edition.');
+	}
 }

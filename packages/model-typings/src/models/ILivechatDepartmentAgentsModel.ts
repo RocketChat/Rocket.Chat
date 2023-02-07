@@ -1,4 +1,4 @@
-import type { FindCursor, FindOptions, Document, UpdateResult } from 'mongodb';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult } from 'mongodb';
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -59,4 +59,5 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): [];
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult>;
+	removeByDepartmentId(departmentId: string): Promise<DeleteResult>;
 }
