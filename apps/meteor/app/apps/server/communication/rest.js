@@ -98,9 +98,15 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${token}`;
 					}
 
+					const customQueryParams = new URLSearchParams();
+
+					if (this.queryParams.isAdminUser === 'false') {
+						customQueryParams.set('endUserID', this.user._id);
+					}
+
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps`, {
+						result = HTTP.get(`${baseUrl}/v1/apps?${customQueryParams.toString()}`, {
 							headers,
 						});
 					} catch (e) {
@@ -1087,13 +1093,67 @@ export class AppsRestApi {
 					}
 
 					try {
-						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+						const result = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 							headers,
 						});
 
-						return API.v1.success({ data });
+						return API.v1.success(result.data);
 					} catch (e) {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
+
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/stats',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const result = HTTP.get(`${baseUrl}/v1/app-request/stats`, { headers });
+
+						return API.v1.success(result.data);
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', e.message);
+
+						return API.v1.failure(e.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/markAsSeen',
+			{ authRequired: true },
+			{
+				async post() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					const { unseenRequests } = this.bodyParams;
+
+					try {
+						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: { ids: unseenRequests } });
+
+						return API.v1.success(result.data);
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
 
 						return API.v1.failure(e.message);
 					}

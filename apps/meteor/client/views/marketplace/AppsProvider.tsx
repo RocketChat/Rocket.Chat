@@ -1,5 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { FC, Reducer } from 'react';
 import React, { useEffect, useReducer, useCallback } from 'react';
 
@@ -168,7 +169,9 @@ const AppsProvider: FC = ({ children }) => {
 		reload: async () => undefined,
 	});
 
-	const fetch = useCallback(async (): Promise<void> => {
+	const isAdminUser = usePermission('manage-apps');
+
+	const fetch = useCallback(async (isAdminUser?: string): Promise<void> => {
 		dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
 		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
 		dispatchPrivateApps({ type: 'request', reload: async () => undefined });
@@ -181,7 +184,7 @@ const AppsProvider: FC = ({ children }) => {
 		let privateAppsError = false;
 
 		try {
-			marketplaceApps = (await Apps.getAppsFromMarketplace()) as unknown as App[];
+			marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
 		} catch (e) {
 			dispatchMarketplaceApps({
 				type: 'failure',
@@ -440,12 +443,12 @@ const AppsProvider: FC = ({ children }) => {
 		};
 		const unregisterListeners = registerListeners(listeners);
 		try {
-			fetch();
+			fetch(isAdminUser ? 'true' : 'false');
 		} finally {
 			// eslint-disable-next-line no-unsafe-finally
 			return unregisterListeners;
 		}
-	}, [fetch, getCurrentData]);
+	}, [fetch, getCurrentData, isAdminUser]);
 	return (
 		<AppsContext.Provider
 			children={children}

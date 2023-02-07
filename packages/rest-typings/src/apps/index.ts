@@ -9,10 +9,9 @@ import type {
 	App,
 	FeaturedAppsSection,
 	ILogItem,
-	Pagination,
 	AppRequestFilter,
-	IRestResponse,
-	AppRequest,
+	AppRequestsStats,
+	PaginatedAppRequests,
 } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
@@ -129,7 +128,13 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/marketplace': {
-		GET: (params: { purchaseType?: 'buy' | 'subscription'; version?: string; appId?: string; details?: 'true' | 'false' }) => App[];
+		GET: (params: {
+			purchaseType?: 'buy' | 'subscription';
+			version?: string;
+			appId?: string;
+			details?: 'true' | 'false';
+			isAdminUser?: string;
+		}) => App[];
 	};
 
 	'/apps/categories': {
@@ -159,7 +164,15 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; q: AppRequestFilter; sort: string; pagination: Pagination }) => IRestResponse<AppRequest>;
+		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => PaginatedAppRequests;
+	};
+
+	'/apps/app-request/stats': {
+		GET: () => AppRequestsStats;
+	};
+
+	'/apps/app-request/markAsSeen': {
+		POST: (params: { unseenRequests: Array<string> }) => { succes: boolean };
 	};
 
 	'/apps': {

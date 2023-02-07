@@ -30,6 +30,7 @@ describe('AdministrationList', () => {
 				accountBoxItems={[{} as any]}
 				hasAuditPermission
 				hasAuditLogPermission
+				hasManageApps
 				hasAdminPermission
 				hasAuditLicense={false}
 				onDismiss={() => null}
@@ -50,6 +51,7 @@ describe('AdministrationList', () => {
 				hasAuditLicense={false}
 				hasAuditLogPermission={false}
 				hasAuditPermission={false}
+				hasManageApps={false}
 				accountBoxItems={[{} as any]}
 				onDismiss={() => null}
 			/>,
@@ -74,6 +76,7 @@ describe('AdministrationList', () => {
 				hasAuditLicense={false}
 				hasAuditLogPermission={false}
 				hasAuditPermission={false}
+				hasManageApps={false}
 				accountBoxItems={[{} as any]}
 				onDismiss={() => null}
 			/>,
