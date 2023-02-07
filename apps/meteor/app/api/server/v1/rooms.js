@@ -333,13 +333,13 @@ API.v1.addRoute(
 		get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-			const { types, filter } = this.requestParams();
+			const { types, text } = this.requestParams();
 
 			return API.v1.success(
 				Promise.await(
 					findAdminRooms({
 						uid: this.userId,
-						filter,
+						filter: text,
 						types,
 						pagination: {
 							offset,

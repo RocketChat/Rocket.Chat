@@ -4,6 +4,7 @@ import { Rooms } from '@rocket.chat/models';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
+import { settings } from '../../../../app/settings/client';
 
 export async function findAdminRooms({
 	uid,
@@ -37,13 +38,15 @@ export async function findAdminRooms({
 		limit: count,
 	};
 
+    const useFnameToSearch = <boolean>settings.get('UI_Allow_room_names_with_special_chars')
+
 	let result;
 	if (name && showTypes.length) {
-		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, useFnameToSearch, options);
 	} else if (showTypes.length) {
 		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, useFnameToSearch, options);
 	}
 
 	const { cursor, totalCount } = result;
