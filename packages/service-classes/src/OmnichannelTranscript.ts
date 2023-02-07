@@ -28,7 +28,7 @@ type WorkDetailsWithSource = WorkDetails & {
 };
 
 type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
-	files: ({ name?: string; buffer: Buffer | null } | undefined)[];
+	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
 };
 
 type WorkerData = {
@@ -139,69 +139,75 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async getFiles(userId: string, messages: IMessage[]): Promise<MessageWithFiles[]> {
-		return Promise.all(
-			messages.map(async (message: IMessage) => {
-				if (!message.attachments || !message.attachments.length) {
-					// If there's no attachment and no message, what was sent? lol
-					return { _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg, md: message.md };
+		const messagesWithFiles: MessageWithFiles[] = [];
+		for await (const message of messages) {
+			if (!message.attachments || !message.attachments.length) {
+				// If there's no attachment and no message, what was sent? lol
+				messagesWithFiles.push({ _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg, md: message.md });
+				continue;
+			}
+
+			const files = [];
+
+			for await (const attachment of message.attachments) {
+				// @ts-expect-error - messages...
+				if (attachment.type !== 'file') {
+					// @ts-expect-error - messages...
+					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+					// ignore other types of attachments
+					continue;
+				}
+				// @ts-expect-error - messages...
+				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
+					// @ts-expect-error - messages...
+					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
+					// ignore invalid mime types
+					files.push({ name: attachment.title, buffer: null });
+					continue;
+				}
+				let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
+				if (!file) {
+					this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
+					// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
+					// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
+					const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
+					if (!fileId) {
+						this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+						// ignore attachments without file
+						files.push({ name: attachment.title, buffer: null });
+						continue;
+					}
+					file = { _id: fileId, name: attachment.title || 'upload' };
 				}
 
-				const files = await Promise.all(
-					message.attachments.map(async (attachment) => {
-						this.log.error(JSON.stringify(attachment, null, 2));
-						// @ts-expect-error - messages...
-						if (attachment.type !== 'file') {
-							// @ts-expect-error - messages...
-							this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
-							// ignore other types of attachments
-							return;
-						}
-						// @ts-expect-error - messages...
-						if (!this.worker.isMimeTypeValid(attachment.image_type)) {
-							// @ts-expect-error - messages...
-							this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
-							// ignore invalid mime types
-							return { name: attachment.title, buffer: null };
-						}
-						let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
-						if (!file) {
-							this.log.debug(`File ${attachment.title} not found in room ${message.rid}!`);
-							// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
-							// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
-							const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
-							if (!fileId) {
-								this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
-								// ignore attachments without file
-								return { name: attachment.title, buffer: null };
-							}
-							file = { _id: fileId, name: attachment.title || 'upload' };
-						}
+				if (!file) {
+					this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+					// ignore attachments without file
+					files.push({ name: attachment.title, buffer: null });
+					continue;
+				}
 
-						if (!file) {
-							this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
-							// ignore attachments without file
-							return { name: attachment.title, buffer: null };
-						}
+				const uploadedFile = await Uploads.findOneById(file._id);
+				if (!uploadedFile) {
+					this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
+					// ignore attachments without file
+					files.push({ name: file.name, buffer: null });
+					continue;
+				}
 
-						const uploadedFile = await Uploads.findOneById(file._id);
-						if (!uploadedFile) {
-							this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
-							// ignore attachments without file
-							return { name: file.name, buffer: null };
-						}
+				const fileBuffer = await uploadService.getFileBuffer({ userId, file: uploadedFile });
+				// @ts-expect-error - identify.format is valid, but type is not updated
+				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.identify?.format });
+			}
 
-						const fileBuffer = await uploadService.getFileBuffer({ userId, file: uploadedFile });
-						return { name: file.name, buffer: fileBuffer };
-					}),
-				);
+			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
+			// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
+			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
+			// Remove nulls from final array
+			messagesWithFiles.push({ _id: message._id, msg, u: message.u, files: files.filter(Boolean), ts: message.ts });
+		}
 
-				// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
-				// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
-				const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
-				// Remove nulls from final array
-				return { _id: message._id, msg, u: message.u, files: files.filter(Boolean), ts: message.ts };
-			}),
-		);
+		return messagesWithFiles;
 	}
 
 	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
