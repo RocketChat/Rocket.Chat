@@ -2,7 +2,15 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, usePermission, useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useRouteParameter,
+	usePermission,
+	useSetModal,
+	useMethod,
+	useTranslation,
+	useToastMessageDispatch,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
 
@@ -15,6 +23,11 @@ import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
+type AppRequestPostMessage = {
+	message: string;
+	status: string;
+};
+
 type AppStatusProps = {
 	app: App;
 	showStatus?: boolean;
@@ -24,6 +37,7 @@ type AppStatusProps = {
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const t = useTranslation();
+	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
@@ -39,6 +53,22 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const totalSeenRequests = app?.appRequestStats?.totalSeen;
 	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const notifyAdmins = useEndpoint('POST', '/apps/notify-admins');
+	const requestConfirmAction = (postMessage: AppRequestPostMessage) => {
+		setModal(null);
+		setLoading(false);
+		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+		setEndUserRequested(true);
+
+		notifyAdmins({
+			appId: app.id,
+			appName: app.name,
+			message: postMessage.message,
+		});
+	};
 
 	if (button?.action === undefined && button?.action) {
 		throw new Error('action must not be null');
@@ -123,7 +153,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} cancel={cancelAction} confirm={undefined} />);
+				setModal(<IframeModal url={data?.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -180,7 +210,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary small disabled={loading || (action === 'request' && app.requestedEndUser)} onClick={handleClick} mie='x8'>
+					<Button
+						primary
+						small
+						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						onClick={handleClick}
+						mie='x8'
+					>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (

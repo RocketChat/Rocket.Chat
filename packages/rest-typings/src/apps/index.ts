@@ -175,6 +175,10 @@ export type AppsEndpoints = {
 		POST: (params: { unseenRequests: Array<string> }) => { succes: boolean };
 	};
 
+	'/apps/notify-admins': {
+		POST: (params: { appId: string; appName: string; message: string }) => void;
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
