@@ -57,11 +57,22 @@ export class Stream extends Streamer {
 		};
 
 		for await (const { subscription } of subscriptions) {
+			// if the connection state is not open anymore, it somehow got to a weird state,
+			// we'll emit close so it can clean up the weird state, and so we stop emitting to it
+			if (subscription.client.ws.readyState !== WebSocket.OPEN) {
+				subscription.client.ws.emit('close');
+				continue;
+			}
+
 			if (this.retransmitToSelf === false && origin && origin === subscription.connection) {
 				continue;
 			}
 
-			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
+			if (!(await this.isEmitAllowed(subscription, eventName, ...args))) {
+				continue;
+			}
+
+			try {
 				await new Promise<void>((resolve, reject) => {
 					const frame = data[subscription.client.meteorClient ? 'meteor' : 'normal'];
 
@@ -72,6 +83,16 @@ export class Stream extends Streamer {
 						resolve();
 					});
 				});
+			} catch (error: any) {
+				if (error.code === 'ERR_STREAM_DESTROYED') {
+					console.warn('Trying to send data to destroyed stream, closing connection.');
+
+					// if we still tried to send data to a destroyed stream, we'll try again to close the connection
+					if (subscription.client.ws.readyState !== WebSocket.OPEN) {
+						subscription.client.ws.emit('close');
+					}
+				}
+				console.error('Error trying to send data to stream.', error);
 			}
 		}
 	}

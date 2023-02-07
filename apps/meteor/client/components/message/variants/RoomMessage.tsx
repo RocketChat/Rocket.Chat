@@ -5,6 +5,8 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { useUserCard } from '../../../hooks/useUserCard';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -12,8 +14,6 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import type { MessageWithMdEnforced } from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -22,22 +22,21 @@ import ToolboxHolder from '../ToolboxHolder';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
-	message: MessageWithMdEnforced<IMessage & { ignored?: boolean }>;
+	message: IMessage & { ignored?: boolean };
 	sequential: boolean;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
-	ignoredUser: boolean;
+	context?: MessageActionContext;
+	ignoredUser?: boolean;
 };
 
-const RoomMessage = ({ message, sequential, all, mention, unread, ignoredUser }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
+	const { open: openUserCard } = useUserCard();
 
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -79,12 +78,12 @@ const RoomMessage = ({ message, sequential, all, mention, unread, ignoredUser }:
 				{!sequential && <MessageHeader message={message} />}
 
 				{ignored ? (
-					<IgnoredContent onShowButtonClick={toggleDisplayIgnoredMessage} />
+					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} />
 				)}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context={context} />}
 		</Message>
 	);
 };

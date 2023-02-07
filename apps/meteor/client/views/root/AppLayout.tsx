@@ -6,18 +6,16 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { appLayout } from '../../lib/appLayout';
 import { blazePortals, useBlazePortals } from '../../lib/portals/blazePortals';
-import { useExperimentalTheme } from '../hooks/useExperimentalTheme';
 import PageLoading from './PageLoading';
 
 const AppLayout: FC = () => {
-	const theme = useExperimentalTheme();
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
 	const [portals] = useBlazePortals(blazePortals);
 
 	return (
 		<>
-			{theme && <PaletteStyleTag />}
+			<PaletteStyleTag />
 			<SidebarPaletteStyleTag />
 			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
 			{portals}

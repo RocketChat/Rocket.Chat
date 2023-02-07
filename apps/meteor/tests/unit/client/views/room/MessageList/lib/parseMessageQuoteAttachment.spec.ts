@@ -3,7 +3,7 @@ import type { Options, Root } from '@rocket.chat/message-parser';
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { parseMessageQuoteAttachment } from '../../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
+import { parseMessageQuoteAttachment } from '../../../../../../../client/lib/parseMessageTextToAstMarkdown';
 
 const parseOptions: Options = {
 	colors: true,

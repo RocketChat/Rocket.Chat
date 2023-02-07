@@ -1,25 +1,25 @@
 import { Box, Icon, MessageBody } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 type IgnoredContentProps = {
-	onShowButtonClick: () => void;
+	onShowMessageIgnored: () => void;
 };
 
-const IgnoredContent = ({ onShowButtonClick }: IgnoredContentProps): ReactElement => {
+const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
 	const t = useTranslation();
 
-	const handleClick = (event: UIEvent): void => {
+	const showMessageIgnored = (event: React.SyntheticEvent): void => {
 		event.stopPropagation();
 
-		onShowButtonClick();
+		onShowMessageIgnored();
 	};
 
 	return (
 		<MessageBody data-qa-type='message-body'>
 			<Box display='flex' alignItems='center' fontSize='x12' color='hint'>
-				<p role='button' onClick={handleClick} style={{ cursor: 'pointer' }}>
+				<p role='button' onClick={showMessageIgnored} style={{ cursor: 'pointer' }}>
 					<Icon name='chevron-left' /> {t('Message_Ignored')}
 				</p>
 			</Box>

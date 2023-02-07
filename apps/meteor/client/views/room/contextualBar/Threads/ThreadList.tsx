@@ -17,8 +17,8 @@ import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useGoToThread } from '../../hooks/useGoToThread';
 import ThreadListItem from './components/ThreadListItem';
-import { useGoToThread } from './hooks/useGoToThread';
 import { useThreadsList } from './hooks/useThreadsList';
 
 type ThreadType = 'all' | 'following' | 'unread';
@@ -104,7 +104,7 @@ const ThreadList: VFC = () => {
 	const { threadsList, loadMoreItems } = useThreadsList(options, uid);
 	const { phase, error, items, itemCount } = useRecordList(threadsList);
 
-	const goToThread = useGoToThread();
+	const goToThread = useGoToThread({ replace: true });
 	const handleThreadClick = useCallback(
 		(tmid: IMessage['_id']) => {
 			goToThread(tmid);
