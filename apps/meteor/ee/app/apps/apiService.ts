@@ -1,8 +1,7 @@
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiEndpoint, IApiRequest } from '@rocket.chat/apps-engine/definition/api';
 import { Router } from 'express';
-import type { Request, Response, IRouter, RequestHandler } from 'express';
-import type { NextFunction } from 'connect';
+import type { Request, Response, IRouter, RequestHandler, NextFunction } from 'express';
 
 import type { IAppsApiService, IRequestWithPrivateHash } from '../../../server/sdk/types/IAppsApiService';
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
