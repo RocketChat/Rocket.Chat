@@ -4,7 +4,7 @@ import React, { memo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import Sidebar from '../../components/Sidebar';
-import SidebarItemsAssemblerProps from '../../components/Sidebar/SidebarItemsAssembler';
+import SidebarItemsAssembler from '../../components/Sidebar/SidebarItemsAssembler';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { getMarketplaceSidebarItems, subscribeToMarketplaceSidebarItems } from './sidebarItems';
 
@@ -23,7 +23,7 @@ const MarketplaceSidebar = (): ReactElement => {
 			<Sidebar>
 				<Sidebar.Header onClose={sidebar.close} title={<>{t('Marketplace')}</>} />
 				<Sidebar.Content>
-					<SidebarItemsAssemblerProps items={items} currentPath={currentPath} />
+					<SidebarItemsAssembler items={items} currentPath={currentPath} />
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>
