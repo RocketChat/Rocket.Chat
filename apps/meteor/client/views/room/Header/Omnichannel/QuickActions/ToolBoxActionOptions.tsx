@@ -1,12 +1,14 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
+import { Box, Option } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useLayout } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo, useRef } from 'react';
 
 import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
 import type { QuickActionsActionOptions } from '../../../lib/QuickActions';
+import DesktopToolboxDropdown from './DesktopToolboxDropdown';
+import MobileToolboxDropdown from './MobileToolboxDropdown';
 
 type ToolBoxActionOptionsProps = {
 	options: QuickActionsActionOptions;
@@ -19,6 +21,9 @@ const ToolBoxActionOptions: FC<ToolBoxActionOptionsProps> = ({ options, room, ac
 	const reference = useRef(null);
 	const target = useRef(null);
 	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+	const { isMobile } = useLayout();
+
+	const Dropdown = isMobile ? MobileToolboxDropdown : DesktopToolboxDropdown;
 
 	const handleClick = (id: string) => (): void => {
 		toggle();
