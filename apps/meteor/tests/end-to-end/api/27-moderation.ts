@@ -277,4 +277,146 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 	});
+
+	// test for testing out the moderation.getReportInfo endpoint
+
+	describe('[/moderation.getReportInfo]', () => {
+		let message: IMessage;
+		let reportedMessage: IReport;
+
+		// post a new message to the channel 'general' by sending a request to chat.postMessage
+		before((done) => {
+			request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: 'general',
+					text: 'messageId',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').and.to.be.an('object');
+					message = res.body.message;
+				})
+				.end(done);
+		});
+
+		// create a reported message by sending a request to chat.reportMessage
+		before((done) => {
+			request
+				.post(api('chat.reportMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+					description: 'sample report',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		// get the report information by sending a request to moderation.reportsByMessage
+		before((done) => {
+			request
+				.get(api('moderation.reportsByMessage'))
+				.set(credentials)
+				.query({
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+					reportedMessage = res.body.reports[0];
+				})
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return the report information', (done) => {
+			request
+				.get(api('moderation.getReportInfo'))
+				.set(credentials)
+				.query({
+					reportId: reportedMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('report').and.to.be.an('object');
+					expect(res.body.report).to.have.property('_id', reportedMessage._id);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the reportId is not provided', (done) => {
+			request
+				.get(api('moderation.getReportInfo'))
+				.set(credentials)
+				.query({
+					reportId: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.a('string');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the reportId is invalid', (done) => {
+			request
+				.get(api('moderation.getReportInfo'))
+				.set(credentials)
+				.query({
+					reportId: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.a('string');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the reportId is not found', (done) => {
+			request
+				.get(api('moderation.getReportInfo'))
+				.set(credentials)
+				.query({
+					reportId: '123456789012345678901234',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.a('string');
+				})
+				.end(done);
+		});
+	});
 });
