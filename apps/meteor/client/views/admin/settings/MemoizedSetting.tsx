@@ -88,13 +88,14 @@ const MemoizedSetting = ({
 			<Box flexDirection='column' flexGrow={1}>
 				<InputComponent
 					value={value}
+					hint={hint}
 					editor={editor}
 					onChangeValue={onChangeValue}
 					onChangeEditor={onChangeEditor}
 					{...inputProps}
 					disabled={disabled}
 				/>
-				{hint && <Field.Hint>{hint}</Field.Hint>}
+				{hint && type !== 'code' && <Field.Hint>{hint}</Field.Hint>}
 				{callout && (
 					<Margins block='x16'>
 						<Callout type='warning'>{callout}</Callout>
