@@ -6,11 +6,10 @@ import ScrollableContentWrapper from '../../../../../components/ScrollableConten
 
 type MobileToolboxDropdownProps = {
 	children: ReactNode;
-	reference: RefObject<HTMLElement>;
 };
 
 const MobileToolboxDropdown = forwardRef(function MobileToolboxDropdown(
-	{ reference, children }: MobileToolboxDropdownProps,
+	{ children, ...props }: MobileToolboxDropdownProps,
 	ref: Ref<HTMLElement>,
 ) {
 	return (
@@ -29,7 +28,7 @@ const MobileToolboxDropdown = forwardRef(function MobileToolboxDropdown(
 			insetInline={0}
 			opacity={1}
 			height='full'
-			reference={reference}
+			{...props}
 		>
 			<ScrollableContentWrapper autoHide={false}>{children}</ScrollableContentWrapper>
 		</Tile>
