@@ -32,7 +32,7 @@ describe('Apps - Installation', function () {
 			});
 		});
 		it('should install the app successfully from a URL', (done) => {
-			updatePermission('manage-apps', []).then(() => {
+			updatePermission('manage-apps', ['admin']).then(() => {
 				request
 					.post(apps())
 					.set(credentials)
