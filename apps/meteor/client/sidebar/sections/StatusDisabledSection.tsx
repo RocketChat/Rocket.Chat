@@ -5,7 +5,7 @@ import React from 'react';
 
 import GenericModal from '../../components/GenericModal';
 
-const StatusDisabledSection = () => {
+const StatusDisabledSection = ({ onDismiss }: { onDismiss: () => void }) => {
 	const t = useTranslation();
 	const userStatusRoute = useRoute('user-status');
 	const setModal = useSetModal();
@@ -19,7 +19,7 @@ const StatusDisabledSection = () => {
 		<SidebarBanner
 			text={t('User_status_temporarily_disabled')}
 			description={t('Learn_more')}
-			onClose={() => undefined} // TO DO: dismiss warning and close
+			onClose={onDismiss}
 			onClick={() =>
 				setModal(
 					<GenericModal
