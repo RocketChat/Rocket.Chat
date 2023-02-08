@@ -87,7 +87,7 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 			roomCanRemove && userCanRemove
 				? {
 						label: (
-							<Box color='danger'>
+							<Box color='on-danger'>
 								<Icon mie='x4' name='cross' size='x20' />
 								{room?.teamMain ? t('Remove_from_team') : t('Remove_from_room')}
 							</Box>

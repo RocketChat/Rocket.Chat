@@ -5,43 +5,57 @@ import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
 import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import { useAppRequestStats } from '../../views/marketplace/hooks/useAppRequestStats';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
-	appsManagementAllowed: boolean;
+	appsManagementAllowed?: boolean;
 	onDismiss: () => void;
 };
 
 const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
-	const marketplaceRoute = useRoute('admin-marketplace');
+	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
+
+	const { data: appRequestStats, isLoading } = useAppRequestStats();
 
 	return (
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
-				{appsManagementAllowed && (
-					<>
-						<ListItem
-							icon='store'
-							text={t('Marketplace')}
-							action={(): void => {
-								marketplaceRoute.push({ context: 'all', page });
-								onDismiss();
-							}}
-						/>
+				<>
+					<ListItem
+						icon='store'
+						text={t('Marketplace')}
+						action={(): void => {
+							marketplaceRoute.push({ context: 'explore', page });
+							onDismiss();
+						}}
+					/>
+					<ListItem
+						icon='cube'
+						text={t('Installed')}
+						action={(): void => {
+							marketplaceRoute.push({ context: 'installed', page });
+							onDismiss();
+						}}
+					/>
+
+					{appsManagementAllowed && (
 						<ListItem
 							icon='cube'
-							text={t('Installed')}
+							text={t('Requested')}
 							action={(): void => {
-								marketplaceRoute.push({ context: 'installed', page });
+								marketplaceRoute.push({ context: 'requested', page });
 								onDismiss();
 							}}
+							loading={isLoading}
+							notifications={appRequestStats?.data.totalUnseen ? appRequestStats?.data.totalUnseen : null}
 						/>
-					</>
-				)}
+					)}
+				</>
 				{appBoxItems.length > 0 && (
 					<>
 						{appBoxItems.map((item, key) => {

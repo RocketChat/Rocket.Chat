@@ -1,17 +1,17 @@
-import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
-import { isTranslatedMessage, isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
-import { AutoTranslate } from '../../../../../app/autotranslate/client';
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
+import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
+import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
-import type { MessageListContextValue } from '../contexts/MessageListContext';
-import { MessageListContext } from '../contexts/MessageListContext';
-import { useAutotranslateLanguage } from '../hooks/useAutotranslateLanguage';
+import { useAutoTranslate } from '../hooks/useAutoTranslate';
+import { useKatex } from '../hooks/useKatex';
 
 type MessageListProviderProps = {
 	children: ReactNode;
@@ -33,11 +33,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 	const { isMobile } = useLayout();
 
 	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
-	const showReadReceipt = Boolean(useSetting('Message_Read_Receipt_Enabled'));
-	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
-	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
-	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax'));
-	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax'));
 	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
 	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
@@ -46,7 +41,8 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
-	const autoTranslateLanguage = useAutotranslateLanguage(room._id);
+	const { showAutoTranslate, autoTranslateLanguage } = useAutoTranslate(subscription);
+	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
 	const hasSubscription = Boolean(subscription);
 
@@ -85,30 +81,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
 			autoTranslateLanguage,
-			useShowTranslated:
-				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
-					? ({ message }): boolean =>
-							Boolean(message.u) &&
-							message.u?._id !== uid &&
-							isTranslatedMessage(message) &&
-							Boolean(message.translations[autoTranslateLanguage]) &&
-							!message.autoTranslateShowInverse
-					: (): boolean => false,
-			useTranslateProvider:
-				autoTranslateEnabled && autoTranslateLanguage
-					? ({ message }): string | boolean =>
-							isTranslatedMessage(message) && AutoTranslate.providersMetadata[message.translationProvider]?.displayName
-					: (): boolean => false,
-			useTranslateAttachments:
-				uid && autoTranslateEnabled && hasSubscription && autoTranslateLanguage
-					? ({ message }): MessageAttachment[] =>
-							(isTranslatedMessage(message) &&
-								message.u?._id !== uid &&
-								message.attachments &&
-								AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage, !!message.autoTranslateShowInverse)) ||
-							message.attachments ||
-							[]
-					: ({ message }): MessageAttachment[] => message.attachments || [],
+			useShowTranslated: showAutoTranslate,
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
@@ -116,7 +89,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
-			showReadReceipt,
 			showRoles,
 			showRealName,
 			showUsername,
@@ -133,11 +105,6 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 					regex: getRegexHighlight(highlight),
 					urlRegex: getRegexHighlightUrl(highlight),
 				})),
-			useReactToMessage: uid
-				? (message) =>
-						(reaction): void =>
-							reactToMessage({ messageId: message._id, reaction }) as unknown as void
-				: () => (): void => undefined,
 
 			useOpenEmojiPicker: uid
 				? (message) =>
@@ -153,13 +120,12 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 		[
 			username,
 			uid,
-			autoTranslateEnabled,
+			showAutoTranslate,
 			hasSubscription,
 			autoTranslateLanguage,
 			showRoles,
 			showRealName,
 			showUsername,
-			showReadReceipt,
 			katexEnabled,
 			katexDollarSyntaxEnabled,
 			katexParenthesisSyntaxEnabled,
