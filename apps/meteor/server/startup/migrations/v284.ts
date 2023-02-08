@@ -1,9 +1,10 @@
 import { addMigration } from '../../lib/migrations';
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { settingsRegenerator } from '../../lib/settingsRegenerator';
 
+// Removes invalid settings from DB one time
 addMigration({
 	version: 284,
-	up() {
-		upsertPermissions();
+	async up() {
+		await settingsRegenerator();
 	},
 });
