@@ -5559,6 +5559,7 @@
   "Create_an_account": "Create an account",
   "Use_token": "Use token",
   "Deregister": "Deregister",
+  "Disconnected": "Disconnected",
   "Deregister_workspace": "Deregister workspace",
   "Awaiting_confirmation": "Awaiting confirmation",
   "Security_code": "Security code",
@@ -5602,5 +5603,9 @@
   "RegisterWorkspace_Setup_No_Account_Subtitle": "Enter your email to create a new Cloud account and associate this workspace.",
   "RegisterWorkspace_Setup_Email_Confirmation": "Email sent to <strong>__email__</strong> with a confirmation link.",
   "RegisterWorkspace_Setup_Email_Verification": "Please verify that the security code below matches the one in the email.",
-  "RegisterWorkspace_Setup_Terms_Privacy": "I agree with <a target='_blank' href='https://rocket.chat/terms'>Terms and Conditions</a> and <a target='_blank' href='https://rocket.chat/privacy'>Privacy Policy</a>"
+  "RegisterWorkspace_Setup_Terms_Privacy": "I agree with <a target='_blank' href='https://rocket.chat/terms'>Terms and Conditions</a> and <a target='_blank' href='https://rocket.chat/privacy'>Privacy Policy</a>",
+  "RegisterWorkspace_Syncing_Error": "An error occured syncing your workspace",
+  "RegisterWorkspace_Syncing_Complete": "Sync Complete",
+  "RegisterWorkspace_Connection_Error": "An error occured connecting",
+  "RegisterWorkspace_Disconnect_Error": "An error occured disconnecting"
 }

@@ -37,7 +37,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 			const isConnected = await connectWorkspace(token);
 
 			if (!isConnected) {
-				throw Error(t('An error occured connecting'));
+				throw Error(t('RegisterWorkspace_Connection_Error'));
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Connected') });
@@ -45,7 +45,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 			const isSynced = await syncWorkspace();
 
 			if (!isSynced) {
-				throw Error(t('An error occured syncing'));
+				throw Error(t('RegisterWorkspace_Syncing_Error'));
 			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

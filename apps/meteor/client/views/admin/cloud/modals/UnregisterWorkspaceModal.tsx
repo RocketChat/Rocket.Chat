@@ -28,7 +28,7 @@ const UnregisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: Unregis
 			const success = await disconnectWorkspace();
 
 			if (!success) {
-				throw Error(t('An error occured disconnecting'));
+				throw Error(t('RegisterWorkspace_Disconnect_Error'));
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Disconnected') });
