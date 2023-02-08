@@ -21,7 +21,7 @@ export type ModerationEndpoints = {
 			reports: IReport[];
 		}>;
 	};
-	'v1/moderation.getReportInfo': {
+	'/v1/moderation.getReportInfo': {
 		GET: (params: { reportId: string }) => {
 			report: IReport | null;
 		};
