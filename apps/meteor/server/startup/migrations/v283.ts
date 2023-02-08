@@ -1,42 +1,49 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, Permissions, LivechatRooms, LivechatInquiry, Subscriptions } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 283,
-	up() {
-		const deprecatedSettings = [
-			'Markdown_Parser',
-			'Markdown_Headers',
-			'Markdown_SupportSchemesForLink',
-			'Markdown_Marked_GFM',
-			'Markdown_Marked_Tables',
-			'Markdown_Marked_Breaks',
-			'Markdown_Marked_Pedantic',
-			'Markdown_Marked_SmartLists',
-			'Markdown_Marked_Smartypants',
-			'Message_AllowSnippeting',
-			'Message_Attachments_GroupAttach',
-			'Message_ShowEditedStatus',
-			'Message_ShowFormattingTips',
-			'Accounts_Default_User_Preferences_useLegacyMessageTemplate',
-			'AutoLinker',
-			'AutoLinker_StripPrefix',
-			'AutoLinker_Urls_Scheme',
-			'AutoLinker_Urls_www',
-			'AutoLinker_Urls_TLD',
-			'AutoLinker_UrlsRegExp',
-			'AutoLinker_Email',
-			'AutoLinker_Phone',
-			'IssueLinks_Enabled',
-			'IssueLinks_Template',
-			'API_EmbedDisabledFor',
-			'API_EmbedIgnoredHosts',
-			'API_EmbedSafePorts',
-		];
+	async up() {
+		// Removing all settings & permissions related to Legacy FB Messenger integration
+		await Promise.all([
+			Settings.deleteMany({
+				_id: {
+					$in: ['Livechat_Facebook_Enabled', 'Livechat_Facebook_API_Key', 'Livechat_Facebook_API_Secret'],
+				},
+			}),
+			Permissions.removeById('view-livechat-facebook'),
+		]);
 
-		Settings.deleteMany({
-			_id: { $in: deprecatedSettings },
-		});
+		// close all open Fb Messenger rooms since the integration is no longer available
+		const openRoomsIds = (
+			await LivechatRooms.find(
+				{
+					open: true,
+					facebook: { $exists: true },
+				},
+				{ projection: { _id: 1 } },
+			).toArray()
+		).map((room) => room._id);
+		await Promise.all([
+			LivechatRooms.updateMany(
+				{
+					_id: {
+						$in: openRoomsIds,
+					},
+				},
+				{
+					$unset: {
+						open: 1,
+					},
+				},
+			),
+			LivechatInquiry.deleteMany({
+				rid: {
+					$in: openRoomsIds,
+				},
+			}),
+			...openRoomsIds.map((room) => Subscriptions.removeByRoomId(room)),
+		]);
 	},
 });
