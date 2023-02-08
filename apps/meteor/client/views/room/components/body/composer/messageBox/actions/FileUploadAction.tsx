@@ -3,8 +3,8 @@ import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useRef } from 'react';
 
-import type { ChatAPI } from '../../../../../../lib/chats/ChatAPI';
-import { useChat } from '../../../../contexts/ChatContext';
+import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
+import { useChat } from '../../../../../contexts/ChatContext';
 
 type FileUploadActionProps = {
 	isRecording: boolean;
@@ -18,7 +18,7 @@ const FileUploadAction = ({ chatContext, isRecording }: FileUploadActionProps) =
 	const chat = useChat() ?? chatContext;
 
 	const handleUploadChange = async (e: ChangeEvent<HTMLInputElement>) => {
-		const { mime } = await import('../../../../../../../app/utils/lib/mimeTypes');
+		const { mime } = await import('../../../../../../../../app/utils/lib/mimeTypes');
 		const filesToUpload = Array.from(e.target.files ?? []).map((file) => {
 			Object.defineProperty(file, 'type', {
 				value: mime.lookup(file.name),

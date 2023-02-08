@@ -5321,6 +5321,7 @@
   "WebDAV_Accounts": "WebDAV Accounts",
   "Webdav_add_new_account": "Add new WebDAV account",
   "Webdav_Integration_Enabled": "Webdav Integration Enabled",
+  "WebDAV_Integration_Not_Allowed": "WebDAV Integration Not Allowed",
   "Webdav_Password": "WebDAV Password",
   "Webdav_Server_URL": "WebDAV Server Access URL",
   "Webdav_Username": "WebDAV Username",

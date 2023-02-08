@@ -2,8 +2,8 @@ import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { ChatAPI } from '../../../../../../lib/chats/ChatAPI';
-import { useChat } from '../../../../contexts/ChatContext';
+import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
+import { useChat } from '../../../../../contexts/ChatContext';
 
 type VideoMessageActionProps = {
 	isRecording: boolean;

@@ -11,7 +11,7 @@ import { Utilities } from '../../../apps/lib/misc/Utilities';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
-const APP_GROUP = 'Create_new';
+const APP_GROUP = t('Apps') as TranslationKey;
 
 export const onAdded = (button: IUIActionButton): void =>
 	// eslint-disable-next-line no-void

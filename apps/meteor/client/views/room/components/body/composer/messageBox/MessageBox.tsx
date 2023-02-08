@@ -41,11 +41,11 @@ import { useChat } from '../../../../contexts/ChatContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import FileUploadAction from './FileUploadAction';
 import MessageBoxDropdown from './MessageBoxDropdown';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
-import VideoMessageAction from './VideoMessageAction';
+import FileUploadAction from './actions/FileUploadAction';
+import VideoMessageAction from './actions/VideoMessageAction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -256,7 +256,7 @@ const MessageBox = ({
 		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
 	});
 
-	const isRecording = useSubscription({
+	const isRecordingAudio = useSubscription({
 		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
@@ -321,6 +321,10 @@ const MessageBox = ({
 		}
 	});
 
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
+	console.log(isRecordingVideo);
+
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -359,10 +363,10 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<VideoMessageAction isRecording={isRecording} />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
+						<VideoMessageAction isRecording={isRecordingAudio} />
+						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing || isRecordingVideo} />
 						<FileUploadAction isRecording={isRecording} />
-						<MessageBoxDropdown rid={rid} tmid={tmid} />
+						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
