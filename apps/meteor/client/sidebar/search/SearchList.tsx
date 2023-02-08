@@ -41,7 +41,7 @@ const options = {
 		lm: -1,
 		name: 1,
 	},
-};
+} as const;
 
 const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRoom)[] | undefined, Error> => {
 	const expression = /(@|#)?(.*)/i;
@@ -302,7 +302,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			`}
 			ref={ref}
 		>
-			<Sidebar.TopBar.Section {...({ role: 'search' } as any)} is='form'>
+			<Sidebar.TopBar.Section {...({ role: 'search', flexShrink: 0 } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
 					data-qa='sidebar-search-input'

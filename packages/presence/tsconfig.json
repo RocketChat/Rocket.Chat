@@ -1,30 +1,12 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "../../tsconfig.base.server.json",
 	"compilerOptions": {
-		"target": "es2018",
-		"lib": ["esnext", "dom"],
-		"allowJs": true,
-		"checkJs": false,
-		"incremental": true,
-
-		/* Strict Type-Checking Options */
-		"noImplicitAny": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": false,
-
-		/* Additional Checks */
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noImplicitReturns": false,
-		"noFallthroughCasesInSwitch": false,
-
-		/* Module Resolution Options */
+		"lib": ["es2020"],
+		"target": "es2020",
+		"strictPropertyInitialization": false, // TODO: Remove this line
+		"declaration": true,
 		"outDir": "./dist",
-		"importsNotUsedAsValues": "preserve",
-		// "declaration": false,
-		"declarationMap": false
+		"rootDir": "./src",
 	},
-	"include": ["../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
-	"exclude": ["./dist"],
 	"files": ["./src/Presence.ts"]
 }

@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Avatar } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import { Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -10,7 +9,7 @@ import MenuItem from './MenuItem';
 const hoverClass = css`
 	&:hover {
 		cursor: pointer;
-		background-color: ${colors.n100};
+		background-color: ${Palette.surface['surface-tint']};
 	}
 `;
 
@@ -20,7 +19,7 @@ const FileItem = ({ fileData, isDeletionAllowed, onClickDelete, index }) => {
 	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
 
 	return (
-		<Box display='flex' p='x12' style={style} className={[className, hoverClass]}>
+		<Box display='flex' p='x12' borderRadius='x4' style={style} className={[className, hoverClass]}>
 			<Box
 				is='a'
 				minWidth={0}

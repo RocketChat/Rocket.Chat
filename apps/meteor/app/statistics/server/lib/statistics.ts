@@ -23,6 +23,7 @@ import {
 	InstanceStatus,
 	Settings,
 } from '@rocket.chat/models';
+import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
 import { Users, Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -34,7 +35,6 @@ import { getAppsStatistics } from './getAppsStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Analytics, Team, VideoConf } from '../../../../server/sdk';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { getMatrixFederationStatistics } from '../../../federation-v2/server/infrastructure/rocket-chat/statistics';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';

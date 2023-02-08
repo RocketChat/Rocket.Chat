@@ -30,63 +30,67 @@ export async function configureEmailInboxes(): Promise<void> {
 	inboxes.clear();
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
-		logger.info(`Setting up email interceptor for ${emailInboxRecord.email}`);
+		try {
+			logger.info(`Setting up email interceptor for ${emailInboxRecord.email}`);
 
-		const imap = new IMAPInterceptor(
-			{
-				password: emailInboxRecord.imap.password,
-				user: emailInboxRecord.imap.username,
-				host: emailInboxRecord.imap.server,
-				port: emailInboxRecord.imap.port,
-				...(emailInboxRecord.imap.secure
-					? {
-							tls: emailInboxRecord.imap.secure,
-							tlsOptions: {
-								rejectUnauthorized: false,
-							},
-					  }
-					: {}),
-			},
-			{
-				deleteAfterRead: false,
-				filter: [['UNSEEN'], ['SINCE', emailInboxRecord._createdAt]],
-				rejectBeforeTS: emailInboxRecord._createdAt,
-				markSeen: true,
-				maxRetries: emailInboxRecord.imap.maxRetries,
-			},
-			emailInboxRecord._id,
-		);
+			const imap = new IMAPInterceptor(
+				{
+					password: emailInboxRecord.imap.password,
+					user: emailInboxRecord.imap.username,
+					host: emailInboxRecord.imap.server,
+					port: emailInboxRecord.imap.port,
+					...(emailInboxRecord.imap.secure
+						? {
+								tls: emailInboxRecord.imap.secure,
+								tlsOptions: {
+									rejectUnauthorized: false,
+								},
+						  }
+						: {}),
+				},
+				{
+					deleteAfterRead: false,
+					filter: [['UNSEEN'], ['SINCE', emailInboxRecord._createdAt]],
+					rejectBeforeTS: emailInboxRecord._createdAt,
+					markSeen: true,
+					maxRetries: emailInboxRecord.imap.maxRetries,
+				},
+				emailInboxRecord._id,
+			);
 
-		imap.on(
-			'email',
-			Meteor.bindEnvironment(async (email) => {
-				if (!email.messageId) {
-					return;
-				}
+			imap.on(
+				'email',
+				Meteor.bindEnvironment(async (email) => {
+					if (!email.messageId) {
+						return;
+					}
 
-				try {
-					await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
-					onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-				} catch (e: any) {
-					// In case the email message history has been received by other instance..
-					logger.error(e);
-				}
-			}),
-		);
+					try {
+						await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
+						onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+					} catch (e: any) {
+						// In case the email message history has been received by other instance..
+						logger.error(e);
+					}
+				}),
+			);
 
-		imap.start();
+			imap.start();
 
-		const smtp = nodemailer.createTransport({
-			host: emailInboxRecord.smtp.server,
-			port: emailInboxRecord.smtp.port,
-			secure: emailInboxRecord.smtp.secure,
-			auth: {
-				user: emailInboxRecord.smtp.username,
-				pass: emailInboxRecord.smtp.password,
-			},
-		});
+			const smtp = nodemailer.createTransport({
+				host: emailInboxRecord.smtp.server,
+				port: emailInboxRecord.smtp.port,
+				secure: emailInboxRecord.smtp.secure,
+				auth: {
+					user: emailInboxRecord.smtp.username,
+					pass: emailInboxRecord.smtp.password,
+				},
+			});
 
-		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
+			inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
+		} catch (err) {
+			logger.error({ msg: `Error setting up email interceptor for ${emailInboxRecord.email}`, err });
+		}
 	}
 
 	logger.info(`Configured a total of ${inboxes.size} inboxes`);

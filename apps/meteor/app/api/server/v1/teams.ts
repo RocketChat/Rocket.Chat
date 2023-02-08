@@ -13,11 +13,11 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Rooms, Users } from '../../../models/server';
 import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Team } from '../../../../server/sdk';
 import { API } from '../api';
 
 API.v1.addRoute(

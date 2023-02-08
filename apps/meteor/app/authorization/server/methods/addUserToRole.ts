@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { api } from '../../../../server/sdk/api';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

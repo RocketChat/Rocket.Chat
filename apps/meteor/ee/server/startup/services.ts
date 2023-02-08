@@ -1,4 +1,5 @@
-import { api } from '../../../server/sdk/api';
+import { api } from '@rocket.chat/core-services';
+
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
 import { LDAPEEService } from '../local-services/ldap/service';
 import { LicenseService } from '../../app/license/server/license.internalService';

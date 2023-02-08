@@ -33,7 +33,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 	const handleBack = useCallback(() => router.push({}), [router]);
 
 	const saveEmailInbox = useEndpoint('POST', '/v1/email-inbox');
-	const deleteInboxAction = useEndpoint('DELETE', `/v1/email-inbox/${inboxData?._id}`);
+	const deleteInboxAction = useEndpoint('DELETE', '/v1/email-inbox/:_id', { _id: inboxData?._id ?? '' });
 	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/email-inbox.search');
 
 	const {

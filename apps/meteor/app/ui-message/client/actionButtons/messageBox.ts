@@ -1,5 +1,6 @@
 import { Session } from 'meteor/session';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';
@@ -14,7 +15,7 @@ const APP_GROUP = 'Create_new';
 
 export const onAdded = (button: IUIActionButton): void =>
 	// eslint-disable-next-line no-void
-	void messageBox.actions.add(APP_GROUP, t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)), {
+	void messageBox.actions.add(APP_GROUP, t(Utilities.getI18nKeyForApp(button.labelI18n, button.appId)) as TranslationKey, {
 		id: getIdForActionButton(button),
 		// icon: button.icon || '',
 		condition() {

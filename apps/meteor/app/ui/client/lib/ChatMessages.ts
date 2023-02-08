@@ -14,6 +14,8 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
+import { UserAction } from '..';
+import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
 
 export class ChatMessages implements ChatAPI {
 	private currentEditingMID?: string;
@@ -62,7 +64,6 @@ export class ChatMessages implements ChatAPI {
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0].description || message.msg;
-			const cursorPosition = cursorAtStart ? 0 : text.length;
 
 			await this.currentEditing?.stop();
 
@@ -72,10 +73,12 @@ export class ChatMessages implements ChatAPI {
 
 			this.currentEditingMID = message._id;
 			setHighlightMessage(message._id);
-			this.composer?.setEditingMode(true);
+			this.composer.setEditingMode(true);
 
-			this.composer.setText(text, { selection: { start: cursorPosition, end: cursorPosition } });
-			this.composer?.focus();
+			this.composer.setText(text);
+			cursorAtStart && this.composer.setCursorToStart();
+			!cursorAtStart && this.composer.setCursorToEnd();
+			this.composer.focus();
 		},
 	};
 
@@ -98,6 +101,19 @@ export class ChatMessages implements ChatAPI {
 			processMessageEditing: processMessageEditing.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
+			replyBroadcast: replyBroadcast.bind(null, this),
+
+			action: {
+				start: async (action: 'typing') => {
+					UserAction.start(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+				performContinuously: async (action: 'recording' | 'uploading' | 'playing') => {
+					UserAction.performContinuously(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+				stop: async (action: 'typing' | 'recording' | 'uploading' | 'playing') => {
+					UserAction.stop(params.rid, `user-${action}`, { tmid: params.tmid });
+				},
+			},
 		};
 	}
 

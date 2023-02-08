@@ -27,7 +27,7 @@ const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRout
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 
-const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
+const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
 

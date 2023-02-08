@@ -4,6 +4,7 @@ import s from 'underscore.string';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms, Users } from '@rocket.chat/models';
+import { Team } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../app/authorization/server';
 import { Subscriptions } from '../../app/models/server';
@@ -11,7 +12,6 @@ import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
-import { Team } from '../sdk';
 
 const sortChannels = function (field, direction) {
 	switch (field) {

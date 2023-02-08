@@ -1,9 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { ServiceClassInternal, Authorization } from '@rocket.chat/core-services';
+import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
-import { Authorization } from '../../sdk';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 
 export class RoomService extends ServiceClassInternal implements IRoomService {

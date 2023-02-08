@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { MeteorError } from '@rocket.chat/core-services';
 
-import { MeteorError } from '../../../../server/sdk/errors';
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
 import { uploadFileToWebdav } from '../lib/uploadFileToWebdav';

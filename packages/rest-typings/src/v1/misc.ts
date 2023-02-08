@@ -1,8 +1,7 @@
-import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -199,12 +198,6 @@ export type MiscEndpoints = {
 			users: Pick<Required<IUser>, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
 			rooms: Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[];
 		};
-	};
-
-	'/v1/directory': {
-		GET: (params: Directory) => PaginatedResult<{
-			result: (IUser | IRoom | ITeam)[];
-		}>;
 	};
 
 	'/v1/pw.getPolicy': {

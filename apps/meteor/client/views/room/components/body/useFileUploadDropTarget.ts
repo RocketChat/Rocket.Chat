@@ -1,19 +1,16 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
-import { Users } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
+import { useRoom } from '../../contexts/RoomContext';
 import { useDropTarget } from './useDropTarget';
 
-export const useFileUploadDropTarget = (
-	room: IRoom,
-): readonly [
+export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
 		onDragEnter: (event: React.DragEvent<Element>) => void;
 	},
@@ -24,16 +21,15 @@ export const useFileUploadDropTarget = (
 		reason?: ReactNode;
 	},
 ] => {
+	const room = useRoom();
 	const { triggerProps, overlayProps } = useDropTarget();
 
 	const t = useTranslation();
 
 	const fileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
+	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
-		useCallback(
-			() => !roomCoordinator.readOnly(room._id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } })),
-			[room._id],
-		),
+		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
 	);
 
 	const chat = useChat();

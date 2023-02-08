@@ -36,27 +36,13 @@
 	justify-content: flex-start;
 }
 
-.rc-input__element[type=date]::-webkit-inner-spin-button {
+.rc-input__element[type='date']::-webkit-inner-spin-button {
 	display: none;
 	-webkit-appearance: none;
 }
 
 .rc-audit-date {
 	flex-grow: 0;
-}
-
-.rc-table--audit {
-	table-layout: fixed;
-}
-
-.rc-table--audit .rc-table-td {
-	overflow: hidden;
-
-	padding-right: 0.5rem;
-
-	padding-left: 0.5rem;
-
-	text-overflow: ellipsis;
 }
 
 .rc-audit-filter-td {

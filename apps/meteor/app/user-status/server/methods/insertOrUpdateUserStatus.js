@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { CustomUserStatus } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
-import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	async insertOrUpdateUserStatus(userStatusData) {

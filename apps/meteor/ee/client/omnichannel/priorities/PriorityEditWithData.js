@@ -8,7 +8,7 @@ import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import PriorityEdit from './PriorityEdit';
 
 function PriorityEditWithData({ priorityId, reload }) {
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/priorities/${priorityId}`);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/priorities/:priorityId', { keys: { priorityId } });
 
 	const t = useTranslation();
 

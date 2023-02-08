@@ -10,9 +10,11 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
-		);
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
+	}
+
+	get checkboxEncryption(): Locator {
+		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]');
 	}
 
 	get inputChannelName(): Locator {

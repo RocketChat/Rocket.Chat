@@ -37,7 +37,7 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 					display='flex'
 					flexDirection='row'
 					p='x24'
-					borderBlockEndWidth='x2'
+					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'
 					flexShrink={0}

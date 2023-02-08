@@ -18,7 +18,7 @@ import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import WarningModal from '../../../../../components/WarningModal';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
@@ -65,12 +65,10 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', '/v1/teams.addRooms', t('Rooms_added_successfully'));
-	const convertRoomToTeam = useEndpointActionExperimental(
-		'POST',
-		type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam',
-		t('Success'),
-	);
+	const moveChannelToTeam = useEndpointAction('POST', '/v1/teams.addRooms', { successMessage: t('Rooms_added_successfully') });
+	const convertRoomToTeam = useEndpointAction('POST', type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam', {
+		successMessage: t('Success'),
+	});
 
 	const isFederated = isRoomFederated(room);
 	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);

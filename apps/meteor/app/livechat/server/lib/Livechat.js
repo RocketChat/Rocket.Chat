@@ -10,6 +10,7 @@ import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -39,8 +40,6 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
-import { VideoConf } from '../../../../server/sdk';
-import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('Livechat');
 
@@ -1128,30 +1127,6 @@ export const Livechat = {
 		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
-	},
-
-	removeDepartment(_id) {
-		check(_id, String);
-
-		const department = LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found', 'Department not found', {
-				method: 'livechat:removeDepartment',
-			});
-		}
-		const ret = LivechatDepartment.removeById(_id);
-		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id)
-			.fetch()
-			.map((agent) => agent.agentId);
-		LivechatDepartmentAgents.removeByDepartmentId(_id);
-		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
-		if (ret) {
-			Meteor.defer(() => {
-				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
-			});
-		}
-		return ret;
 	},
 
 	showConnecting() {

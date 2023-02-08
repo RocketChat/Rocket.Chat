@@ -1,9 +1,9 @@
 import { MongoInternals } from 'meteor/mongo';
+import { api } from '@rocket.chat/core-services';
 
 import { DatabaseWatcher } from '../database/DatabaseWatcher';
 import { db } from '../database/utils';
 import { initWatchers } from '../modules/watchers/watchers.module';
-import { api } from '../sdk/api';
 import { metrics } from '../../app/metrics/server/lib/metrics';
 import { SystemLogger } from '../lib/logger/system';
 import { Logger } from '../lib/logger/Logger';

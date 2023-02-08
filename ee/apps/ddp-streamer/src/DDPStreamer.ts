@@ -2,12 +2,11 @@ import crypto from 'crypto';
 
 import polka from 'polka';
 import WebSocket from 'ws';
+import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
-import { MeteorService, Presence } from '../../../../apps/meteor/server/sdk';
-import { ServiceClass } from '../../../../apps/meteor/server/sdk/types/ServiceClass';
 import { Client } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
@@ -99,13 +98,13 @@ export class DDPStreamer extends ServiceClass {
 			const { userId, connection } = info;
 
 			Presence.newConnection(userId, connection.id, nodeID);
-			this.api.broadcast('accounts.login', { userId, connection });
+			this.api?.broadcast('accounts.login', { userId, connection });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			this.api.broadcast('accounts.logout', { userId, connection });
+			this.api?.broadcast('accounts.logout', { userId, connection });
 
 			if (!userId) {
 				return;
@@ -116,7 +115,7 @@ export class DDPStreamer extends ServiceClass {
 		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
 			const { userId, connection } = info;
 
-			this.api.broadcast('socket.disconnected', connection);
+			this.api?.broadcast('socket.disconnected', connection);
 
 			if (!userId) {
 				return;
@@ -125,7 +124,7 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-			this.api.broadcast('socket.connected', connection);
+			this.api?.broadcast('socket.connected', connection);
 		});
 	}
 
@@ -141,7 +140,7 @@ export class DDPStreamer extends ServiceClass {
 			.use(proxy())
 			.get('/health', async (_req, res) => {
 				try {
-					await this.api.nodeList();
+					await this.api?.nodeList();
 					res.end('ok');
 				} catch (err) {
 					console.error('Service not healthy', err);

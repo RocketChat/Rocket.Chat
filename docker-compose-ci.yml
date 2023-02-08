@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   rocketchat:
+    platform: linux/amd64
     build:
       dockerfile: ${RC_DOCKERFILE}
       context: /tmp/build
@@ -25,6 +26,7 @@ services:
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
 
   authorization-service:
+    platform: linux/amd64
     build:
       dockerfile: ee/apps/authorization-service/Dockerfile
       args:
@@ -40,6 +42,7 @@ services:
       - nats
 
   account-service:
+    platform: linux/amd64
     build:
       dockerfile: ee/apps/account-service/Dockerfile
       args:
@@ -55,6 +58,7 @@ services:
       - nats
 
   presence-service:
+    platform: linux/amd64
     build:
       dockerfile: ee/apps/presence-service/Dockerfile
       args:
@@ -70,6 +74,7 @@ services:
       - nats
 
   ddp-streamer-service:
+    platform: linux/amd64
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
       args:
@@ -91,6 +96,7 @@ services:
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
 
   stream-hub-service:
+    platform: linux/amd64
     build:
       dockerfile: ee/apps/stream-hub-service/Dockerfile
       args:
