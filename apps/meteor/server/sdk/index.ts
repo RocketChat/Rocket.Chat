@@ -34,6 +34,7 @@ import type { ILivechatService } from './types/ILivechatService';
 import type { IMessageService } from './types/IMessageService';
 import type { INotificationService } from './types/INotificationService';
 import type { ISlashCommandService } from './types/ISlashCommandService';
+import type { IAppsApiService } from './types/IAppsApiService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -63,6 +64,7 @@ export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
 export const AppsListener = proxifyWithWait<IAppsListenerService>('apps');
 export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
 export const FetchService = proxifyWithWait<IFetchService>('fetch');
 export const LivechatService = proxifyWithWait<ILivechatService>('livechat');
 export const MessageService = proxifyWithWait<IMessageService>('message');

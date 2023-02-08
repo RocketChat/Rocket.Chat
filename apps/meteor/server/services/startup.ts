@@ -72,6 +72,7 @@ if (!isRunningMs()) {
 		const { AppsConverterService } = await import('../../ee/app/apps/converterService');
 		const { AppsManagerService } = await import('../../ee/app/apps/managerService');
 		const { AppsVideoManagerService } = await import('../../ee/app/apps/videoManagerService');
+		const { AppsApiService } = await import('../../ee/app/apps/apiService');
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
@@ -81,5 +82,6 @@ if (!isRunningMs()) {
 		api.registerService(new AppsConverterService());
 		api.registerService(new AppsManagerService());
 		api.registerService(new AppsVideoManagerService());
+		api.registerService(new AppsApiService());
 	})();
 }
