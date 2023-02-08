@@ -121,4 +121,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	unsetEmailTranscriptRequestedByRoomId(rid: string): Promise<UpdateResult>;
 
 	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo): Promise<UpdateResult>;
+
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 }

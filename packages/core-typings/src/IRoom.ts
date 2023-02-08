@@ -193,6 +193,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		username: IUser['username'];
 	};
 	closingMessage?: IMessage;
+
+	departmentAncestors?: string[];
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
