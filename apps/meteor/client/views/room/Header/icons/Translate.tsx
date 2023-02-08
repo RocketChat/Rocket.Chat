@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Header } from '@rocket.chat/ui-client';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -14,7 +13,7 @@ const Translate: FC<TranslateProps> = ({ room: { autoTranslateLanguage, autoTran
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const encryptedLabel = t('Translated');
 	return autoTranslateEnabled && autoTranslate && autoTranslateLanguage ? (
-		<Header.State title={encryptedLabel} icon='language' color={colors.p500} />
+		<Header.State title={encryptedLabel} icon='language' color='on-info' />
 	) : null;
 };
 

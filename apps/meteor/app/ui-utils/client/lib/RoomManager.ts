@@ -138,12 +138,18 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 			close(type + FlowRouter.getParam('name'));
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });
+			if (!subscription) {
+				throw new Error('Subscription not found');
+			}
 			const route = subscription.t === 'c' ? 'channel' : 'group';
 			FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
 		}
 
 		if (msg.t === 'r') {
 			const room = ChatRoom.findOne(msg.rid);
+			if (!room) {
+				throw new Error('Room not found');
+			}
 			if (room.name !== FlowRouter.getParam('name')) {
 				close(room.t + FlowRouter.getParam('name'));
 				roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);
