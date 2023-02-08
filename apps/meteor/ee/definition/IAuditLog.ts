@@ -4,11 +4,11 @@ export interface IAuditLog {
 	_id: string;
 	ts: Date;
 	results: number;
-	u: Pick<IUser, '_id' | 'username' | 'avatarETag'>;
+	u: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
 	fields: {
 		msg: IMessage['msg'];
 		users: IUser['username'][];
-		room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
+		room?: IRoom['name'];
 		startDate: Date;
 		endDate: Date;
 	};

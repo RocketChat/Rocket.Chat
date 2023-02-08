@@ -5,12 +5,12 @@ import React from 'react';
 
 import Page from '../../../client/components/Page';
 import { useEndpointAction } from '../../../client/hooks/useEndpointAction';
-import DateRangePicker from './DateRangePicker';
-import Result from './Result';
-import ChannelTab from './Tabs/ChannelTab';
-import DirectTab from './Tabs/DirectTab';
-import UsersTab from './Tabs/UsersTab';
-import VisitorsTab from './Tabs/VisitorsTab';
+import DirectTab from '../views/audit/components/tabs/DirectTab';
+import RoomsTab from '../views/audit/components/tabs/RoomsTab';
+import UsersTab from '../views/audit/components/tabs/UsersTab';
+import VisitorsTab from '../views/audit/components/tabs/VisitorsTab';
+import AuditResult from './AuditResult';
+import DateRangePicker from '../views/audit/components/DateRangePicker';
 
 // TODO: create more stories for the tabs
 export const AuditPageBase = ({
@@ -84,7 +84,7 @@ export const AuditPageBase = ({
 					</Box>
 					<Box display='flex' flexDirection='row' alignItems='flex-end'>
 						<Flex.Item shrink={1}>
-							{type === '' && <ChannelTab errors={errors} rid={rid} handleRid={handleRid} />}
+							{type === '' && <RoomsTab errors={errors} rid={rid} onChange={handleRid} />}
 							{type === 'u' && <UsersTab errors={errors} users={users} onChangeUsers={onChangeUsers} />}
 							{type === 'd' && <DirectTab errors={errors} users={users} onChangeUsers={onChangeUsers} />}
 							{type === 'l' && (
@@ -106,7 +106,7 @@ export const AuditPageBase = ({
 							</ButtonGroup>
 						</Flex.Item>
 					</Box>
-					{setData && <Result setDataRef={setData} />}
+					{setData && <AuditResult setDataRef={setData} />}
 				</Margins>
 			</Page.ScrollableContentWithShadow>
 		</Page>

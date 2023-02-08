@@ -2,14 +2,19 @@ import { Box } from '@rocket.chat/fuselage';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import type { Dispatch, MutableRefObject, ReactElement, SetStateAction } from 'react';
 import React, { useEffect, useState, useRef, memo } from 'react';
 
 import '../../app/auditing/client/templates/audit/audit.html';
 
-const Result = memo(({ setDataRef }) => {
-	const ref = useRef();
+type AuditResultProps = {
+	setDataRef: MutableRefObject<Dispatch<SetStateAction<Record<string, any>>>>;
+};
 
-	const [data, setData] = useState({});
+const AuditResult = ({ setDataRef }: AuditResultProps): ReactElement => {
+	const ref = useRef<HTMLElement>(null);
+
+	const [data, setData] = useState<Record<string, any>>({});
 
 	const { msg, type, startDate, endDate, visitor, agent, users = [], rid } = data;
 
@@ -18,6 +23,10 @@ const Result = memo(({ setDataRef }) => {
 	setDataRef.current = setData;
 
 	useEffect(() => {
+		if (!ref.current) {
+			return;
+		}
+
 		const view = Blaze.renderWithData(
 			Template.audit,
 			{
@@ -37,8 +46,6 @@ const Result = memo(({ setDataRef }) => {
 	}, [agent, endDate, msg, rid, startDate, type, stableUsers, visitor]);
 
 	return <Box ref={ref} />;
-});
+};
 
-Result.displayName = 'Result';
-
-export default Result;
+export default memo(AuditResult);
