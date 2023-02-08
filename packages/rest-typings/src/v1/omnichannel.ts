@@ -2497,53 +2497,6 @@ const GETLivechatQueueParamsSchema = {
 
 export const isGETLivechatQueueParams = ajv.compile<GETLivechatQueueParams>(GETLivechatQueueParamsSchema);
 
-type POSTLivechatFacebookParams = {
-	text?: string;
-	attachments?: unknown[];
-	mid: string;
-	page: string;
-	token: string;
-	first_name: string;
-	last_name: string;
-};
-
-const POSTLivechatFacebookParamsSchema = {
-	type: 'object',
-	properties: {
-		text: {
-			type: 'string',
-			nullable: true,
-		},
-		attachments: {
-			type: 'array',
-			items: {
-				type: 'object',
-			},
-			nullable: true,
-		},
-		mid: {
-			type: 'string',
-		},
-		page: {
-			type: 'string',
-		},
-		token: {
-			type: 'string',
-		},
-		first_name: {
-			type: 'string',
-		},
-		last_name: {
-			type: 'string',
-		},
-	},
-	// Facebook may send additional props
-	additionalProperties: true,
-	required: ['mid', 'page', 'token', 'first_name', 'last_name'],
-};
-
-export const isPOSTLivechatFacebookParams = ajv.compile<POSTLivechatFacebookParams>(POSTLivechatFacebookParamsSchema);
-
 type GETLivechatInquiriesListParams = PaginatedRequest<{ department?: string }>;
 
 const GETLivechatInquiriesListParamsSchema = {
@@ -3061,9 +3014,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/upload/:rid': {
 		POST: () => IMessage & { newRoom: boolean; showConnecting: boolean };
-	};
-	'/v1/livechat/facebook': {
-		POST: (params: POSTLivechatFacebookParams) => { message: IMessage };
 	};
 	'/v1/livechat/inquiries.list': {
 		GET: (params: GETLivechatInquiriesListParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
