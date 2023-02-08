@@ -8,11 +8,6 @@ export const registerMarketplaceRoute = createRouteGroup(
 	lazy(() => import('./MarketplaceRouter')),
 );
 
-registerMarketplaceRoute('/what-is-it', {
-	name: 'marketplace-disabled',
-	component: lazy(() => import('./AppsWhatIsIt')),
-});
-
 registerMarketplaceRoute('/:context?/:page?/:id?/:version?/:tab?', {
 	name: 'marketplace',
 	component: lazy(() => import('./AppsRoute')),

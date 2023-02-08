@@ -7,7 +7,7 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
 import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -19,6 +19,7 @@ import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
+import { canEnableApp } from '../../../ee/app/license/server/license';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -45,7 +46,7 @@ export class AppServerOrchestrator {
 			this._marketplaceUrl = 'https://marketplace.rocket.chat';
 		}
 
-		this._model = new AppsModel();
+		this._model = AppsModel;
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
@@ -72,7 +73,6 @@ export class AppServerOrchestrator {
 		});
 
 		this._communicators = new Map();
-		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
@@ -127,16 +127,12 @@ export class AppServerOrchestrator {
 		return this._isInitialized;
 	}
 
-	isEnabled() {
-		return settings.get('Apps_Framework_enabled');
-	}
-
 	isLoaded() {
 		return this.getManager().areAppsLoaded();
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
+		return !isTesting();
 	}
 
 	/**
@@ -163,11 +159,20 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager
-			.load()
-			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`))
-			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err))
-			.then(() => this.getBridges().getSchedulerBridge().startScheduler());
+		await this.getManager().load();
+
+		// Before enabling each app we verify if there is still room for it
+		await this.getManager()
+			.get()
+			// We reduce everything to a promise chain so it runs sequentially
+			.reduce(
+				(control, app) => control.then(async () => (await canEnableApp(app.getStorageItem())) && this.getManager().enable(app.getID())),
+				Promise.resolve(),
+			);
+
+		await this.getBridges().getSchedulerBridge().startScheduler();
+
+		console.log(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
 	}
 
 	async unload() {
@@ -243,21 +248,6 @@ settingsRegistry.addGroup('General', function () {
 			alert: 'Apps_Logs_TTL_Alert',
 		});
 
-		this.add('Apps_Framework_enabled', true, {
-			type: 'boolean',
-			hidden: false,
-		});
-
-		this.add('Apps_Framework_Development_Mode', false, {
-			type: 'boolean',
-			enableQuery: {
-				_id: 'Apps_Framework_enabled',
-				value: true,
-			},
-			public: true,
-			hidden: false,
-		});
-
 		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
 			values: [
@@ -303,19 +293,6 @@ settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) 
 	}
 });
 
-settings.watch('Apps_Framework_enabled', (isEnabled) => {
-	// In case this gets called before `Meteor.startup`
-	if (!Apps.isInitialized()) {
-		return;
-	}
-
-	if (isEnabled) {
-		Apps.load();
-	} else {
-		Apps.unload();
-	}
-});
-
 settings.watch('Apps_Logs_TTL', (value) => {
 	if (!Apps.isInitialized()) {
 		return;
@@ -347,7 +324,5 @@ settings.watch('Apps_Logs_TTL', (value) => {
 Meteor.startup(function _appServerOrchestrator() {
 	Apps.initialize();
 
-	if (Apps.isEnabled()) {
-		Apps.load();
-	}
+	Apps.load();
 });

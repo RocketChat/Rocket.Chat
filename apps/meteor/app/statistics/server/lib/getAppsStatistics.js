@@ -6,7 +6,6 @@ import { Info } from '../../../utils/server';
 export function getAppsStatistics() {
 	return {
 		engineVersion: Info.marketplaceApiVersion,
-		enabled: Apps.isEnabled(),
 		totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
 		totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
 		totalFailed:

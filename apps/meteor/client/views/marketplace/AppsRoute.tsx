@@ -1,4 +1,4 @@
-import { useRouteParameter, useRoute, useMethod, usePermission } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
@@ -11,8 +11,6 @@ import AppsProvider from './AppsProvider';
 
 const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
-	const isAppsEngineEnabled = useMethod('apps/is-enabled');
-	const appsWhatIsItRoute = useRoute('marketplace-disabled');
 	const marketplaceRoute = useRoute('marketplace');
 
 	const context = useRouteParameter('context') || 'explore';
@@ -28,11 +26,6 @@ const AppsRoute = (): ReactElement => {
 		let mounted = true;
 
 		const initialize = async (): Promise<void> => {
-			if (!(await isAppsEngineEnabled())) {
-				appsWhatIsItRoute.push();
-				return;
-			}
-
 			if (!mounted) {
 				return;
 			}
@@ -45,7 +38,7 @@ const AppsRoute = (): ReactElement => {
 		return (): void => {
 			mounted = false;
 		};
-	}, [isAppsEngineEnabled, appsWhatIsItRoute, marketplaceRoute, context]);
+	}, [marketplaceRoute, context]);
 
 	if ((context === 'requested' || page === 'install') && !isAdminUser) return <NotAuthorizedPage />;
 
