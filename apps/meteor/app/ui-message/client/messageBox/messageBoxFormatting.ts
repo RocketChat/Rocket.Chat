@@ -29,12 +29,6 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		command: 'b',
 	},
 	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '**{{text}}**',
-		command: 'b',
-	},
-	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
@@ -44,11 +38,6 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~~{{text}}~~',
 	},
 	{
 		label: 'inline_code',
