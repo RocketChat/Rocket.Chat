@@ -1,9 +1,8 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
+import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
 import { getRandomId } from '../../../lib/random';
@@ -11,9 +10,6 @@ import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { call } from '../utils/call';
 import { prependReplies } from '../utils/prependReplies';
 import type { DataAPI } from './ChatAPI';
-
-const roomsCollection = Rooms as Mongo.Collection<IRoom>;
-const subscriptionsCollection = Subscriptions as Mongo.Collection<ISubscription>;
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const composeMessage = async (
@@ -233,7 +229,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		drafts.set(mid, draft);
 	};
 
-	const findRoom = async (): Promise<IRoom | undefined> => roomsCollection.findOne({ _id: rid }, { reactive: false });
+	const findRoom = async (): Promise<IRoom | undefined> => ChatRoom.findOne({ _id: rid }, { reactive: false });
 
 	const getRoom = async (): Promise<IRoom> => {
 		const room = await findRoom();
@@ -245,7 +241,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return room;
 	};
 
-	const isSubscribedToRoom = async (): Promise<boolean> => !!subscriptionsCollection.findOne({ rid }, { reactive: false });
+	const isSubscribedToRoom = async (): Promise<boolean> => !!ChatSubscription.findOne({ rid }, { reactive: false });
 
 	const joinRoom = async (): Promise<void> => call('joinRoom', rid);
 
@@ -255,7 +251,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
-		roomsCollection.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
+		ChatRoom.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
 
 	const getDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom> => {
 		const discussion = await findDiscussionByID(drid);
