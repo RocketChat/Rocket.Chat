@@ -1395,4 +1395,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		);
 	}
+
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId) {
+		return this.updateMany({ departmentId }, { $unset: { departmentId: 1, departmentAncestors: 1 } });
+	}
 }
