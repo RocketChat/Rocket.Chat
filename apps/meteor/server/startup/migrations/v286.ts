@@ -19,36 +19,5 @@ addMigration({
 			},
 		);
 
-		// update all livechat rooms to have the correct estimatedWaitingTimeQueue
-		// this is a prop that we started to store recently, so we need to update all rooms to have this prop
-		const existingSLAs = await OmnichannelServiceLevelAgreements.find().toArray();
-		if (existingSLAs.length) {
-			const promises = existingSLAs.map(async (sla) => {
-				await LivechatRooms.updateMany(
-					{
-						t: 'l',
-						slaId: sla._id,
-					},
-					{
-						$set: {
-							estimatedWaitingTimeQueue: sla.dueTimeInMinutes,
-						},
-					},
-				);
-			});
-			await Promise.all(promises);
-		}
-		// for all other livechat rooms, set the estimatedWaitingTimeQueue to the default SLA due time
-		await LivechatRooms.updateMany(
-			{
-				t: 'l',
-				estimatedWaitingTimeQueue: { $exists: false },
-			},
-			{
-				$set: {
-					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
-				},
-			},
-		);
 	},
 });
