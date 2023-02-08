@@ -581,8 +581,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		{ _id: rid, uids }: AtLeast<IRoom, '_id' | 'uids'>,
 		extraData?: Partial<IDirectVideoConference>,
 	): Promise<DirectCallInstructions> {
-		const callee = uids?.filter((uid) => uid !== user._id).pop();
-		if (!callee) {
+		const calleeId = uids?.filter((uid) => uid !== user._id).pop();
+		if (!calleeId) {
 			// Are you trying to call yourself?
 			throw new Error('invalid-call-target');
 		}
@@ -629,7 +629,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return {
 			type: 'direct',
 			callId,
-			callee,
+			calleeId,
 		};
 	}
 

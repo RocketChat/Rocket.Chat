@@ -7,7 +7,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { MutableRefObject } from 'react';
 
-import { waitUntilWrapperExists } from './waitUntilWrapperExists';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { readMessage } from './readMessages';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
@@ -18,6 +18,7 @@ import {
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
 	{
@@ -29,7 +30,7 @@ export async function upsertMessage(
 		subscription?: ISubscription;
 		uid?: IUser['_id'];
 	},
-	{ direct } = ChatMessage,
+	{ direct }: MinimongoCollection<IMessage> = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -58,10 +59,13 @@ export async function upsertMessage(
 		);
 	}
 
-	return direct.upsert({ _id }, messageToUpsert);
+	return direct.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
+export function upsertMessageBulk(
+	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
+	collection: MinimongoCollection<IMessage> = ChatMessage,
+) {
 	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
 	const { queries } = collection;
 	collection.queries = [];
@@ -169,7 +173,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, false);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
 
 		this.unqueue();
 
@@ -179,7 +183,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitUntilWrapperExists();
+		const wrapper = await waitForElement('.messages-box .wrapper');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -294,7 +298,7 @@ class RoomHistoryManagerClass extends Emitter {
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			await waitForElement(`[data-id='${message._id}']`);
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`[data-id='${message._id}']`, wrapper);
 
@@ -332,7 +336,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
-		if (!result || !result.messages) {
+		if (!result) {
 			return;
 		}
 
@@ -341,7 +345,7 @@ class RoomHistoryManagerClass extends Emitter {
 		readMessage.refreshUnreadMark(message.rid);
 
 		Tracker.afterFlush(async () => {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
+			await waitForElement(`[data-id='${message._id}']`);
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`[data-id=${message._id}]`, wrapper);
 

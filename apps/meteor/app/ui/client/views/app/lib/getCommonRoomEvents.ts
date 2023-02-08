@@ -2,50 +2,51 @@ import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Blaze } from 'meteor/blaze';
+import type { UIEvent } from 'react';
+import { Tracker } from 'meteor/tracker';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../../lib/utils/isURL';
-import { openUserCard } from '../../../lib/UserCard';
+import { closeUserCard, openUserCard } from '../../../lib/userCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
-import { ChatMessage, Rooms } from '../../../../../models/client';
+import { Messages, Rooms, Subscriptions } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
-import { EmojiEvents } from '../../../../../reactions/client/init';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 import { mountPopover } from './mountPopover';
 import type { CommonRoomTemplateInstance } from './CommonRoomTemplateInstance';
+import { roomCoordinator } from '../../../../../../client/lib/rooms/roomCoordinator';
+import { EmojiPicker } from '../../../../../emoji/client';
 
 const createMessageTouchEvents = () => {
-	let touchMoved = false;
-	let lastTouchX: number | undefined = undefined;
-	let lastTouchY: number | undefined = undefined;
-
-	let touchtime: ReturnType<typeof setTimeout> | undefined = undefined;
+	let moved = false;
+	let lastX: number | undefined = undefined;
+	let lastY: number | undefined = undefined;
+	let timer: ReturnType<typeof setTimeout> | undefined = undefined;
 
 	return {
-		...EmojiEvents,
 		'click .message img'(e: JQuery.ClickEvent) {
-			clearTimeout(touchtime);
-			if (touchMoved === true) {
+			clearTimeout(timer);
+			if (moved) {
 				e.preventDefault();
 				e.stopPropagation();
 			}
 		},
-
 		'touchstart .message'(event: JQuery.TouchStartEvent, template: CommonRoomTemplateInstance) {
 			const touches = event.originalEvent?.touches;
 			if (touches?.length) {
-				lastTouchX = touches[0].pageX;
-				lastTouchY = touches[0].pageY;
+				lastX = touches[0].pageX;
+				lastY = touches[0].pageY;
 			}
-			touchMoved = false;
+			moved = false;
 			if (touches?.length !== 1) {
 				return;
 			}
 
-			if ($(event.currentTarget).hasClass('system')) {
+			if ((event.originalEvent?.currentTarget as HTMLElement | null)?.classList.contains('system')) {
 				return;
 			}
 
@@ -63,14 +64,14 @@ const createMessageTouchEvents = () => {
 				mountPopover(event, template, data);
 			};
 
-			clearTimeout(touchtime);
-			touchtime = setTimeout(doLongTouch, 500);
+			clearTimeout(timer);
+			timer = setTimeout(doLongTouch, 500);
 		},
 
 		'touchend .message'(e: JQuery.TouchEndEvent) {
-			clearTimeout(touchtime);
+			clearTimeout(timer);
 			if (e.target && e.target.nodeName === 'A' && isURL(e.target.getAttribute('href'))) {
-				if (touchMoved === true) {
+				if (moved === true) {
 					e.preventDefault();
 					e.stopPropagation();
 					return;
@@ -82,18 +83,18 @@ const createMessageTouchEvents = () => {
 
 		'touchmove .message'(e: JQuery.TouchMoveEvent) {
 			const touches = e.originalEvent?.touches;
-			if (touches?.length && lastTouchX !== undefined && lastTouchY !== undefined) {
-				const deltaX = Math.abs(lastTouchX - touches[0].pageX);
-				const deltaY = Math.abs(lastTouchY - touches[0].pageY);
+			if (touches?.length && lastX !== undefined && lastY !== undefined) {
+				const deltaX = Math.abs(lastX - touches[0].pageX);
+				const deltaY = Math.abs(lastY - touches[0].pageY);
 				if (deltaX > 5 || deltaY > 5) {
-					touchMoved = true;
+					moved = true;
 				}
 			}
-			clearTimeout(touchtime);
+			clearTimeout(timer);
 		},
 
 		'touchcancel .message'() {
-			clearTimeout(touchtime);
+			clearTimeout(timer);
 		},
 	};
 };
@@ -134,12 +135,15 @@ function handleOpenThreadButtonClick(event: JQuery.ClickEvent) {
 		msg: { rid, _id, tmid },
 	} = messageArgs(dataContext);
 	const room = Rooms.findOne({ _id: rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 
 	FlowRouter.go(
 		FlowRouter.getRouteName(),
 		{
 			rid,
-			name: room.name,
+			name: room.name ?? '',
 			tab: 'thread',
 			context: tmid || _id,
 		},
@@ -155,9 +159,9 @@ function handleDownloadImageButtonClick(event: JQuery.ClickEvent) {
 	const messageElement = event.target.closest('.message') as HTMLElement;
 	const dataContext = Blaze.getData(messageElement);
 	const { msg } = messageArgs(dataContext);
-	ChatMessage.update({ '_id': msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-	ChatMessage.update(
-		{ '_id': msg._id, 'attachments.image_url': $(event.currentTarget).data('url') },
+	Messages.update({ '_id': msg._id, 'urls.url': event.currentTarget.dataset.url }, { $set: { 'urls.$.downloadImages': true } });
+	Messages.update(
+		{ '_id': msg._id, 'attachments.image_url': event.currentTarget.dataset.url },
 		{ $set: { 'attachments.$.downloadImages': true } },
 	);
 }
@@ -178,10 +182,19 @@ function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: Commo
 			username,
 			rid,
 			target: event.currentTarget,
-			open: (e: MouseEvent) => {
+			open: (e: UIEvent) => {
 				e.preventDefault();
 				tabBar.openRoomInfo(username);
 			},
+		});
+
+		Tracker.autorun((c) => {
+			FlowRouter.watchPathChange();
+
+			if (!c.firstRun) {
+				closeUserCard();
+				c.stop();
+			}
 		});
 	}
 }
@@ -193,6 +206,9 @@ async function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: 
 	const messageContext = messageArgs(dataContext);
 	const { msg: message, u: user, context: ctx } = messageContext;
 	const room = Rooms.findOne({ _id: message.rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	// @ts-ignore
 	const context = ctx || message.context || message.actionContext || federationContext || 'message';
@@ -273,15 +289,65 @@ function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTe
 			username,
 			rid,
 			target: event.currentTarget,
-			open: (e: MouseEvent) => {
+			open: (e: UIEvent) => {
 				e.preventDefault();
 				tabBar.openRoomInfo(username);
 			},
 		});
+
+		Tracker.autorun((c) => {
+			FlowRouter.watchPathChange();
+
+			if (!c.firstRun) {
+				closeUserCard();
+				c.stop();
+			}
+		});
 	}
 }
 
-export const getCommonRoomEvents = (useLegacyMessageTemplate = true) => ({
+function handleAddReactionButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+	event.stopPropagation();
+	const data = Blaze.getData(event.currentTarget);
+	const {
+		msg: { rid, _id: mid, private: isPrivate },
+	} = messageArgs(data);
+	const user = Meteor.user();
+	const room = Rooms.findOne({ _id: rid });
+
+	if (!user || !room) {
+		return false;
+	}
+
+	if (!Subscriptions.findOne({ rid })) {
+		return false;
+	}
+
+	if (isPrivate) {
+		return false;
+	}
+
+	if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
+		return false;
+	}
+
+	EmojiPicker.open(event.currentTarget, (emoji) => {
+		callWithErrorHandling('setReaction', `:${emoji}:`, mid);
+	});
+}
+
+function handleReactionButtonClick(event: JQuery.ClickEvent) {
+	event.preventDefault();
+
+	const data = Blaze.getData(event.currentTarget);
+	const {
+		msg: { _id: mid },
+	} = messageArgs(data);
+	callWithErrorHandling('setReaction', event.currentTarget.dataset.emoji ?? '', mid);
+}
+
+export const getCommonRoomEvents = () => ({
 	...createMessageTouchEvents(),
 	'click [data-message-action]': handleMessageActionButtonClick,
 	'click .js-follow-thread': handleFollowThreadButtonClick,
@@ -290,5 +356,7 @@ export const getCommonRoomEvents = (useLegacyMessageTemplate = true) => ({
 	'click .image-to-download': handleDownloadImageButtonClick,
 	'click .user-card-message': handleOpenUserCardButtonClick,
 	'click .message-actions__menu': handleMessageActionMenuClick,
-	...(useLegacyMessageTemplate && { 'click .mention-link': handleMentionLinkClick }),
+	'click .mention-link': handleMentionLinkClick,
+	'click .add-reaction': handleAddReactionButtonClick,
+	'click .reactions > li:not(.add-reaction)': handleReactionButtonClick,
 });

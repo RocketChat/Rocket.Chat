@@ -12,6 +12,7 @@ import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
+import { notifyAppInstall } from '../marketplace/appInstall';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -272,6 +273,8 @@ export class AppsRestApi {
 					}
 
 					info.status = aff.getApp().getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
 
 					return API.v1.success({
 						app: info,
@@ -558,6 +561,8 @@ export class AppsRestApi {
 
 					info.status = aff.getApp().getStatus();
 
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'update', info);
+
 					return API.v1.success({
 						app: info,
 						implemented: aff.getImplementedInferfaces(),
@@ -577,6 +582,8 @@ export class AppsRestApi {
 
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
+
+					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'uninstall', info);
 
 					return API.v1.success({ app: info });
 				},
@@ -882,6 +889,35 @@ export class AppsRestApi {
 					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
 
 					return API.v1.success({ status: result.getStatus() });
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request',
+			{ authRequired: true },
+			{
+				async get() {
+					const baseUrl = orchestrator.getMarketplaceUrl();
+					const { appId, q = '', sort = '', limit = 25, offset = 0 } = this.queryParams;
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const data = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+							headers,
+						});
+
+						return API.v1.success({ data });
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
+
+						return API.v1.failure(e.message);
+					}
 				},
 			},
 		);

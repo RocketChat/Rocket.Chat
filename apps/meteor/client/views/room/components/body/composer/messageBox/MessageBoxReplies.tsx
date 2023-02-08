@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { QuoteAttachment } from '../../../../../../components/message/Attachments/QuoteAttachment';
+import { QuoteAttachment } from '../../../../../../components/message/content/attachments/QuoteAttachment';
 import { useChat } from '../../../../contexts/ChatContext';
 
 const MessageBoxReplies = (): ReactElement | null => {

@@ -20,10 +20,7 @@ function VisitorData({ room, reload, reloadInfo, close }) {
 		value: visitor,
 		phase: stateVisitor,
 		error: errorVisitor,
-	} = useEndpointData(
-		'/v1/livechat/visitors.info',
-		useMemo(() => ({ visitorId: _id }), [_id]),
-	);
+	} = useEndpointData('/v1/livechat/visitors.info', { params: useMemo(() => ({ visitorId: _id }), [_id]) });
 
 	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

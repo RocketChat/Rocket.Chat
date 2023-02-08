@@ -1,21 +1,21 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ContextType, ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
-import type { ChatContext } from '../../../contexts/ChatContext';
+import { useChat } from '../../../contexts/ChatContext';
 import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	rid: IRoom['_id'];
-	children?: ReactElement;
+	tmid?: IMessage['_id'];
+	children?: ReactNode;
 	subscription?: ISubscription;
 	readOnly?: boolean;
 	tshow?: boolean;
-	chatMessagesInstance: ContextType<typeof ChatContext>;
 	onResize?: () => void;
 	onEscape?: () => void;
 	onSend?: () => void;
@@ -24,14 +24,15 @@ export type ComposerMessageProps = {
 	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
+	const chat = useChat();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const composerProps = useMemo(
 		() => ({
 			onJoin: async (): Promise<void> => {
 				try {
-					await chatMessagesInstance?.data?.joinRoom();
+					await chat?.data?.joinRoom();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 					throw error;
@@ -40,8 +41,8 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props
 
 			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
 				try {
-					await chatMessagesInstance?.flows.action.stop('typing');
-					const newMessageSent = await chatMessagesInstance?.flows.sendMessage({
+					await chat?.flows.action.stop('typing');
+					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
 					});
@@ -51,26 +52,19 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props
 				}
 			},
 			onTyping: async (): Promise<void> => {
-				if (chatMessagesInstance?.composer?.text?.trim() === '') {
-					await chatMessagesInstance?.flows.action.stop('typing');
+				if (chat?.composer?.text?.trim() === '') {
+					await chat?.flows.action.stop('typing');
 					return;
 				}
-				await chatMessagesInstance?.flows.action.start('typing');
+				await chat?.flows.action.start('typing');
 			},
-			onNavigateToPreviousMessage: () => chatMessagesInstance?.messageEditing.toPreviousMessage(),
-			onNavigateToNextMessage: () => chatMessagesInstance?.messageEditing.toNextMessage(),
+			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
+			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
 			onUploadFiles: (files: readonly File[]) => {
-				return chatMessagesInstance?.flows.uploadFiles(files);
+				return chat?.flows.uploadFiles(files);
 			},
 		}),
-		[
-			chatMessagesInstance?.data,
-			chatMessagesInstance?.flows,
-			chatMessagesInstance?.composer?.text,
-			chatMessagesInstance?.messageEditing,
-			dispatchToastMessage,
-			onSend,
-		],
+		[chat?.data, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
 	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
@@ -83,16 +77,7 @@ const ComposerMessage = ({ rid, chatMessagesInstance, readOnly, onSend, ...props
 		);
 	}
 
-	return (
-		<MessageBox
-			readOnly={readOnly ?? false}
-			rid={rid}
-			{...composerProps}
-			showFormattingTips={true}
-			{...props}
-			chatContext={chatMessagesInstance}
-		/>
-	);
+	return <MessageBox readOnly={readOnly ?? false} rid={rid} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);

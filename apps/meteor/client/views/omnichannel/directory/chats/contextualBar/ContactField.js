@@ -22,10 +22,7 @@ const ContactField = ({ contact, room }) => {
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/livechat/visitors.info',
-		useMemo(() => ({ visitorId: contact._id }), [contact._id]),
-	);
+	} = useEndpointData('/v1/livechat/visitors.info', { params: useMemo(() => ({ visitorId: contact._id }), [contact._id]) });
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;

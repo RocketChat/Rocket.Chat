@@ -38,7 +38,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 		[id],
 	);
 
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`/v1/rooms.info`, query);
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`/v1/rooms.info`, { params: query });
 
 	if (bar === 'view' && id) {
 		return <Chat rid={id} />;
@@ -57,8 +57,8 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 	}
 
 	return (
-		<VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
+		<VerticalBar>
+			<VerticalBar.Header expanded>
 				{bar === 'info' && (
 					<>
 						<VerticalBar.Icon name='info-circled' />

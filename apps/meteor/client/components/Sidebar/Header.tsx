@@ -20,7 +20,7 @@ const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => {
 							{title}
 						</Box>
 					)}
-					{onClose && <IconButton title={t('Close')} small icon='cross' onClick={onClose} />}
+					{onClose && <IconButton aria-label={t('Close')} title={t('Close')} small icon='cross' onClick={onClose} />}
 				</Box>
 			)}
 			{children}

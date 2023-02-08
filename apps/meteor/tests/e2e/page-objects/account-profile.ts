@@ -77,22 +77,22 @@ export class AccountProfile {
 	}
 
 	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator("[data-qa-type='e2e-encryption-section']");
+		return this.page.locator('role=region[name="Security"] >> role=region[name="E2E Encryption"]');
 	}
 
 	get securityE2EEncryptionResetKeyButton(): Locator {
-		return this.page.locator("[data-qa-type='e2e-encryption-reset-key-button']");
+		return this.page.locator("role=button[name='Reset E2E Key']");
 	}
 
 	get securityE2EEncryptionPassword(): Locator {
-		return this.page.locator("[data-qa-type='e2e-encryption-password']");
+		return this.page.locator('role=textbox[name="New encryption password"]');
 	}
 
 	get securityE2EEncryptionPasswordConfirmation(): Locator {
-		return this.page.locator("[data-qa-type='e2e-encryption-password-confirmation']");
+		return this.page.locator('role=textbox[name="Confirm new encryption password"]');
 	}
 
 	get securityE2EEncryptionSavePasswordButton(): Locator {
-		return this.page.locator("[data-qa-type='e2e-encryption-save-password-button']");
+		return this.page.locator("role=button[name='Save changes']");
 	}
 }

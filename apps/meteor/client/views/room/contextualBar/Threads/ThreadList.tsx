@@ -2,24 +2,28 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { FormEvent, ReactElement } from 'react';
+import type { FormEvent, ReactElement, VFC } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../../components/VerticalBar';
+import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
+import VerticalBarContent from '../../../../components/VerticalBar/VerticalBarContent';
+import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
+import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon';
+import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useGoToThread } from '../../hooks/useGoToThread';
 import ThreadListItem from './components/ThreadListItem';
-import { useGoToThread } from './hooks/useGoToThread';
 import { useThreadsList } from './hooks/useThreadsList';
 
 type ThreadType = 'all' | 'following' | 'unread';
 
-const ThreadList = (): ReactElement => {
+const ThreadList: VFC = () => {
 	const t = useTranslation();
 
 	const closeTabBar = useTabBarClose();
@@ -100,7 +104,7 @@ const ThreadList = (): ReactElement => {
 	const { threadsList, loadMoreItems } = useThreadsList(options, uid);
 	const { phase, error, items, itemCount } = useRecordList(threadsList);
 
-	const goToThread = useGoToThread();
+	const goToThread = useGoToThread({ replace: true });
 	const handleThreadClick = useCallback(
 		(tmid: IMessage['_id']) => {
 			goToThread(tmid);
@@ -110,13 +114,13 @@ const ThreadList = (): ReactElement => {
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='thread' />
-				<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={handleTabBarCloseButtonClick} />
-			</VerticalBar.Header>
+			<VerticalBarHeader>
+				<VerticalBarIcon name='thread' />
+				<VerticalBarText>{t('Threads')}</VerticalBarText>
+				<VerticalBarClose onClick={handleTabBarCloseButtonClick} />
+			</VerticalBarHeader>
 
-			<VerticalBar.Content paddingInline={0} ref={ref}>
+			<VerticalBarContent paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -188,7 +192,7 @@ const ThreadList = (): ReactElement => {
 						/>
 					)}
 				</Box>
-			</VerticalBar.Content>
+			</VerticalBarContent>
 		</>
 	);
 };

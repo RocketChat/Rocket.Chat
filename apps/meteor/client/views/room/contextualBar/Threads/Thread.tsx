@@ -3,18 +3,21 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Modal, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { VFC } from 'react';
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
+import VerticalBarAction from '../../../../components/VerticalBar/VerticalBarAction';
+import VerticalBarActions from '../../../../components/VerticalBar/VerticalBarActions';
+import VerticalBarClose from '../../../../components/VerticalBar/VerticalBarClose';
+import VerticalBarHeader from '../../../../components/VerticalBar/VerticalBarHeader';
+import VerticalBarInnerContent from '../../../../components/VerticalBar/VerticalBarInnerContent';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
+import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
-import MessageProvider from '../../providers/MessageProvider';
 import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
-import { useGoToThreadList } from './hooks/useGoToThreadList';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 
@@ -22,8 +25,8 @@ type ThreadProps = {
 	tmid: IMessage['_id'];
 };
 
-const Thread = ({ tmid }: ThreadProps): ReactElement => {
-	const goToThreadList = useGoToThreadList();
+const Thread: VFC<ThreadProps> = ({ tmid }) => {
+	const goToThreadList = useGoToThreadList({ replace: true });
 	const closeTabBar = useTabBarClose();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
@@ -31,9 +34,6 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 			closeTabBar();
 		},
 	});
-
-	const room = useRoom();
-	const subscription = useRoomSubscription();
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -70,7 +70,7 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 	};
 
 	return (
-		<VerticalBar.InnerContent>
+		<VerticalBarInnerContent>
 			{canExpand && expanded && <Modal.Backdrop onClick={handleBackdropClick} />}
 			<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 				<VerticalBar
@@ -92,42 +92,41 @@ const Thread = ({ tmid }: ThreadProps): ReactElement => {
 					overflow='hidden'
 					zIndex={100}
 					insetBlock={0}
+					border='none'
 				>
-					<VerticalBar.Header>
-						<VerticalBar.Action name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
+					<VerticalBarHeader expanded={expanded}>
+						<VerticalBarAction name='arrow-back' title={t('Back_to_threads')} onClick={handleGoBack} />
 						{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 							(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
 							null}
-						<VerticalBar.Actions>
+						<VerticalBarActions>
 							{canExpand && (
-								<VerticalBar.Action
+								<VerticalBarAction
 									name={expanded ? 'arrow-collapse' : 'arrow-expand'}
 									title={expanded ? t('Collapse') : t('Expand')}
 									onClick={handleToggleExpand}
 								/>
 							)}
-							<VerticalBar.Action
+							<VerticalBarAction
 								name={following ? 'bell' : 'bell-off'}
 								title={following ? t('Following') : t('Not_Following')}
 								disabled={!mainMessageQueryResult.isSuccess || toggleFollowingMutation.isLoading}
 								onClick={handleToggleFollowing}
 							/>
-							<VerticalBar.Close onClick={handleClose} />
-						</VerticalBar.Actions>
-					</VerticalBar.Header>
+							<VerticalBarClose onClick={handleClose} />
+						</VerticalBarActions>
+					</VerticalBarHeader>
 
 					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (
 							<ChatProvider tmid={tmid}>
-								<MessageProvider rid={room._id} broadcast={subscription?.broadcast ?? false}>
-									<ThreadChat mainMessage={mainMessageQueryResult.data} />
-								</MessageProvider>
+								<ThreadChat mainMessage={mainMessageQueryResult.data} />
 							</ChatProvider>
 						)) ||
 						null}
 				</VerticalBar>
 			</Box>
-		</VerticalBar.InnerContent>
+		</VerticalBarInnerContent>
 	);
 };
 

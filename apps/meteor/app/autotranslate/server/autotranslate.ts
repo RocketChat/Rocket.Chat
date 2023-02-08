@@ -67,7 +67,7 @@ export class TranslationProviderRegistry {
 		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
 	}
 
-	static translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage | undefined {
+	static translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): IMessage | undefined {
 		return TranslationProviderRegistry.enabled
 			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(message, room, targetLanguage)
 			: undefined;
@@ -281,7 +281,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage {
+	translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): IMessage {
 		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
@@ -305,10 +305,13 @@ export abstract class AutoTranslate {
 			Meteor.defer(() => {
 				for (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
-						const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+						// Removes the initial link `[ ](quoterl)` from quote message before translation
+						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;
+						const attachmentMessage = { ...attachment, text: translatedText };
+						const translations = this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
+
 						if (!_.isEmpty(translations)) {
 							Messages.addAttachmentTranslations(message._id, index, translations);
-							Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
 						}
 					}
 				}

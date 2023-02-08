@@ -14,7 +14,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="encryption-toggle"]');
+		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]');
 	}
 
 	get inputChannelName(): Locator {
