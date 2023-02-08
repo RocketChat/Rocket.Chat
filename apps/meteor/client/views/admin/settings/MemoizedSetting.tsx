@@ -1,7 +1,5 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Field, Margins } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
 import type { ElementType, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
@@ -61,11 +59,9 @@ type MemoizedSettingProps = {
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
 	disabled?: boolean;
-	enterpriseCallout?: ReactNode;
+	showUpgradeButton?: ReactNode;
 	actionText?: string;
 };
-
-const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
 
 const MemoizedSetting = ({
 	type,
@@ -76,12 +72,11 @@ const MemoizedSetting = ({
 	onChangeValue,
 	onChangeEditor,
 	disabled,
-	enterpriseCallout,
+	showUpgradeButton,
 	className = undefined,
 	invisible = undefined,
 	...inputProps
 }: MemoizedSettingProps): ReactElement | null => {
-	const t = useTranslation();
 	if (invisible) {
 		return null;
 	}
@@ -106,11 +101,7 @@ const MemoizedSetting = ({
 					</Margins>
 				)}
 			</Box>
-			{enterpriseCallout && (
-				<ExternalLink to={PRICING_URL}>
-					<Button>{t('See_Paid_Plan')}</Button>
-				</ExternalLink>
-			)}
+			{showUpgradeButton}
 		</Field>
 	);
 };
