@@ -1,5 +1,6 @@
-import { LivechatRooms, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import { LivechatPriority, LivechatRooms, Messages, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { IBaseModel } from '@rocket.chat/model-typings';
 import type { Db } from 'mongodb';
 
@@ -37,7 +38,7 @@ class OldLivechatPriorityRaw extends BaseRaw<IOldLivechatPriority> implements IO
 	}
 }
 
-// Migrates priorities to SLAs collection and cleans priorities collection
+// Migration to migrate old priorities to new SLAs, plus for new priorities feature
 addMigration({
 	version: 283,
 	async up() {
@@ -51,15 +52,53 @@ addMigration({
 		await OldLivechatPriority.deleteMany({});
 		await OldLivechatPriority.col.dropIndexes();
 		// If there's no priorities, then no rooms/slas should be modified
-		if (!isEE || !currentPriorities.length) {
+		if (!isEE) {
 			return;
 		}
 
 		// Since priorityId holds the "SLA ID" at this point, we need to rename the property so it doesnt conflict with current priorities
 		// Typing of the prop will be kept as will be reused by the new priorities feature
-		// @ts-ignore - rooms has ref to messages :(
 		await LivechatRooms.updateMany({ priorityId: { $exists: true } }, { $rename: { priorityId: 'slaId' } });
-		// Since we updated the typings of the model
-		await OmnichannelServiceLevelAgreements.insertMany(currentPriorities);
+		if (currentPriorities.length) {
+			// Since we updated the typings of the model
+			await OmnichannelServiceLevelAgreements.insertMany(currentPriorities);
+		}
+
+		try {
+			// remove indexes from livechat_priority collection
+			await LivechatPriority.col.dropIndex('dueTimeInMinutes_1');
+		} catch (error) {
+			// ignore
+			console.log('Error dropping index dueTimeInMinutes_1 from livechat_priority collection:', error);
+		}
+
+		// migrate old priority history messages to new sla history messages
+		await Messages.updateMany(
+			// intentionally using any since this is a legacy type which we've removed
+			{ t: 'livechat_priority_history' as any },
+			{
+				$set: {
+					't': 'omnichannel_sla_change_history',
+					'slaData.definedBy': '$priorityData.definedBy',
+					'slaData.sla': '$priorityData.priority',
+				},
+				$unset: {
+					priorityData: 1,
+				},
+			},
+		);
+
+		// update all livechat rooms to have default priority weight so the sorting on the livechat queue and current chats works as expected
+		await LivechatRooms.updateMany(
+			{
+				t: 'l',
+				priorityWeight: { $exists: false },
+			},
+			{
+				$set: {
+					priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+				},
+			},
+		);
 	},
 });
