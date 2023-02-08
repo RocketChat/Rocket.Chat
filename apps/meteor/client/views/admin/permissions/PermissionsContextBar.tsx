@@ -1,9 +1,11 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
 
 const PermissionsContextBar = (): ReactElement | null => {
@@ -11,10 +13,22 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const _id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
 	const router = useRoute('admin-permissions');
+	const setModal = useSetModal();
+	const { data } = useIsEnterprise();
+	const isEnterprise = !!data?.isEnterprise;
 
 	const handleCloseVerticalBar = useMutableCallback(() => {
 		router.push({});
 	});
+
+	useEffect(() => {
+		if (context !== 'new' || isEnterprise) {
+			return;
+		}
+
+		setModal(<CustomRoleUpsellModal onClose={() => setModal()} />);
+		handleCloseVerticalBar();
+	}, [context, isEnterprise, handleCloseVerticalBar, setModal]);
 
 	return (
 		(context && (
