@@ -290,6 +290,7 @@
 		"dompurify": "^2.3.8",
 		"ejson": "^2.2.2",
 		"emailreplyparser": "^0.0.5",
+		"emoji-toolkit": "^7.0.0",
 		"emojione": "^4.5.0",
 		"eslint-plugin-anti-trojan-source": "^1.1.0",
 		"eventemitter3": "^4.0.7",
