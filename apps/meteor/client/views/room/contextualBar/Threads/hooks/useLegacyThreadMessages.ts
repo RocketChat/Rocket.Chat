@@ -1,4 +1,4 @@
-import type { IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useCallback } from 'react';
 
@@ -6,7 +6,12 @@ import { Messages } from '../../../../../../app/models/client';
 import { upsertMessageBulk } from '../../../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 
-export const useLegacyThreadMessages = (tmid: IThreadMainMessage['_id']) => {
+export const useLegacyThreadMessages = (
+	tmid: IThreadMainMessage['_id'],
+): {
+	messages: Array<IThreadMessage | IThreadMainMessage>;
+	loading: boolean;
+} => {
 	const messages = useReactiveValue(
 		useCallback(() => {
 			return Messages.find(
@@ -22,7 +27,7 @@ export const useLegacyThreadMessages = (tmid: IThreadMainMessage['_id']) => {
 					},
 					sort: { ts: 1 },
 				},
-			).fetch();
+			).fetch() as Array<IThreadMessage | IThreadMainMessage>;
 		}, [tmid]),
 	);
 
