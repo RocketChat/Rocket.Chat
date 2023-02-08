@@ -58,26 +58,33 @@ const AuditResult = ({ className, type, msg, dateRange, rid, users, visitor, age
 	}, [agent]);
 
 	useEffect(() => {
-		if (!ref.current) {
-			return;
-		}
+		let view: Blaze.View | undefined;
 
-		const view = Blaze.renderWithData(
-			Template.audit,
-			() => ({
-				type,
-				msg: reactiveDataRef.current.get('msg'),
-				startDate: reactiveDataRef.current.get('dateRange')?.start ?? new Date(0),
-				endDate: reactiveDataRef.current.get('dateRange')?.end ?? new Date(),
-				rid: reactiveDataRef.current.get('rid'),
-				users: reactiveDataRef.current.get('users'),
-				visitor: reactiveDataRef.current.get('visitor'),
-				agent: reactiveDataRef.current.get('agent'),
-			}),
-			ref.current,
-		);
+		// @ts-expect-error An import path cannot end with a '.ts' extension.
+		import('../../../templates/audit/audit.ts').then(() => {
+			if (!ref.current) {
+				return;
+			}
 
-		return () => Blaze.remove(view);
+			view = Blaze.renderWithData(
+				Template.audit,
+				() => ({
+					type,
+					msg: reactiveDataRef.current.get('msg'),
+					startDate: reactiveDataRef.current.get('dateRange')?.start ?? new Date(0),
+					endDate: reactiveDataRef.current.get('dateRange')?.end ?? new Date(),
+					rid: reactiveDataRef.current.get('rid'),
+					users: reactiveDataRef.current.get('users'),
+					visitor: reactiveDataRef.current.get('visitor'),
+					agent: reactiveDataRef.current.get('agent'),
+				}),
+				ref.current,
+			);
+		});
+
+		return () => {
+			if (view) Blaze.remove(view);
+		};
 	}, [type]);
 
 	return <div className={className} ref={ref} />;

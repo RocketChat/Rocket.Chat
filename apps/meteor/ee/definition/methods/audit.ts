@@ -1,7 +1,7 @@
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import '@rocket.chat/ui-contexts';
-import type { IAuditLog } from '../../../definition/IAuditLog';
+import type { IAuditLog } from '../IAuditLog';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

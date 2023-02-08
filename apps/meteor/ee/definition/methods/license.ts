@@ -1,5 +1,5 @@
 import '@rocket.chat/ui-contexts';
-import type { ILicenseTag } from './ILicenseTag';
+import type { ILicenseTag } from '../../app/license/definition/ILicenseTag';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

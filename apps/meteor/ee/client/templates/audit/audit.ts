@@ -1,15 +1,16 @@
-import type { TemplateStatic } from 'meteor/templating';
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
+import type { TemplateStatic } from 'meteor/templating';
+import { Template } from 'meteor/templating';
 
-import { hasAllPermission } from '../../../../../../app/authorization/client';
-import { createMessageContext } from '../../../../../../app/ui-utils/client/lib/messageContext';
-import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
+import { hasAllPermission } from '../../../../app/authorization/client';
+import { createMessageContext } from '../../../../app/ui-utils/client/lib/messageContext';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 import './audit.html';
+import './audit.css';
 
 const loadMessages = async function (
 	this: TemplateStatic['audit'] extends Blaze.Template<any, infer I> ? I : never,

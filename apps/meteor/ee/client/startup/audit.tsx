@@ -64,8 +64,7 @@ const unregisterRoutes = () => {
 };
 
 onToggledFeature('auditing', {
-	up: async () => {
-		await Promise.all([import('../../app/auditing/client/templates'), import('../../app/auditing/client/index.css')]);
+	up: () => {
 		registerRoutes();
 	},
 	down: () => {
