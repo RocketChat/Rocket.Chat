@@ -1,7 +1,7 @@
 import { Margins, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import TriggersForm from './TriggersForm';
@@ -45,11 +45,32 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	const save = useMethod('livechat:saveTrigger');
 
-	// const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
-	const methods = useForm({ defaultValues: getInitialValues(data) });
+	const methods = useForm({ defaultValues: getInitialValues(data), mode: 'onChange' });
+	const { reset, setValue, getValues, handleSubmit, formState } = methods;
 
-	const values = methods.getValues();
-	const hasUnsavedChanges = methods.formState.isDirty;
+	// useEffect(() => {
+	// 	methods.setValue('enabled', data.enabled);
+	// 	methods.setValue('name', data.name);
+	// 	methods.setValue('description', data.description);
+	// 	methods.setValue('runOnce', data.runOnce);
+	// 	methods.setValue('conditions', { value: data.conditions.value });
+	// 	// methods.setValue('actions', {
+	// 	// 	name: data.actions.name,
+	// 	// 	params: { msg: data.actions.params.msg, actionAgentName: data.actions.params.name },
+	// 	// });
+	// }, [data, methods]);
+
+	const handleDebug = useCallback(() => {
+		reset(getInitialValues(data));
+	}, [reset, data]);
+
+	// useEffect(() => {
+	// 	const dataValues = getInitialValues(data);
+	// 	reset(dataValues);
+	// }, [data, reset]);
+
+	const values = getValues();
+	const hasUnsavedChanges = formState.isDirty;
 	const handleSave = useMutableCallback(async () => {
 		try {
 			const {
@@ -94,8 +115,11 @@ const EditTriggerPage = ({ data, onSave }) => {
 			</FieldGroup>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} primary onClick={handleSave} disabled={!canSave}>
+					<Button flexGrow={1} type='submit' primary onClick={handleSubmit(handleSave)} disabled={!canSave}>
 						{t('Save')}
+					</Button>
+					<Button flexGrow={1} type='button' primary onClick={handleDebug}>
+						Debug
 					</Button>
 				</Margins>
 			</Box>

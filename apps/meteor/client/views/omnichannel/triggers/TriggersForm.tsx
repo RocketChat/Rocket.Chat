@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, FC, FormEvent } from 'react';
+import type { ComponentProps, FC } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 
@@ -32,19 +32,15 @@ type TriggersFormProps = {
 		// In the future, this will be an array
 		actions: TriggerActions;
 	};
-	handlers: {
-		handleName: (event: FormEvent<HTMLInputElement>) => void;
-		handleDescription: (event: FormEvent<HTMLInputElement>) => void;
-		handleEnabled: (event: FormEvent<HTMLInputElement>) => void;
-		handleRunOnce: (event: FormEvent<HTMLInputElement>) => void;
-		handleConditions: (value: TriggerConditions) => void;
-		handleActions: (value: TriggerActions) => void;
-	};
 	className?: ComponentProps<typeof Field>['className'];
 };
 
 const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
-	const { register, control } = useFormContext();
+	const {
+		register,
+		control,
+		formState: { errors },
+	} = useFormContext();
 
 	const {
 		field: { onChange: handleEnabled, value: valueEnabled },
@@ -76,13 +72,11 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 	const t = useTranslation();
 	const { name, conditions, actions } = values;
 
-	// const { /* handleName, handleDescription,*/ handleEnabled, handleRunOnce, handleConditions, handleActions } = handlers;
-
-	const { name: conditionName } = conditions;
+	const { name: conditionName } = conditions || {};
 
 	const {
 		params: { sender: actionSender, msg: actionMsg },
-	} = actions;
+	} = actions || { params: {} };
 
 	const conditionOptions: SelectOption[] = useMemo(
 		() => [
@@ -154,6 +148,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 	// 		},
 	// 	});
 	// });
+
 	useComponentDidUpdate(() => {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
@@ -181,9 +176,13 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 			<Field className={className}>
 				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
-					<TextInput {...register('name')} error={nameError} placeholder={t('Name')} />
+					<TextInput
+						{...register('name', { required: t('The_field_is_required', t('Name')) })}
+						error={errors?.name?.message}
+						placeholder={t('Name')}
+					/>
 				</Field.Row>
-				<Field.Error>{nameError}</Field.Error>
+				{errors?.name && <Field.Error>{errors.name?.message}</Field.Error>}
 			</Field>
 			<Field className={className}>
 				<Field.Label>{t('Description')}</Field.Label>
@@ -216,9 +215,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 					</Field.Row>
 				)}
 				<Field.Row>
-					<TextAreaInput rows={3} {...register('actions.params.msg')} placeholder={`${t('Message')}*`} />
+					<TextAreaInput rows={3} {...register('actions.params.msg', { required: true })} placeholder={`${t('Message')}*`} />
 				</Field.Row>
-				<Field.Error>{msgError}</Field.Error>
+				{errors?.actions?.params?.msg && <Field.Error>{msgError}</Field.Error>}
 			</Field>
 		</>
 	);
