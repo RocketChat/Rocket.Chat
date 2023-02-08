@@ -41,7 +41,6 @@ import './methods/removeOAuthService';
 import './methods/restartServer';
 import './methods/saveSetting';
 import './methods/saveSettings';
-import './methods/sendInvitationEmail';
 import './methods/sendMessage';
 import './methods/sendSMTPTestEmail';
 import './methods/setAdminStatus';

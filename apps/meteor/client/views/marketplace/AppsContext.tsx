@@ -7,6 +7,7 @@ import type { App } from './types';
 type AppsContextValue = {
 	installedApps: AsyncState<{ apps: App[] }>;
 	marketplaceApps: AsyncState<{ apps: App[] }>;
+	privateApps: AsyncState<{ apps: App[] }>;
 	numberOfMarketplaceEnabledApps: number;
 	numberOfPrivateEnabledApps: number;
 	reload: () => Promise<void>;
@@ -23,7 +24,11 @@ export const AppsContext = createContext<AppsContextValue>({
 		value: undefined,
 		error: undefined,
 	},
-
+	privateApps: {
+		phase: AsyncStatePhase.LOADING,
+		value: undefined,
+		error: undefined,
+	},
 	numberOfMarketplaceEnabledApps: 0,
 	numberOfPrivateEnabledApps: 0,
 	reload: () => Promise.resolve(),

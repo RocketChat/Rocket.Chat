@@ -12,7 +12,7 @@ import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 
-type AppRowProps = App & { isMarketplace: boolean };
+type AppRowProps = App;
 
 // TODO: org props
 const AppRow = (props: AppRowProps): ReactElement => {

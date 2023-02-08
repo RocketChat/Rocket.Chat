@@ -1,8 +1,9 @@
-import { useRouteParameter, useRoute, useMethod } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute, useMethod, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
+import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
 import AppsPage from './AppsPage/AppsPage';
@@ -14,9 +15,13 @@ const AppsRoute = (): ReactElement => {
 	const appsWhatIsItRoute = useRoute('marketplace-disabled');
 	const marketplaceRoute = useRoute('marketplace');
 
-	const context = useRouteParameter('context');
+	const context = useRouteParameter('context') || 'explore';
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
+
+	const isAdminUser = usePermission('manage-apps');
+
+	if (!page) marketplaceRoute.push({ context, page: 'list' });
 
 	useEffect(() => {
 		let mounted = true;
@@ -40,6 +45,8 @@ const AppsRoute = (): ReactElement => {
 			mounted = false;
 		};
 	}, [isAppsEngineEnabled, appsWhatIsItRoute, marketplaceRoute, context]);
+
+	if ((context === 'requested' || page === 'install') && !isAdminUser) return <NotAuthorizedPage />;
 
 	if (isLoading) {
 		return <PageSkeleton />;
