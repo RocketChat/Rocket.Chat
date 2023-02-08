@@ -1,5 +1,6 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute, useMethod, useSetModal } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
 import React from 'react';
@@ -7,11 +8,10 @@ import React from 'react';
 import { userHasAllPermission } from '../../../app/authorization/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
+import RegisterWorkspaceModal from '../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
 import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
-import { useQuery } from '@tanstack/react-query';
-import RegisterWorkspaceModal from '../../views/admin/cloud/modals/WorkspaceRegistrationModal';
 
 type AdministrationModelListProps = {
 	accountBoxItems: AccountBoxItem[];
@@ -31,11 +31,11 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
 	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
-	const { workspaceRegistered } = result.data || {};
+	const { workspaceRegistered, connectToCloud } = result.data || {};
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<RegisterWorkspaceModal onClose={handleModalClose} />);
+		setModal(<RegisterWorkspaceModal onClose={handleModalClose} isConnectedToCloud={connectToCloud} />);
 	};
 
 	const infoRoute = useRoute('admin-info');

@@ -1,97 +1,78 @@
-import React, { useEffect } from 'react';
-import type { ReactNode } from 'react';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useQueryStringParameter,
-	useMethod,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
-import RegisterWorkspaceMenu from './components/RegisterWorkspaceMenu';
 import RegisterWorkspaceCards from './components/RegisterWorkspaceCards';
-import RegisterWorkspaceModal from './modals/WorkspaceRegistrationModal';
+import RegisterWorkspaceMenu from './components/RegisterWorkspaceMenu';
+import ConnectWorkspaceModal from './modals/ConnectWorkspaceModal';
+import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 
 const RegisterWorkspace = (): ReactNode => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const token = useQueryStringParameter('token');
+	const setModal = useSetModal();
 
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
 	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
 	const reload = useMutableCallback(() => result.refetch());
 
-	const connectWorkspace = useMethod('cloud:connectWorkspace');
-
-	const setModal = useSetModal();
-
-	useEffect(() => {
-		const acceptWorkspaceToken = async (): Promise<void> => {
-			try {
-				if (token) {
-					const isConnected = await connectWorkspace(token);
-
-					if (!isConnected) {
-						throw Error(t('An error occured connecting' as Parameters<typeof t>[0]));
-					}
-
-					dispatchToastMessage({ type: 'success', message: t('Connected') });
-				}
-			} catch (error: unknown) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				reload();
-			}
-		};
-
-		acceptWorkspaceToken();
-	}, [reload, connectWorkspace, dispatchToastMessage, t, token]);
-
-
 	if (result.isLoading || result.isError) {
 		return null;
 	}
 
-	const {
-		connectToCloud: isConnectedToCloud,
-		workspaceRegistered: isWorkspaceRegistered,
-	} = result.data;
+	const { connectToCloud: isConnectedToCloud, workspaceRegistered: isWorkspaceRegistered } = result.data;
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => {
 			setModal(null);
 			reload();
 		};
-		setModal(<RegisterWorkspaceModal
-			onClose={handleModalClose}
-			onStatusChange={reload}
-			isConnectedToCloud={isConnectedToCloud}
-		/>);
+		if (isWorkspaceRegistered) {
+			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
+		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={reload} isConnectedToCloud={isConnectedToCloud} />);
 	};
 
-	console.log('result.data', result.data)
+	const handleRegistrationTag = () => {
+		if (!isWorkspaceRegistered && !isConnectedToCloud) {
+			return <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>;
+		}
+		if (isWorkspaceRegistered && !isConnectedToCloud) {
+			return <Tag variant='secondary-danger'>{t('RegisterWorkspace_NotConnected_Title')}</Tag>;
+		}
+		return <Tag variant='primary'>{t('Workspace_registered')}</Tag>;
+	};
+
+	const handleCardsTitle = () => {
+		if (!isWorkspaceRegistered && !isConnectedToCloud) {
+			return t('RegisterWorkspace_NotRegistered_Subtitle');
+		}
+		if (isWorkspaceRegistered && !isConnectedToCloud) {
+			return t('RegisterWorkspace_NotConnected_Subtitle');
+		}
+		return t('RegisterWorkspace_Registered_Description');
+	};
 
 	return (
 		<Page background='tint'>
 			<Page.Header title={t('Registration')}>
-				<RegisterWorkspaceMenu isWorkspaceRegistered={isWorkspaceRegistered} onClick={handleRegisterWorkspaceClick} />
+				<RegisterWorkspaceMenu
+					isWorkspaceRegistered={isWorkspaceRegistered}
+					isConnectedToCloud={isConnectedToCloud}
+					onClick={handleRegisterWorkspaceClick}
+					onStatusChange={reload}
+				/>
 			</Page.Header>
-			
+
 			<Page.ScrollableContentWithShadow>
-				{isWorkspaceRegistered ? (
-					<Tag variant='primary'>{t('Workspace_registered')}</Tag>
-				) : (
-					<Tag variant='secondary-danger'>{t('RegisterWorkspace_NotRegistered_Title')}</Tag>
-				)}
-				
+				{handleRegistrationTag()}
+
 				<Box pb={8}>
-					<Box fontSize='h3' fontWeight={700}>{
-						isWorkspaceRegistered ? t('RegisterWorkspace_Registered_Description') : t('RegisterWorkspace_NotRegistered_Description')
-					}</Box>
+					<Box fontSize='h3' fontWeight={700}>
+						{handleCardsTitle()}
+					</Box>
 					<RegisterWorkspaceCards />
 				</Box>
 			</Page.ScrollableContentWithShadow>
