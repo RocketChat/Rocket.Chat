@@ -498,6 +498,10 @@ const LivechatDepartmentSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		showArchived: {
+			type: 'string',
+			nullable: true,
+		},
 		count: {
 			type: 'number',
 			nullable: true,
