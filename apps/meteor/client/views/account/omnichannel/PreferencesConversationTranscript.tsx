@@ -1,4 +1,4 @@
-import { Accordion, Box, Field, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Accordion, Box, Field, FieldGroup, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -13,34 +13,51 @@ const PreferencesConversationTranscript = ({ register }: FormSectionProps): Reac
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
 
-	return canSendTranscriptEmail || (canSendTranscriptPDF && hasLicense) ? (
-		<Accordion.Item title={t('Conversational_transcript')}>
+	return (
+		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
-				{canSendTranscriptPDF && hasLicense && (
-					<Field>
-						<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Omnichannel_transcript_pdf')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch {...register('omnichannelTranscriptPDF')} />
-							</Field.Row>
-						</Box>
-						<Field.Hint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description')}</Field.Hint>
-					</Field>
-				)}
-				{canSendTranscriptEmail && (
-					<Field>
-						<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Omnichannel_transcript_email')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch {...register('omnichannelTranscriptEmail')} />
-							</Field.Row>
-						</Box>
-						<Field.Hint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}</Field.Hint>
-					</Field>
-				)}
+				<Field>
+					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1} color='red'>
+						<Field.Label color={!canSendTranscriptPDF || !hasLicense ? 'disabled' : undefined}>
+							<Box display='flex' alignItems='center'>
+								{t('Omnichannel_transcript_pdf')}
+								<Box marginInline={4}>
+									{!hasLicense && <Tag variant='featured'>{t('Enterprise')}</Tag>}
+									{!canSendTranscriptPDF && hasLicense && <Tag>{t('No_permission')}</Tag>}
+								</Box>
+							</Box>
+						</Field.Label>
+						<Field.Row>
+							<ToggleSwitch disabled={!canSendTranscriptPDF || !hasLicense} {...register('omnichannelTranscriptPDF')} />
+						</Field.Row>
+					</Box>
+					<Field.Hint color={!canSendTranscriptPDF || !hasLicense ? 'disabled' : undefined}>
+						{t('Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description')}
+					</Field.Hint>
+				</Field>
+				<Field>
+					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+						<Field.Label color={!canSendTranscriptEmail ? 'disabled' : undefined}>
+							<Box display='flex' alignItems='center'>
+								{t('Omnichannel_transcript_email')}
+								{!canSendTranscriptEmail && (
+									<Box marginInline={4}>
+										<Tag>{t('No_permission')}</Tag>
+									</Box>
+								)}
+							</Box>
+						</Field.Label>
+						<Field.Row>
+							<ToggleSwitch disabled={!canSendTranscriptEmail} {...register('omnichannelTranscriptEmail')} />
+						</Field.Row>
+					</Box>
+					<Field.Hint color={!canSendTranscriptEmail ? 'disabled' : undefined}>
+						{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}
+					</Field.Hint>
+				</Field>
 			</FieldGroup>
 		</Accordion.Item>
-	) : null;
+	);
 };
 
 export default PreferencesConversationTranscript;

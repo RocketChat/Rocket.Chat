@@ -7632,7 +7632,7 @@ __metadata:
     "@types/react-dom": ^18
     "@types/testing-library__jest-dom": ^5
     emoji-assets: ^7.0.1
-    emojione: ^4.5.0
+    emoji-toolkit: ^7.0.0
     eslint: ^8.12.0
     jest: ^27.5.1
     moment: ^2.29.4
@@ -18908,6 +18908,13 @@ __metadata:
   version: 9.2.2
   resolution: "emoji-regex@npm:9.2.2"
   checksum: 8487182da74aabd810ac6d6f1994111dfc0e331b01271ae01ec1eb0ad7b5ecc2bbbbd2f053c05cb55a1ac30449527d819bbfbf0e3de1023db308cbcb47f86601
+  languageName: node
+  linkType: hard
+
+"emoji-toolkit@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "emoji-toolkit@npm:7.0.0"
+  checksum: 0e1ad04dbbbd1ab6d0c735ed2ab24deb8ba2b9d9901367c5a7b12cf7c1f35803cd6082af26e96f7a2bd7371d8af7493aa24664e54df365729fdf6785f28860e3
   languageName: node
   linkType: hard
 

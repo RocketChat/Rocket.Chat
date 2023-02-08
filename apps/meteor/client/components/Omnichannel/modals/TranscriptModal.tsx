@@ -112,7 +112,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					{roomOpen && transcriptRequest && (
 						<Button danger onClick={handleDiscard}>
-							{t('Discard')}
+							{t('Undo_request')}
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (

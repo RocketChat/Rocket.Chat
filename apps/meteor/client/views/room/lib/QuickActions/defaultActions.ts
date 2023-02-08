@@ -19,7 +19,7 @@ addAction(QuickActionsEnum.ChatForward, {
 addAction(QuickActionsEnum.Transcript, {
 	groups: ['live'],
 	id: QuickActionsEnum.Transcript,
-	title: 'Transcript',
+	title: 'Send_transcript',
 	icon: 'mail-arrow-top-right',
 	order: 3,
 	options: [

@@ -24,6 +24,7 @@
 		"@rocket.chat/service-classes": "workspace:^",
 		"@types/node": "^14.18.21",
 		"ejson": "^2.2.2",
+		"emoji-toolkit": "^7.0.0",
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
