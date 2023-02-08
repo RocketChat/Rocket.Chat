@@ -179,29 +179,33 @@ const CloseChatModal = ({
 										</Field.Label>
 									</Field.Row>
 								</Field>
-								<Field marginBlockStart='x14'>
-									<Field.Label required>{t('Contact_email')}</Field.Label>
-									<Field.Row>
-										<EmailInput value={visitorEmail} required disabled flexGrow={1} />
-									</Field.Row>
-								</Field>
-								<Field marginBlockStart='x12'>
-									<Field.Label required>{t('Subject')}</Field.Label>
-									<Field.Row>
-										<TextInput
-											{...register('subject', { required: true })}
-											className='active'
-											error={
-												errors.subject &&
-												t('error-the-field-is-required', {
-													field: t('Subject'),
-												})
-											}
-											flexGrow={1}
-										/>
-									</Field.Row>
-									<Field.Error>{errors.subject?.message}</Field.Error>
-								</Field>
+								{transcriptEmail && (
+									<>
+										<Field marginBlockStart='x14'>
+											<Field.Label required>{t('Contact_email')}</Field.Label>
+											<Field.Row>
+												<EmailInput value={visitorEmail} required disabled flexGrow={1} />
+											</Field.Row>
+										</Field>
+										<Field marginBlockStart='x12'>
+											<Field.Label required>{t('Subject')}</Field.Label>
+											<Field.Row>
+												<TextInput
+													{...register('subject', { required: true })}
+													className='active'
+													error={
+														errors.subject &&
+														t('error-the-field-is-required', {
+															field: t('Subject'),
+														})
+													}
+													flexGrow={1}
+												/>
+											</Field.Row>
+											<Field.Error>{errors.subject?.message}</Field.Error>
+										</Field>
+									</>
+								)}
 							</>
 						)}
 						<Field marginBlockStart='x16'>
