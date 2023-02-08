@@ -131,7 +131,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

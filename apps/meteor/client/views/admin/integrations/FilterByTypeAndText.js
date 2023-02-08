@@ -2,8 +2,6 @@ import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect, memo } from 'react';
 
-import { isValidRegex } from '../../../lib/utils/validateRegex';
-
 const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
 
