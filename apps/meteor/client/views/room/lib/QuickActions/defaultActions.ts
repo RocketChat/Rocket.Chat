@@ -38,7 +38,7 @@ addAction(QuickActionsEnum.Transcript, {
 addAction(QuickActionsEnum.CloseChat, {
 	groups: ['live'],
 	id: QuickActionsEnum.CloseChat,
-	title: 'Close',
+	title: 'End_conversation',
 	icon: 'balloon-close-top-right',
 	order: 5,
 	color: 'danger',
