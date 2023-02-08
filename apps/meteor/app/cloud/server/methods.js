@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';
-import { reconnectWorkspace } from './functions/connectWorkspace';
+import { reconnectWorkspace } from './functions/reconnectWorkspace';
 import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
 import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
 import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
@@ -98,9 +98,7 @@ Meteor.methods({
 
 		return connectWorkspace(token);
 	},
-	'cloud:reconnectWorkspace'(token) {
-		check(token, String);
-
+	'cloud:reconnectWorkspace'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'cloud:reconnectWorkspace',
