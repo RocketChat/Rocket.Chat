@@ -82,6 +82,7 @@ test.describe.serial('homepage', () => {
 						expect(
 							(await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello admin</span>' })).status(),
 						).toBe(200);
+						expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 						expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 					});
 
