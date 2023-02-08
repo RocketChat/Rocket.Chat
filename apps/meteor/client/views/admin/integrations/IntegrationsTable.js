@@ -1,6 +1,6 @@
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
