@@ -3,7 +3,7 @@ import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
+import { useOmnichannelEnterpriseEnabled } from '../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';
 import { OmnichannelSortingDisclaimer } from '../Omnichannel/OmnichannelSortingDisclaimer';
 import ListItem from '../Sidebar/ListItem';
 
@@ -11,7 +11,7 @@ function SortModeList(): ReactElement {
 	const t = useTranslation();
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
-	const isOmnichannelEnabled = useOmnichannelEnabled();
+	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
 
 	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { sidebarSortby: value } }), [value]);
