@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
+import { settings } from '../../../../app/settings/client';
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -39,6 +40,7 @@ const useQueryLc = (
 	filter: string;
 	types: string[];
 	sort: string;
+	useFname: boolean;
 	count?: number;
 	offset?: number;
 } =>
@@ -47,6 +49,7 @@ const useQueryLc = (
 			filter: text || '',
 			types: types || [],
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+			useFname: settings.get('UI_Allow_room_names_with_special_chars') as boolean,
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
@@ -71,27 +74,14 @@ const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI
 const getRoomDisplayName = (room: IRoom): string | undefined =>
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
 
-const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[] =>
+const useDisplayData = (data: IRoom[] | undefined, isLoading: boolean, sort: [string, 'asc' | 'desc']): IRoom[] | undefined =>
 	useMemo(() => {
-		const { data = {}, isLoading } = asyncState;
-
 		if (isLoading) {
-			return null;
+			return undefined;
 		}
 
-		if (sort[0] === 'name' && data.rooms) {
-			return data.rooms.sort((a: IRoom, b: IRoom) => {
-				const aName = getRoomDisplayName(a) || '';
-				const bName = getRoomDisplayName(b) || '';
-				if (aName === bName) {
-					return 0;
-				}
-				const result = aName < bName ? -1 : 1;
-				return sort[1] === 'asc' ? result : result * -1;
-			});
-		}
-		return data;
-	}, [asyncState, sort]);
+		return data ?? undefined;
+	}, [isLoading, sort]);
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
@@ -119,12 +109,12 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const endpointData = useQuery(
 		['rooms', query, 'admin'],
 		async () => {
-			const { rooms } = await getAdminRooms(params);
+			const adminRooms = await getAdminRooms(query);
 
-			if (rooms.length === 0) {
+			if (adminRooms.rooms.length === 0) {
 				throw new Error(t('No_results_found'));
 			}
-			return rooms;
+			return { ...adminRooms, rooms: adminRooms.rooms as IRoom[] };
 		},
 		{
 			onError: (error) => {
@@ -133,7 +123,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		},
 	);
 
-	const { data, refetch } = endpointData;
+	const { data, refetch, isLoading } = endpointData;
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -163,7 +153,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[sort, setSort],
 	);
 
-	const displayData = useDisplayData(endpointData, sort);
+	const displayData = useDisplayData(data?.rooms, isLoading, sort);
 
 	const header = useMemo(
 		() =>
@@ -266,7 +256,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			header={header}
 			renderRow={renderRow}
 			results={displayData}
-			total={data?.length}
+			total={data?.total}
 			params={params}
 			setParams={setParams}
 			renderFilter={({ onChange, ...props }): ReactElement => <FilterByTypeAndText setFilter={onChange} {...props} />}

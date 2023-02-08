@@ -12,7 +12,15 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	getMostRecentAverageChatDurationTime(numberMostRecentChats: any, department: any): Promise<any>;
 
-	findByNameContainingAndTypes(name: any, types: any, discussion?: boolean, teams?: boolean, showOnlyTeams?: boolean, useFname?: boolean,  options?: any): any;
+	findByNameContainingAndTypes(
+		name: any,
+		types: any,
+		discussion?: boolean,
+		teams?: boolean,
+		showOnlyTeams?: boolean,
+		useFname?: boolean,
+		options?: any,
+	): any;
 
 	findByTypes(types: any, discussion?: boolean, teams?: boolean, onlyTeams?: boolean, options?: any): any;
 

@@ -223,6 +223,7 @@ export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchem
 type RoomsAdminRoomsProps = PaginatedRequest<{
 	filter?: string;
 	types?: string[];
+	useFname?: boolean;
 }>;
 
 const RoomsAdminRoomsSchema = {
@@ -237,6 +238,10 @@ const RoomsAdminRoomsSchema = {
 			items: {
 				type: 'string',
 			},
+			nullable: true,
+		},
+		useFname: {
+			type: 'boolean',
 			nullable: true,
 		},
 		count: {

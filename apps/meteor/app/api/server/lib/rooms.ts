@@ -4,18 +4,19 @@ import { Rooms } from '@rocket.chat/models';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
-import { settings } from '../../../../app/settings/client';
 
 export async function findAdminRooms({
 	uid,
 	filter,
 	types = [],
 	pagination: { offset, count, sort },
+	useFname = false,
 }: {
 	uid: string;
 	filter: string;
 	types: string[];
 	pagination: { offset: number; count: number; sort: [string, number][] };
+	useFname: boolean;
 }): Promise<{
 	rooms: IRoom[];
 	count: number;
@@ -33,25 +34,22 @@ export async function findAdminRooms({
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
 		projection: adminFields,
-		sort: sort || { default: -1, name: 1 },
 		skip: offset,
 		limit: count,
 	};
 
-    const useFnameToSearch = <boolean>settings.get('UI_Allow_room_names_with_special_chars')
-
 	let result;
 	if (name && showTypes.length) {
-		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, useFnameToSearch, options);
+		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, useFname, options);
 	} else if (showTypes.length) {
 		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, useFnameToSearch, options);
+		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, useFname, options);
 	}
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
 
 	return {
 		rooms,
