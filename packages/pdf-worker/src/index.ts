@@ -4,7 +4,7 @@ import type { IStrategy } from './types/IStrategy';
 export type Templates = 'chat-transcript';
 
 export class PdfWorker {
-	protected validMimeTypes = ['image/jpeg', 'image/png'];
+	protected validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 
 	mode: Templates;
 

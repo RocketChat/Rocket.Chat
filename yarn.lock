@@ -5366,23 +5366,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/layout@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@react-pdf/layout@npm:3.2.1"
+"@react-pdf/layout@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@react-pdf/layout@npm:3.3.0"
   dependencies:
     "@babel/runtime": ^7.16.4
     "@react-pdf/fns": 2.0.0
     "@react-pdf/image": ^2.2.0
     "@react-pdf/pdfkit": ^3.0.0
     "@react-pdf/primitives": ^3.0.0
-    "@react-pdf/stylesheet": ^4.0.0
+    "@react-pdf/stylesheet": ^4.1.0
     "@react-pdf/textkit": ^4.1.0
-    "@react-pdf/types": ^2.1.0
-    "@react-pdf/yoga": ^3.0.0
+    "@react-pdf/types": ^2.2.0
+    "@react-pdf/yoga": ^4.0.0
     cross-fetch: ^3.1.5
     emoji-regex: ^8.0.0
     queue: ^6.0.1
-  checksum: 2f58cf70512d0e5b52a0a900f02b1917495534f2b4e4f83a8a74809b39d494e77e76952855b8989fd06411165ac30caa7c2e96bc1e63e4bbc1064ed6d6a0cff9
+  checksum: 0ecadf50b0ebdbcbe74b48bcfdbbe0fa4528bb42b0a47f36491a330d45860c8a64e67eb6fff81b18985855da29215928f8b3a36dcdc347cd93b60252ae11c516
   languageName: node
   linkType: hard
 
@@ -5434,38 +5434,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/renderer@npm:^3.0.1":
-  version: 3.0.2
-  resolution: "@react-pdf/renderer@npm:3.0.2"
+"@react-pdf/renderer@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "@react-pdf/renderer@npm:3.1.3"
   dependencies:
     "@babel/runtime": ^7.16.4
     "@react-pdf/font": ^2.3.1
-    "@react-pdf/layout": ^3.2.1
+    "@react-pdf/layout": ^3.3.0
     "@react-pdf/pdfkit": ^3.0.1
     "@react-pdf/primitives": ^3.0.0
     "@react-pdf/render": ^3.2.1
-    "@react-pdf/types": ^2.1.1
+    "@react-pdf/types": ^2.2.0
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
     queue: ^6.0.1
-    react-reconciler: ^0.23.0
     scheduler: ^0.17.0
   peerDependencies:
-    react: ^16.8.6 || ^17.0.0
-  checksum: ab2973fc1685610b77101f157c27581d0162f3f1e267a91626c3425522880d15efdbff7a59a1243b2dad76cfa13236892b362270d6e09dd750e03918d4bfe671
+    react: ^16.8.6 || ^17.0.0 || ^18.0.0
+  checksum: e10aafe3760a53a24c032fcd499c532797886031ccab3851bc48b179cb456197b497fc8008dee736c164f352c7948ed1f17be738257af2332ab154214aa446b9
   languageName: node
   linkType: hard
 
-"@react-pdf/stylesheet@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@react-pdf/stylesheet@npm:4.0.0"
+"@react-pdf/stylesheet@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@react-pdf/stylesheet@npm:4.1.0"
   dependencies:
     "@babel/runtime": ^7.16.4
     "@react-pdf/fns": 2.0.0
-    "@react-pdf/types": ^2.1.0
+    "@react-pdf/types": ^2.2.0
     color-string: ^1.5.3
     hsl-to-hex: ^1.0.0
     media-engine: ^1.0.3
     postcss-value-parser: ^4.1.0
-  checksum: 5a78b17ea291f24a9ce50530fb62d9f40b69e7f15336a79144a94ffbce240054370fcda1996e9fbfbbadb30020abae4fb59785b82e7966412734b95b3c5eeafe
+  checksum: 9a58e56430752aecf80ca1fb2ccd3525afaad288ace2117981abdb367b42a79fe130f1c7cb2e765fa7d47df072d82e029849ee9b989475b4d4430d21fa9da7a4
   languageName: node
   linkType: hard
 
@@ -5481,19 +5483,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/types@npm:^2.0.9, @react-pdf/types@npm:^2.1.0, @react-pdf/types@npm:^2.1.1":
+"@react-pdf/types@npm:^2.0.9, @react-pdf/types@npm:^2.1.0":
   version: 2.1.1
   resolution: "@react-pdf/types@npm:2.1.1"
   checksum: 63c52f7d552f0c373575fc8322a56cdc4f370872ce51da63ca9436fa2ee99cefe1f8d536ca062e70fdfb03114fef728cfb176404f7c7e06ad6e1a34b11671079
   languageName: node
   linkType: hard
 
-"@react-pdf/yoga@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@react-pdf/yoga@npm:3.0.0"
+"@react-pdf/types@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@react-pdf/types@npm:2.2.0"
+  checksum: c0d5dcac934e3c6f7edbaac995445223cd083bcb6985269322114b86d735918fa1e20f7e022dc44418ed29565f45dc4e84d0c56d8db9d37058070e08c454bf72
+  languageName: node
+  linkType: hard
+
+"@react-pdf/yoga@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "@react-pdf/yoga@npm:4.0.1"
   dependencies:
-    "@types/yoga-layout": ^1.9.3
-  checksum: d854112020d3081afa21023cf85bf4dcad520ba7cd8d8e8f0c7cacf84b9b0d865fbafb858236cb95ae70bf6941ffb5f0ff97dccad459740a90bb75f55b1a4760
+    "@babel/runtime": ^7.16.4
+  checksum: 74180c52dfa1b2748bebd0d6c4e285fa47e05a700b19ab1aabd91adca5b08e45db61316d7a9fe818f7c8e6e2528eedeaaffd27b8d0576ecf932db8566e518443
   languageName: node
   linkType: hard
 
@@ -7186,6 +7195,7 @@ __metadata:
     "@nivo/pie": 0.79.1
     "@playwright/test": ^1.22.2
     "@react-aria/color": ^3.0.0-beta.15
+    "@react-pdf/renderer": ^3.1.3
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": 1.36.0
@@ -7215,10 +7225,13 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
     "@rocket.chat/onboarding-ui": next
+    "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/service-classes": "workspace:^"
     "@rocket.chat/string-helpers": next
+    "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-composer": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -7416,6 +7429,7 @@ __metadata:
     moleculer: ^0.14.21
     moment: ^2.29.4
     moment-timezone: ^0.5.34
+    mongo-message-queue: ^1.0.0
     mongodb: ^4.12.1
     mongodb-memory-server: ^7.6.3
     nats: ^2.6.1
@@ -7542,6 +7556,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/omnichannel-transcript@workspace:ee/apps/omnichannel-transcript"
   dependencies:
+    "@react-pdf/renderer": ^3.1.3
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.22
@@ -7549,8 +7564,7 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/service-classes": "workspace:^"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/eslint": ^8.4.10
@@ -7562,6 +7576,7 @@ __metadata:
     fibers: ^5.0.3
     mem: ^8.1.1
     moleculer: ^0.14.21
+    mongo-message-queue: ^1.0.0
     mongodb: ^4.12.1
     nats: ^2.4.0
     pino: ^8.4.2
@@ -7597,7 +7612,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/pdf-worker@workspace:packages/pdf-worker"
   dependencies:
-    "@react-pdf/renderer": ^3.0.1
+    "@react-pdf/renderer": ^3.1.3
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": next
     "@storybook/addon-actions": ~6.5.14
@@ -7704,14 +7719,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/queue-worker@workspace:ee/apps/queue-worker"
   dependencies:
+    "@react-pdf/renderer": ^3.1.3
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": 0.31.22
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/service-classes": "workspace:^"
     "@types/eslint": ^8.4.10
     "@types/node": ^14.18.21
     "@types/polka": ^0.5.4
@@ -7762,6 +7777,36 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/service-classes@workspace:^, @rocket.chat/service-classes@workspace:packages/service-classes":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/service-classes@workspace:packages/service-classes"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": 0.31.22
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/pdf-worker": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/string-helpers": 0.31.22
+    "@rocket.chat/tools": "workspace:^"
+    "@types/jest": ^27.4.1
+    "@types/node": ^14.18.21
+    ejson: ^2.2.2
+    eslint: ^8.12.0
+    eventemitter3: ^4.0.7
+    fibers: ^5.0.3
+    jest: ^27.5.1
+    mem: ^8.1.1
+    mongo-message-queue: ^1.0.0
+    mongodb: ^4.12.1
+    pino: ^8.4.2
+    ts-jest: ^27.1.4
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
   version: 0.0.0-use.local
@@ -12538,13 +12583,6 @@ __metadata:
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 5b41d21d8624199f89db82209b2adab2e47867b3677e852fde65698be2ca48364b14c2e70cb0adc9bca4a2102c93dad2409cae0ad666ea36ae031ae1cb08a7b5
-  languageName: node
-  linkType: hard
-
-"@types/yoga-layout@npm:^1.9.3":
-  version: 1.9.4
-  resolution: "@types/yoga-layout@npm:1.9.4"
-  checksum: 48e143b691ce0489c129cbe79d1ea25c0145a1ec3cf54f4e45459d08c2cb381edebf5e3217d05b8c1f6f634582f3d713823e570fd2fe190ef19b9812aa74024e
   languageName: node
   linkType: hard
 
@@ -32647,20 +32685,6 @@ __metadata:
   version: 1.1.0
   resolution: "react-merge-refs@npm:1.1.0"
   checksum: 90884352999002d868ab9f1bcfe3222fb0f2178ed629f1da7e98e5a9b02a2c96b4aa72800db92aabd69d2483211b4be57a2088e89a11a0b660e7ada744d4ddf7
-  languageName: node
-  linkType: hard
-
-"react-reconciler@npm:^0.23.0":
-  version: 0.23.0
-  resolution: "react-reconciler@npm:0.23.0"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    scheduler: ^0.17.0
-  peerDependencies:
-    react: ^16.0.0
-  checksum: 6bccf22c656eddecc2d7cdb9cb7cb22f89a0ce45cea6981ad8fe5b2958bcba2edd36b67d801d09b443efde6605b472e73139b4fe1eb6a415ccb6bdfd737c3741
   languageName: node
   linkType: hard
 

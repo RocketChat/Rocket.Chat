@@ -33,7 +33,10 @@ export const Files = ({ files, invalidMessage }: { files: PDFFile[]; invalidMess
 			<View style={styles.file} key={index}>
 				<Text>{file.name}</Text>
 				{file.buffer ? (
-					<Image style={styles.image} src={Buffer.from(file.buffer)} />
+					// Cache = false is required to avoid a bug in react-pdf
+					// Which causes the image to be duplicated when using buffers because of bad caching
+					// https://github.com/diegomura/react-pdf/issues/1805
+					<Image style={styles.image} src={Buffer.from(file.buffer)} cache={false} />
 				) : (
 					<Text style={styles.invalidMessage}>{invalidMessage}</Text>
 				)}
