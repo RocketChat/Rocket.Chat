@@ -32,7 +32,6 @@ export default async function (): Promise<void> {
 	await page.locator('[name=password]').type(constants.ADMIN_CREDENTIALS.password);
 	await page.locator('role=button >> text="Login"').click();
 
-
 	await expect('role=alert').not.toBeBusy();
 
 	await page.context().storageState({ path: `admin-session.json` });
