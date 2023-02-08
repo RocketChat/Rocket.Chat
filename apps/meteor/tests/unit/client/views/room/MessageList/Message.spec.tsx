@@ -5,10 +5,9 @@ import proxyquire from 'proxyquire';
 import React from 'react';
 
 import type { default as _RoomMessage } from '../../../../../../client/components/message/variants/RoomMessage';
-import type { MessageWithMdEnforced } from '../../../../../../client/views/room/MessageList/lib/parseMessageTextToAstMarkdown';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
-const baseMessage: MessageWithMdEnforced<IMessage> = {
+const baseMessage: IMessage = {
 	ts: date,
 	u: {
 		_id: 'userId',
