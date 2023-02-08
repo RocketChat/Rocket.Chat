@@ -18,11 +18,6 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	return (
 		<Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 			<TextInput placeholder={t('Search_Integrations')} addon={<Icon name='magnifier' size='x20' />} onChange={handleChange} value={text} />
-			{!isValidRegex(text) && (
-				<Box mbs='x4' color='danger'>
-					{t('Invalid_search_terms')}
-				</Box>
-			)}
 		</Box>
 	);
 };

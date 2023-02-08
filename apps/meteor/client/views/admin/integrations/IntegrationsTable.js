@@ -1,17 +1,17 @@
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { validateRegex } from '../../../lib/utils/validateRegex';
 import FilterByTypeAndText from './FilterByTypeAndText';
 import IntegrationRow from './IntegrationRow';
 
 const useQueryLoc = ({ text, type, itemsPerPage, current }, [column, direction]) =>
 	useMemo(
 		() => ({
-			query: JSON.stringify({ name: { $regex: validateRegex(text), $options: 'i' }, type }),
+			query: JSON.stringify({ name: { $regex: escapeRegExp(text), $options: 'i' }, type }),
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),

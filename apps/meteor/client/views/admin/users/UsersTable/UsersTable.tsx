@@ -1,5 +1,6 @@
-import { States, StatesIcon, StatesTitle, Pagination, Box } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
@@ -15,7 +16,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { isValidRegex, validateRegex } from '../../../../lib/utils/validateRegex';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
@@ -44,9 +44,9 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 				}),
 				query: JSON.stringify({
 					$or: [
-						{ 'emails.address': { $regex: validateRegex(text), $options: 'i' } },
-						{ username: { $regex: validateRegex(text), $options: 'i' } },
-						{ name: { $regex: validateRegex(text), $options: 'i' } },
+						{ 'emails.address': { $regex: escapeRegExp(text), $options: 'i' } },
+						{ username: { $regex: escapeRegExp(text), $options: 'i' } },
+						{ name: { $regex: escapeRegExp(text), $options: 'i' } },
 					],
 				}),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
@@ -131,13 +131,7 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 
 	return (
 		<>
-			<FilterByText shouldFiltersStack onChange={({ text }): void => setText(text)}>
-				{!isValidRegex(text) && (
-					<Box mbs='x4' color='danger'>
-						{t('Invalid_search_terms')}
-					</Box>
-				)}
-			</FilterByText>
+			<FilterByText onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

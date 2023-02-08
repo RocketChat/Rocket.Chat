@@ -1,5 +1,6 @@
-import { Box, Button, Icon, Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
+import { Button, Icon, Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -15,7 +16,6 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { isValidRegex, validateRegex } from '../../../lib/utils/validateRegex';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundRow from './CustomSoundRow';
@@ -36,7 +36,7 @@ const CustomSoundsRoute = (): ReactElement => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: validateRegex(text), $options: 'i' } }),
+				query: JSON.stringify({ name: { $regex: escapeRegExp(text), $options: 'i' } }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				...(itemsPerPage && { count: itemsPerPage }),
 				...(current && { offset: current }),
@@ -122,13 +122,7 @@ const CustomSoundsRoute = (): ReactElement => {
 						)}
 						{isSuccess && data && data.length > 0 && (
 							<>
-								<FilterByText shouldFiltersStack onChange={({ text }): void => setParams(text)}>
-									{!isValidRegex(text) && (
-										<Box mbs='x4' color='danger'>
-											{t('Invalid_search_terms')}
-										</Box>
-									)}
-								</FilterByText>
+								<FilterByText onChange={({ text }): void => setParams(text)} />
 								<GenericTable>
 									<GenericTableHeader>{headers}</GenericTableHeader>
 									<GenericTableBody>

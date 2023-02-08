@@ -1,5 +1,6 @@
 import { Box, Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC, MutableRefObject } from 'react';
@@ -17,7 +18,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { isValidRegex, validateRegex } from '../../../lib/utils/validateRegex';
 
 type CustomEmojiProps = {
 	reload: MutableRefObject<() => void>;
@@ -34,7 +34,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: validateRegex(text), $options: 'i' } }),
+				query: JSON.stringify({ name: { $regex: escapeRegExp(text), $options: 'i' } }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
@@ -65,13 +65,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 
 	return (
 		<>
-			<FilterByText shouldFiltersStack onChange={({ text }): void => setText(text)}>
-				{!isValidRegex(text) && (
-					<Box mbs='x4' color='danger'>
-						{t('Invalid_search_terms')}
-					</Box>
-				)}
-			</FilterByText>
+			<FilterByText onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
