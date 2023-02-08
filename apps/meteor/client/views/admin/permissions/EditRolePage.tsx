@@ -8,7 +8,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import RoleForm from './RoleForm';
 
 const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {
@@ -17,8 +16,6 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 	const setModal = useSetModal();
 	const usersInRoleRouter = useRoute('admin-permissions');
 	const router = useRoute('admin-permissions');
-	const { data } = useIsEnterprise();
-	const isEnterprise = !!data?.isEnterprise;
 
 	const createRole = useEndpoint('POST', '/v1/roles.create');
 	const updateRole = useEndpoint('POST', '/v1/roles.update');
