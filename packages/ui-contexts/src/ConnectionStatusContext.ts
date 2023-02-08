@@ -4,7 +4,7 @@ export type ConnectionStatusContextValue = {
 	connected: boolean;
 	retryCount?: number;
 	retryTime?: number;
-	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
+	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline' | 'disabled';
 	reconnect: () => void;
 };
 
