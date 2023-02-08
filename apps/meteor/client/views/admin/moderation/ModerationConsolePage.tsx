@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
+import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
 
 const ModerationConsolePage = () => {
@@ -32,6 +33,7 @@ const ModerationConsolePage = () => {
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 						<VerticalBar.Action name='download' onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
+					<VerticalBar.Content>{context === 'info' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}</VerticalBar.Content>
 				</VerticalBar>
 			)}
 		</Page>

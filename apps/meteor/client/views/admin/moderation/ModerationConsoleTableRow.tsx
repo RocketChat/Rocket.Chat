@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
+import { formatDateAndTime } from '../../../../client/lib/utils/formatDateAndTime';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import type { GroupedReports } from './ModerationConsoleTable';
 
@@ -89,7 +90,7 @@ const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConso
 			</TableCell>
 			<TableCell withTruncatedText>{message.msg}</TableCell>
 			<TableCell withTruncatedText>{message.rid}</TableCell>
-			<TableCell withTruncatedText>{ts}</TableCell>
+			<TableCell withTruncatedText>{formatDateAndTime(ts)}</TableCell>
 			<TableCell withTruncatedText>{renderReportsByMessage()}</TableCell>
 			<TableCell onClick={(e): void => e.stopPropagation()}>
 				<Menu
