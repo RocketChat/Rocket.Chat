@@ -22,7 +22,7 @@ const InformationRoute = (): ReactElement => {
 	const [instances, setInstances] = useState<IInstanceStatus[]>([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
-	const getInstances = useMethod('instances/get');
+	const getInstances = useMethod('instances/get'); // TODO change to use REST API
 
 	useEffect(() => {
 		let didCancel = false;
