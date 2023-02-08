@@ -98,6 +98,21 @@ Meteor.methods({
 
 		return connectWorkspace(token);
 	},
+	'cloud:disconnectWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'cloud:connectServer',
+			});
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'cloud:connectServer',
+			});
+		}
+
+		return disconnectWorkspace();
+	},
 	'cloud:reconnectWorkspace'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
