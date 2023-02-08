@@ -28,8 +28,8 @@ const getRoomInfoByAuditParams = ({
 	type: string;
 	roomId: IRoom['_id'];
 	users: IUser['username'][];
-	visitor: ILivechatVisitor;
-	agent: ILivechatAgent | 'all';
+	visitor: ILivechatVisitor['_id'];
+	agent: ILivechatAgent['_id'];
 }) => {
 	if (rid) {
 		return getValue(Rooms.findOne({ _id: rid }));
@@ -62,9 +62,9 @@ Meteor.methods({
 		endDate: Date;
 		users: IUser['username'][];
 		msg: IMessage['msg'];
-		type: string;
-		visitor: ILivechatVisitor;
-		agent: ILivechatAgent | 'all';
+		type: 'l';
+		visitor?: ILivechatVisitor['_id'];
+		agent?: ILivechatAgent['_id'];
 	}) {
 		check(startDate, Date);
 		check(endDate, Date);
@@ -74,7 +74,7 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const rooms: IRoom[] = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent !== 'all' && agent, {
+		const rooms: IRoom[] = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 			fields: { _id: 1 },
 		}).fetch();
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
@@ -121,8 +121,8 @@ Meteor.methods({
 		users: IUser['username'][];
 		msg: IMessage['msg'];
 		type: string;
-		visitor: ILivechatVisitor;
-		agent: ILivechatAgent | 'all';
+		visitor: ILivechatVisitor['_id'];
+		agent: ILivechatAgent['_id'];
 	}) {
 		check(startDate, Date);
 		check(endDate, Date);

@@ -2,8 +2,11 @@ import { Box, InputBox, Menu, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { ReactElement, ComponentProps, SetStateAction, Dispatch } from 'react';
-import React, { useReducer, useMemo } from 'react';
+import type { ReactElement, ComponentProps, SetStateAction } from 'react';
+import React, { useMemo } from 'react';
+
+import type { DateRange } from '../../utils/dateRange';
+import { createTodayEnd, createTodayStart } from '../../utils/dateRange';
 
 const formatToDateInput = (date: Date | undefined) => {
 	if (!date) {
@@ -32,11 +35,6 @@ const parseFromEndDateInput = (date: string) => {
 	return moment(date, 'YYYY-MM-DD').endOf('day').toDate();
 };
 
-export type DateRange = {
-	start?: Date;
-	end?: Date;
-};
-
 type DateRangeAction =
 	| SetStateAction<DateRange>
 	| 'today'
@@ -47,9 +45,6 @@ type DateRangeAction =
 	| 'last-month'
 	| { newStart: string }
 	| { newEnd: string };
-
-const createTodayStart = () => moment().startOf('day').toDate();
-const createTodayEnd = () => moment().endOf('day').toDate();
 
 const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange => {
 	switch (action) {
@@ -127,16 +122,6 @@ const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange 
 			const newState = typeof action === 'function' ? action(state) : action;
 			return newState;
 	}
-};
-
-export const useDateRange = (initialRange?: DateRange): [DateRange, Dispatch<DateRangeAction>] => {
-	const [range, dispatch] = useReducer(
-		dateRangeReducer,
-		initialRange,
-		(initial) => initial ?? { start: createTodayStart(), end: createTodayEnd() },
-	);
-
-	return [range, dispatch];
 };
 
 type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange'> & {

@@ -2,25 +2,32 @@ import { Field } from '@rocket.chat/fuselage';
 import { useMethod, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 
 import Page from '../../../../client/components/Page';
 import PageContent from '../../../../client/components/Page/PageContent';
 import PageHeader from '../../../../client/components/Page/PageHeader';
 import AuditLogTable from './components/AuditLogTable';
-import DateRangePicker, { useDateRange } from './components/DateRangePicker';
+import DateRangePicker from './components/forms/DateRangePicker';
+import type { DateRange } from './utils/dateRange';
+import { createTodayEnd, createTodayStart } from './utils/dateRange';
 
 const AuditLogPage = (): ReactElement => {
-	const [dateRange, setDateRange] = useDateRange();
-	const { start, end } = dateRange;
+	const [dateRange, setDateRange] = useState<DateRange>(() => ({
+		start: createTodayStart(),
+		end: createTodayEnd(),
+	}));
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const getAudits = useMethod('auditGetAuditions');
 
 	const auditsQueryResult = useQuery(
-		['audits', { start, end }],
-		async () => getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() }),
+		['audits', dateRange],
+		async () => {
+			const { start, end } = dateRange;
+			return getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() });
+		},
 		{
 			onError: (error) => {
 				dispatchToastMessage({ type: 'error', message: error });

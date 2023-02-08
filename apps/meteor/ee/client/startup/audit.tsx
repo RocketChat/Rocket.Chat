@@ -5,7 +5,7 @@ import { appLayout } from '../../../client/lib/appLayout';
 import MainLayout from '../../../client/views/root/MainLayout';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
-const AuditPage = lazy(() => import('../audit/AuditPage'));
+const AuditPage = lazy(() => import('../views/audit/AuditPage'));
 const AuditLogPage = lazy(() => import('../views/audit/AuditLogPage'));
 
 let auditRoute = FlowRouter.route('/audit', { name: 'audit-home' });
@@ -20,7 +20,7 @@ const registerRoutes = () => {
 		delete FlowRouter._routesMap[auditLogRoute.name];
 	}
 
-	auditRoute = FlowRouter.route('/audit', {
+	auditRoute = FlowRouter.route('/audit/:tab?', {
 		name: 'audit-home',
 		action() {
 			appLayout.render(

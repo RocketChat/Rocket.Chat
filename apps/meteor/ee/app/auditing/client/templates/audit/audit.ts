@@ -14,23 +14,23 @@ import './audit.html';
 const loadMessages = async function (
 	this: TemplateStatic['audit'] extends Blaze.Template<any, infer I> ? I : never,
 	{
-		rid,
-		users,
+		type,
+		msg,
 		startDate,
 		endDate = new Date(),
-		msg,
-		type,
+		rid,
+		users,
 		visitor,
 		agent,
 	}: {
-		rid: IRoom['_id'];
+		type: string;
+		msg: IMessage['msg'];
 		startDate: Date;
 		endDate?: Date;
+		rid: IRoom['_id'];
 		users: IUser['username'][];
-		msg: IMessage['msg'];
-		type: string;
-		visitor: ILivechatVisitor;
-		agent: ILivechatAgent | 'all';
+		visitor: ILivechatVisitor['_id'];
+		agent: ILivechatAgent['_id'];
 	},
 ) {
 	try {
@@ -38,7 +38,6 @@ const loadMessages = async function (
 		const messages =
 			type === 'l'
 				? await callWithErrorHandling('auditGetOmnichannelMessages', {
-						rid,
 						users,
 						startDate,
 						endDate,
@@ -99,7 +98,7 @@ Template.audit.onCreated(async function () {
 	this.loadMessages = loadMessages.bind(this);
 
 	const { visitor, agent, users, rid } = this.data;
-	if (rid || users.length || agent || visitor) {
+	if (rid || users?.length || agent || visitor) {
 		await this.loadMessages(this.data);
 	}
 });

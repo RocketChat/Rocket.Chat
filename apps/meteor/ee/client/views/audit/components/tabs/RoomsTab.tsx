@@ -2,25 +2,34 @@ import { Field } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
-import RoomAutoComplete from '../../../../audit/RoomAutoComplete';
+import type { AuditFields } from '../../hooks/useAuditForm';
+import RoomAutoComplete from '../forms/RoomAutoComplete';
 
 type RoomsTabProps = {
-	errors: Record<string, string>;
-	rid: string;
-	onChange: (rid: string) => void;
+	form: UseFormReturn<AuditFields>;
 };
 
-const RoomsTab = ({ errors, rid, onChange }: RoomsTabProps): ReactElement => {
+const RoomsTab = ({ form: { control } }: RoomsTabProps): ReactElement => {
+	const { field: ridField, fieldState: ridFieldState } = useController({ name: 'rid', control, rules: { required: true } });
+
 	const t = useTranslation();
 
 	return (
-		<Field>
-			<Field.Label>{t('Channel_name')}</Field.Label>
+		<Field flexShrink={1}>
+			<Field.Label>{t('Channel_name')}</Field.Label> {/* TODO: should it be `Room_name`? */}
 			<Field.Row>
-				<RoomAutoComplete error={errors.rid} value={rid} onChange={onChange} placeholder={t('Channel_Name_Placeholder')} />
+				<RoomAutoComplete
+					value={ridField.value}
+					error={!!ridFieldState.error}
+					placeholder={t('Channel_Name_Placeholder')}
+					onChange={ridField.onChange}
+				/>
 			</Field.Row>
-			{errors.rid && <Field.Error>{errors.rid}</Field.Error>}
+			{ridFieldState.error?.type === 'required' && <Field.Error>{t('The_field_is_required', t('Channel_name'))}</Field.Error>}
+			{ridFieldState.error?.type === 'validate' && <Field.Error>{ridFieldState.error.message}</Field.Error>}
 		</Field>
 	);
 };

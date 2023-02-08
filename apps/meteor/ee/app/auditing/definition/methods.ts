@@ -14,18 +14,17 @@ declare module '@rocket.chat/ui-contexts' {
 			users: IUser['username'][];
 			msg: IMessage['msg'];
 			type: string;
-			visitor: ILivechatVisitor;
-			agent: ILivechatAgent | 'all';
+			visitor: ILivechatVisitor['_id'];
+			agent: ILivechatAgent['_id'];
 		}) => IMessage[];
 		auditGetOmnichannelMessages: (params: {
-			rid: IRoom['_id'];
 			startDate: Date;
 			endDate: Date;
 			users: IUser['username'][];
 			msg: IMessage['msg'];
-			type: string;
-			visitor: ILivechatVisitor;
-			agent: ILivechatAgent | 'all';
+			type: 'l';
+			visitor?: ILivechatVisitor['_id'];
+			agent?: ILivechatAgent['_id'];
 		}) => IMessage[];
 	}
 }
