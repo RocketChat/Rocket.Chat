@@ -78,6 +78,7 @@ const AppRow = (props: AppRowProps): ReactElement => {
 			borderRadius='x4'
 			className={hoverClass}
 			bg='light'
+			data-qa='appRow'
 		>
 			<Box display='flex' flexDirection='row' width='80%'>
 				<AppAvatar size='x40' mie='x16' alignSelf='center' iconFileContent={iconFileContent} iconFileData={iconFileData} />

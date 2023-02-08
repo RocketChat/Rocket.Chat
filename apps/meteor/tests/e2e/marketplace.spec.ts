@@ -7,20 +7,20 @@ test.describe.serial('marketplace', () => {
 	let poMarketplace: Marketplace;
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/admin/marketplace');
+		await page.goto('/marketplace/explore');
 
 		poMarketplace = new Marketplace(page);
 	});
 
-	test('expect not found message if there is no app with input name', async () => {
-		await poMarketplace.marketplaceFilter.type('*');
+	test.describe('Admin flow', () => {
+		test('expect to render at least one app row', async () => {
+			await expect(poMarketplace.appRow.last()).toBeVisible();
+		});
 
-		await expect(poMarketplace.NoAppMatches).toBeVisible();
-	});
+		test('expect not found message if there is no app with input name', async () => {
+			await poMarketplace.marketplaceFilter.type('*MyDummyApp');
 
-	test('expect to find app if it exists on the list', async ({ page }) => {
-		await poMarketplace.marketplaceFilter.type('Add Reminder');
-
-		await expect(page.locator('text=Add Reminder')).toBeVisible();
+			await expect(poMarketplace.noAppMatches).toBeVisible();
+		});
 	});
 });
