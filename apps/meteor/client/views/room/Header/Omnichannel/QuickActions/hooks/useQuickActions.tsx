@@ -85,7 +85,7 @@ export const useQuickActions = (
 				closeModal();
 				dispatchToastMessage({
 					type: 'success',
-					message: t('Livechat_transcript_has_been_requested'),
+					message: t('Livechat_email_transcript_has_been_requested'),
 				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

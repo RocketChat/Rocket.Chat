@@ -26,6 +26,7 @@
 		"eventemitter3": "^4.0.7",
 		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
+		"moment-timezone": "^0.5.34",
 		"mongo-message-queue": "^1.0.0",
 		"mongodb": "^4.12.1",
 		"pino": "^8.4.2"

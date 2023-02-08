@@ -45,6 +45,7 @@
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.0",
 		"moment": "^2.29.4",
+		"moment-timezone": "^0.5.34",
 		"react": "^18.2.0"
 	}
 }

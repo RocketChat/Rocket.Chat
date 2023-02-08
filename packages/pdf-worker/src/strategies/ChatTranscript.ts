@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import type { Data } from '../types/Data';
 import type { IStrategy } from '../types/IStrategy';
@@ -6,19 +6,27 @@ import exportChatTranscript from '../templates/ChatTranscript';
 import type { ChatTranscriptData, PDFMessage } from '../templates/ChatTranscript';
 
 export class ChatTranscript implements IStrategy {
-	private isNewDay(current: PDFMessage, previous: PDFMessage | undefined): boolean {
-		return !previous || !moment(current.ts).isSame(previous.ts, 'day');
+	private isNewDay(current: PDFMessage, previous: PDFMessage | undefined, timezone: string): boolean {
+		return !previous || !moment(current.ts).tz(timezone).isSame(previous.ts, 'day');
 	}
 
-	private parserMessages(messages: PDFMessage[], dateFormat: unknown, timeAndDateFormat: unknown): unknown[] {
+	private parserMessages(messages: PDFMessage[], dateFormat: unknown, timeAndDateFormat: unknown, timezone: unknown): unknown[] {
 		return messages.map((message, index, arr) => {
 			const previousMessage = arr[index - 1];
 			const { ts, ...rest } = message;
-			const formattedTs = moment(ts).format(String(timeAndDateFormat));
-			const isDivider = this.isNewDay(message, previousMessage);
+			const formattedTs = moment(ts)
+				.tz(timezone as string)
+				.format(String(timeAndDateFormat));
+			const isDivider = this.isNewDay(message, previousMessage, timezone as string);
 
 			if (isDivider) {
-				return { ...rest, ts: formattedTs, divider: moment(ts).format(String(dateFormat)) };
+				return {
+					...rest,
+					ts: formattedTs,
+					divider: moment(ts)
+						.tz(timezone as string)
+						.format(String(dateFormat)),
+				};
 			}
 
 			return {
@@ -64,10 +72,16 @@ export class ChatTranscript implements IStrategy {
 				visitor: data.visitor,
 				agent: data.agent,
 				siteName: data.siteName,
-				date: `${moment(data.closedAt as Date).format(String(data.dateFormat))}`,
-				time: `${moment(data.closedAt as Date).format('H:mm:ss')} ${data.timezone}`,
+				date: `${moment(data.closedAt as Date)
+					.tz(data.timezone as string)
+					.format(String(data.dateFormat))}`,
+				time: `${moment(data.closedAt as Date)
+					.tz(data.timezone as string)
+					.format('H:mm:ss')} ${data.timezone}`,
 			},
-			messages: Array.isArray(data.messages) ? this.parserMessages(data.messages, data.dateFormat, data.timeAndDateFormat) : [],
+			messages: Array.isArray(data.messages)
+				? this.parserMessages(data.messages, data.dateFormat, data.timeAndDateFormat, data.timezone)
+				: [],
 			t: this.getTranslations(data.translations as Record<string, unknown>[]),
 		};
 	}
