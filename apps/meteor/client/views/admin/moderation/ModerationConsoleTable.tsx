@@ -1,10 +1,10 @@
+import type { IReport } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC, MutableRefObject } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
-import { sort } from 'semver';
 
 import FilterByText from '../../../components/FilterByText';
 import {
@@ -18,20 +18,36 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 
+// function which takes an array of IReport and return an array of object such that all the reports are grouped by the message id
+
+export type GroupedReports = {
+	messageId: string;
+	reports: IReport[];
+};
+
+const groupReportsByMessageId = (reports: IReport[] | any[]): GroupedReports[] => {
+	const groupedReports: Record<string, IReport[]> = {};
+
+	reports.forEach((report) => {
+		if (groupedReports[report.message._id]) {
+			groupedReports[report.message._id].push(report);
+		} else {
+			groupedReports[report.message._id] = [report];
+		}
+	});
+	// convert the groupedReports object to an array of objects and return it
+	const groupedReportsArray = Object.keys(groupedReports).map((key) => {
+		return { messageId: key, reports: groupedReports[key] };
+	});
+	return groupedReportsArray;
+};
+
 const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ reload }) => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 
 	const { sortBy, sortDirection, setSort } = useSort<'ts' | 'u.username' | 'description'>('ts');
-	const {
-		current,
-		itemsPerPage,
-		currentItemsPerPage,
-		onChangeItemsPerPage,
-		setItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination();
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	// write a custom query to get the reports data from the database
 
 	const query = useDebouncedValue(
@@ -69,11 +85,17 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 		},
 	);
 
+	const groupedReports = useMemo(() => {
+		if (!data?.reports) {
+			return;
+		}
+
+		return groupReportsByMessageId(data.reports);
+	}, [data]);
+
 	useEffect(() => {
 		reload.current = reloadReports;
 	}, [reload, reloadReports]);
-
-	console.log('data', data);
 
 	const handleClick = useMutableCallback((id): void => {
 		moderationRoute.push({
@@ -121,22 +143,22 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.reports.length > 0 && (
+			{isSuccess && data.reports.length > 0 && groupedReports && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data.reports.map((report) => (
-								<ModerationConsoleTableRow key={report._id} report={report} onClick={handleClick} />
+							{groupedReports.map((report) => (
+								<ModerationConsoleTableRow key={report.messageId} report={report} onClick={handleClick} reload={reload} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						current={current}
 						divider
-						itemsPerPage={currentItemsPerPage}
+						itemsPerPage={itemsPerPage}
 						count={data?.total || 0}
-						onSetItemsPerPage={onChangeItemsPerPage}
+						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}
 					/>

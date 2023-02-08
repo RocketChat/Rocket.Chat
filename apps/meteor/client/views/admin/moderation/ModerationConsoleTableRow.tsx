@@ -3,21 +3,22 @@ import { TableRow, TableCell, Box, Menu } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
+import type { GroupedReports } from './ModerationConsoleTable';
 
 type MonderationConsoleRowProps = {
-	report: IReport;
+	report: GroupedReports;
 	onClick: (id: IReport['_id']) => void;
+	reload: MutableRefObject<() => void>;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowProps): JSX.Element => {
-	const { _id, description, message, ts } = report;
+const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConsoleRowProps): JSX.Element => {
+	const { messageId, reports } = report;
+	const { _id, message, ts } = reports[0];
 	const { username } = message.u;
-	const { rid } = message;
-	const { msg } = message;
-	const [text, setText] = useState('');
 
 	// write a custom query to get the reports data from the database
 
@@ -26,9 +27,8 @@ const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowPro
 			() => ({
 				count: 50,
 				msgId: message._id,
-				selector: text,
 			}),
-			[message._id, text],
+			[message._id],
 		),
 		500,
 	);
@@ -42,7 +42,6 @@ const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowPro
 		refetch: reloadReportsByMessage,
 		isLoading: isLoadingReportsByMessage,
 		isSuccess: isSuccessReportsByMessage,
-		isError: isErrorReportsByMessage,
 	} = useQuery(
 		['reportsByMessage', query],
 		async () => {
@@ -56,8 +55,26 @@ const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowPro
 		},
 	);
 
+	useEffect(() => {
+		reload.current = reloadReportsByMessage;
+	}, [reload, reloadReportsByMessage]);
+
+	// a return function based on the status of the query which shows the query total or a loading spinner or a "-" incase of error
+
+	const renderReportsByMessage = (): string | number => {
+		if (isLoadingReportsByMessage) {
+			return '...';
+		}
+
+		if (isSuccessReportsByMessage) {
+			return reportsByMessage.total;
+		}
+
+		return '-';
+	};
+
 	return (
-		<TableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
+		<TableRow key={_id} onKeyDown={(): void => onClick(messageId)} onClick={(): void => onClick(messageId)} tabIndex={0} role='link' action>
 			<TableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={'x40'} username={username} />}
@@ -70,11 +87,11 @@ const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowPro
 					</Box>
 				</Box>
 			</TableCell>
-			<TableCell withTruncatedText>{msg}</TableCell>
-			<TableCell withTruncatedText>{rid}</TableCell>
+			<TableCell withTruncatedText>{message.msg}</TableCell>
+			<TableCell withTruncatedText>{message.rid}</TableCell>
 			<TableCell withTruncatedText>{ts}</TableCell>
-			<TableCell withTruncatedText>{isSuccessReportsByMessage ? reportsByMessage.total : '-'}</TableCell>
-			<TableCell>
+			<TableCell withTruncatedText>{renderReportsByMessage()}</TableCell>
+			<TableCell onClick={(e): void => e.stopPropagation()}>
 				<Menu
 					options={{
 						seeReports: {
