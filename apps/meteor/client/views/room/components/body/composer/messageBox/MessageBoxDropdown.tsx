@@ -45,7 +45,7 @@ const MessageBoxDropdown = ({ chatContext, isRecording, rid, tmid }: MessageBoxD
 
 	return (
 		<>
-			<IconButton disabled={isRecording} small ref={reference} icon='plus' onClick={() => toggle()} />
+			<IconButton data-qa-id='menu-more-actions' disabled={isRecording} small ref={reference} icon='plus' onClick={() => toggle()} />
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-start'>
 					<OptionTitle>{t('Create_new')}</OptionTitle>

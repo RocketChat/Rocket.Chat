@@ -40,7 +40,13 @@ const FileUploadAction = ({ chatContext, isRecording }: FileUploadActionProps) =
 
 	return (
 		<>
-			<MessageComposerAction icon='clip' disabled={!fileUploadEnabled || isRecording} onClick={handleUpload} title={t('File')} />
+			<MessageComposerAction
+				data-qa-id='file-upload'
+				icon='clip'
+				disabled={!fileUploadEnabled || isRecording}
+				onClick={handleUpload}
+				title={t('File')}
+			/>
 			<input ref={fileInputRef} type='file' onChange={handleUploadChange} multiple style={{ display: 'none' }} />
 		</>
 	);

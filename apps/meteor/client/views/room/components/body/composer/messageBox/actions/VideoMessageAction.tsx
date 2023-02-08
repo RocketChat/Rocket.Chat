@@ -40,6 +40,7 @@ const VideoMessageAction = ({ chatContext, isRecording }: VideoMessageActionProp
 
 	return (
 		<MessageComposerAction
+			data-qa-id='video-message'
 			icon='video'
 			disabled={!enableVideoMessage || isRecording}
 			onClick={handleOpenVideoMessage}
