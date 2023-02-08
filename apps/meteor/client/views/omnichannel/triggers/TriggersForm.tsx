@@ -67,10 +67,10 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 		control,
 	});
 
-	const [nameError, setNameError] = useState('');
+	// const [nameError, setNameError] = useState('');
 	const [msgError, setMsgError] = useState('');
 	const t = useTranslation();
-	const { name, conditions, actions } = values;
+	const { conditions, actions } = values;
 
 	const { name: conditionName } = conditions || {};
 
@@ -149,9 +149,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 	// 	});
 	// });
 
-	useComponentDidUpdate(() => {
-		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
-	}, [t, name]);
+	// useComponentDidUpdate(() => {
+	// 	setNameError(!name ? t('The_field_is_required', t('Name')) : '');
+	// }, [t, name]);
 	useComponentDidUpdate(() => {
 		setMsgError(!actionMsg ? t('The_field_is_required', t('Message')) : '');
 	}, [t, actionMsg]);
@@ -178,7 +178,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				<Field.Row>
 					<TextInput
 						{...register('name', { required: t('The_field_is_required', t('Name')) })}
-						error={errors?.name?.message}
+						error={(errors as any)?.name?.message}
 						placeholder={t('Name')}
 					/>
 				</Field.Row>
@@ -217,7 +217,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				<Field.Row>
 					<TextAreaInput rows={3} {...register('actions.params.msg', { required: true })} placeholder={`${t('Message')}*`} />
 				</Field.Row>
-				{errors?.actions?.params?.msg && <Field.Error>{msgError}</Field.Error>}
+				{(errors as any)?.actions?.params?.msg && <Field.Error>{msgError}</Field.Error>}
 			</Field>
 		</>
 	);

@@ -1,7 +1,7 @@
 import { Margins, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import TriggersForm from './TriggersForm';
@@ -46,7 +46,7 @@ const EditTriggerPage = ({ data, onSave }) => {
 	const save = useMethod('livechat:saveTrigger');
 
 	const methods = useForm({ defaultValues: getInitialValues(data), mode: 'onChange' });
-	const { reset, setValue, getValues, handleSubmit, formState } = methods;
+	const { reset, getValues, handleSubmit, formState } = methods;
 
 	// useEffect(() => {
 	// 	methods.setValue('enabled', data.enabled);
