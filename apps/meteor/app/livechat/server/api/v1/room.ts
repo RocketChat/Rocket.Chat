@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
 import {
@@ -118,15 +118,42 @@ API.v1.addRoute(
 
 			const options: CloseRoomParams['options'] = {};
 			if (room.servedBy) {
-				const servingAgent = await Users.findOneById(room.servedBy._id, {
-					projection: {
-						settings: 1,
-					},
-				});
+				const servingAgent: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset' | 'settings' | 'language'> | null =
+					await Users.findOneById(room.servedBy._id, {
+						projection: {
+							name: 1,
+							username: 1,
+							utcOffset: 1,
+							settings: 1,
+							language: 1,
+						},
+					});
 
 				if (servingAgent?.settings?.preferences?.omnichannelTranscriptPDF) {
 					options.pdfTranscript = {
 						requestedBy: servingAgent._id,
+					};
+				}
+
+				if (
+					servingAgent?.settings?.preferences?.omnichannelTranscriptEmail &&
+					visitor.visitorEmails?.length &&
+					visitor.visitorEmails?.[0]?.address
+				) {
+					const visitorEmail = visitor.visitorEmails?.[0]?.address;
+
+					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
+					const t = (s: string): string => TAPi18n.__(s, { lng: language });
+					const subject = t('Transcript_of_your_livechat_conversation');
+
+					options.emailTranscript = {
+						sendToVisitor: true,
+						requestData: {
+							email: visitorEmail,
+							requestedAt: new Date(),
+							requestedBy: servingAgent,
+							subject,
+						},
 					};
 				}
 			}
