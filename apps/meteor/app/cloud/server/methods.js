@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';
+import { reconnectWorkspace } from './functions/reconnectWorkspace';
 import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
 import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
 import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
@@ -96,6 +97,21 @@ Meteor.methods({
 		}
 
 		return connectWorkspace(token);
+	},
+	'cloud:reconnectWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'cloud:reconnectWorkspace',
+			});
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'cloud:reconnectWorkspace',
+			});
+		}
+
+		return reconnectWorkspace();
 	},
 	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	'cloud:getOAuthAuthorizationUrl'() {
