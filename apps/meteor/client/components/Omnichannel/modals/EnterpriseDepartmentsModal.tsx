@@ -23,6 +23,15 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 		closeModal();
 	};
 
+	const tabTypeIsUpgradeYourPlan =
+		tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan';
+
+	const talkToExpertLink =
+		'https://www.rocket.chat/sales-contact?utm_source=rocketchat_app&utm_medium=multiple_queues&utm_campaign=in_product_ctas';
+
+	const freeTrialLink =
+		'https://www.rocket.chat/trial-saas?utm_source=rocketchat_app&utm_medium=multiple_queues&utm_campaign=in_product_ctas';
+
 	useOutsideClick([ref], onClose);
 
 	return (
@@ -46,14 +55,18 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 			<Modal.Footer>
 				{hasPermission('view-statistics') ? (
 					<Modal.FooterControllers>
-						<Button is='a' href='https://rocket.chat/contact' external onClick={onClose} data-qa-id='btn-talk-to-sales'>
-							{t('Talk_to_sales')}
+						<Button is='a' href={talkToExpertLink} external onClick={onClose} data-qa-id='btn-talk-to-sales'>
+							{t('Talk_to_an_expert')}
 						</Button>
-						<Button onClick={upgradeNowClick} primary data-qa-id='upgrade-now'>
-							{tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan'
-								? t('Start_free_trial')
-								: t('Learn_more')}
-						</Button>
+						{tabTypeIsUpgradeYourPlan ? (
+							<Button is='a' href={freeTrialLink} external primary data-qa-id='upgrade-now'>
+								{t('Start_free_trial')}
+							</Button>
+						) : (
+							<Button onClick={upgradeNowClick} primary data-qa-id='upgrade-now'>
+								{t('Learn_more')}
+							</Button>
+						)}
 					</Modal.FooterControllers>
 				) : (
 					<Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
