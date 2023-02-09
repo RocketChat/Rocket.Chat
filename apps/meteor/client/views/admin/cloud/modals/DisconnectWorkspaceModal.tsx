@@ -5,12 +5,12 @@ import React from 'react';
 import useFeatureBullets from '../hooks/useFeatureBullets';
 import RegisteredWorkspaceModal from './RegisteredWorkspaceModal';
 
-type UnregisterWorkspaceModalProps = {
+type DisconnectWorkspaceModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };
 
-const UnregisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: UnregisterWorkspaceModalProps) => {
+const DisconnectWorkspaceModal = ({ onClose, onStatusChange, ...props }: DisconnectWorkspaceModalProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const bulletFeatures = useFeatureBullets();
@@ -57,7 +57,7 @@ const UnregisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: Unregis
 							<li key={index}>
 								<strong>{item.title}</strong>
 								<Box color='danger' is='p' mbs={4}>
-									{item.deregister}
+									{item.disconnect}
 								</Box>
 							</li>
 						))}
@@ -76,4 +76,4 @@ const UnregisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: Unregis
 	);
 };
 
-export default UnregisterWorkspaceModal;
+export default DisconnectWorkspaceModal;

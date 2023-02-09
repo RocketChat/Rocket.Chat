@@ -4,7 +4,7 @@ import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from 
 import React, { useState } from 'react';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
-import UnregisterWorkspaceModal from './UnregisterWorkspaceModal';
+import DisconnectWorkspaceModal from './DisconnectWorkspaceModal';
 
 type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
@@ -20,9 +20,9 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 
 	const syncWorkspace = useMethod('cloud:syncWorkspace');
 
-	const handleDeregister = (): void => {
+	const handleDisconnect = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<UnregisterWorkspaceModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
+		setModal(<DisconnectWorkspaceModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
 	};
 
 	const handleSyncAction = async () => {
@@ -70,8 +70,8 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button secondary danger onClick={handleDeregister}>
-						{t('Deregister')}
+					<Button secondary danger onClick={handleDisconnect}>
+						{t('Disconnect')}
 					</Button>
 					<Button onClick={handleSyncAction} disabled={isSyncing}>
 						<Icon pie={4} name='reload' size='x20' />
