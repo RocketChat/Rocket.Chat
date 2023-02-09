@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useEffect, useMemo } from 'react';
 
-import { formatDateAndTime } from '../../../../client/lib/utils/formatDateAndTime';
 import UserAvatar from '../../../components/avatar/UserAvatar';
+import { formatDateAndTime } from '../../../lib/utils/formatDateAndTime';
 import type { GroupedReports } from './ModerationConsoleTable';
 
 type MonderationConsoleRowProps = {
@@ -36,7 +36,7 @@ const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConso
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const getReportsByMessage = useEndpoint('GET', '/v1/moderation.reportsByMessage');
+	const countReportsByMsgId = useEndpoint('GET', '/v1/moderation.countReportsByMsgId');
 
 	const {
 		data: reportsByMessage,
@@ -46,7 +46,7 @@ const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConso
 	} = useQuery(
 		['reportsByMessage', query],
 		async () => {
-			const reports = await getReportsByMessage(query);
+			const reports = await countReportsByMsgId(query);
 			return reports;
 		},
 		{
@@ -68,7 +68,7 @@ const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConso
 		}
 
 		if (isSuccessReportsByMessage) {
-			return reportsByMessage.total;
+			return reportsByMessage.reportCounts;
 		}
 
 		return '-';
