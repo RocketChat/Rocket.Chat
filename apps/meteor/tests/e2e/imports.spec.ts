@@ -29,15 +29,13 @@ test.describe.serial('imports', () => {
 		await page.goto('/admin/import');
 
 		await poAdmin.btnImportNewFile.click();
-		await (await poAdmin.getOptionFileType("Slack's Users CSV")).click();
-		await poAdmin.inputFile.setInputFiles(slackCsvDir);
 
+		await (await poAdmin.getOptionFileType("Slack's Users CSV")).click();
+
+		await poAdmin.inputFile.setInputFiles(slackCsvDir);
 		await poAdmin.btnImport.click();
-		await poAdmin.btnStartImport.waitFor({ state: 'visible' });
 
 		await poAdmin.btnStartImport.click();
-
-		await page.locator('[data-qa-id="ImportTable"]').waitFor({ state: 'visible' });
 
 		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible();
 	});
