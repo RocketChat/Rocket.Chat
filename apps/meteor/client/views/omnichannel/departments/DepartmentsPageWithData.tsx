@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
@@ -13,16 +13,6 @@ import DepartmentsTable from './DepartmentsTable';
 
 const DepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
-
-	const departmentsRoute = useRoute('omnichannel-departments');
-
-	const onRowClick = useMutableCallback(
-		(id) => () =>
-			departmentsRoute.push({
-				context: 'edit',
-				id,
-			}),
-	);
 
 	const pagination = usePagination();
 	const sort = useSort<'name' | 'email' | 'active'>('name');
@@ -43,21 +33,14 @@ const DepartmentsPageWithData = (): ReactElement => {
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
-	const { data, refetch, isLoading } = useQuery(['getDepartments', query], async () => getDepartments(query));
+	const { data, isLoading } = useQuery(['omnichannel', 'departments', query], async () => getDepartments(query));
 
-	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <DepartmentItemMenu dep={dep} reload={() => refetch()} />;
+	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <DepartmentItemMenu dep={dep} />;
 
 	return (
 		<>
 			<FilterByText onChange={({ text }): void => setText(text)} />
-			<DepartmentsTable
-				onRowClick={onRowClick}
-				data={data}
-				sort={sort}
-				pagination={pagination}
-				removeButton={removeButton}
-				loading={isLoading}
-			></DepartmentsTable>
+			<DepartmentsTable data={data} sort={sort} pagination={pagination} removeButton={removeButton} loading={isLoading}></DepartmentsTable>
 		</>
 	);
 };

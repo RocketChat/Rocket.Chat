@@ -2,27 +2,28 @@ import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import PermanentDepartmentRemovalModal from './PermanentDepartmentRemovalModal';
 
-const ArchivedItemMenu = ({
-	dep,
-	handlePageDepartmentsReload,
-}: {
-	dep: Omit<ILivechatDepartment, '_updatedAt'>;
-	handlePageDepartmentsReload: () => void;
-}): ReactElement => {
+const ArchivedItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedAt'> }): ReactElement => {
 	const unarchiveDepartment = useEndpoint('POST', '/v1/livechat/department/:_id/unarchive', { _id: dep._id });
 
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToast = useToastMessageDispatch();
-	const departmentRemovalEnabled = useSetting('departmentRemovalEnabled');
+	const departmentRemovalEnabled = useSetting('Omnichannel_enable_department_removal');
 
-	const handleUnarchiveDepartment = useMutableCallback(() => {
-		unarchiveDepartment();
+	const queryClient = useQueryClient();
+
+	const handlePageDepartmentsReload = useCallback(async () => {
+		await queryClient.refetchQueries(['omnichannel', 'departments', 'archived']);
+	}, [queryClient]);
+
+	const handleUnarchiveDepartment = useMutableCallback(async () => {
+		await unarchiveDepartment();
 		handlePageDepartmentsReload();
 		dispatchToast({ type: 'success', message: t('Department_unarchived') });
 	});
@@ -41,7 +42,7 @@ const ArchivedItemMenu = ({
 	const menuOptions = {
 		unarchive: {
 			label: { label: t('Unarchive'), icon: 'undo' },
-			action: (): void => handleUnarchiveDepartment(),
+			action: (): Promise<void> => handleUnarchiveDepartment(),
 		},
 
 		...(departmentRemovalEnabled === true && {

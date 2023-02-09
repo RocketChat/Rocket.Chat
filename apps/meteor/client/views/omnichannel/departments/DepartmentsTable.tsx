@@ -17,13 +17,12 @@ import {
 type DepartmentsTableProps = {
 	data?: { departments: Omit<ILivechatDepartment, '_updatedAt'>[]; count?: number; offset?: number; total: number };
 	removeButton: (department: Omit<ILivechatDepartment, '_updatedAt'>) => ReactElement;
-	onRowClick: (id: string) => void;
 	pagination: any;
 	sort: any;
 	loading: boolean;
 };
 
-function DepartmentsTable({ data, removeButton, onRowClick, pagination, sort, loading }: DepartmentsTableProps) {
+function DepartmentsTable({ data, removeButton, pagination, sort, loading }: DepartmentsTableProps) {
 	const t = useTranslation();
 
 	const { departments } = data || {};
@@ -59,15 +58,7 @@ function DepartmentsTable({ data, removeButton, onRowClick, pagination, sort, lo
 				<GenericTableBody>
 					{departments && !loading ? (
 						departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (
-							<GenericTableRow
-								key={department._id}
-								onKeyDown={() => onRowClick(department._id)}
-								onClick={() => onRowClick(department._id)}
-								tabIndex={0}
-								role='link'
-								action
-								width='full'
-							>
+							<GenericTableRow key={department._id} tabIndex={0} role='link' action width='full'>
 								<GenericTableCell withTruncatedText>{department.name}</GenericTableCell>
 								<GenericTableCell withTruncatedText>{department.description}</GenericTableCell>
 								<GenericTableCell withTruncatedText>{department.numAgents || '0'}</GenericTableCell>
