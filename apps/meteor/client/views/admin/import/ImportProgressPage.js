@@ -1,7 +1,6 @@
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 
@@ -9,7 +8,8 @@ import { ProgressStep, ImportingStartedStates } from '../../../../app/importer/l
 import Page from '../../../components/Page';
 import { useErrorHandler } from './useErrorHandler';
 
-function ImportProgressPage() {
+const ImportProgressPage = function ImportProgressPage() {
+	const streamer = useStream('importer');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
@@ -52,40 +52,38 @@ function ImportProgressPage() {
 		loadCurrentOperation();
 	}, [getCurrentImportOperation, handleError, importHistoryRoute, prepareImportRoute, setCompleted, setImporterKey, setTotal, t]);
 
+	const handleProgressUpdated = useMutableCallback(({ key, step, count: { completed = 0, total = 0 } = {} }) => {
+		if (key.toLowerCase() !== importerKey) {
+			return;
+		}
+
+		switch (step) {
+			case ProgressStep.DONE:
+				dispatchToastMessage({
+					type: 'success',
+					message: t(step[0].toUpperCase() + step.slice(1)),
+				});
+				importHistoryRoute.push();
+				return;
+
+			case ProgressStep.ERROR:
+			case ProgressStep.CANCELLED:
+				handleError(t(step[0].toUpperCase() + step.slice(1)));
+				importHistoryRoute.push();
+				return;
+
+			default:
+				setStep(step);
+				setCompleted(completed);
+				setTotal(total);
+				break;
+		}
+	});
+
 	useEffect(() => {
 		if (!importerKey) {
 			return;
 		}
-
-		const handleProgressUpdated = ({ key, step, count: { completed = 0, total = 0 } = {} }) => {
-			if (key.toLowerCase() !== importerKey) {
-				return;
-			}
-
-			switch (step) {
-				case ProgressStep.DONE:
-					dispatchToastMessage({
-						type: 'success',
-						message: t(step[0].toUpperCase() + step.slice(1)),
-					});
-					importHistoryRoute.push();
-					return;
-
-				case ProgressStep.ERROR:
-				case ProgressStep.CANCELLED:
-					handleError(t(step[0].toUpperCase() + step.slice(1)));
-					importHistoryRoute.push();
-					return;
-
-				default:
-					setStep(step);
-					setCompleted(completed);
-					setTotal(total);
-					break;
-			}
-		};
-
-		const streamer = new Meteor.Streamer('importers');
 
 		const loadImportProgress = async () => {
 			try {
@@ -97,7 +95,6 @@ function ImportProgressPage() {
 					return;
 				}
 
-				streamer.on('progress', handleProgressUpdated);
 				handleProgressUpdated(progress);
 			} catch (error) {
 				handleError(error, t('Failed_To_Load_Import_Data'));
@@ -105,21 +102,25 @@ function ImportProgressPage() {
 			}
 		};
 
+		const progressSubscription = streamer('progress', handleProgressUpdated);
+
 		loadImportProgress();
 
 		return () => {
-			streamer.removeListener('progress', handleProgressUpdated);
+			progressSubscription();
 		};
 	}, [
 		dispatchToastMessage,
 		getImportProgress,
 		handleError,
+		handleProgressUpdated,
 		importHistoryRoute,
 		importerKey,
 		prepareImportRoute,
 		setCompleted,
 		setStep,
 		setTotal,
+		streamer,
 		t,
 	]);
 
@@ -156,6 +157,6 @@ function ImportProgressPage() {
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
-}
+};
 
 export default ImportProgressPage;
