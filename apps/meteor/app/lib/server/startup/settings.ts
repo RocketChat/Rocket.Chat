@@ -18,7 +18,7 @@ settingsRegistry.add('Initial_Channel_Created', false, {
 settingsRegistry.add('Presence_broadcast_disabled', false, {
 	type: 'boolean',
 	public: true,
-	hidden: true,
+	// hidden: true,
 });
 
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
