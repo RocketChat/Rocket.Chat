@@ -1584,7 +1584,7 @@ describe('LIVECHAT - rooms', function () {
 			await request.get(api('livechat/rooms/filters')).set(credentials).expect(403);
 		});
 		it('should return a list of available source filters', async () => {
-			await updatePermission('view-l-room', ['admin']);
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
 			expect(response.body).to.have.property('filters').and.to.be.an('array');
 			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;
