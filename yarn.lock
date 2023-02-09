@@ -6844,9 +6844,11 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.193
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.193"
-  checksum: e32fa17388247a76f9ae5bc306ac261b64acac1b592ec23c693fdbcda19ccf004287c5fa968e4f6f0ef8e14e6213ba0292341caeb7b195f871e062bc09075ff8
+  version: 0.32.0-dev.217
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.217"
+  dependencies:
+    tldts: ~5.7.104
+  checksum: 0f8d6788775578950da715722fcdc0159c99d36999d279f1a102e5ce946e420f42750bb253958fc5a3f0ff9d56c760ab2a11370e98b101bc0d325fda9fc22281
   languageName: node
   linkType: hard
 
@@ -34336,6 +34338,24 @@ __metadata:
   bin:
     tlds: bin.js
   checksum: 1e2ab7ef77584ab7d3f5dec08f33d33d475c8890a1392019b99ccc4111ae8b548381a349007337080822127b2cfcdc08163e0f7a5424a5613fbe6175fd4ecb7d
+  languageName: node
+  linkType: hard
+
+"tldts-core@npm:^5.7.105":
+  version: 5.7.105
+  resolution: "tldts-core@npm:5.7.105"
+  checksum: dfdb64ad4a25063e37d300b45aeda5fd4468d7f4fe36d545b4de84d9e7e14c50049d1c21fae95722d45334ae9df510e0074c0e7acd622fd92c60f5268a58a81b
+  languageName: node
+  linkType: hard
+
+"tldts@npm:~5.7.104":
+  version: 5.7.105
+  resolution: "tldts@npm:5.7.105"
+  dependencies:
+    tldts-core: ^5.7.105
+  bin:
+    tldts: bin/cli.js
+  checksum: ce3c62203aa12f278b23e8b0f42079b88de7627fc968f34a29963f4eb909e6e9781f80133519639ee962a454149fe3e87368d29e177c0bbbb141cbe2d40f4371
   languageName: node
   linkType: hard
 
