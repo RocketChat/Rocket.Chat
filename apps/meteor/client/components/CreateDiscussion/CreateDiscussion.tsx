@@ -21,7 +21,7 @@ type CreateDiscussionFormValues = {
 };
 
 type CreateDiscussionProps = {
-	parentMessageId: IMessage['_id'];
+	parentMessageId?: IMessage['_id'];
 	onClose: () => void;
 	defaultParentRoom?: IRoom['_id'];
 	nameSuggestion?: string;
