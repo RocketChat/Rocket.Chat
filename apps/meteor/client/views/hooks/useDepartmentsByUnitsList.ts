@@ -1,5 +1,5 @@
 import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
@@ -19,6 +19,7 @@ export const useDepartmentsByUnitsList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
+	const t = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
 
@@ -38,6 +39,9 @@ export const useDepartmentsByUnitsList = (
 
 			return {
 				items: departments.map((department: any) => {
+					if (department.archived) {
+						department.name = `${department.name} [${t('Archived')}]`;
+					}
 					department._updatedAt = new Date(department._updatedAt);
 					department.label = department.name;
 					department.value = { value: department._id, label: department.name };
@@ -46,7 +50,7 @@ export const useDepartmentsByUnitsList = (
 				itemCount: total,
 			};
 		},
-		[getDepartments, options.filter],
+		[getDepartments, options.filter, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);

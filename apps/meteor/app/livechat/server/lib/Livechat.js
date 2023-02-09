@@ -9,7 +9,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import {
+	Users as UsersRaw,
+	LivechatVisitors,
+	LivechatCustomField,
+	Settings,
+	LivechatDepartment as LivechatDepartmentRaw,
+} from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
@@ -1059,6 +1065,66 @@ export const Livechat = {
 		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
+	},
+
+	removeDepartment(_id) {
+		check(_id, String);
+
+		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+
+		if (!departmentRemovalEnabled) {
+			throw new Meteor.Error('department-removal-disabled', 'Department removal is disabled', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		const department = LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+		const ret = LivechatDepartment.removeById(_id);
+		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id)
+			.fetch()
+			.map((agent) => agent.agentId);
+		LivechatDepartmentAgents.removeByDepartmentId(_id);
+		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+			});
+		}
+		return ret;
+	},
+
+	async unarchiveDepartment(_id) {
+		check(_id, String);
+
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.unarchiveDepartment(_id);
+	},
+
+	async archiveDepartment(_id) {
+		check(_id, String);
+
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.archiveDepartment(_id);
 	},
 
 	showConnecting() {

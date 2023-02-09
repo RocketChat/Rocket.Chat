@@ -12,8 +12,11 @@ test.describe.serial('omnichannel-departments', () => {
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	let departmentName: string;
-	test.beforeAll(() => {
+	test.beforeAll(async ({ api }) => {
 		departmentName = faker.datatype.uuid();
+		// turn on department removal
+		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
+		expect(statusCode).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
@@ -47,7 +50,9 @@ test.describe.serial('omnichannel-departments', () => {
 	test('expect update department name', async () => {
 		await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
-		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
+		await poOmnichannelDepartments.menuEditOption.click();
+
 		await poOmnichannelDepartments.inputName.fill(`edited-${departmentName}`);
 		await poOmnichannelDepartments.btnSave.click();
 
@@ -58,7 +63,8 @@ test.describe.serial('omnichannel-departments', () => {
 	test.describe('Tags', () => {
 		test.beforeEach(async () => {
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+			await poOmnichannelDepartments.firstRowInTableMenu.click();
+			await poOmnichannelDepartments.menuEditOption.click();
 		});
 
 		test('expect save form button be disabled', async () => {
@@ -118,14 +124,17 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 	});
 
-	test('expect delete department', async ({ page }) => {
+	test('expect delete department', async () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 
 		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
 
-		await page.waitForRequest('**/livechat/department**');
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
 
-		await poOmnichannelDepartments.btnDeleteFirstRowInTable.click();
+		await poOmnichannelDepartments.menuDeleteOption.click();
+
+		await poOmnichannelDepartments.inputModalConfirmDelete.fill(`edited-${departmentName}`);
+
 		await poOmnichannelDepartments.btnModalConfirmDelete.click();
 
 		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
