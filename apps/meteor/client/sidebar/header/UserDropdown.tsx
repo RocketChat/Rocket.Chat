@@ -12,6 +12,7 @@ import {
 	RadioButton,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
@@ -39,7 +40,7 @@ const setStatus = (status: typeof userStatus.list['']): void => {
 
 const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
-		return t(status.name);
+		return t(status.name as TranslationKey);
 	}
 
 	return status.name;
@@ -113,7 +114,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						<MarkdownText
 							withTruncatedText
 							parseEmoji={true}
-							content={statusText || t(status || 'offline')}
+							content={statusText || t((status as TranslationKey) || 'offline')}
 							variant='inlineWithoutBreaks'
 						/>
 					</Box>
