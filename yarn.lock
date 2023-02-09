@@ -6230,7 +6230,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.36.0, @rocket.chat/apps-engine@npm:^1.32.0":
+"@rocket.chat/apps-engine@npm:1.37.0-alpha.133":
+  version: 1.37.0-alpha.133
+  resolution: "@rocket.chat/apps-engine@npm:1.37.0-alpha.133"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.11
+  checksum: c924517b8b88caad680d8e4bf86602c4318b7a10e0b47899faa6e81323226e7f36fb067674c2c8b8f66d38e3133c890e3efdd560b832fb000da8ef9e337dedf1
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.36.0
   resolution: "@rocket.chat/apps-engine@npm:1.36.0"
   dependencies:
@@ -6875,7 +6890,7 @@ __metadata:
     "@react-aria/color": ^3.0.0-beta.15
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.36.0
+    "@rocket.chat/apps-engine": 1.37.0-alpha.133
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"

@@ -180,7 +180,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, checkUserLoggedIn, setModal, cancelAction, closeModal]);
+	}, [
+		action,
+		app,
+		isAppPurchased,
+		showAppPermissionsReviewModal,
+		checkUserLoggedIn,
+		setModal,
+		cancelAction,
+		requestConfirmAction,
+		closeModal,
+	]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -309,7 +319,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
 			...(canAppBeSubscribed &&
-				isSubscribed && {
+				isSubscribed &&
+				isAdminUser && {
 					subscribe: {
 						label: (
 							<Option>
