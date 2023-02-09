@@ -1,7 +1,8 @@
 /* eslint-disable react/display-name */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Badge, Box, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
@@ -32,6 +33,12 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnTyp
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
+
+const badgesContainer = css`
+	* + * {
+		margin-inline-start: 8px;
+	}
+`;
 
 type RoomListRowProps = {
 	extended: boolean;
@@ -135,16 +142,17 @@ function SideBarItemTemplateWithData({
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
+
 	const badges = (
-		<>
+		<Box className={badgesContainer}>
 			{showBadge &&
 				isUnread && ( // TODO: Remove any
 					<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
 						{unread + tunread?.length}
 					</Badge>
 				)}
-			{isOmnichannelRoom(room) && room.priorityWeight && <PriorityIcon mis='8px' level={room.priorityWeight} />}
-		</>
+			{isOmnichannelRoom(room) && room.priorityWeight && <PriorityIcon level={room.priorityWeight} />}
+		</Box>
 	);
 
 	return (
