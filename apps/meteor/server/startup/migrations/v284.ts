@@ -1,16 +1,10 @@
-import { LivechatPriority } from '@rocket.chat/models';
-
 import { addMigration } from '../../lib/migrations';
+import { settingsRegenerator } from '../../lib/settingsRegenerator';
 
+// Removes invalid settings from DB one time
 addMigration({
 	version: 284,
 	async up() {
-		try {
-			// remove indexes from livechat_priority collection
-			await LivechatPriority.col.dropIndex('dueTimeInMinutes_1');
-		} catch (error) {
-			// ignore
-			console.log(error);
-		}
+		await settingsRegenerator();
 	},
 });
