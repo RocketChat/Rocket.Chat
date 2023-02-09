@@ -114,7 +114,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						<MarkdownText
 							withTruncatedText
 							parseEmoji={true}
-							content={statusText || t((status as TranslationKey) || 'offline')}
+							content={statusText || t(status ?? 'offline')}
 							variant='inlineWithoutBreaks'
 						/>
 					</Box>

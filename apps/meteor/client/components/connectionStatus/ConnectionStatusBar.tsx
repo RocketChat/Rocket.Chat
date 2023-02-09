@@ -14,7 +14,7 @@ const getReconnectCountdown = (retryTime: number): number => {
 
 const useReconnectCountdown = (
 	retryTime: number | undefined,
-	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline' | 'disabled',
+	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline',
 ): number => {
 	const reconnectionTimerRef = useRef<ReturnType<typeof setInterval>>();
 	const [reconnectCountdown, setReconnectCountdown] = useState(() => (retryTime ? getReconnectCountdown(retryTime) : 0));

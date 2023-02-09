@@ -13,6 +13,7 @@
   "This_room_encryption_has_been_disabled_by__username_": "This room's encryption has been disabled by __username__",
   "Enabled_E2E_Encryption_for_this_room": "enabled E2E Encryption for this room",
   "Disabled_E2E_Encryption_for_this_room": "disabled E2E Encryption for this room",
+  "disabled": "disabled",
   "@username": "@username",
   "@username_message": "@username <message>",
   "#channel": "#channel",
