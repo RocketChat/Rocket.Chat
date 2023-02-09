@@ -6,7 +6,6 @@ import type { ReactElement, ComponentProps, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
 
 import type { DateRange } from '../../utils/dateRange';
-import { createTodayEnd, createTodayStart } from '../../utils/dateRange';
 
 const formatToDateInput = (date: Date | undefined) => {
 	if (!date) {
@@ -131,7 +130,7 @@ type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange
 
 const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): ReactElement => {
 	const dispatch = useMutableCallback((action: DateRangeAction): void => {
-		const newRange = dateRangeReducer(value ?? { start: createTodayStart(), end: createTodayEnd() }, action);
+		const newRange = dateRangeReducer(value ?? { start: undefined, end: undefined }, action);
 		onChange?.(newRange);
 	});
 
@@ -143,8 +142,8 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 		dispatch({ newEnd: currentTarget.value });
 	});
 
-	const startDate = useMemo(() => formatToDateInput(value?.start ?? createTodayStart()), [value?.start]);
-	const endDate = useMemo(() => formatToDateInput(value?.end ?? createTodayEnd()), [value?.end]);
+	const startDate = useMemo(() => formatToDateInput(value?.start), [value?.start]);
+	const endDate = useMemo(() => formatToDateInput(value?.end), [value?.end]);
 	const maxStartDate = useMemo(() => {
 		return formatToDateInput(value?.end ? moment.min(moment(value.end), moment()).toDate() : new Date());
 	}, [value?.end]);

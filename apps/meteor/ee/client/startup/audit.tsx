@@ -1,7 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
+import { hasAllPermission } from '../../../app/authorization/client';
 import { appLayout } from '../../../client/lib/appLayout';
+import NotAuthorizedPage from '../../../client/views/notAuthorized/NotAuthorizedPage';
 import MainLayout from '../../../client/views/root/MainLayout';
 import { onToggledFeature } from '../lib/onToggledFeature';
 
@@ -23,22 +26,22 @@ const registerRoutes = () => {
 	auditRoute = FlowRouter.route('/audit/:tab?', {
 		name: 'audit-home',
 		action() {
-			appLayout.render(
-				<MainLayout>
-					<AuditPage />
-				</MainLayout>,
-			);
+			Tracker.autorun(() => {
+				const canAudit = hasAllPermission('can-audit');
+
+				appLayout.render(<MainLayout>{canAudit ? <AuditPage /> : <NotAuthorizedPage />}</MainLayout>);
+			});
 		},
 	});
 
 	auditLogRoute = FlowRouter.route('/audit-log', {
 		name: 'audit-log',
 		action() {
-			appLayout.render(
-				<MainLayout>
-					<AuditLogPage />
-				</MainLayout>,
-			);
+			Tracker.autorun(() => {
+				const canAuditLog = hasAllPermission('can-audit-log');
+
+				appLayout.render(<MainLayout>{canAuditLog ? <AuditLogPage /> : <NotAuthorizedPage />}</MainLayout>);
+			});
 		},
 	});
 

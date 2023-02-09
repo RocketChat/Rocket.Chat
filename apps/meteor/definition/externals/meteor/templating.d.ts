@@ -1,7 +1,7 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { ILivechatAgent, ILivechatVisitor, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -109,66 +109,59 @@ declare module 'meteor/templating' {
 		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		audit: Blaze.Template<
 			{
-				rid: IRoom['_id'];
-				startDate: Date;
-				endDate?: Date;
-				users: IUser['username'][];
-				msg: IMessage['msg'];
-				type: string;
-				visitor: ILivechatVisitor['_id'];
-				agent: ILivechatAgent['_id'];
+				u?: Partial<IUser>;
+				room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
+				subscription?: Pick<ISubscription, 'rid' | 'name' | 'autoTranslate' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
+				settings?: {
+					translateLanguage: unknown;
+					autoImageLoad: unknown;
+					useLegacyMessageTemplate: unknown;
+					saveMobileBandwidth: unknown;
+					collapseMediaByDefault: unknown;
+					showreply: unknown;
+					showReplyButton: unknown;
+					hasPermissionDeleteMessage: unknown;
+					hasPermissionDeleteOwnMessage: unknown;
+					hideRoles: unknown;
+					UI_Use_Real_Name: unknown;
+					Chatops_Username: unknown;
+					AutoTranslate_Enabled: unknown;
+					Message_AllowEditing: unknown;
+					Message_AllowEditing_BlockEditInMinutes: unknown;
+					Message_ShowEditedStatus: unknown;
+					API_Embed: unknown;
+					API_EmbedDisabledFor: unknown;
+					Message_GroupingPeriod: unknown;
+				};
+				messages?: IMessage[];
 			},
 			Blaze.TemplateInstance<{
-				rid: IRoom['_id'];
-				startDate: Date;
-				endDate?: Date;
-				users: IUser['username'][];
-				msg: IMessage['msg'];
-				type: string;
-				visitor: ILivechatVisitor['_id'];
-				agent: ILivechatAgent['_id'];
-			}> & {
-				messagesContext: ReactiveVar<{
-					u?: Partial<IUser>;
-					room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
-					subscription?: Pick<ISubscription, 'rid' | 'name' | 'autoTranslate' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-					settings?: {
-						translateLanguage: unknown;
-						autoImageLoad: unknown;
-						useLegacyMessageTemplate: unknown;
-						saveMobileBandwidth: unknown;
-						collapseMediaByDefault: unknown;
-						showreply: unknown;
-						showReplyButton: unknown;
-						hasPermissionDeleteMessage: unknown;
-						hasPermissionDeleteOwnMessage: unknown;
-						hideRoles: unknown;
-						UI_Use_Real_Name: unknown;
-						Chatops_Username: unknown;
-						AutoTranslate_Enabled: unknown;
-						Message_AllowEditing: unknown;
-						Message_AllowEditing_BlockEditInMinutes: unknown;
-						Message_ShowEditedStatus: unknown;
-						API_Embed: unknown;
-						API_EmbedDisabledFor: unknown;
-						Message_GroupingPeriod: unknown;
-					};
-					messages?: IMessage[];
-				}>;
-				loading: ReactiveVar<boolean>;
-				hasResults: ReactiveVar<boolean>;
-				loadMessages: (params: {
-					rid: IRoom['_id'];
-					startDate: Date;
-					endDate?: Date;
-					users: IUser['username'][];
-					msg: IMessage['msg'];
-					type: string;
-					visitor: ILivechatVisitor['_id'];
-					agent: ILivechatAgent['_id'];
-				}) => Promise<void>;
-				messages?: ReactiveVar<IMessage[]>;
-			}
+				u?: Partial<IUser>;
+				room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
+				subscription?: Pick<ISubscription, 'rid' | 'name' | 'autoTranslate' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
+				settings?: {
+					translateLanguage: unknown;
+					autoImageLoad: unknown;
+					useLegacyMessageTemplate: unknown;
+					saveMobileBandwidth: unknown;
+					collapseMediaByDefault: unknown;
+					showreply: unknown;
+					showReplyButton: unknown;
+					hasPermissionDeleteMessage: unknown;
+					hasPermissionDeleteOwnMessage: unknown;
+					hideRoles: unknown;
+					UI_Use_Real_Name: unknown;
+					Chatops_Username: unknown;
+					AutoTranslate_Enabled: unknown;
+					Message_AllowEditing: unknown;
+					Message_AllowEditing_BlockEditInMinutes: unknown;
+					Message_ShowEditedStatus: unknown;
+					API_Embed: unknown;
+					API_EmbedDisabledFor: unknown;
+					Message_GroupingPeriod: unknown;
+				};
+				messages?: IMessage[];
+			}>
 		>;
 		messagePopupCannedResponse: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 

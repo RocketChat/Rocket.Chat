@@ -1,82 +1,41 @@
-import type { ILivechatAgent, ILivechatVisitor, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { Blaze } from 'meteor/blaze';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useCallback, useEffect, useRef, memo } from 'react';
 
+import { createMessageContext } from '../../../../../app/ui-utils/client/lib/messageContext';
+import { useReactiveValue } from '../../../../../client/hooks/useReactiveValue';
 import type { IAuditLog } from '../../../../definition/IAuditLog';
-import type { DateRange } from '../utils/dateRange';
 
 type AuditResultProps = {
 	className?: string;
 	type: IAuditLog['fields']['type'];
-	msg: string;
-	dateRange: DateRange;
 	rid: IRoom['_id'];
-	users: Exclude<IUser['username'], undefined>[];
-	visitor: ILivechatVisitor['_id'];
-	agent: ILivechatAgent['_id'];
+
+	messages: IMessage[];
 };
 
-const AuditResult = ({ className, type, msg, dateRange, rid, users, visitor, agent }: AuditResultProps): ReactElement => {
-	const ref = useRef<HTMLDivElement>(null);
+const AuditResult = ({ className, type, rid, messages }: AuditResultProps): ReactElement => {
+	const ref = useRef<HTMLUListElement>(null);
 
-	const reactiveDataRef = useRef(
-		new ReactiveDict(undefined, {
-			rid,
-			msg,
-			dateRange,
-			users,
-			visitor,
-			agent,
-		}),
-	);
-
-	useEffect(() => {
-		reactiveDataRef.current.set('msg', msg);
-	}, [msg]);
-
-	useEffect(() => {
-		reactiveDataRef.current.set('dateRange', dateRange);
-	}, [dateRange]);
-
-	useEffect(() => {
-		reactiveDataRef.current.set('rid', rid);
-	}, [rid]);
-
-	useEffect(() => {
-		reactiveDataRef.current.set('users', users);
-	}, [users]);
-
-	useEffect(() => {
-		reactiveDataRef.current.set('visitor', visitor);
-	}, [visitor]);
-
-	useEffect(() => {
-		reactiveDataRef.current.set('agent', agent);
-	}, [agent]);
+	const messageContext = useReactiveValue(useCallback(() => createMessageContext({ rid }), [rid]));
 
 	useEffect(() => {
 		let view: Blaze.View | undefined;
 
-		// @ts-expect-error An import path cannot end with a '.ts' extension.
-		import('../../../templates/audit/audit.ts').then(() => {
-			if (!ref.current) {
+		import('../../../templates/audit/audit.html').then(() => {
+			if (!ref.current || messages.length === 0) {
 				return;
 			}
 
 			view = Blaze.renderWithData(
 				Template.audit,
 				() => ({
-					type,
-					msg: reactiveDataRef.current.get('msg'),
-					startDate: reactiveDataRef.current.get('dateRange')?.start ?? new Date(0),
-					endDate: reactiveDataRef.current.get('dateRange')?.end ?? new Date(),
-					rid: reactiveDataRef.current.get('rid'),
-					users: reactiveDataRef.current.get('users'),
-					visitor: reactiveDataRef.current.get('visitor'),
-					agent: reactiveDataRef.current.get('agent'),
+					...messageContext,
+					messages,
 				}),
 				ref.current,
 			);
@@ -85,9 +44,19 @@ const AuditResult = ({ className, type, msg, dateRange, rid, users, visitor, age
 		return () => {
 			if (view) Blaze.remove(view);
 		};
-	}, [type]);
+	}, [messageContext, messages, messages.length, type]);
 
-	return <div className={className} ref={ref} />;
+	const t = useTranslation();
+
+	if (messages.length === 0) {
+		return (
+			<Box padding={24} textAlign='center'>
+				{t('Nothing_found')}
+			</Box>
+		);
+	}
+
+	return <ul ref={ref} className={['messages-list', className].filter(Boolean).join(' ')} aria-live='polite' />;
 };
 
 export default memo(AuditResult);

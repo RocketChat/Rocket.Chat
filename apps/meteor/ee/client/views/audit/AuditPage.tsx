@@ -1,24 +1,21 @@
-import { Margins, Tabs } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import React from 'react';
 
 import Page from '../../../../client/components/Page/Page';
 import PageHeader from '../../../../client/components/Page/PageHeader';
 import PageScrollableContentWithShadow from '../../../../client/components/Page/PageScrollableContentWithShadow';
+import MessageListSkeleton from '../../../../client/components/message/list/MessageListSkeleton';
+import { getErrorMessage } from '../../../../client/lib/errorHandling';
 import AuditForm from './components/AuditForm';
 import AuditResult from './components/AuditResult';
-import type { AuditFields } from './hooks/useAuditForm';
+import { useAuditMutation } from './hooks/useAuditMutation';
 import { useAuditTab } from './hooks/useAuditTab';
 
 const AuditPage = () => {
 	const [type, setType] = useAuditTab();
 
-	const [auditFields, setAuditFields] = useState<AuditFields | undefined>();
-
-	const handleSubmit = useMutableCallback((fields: AuditFields) => {
-		setAuditFields(fields);
-	});
+	const auditMutation = useAuditMutation(type);
 
 	const t = useTranslation();
 
@@ -41,8 +38,18 @@ const AuditPage = () => {
 			</Tabs>
 			<PageScrollableContentWithShadow mb={-4}>
 				<Margins block={4}>
-					<AuditForm key={type} type={type} onSubmit={handleSubmit} />
-					{auditFields && <AuditResult type={type} {...auditFields} />}
+					<AuditForm key={type} type={type} onSubmit={auditMutation.mutate} />
+					{auditMutation.isLoading && <MessageListSkeleton messageCount={5} />}
+					{auditMutation.isError && (
+						<States>
+							<StatesIcon name='circle-exclamation' variation='danger' />
+							<StatesTitle>{t('Error')}</StatesTitle>
+							<StatesSubtitle>{getErrorMessage(auditMutation.error)}</StatesSubtitle>
+						</States>
+					)}
+					{auditMutation.isSuccess && auditMutation.variables && (
+						<AuditResult type={type} {...auditMutation.variables} messages={auditMutation.data} />
+					)}
 				</Margins>
 			</PageScrollableContentWithShadow>
 		</Page>
