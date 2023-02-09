@@ -4,7 +4,6 @@ import {
 	MessageLeftContainer,
 	MessageContainer,
 	MessageBody,
-	MessageBlock,
 	MessageDivider,
 	MessageName,
 	MessageUsername,
@@ -23,13 +22,13 @@ import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import MessageContentBody from '../../../../components/message/MessageContentBody';
+import StatusIndicators from '../../../../components/message/StatusIndicators';
+import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { useUserCard } from '../../../../hooks/useUserCard';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import MessageBlockUiKit from '../../../blocks/MessageBlock';
-import MessageContentBody from '../../../room/MessageList/components/MessageContentBody';
-import { MessageIndicators } from '../../../room/MessageList/components/MessageIndicators';
-import { useMessageActions } from '../../../room/contexts/MessageContext';
 
 const ContactHistoryMessage: FC<{
 	message: IMessage;
@@ -40,9 +39,7 @@ const ContactHistoryMessage: FC<{
 	const formatTime = useFormatTime();
 
 	const t = useTranslation();
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
+	const { open: openUserCard } = useUserCard();
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -83,7 +80,7 @@ const ContactHistoryMessage: FC<{
 							style={{ cursor: 'pointer' }}
 						/>
 					)}
-					{sequential && <MessageIndicators message={message} />}
+					{sequential && <StatusIndicators message={message} />}
 				</MessageLeftContainer>
 
 				<MessageContainer>
@@ -96,7 +93,7 @@ const ContactHistoryMessage: FC<{
 								@{message.u.username}
 							</MessageUsername>
 							<MessageTimestamp title={formatTime(message.ts)}>{formatTime(message.ts)}</MessageTimestamp>
-							<MessageIndicators message={message} />
+							<StatusIndicators message={message} />
 						</MessageHeaderTemplate>
 					)}
 					{!message.blocks && message.md && (
@@ -104,11 +101,7 @@ const ContactHistoryMessage: FC<{
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
-					{message.blocks && (
-						<MessageBlock fixedWidth>
-							<MessageBlockUiKit mid={message._id} blocks={message.blocks} appId rid={message.rid} />
-						</MessageBlock>
-					)}
+					{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

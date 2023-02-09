@@ -16,7 +16,7 @@ const DeviceIcon = ({ deviceType }: { deviceType: string }): ReactElement => (
 		alignItems='center'
 		justifyContent='center'
 		p='x4'
-		bg='neutral-500-50'
+		bg='selected'
 		size='x24'
 		borderRadius='full'
 		mie='x8'

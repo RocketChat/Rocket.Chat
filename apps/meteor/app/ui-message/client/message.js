@@ -21,6 +21,7 @@ import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
 import { settings } from '../../settings/client';
 import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
+import { hasTranslationLanguageInAttachments } from '../../../client/views/room/MessageList/lib/autoTranslate';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import './messageThread';
 import './message.html';
@@ -258,7 +259,9 @@ Template.message.helpers({
 			const autoTranslate = subscription && subscription.autoTranslate;
 			return (
 				msg.autoTranslateFetching ||
-				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage])
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]) ||
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse &&
+					hasTranslationLanguageInAttachments(msg.attachments, settings.translateLanguage))
 			);
 		}
 	},

@@ -64,7 +64,7 @@ const DeviceSettingsModal = (): ReactElement => {
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				{!setSinkIdAvailable && (
-					<Box color='danger-600' display='flex' flexDirection='column'>
+					<Box color='on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
 						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
@@ -72,7 +72,7 @@ const DeviceSettingsModal = (): ReactElement => {
 					</Box>
 				)}
 				{!isDeviceManagementEnabled && (
-					<Box color='danger-600' display='flex' flexDirection='column'>
+					<Box color='on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available_Insecure_Context')}
 					</Box>
 				)}

@@ -20,17 +20,12 @@ const csvToJson = (): void => {
 };
 
 test.describe.serial('imports', () => {
-	let poAdmin: Admin;
-
 	test.beforeAll(() => {
 		csvToJson();
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poAdmin = new Admin(page);
-	});
-
 	test('expect import users data from slack', async ({ page }) => {
+		const poAdmin: Admin = new Admin(page);
 		await page.goto('/admin/import');
 
 		await poAdmin.btnImportNewFile.click();

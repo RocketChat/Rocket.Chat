@@ -22,7 +22,7 @@ export const useDepartmentsByUnitsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
 
-	const getDepartments = useEndpoint('GET', `/v1/livechat/units/${options.unitId || 'none'}/departments/available`);
+	const getDepartments = useEndpoint('GET', '/v1/livechat/units/:unitId/departments/available', { unitId: options.unitId || 'none' });
 
 	useComponentDidUpdate(() => {
 		options && reload();

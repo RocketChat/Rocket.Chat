@@ -21,40 +21,6 @@
 	flex-shrink: 1;
 }
 
-.thread-footer {
-	display: flex;
-
-	flex-direction: column;
-
-	padding: 0 1.5rem;
-
-	align-items: stretch;
-
-	&__row {
-		display: flex;
-		flex-direction: column;
-
-		&:not(:last-child) {
-			margin-block-end: 0.5rem;
-		}
-	}
-}
-
-@media (width < 500px) {
-	.thread-footer {
-		padding-right: var(--default-small-padding);
-		padding-left: var(--default-small-padding);
-	}
-}
-
-.thread-footer__text {
-	color: var(--color-gray);
-
-	font-size: 12px;
-
-	margin-inline-start: 0.25rem;
-}
-
 .message {
 	& .thread-replied {
 		display: inline-flex;

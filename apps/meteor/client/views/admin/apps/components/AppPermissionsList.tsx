@@ -46,7 +46,7 @@ const AppPermissionsList = ({ appPermissions }: { appPermissions: AppPermission[
 					<Fragment key={permission.name}>
 						<li>{handleAppPermissions(permission.name)}</li>
 						{permission.required && (
-							<Box is='span' color='danger'>
+							<Box is='span' color='on-danger'>
 								({t('required')})
 							</Box>
 						)}
