@@ -20,7 +20,7 @@ declare module '@rocket.chat/model-typings' {
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
 		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
-		setEstimatedWaitingTimeQueueForRoomById(
+		setSlaForRoomById(
 			roomId: string,
 			sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
 		): Promise<UpdateResult | Document>;
@@ -68,7 +68,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	setEstimatedWaitingTimeQueueForRoomById(
+	setSlaForRoomById(
 		roomId: string,
 		sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
 	): Promise<UpdateResult | Document> {
@@ -77,10 +77,10 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne(
 			{
 				_id: roomId,
-				slaId,
 			},
 			{
 				$set: {
+					slaId,
 					estimatedWaitingTimeQueue: dueTimeInMinutes,
 				},
 			},
