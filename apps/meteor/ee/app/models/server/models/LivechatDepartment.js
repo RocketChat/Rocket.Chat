@@ -55,8 +55,4 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 	},
 });
 
-LivechatDepartment.prototype.removeDepartmentFromForwardListById = function (_id) {
-	return this.update({ departmentsAllowedToForward: _id }, { $pull: { departmentsAllowedToForward: _id } }, { multi: true });
-};
-
 export default LivechatDepartment;
