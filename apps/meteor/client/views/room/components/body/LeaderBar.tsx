@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -73,7 +74,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 					<Box fontWeight={700}>{name}</Box>
 					<Box display='flex' alignItems='center'>
 						<UserStatus status={roomLeaderData?.status} />
-						<Box mis='x4'>{roomLeaderData?.statusText ?? t(roomLeaderData?.status || 'offline')}</Box>
+						<Box mis='x4'>{roomLeaderData?.statusText ?? t((roomLeaderData?.status as TranslationKey) || 'offline')}</Box>
 					</Box>
 				</Box>
 			</Box>
