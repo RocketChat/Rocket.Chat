@@ -85,15 +85,15 @@ API.v1.addRoute(
 				return API.v1.failure('The required "msgId" query param is missing.');
 			}
 
-			const { cursor, totalCount } = Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
+			const cursor = await Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
 
-			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [reports] = await Promise.all([cursor.toArray()]);
 
 			return API.v1.success({
 				reports,
 				count: reports.length,
 				offset,
-				total,
+				total: reports.length || 0,
 			});
 		},
 	},

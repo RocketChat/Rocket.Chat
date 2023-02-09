@@ -1,8 +1,9 @@
 import type { IMessage, IReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindCursor, UpdateResult, Document } from 'mongodb';
+import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReport>>) {
@@ -166,7 +167,13 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		);
 	}
 
-	findReportsByMessageId(messageId: string, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {
+	async findReportsByMessageId(
+		messageId: string,
+		offset = 0,
+		count = 20,
+		sort?: any,
+		selector?: string,
+	): Promise<AggregationCursor<IReport[]>> {
 		const query = {
 			'_hidden': {
 				$ne: true,
@@ -199,16 +206,55 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			  }
 			: {};
 
-		return this.findPaginated(
-			{ ...query, ...cquery },
+		// get the user data from collection users for each report
+
+		const lookup = [
 			{
-				sort: sort || {
+				$lookup: {
+					from: 'users',
+					localField: 'userId',
+					foreignField: '_id',
+					pipeline: [
+						{
+							$project: {
+								_id: 1,
+								username: 1,
+								name: 1,
+								active: 1,
+								avatarETag: 1,
+								createdAt: 1,
+							},
+						},
+					],
+					as: 'reportedBy',
+				},
+			},
+			{
+				$match: {
+					...query,
+					...cquery,
+				},
+			},
+			{
+				$sort: sort || {
 					ts: -1,
 				},
-				skip: offset,
-				limit: count,
 			},
-		);
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+			{
+				$unwind: {
+					path: '$reportedBy',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+		];
+
+		return this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() });
 	}
 
 	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {

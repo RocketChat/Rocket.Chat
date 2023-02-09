@@ -29,7 +29,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): FindPaginated<FindCursor<IReport>>;
+	): Promise<AggregationCursor<IReport[]>>;
 
 	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
