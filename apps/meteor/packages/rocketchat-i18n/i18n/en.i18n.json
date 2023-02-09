@@ -5560,7 +5560,7 @@
   "Use_token": "Use token",
   "Deregister": "Deregister",
   "Disconnected": "Disconnected",
-  "Deregister_workspace": "Deregister workspace",
+  "Disconnect_workspace": "Disconnect workspace",
   "Awaiting_confirmation": "Awaiting confirmation",
   "Security_code": "Security code",
   "Registration_Token": "Registration Token",
@@ -5576,7 +5576,8 @@
   "RegisterWorkspace_NotConnected_Title": "Workspace disconnected",
   "RegisterWorkspace_NotConnected_Subtitle": "Connect this workspace and get",
   "RegisterWorkspace_NotRegistered_Description": "Benefits of registering workspace",
-  "RegisterWorkspace_Deregister_Subtitle": "Deregistering your workspace will result in the loss of the following",
+  "RegisterWorkspace_Disconnect_Subtitle": "Disconnecting your workspace will result in the loss of the following",
+  "RegisterWorkspace_Disconnect_Error": "An error occured disconnecting",
   "RegisterWorkspace_Features_MobileNotifications_Title": "Mobile push notifications",
   "RegisterWorkspace_Features_MobileNotifications_Description": "Allows workspace members to receive notifications on their mobile devices.",
   "RegisterWorkspace_Features_MobileNotifications_Deregister": "Workspace members will no longer receive notifications on their mobile devices.",
@@ -5606,6 +5607,5 @@
   "RegisterWorkspace_Setup_Terms_Privacy": "I agree with <a target='_blank' href='https://rocket.chat/terms'>Terms and Conditions</a> and <a target='_blank' href='https://rocket.chat/privacy'>Privacy Policy</a>",
   "RegisterWorkspace_Syncing_Error": "An error occured syncing your workspace",
   "RegisterWorkspace_Syncing_Complete": "Sync Complete",
-  "RegisterWorkspace_Connection_Error": "An error occured connecting",
-  "RegisterWorkspace_Disconnect_Error": "An error occured disconnecting"
+  "RegisterWorkspace_Connection_Error": "An error occured connecting"
 }

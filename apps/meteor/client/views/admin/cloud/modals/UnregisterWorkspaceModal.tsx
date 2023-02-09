@@ -51,7 +51,7 @@ const UnregisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: Unregis
 			</Modal.Header>
 			<Modal.Content>
 				<Box withRichContent>
-					<span>{`${t('RegisterWorkspace_Deregister_Subtitle')}: `}</span>
+					<span>{`${t('RegisterWorkspace_Disconnect_Subtitle')}: `}</span>
 					<ul>
 						{bulletFeatures.map((item, index) => (
 							<li key={index}>
@@ -68,7 +68,7 @@ const UnregisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: Unregis
 				<ButtonGroup align='end'>
 					<Button onClick={handleCancelAction}>{t('Cancel')}</Button>
 					<Button danger onClick={handleUnregister}>
-						{t('Deregister_workspace')}
+						{t('Disconnect_workspace')}
 					</Button>
 				</ButtonGroup>
 			</Modal.Footer>
