@@ -16,7 +16,6 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
-	const syncWorkspace = useMethod('cloud:syncWorkspace');
 
 	const [token, setToken] = useState('');
 	const [processing, setProcessing] = useState(false);

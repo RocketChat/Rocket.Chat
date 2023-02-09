@@ -1,7 +1,6 @@
 import { Box, Icon, Menu, Throbber } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
-	useMethod,
 	useEndpoint,
 	useTranslation,
 	useRoute,
@@ -15,7 +14,6 @@ import semver from 'semver';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import WarningModal from '../../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
-import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
