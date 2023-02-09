@@ -1,9 +1,10 @@
+import { Settings } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
 addMigration({
 	version: 285,
-	up() {
-		upsertPermissions();
+	async up() {
+		await Settings.removeById('Accounts_Default_User_Preferences_messageViewMode');
 	},
 });
