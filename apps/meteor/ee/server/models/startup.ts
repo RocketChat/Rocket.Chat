@@ -4,6 +4,7 @@ import { onLicense } from '../../app/license/server/license';
 // Collection will be registered on CE too
 // No functionality will be imported tho, just the service registration
 import('./LivechatPriority');
+import('./OmnichannelServiceLevelAgreements');
 
 onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');
@@ -11,6 +12,5 @@ onLicense('livechat-enterprise', () => {
 	import('./LivechatUnit');
 	import('./LivechatUnitMonitors');
 	import('./LivechatRooms');
-	import('./OmnichannelServiceLevelAgreements');
 	import('./LivechatInquiry');
 });
