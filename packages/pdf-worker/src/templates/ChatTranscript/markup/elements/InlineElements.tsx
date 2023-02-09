@@ -1,4 +1,4 @@
-import { Text } from '@react-pdf/renderer';
+import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 
 import BoldSpan from './BoldSpan';
@@ -6,14 +6,20 @@ import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import StrikeSpan from './StrikeSpan';
 import EmojiSpan from './EmojiSpan';
-import CodeElement from './CodeElement';
+import CodeSpan from './CodeSpan';
 
 type InlineElementsProps = {
 	children: MessageParser.Inlines[];
 };
 
+const styles = StyleSheet.create({
+	inline: {
+		flexDirection: 'row',
+	},
+});
+
 const InlineElements = ({ children }: InlineElementsProps) => (
-	<Text>
+	<View style={styles.inline}>
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
@@ -35,7 +41,7 @@ const InlineElements = ({ children }: InlineElementsProps) => (
 					return <EmojiSpan key={index} {...child} />;
 
 				case 'INLINE_CODE':
-					return <CodeElement key={index} code={child.value.value} />;
+					return <CodeSpan key={index} code={child.value.value} />;
 
 				case 'MENTION_USER':
 				case 'MENTION_CHANNEL':
@@ -45,7 +51,7 @@ const InlineElements = ({ children }: InlineElementsProps) => (
 					return null;
 			}
 		})}
-	</Text>
+	</View>
 );
 
 export default InlineElements;

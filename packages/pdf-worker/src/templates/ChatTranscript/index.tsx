@@ -79,6 +79,10 @@ export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> 
 			{ src: `${FONT_PATH}/inter700-italic.ttf`, fontWeight: 700, fontStyle: 'italic' },
 		],
 	});
+	Font.register({
+		family: 'FiraCode',
+		fonts: [{ src: `${FONT_PATH}/fira-code700.ttf'`, fontWeight: 700 }],
+	});
 	Font.registerHyphenationCallback((word) => [word]);
 
 	return ReactPDF.renderToStream(<ChatTranscriptPDF {...data} />);

@@ -181,6 +181,35 @@ export const exampleData = {
 				name: 'Christian Castro',
 				username: 'cristiano.castro',
 			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{ type: 'PLAIN_TEXT', value: 'No, that is all. Thank you for your help. ' },
+						{ type: 'INLINE_CODE', value: { type: 'PLAIN_TEXT', value: 'Inline code' } },
+					],
+				},
+			],
+		},
+		{
+			msg: 'You are welcome. Have a great day!',
+			ts: '2022-11-22T16:00:00.000Z',
+			u: {
+				_id: '123',
+				name: 'Juanito De Ponce',
+				username: 'juanito.ponce',
+			},
+			md: [
+				{
+					type: 'CODE',
+					value: [
+						{ type: 'CODE_INLINE', value: { type: 'PLAIN_TEXT', value: 'Multi line code' } },
+						{ type: 'CODE_INLINE', value: { type: 'PLAIN_TEXT', value: '' } },
+						{ type: 'CODE_INLINE', value: { type: 'PLAIN_TEXT', value: '--rcx-color-button-background-success-focus: #general;' } },
+						{ type: 'CODE_INLINE', value: { type: 'PLAIN_TEXT', value: '--rcx-color-button-background-success-keyfocus: #1D7256;' } },
+					],
+				},
+			],
 		},
 		{
 			msg: 'You are welcome. Have a great day!',
