@@ -20,6 +20,6 @@ export class Utils {
 	}
 
 	get btnModalConfirmDelete() {
-		return this.page.locator('.rcx-modal >> button >> text=Delete');
+		return this.page.locator('.rcx-modal >> button >> text="Delete"');
 	}
 }

@@ -43,6 +43,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				await resetPriorities();
 				await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
 
+				prioritiesRoute.push({});
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

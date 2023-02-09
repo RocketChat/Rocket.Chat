@@ -1,5 +1,12 @@
-import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { AggregationCursor, CountDocumentsOptions, FindCursor, FindOptions, AggregateOptions } from 'mongodb';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	ILivechatDepartment,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import type { AggregationCursor, CountDocumentsOptions, FindCursor, FindOptions, AggregateOptions, InsertOneResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -63,4 +70,16 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
 	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
+
+	createPriorityHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
+	): Promise<InsertOneResult<IMessage>>;
+
+	createSLAHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
+	): Promise<InsertOneResult<IMessage>>;
 }

@@ -82,10 +82,6 @@ settingsRegistry.addGroup('Accounts', function () {
 		type: 'int',
 		public: true,
 	});
-	this.add('Accounts_ShowFormLogin', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Accounts_EmailOrUsernamePlaceholder', '', {
 		type: 'string',
 		public: true,
@@ -945,6 +941,20 @@ settingsRegistry.addGroup('General', function () {
 		],
 		public: true,
 	});
+	this.add('Unread_Count_Omni', 'all_messages', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages',
+			},
+			{
+				key: 'mentions_only',
+				i18nLabel: 'Mentions_only',
+			},
+		],
+		public: true,
+	});
 
 	this.add('DeepLink_Url', 'https://go.rocket.chat', {
 		type: 'string',
@@ -1559,6 +1569,46 @@ settingsRegistry.addGroup('Push', function () {
 });
 
 settingsRegistry.addGroup('Layout', function () {
+	this.section('Login', function () {
+		this.add('Layout_Login_Hide_Logo', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Title', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Powered_By', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Template', 'horizontal-template', {
+			type: 'select',
+			values: [
+				{
+					key: 'vertical-template',
+					i18nLabel: 'Layout_Login_Template_Vertical',
+				},
+				{
+					key: 'horizontal-template',
+					i18nLabel: 'Layout_Login_Template_Horizontal',
+				},
+			],
+			public: true,
+			enterprise: true,
+			invalidValue: 'horizontal-template',
+		});
+		this.add('Accounts_ShowFormLogin', true, {
+			type: 'boolean',
+			public: true,
+		});
+	});
 	this.section('Content', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',

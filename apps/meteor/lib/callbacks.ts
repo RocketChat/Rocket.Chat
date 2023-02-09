@@ -108,7 +108,7 @@ type ChainedCallbackSignatures = {
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
 	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
-	'livechat.afterRemoveDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => {
+	'livechat.afterRemoveDepartment': (params: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
 		departmentId: ILivechatDepartmentRecord['_id'];
 		agentsId: ILivechatAgent['_id'][];
 	};
@@ -173,18 +173,6 @@ type Hook =
 	| 'beforeSaveMessage'
 	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
-	| 'cachedCollection-loadFromServer-rooms'
-	| 'cachedCollection-loadFromServer-subscriptions'
-	| 'cachedCollection-received-rooms'
-	| 'cachedCollection-received-subscriptions'
-	| 'cachedCollection-sync-rooms'
-	| 'cachedCollection-sync-subscriptions'
-	| 'cachedCollection-after-loadFromServer-rooms'
-	| 'cachedCollection-after-loadFromServer-subscriptions'
-	| 'cachedCollection-after-received-rooms'
-	| 'cachedCollection-after-received-subscriptions'
-	| 'cachedCollection-after-sync-rooms'
-	| 'cachedCollection-after-sync-subscriptions'
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'

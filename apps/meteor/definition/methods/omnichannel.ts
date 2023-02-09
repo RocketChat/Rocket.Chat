@@ -7,21 +7,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:addMonitor': (...args: any[]) => any;
 		'livechat:closeRoom': (...args: any[]) => any;
 		'livechat:discardTranscript': (...args: any[]) => any;
-
-		// TODO: chapter day backend - enhance/deprecate
-		'livechat:facebook':
-			| ((...args: [{ action: 'initialState' }]) => {
-					enabled: boolean;
-					hasToken: boolean;
-			  })
-			| ((...args: [{ action: 'list-pages' }]) => {
-					name: string;
-					subscribed: boolean;
-					id: string;
-			  }[])
-			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => void)
-			| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
-			| ((...args: [{ action: 'disable' }]) => void);
 		'livechat:getAgentOverviewData': (...args: any[]) => any;
 		'livechat:getAnalyticsChartData': (...args: any[]) => any;
 		'livechat:getAnalyticsOverviewData': (...args: any[]) => any;
