@@ -29,6 +29,15 @@ describe('AdministrationModelList', () => {
 			'../../../app/authorization/client': {
 				userHasAllPermission: () => true,
 			},
+			'@rocket.chat/ui-contexts': {
+				useTranslation: () => () => '',
+				useRoute: () => '',
+				useMethod: () => '',
+				useSetModal: () => () => '',
+			},
+			'@tanstack/react-query': {
+				useQuery: () => '',
+			},
 			...stubs,
 		}).default;
 	};
@@ -56,7 +65,9 @@ describe('AdministrationModelList', () => {
 		const handleDismiss = spy();
 
 		const ProvidersMock = ({ children }: { children: ReactNode }) => {
-			return <RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>;
+			return (
+				<RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>
+			);
 		};
 
 		it('should go to admin info', async () => {
