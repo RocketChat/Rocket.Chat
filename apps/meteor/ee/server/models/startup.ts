@@ -9,4 +9,5 @@ onLicense('livechat-enterprise', () => {
 	import('./LivechatRooms');
 	import('./OmnichannelServiceLevelAgreements');
 	import('./LivechatInquiry');
+	import('./LivechatDepartment');
 });

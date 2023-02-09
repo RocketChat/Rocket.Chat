@@ -30,4 +30,8 @@ export class OmnichannelSidenav {
 	get linkSlaPolicies(): Locator {
 		return this.page.locator('a[href="omnichannel/sla-policies"]');
 	}
+
+	get linkPriorities(): Locator {
+		return this.page.locator('a[href="omnichannel/priorities"]');
+	}
 }

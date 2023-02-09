@@ -1,6 +1,6 @@
 import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
-import { LivechatEnterprise } from '../../lib/LivechatEnterprise';
+import { updateRoomSLA } from './sla';
 
 export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string; roomId: string; sla: string }): Promise<void> {
 	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { status: 1 } });
@@ -13,5 +13,10 @@ export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string;
 		throw new Error('error-invalid-sla');
 	}
 
-	await LivechatEnterprise.updateRoomSLA(roomId, await Users.findOneById(userId, { projection: { username: 1 } }), slaData);
+	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Error('error-invalid-user');
+	}
+
+	await updateRoomSLA(roomId, user, slaData);
 }

@@ -1,11 +1,12 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useUserCard } from '../../../hooks/useUserCard';
-import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -21,17 +22,20 @@ import ToolboxHolder from '../ToolboxHolder';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
-	message: MessageWithMdEnforced;
+	message: IMessage & { ignored?: boolean };
 	sequential: boolean;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
+	context?: MessageActionContext;
+	ignoredUser?: boolean;
 };
 
-const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored ?? false);
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { open: openUserCard } = useUserCard();
 
 	const selecting = useIsSelecting();
@@ -74,12 +78,12 @@ const RoomMessage = ({ message, sequential, all, mention, unread }: RoomMessageP
 				{!sequential && <MessageHeader message={message} />}
 
 				{ignored ? (
-					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
+					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} />
 				)}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context={context} />}
 		</Message>
 	);
 };
