@@ -248,9 +248,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			},
 		];
 
-		const reports: IReport[] = await this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() }).toArray();
+		const reports: Document[] = await this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() }).toArray();
 
-		return reports;
+		return reports as IReport[];
 	}
 
 	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {
