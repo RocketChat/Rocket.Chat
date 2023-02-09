@@ -29,6 +29,7 @@ export type ModerationEndpoints = {
 	'/v1/moderation.countReportsByMsgId': {
 		GET: (params: { msgId: string; count?: number }) => {
 			count: number;
+			reportCounts: number;
 		};
 	};
 };
