@@ -90,21 +90,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		}
 	};
 
-	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
-
 	const handleClick = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
 		e.preventDefault();
 		e.stopPropagation();
 
 		setLoading(true);
-
-		const isLoggedIn = await checkUserLoggedIn();
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
 
 		if (app.versionIncompatible && action !== undefined) {
 			openIncompatibleModal(app, action, cancelAction);

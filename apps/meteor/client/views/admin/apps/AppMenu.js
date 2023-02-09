@@ -33,7 +33,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const [currentRouteName, currentRouteParams] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -89,11 +88,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const handleSubscription = useCallback(async () => {
-		if (!(await checkUserLoggedIn())) {
-			setModal(<CloudLoginModal />);
-			return;
-		}
-
 		if (app?.versionIncompatible && !isSubscribed) {
 			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
@@ -121,18 +115,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [checkUserLoggedIn, app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
+	}, [app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const handleAcquireApp = useCallback(async () => {
 		setLoading(true);
-
-		const isLoggedIn = await checkUserLoggedIn();
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
 
 		if (app?.versionIncompatible) {
 			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
@@ -150,7 +136,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app, closeModal, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
+	}, [action, app, closeModal, cancelAction, isAppPurchased, setModal, showAppPermissionsReviewModal]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -263,16 +249,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			return;
 		}
 
-		const isLoggedIn = await checkUserLoggedIn();
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
-
 		showAppPermissionsReviewModal();
-	}, [checkUserLoggedIn, app, closeModal, setModal, showAppPermissionsReviewModal]);
+	}, [app, closeModal, setModal, showAppPermissionsReviewModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
