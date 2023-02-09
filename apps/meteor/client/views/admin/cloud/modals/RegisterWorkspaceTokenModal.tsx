@@ -41,12 +41,6 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Connected') });
-
-			const isSynced = await syncWorkspace();
-
-			if (!isSynced) {
-				throw Error(t('RegisterWorkspace_Syncing_Error'));
-			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
