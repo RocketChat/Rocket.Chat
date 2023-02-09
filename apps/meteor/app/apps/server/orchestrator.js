@@ -191,6 +191,14 @@ export class AppServerOrchestrator {
 		return this._manager.updateAppsMarketplaceInfo(apps).then(() => this._manager.get());
 	}
 
+	async installedApps(filter = {}) {
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		return this._manager.get(filter);
+	}
+
 	async triggerEvent(event, ...payload) {
 		if (!this.isLoaded()) {
 			return;

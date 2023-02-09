@@ -15,10 +15,11 @@ const audioRecorder = new AudioRecorder();
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	isRecording?: boolean;
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
-const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
@@ -39,8 +40,6 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
 
 		chat?.flows.action.stop('recording');
-
-		chat?.composer?.setRecordingMode(false);
 
 		chat?.composer?.setRecordingMode(false);
 
@@ -169,6 +168,8 @@ const AudioMessageRecorder = ({ rid, chatContext, ...props }: AudioMessageRecord
 	if (state === 'idle') {
 		return (
 			<MessageComposerAction
+				disabled={isRecording}
+				title={t('Audio_message')}
 				icon='mic'
 				className='rc-message-box__icon rc-message-box__audio-message-mic'
 				data-qa-id='audio-record'

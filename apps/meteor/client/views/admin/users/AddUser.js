@@ -1,10 +1,10 @@
 import { Field, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
@@ -13,7 +13,14 @@ const AddUser = ({ onReload, ...props }) => {
 
 	const router = useRoute('admin-users');
 
-	const { value: roleData } = useEndpointData('/v1/roles.list');
+	const getRoleData = useEndpoint('GET', '/v1/roles.list');
+
+	const isSmtpEnabled = Boolean(useSetting('SMTP_Host'));
+
+	const { data } = useQuery(['roles'], async () => {
+		const roles = await getRoleData();
+		return roles;
+	});
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = {
@@ -61,7 +68,7 @@ const AddUser = ({ onReload, ...props }) => {
 			verified: false,
 			requirePasswordChange: false,
 			setRandomPassword: false,
-			sendWelcomeEmail: true,
+			sendWelcomeEmail: isSmtpEnabled,
 			joinDefaultChannels: true,
 			customFields: {},
 		},
@@ -103,7 +110,7 @@ const AddUser = ({ onReload, ...props }) => {
 		}
 	});
 
-	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description, name }) => [_id, description || name]) ?? [], [roleData]);
+	const availableRoles = useMemo(() => data?.roles?.map(({ _id, description, name }) => [_id, description || name]) ?? [], [data]);
 
 	const append = useMemo(
 		() => (

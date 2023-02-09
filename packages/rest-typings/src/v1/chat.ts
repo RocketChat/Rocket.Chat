@@ -405,6 +405,102 @@ const ChatGetMessageReadReceiptsSchema = {
 
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
+type GetStarredMessages = {
+	roomId: IRoom['_id'];
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const GetStarredMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isChatGetStarredMessagesPayload = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
+
+type GetPinnedMessages = {
+	roomId: IRoom['_id'];
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const GetPinnedMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isChatGetPinnedMessagesPayload = ajv.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
+
+type GetMentionedMessages = {
+	roomId: IRoom['_id'];
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const GetMentionedMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isChatGetMentionedMessagesPayload = ajv.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
+
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => IMessage;
@@ -480,5 +576,29 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getMessageReadReceipts': {
 		GET: (params: ChatGetMessageReadReceipts) => { receipts: ReadReceipt[] };
+	};
+	'/v1/chat.getStarredMessages': {
+		GET: (params: GetStarredMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.getPinnedMessages': {
+		GET: (params: GetPinnedMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.getMentionedMessages': {
+		GET: (params: GetMentionedMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
 	};
 };

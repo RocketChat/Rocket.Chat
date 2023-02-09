@@ -1,7 +1,9 @@
 import type {
 	AtLeast,
 	ICreatedRoom,
+	IInstanceStatus,
 	IMessage,
+	IPermission,
 	IRoom,
 	ISetting,
 	ISubscription,
@@ -50,7 +52,6 @@ export interface ServerMethods {
 	'authorization:deleteRole': (...args: any[]) => any;
 	'authorization:removeRoleFromPermission': (...args: any[]) => any;
 	'authorization:removeUserFromRole': (...args: any[]) => any;
-	'authorization:saveRole': (...args: any[]) => any;
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;
@@ -144,14 +145,14 @@ export interface ServerMethods {
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
-	'instances/get': (...args: any[]) => any;
+	'instances/get': () => IInstanceStatus[];
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'loadHistory': (
 		rid: IRoom['_id'],
 		ts?: Date,
 		limit?: number,
-		ls?: number,
+		ls?: string,
 		showThreadMessages?: boolean,
 	) => {
 		messages: IMessage[];
@@ -203,7 +204,6 @@ export interface ServerMethods {
 	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
-	'sendInvitationEmail': (...args: any[]) => any;
 	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;
@@ -259,6 +259,13 @@ export interface ServerMethods {
 		enabled: boolean;
 		policy: [name: TranslationKey, options?: Record<string, unknown>][];
 	};
+	'rooms/get': (updatedSince?: Date) => IRoom[] | { update: IRoom[]; remove: IRoom[] };
+	'subscriptions/get': (updatedSince?: Date) => ISubscription[] | { update: ISubscription[]; remove: ISubscription[] };
+	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
+	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
+	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
+	'pinMessage': (message: IMessage) => void;
+	'unpinMessage': (message: IMessage) => void;
 }
 
 export type ServerMethodName = keyof ServerMethods;

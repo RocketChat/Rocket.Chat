@@ -1,13 +1,13 @@
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import FilterByTypeAndText from './FilterByTypeAndText';
 import IntegrationRow from './IntegrationRow';
 
-const useQuery = ({ text, type, itemsPerPage, current }, [column, direction]) =>
+const useQueryLoc = ({ text, type, itemsPerPage, current }, [column, direction]) =>
 	useMemo(
 		() => ({
 			query: JSON.stringify({ name: { $regex: text || '', $options: 'i' }, type }),
@@ -34,9 +34,14 @@ function IntegrationsTable({ type }) {
 
 	const debouncedText = useDebouncedValue(params.text, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery({ ...params, text: debouncedText, type }, debouncedSort);
+	const query = useQueryLoc({ ...params, text: debouncedText, type }, debouncedSort);
 
-	const { value: data } = useEndpointData('/v1/integrations.list', { params: query });
+	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
+
+	const { data } = useQuery(['integrations', query], async () => {
+		const integrations = await getIntegrations(query);
+		return integrations;
+	});
 
 	const router = useRoute('admin-integrations');
 

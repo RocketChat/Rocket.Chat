@@ -32,7 +32,7 @@ const NotificationPreferencesWithData = ({ rid }: { rid: string }): ReactElement
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({
 		turnOn: !subscription?.disableNotifications,
-		muteGroupMentions: subscription?.muteGroupMentions,
+		muteGroupMentions: !!subscription?.muteGroupMentions,
 		showCounter: !subscription?.hideUnreadStatus,
 		showMentions: !subscription?.hideMentionStatus,
 		desktopAlert: (subscription?.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) || 'default',
