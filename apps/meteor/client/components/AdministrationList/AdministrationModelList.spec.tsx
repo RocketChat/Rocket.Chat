@@ -65,9 +65,7 @@ describe('AdministrationModelList', () => {
 		const handleDismiss = spy();
 
 		const ProvidersMock = ({ children }: { children: ReactNode }) => {
-			return (
-				<RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>
-			);
+			return <RouterContextMock pushRoute={pushRoute}>{children}</RouterContextMock>;
 		};
 
 		it('should go to admin info', async () => {
