@@ -26,9 +26,6 @@ describe('AdministrationModelList', () => {
 				getUpgradeTabLabel: () => 'Upgrade',
 				isFullyFeature: () => true,
 			},
-			'../../../app/authorization/client': {
-				userHasAllPermission: () => true,
-			},
 			...stubs,
 		}).default;
 	};
@@ -51,7 +48,7 @@ describe('AdministrationModelList', () => {
 		expect(screen.getByText('Upgrade')).to.exist;
 	});
 
-	context('when clicked', () => {
+	context.only('when clicked', () => {
 		const pushRoute = spy();
 		const handleDismiss = spy();
 

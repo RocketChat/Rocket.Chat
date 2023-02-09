@@ -179,8 +179,10 @@ const addEmojiToRecents = (emoji) => {
 	});
 };
 
+export const usersFromRoomMessages = new Mongo.Collection(null);
+
 Template.messagePopupConfig.onCreated(function () {
-	this.usersFromRoomMessages = new Mongo.Collection(null);
+	this.usersFromRoomMessages = usersFromRoomMessages;
 
 	this.autorun(() => {
 		const { rid } = this.data;

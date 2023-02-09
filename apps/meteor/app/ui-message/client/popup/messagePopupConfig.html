@@ -1,13 +1,7 @@
 <template name="messagePopupConfig">
 	<div class="message-popup-results">
-		{{> messagePopup popupUserConfig}}
-		{{> messagePopup popupChannelConfig}}
-		{{> messagePopup popupSlashCommandsConfig}}
-		{{> messagePopup popupEmojiConfig}}
-		{{> messagePopup popupReactionEmojiConfig}}
-
-		{{#each customMessagePopups}}
-			{{> messagePopup getCustomConfig}}
+		{{> messagePopup popupUserConfig}} {{> messagePopup popupChannelConfig}} {{> messagePopup popupEmojiConfig}} {{> messagePopup
+		popupSlashCommandsConfig}} {{> messagePopup popupReactionEmojiConfig}} {{#each customMessagePopups}} {{> messagePopup getCustomConfig}}
 		{{/each}}
 	</div>
 </template>

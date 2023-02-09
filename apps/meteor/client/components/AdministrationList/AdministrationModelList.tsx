@@ -1,14 +1,14 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
 import React from 'react';
 
-import { userHasAllPermission } from '../../../app/authorization/client';
+// import { userHasAllPermission } from '../../../app/authorization/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
-import Emoji from '../Emoji';
+// import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
 
 type AdministrationModelListProps = {
@@ -17,14 +17,12 @@ type AdministrationModelListProps = {
 	onDismiss: () => void;
 };
 
-const INFO_PERMISSIONS = ['view-statistics'];
-
 const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showWorkspace, onDismiss }) => {
 	const t = useTranslation();
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
 	const label = getUpgradeTabLabel(tabType);
-	const hasInfoPermission = userHasAllPermission(INFO_PERMISSIONS);
+	const hasInfoPermission = usePermission('view-statistics');
 
 	const infoRoute = useRoute('admin-info');
 	const adminRoute = useRoute('admin-index');
@@ -38,11 +36,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 				{showUpgradeItem && (
 					<ListItem
 						icon='arrow-stack-up'
-						text={
-							<>
-								{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
-							</>
-						}
+						text={<>{/* {t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />} */}</>}
 						action={(): void => {
 							upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
 							onDismiss();

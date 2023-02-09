@@ -1,5 +1,5 @@
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
-import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useMergedRefs, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -29,6 +29,8 @@ import { createComposerAPI } from '../../../../../../../app/ui-message/client/me
 import type { MessageBoxTemplateInstance } from '../../../../../../../app/ui-message/client/messageBox/messageBox';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { ComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
+import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
 import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
@@ -39,7 +41,8 @@ import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
-import BlazeTemplate from '../../../BlazeTemplate';
+// import BlazeTemplate from '../../../BlazeTemplate';
+import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -304,20 +307,38 @@ const MessageBox = ({
 		}
 	});
 
+	const composerPopupConfig = useComposerPopup();
+
+	const {
+		popup,
+		focused,
+		items,
+		callbackRef: c,
+	} = useComposerBoxPopup({
+		configurations: composerPopupConfig,
+	});
+
+	const cc = useMergedRefs(c, callbackRef);
+
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
-			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
-			<BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
+
+			{/* <BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
+			<BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
+
+			{popup && <ComposerBoxPopup items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />}
+
 			{readOnly && (
 				<Box mbe='x4'>
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}
+
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				<MessageComposerInput
-					ref={callbackRef as unknown as Ref<HTMLInputElement>}
+					ref={cc as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
 					disabled={isRecording}
@@ -327,6 +348,7 @@ const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 					onPaste={handlePaste}
+					// aria-activedescendant
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>

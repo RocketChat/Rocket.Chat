@@ -14,6 +14,7 @@ import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
 import { RoomAPIContext } from '../contexts/RoomAPIContext';
 import { RoomContext } from '../contexts/RoomContext';
+import ComposerPopupProvider from './ComposerPopupProvider';
 import ToolboxProvider from './ToolboxProvider';
 
 type RoomProviderProps = {
@@ -108,7 +109,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomAPIContext.Provider value={api}>
 			<RoomContext.Provider value={context}>
-				<ToolboxProvider room={pseudoRoom}>{children}</ToolboxProvider>
+				<ToolboxProvider room={pseudoRoom}>
+					<ComposerPopupProvider rid={rid}>{children}</ComposerPopupProvider>
+				</ToolboxProvider>
 			</RoomContext.Provider>
 		</RoomAPIContext.Provider>
 	);

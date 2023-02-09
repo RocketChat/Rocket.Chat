@@ -1057,6 +1057,7 @@
 
 .rc-old .message-popup-position {
 	position: relative;
+	margin-block-end: 2px;
 
 	.message-popup {
 		display: flex;
@@ -1113,16 +1114,6 @@
 
 	border-radius: 5px;
 	box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
-}
-
-.rc-old .message-popup-title {
-	padding: 0 20px;
-
-	border-width: 0 0 1px;
-
-	font-size: 14px;
-	font-weight: 300;
-	line-height: 32px;
 }
 
 .rc-old .popup-item {
