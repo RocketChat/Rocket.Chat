@@ -255,6 +255,7 @@ export interface ServerMethods {
 			username: string;
 			outside: boolean;
 			avatarETag?: string;
+			nickname?: string;
 		}[];
 	};
 	'getPasswordPolicy': (params?: { token: string }) => {
