@@ -85,9 +85,7 @@ API.v1.addRoute(
 				return API.v1.failure('The required "msgId" query param is missing.');
 			}
 
-			const cursor = await Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
-
-			const [reports] = await Promise.all([cursor.toArray()]);
+			const reports = await Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
 
 			return API.v1.success({
 				reports,
@@ -122,6 +120,30 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ report });
+		},
+	},
+);
+
+// api endpoint to get counts of reports by msgId
+
+API.v1.addRoute(
+	'moderation.countReportsByMsgId',
+	{
+		authRequired: true,
+		pemissionsRequired: ['view-moderation-console'],
+	},
+	{
+		async get() {
+			const { msgId } = this.queryParams;
+			const { count } = this.getPaginationItems();
+
+			if (!msgId) {
+				return API.v1.failure('The required "msgId" query param is missing.');
+			}
+
+			const reportCounts = await Reports.countReportsByMessageId(msgId, count);
+
+			return API.v1.success({ reportCounts, count });
 		},
 	},
 );

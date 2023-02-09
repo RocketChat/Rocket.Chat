@@ -29,7 +29,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): Promise<AggregationCursor<IReport[]>>;
+	): Promise<IReport[]>;
 
 	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
@@ -38,4 +38,6 @@ export interface IReportsModel extends IBaseModel<IReport> {
 	hideReportById(reportId: IReport['_id'], userId: string): Promise<UpdateResult | Document>;
 
 	hideReportsByMessageId(messageId: IReport['message']['_id'], userId: string): Promise<UpdateResult | Document>;
+
+	countReportsByMessageId(messageId: IReport['message']['_id'], count?: number): Promise<number>;
 }

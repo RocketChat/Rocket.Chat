@@ -1,6 +1,6 @@
 import type { IMessage, IReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
+import type { Db, Collection, FindCursor, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -167,13 +167,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		);
 	}
 
-	async findReportsByMessageId(
-		messageId: string,
-		offset = 0,
-		count = 20,
-		sort?: any,
-		selector?: string,
-	): Promise<AggregationCursor<IReport[]>> {
+	async findReportsByMessageId(messageId: string, offset = 0, count?: number, sort?: any, selector?: string): Promise<IReport[]> {
 		const query = {
 			'_hidden': {
 				$ne: true,
@@ -254,7 +248,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			},
 		];
 
-		return this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() });
+		const reports: IReport[] = await this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() }).toArray();
+
+		return reports;
 	}
 
 	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {
@@ -383,5 +379,20 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	// misc
+
+	// method to return the reports count by msgId
+
+	async countReportsByMessageId(messageId: string, count?: number): Promise<number> {
+		const query = {
+			'_hidden': {
+				$ne: true,
+			},
+			'message._id': messageId,
+		};
+
+		return this.col.countDocuments(query, { limit: count });
 	}
 }

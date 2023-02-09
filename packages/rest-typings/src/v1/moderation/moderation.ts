@@ -17,13 +17,18 @@ export type ModerationEndpoints = {
 		};
 	};
 	'/v1/moderation.reportsByMessage': {
-		GET: (params: { msgId: string; sort?: string; selector?: string }) => PaginatedResult<{
+		GET: (params: { msgId: string; sort?: string; selector?: string; count?: number }) => {
 			reports: IReport[];
-		}>;
+		};
 	};
 	'/v1/moderation.getReportInfo': {
 		GET: (params: { reportId: string }) => {
 			report: IReport | null;
+		};
+	};
+	'/v1/moderation.countReportsByMsgId': {
+		GET: (params: { msgId: string; count?: number }) => {
+			count: number;
 		};
 	};
 };
