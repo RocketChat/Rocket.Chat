@@ -1,6 +1,6 @@
 /* eslint no-await-in-loop: 0 */
 
-import { chromium, expect } from '@playwright/test';
+import { chromium } from '@playwright/test';
 
 import * as constants from './constants';
 import injectInitialData from '../fixtures/inject-initial-data';
