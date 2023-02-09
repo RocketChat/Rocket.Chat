@@ -13,6 +13,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
+import semver from 'semver';
 
 import { Apps } from '../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
@@ -48,6 +49,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const button = appButtonProps({ ...app, isAdminUser });
 	const isAppRequestsPage = context === 'requested';
+	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
 
@@ -197,11 +200,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		return null;
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
-
 	return (
 		<Box {...props} display='flex' alignItems='center'>
-			{button && isAppDetailsPage && !installed && (
+			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
 					flexDirection='row'
