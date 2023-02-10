@@ -15,6 +15,10 @@ import type {
 } from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
+	'/apps/count': {
+		GET: () => { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
+	};
+
 	'/apps/externalComponents': {
 		GET: () => { externalComponents: IExternalComponent[] };
 	};

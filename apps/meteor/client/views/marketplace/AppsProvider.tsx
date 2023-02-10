@@ -1,8 +1,8 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import type { FC, Reducer } from 'react';
-import React, { useEffect, useReducer, useCallback } from 'react';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
 
 import { AppEvents } from '../../../app/apps/client/communication';
 import { Apps } from '../../../app/apps/client/orchestrator';
@@ -170,123 +170,144 @@ const AppsProvider: FC = ({ children }) => {
 	});
 
 	const isAdminUser = usePermission('manage-apps');
+	const getAppCount = useEndpoint('GET', '/apps/count');
+	const [appsCountState, setAppsCountState] = useState({
+		totalMarketplaceEnabled: '-',
+		totalPrivateEnabled: '-',
+		maxMarketplaceApps: '-',
+		maxPrivateApps: '-',
+	});
 
-	const fetch = useCallback(async (isAdminUser?: string): Promise<void> => {
-		dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
-		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
-		dispatchPrivateApps({ type: 'request', reload: async () => undefined });
+	const fetch = useCallback(
+		async (isAdminUser?: string): Promise<void> => {
+			dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
+			dispatchInstalledApps({ type: 'request', reload: async () => undefined });
+			dispatchPrivateApps({ type: 'request', reload: async () => undefined });
 
-		let installedApps: App[] = [];
-		let marketplaceApps: App[] = [];
-		let privateApps: App[] = [];
-		let marketplaceError = false;
-		let installedAppsError = false;
-		let privateAppsError = false;
+			let installedApps: App[] = [];
+			let marketplaceApps: App[] = [];
+			let privateApps: App[] = [];
+			let marketplaceError = false;
+			let installedAppsError = false;
+			let privateAppsError = false;
 
-		try {
-			marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
-		} catch (e) {
-			dispatchMarketplaceApps({
-				type: 'failure',
-				error: e instanceof Error ? e : new Error(String(e)),
-				reload: fetch,
-			});
-			marketplaceError = true;
-		}
-
-		try {
-			installedApps = await Apps.getInstalledApps().then((result: App[]) =>
-				result.map((current: App) => ({
-					...current,
-					installed: true,
-					marketplace: false,
-				})),
-			);
-		} catch (e) {
-			dispatchInstalledApps({
-				type: 'failure',
-				error: e instanceof Error ? e : new Error(String(e)),
-				reload: fetch,
-			});
-			installedAppsError = true;
-		}
-
-		try {
-			privateApps = installedApps.filter((app: App) => app.private);
-		} catch (e) {
-			dispatchPrivateApps({
-				type: 'failure',
-				error: e instanceof Error ? e : new Error(String(e)),
-				reload: fetch,
+			// We don't need to wait on this to move forward, so let's
+			// just do it in the background
+			getAppCount().then((result) => {
+				setAppsCountState({
+					totalMarketplaceEnabled: String(result.totalMarketplaceEnabled),
+					totalPrivateEnabled: String(result.totalPrivateEnabled),
+					maxMarketplaceApps: String(result.maxMarketplaceApps),
+					maxPrivateApps: String(result.maxPrivateApps),
+				});
 			});
 
-			privateAppsError = true;
-		}
+			try {
+				marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
+			} catch (e) {
+				dispatchMarketplaceApps({
+					type: 'failure',
+					error: e instanceof Error ? e : new Error(String(e)),
+					reload: fetch,
+				});
+				marketplaceError = true;
+			}
 
-		const installedAppsData: App[] = [];
-		const marketplaceAppsData: App[] = [];
-		const privateAppsData: App[] = [];
+			try {
+				installedApps = await Apps.getInstalledApps().then((result: App[]) =>
+					result.map((current: App) => ({
+						...current,
+						installed: true,
+						marketplace: false,
+					})),
+				);
+			} catch (e) {
+				dispatchInstalledApps({
+					type: 'failure',
+					error: e instanceof Error ? e : new Error(String(e)),
+					reload: fetch,
+				});
+				installedAppsError = true;
+			}
 
-		if (!marketplaceError) {
-			marketplaceApps.forEach((app) => {
-				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-				if (!installedApps[appIndex]) {
-					marketplaceAppsData.push({
+			try {
+				privateApps = installedApps.filter((app: App) => app.private);
+			} catch (e) {
+				dispatchPrivateApps({
+					type: 'failure',
+					error: e instanceof Error ? e : new Error(String(e)),
+					reload: fetch,
+				});
+
+				privateAppsError = true;
+			}
+
+			const installedAppsData: App[] = [];
+			const marketplaceAppsData: App[] = [];
+			const privateAppsData: App[] = [];
+
+			if (!marketplaceError) {
+				marketplaceApps.forEach((app) => {
+					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+					if (!installedApps[appIndex]) {
+						marketplaceAppsData.push({
+							...app,
+							status: undefined,
+							marketplaceVersion: app.version,
+							bundledIn: app.bundledIn,
+						});
+
+						return;
+					}
+					const [installedApp] = installedApps.splice(appIndex, 1);
+					const appData = {
 						...app,
-						status: undefined,
-						marketplaceVersion: app.version,
+						installed: true,
+						...(installedApp && {
+							status: installedApp.status,
+							version: installedApp.version,
+							licenseValidation: installedApp.licenseValidation,
+						}),
 						bundledIn: app.bundledIn,
-					});
+						marketplaceVersion: app.version,
+					};
 
-					return;
+					installedAppsData.push(appData);
+					marketplaceAppsData.push(appData);
+				});
+				dispatchMarketplaceApps({
+					type: 'success',
+					reload: fetch,
+					apps: marketplaceAppsData,
+				});
+			}
+
+			if (!installedAppsError) {
+				if (installedApps.length > 0) {
+					installedAppsData.push(...installedApps);
 				}
-				const [installedApp] = installedApps.splice(appIndex, 1);
-				const appData = {
-					...app,
-					installed: true,
-					...(installedApp && {
-						status: installedApp.status,
-						version: installedApp.version,
-						licenseValidation: installedApp.licenseValidation,
-					}),
-					bundledIn: app.bundledIn,
-					marketplaceVersion: app.version,
-				};
 
-				installedAppsData.push(appData);
-				marketplaceAppsData.push(appData);
-			});
-			dispatchMarketplaceApps({
-				type: 'success',
-				reload: fetch,
-				apps: marketplaceAppsData,
-			});
-		}
-
-		if (!installedAppsError) {
-			if (installedApps.length > 0) {
-				installedAppsData.push(...installedApps);
+				dispatchInstalledApps({
+					type: 'success',
+					reload: fetch,
+					apps: installedAppsData,
+				});
 			}
 
-			dispatchInstalledApps({
-				type: 'success',
-				reload: fetch,
-				apps: installedAppsData,
-			});
-		}
+			if (!privateAppsError) {
+				if (privateApps.length > 0) {
+					privateAppsData.push(...privateApps);
+				}
 
-		if (!privateAppsError) {
-			if (privateApps.length > 0) {
-				privateAppsData.push(...privateApps);
+				dispatchPrivateApps({
+					type: 'success',
+					reload: fetch,
+					apps: privateAppsData,
+				});
 			}
-
-			dispatchPrivateApps({
-				type: 'success',
-				reload: fetch,
-				apps: privateAppsData,
-			});
-		}
-	}, []);
+		},
+		[getAppCount],
+	);
 
 	const getCurrentData = useMutableCallback(function getCurrentData() {
 		return [marketplaceAppsState, installedAppsState, privateAppsState];
@@ -456,6 +477,7 @@ const AppsProvider: FC = ({ children }) => {
 				installedApps: installedAppsState,
 				marketplaceApps: marketplaceAppsState,
 				privateApps: privateAppsState,
+				appsCount: appsCountState,
 				reload: fetch,
 				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
 				numberOfMarketplaceEnabledApps: 0,

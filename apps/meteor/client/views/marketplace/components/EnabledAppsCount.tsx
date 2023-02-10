@@ -3,7 +3,7 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import { useNumberOfPrivateEnabledApps, useNumberOfMarketplaceEnabledApps } from '../AppsContext';
+import { useAppsCount } from '../AppsContext';
 
 type Variant = 'success' | 'warning' | 'danger';
 
@@ -26,17 +26,21 @@ const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: num
 const EnabledAppsCount = (): ReactElement => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
-	const numberOfMarketplaceEnabledApps = useNumberOfMarketplaceEnabledApps();
-	const numberOfPrivateEnabledApps = useNumberOfPrivateEnabledApps();
+	const appsCount = useAppsCount();
 
 	const numberOfEnabledApps = useMemo(() => {
-		return context === 'private' ? numberOfPrivateEnabledApps : numberOfMarketplaceEnabledApps;
-	}, [context, numberOfMarketplaceEnabledApps, numberOfPrivateEnabledApps]);
+		return context === 'private' ? appsCount.totalPrivateEnabled : appsCount.totalMarketplaceEnabled;
+	}, [context, appsCount.totalMarketplaceEnabled, appsCount.totalPrivateEnabled]);
 
-	const enabledAppsLimit = useMemo(() => (context === 'private' ? 3 : 5), [context]);
+	const enabledAppsLimit = useMemo(
+		() => (context === 'private' ? appsCount.maxPrivateApps : appsCount.maxMarketplaceApps),
+		[context, appsCount.maxMarketplaceApps, appsCount.maxPrivateApps],
+	);
 
 	const { variant, percentage } = useMemo(() => {
-		return getProgressBarValues(numberOfEnabledApps, enabledAppsLimit);
+		const enabled = Number(numberOfEnabledApps) || 0;
+		const limit = Number(enabledAppsLimit) || 0;
+		return getProgressBarValues(enabled, limit);
 	}, [enabledAppsLimit, numberOfEnabledApps]);
 
 	return (
