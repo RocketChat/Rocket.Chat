@@ -24,7 +24,7 @@ export const useAuditForm = () => {
 				end: createEndOfToday(),
 			},
 			rid: undefined,
-			users: undefined,
+			users: [],
 			visitor: undefined,
 			agent: undefined,
 		},
