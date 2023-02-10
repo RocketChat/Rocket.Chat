@@ -62,7 +62,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 				</Page.Content>
 			</Page>
 			{context && (
-				<VerticalBar flexShrink={0}>
+				<VerticalBar bg='light' flexShrink={0}>
 					<VerticalBar.Header>
 						{context === 'edit' && t('Custom_User_Status_Edit')}
 						{context === 'new' && t('Custom_User_Status_Add')}
