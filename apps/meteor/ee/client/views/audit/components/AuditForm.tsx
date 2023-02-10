@@ -1,4 +1,4 @@
-import { Box, Field, TextInput, Button } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useController } from 'react-hook-form';
@@ -59,9 +59,14 @@ const AuditForm = ({ type, onSubmit }: AuditFormProps) => {
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<Button primary type='submit' flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
-					{t('Apply')}
-				</Button>
+				<ButtonGroup align='end' flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
+					<Button secondary onClick={() => window.print()}>
+						{t('Export')} {t('PDF')}
+					</Button>
+					<Button primary type='submit'>
+						{t('Apply')}
+					</Button>
+				</ButtonGroup>
 			</Box>
 		</form>
 	);
