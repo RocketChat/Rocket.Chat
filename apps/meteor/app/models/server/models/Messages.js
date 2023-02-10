@@ -21,7 +21,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: true });
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
-		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackTs: 1, slackBotId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
@@ -612,30 +611,6 @@ export class Messages extends Base {
 				pinned,
 				pinnedAt: pinnedAt || new Date(),
 				pinnedBy,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		if (snippeted == null) {
-			snippeted = true;
-		}
-		if (snippetedAt == null) {
-			snippetedAt = 0;
-		}
-		const query = { _id: message._id };
-
-		const msg = `\`\`\`${message.msg}\`\`\``;
-
-		const update = {
-			$set: {
-				msg,
-				snippeted,
-				snippetedAt: snippetedAt || new Date(),
-				snippetedBy,
-				snippetName,
 			},
 		};
 
