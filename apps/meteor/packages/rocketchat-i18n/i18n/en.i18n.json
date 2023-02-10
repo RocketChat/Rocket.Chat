@@ -3610,7 +3610,7 @@
   "Omnichannel_External_Frame_Encryption_JWK_Description": "If provided it will encrypt the user's token with the provided key and the external system will need to decrypt the data to access the token",
   "Omnichannel_External_Frame_URL": "External frame URL",
   "Omnichannel_enable_department_removal": "Enable department removal",
-  "Omnichannel_enable_department_removal_alert": "Departments Removed on Community Edition cannot be restored, we reccomend archiving the department instead.",
+  "Omnichannel_enable_department_removal_alert": "Departments removed on Community Edition cannot be restored, we recommend archiving the department instead.",
   "On": "On",
   "on-hold-livechat-room": "On Hold Omnichannel Room",
   "on-hold-livechat-room_description": "Permission to on hold omnichannel room",
