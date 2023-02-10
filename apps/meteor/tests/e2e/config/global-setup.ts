@@ -1,6 +1,6 @@
 /* eslint no-await-in-loop: 0 */
 
-import { chromium, expect } from '@playwright/test';
+import { chromium } from '@playwright/test';
 
 import * as constants from './constants';
 import injectInitialData from '../fixtures/inject-initial-data';
@@ -32,7 +32,7 @@ export default async function (): Promise<void> {
 	await page.locator('[name=password]').type(constants.ADMIN_CREDENTIALS.password);
 	await page.locator('role=button >> text="Login"').click();
 
-	await expect(page.locator('role=alert[name=loading]')).toHaveCount(0);
+	await page.waitForTimeout(1000);
 
 	await page.context().storageState({ path: `admin-session.json` });
 
