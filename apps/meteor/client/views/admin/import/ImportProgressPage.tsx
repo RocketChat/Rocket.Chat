@@ -62,18 +62,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	const handleProgressUpdated = useMutableCallback(
-		({
-			key,
-			step,
-			count: { completed = 0, total = 0 },
-		}: {
-			key: string;
-			step: ProgressStep;
-			count: {
-				completed: number;
-				total: number;
-			};
-		}) => {
+		({ key, step, completed = 0, total = 0 }: { key: string; step: ProgressStep; completed: number; total: number }) => {
 			if (!currentOperation.isSuccess) {
 				return;
 			}
@@ -109,8 +98,9 @@ const ImportProgressPage = function ImportProgressPage() {
 	const progress = useQuery(
 		['importers', 'progress'],
 		async () => {
-			const { step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
+			const { key, step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
 			return {
+				key,
 				step,
 				completed,
 				total,
@@ -125,6 +115,7 @@ const ImportProgressPage = function ImportProgressPage() {
 					return;
 				}
 				handleProgressUpdated({
+					key: progress.key,
 					step: progress.step,
 					total: progress.total,
 					completed: progress.completed,
