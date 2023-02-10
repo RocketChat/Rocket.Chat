@@ -39,7 +39,6 @@ export type UsersSetPreferencesParamsPOST = {
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		receiveLoginDetectionEmail?: boolean;
-		useLegacyMessageTemplate?: boolean;
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
@@ -189,10 +188,6 @@ const UsersSetPreferencesParamsPostSchema = {
 							label: { type: 'string' },
 						},
 					},
-					nullable: true,
-				},
-				useLegacyMessageTemplate: {
-					type: 'boolean',
 					nullable: true,
 				},
 				receiveLoginDetectionEmail: {

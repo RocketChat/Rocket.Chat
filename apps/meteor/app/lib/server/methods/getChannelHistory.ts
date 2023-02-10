@@ -4,7 +4,6 @@ import _ from 'underscore';
 
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
-import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
@@ -58,10 +57,6 @@ Meteor.methods({
 			skip: offset,
 			limit: count,
 		};
-
-		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = { editedAt: 0 };
-		}
 
 		const records = _.isUndefined(oldest)
 			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
