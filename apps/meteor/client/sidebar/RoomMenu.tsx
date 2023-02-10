@@ -253,6 +253,7 @@ const RoomMenu = ({
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
+			maxHeight={300}
 			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>
 	);
