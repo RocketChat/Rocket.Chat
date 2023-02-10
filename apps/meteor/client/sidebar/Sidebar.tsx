@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -12,6 +12,10 @@ const Sidebar = () => {
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { isMobile, sidebar } = useLayout();
 
+	const sideBarBackground = css`
+		background-color: ${Palette.surface['surface-tint']};
+	`;
+
 	const sideBarStyle = css`
 		position: relative;
 		z-index: 2;
@@ -23,7 +27,6 @@ const Sidebar = () => {
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
-		background-color: var(--sidebar-background);
 
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
@@ -89,6 +92,7 @@ const Sidebar = () => {
 						'rcx-sidebar--main',
 						`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
 						sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+						sideBarBackground,
 					].filter(Boolean)}
 					role='navigation'
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}

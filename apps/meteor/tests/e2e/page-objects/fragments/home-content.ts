@@ -99,7 +99,7 @@ export class HomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('.rc-popover__content [data-id="video-message"]');
+		return this.page.locator('[data-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
