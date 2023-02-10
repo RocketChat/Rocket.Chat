@@ -1,6 +1,7 @@
 import { Modal, Box, Field, TextInput, CheckBox, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';
 
@@ -87,8 +88,17 @@ const RegisterWorkspaceSetupStepOneModal = ({
 					</Box>
 					<Box display='flex'>
 						<CheckBox checked={terms} onChange={() => setTerms(!terms)} />
-						<Box is='p' fontSize='c1' pis={8} withRichContent>
-							{t('RegisterWorkspace_Setup_Terms_Privacy')}
+						<Box is='p' fontSize='c1' pis={8}>
+							<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
+								I agree with
+								<Box is='a' href='https://rocket.chat/terms' target='_blank' rel='noopener noreferrer' pi={4}>
+									Terms and Conditions
+								</Box>
+								and
+								<Box is='a' href='https://rocket.chat/privacy' target='_blank' rel='noopener noreferrer' pi={4}>
+									Privacy Policy
+								</Box>
+							</Trans>
 						</Box>
 					</Box>
 				</Box>

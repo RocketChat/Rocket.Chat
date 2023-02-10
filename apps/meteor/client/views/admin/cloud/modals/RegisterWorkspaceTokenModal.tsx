@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, Field, Modal, TextInput } from '@rocket.chat/
 import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useState } from 'react';
+import { Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 
@@ -29,6 +30,8 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 		setToken(event.target.value);
 	};
 
+	const isToken = token.length > 0;
+
 	const handleConnectButtonClick = async () => {
 		setProcessing(true);
 
@@ -38,6 +41,8 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 			if (!isConnected) {
 				throw Error(t('RegisterWorkspace_Connection_Error'));
 			}
+
+			setModal(null);
 
 			dispatchToastMessage({ type: 'success', message: t('Connected') });
 		} catch (error) {
@@ -57,7 +62,19 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box is='p' fontSize='p2'>{`1. ${t('RegisterWorkspace_Token_Step_One')}`}</Box>
+				<Box is='p'>
+					<Trans i18nKey='RegisterWorkspace_Token_Step_One'>
+						1. Go to:{' '}
+						<Box is='span' fontWeight={600}>
+							cloud.rocket.chat {'>'} Workspaces
+						</Box>{' '}
+						and click{' '}
+						<Box is='span' fontWeight={600}>
+							"Register self-managed"
+						</Box>
+						.
+					</Trans>
+				</Box>
 				<Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
 				<Field pbs={10}>
 					<Field.Label>{t('Registration_Token')}</Field.Label>
@@ -69,7 +86,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBackAction}>{t('Back')}</Button>
-					<Button primary disabled={processing} onClick={handleConnectButtonClick}>
+					<Button primary disabled={processing || !isToken} onClick={handleConnectButtonClick}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>
