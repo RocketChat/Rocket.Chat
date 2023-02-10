@@ -10,6 +10,8 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const options = {
 			rootUrl: Meteor.absoluteUrl(),
+			supportSchemesForLink: 'http,https',
+			headers: false,
 		};
 
 		const renderMessage = createMarkdownMessageRenderer(options);
