@@ -159,7 +159,6 @@ describe('miscellaneous', function () {
 					'useLegacyMessageTemplate',
 					// 'highlights',
 					'desktopNotificationRequireInteraction',
-					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
 					'displayAvatars',

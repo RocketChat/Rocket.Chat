@@ -203,13 +203,15 @@ export const useQuickActions = (
 						  }
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
+				homeRoute.push();
+				RoomManager.close(room.t + rid);
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, homeRoute, room.t, rid, t],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
