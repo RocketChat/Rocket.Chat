@@ -124,6 +124,32 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 	});
 
+	test('expect archive and unarchive department', async () => {
+		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
+
+		await poOmnichannelDepartments.menuArchiveOption.click();
+
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+		await poOmnichannelDepartments.archivedDepartmentsTab.click();
+
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
+
+		await poOmnichannelDepartments.menuUnarchiveOption.click();
+
+		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+		await poOmnichannelDepartments.allDepartmentsTab.click();
+	});
+
 	test('expect delete department', async () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 
