@@ -14,13 +14,6 @@ settingsRegistry.add('Initial_Channel_Created', false, {
 	hidden: true,
 });
 
-// this settings will let clients know in case presence has been disabled
-settingsRegistry.add('Presence_broadcast_disabled', false, {
-	type: 'boolean',
-	public: true,
-	// hidden: true,
-});
-
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
@@ -3227,10 +3220,20 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
+
+	// this settings will let clients know in case presence has been disabled
+	this.add('Presence_broadcast_disabled', false, {
+		type: 'boolean',
+		public: true,
+		blocked: true,
+	});
+
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
+
 	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
