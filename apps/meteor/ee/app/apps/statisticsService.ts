@@ -1,11 +1,11 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
-import type { IAppsStatisticsService } from '../../sdk/types/IAppsStatisticsService';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
+import type { IAppsStatisticsService } from '../../../server/sdk/types/IAppsStatisticsService';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
-export type AppStatistcs = {
+export type AppStatistics = {
 	totalInstalled: number | false;
 	totalActive: number | false;
 	totalFailed: number | false;
@@ -22,7 +22,7 @@ export class AppsStatisticsService extends ServiceClass implements IAppsStatisti
 		this.apps = OrchestratorFactory.getOrchestrator();
 	}
 
-	getStatistics(): AppStatistcs {
+	getStatistics(): AppStatistics {
 		const isInitialized = this.apps.isInitialized();
 		const manager = this.apps.getManager();
 

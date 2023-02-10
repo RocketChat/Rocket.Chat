@@ -3,10 +3,10 @@ import type { VideoConfData, VideoConfDataExtended, IVideoConferenceOptions } fr
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
-import type { IAppsVideoManagerService } from '../../sdk/types/IAppsVideoManagerService';
+import type { IAppsVideoManagerService } from '../../../server/sdk/types/IAppsVideoManagerService';
 
 export class AppsVideoManagerService extends ServiceClass implements IAppsVideoManagerService {
 	protected name = 'apps';

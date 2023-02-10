@@ -9,10 +9,10 @@ import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFil
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
-import type { IAppsManagerService } from '../../sdk/types/IAppsManagerService';
+import type { IAppsManagerService } from '../../../server/sdk/types/IAppsManagerService';
 
 export class AppsManagerService extends ServiceClass implements IAppsManagerService {
 	protected name = 'apps';

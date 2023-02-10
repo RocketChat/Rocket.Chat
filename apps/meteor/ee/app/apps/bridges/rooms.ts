@@ -8,7 +8,7 @@ import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../orchestrator';
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
-import { Room } from '../../../sdk';
+import { Room } from '../../../../server/sdk';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -177,8 +177,9 @@ export class AppRoomBridge extends RoomBridge {
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
 		const subs = await Subscriptions.findByRoomIdAndRoles(roomId, [role], { projection: { uid: '$u._id', _id: 0 } });
-		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid));
-		const userConverter = this.orch.getConverters()!.get('users');
-		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
+		const subsUids = subs.map((user: { uid: string }) => user.uid);
+		const users = await Users.findByIds(subsUids).toArray();
+		const userConverter = this.orch.getConverters()?.get('users');
+		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
 }

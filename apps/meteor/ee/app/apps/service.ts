@@ -4,11 +4,11 @@ import type { SettingValue } from '@rocket.chat/core-typings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { Db } from 'mongodb';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
+import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
-import type { AppsPersistenceModel } from '../../../app/models/server';
-import type { IAppsService } from '../../sdk/types/IAppsService';
+import type { IAppsService } from '../../../server/sdk/types/IAppsService';
 import { settings } from '../../../app/settings/server';
-import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 
@@ -75,7 +75,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.isInitialized();
 	}
 
-	getPersistenceModel(): AppsPersistenceModel {
+	getPersistenceModel(): IAppsPersistenceModel {
 		return this.apps.getPersistenceModel();
 	}
 
@@ -95,7 +95,7 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 		return this.apps.getRocketChatLogger()?.error(obj, args);
 	}
 
-	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem> | undefined {
+	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null> {
 		return this.apps.getStorage()?.retrieveOne(appId);
 	}
 

@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { PersistenceBridge } from '@rocket.chat/apps-engine/server/bridges/PersistenceBridge';
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 
@@ -22,7 +23,9 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		return this.orch.getPersistenceModel().insertOne({ appId, data });
+		const result = await this.orch.getPersistenceModel().insertOne({ appId, data });
+
+		return result.insertedId.toString();
 	}
 
 	protected async createWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
@@ -36,7 +39,9 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			throw new Error('Attempted to store an invalid data type, it must be an object.');
 		}
 
-		return this.orch.getPersistenceModel().insertOne({ appId, associations, data });
+		const result = await this.orch.getPersistenceModel().insertOne({ appId, associations, data });
+
+		return result.insertedId.toString();
 	}
 
 	protected async readById(id: string, appId: string): Promise<object> {
@@ -44,7 +49,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 
 		const record = await this.orch.getPersistenceModel().findOneById(id);
 
-		return record.data;
+		return record?.data || {};
 	}
 
 	protected async readByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object>> {
@@ -64,13 +69,13 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	protected async remove(id: string, appId: string): Promise<object | undefined> {
 		this.orch.debugLog(`The App ${appId} is removing one of their records by the id: "${id}"`);
 
-		const record = await this.orch.getPersistenceModel().findOne({ _id: id, appId });
+		const record = await this.orch.getPersistenceModel().findOne({ _id: new ObjectId(id), appId });
 
 		if (!record) {
 			return undefined;
 		}
 
-		await this.orch.getPersistenceModel().deleteOne({ _id: id, appId });
+		await this.orch.getPersistenceModel().deleteOne({ _id: new ObjectId(id), appId });
 
 		return record.data;
 	}
@@ -126,6 +131,8 @@ export class AppPersistenceBridge extends PersistenceBridge {
 			associations,
 		};
 
-		return this.orch.getPersistenceModel().upsert(query, { $set: { data } }, { upsert });
+		const result = await this.orch.getPersistenceModel().updateOne(query, { $set: { data } }, { upsert });
+
+		return result.upsertedId.toString();
 	}
 }
