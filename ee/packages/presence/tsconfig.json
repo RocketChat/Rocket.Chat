@@ -1,8 +1,6 @@
 {
-	"extends": "../../tsconfig.base.server.json",
+	"extends": "../../../tsconfig.base.server.json",
 	"compilerOptions": {
-		"lib": ["es2020"],
-		"target": "es2020",
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"declaration": true,
 		"outDir": "./dist",
