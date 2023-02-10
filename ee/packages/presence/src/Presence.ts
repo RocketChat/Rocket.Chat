@@ -8,12 +8,6 @@ import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 const MAX_CONNECTIONS = 200;
 
-const connsPerInstance = new Map<string, number>();
-
-function getTotalConnections(): number {
-	return Array.from(connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
-}
-
 export class Presence extends ServiceClass implements IPresence {
 	protected name = 'presence';
 
@@ -23,12 +17,14 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private lostConTimeout?: NodeJS.Timeout;
 
+	private connsPerInstance = new Map<string, number>();
+
 	constructor() {
 		super();
 
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
 			if (clientAction === 'removed') {
-				connsPerInstance.delete(id);
+				this.connsPerInstance.delete(id);
 
 				const affectedUsers = await this.removeLostConnections(id);
 				affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -37,7 +33,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 			// check total connections if there is no license
 			if (!this.hasLicense && diff?.hasOwnProperty('extraInformation.conns')) {
-				connsPerInstance.set(id, diff['extraInformation.conns']);
+				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
 				this.validateAvailability();
 			}
@@ -78,7 +74,7 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	toggleBroadcast(enabled: boolean): void {
-		if (!this.hasLicense && getTotalConnections() > MAX_CONNECTIONS) {
+		if (!this.hasLicense && this.getTotalConnections() > MAX_CONNECTIONS) {
 			throw new Error('Cannot enable broadcast when there are more than 200 connections');
 		}
 		this.broadcastEnabled = enabled;
@@ -91,7 +87,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 	getConnectionCount(): { current: number; max: number } {
 		return {
-			current: getTotalConnections(),
+			current: this.getTotalConnections(),
 			max: MAX_CONNECTIONS,
 		};
 	}
@@ -240,10 +236,14 @@ export class Presence extends ServiceClass implements IPresence {
 			return;
 		}
 
-		if (getTotalConnections() > MAX_CONNECTIONS) {
+		if (this.getTotalConnections() > MAX_CONNECTIONS) {
 			this.broadcastEnabled = false;
 
 			await Settings.updateValueById('Presence_broadcast_disabled', true);
 		}
+	}
+
+	private getTotalConnections(): number {
+		return Array.from(this.connsPerInstance.values()).reduce((acc, conns) => acc + conns, 0);
 	}
 }
