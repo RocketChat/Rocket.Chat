@@ -36,7 +36,7 @@ export const useRemoveUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
-	const { roomCanRemove } = getRoomDirectives(room, uid, subscription);
+	const { roomCanRemove } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
 
 	const removeFromTeam = useEndpointAction('POST', '/v1/teams.removeMember', {
 		successMessage: t('User_has_been_removed_from_team'),

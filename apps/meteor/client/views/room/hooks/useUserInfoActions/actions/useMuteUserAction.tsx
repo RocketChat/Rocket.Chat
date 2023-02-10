@@ -58,7 +58,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		throw Error('Room not provided');
 	}
 
-	const { roomCanMute } = getRoomDirectives(room, user._id, userSubscription);
+	const { roomCanMute } = getRoomDirectives({ room, showingUserId: user._id, userSubscription });
 
 	const mutedMessage = isMuted ? 'User__username__unmuted_in_room__roomName__' : 'User__username__muted_in_room__roomName__';
 

@@ -11,7 +11,6 @@ import {
 	useMethod,
 	useTranslation,
 	useUser,
-	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -22,6 +21,7 @@ import WarningModal from '../../../../../components/WarningModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
 import RoomInfo from './RoomInfo';
@@ -46,7 +46,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const subscription = useUserSubscription(rid);
+	const subscription = useRoomSubscription();
 
 	const { type, fname, name, prid, joined = true } = room; // TODO implement joined
 

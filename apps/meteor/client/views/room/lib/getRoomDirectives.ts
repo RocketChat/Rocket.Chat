@@ -13,7 +13,15 @@ type getRoomDirectiesType = {
 	roomCanRemove: boolean;
 };
 
-export const getRoomDirectives = (room: IRoom, showingUserId: IUser['_id'], userSubscription?: ISubscription): getRoomDirectiesType => {
+export const getRoomDirectives = ({
+	room,
+	showingUserId,
+	userSubscription,
+}: {
+	room: IRoom;
+	showingUserId: IUser['_id'];
+	userSubscription?: ISubscription;
+}): getRoomDirectiesType => {
 	const roomDirectives = room?.t && roomCoordinator.getRoomDirectives(room.t);
 
 	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove] = [
