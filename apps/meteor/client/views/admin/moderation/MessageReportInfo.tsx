@@ -10,6 +10,7 @@ import { formatDate } from '../../../lib/utils/formatDate';
 import { formatTime } from '../../../lib/utils/formatTime';
 // import { useRoomInfoEndpoint } from '/client/hooks/useRoomInfoEndpoint';
 // import { formatDateAndTime } from '../../../../client/lib/utils/formatDateAndTime';
+import useConversationRedirectLink from './helpers/conversationRedirectLink';
 
 const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRefObject<() => void> }): JSX.Element => {
 	const t = useTranslation();
@@ -35,6 +36,10 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 			},
 		},
 	);
+
+	const roomLink = useConversationRedirectLink(reportsByMessage?.reports[0].message.rid || '');
+
+	console.log('roomLink', roomLink);
 
 	// const {
 	// 	data: roomInfo,

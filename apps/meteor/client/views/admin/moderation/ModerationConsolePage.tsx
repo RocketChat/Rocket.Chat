@@ -30,8 +30,8 @@ const ModerationConsolePage = () => {
 					<VerticalBar.Header>
 						<VerticalBar.Icon name='info-circled' />
 						<VerticalBar.Text>{t('Report')}</VerticalBar.Text>
+						<VerticalBar.Action name={'new-window'} onClick={() => moderationRoute.push({})} title={t('View_full_conversation')} />
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
-						<VerticalBar.Action name='download' onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
 					<VerticalBar.Content>{context === 'info' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}</VerticalBar.Content>
 				</VerticalBar>
