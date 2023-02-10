@@ -12,6 +12,9 @@ test.describe.serial('omnichannel-departments', () => {
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	let departmentName: string;
+
+	let url: string;
+
 	test.beforeAll(async ({ api }) => {
 		departmentName = faker.datatype.uuid();
 		// turn on department removal
@@ -24,6 +27,11 @@ test.describe.serial('omnichannel-departments', () => {
 
 		await page.goto('/omnichannel');
 		await poOmnichannelDepartments.sidenav.linkDepartments.click();
+	});
+
+	test('expect page to be empty', async ({ page }) => {
+		await page.goto('/omnichannel/departments/edit/this-department-dont-exist');
+		await expect(poOmnichannelDepartments.btnEnabled).not.toBeVisible();
 	});
 
 	test('expect create new department', async () => {
@@ -47,11 +55,13 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelDepartments.btnUpgradeDepartmentsModalClose.click();
 	});
 
-	test('expect update department name', async () => {
+	test('expect update department name', async ({ page }) => {
 		await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
 		await poOmnichannelDepartments.firstRowInTableMenu.click();
 		await poOmnichannelDepartments.menuEditOption.click();
+
+		url = await page.url();
 
 		await poOmnichannelDepartments.inputName.fill(`edited-${departmentName}`);
 		await poOmnichannelDepartments.btnSave.click();
@@ -124,7 +134,7 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 	});
 
-	test('expect archive and unarchive department', async () => {
+	test('expect archive and unarchive department', async ({ page }) => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 
 		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
@@ -136,6 +146,14 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
 
 		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+		// Try to edit the archived department
+
+		await page.goto(url);
+
+		await expect(poOmnichannelDepartments.btnEnabled).not.toBeVisible();
+
+		await page.goBack();
 
 		await poOmnichannelDepartments.archivedDepartmentsTab.click();
 
