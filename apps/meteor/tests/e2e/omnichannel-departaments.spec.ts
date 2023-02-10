@@ -3,15 +3,20 @@ import type { Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
 import { OmnichannelDepartments } from './page-objects';
+import { IS_EE } from './config/constants';
 
 test.use({ storageState: 'admin-session.json' });
 
 test.describe.serial('omnichannel-departments', () => {
+	test.skip(!IS_EE, 'Enterprise Edition Only');
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	let departmentName: string;
-	test.beforeAll(() => {
+	test.beforeAll(async ({ api }) => {
 		departmentName = faker.datatype.uuid();
+		// turn on department removal
+		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
+		expect(statusCode).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
@@ -32,10 +37,22 @@ test.describe.serial('omnichannel-departments', () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
+	test('expect to not be possible adding a second department ', async () => {
+		test.skip(IS_EE, 'Community Edition Only');
+
+		await poOmnichannelDepartments.btnNew.click();
+
+		await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
+
+		await poOmnichannelDepartments.btnUpgradeDepartmentsModalClose.click();
+	});
+
 	test('expect update department name', async () => {
 		await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
-		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
+		await poOmnichannelDepartments.menuEditOption.click();
+
 		await poOmnichannelDepartments.inputName.fill(`edited-${departmentName}`);
 		await poOmnichannelDepartments.btnSave.click();
 
@@ -46,7 +63,8 @@ test.describe.serial('omnichannel-departments', () => {
 	test.describe('Tags', () => {
 		test.beforeEach(async () => {
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+			await poOmnichannelDepartments.firstRowInTableMenu.click();
+			await poOmnichannelDepartments.menuEditOption.click();
 		});
 
 		test('expect save form button be disabled', async () => {
@@ -106,14 +124,43 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 	});
 
-	test('expect delete department', async ({ page }) => {
+	test('expect archive and unarchive department', async () => {
 		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 
 		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
 
-		await page.waitForRequest('**/livechat/department**');
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
 
-		await poOmnichannelDepartments.btnDeleteFirstRowInTable.click();
+		await poOmnichannelDepartments.menuArchiveOption.click();
+
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+		await poOmnichannelDepartments.archivedDepartmentsTab.click();
+
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
+
+		await poOmnichannelDepartments.menuUnarchiveOption.click();
+
+		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+		await poOmnichannelDepartments.allDepartmentsTab.click();
+	});
+
+	test('expect delete department', async () => {
+		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+
+		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+		await poOmnichannelDepartments.firstRowInTableMenu.click();
+
+		await poOmnichannelDepartments.menuDeleteOption.click();
+
+		await poOmnichannelDepartments.inputModalConfirmDelete.fill(`edited-${departmentName}`);
+
 		await poOmnichannelDepartments.btnModalConfirmDelete.click();
 
 		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);

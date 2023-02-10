@@ -15,6 +15,7 @@ type AutoCompleteDepartmentProps = {
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
+	showArchived?: boolean;
 };
 
 const AutoCompleteDepartment = ({
@@ -24,6 +25,7 @@ const AutoCompleteDepartment = ({
 	onChange,
 	haveAll,
 	haveNone,
+	showArchived = false,
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
@@ -38,8 +40,9 @@ const AutoCompleteDepartment = ({
 				haveAll,
 				haveNone,
 				excludeDepartmentId,
+				showArchived,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
 		),
 	);
 

@@ -30,7 +30,7 @@ function withDefault(key, defaultValue) {
 	return key || defaultValue;
 }
 
-function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
+function EditDepartment({ data, id, title, allowedToForwardData }) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
 
@@ -224,7 +224,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
 			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
