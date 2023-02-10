@@ -172,44 +172,13 @@ export class ChatMessages implements ChatAPI {
 		};
 	}
 
-	private async release() {
+	public async release() {
 		this.composer?.release();
 		if (this.currentEditing) {
 			if (!this.params.tmid) {
 				await this.currentEditing.cancel();
 			}
 			this.composer?.clear();
-		}
-	}
-
-	private static refs = new Map<string, { instance: ChatMessages; count: number }>();
-
-	private static getID({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): string {
-		return `${rid}${tmid ? `-${tmid}` : ''}`;
-	}
-
-	public static hold({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
-		const id = this.getID({ rid, tmid });
-
-		const ref = this.refs.get(id) ?? { instance: new ChatMessages({ rid, tmid }), count: 0 };
-		ref.count++;
-		this.refs.set(id, ref);
-
-		return ref.instance;
-	}
-
-	public static release({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
-		const id = this.getID({ rid, tmid });
-
-		const ref = this.refs.get(id);
-		if (!ref) {
-			return;
-		}
-
-		ref.count--;
-		if (ref.count === 0) {
-			this.refs.delete(id);
-			ref.instance.release();
 		}
 	}
 }
