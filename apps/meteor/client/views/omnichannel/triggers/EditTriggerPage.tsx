@@ -2,7 +2,7 @@ import type { ILivechatTrigger, Serialized } from '@rocket.chat/core-typings';
 import { Margins, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import type { TriggersFormType } from './NewTriggerPage';
@@ -45,22 +45,7 @@ const EditTriggerPage = ({ data, onSave }: { data: Serialized<ILivechatTrigger>;
 	const save = useMethod('livechat:saveTrigger');
 
 	const methods = useForm<TriggersFormType>({ defaultValues: getInitialValues(data), mode: 'onChange' });
-	const { reset, getValues, handleSubmit, formState, setValue, resetField } = methods;
-
-	useEffect(() => {
-		const { enabled, description, name, runOnce, conditions, actions } = getInitialValues(data);
-		// setValue('enabled', data.enabled);
-		resetField('enabled', { defaultValue: enabled });
-		resetField('description', { defaultValue: description });
-		resetField('name', { defaultValue: name });
-		resetField('runOnce', { defaultValue: runOnce });
-		resetField('conditions.name', { defaultValue: conditions.name });
-		// setValue('conditions.name', conditions.name);
-		resetField('conditions.value', { defaultValue: conditions?.value });
-		resetField('actions.params.name', { defaultValue: actions.params.name });
-		resetField('actions.params.sender', { defaultValue: actions.params.sender });
-		resetField('actions.params.msg', { defaultValue: actions.params.msg });
-	}, [data, setValue, resetField, reset]);
+	const { getValues, handleSubmit, formState } = methods;
 
 	const values = getValues();
 	const hasUnsavedChanges = formState.isDirty;
