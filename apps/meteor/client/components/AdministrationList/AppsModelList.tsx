@@ -35,7 +35,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 						}}
 					/>
 					<ListItem
-						icon='cube'
+						icon='circle-arrow-down'
 						text={t('Installed')}
 						action={(): void => {
 							marketplaceRoute.push({ context: 'installed', page });

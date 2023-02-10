@@ -290,10 +290,18 @@ export const appStatusSpanProps = (
 	context?: string,
 	isAppDetailsPage?: boolean,
 ): appStatusSpanResponseProps | undefined => {
+	const isEnabled = status && appEnabledStatuses.includes(status);
 	if (installed) {
+		if (isEnabled) {
+			return {
+				icon: 'check',
+				label: 'Installed',
+			};
+		}
+
 		return {
-			icon: 'check',
-			label: 'Installed',
+			type: 'warning',
+			label: 'Disabled',
 		};
 	}
 
@@ -303,14 +311,6 @@ export const appStatusSpanProps = (
 			type: 'failed',
 			icon: 'warning',
 			label: status === AppStatus.INVALID_SETTINGS_DISABLED ? 'Config Needed' : 'Failed',
-		};
-	}
-
-	const isEnabled = status && appEnabledStatuses.includes(status);
-	if (!isEnabled && installed) {
-		return {
-			type: 'warning',
-			label: 'Disabled',
 		};
 	}
 
