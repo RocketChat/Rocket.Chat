@@ -1,29 +1,49 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Settings, Permissions, LivechatRooms, LivechatInquiry, Subscriptions } from '@rocket.chat/models';
 
-import { AppRealStorage } from '../../../app/apps/server/storage';
 import { addMigration } from '../../lib/migrations';
-import { AppsModel } from '../../../app/models/server';
 
 addMigration({
 	version: 283,
-	name: "Mark all installed apps as 'migrated'",
 	async up() {
-		const appsStorage = new AppRealStorage(AppsModel);
+		// Removing all settings & permissions related to Legacy FB Messenger integration
+		await Promise.all([
+			Settings.deleteMany({
+				_id: {
+					$in: ['Livechat_Facebook_Enabled', 'Livechat_Facebook_API_Key', 'Livechat_Facebook_API_Secret'],
+				},
+			}),
+			Permissions.removeById('view-livechat-facebook'),
+		]);
 
-		const apps = await appsStorage.retrieveAll();
-
-		const promises: Array<ReturnType<typeof appsStorage.update>> = [];
-
-		apps.forEach((app) =>
-			promises.push(
-				appsStorage.update({
-					...app,
-					migrated: true,
-					installationSource: 'marketplaceInfo' in app ? 'marketplace' : 'private',
-				} as IAppStorageItem),
+		// close all open Fb Messenger rooms since the integration is no longer available
+		const openRoomsIds = (
+			await LivechatRooms.find(
+				{
+					open: true,
+					facebook: { $exists: true },
+				},
+				{ projection: { _id: 1 } },
+			).toArray()
+		).map((room) => room._id);
+		await Promise.all([
+			LivechatRooms.updateMany(
+				{
+					_id: {
+						$in: openRoomsIds,
+					},
+				},
+				{
+					$unset: {
+						open: 1,
+					},
+				},
 			),
-		);
-
-		await Promise.all(promises);
+			LivechatInquiry.deleteMany({
+				rid: {
+					$in: openRoomsIds,
+				},
+			}),
+			...openRoomsIds.map((room) => Subscriptions.removeByRoomId(room)),
+		]);
 	},
 });

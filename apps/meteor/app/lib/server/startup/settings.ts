@@ -82,10 +82,6 @@ settingsRegistry.addGroup('Accounts', function () {
 		type: 'int',
 		public: true,
 	});
-	this.add('Accounts_ShowFormLogin', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Accounts_EmailOrUsernamePlaceholder', '', {
 		type: 'string',
 		public: true,
@@ -470,26 +466,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			],
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
-		});
-
-		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal',
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy',
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact',
-				},
-			],
-			public: true,
-			i18nLabel: 'MessageBox_view_mode',
 		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
@@ -1573,6 +1549,46 @@ settingsRegistry.addGroup('Push', function () {
 });
 
 settingsRegistry.addGroup('Layout', function () {
+	this.section('Login', function () {
+		this.add('Layout_Login_Hide_Logo', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Title', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Powered_By', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Template', 'horizontal-template', {
+			type: 'select',
+			values: [
+				{
+					key: 'vertical-template',
+					i18nLabel: 'Layout_Login_Template_Vertical',
+				},
+				{
+					key: 'horizontal-template',
+					i18nLabel: 'Layout_Login_Template_Horizontal',
+				},
+			],
+			public: true,
+			enterprise: true,
+			invalidValue: 'horizontal-template',
+		});
+		this.add('Accounts_ShowFormLogin', true, {
+			type: 'boolean',
+			public: true,
+		});
+	});
 	this.section('Content', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
