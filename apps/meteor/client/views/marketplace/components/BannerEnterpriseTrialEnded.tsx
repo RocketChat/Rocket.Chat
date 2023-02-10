@@ -6,7 +6,7 @@ import React from 'react';
 
 const BannerEnterpriseTrialEnded = (): ReactElement => {
 	const t = useTranslation();
-	const isAdmin = usePermission('enable-unlimited-apps');
+	const isAdmin = usePermission('manage-apps');
 
 	const bannerLink = {
 		link: '/admin/upgrade/go-fully-featured',
