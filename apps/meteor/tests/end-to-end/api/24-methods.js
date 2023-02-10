@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper.js';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('Meteor.methods', function () {
 	this.retries(0);
