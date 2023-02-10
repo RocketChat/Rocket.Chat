@@ -16,8 +16,8 @@ export const useAuditMutation = (type: IAuditLog['fields']['type']) => {
 				startDate: dateRange.start ?? new Date(0),
 				endDate: dateRange.end ?? new Date(),
 				users,
-				visitor,
-				agent,
+				visitor: '',
+				agent: '',
 			});
 		}
 

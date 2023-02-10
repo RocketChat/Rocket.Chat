@@ -10,12 +10,12 @@ import PageHeader from '../../../../client/components/Page/PageHeader';
 import AuditLogTable from './components/AuditLogTable';
 import DateRangePicker from './components/forms/DateRangePicker';
 import type { DateRange } from './utils/dateRange';
-import { createTodayEnd, createTodayStart } from './utils/dateRange';
+import { createEndOfToday, createStartOfToday } from './utils/dateRange';
 
 const AuditLogPage = (): ReactElement => {
 	const [dateRange, setDateRange] = useState<DateRange>(() => ({
-		start: createTodayStart(),
-		end: createTodayEnd(),
+		start: createStartOfToday(),
+		end: createEndOfToday(),
 	}));
 
 	const dispatchToastMessage = useToastMessageDispatch();

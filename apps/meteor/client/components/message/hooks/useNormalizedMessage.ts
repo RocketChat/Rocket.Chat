@@ -6,12 +6,12 @@ import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMa
 import { parseMessageTextToAstMarkdown, removePossibleNullMessageValues } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useKatex } from '../../../views/room/MessageList/hooks/useKatex';
-import { useRoomSubscription } from '../../../views/room/contexts/RoomContext';
+import { useSubscriptionFromMessageQuery } from './useSubscriptionFromMessageQuery';
 
-export const useMessageNormalization = (): (<TMessage extends IMessage>(message: TMessage) => MessageWithMdEnforced) => {
+export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessage): MessageWithMdEnforced => {
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
-	const subscription = useRoomSubscription();
+	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const autoTranslateOptions = useAutoTranslate(subscription);
 	const showColors = useSetting<boolean>('HexColorPreview_Enabled');
 
@@ -27,7 +27,6 @@ export const useMessageNormalization = (): (<TMessage extends IMessage>(message:
 			}),
 		};
 
-		return <TTMessage extends IMessage>(message: TTMessage): MessageWithMdEnforced =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [showColors, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, autoTranslateOptions]);
+		return parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
+	}, [showColors, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, message, autoTranslateOptions]);
 };

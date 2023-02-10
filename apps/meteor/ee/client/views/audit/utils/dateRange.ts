@@ -5,5 +5,5 @@ export type DateRange = {
 	end?: Date;
 };
 
-export const createTodayStart = () => moment().startOf('day').toDate();
-export const createTodayEnd = () => moment().endOf('day').toDate();
+export const createStartOfToday = () => moment().startOf('day').toDate();
+export const createEndOfToday = () => moment().endOf('day').toDate();

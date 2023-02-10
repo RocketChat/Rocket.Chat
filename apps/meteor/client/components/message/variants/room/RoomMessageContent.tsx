@@ -3,11 +3,11 @@ import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, memo } from 'react';
+import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useRoomSubscription } from '../../../../views/room/contexts/RoomContext';
+import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -19,8 +19,9 @@ import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
-import { useMessageNormalization } from '../../hooks/useMessageNormalization';
+import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
+import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
 
 type RoomMessageContentProps = {
 	message: IMessage;
@@ -32,15 +33,15 @@ type RoomMessageContentProps = {
 const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
 	const encrypted = isE2EEMessage(message);
 	const { enabled: oembedEnabled } = useOembedLayout();
-	const broadcast = useRoomSubscription()?.broadcast ?? false;
+	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
+	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
 	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
-
+	const chat = useChat();
 	const t = useTranslation();
 
-	const normalizeMessage = useMessageNormalization();
-	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
+	const normalizedMessage = useNormalizedMessage(message);
 
 	return (
 		<>
@@ -76,7 +77,7 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 
 			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && <Reactions message={normalizedMessage} />}
 
-			{isThreadMainMessage(normalizedMessage) && (
+			{chat && isThreadMainMessage(normalizedMessage) && (
 				<ThreadMetrics
 					counter={normalizedMessage.tcount}
 					following={Boolean(uid && normalizedMessage?.replies?.indexOf(uid) > -1)}

@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { UIEvent } from 'react';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -73,6 +73,10 @@ export type DataAPI = {
 	markRoomAsRead(): Promise<void>;
 	findDiscussionByID(drid: IRoom['_id']): Promise<IRoom | undefined>;
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
+	findSubscription(): Promise<ISubscription | undefined>;
+	getSubscription(): Promise<ISubscription>;
+	findSubscriptionFromMessage(message: IMessage): Promise<ISubscription | undefined>;
+	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
 export type UploadsAPI = {

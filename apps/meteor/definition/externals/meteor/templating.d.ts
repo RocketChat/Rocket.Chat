@@ -1,7 +1,6 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -107,62 +106,6 @@ declare module 'meteor/templating' {
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		audit: Blaze.Template<
-			{
-				u?: Partial<IUser>;
-				room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
-				subscription?: Pick<ISubscription, 'rid' | 'name' | 'autoTranslate' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-				settings?: {
-					translateLanguage: unknown;
-					autoImageLoad: unknown;
-					useLegacyMessageTemplate: unknown;
-					saveMobileBandwidth: unknown;
-					collapseMediaByDefault: unknown;
-					showreply: unknown;
-					showReplyButton: unknown;
-					hasPermissionDeleteMessage: unknown;
-					hasPermissionDeleteOwnMessage: unknown;
-					hideRoles: unknown;
-					UI_Use_Real_Name: unknown;
-					Chatops_Username: unknown;
-					AutoTranslate_Enabled: unknown;
-					Message_AllowEditing: unknown;
-					Message_AllowEditing_BlockEditInMinutes: unknown;
-					Message_ShowEditedStatus: unknown;
-					API_Embed: unknown;
-					API_EmbedDisabledFor: unknown;
-					Message_GroupingPeriod: unknown;
-				};
-				messages?: IMessage[];
-			},
-			Blaze.TemplateInstance<{
-				u?: Partial<IUser>;
-				room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
-				subscription?: Pick<ISubscription, 'rid' | 'name' | 'autoTranslate' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-				settings?: {
-					translateLanguage: unknown;
-					autoImageLoad: unknown;
-					useLegacyMessageTemplate: unknown;
-					saveMobileBandwidth: unknown;
-					collapseMediaByDefault: unknown;
-					showreply: unknown;
-					showReplyButton: unknown;
-					hasPermissionDeleteMessage: unknown;
-					hasPermissionDeleteOwnMessage: unknown;
-					hideRoles: unknown;
-					UI_Use_Real_Name: unknown;
-					Chatops_Username: unknown;
-					AutoTranslate_Enabled: unknown;
-					Message_AllowEditing: unknown;
-					Message_AllowEditing_BlockEditInMinutes: unknown;
-					Message_ShowEditedStatus: unknown;
-					API_Embed: unknown;
-					API_EmbedDisabledFor: unknown;
-					Message_GroupingPeriod: unknown;
-				};
-				messages?: IMessage[];
-			}>
-		>;
 		messagePopupCannedResponse: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 
 		instance<TTemplateName extends keyof TemplateStatic>(): TemplateStatic[TTemplateName] extends Blaze.Template<any, infer I> ? I : never;

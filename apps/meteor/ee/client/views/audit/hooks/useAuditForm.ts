@@ -1,7 +1,7 @@
 import type { ILivechatAgent, ILivechatVisitor, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useForm } from 'react-hook-form';
 
-import { createTodayEnd, createTodayStart } from '../utils/dateRange';
+import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 
 export type AuditFields = {
 	msg: string;
@@ -20,8 +20,8 @@ export const useAuditForm = () => {
 		defaultValues: {
 			msg: '',
 			dateRange: {
-				start: createTodayStart(),
-				end: createTodayEnd(),
+				start: createStartOfToday(),
+				end: createEndOfToday(),
 			},
 			rid: undefined,
 			users: undefined,

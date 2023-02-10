@@ -14,9 +14,7 @@ import { useAuditTab } from './hooks/useAuditTab';
 
 const AuditPage = () => {
 	const [type, setType] = useAuditTab();
-
 	const auditMutation = useAuditMutation(type);
-
 	const t = useTranslation();
 
 	return (
@@ -47,9 +45,7 @@ const AuditPage = () => {
 							<StatesSubtitle>{getErrorMessage(auditMutation.error)}</StatesSubtitle>
 						</States>
 					)}
-					{auditMutation.isSuccess && auditMutation.variables && (
-						<AuditResult type={type} {...auditMutation.variables} messages={auditMutation.data} />
-					)}
+					{auditMutation.isSuccess && <AuditResult messages={auditMutation.data} />}
 				</Margins>
 			</PageScrollableContentWithShadow>
 		</Page>
