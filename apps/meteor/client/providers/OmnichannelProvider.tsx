@@ -18,6 +18,7 @@ import { useReactiveValue } from '../hooks/useReactiveValue';
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
 	enabled: false,
+	isEnterprise: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
 	livechatPriorities: {
@@ -150,6 +151,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return {
 				...emptyContextValue,
 				enabled: true,
+				isEnterprise,
 				agentAvailable,
 				voipCallAvailable,
 				routeConfig,
@@ -160,6 +162,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		return {
 			...emptyContextValue,
 			enabled: true,
+			isEnterprise,
 			agentAvailable,
 			voipCallAvailable,
 			routeConfig,
@@ -179,6 +182,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		isLoadingPriorities,
 		isErrorPriorities,
 		manuallySelected,
+		isEnterprise,
 		agentAvailable,
 		voipCallAvailable,
 		routeConfig,
