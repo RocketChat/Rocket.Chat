@@ -15,5 +15,12 @@ export const PaletteStyleTag = (): ReactElement | null => {
 		return null;
 	}
 
-	return createPortal(<style>{convertToCss(filterOnlyChangedColors(defaultPalette, darkPalette))}</style>, document.head);
+	const customCssElement = document.getElementById('css-theme');
+	const styleElement = document.createElement('style');
+	styleElement.setAttribute('id', 'main-palette');
+	document.head.insertBefore(styleElement, customCssElement);
+
+	const palette = convertToCss(filterOnlyChangedColors(defaultPalette, darkPalette), '.rcx-content--main');
+
+	return createPortal(palette, document.getElementById('main-palette') || document.head);
 };

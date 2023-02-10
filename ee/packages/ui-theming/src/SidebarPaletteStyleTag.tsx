@@ -12,13 +12,15 @@ import { useThemeMode } from './hooks/useThemeMode';
 export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
 	const [, , theme] = useThemeMode();
 
-	return createPortal(
-		<style id='sidebar-palette' data-style={theme}>
-			{convertToCss(
-				theme === 'dark' ? filterOnlyChangedColors(darkPalette, sidebarPaletteDark) : { ...darkPalette, ...defaultSidebarPalette },
-				'.rcx-sidebar--main',
-			)}
-		</style>,
-		document.head,
+	const customCssElement = document.getElementById('css-theme');
+	const styleElement = document.createElement('style');
+	styleElement.setAttribute('id', 'sidebar-palette');
+	document.head.insertBefore(styleElement, customCssElement);
+
+	const palette = convertToCss(
+		theme === 'dark' ? filterOnlyChangedColors(darkPalette, sidebarPaletteDark) : { ...darkPalette, ...defaultSidebarPalette },
+		'.rcx-sidebar--main',
 	);
+
+	return createPortal(palette, document.getElementById('sidebar-palette') || document.head);
 });
