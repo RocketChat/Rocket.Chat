@@ -1,21 +1,26 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
 import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import { useAppRequestStats } from '../../views/marketplace/hooks/useAppRequestStats';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
+	appsManagementAllowed?: boolean;
 	onDismiss: () => void;
 };
 
-const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactElement => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
+
+	const isAdminUser = usePermission('manage-apps');
+	const { data: appRequestStats, isLoading } = useAppRequestStats(isAdminUser);
 
 	return (
 		<>
@@ -31,13 +36,26 @@ const AppsModelList = ({ appBoxItems, onDismiss }: AppsModelListProps): ReactEle
 						}}
 					/>
 					<ListItem
-						icon='cube'
+						icon='circle-arrow-down'
 						text={t('Installed')}
 						action={(): void => {
 							marketplaceRoute.push({ context: 'installed', page });
 							onDismiss();
 						}}
 					/>
+
+					{appsManagementAllowed && (
+						<ListItem
+							icon='cube'
+							text={t('Requested')}
+							action={(): void => {
+								marketplaceRoute.push({ context: 'requested', page });
+								onDismiss();
+							}}
+							loading={isLoading}
+							notifications={appRequestStats?.data.totalUnseen ? appRequestStats?.data.totalUnseen : null}
+						/>
+					)}
 				</>
 				{appBoxItems.length > 0 && (
 					<>

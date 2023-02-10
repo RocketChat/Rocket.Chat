@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
-import { useRoute, useSetting, useMethod, useTranslation, useCurrentRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation, useCurrentRoute, useRouteParameter, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState } from 'react';
 
@@ -13,9 +13,9 @@ type AppsPageProps = {
 const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
-	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
 	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
+	const isAdminUser = usePermission('manage-apps');
 
 	const [currentRouteName] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -31,8 +31,8 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 		const initialize = async (): Promise<void> => {
 			setIsLoggedInCloud(await checkUserLoggedIn());
 		};
-		initialize();
-	}, [checkUserLoggedIn]);
+		if (isAdminUser) initialize();
+	}, [checkUserLoggedIn, isAdminUser]);
 
 	const handleLoginButtonClick = (): void => {
 		cloudRoute.push();
@@ -46,7 +46,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 		<Page background='tint'>
 			<Page.Header title={t('Apps')}>
 				<ButtonGroup>
-					{isMarketplace && !isLoggedInCloud && (
+					{isMarketplace && !isLoggedInCloud && isAdminUser && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
 							{isLoggedInCloud === undefined ? (
 								<Skeleton width='x80' />
@@ -57,14 +57,14 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					{Boolean(isDevelopmentMode) && (
+					{isAdminUser && context === 'private' && (
 						<Button primary onClick={handleUploadButtonClick}>
 							<Icon size='x20' name='upload' /> {t('Upload_app')}
 						</Button>
 					)}
 				</ButtonGroup>
 			</Page.Header>
-			<Page.Content>
+			<Page.Content paddingInline='0'>
 				<AppsPageContent />
 			</Page.Content>
 		</Page>

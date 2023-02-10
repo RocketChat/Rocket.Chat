@@ -18,6 +18,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 		categories = [],
 		screenshots,
 		apis,
+		documentationUrl,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
@@ -69,7 +70,7 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 						<Box fontScale='h4' mbe='x8'>
 							{t('Contact')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap'>
+						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe='x24'>
 							<Box display='flex' flexDirection='column' mie='x12' flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
@@ -83,6 +84,14 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 								<ExternalLink to={support} />
 							</Box>
 						</Box>
+						{documentationUrl && (
+							<Box>
+								<Box fontScale='h4' color='hint'>
+									{t('Documentation')}
+								</Box>
+								<ExternalLink to={documentationUrl} />
+							</Box>
+						)}
 					</Box>
 
 					{apis?.length ? (

@@ -110,10 +110,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				value: true,
 			},
 			{
-				_id: 'Apps_Framework_enabled',
-				value: true,
-			},
-			{
 				_id: 'Register_Server',
 				value: true,
 			},

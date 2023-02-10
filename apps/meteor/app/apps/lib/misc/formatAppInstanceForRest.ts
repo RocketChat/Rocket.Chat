@@ -8,6 +8,7 @@ export interface IAppInfoRest extends IAppInfo {
 	status: AppStatus;
 	languages: IAppStorageItem['languageContent'];
 	licenseValidation?: AppLicenseValidationResult;
+	private: boolean;
 }
 
 export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
@@ -15,11 +16,12 @@ export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
 		...app.getInfo(),
 		status: app.getStatus(),
 		languages: app.getStorageItem().languageContent,
+		private: !app.getStorageItem().marketplaceInfo,
 	};
 
 	const licenseValidation = app.getLatestLicenseValidationResult();
 
-	if (licenseValidation.hasErrors || licenseValidation.hasWarnings) {
+	if (licenseValidation?.hasErrors || licenseValidation?.hasWarnings) {
 		appRest.licenseValidation = licenseValidation;
 	}
 

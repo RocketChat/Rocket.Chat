@@ -2,17 +2,32 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { usePermission, useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useRouteParameter,
+	usePermission,
+	useSetModal,
+	useMethod,
+	useTranslation,
+	useToastMessageDispatch,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState, memo, Fragment } from 'react';
+import React, { useCallback, useState, memo } from 'react';
+import semver from 'semver';
 
 import { Apps } from '../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
+import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+
+type AppRequestPostMessage = {
+	message: string;
+	status: string;
+};
 
 type AppStatusProps = {
 	app: App;
@@ -23,13 +38,40 @@ type AppStatusProps = {
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const t = useTranslation();
+	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
 	const setModal = useSetModal();
-	const { price, purchaseType, pricingPlans } = app;
 	const isAdminUser = usePermission('manage-apps');
+	const context = useRouteParameter('context');
+
+	const { price, purchaseType, pricingPlans } = app;
+
 	const button = appButtonProps({ ...app, isAdminUser });
-	const statuses = appMultiStatusProps(app, isAppDetailsPage);
+	const isAppRequestsPage = context === 'requested';
+	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
+
+	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
+
+	const totalSeenRequests = app?.appRequestStats?.totalSeen;
+	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const notifyAdmins = useEndpoint('POST', '/apps/notify-admins');
+	const requestConfirmAction = (postMessage: AppRequestPostMessage) => {
+		setModal(null);
+		setLoading(false);
+		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+		setEndUserRequested(true);
+
+		notifyAdmins({
+			appId: app.id,
+			appName: app.name,
+			message: postMessage.message,
+		});
+	};
 
 	if (button?.action === undefined && button?.action) {
 		throw new Error('action must not be null');
@@ -53,7 +95,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		},
 		[setModal, action, app, setLoading],
 	);
-
 	const cancelAction = useCallback(() => {
 		setLoading(false);
 		setModal(null);
@@ -102,7 +143,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setLoading(true);
 
 		let isLoggedIn = true;
-		if (action !== 'request') {
+		if (isAdminUser) {
 			isLoggedIn = await checkUserLoggedIn();
 		}
 
@@ -115,7 +156,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} cancel={cancelAction} confirm={undefined} />);
+				setModal(<IframeModal url={data?.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -135,11 +176,33 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		showAppPermissionsReviewModal();
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const getStatusVariant = (status: appStatusSpanResponseProps) => {
+		if (isAppRequestsPage && totalUnseenRequests && (status.label === 'request' || status.label === 'requests')) {
+			return 'primary';
+		}
+
+		if (isAppRequestsPage && status.label === 'Requested') {
+			return undefined;
+		}
+
+		if (status.label === 'Disabled') {
+			return 'secondary-danger';
+		}
+
+		return undefined;
+	};
+
+	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
+		if ((status.label === 'request' || status.label === 'requests') && !installed) {
+			return isAppRequestsPage && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests;
+		}
+
+		return null;
+	};
 
 	return (
 		<Box {...props} display='flex' alignItems='center'>
-			{button && isAppDetailsPage && !installed && (
+			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -148,7 +211,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					borderRadius='x4'
 					invisible={!showStatus && !loading}
 				>
-					<Button primary small disabled={loading} onClick={handleClick} mie='x8'>
+					<Button
+						primary
+						small
+						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						onClick={handleClick}
+						mie='x8'
+					>
 						{loading ? (
 							<Throbber inheritColor />
 						) : (
@@ -166,19 +235,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Fragment key={index}>
-					<Margins inlineEnd='x8'>
-						{status.tooltipText ? (
-							<Tag title={status.tooltipText} variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>
-								{status.label}
-							</Tag>
-						) : (
-							<Box is='span'>
-								<Tag variant={status.label === 'Disabled' ? 'secondary-danger' : undefined}>{status.label}</Tag>
-							</Box>
-						)}
-					</Margins>
-				</Fragment>
+				<Margins inline='x8' key={index}>
+					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
+						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
+					</Tag>
+				</Margins>
 			))}
 		</Box>
 	);

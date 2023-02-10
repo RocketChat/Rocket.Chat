@@ -16,7 +16,7 @@ const AppLogsItemEntry: FC<AppLogsItemEntryProps> = ({ severity, timestamp, call
 	const t = useTranslation();
 
 	return (
-		<Box>
+		<Box color='default'>
 			<Box>
 				{severity}: {timestamp} {t('Caller')}: {caller}
 			</Box>

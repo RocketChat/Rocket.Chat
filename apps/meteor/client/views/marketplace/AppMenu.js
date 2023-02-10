@@ -1,4 +1,4 @@
-import { Box, Icon, Menu, Throbber } from '@rocket.chat/fuselage';
+import { Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useMethod,
@@ -49,8 +49,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
+	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const [loading, setLoading] = useState(false);
+	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
@@ -59,13 +61,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
-	const action = button?.action || '';
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
 		setLoading(false);
 	}, [setModal]);
 
+	const action = button?.action || '';
 	const confirmAction = useCallback(
 		async (permissionsGranted) => {
 			setModal(null);
@@ -76,6 +78,19 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		},
 		[setModal, action, app, setLoading],
 	);
+
+	const requestConfirmAction = (postMessage) => {
+		setModal(null);
+		setLoading(false);
+		setRequestedEndUser(true);
+		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+		notifyAdmins({
+			appId: app.id,
+			appName: app.name,
+			message: postMessage.message,
+		});
+	};
 
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
@@ -142,7 +157,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={undefined} />);
+				setModal(<IframeModal url={data.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -165,7 +180,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app, closeModal, cancelAction, checkUserLoggedIn, isAppPurchased, setModal, showAppPermissionsReviewModal]);
+	}, [
+		action,
+		app,
+		isAppPurchased,
+		showAppPermissionsReviewModal,
+		checkUserLoggedIn,
+		setModal,
+		cancelAction,
+		requestConfirmAction,
+		closeModal,
+	]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -294,13 +319,14 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
 			...(canAppBeSubscribed &&
-				isSubscribed && {
+				isSubscribed &&
+				isAdminUser && {
 					subscribe: {
 						label: (
-							<Box>
+							<Option>
 								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
-							</Box>
+							</Option>
 						),
 						action: handleSubscription,
 					},
@@ -311,12 +337,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(!app.installed && {
 				acquire: {
 					label: (
-						<Box>
-							<Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />
+						<Option disabled={requestedEndUser}>
+							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
 							{t(button.label.replace(' ', '_'))}
-						</Box>
+						</Option>
 					),
-					action: handleAcquireApp,
+					action: requestedEndUser ? () => {} : handleAcquireApp,
 				},
 			}),
 		};
@@ -327,10 +353,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				app.installed && {
 					viewLogs: {
 						label: (
-							<Box>
+							<Option>
 								<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
 								{t('View_Logs')}
-							</Box>
+							</Option>
 						),
 						action: handleViewLogs,
 					},
@@ -340,10 +366,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppDetailsPage && {
 					update: {
 						label: (
-							<Box>
+							<Option>
 								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
 								{t('Update')}
-							</Box>
+							</Option>
 						),
 						action: handleUpdate,
 					},
@@ -353,10 +379,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAppEnabled && {
 					disable: {
 						label: (
-							<Box color='on-warning'>
+							<Option color='on-warning'>
 								<Icon name='ban' size='x16' marginInlineEnd='x4' />
 								{t('Disable')}
-							</Box>
+							</Option>
 						),
 						action: handleDisable,
 					},
@@ -366,10 +392,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppEnabled && {
 					enable: {
 						label: (
-							<Box>
+							<Option>
 								<Icon name='check' size='x16' marginInlineEnd='x4' />
 								{t('Enable')}
-							</Box>
+							</Option>
 						),
 						action: handleEnable,
 					},
@@ -384,10 +410,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					uninstall: {
 						label: (
-							<Box color='danger'>
+							<Option color='danger'>
 								<Icon name='trash' size='x16' marginInlineEnd='x4' />
 								{t('Uninstall')}
-							</Box>
+							</Option>
 						),
 						action: handleUninstall,
 					},
@@ -401,15 +427,16 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 	}, [
 		canAppBeSubscribed,
+		requestedEndUser,
 		isSubscribed,
 		incompatibleIconName,
 		app,
 		t,
 		handleSubscription,
+		isAdminUser,
 		button?.label,
 		handleAcquireApp,
 		context,
-		isAdminUser,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,
@@ -421,7 +448,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	]);
 
 	if (loading) {
-		return <Throbber disabled />;
+		return <Skeleton variant='rect' height='x28' width='x28' />;
 	}
 
 	if (!isAdminUser && app?.installed) {
