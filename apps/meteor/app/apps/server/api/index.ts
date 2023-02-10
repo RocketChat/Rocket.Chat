@@ -10,10 +10,12 @@ apiServer.disable('x-powered-by');
 
 WebApp.connectHandlers.use(apiServer);
 
-export class AppsApiRoutes {
+class AppsApiRoutes {
 	constructor() {
 		const rejectUnauthorized = false;
 		apiServer.use('/api/apps/private/:appId/:hash', authenticationMiddleware({ rejectUnauthorized }), AppsApiService.handlePrivateRequest);
 		apiServer.use('/api/apps/public/:appId', authenticationMiddleware({ rejectUnauthorized }), AppsApiService.handlePublicRequest);
 	}
 }
+
+export const AppsApiRoutesInstance = new AppsApiRoutes();
