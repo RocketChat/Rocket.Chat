@@ -2,11 +2,10 @@ import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Options, Box, Option, Field, Select } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { forwardRef, useMemo, useState } from 'react';
+import React, { useCallback, forwardRef, useMemo, useState } from 'react';
 
 import { PriorityIcon } from '../priorities/PriorityIcon';
 
@@ -30,13 +29,16 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		return [['', t('Unprioritized')], ...opts];
 	}, [options, sorting, t]);
 
-	const renderOption = useMutableCallback((label: string, value: string) => {
-		return (
-			<>
-				<PriorityIcon level={sorting[value] || LivechatPriorityWeight.NOT_SPECIFIED} showUnprioritized /> {label}
-			</>
-		);
-	});
+	const renderOption = useCallback(
+		(label: string, value: string) => {
+			return (
+				<>
+					<PriorityIcon level={sorting[value] || LivechatPriorityWeight.NOT_SPECIFIED} showUnprioritized /> {label}
+				</>
+			);
+		},
+		[sorting],
+	);
 
 	// eslint-disable-next-line react/no-multi-comp, react/display-name
 	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>((props, ref) => (
