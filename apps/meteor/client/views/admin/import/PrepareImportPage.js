@@ -1,7 +1,6 @@
 import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useRoute, useEndpoint, useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 
@@ -57,19 +56,15 @@ function PrepareImportPage() {
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const startImport = useEndpoint('POST', '/v1/startImport');
 
-	useEffect(() => {
-		const streamer = new Meteor.Streamer('importers');
+	const streamer = useStream('importers');
 
-		const handleProgressUpdated = ({ rate }) => {
-			setProgressRate(rate);
-		};
-
-		streamer.on('progress', handleProgressUpdated);
-
-		return () => {
-			streamer.removeListener('progress', handleProgressUpdated);
-		};
-	}, [setProgressRate]);
+	useEffect(
+		() =>
+			streamer('progress', ({ rate }) => {
+				setProgressRate(rate);
+			}),
+		[streamer, setProgressRate],
+	);
 
 	useEffect(() => {
 		const loadImportFileData = async () => {

@@ -9,7 +9,7 @@ import Page from '../../../components/Page';
 import { useErrorHandler } from './useErrorHandler';
 
 const ImportProgressPage = function ImportProgressPage() {
-	const streamer = useStream('importer');
+	const streamer = useStream('importers');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
@@ -102,13 +102,9 @@ const ImportProgressPage = function ImportProgressPage() {
 			}
 		};
 
-		const progressSubscription = streamer('progress', handleProgressUpdated);
-
 		loadImportProgress();
 
-		return () => {
-			progressSubscription();
-		};
+		return streamer('progress', handleProgressUpdated);
 	}, [
 		dispatchToastMessage,
 		getImportProgress,
@@ -140,7 +136,7 @@ const ImportProgressPage = function ImportProgressPage() {
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block='x24'>
 						<Box is='p' fontScale='p2'>
-							{t(step[0].toUpperCase() + step.slice(1))}
+							{step[0].toUpperCase() + step.slice(1)}
 						</Box>
 						{progressRate ? (
 							<Box display='flex' justifyContent='center'>
