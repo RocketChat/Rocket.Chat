@@ -10,7 +10,7 @@ export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { tmid: 1, userId: 1 }, unique: true }];
+		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { ls: 1 } }];
 	}
 
 	async findOneByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<Reads | null> {
