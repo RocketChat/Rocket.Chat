@@ -5,9 +5,8 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
-import { Apps } from '../../app/apps/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { Team } from '../sdk';
+import { Apps, AppsListener, Team } from '../sdk';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	const room = Rooms.findOneById(rid);
@@ -30,8 +29,8 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		});
 	}
 
-	if (Apps?.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+	if (await Apps.isLoaded()) {
+		const prevent = await AppsListener.roomEvent('IPreRoomDeletePrevent', room);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 		}
@@ -46,8 +45,8 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 	}
 
-	if (Apps?.isLoaded()) {
-		Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
+	if (await Apps.isLoaded()) {
+		AppsListener.roomEvent('IPostRoomDeleted', room);
 	}
 }
 

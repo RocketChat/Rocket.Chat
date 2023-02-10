@@ -6,7 +6,7 @@ import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
+import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 
 async function notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {

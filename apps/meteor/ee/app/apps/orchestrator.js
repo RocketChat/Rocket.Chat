@@ -3,7 +3,7 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPersistenceModel } from '@rocket.chat/models';
 
-import { Logger } from '../../lib/logger/Logger';
+import { Logger } from '../../../server/lib/logger/Logger';
 import { settings } from '../../../app/settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from '../../../app/apps/server/communication';
@@ -18,7 +18,7 @@ import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
-import { MeteorError } from '../../sdk/errors';
+import { MeteorError } from '../../../server/sdk/errors';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';

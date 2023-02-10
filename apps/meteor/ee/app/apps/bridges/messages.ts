@@ -8,7 +8,7 @@ import { Messages, Users, Subscriptions } from '@rocket.chat/models';
 
 import { updateMessage } from '../../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
-import { api } from '../../../sdk/api';
+import { api } from '../../../../server/sdk/api';
 import notifications from '../../../../app/notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../orchestrator';
 
