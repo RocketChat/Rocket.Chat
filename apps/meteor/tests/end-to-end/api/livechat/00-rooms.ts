@@ -1584,14 +1584,14 @@ describe('LIVECHAT - rooms', function () {
 			await request.get(api('livechat/rooms/filters')).set(credentials).expect(403);
 		});
 		it('should return a list of available source filters', async () => {
-			await updatePermission('view-l-room', ['admin']);
+			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
 			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
 			expect(response.body).to.have.property('filters').and.to.be.an('array');
 			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;
 		});
 	});
 
-	describe.skip('it should mark room as unread when a new message arrives and the config is activated', () => {
+	describe('it should mark room as unread when a new message arrives and the config is activated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
@@ -1620,7 +1620,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe.skip('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
+	describe('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
