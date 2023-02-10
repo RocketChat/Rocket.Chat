@@ -126,16 +126,16 @@ Template.messageBox.onCreated(function (this: MessageBoxTemplateInstance) {
 			input.focus();
 		});
 	};
+});
+
+Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
+	let inputSetup = false;
 
 	const { chatMessagesInstance } = this.data;
 
 	chatMessagesInstance.quotedMessages.subscribe(() => {
 		this.replyMessageData.set(chatMessagesInstance.quotedMessages.get());
 	});
-});
-
-Template.messageBox.onRendered(function (this: MessageBoxTemplateInstance) {
-	let inputSetup = false;
 
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData() as MessageBoxTemplateInstance['data'];
