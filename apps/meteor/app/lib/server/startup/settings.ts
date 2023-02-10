@@ -1291,6 +1291,16 @@ settingsRegistry.addGroup('Message', function () {
 		public: true,
 	});
 
+	// TODO: deprecate this setting in favor of App
+	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
+		type: 'string',
+		i18nDescription: 'API_EmbedIgnoredHosts_Description',
+	});
+	// TODO: deprecate this setting in favor of App
+	this.add('API_EmbedSafePorts', '80, 443', {
+		type: 'string',
+	});
+
 	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',
 		public: true,

@@ -4,6 +4,7 @@ import querystring from 'querystring';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
+import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
@@ -69,7 +70,30 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 		urlObj = urlObjStr;
 	}
 
+	const portsProtocol = new Map<string, string>(
+		Object.entries({
+			80: 'http:',
+			8080: 'http:',
+			443: 'https:',
+		}),
+	);
+
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
+	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
+	if (parsedUrl.hostname && (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts))) {
+		throw new Error('invalid host');
+	}
+
+	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
+
+	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+		throw new Error('invalid/unsafe port');
+	}
+
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol.get(port) === parsedUrl.protocol)) {
+		throw new Error('invalid/unsafe port');
+	}
+
 	const data = callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
 		parsedUrl,
