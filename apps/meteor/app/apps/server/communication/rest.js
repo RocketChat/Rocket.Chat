@@ -160,7 +160,7 @@ export class AppsRestApi {
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/${
 								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-							}?workspaceId=${workspaceId}&token=${token}&seats=${seats}`,
+							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
 
