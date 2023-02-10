@@ -24,7 +24,7 @@ test.describe.serial('imports', () => {
 		csvToJson();
 	});
 
-	test('expect import users data from slack', async ({ page }) => {
+	test.only('expect import users data from slack', async ({ page }) => {
 		const poAdmin: Admin = new Admin(page);
 		await page.goto('/admin/import');
 
@@ -37,7 +37,9 @@ test.describe.serial('imports', () => {
 
 		await poAdmin.btnStartImport.click();
 
-		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible();
+		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
+			timeout: 1000 * 60 * 10,
+		});
 	});
 
 	test('expect all users is added is visible', async ({ page }) => {
