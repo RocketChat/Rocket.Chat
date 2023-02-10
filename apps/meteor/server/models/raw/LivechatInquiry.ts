@@ -1,5 +1,15 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, ModifyResult } from 'mongodb';
+import type {
+	Collection,
+	Db,
+	Document,
+	FindOptions,
+	DistinctOptions,
+	UpdateResult,
+	UpdateFilter,
+	ModifyResult,
+	DeleteResult,
+} from 'mongodb';
 import type {
 	ILivechatInquiryRecord,
 	IMessage,
