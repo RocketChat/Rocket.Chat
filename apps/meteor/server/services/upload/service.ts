@@ -8,9 +8,11 @@ import { FileUpload } from '../../../app/file-upload/server';
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
-		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+	async uploadFile({ buffer, details, userId }: IUploadFileParams): Promise<IUpload> {
+		return Meteor.runAsUser(userId, () => {
+			const fileStore = FileUpload.getStore('Uploads');
+			return fileStore.insert(details, buffer);
+		});
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<IMessage | undefined> {
@@ -21,13 +23,15 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return Meteor.call('sendFileLivechatMessage', roomId, visitorToken, file, message);
 	}
 
-	async getFileBuffer({ file }: { userId: string; file: IUpload }): Promise<Buffer> {
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
-				if (err) {
-					return reject(err);
-				}
-				return resolve(buffer);
+	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {
+		return Meteor.runAsUser(userId, () => {
+			return new Promise((resolve, reject) => {
+				FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
+					if (err) {
+						return reject(err);
+					}
+					return resolve(buffer);
+				});
 			});
 		});
 	}

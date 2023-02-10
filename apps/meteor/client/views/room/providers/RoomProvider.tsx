@@ -24,12 +24,12 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
-	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
+	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }) ?? null);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
 	useEffect(() => {
-		if (roomQuery.isSuccess && !roomQuery.data) {
+		if (roomQuery.isSuccess && roomQuery.data === undefined) {
 			homeRoute.push();
 		}
 	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
@@ -102,7 +102,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const api = useMemo(() => ({}), []);
 
 	if (!pseudoRoom) {
-		return roomQuery.isSuccess ? <RoomNotFound /> : <RoomSkeleton />;
+		return roomQuery.isSuccess && roomQuery.data === undefined ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
