@@ -446,10 +446,6 @@ Template.message.helpers({
 	messageActions() {
 		return Template.instance().actions.get();
 	},
-	isSnippet() {
-		const { msg } = this;
-		return msg.actionContext === 'snippeted';
-	},
 	isThreadReply() {
 		const {
 			groupable,

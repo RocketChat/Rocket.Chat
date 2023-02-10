@@ -1,6 +1,7 @@
-import { Settings } from '@rocket.chat/models';
+import { Messages, Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
+import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
 addMigration({
 	version: 287,
@@ -35,5 +36,21 @@ addMigration({
 		Settings.deleteMany({
 			_id: { $in: deprecatedSettings },
 		});
+
+		Messages.updateMany(
+			{
+				snippeted: true,
+			},
+			{
+				$unset: {
+					snippeted: 1,
+					snippetedBy: 1,
+					snippetedAt: 1,
+					snippetName: 1,
+				},
+			},
+		);
+
+		upsertPermissions();
 	},
 });

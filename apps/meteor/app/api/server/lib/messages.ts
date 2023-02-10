@@ -82,66 +82,6 @@ export async function findStarredMessages({
 	};
 }
 
-export async function findSnippetedMessageById({ uid, messageId }: { uid: string; messageId: string }): Promise<IMessage> {
-	if (!uid) {
-		throw new Error('invalid-user');
-	}
-
-	const snippet = await Messages.findOne({ _id: messageId, snippeted: true });
-
-	if (!snippet) {
-		throw new Error('invalid-message');
-	}
-
-	const room = await Rooms.findOneById(snippet.rid);
-
-	if (!room) {
-		throw new Error('invalid-message');
-	}
-
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
-		throw new Error('error-not-allowed');
-	}
-
-	return snippet;
-}
-
-export async function findSnippetedMessages({
-	uid,
-	roomId,
-	pagination: { offset, count, sort },
-}: {
-	uid: string;
-	roomId: string;
-	pagination: { offset: number; count: number; sort: FindOptions<IMessage>['sort'] };
-}): Promise<{
-	messages: IMessage[];
-	count: number;
-	offset: number;
-	total: number;
-}> {
-	const room = await Rooms.findOneById(roomId);
-
-	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
-		throw new Error('error-not-allowed');
-	}
-
-	const { cursor, totalCount } = Messages.findSnippetedByRoom(roomId, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
-
-	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-	return {
-		messages,
-		count: messages.length,
-		offset,
-		total,
-	};
-}
-
 export async function findDiscussionsFromRoom({
 	uid,
 	roomId,

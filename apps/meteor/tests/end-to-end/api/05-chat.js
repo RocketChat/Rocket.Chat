@@ -1988,47 +1988,6 @@ describe('[Chat]', function () {
 		});
 	});
 
-	describe('[/chat.getSnippetedMessages]', () => {
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request
-				.get(api('chat.getSnippetedMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the roomId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[/chat.getDiscussions]', () => {
 		const messageText = 'Message to create discussion';
 		let testChannel;
@@ -2172,19 +2131,6 @@ describe('[Chat]', function () {
 
 		messageWords.forEach((text) => {
 			filterDiscussionsByText(text);
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
 		});
 	});
 });
