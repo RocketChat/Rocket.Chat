@@ -42,7 +42,10 @@ const EnabledAppsCount = (): ReactElement => {
 			mi='16px'
 			minWidth='200px'
 			justifyContent='center'
-			data-tooltip={t('Apps_Count_Enabled_tooltip', { number: enabledAppsLimit, context })}
+			data-tooltip={t('Apps_Count_Enabled_tooltip', {
+				number: enabledAppsLimit,
+				context: context === 'private' ? 'private' : 'marketplace',
+			})}
 		>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' w='full'>
 				<Box fontScale='c1'>{t('Apps_Count_Enabled', { count: numberOfEnabledApps })}</Box>
