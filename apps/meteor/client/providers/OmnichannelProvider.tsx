@@ -8,6 +8,7 @@ import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatI
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { Notifications } from '../../app/notifications/client';
+import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
@@ -16,6 +17,7 @@ import { useReactiveValue } from '../hooks/useReactiveValue';
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
 	enabled: false,
+	isEnterprise: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
 };
@@ -41,6 +43,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
+	const isEnterprise = useHasLicenseModule('livechat-enterprise') === true;
 
 	useEffect(() => {
 		if (!accessible) {
@@ -110,6 +113,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return {
 				...emptyContextValue,
 				enabled: true,
+				isEnterprise,
 				agentAvailable,
 				voipCallAvailable,
 				routeConfig,
@@ -119,6 +123,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		return {
 			...emptyContextValue,
 			enabled: true,
+			isEnterprise,
 			agentAvailable,
 			voipCallAvailable,
 			routeConfig,
