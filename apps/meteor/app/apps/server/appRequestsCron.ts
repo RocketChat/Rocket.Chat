@@ -16,6 +16,12 @@ export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotify
 
 		const workspaceUrl = settings.get<string>('Site_Url');
 		const token = Promise.await(getWorkspaceAccessToken());
+
+		if (!token) {
+			Apps.debugLog(`could not load workspace token to send app requests notifications`);
+			return;
+		}
+
 		const baseUrl = Apps.getMarketplaceUrl();
 		if (!baseUrl) {
 			Apps.debugLog(`could not load marketplace base url to send app requests notifications`);

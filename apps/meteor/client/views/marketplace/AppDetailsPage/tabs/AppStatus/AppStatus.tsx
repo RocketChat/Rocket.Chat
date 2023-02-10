@@ -156,7 +156,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data?.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
