@@ -45,8 +45,11 @@ import { useChat } from '../../../../contexts/ChatContext';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
+import MessageBoxDropdown from './MessageBoxDropdown';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import FileUploadAction from './actions/FileUploadAction';
+import VideoMessageAction from './actions/VideoMessageAction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -111,7 +114,6 @@ const MessageBox = ({
 	onUploadFiles,
 	onEscape,
 	onTyping,
-	subscription,
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
@@ -258,7 +260,7 @@ const MessageBox = ({
 		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
 	});
 
-	const isRecording = useSubscription({
+	const isRecordingAudio = useSubscription({
 		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
@@ -335,6 +337,9 @@ const MessageBox = ({
 	});
 
 	const cc = useMergedRefs(c, callbackRef);
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
+	console.log(isRecordingVideo);
 
 	return (
 		<>
@@ -380,48 +385,10 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
-						<MessageComposerAction
-							disabled={isRecording}
-							onClick={(event): void => {
-								const groups = messageBox.actions.get();
-								const config = {
-									popoverClass: 'message-box',
-									columns: [
-										{
-											groups: Object.entries(groups).map(([name, group]) => {
-												const items = group.map((item) => ({
-													icon: item.icon,
-													name: t(item.label),
-													type: 'messagebox-action',
-													id: item.id,
-													action: item.action,
-												}));
-												return {
-													title: t.has(name) && t(name),
-													items,
-												};
-											}),
-										},
-									],
-									offsetVertical: 10,
-									direction: 'top-inverted',
-									currentTarget: event.currentTarget,
-									data: {
-										rid,
-										tmid,
-										prid: subscription?.prid,
-										messageBox: textareaRef.current,
-										chat,
-									},
-									activeElement: event.currentTarget,
-								};
-
-								popover.open(config);
-							}}
-							icon='plus'
-							data-qa-id='menu-more-actions'
-						/>
+						<VideoMessageAction isRecording={isRecordingAudio} />
+						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing || isRecordingVideo} />
+						<FileUploadAction isRecording={isRecording} />
+						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (

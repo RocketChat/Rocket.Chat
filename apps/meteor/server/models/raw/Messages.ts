@@ -64,16 +64,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findSnippetedByRoom(roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
-		const query: Filter<IMessage> = {
-			_hidden: { $ne: true },
-			snippeted: true,
-			rid: roomId,
-		};
-
-		return this.findPaginated(query, options);
-	}
-
 	// TODO: do we need this? currently not used anywhere
 	findDiscussionsByRoom(rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
