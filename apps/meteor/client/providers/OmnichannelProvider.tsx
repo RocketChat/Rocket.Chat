@@ -1,8 +1,7 @@
 import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { millisecondsToMinutes } from 'date-fns';
+import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
@@ -53,15 +52,28 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const isEnterprise = useHasLicenseModule('livechat-enterprise') === true;
 
 	const getPriorities = useEndpoint('GET', '/v1/livechat/priorities');
+	const subscribe = useStream('notify-logged');
+	const queryClient = useQueryClient();
+	const isPrioritiesEnabled = isEnterprise && accessible;
 
 	const {
 		data: { priorities = [] } = {},
 		isInitialLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
 	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
-		staleTime: millisecondsToMinutes(10),
-		enabled: isEnterprise && accessible,
+		staleTime: Infinity,
+		enabled: isPrioritiesEnabled,
 	});
+
+	useEffect(() => {
+		if (!isPrioritiesEnabled) {
+			return;
+		}
+
+		return subscribe('omnichannel.priority-changed', () => {
+			queryClient.invalidateQueries(['/v1/livechat/priorities']);
+		});
+	}, [isPrioritiesEnabled, queryClient, subscribe]);
 
 	useEffect(() => {
 		if (!accessible) {
@@ -128,7 +140,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 
 		const livechatPriorities = {
-			enabled: isEnterprise && accessible,
+			enabled: isPrioritiesEnabled,
 			data: priorities,
 			isLoading: isLoadingPriorities,
 			isError: isErrorPriorities,
@@ -162,8 +174,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 	}, [
 		enabled,
-		isEnterprise,
-		accessible,
+		isPrioritiesEnabled,
 		priorities,
 		isLoadingPriorities,
 		isErrorPriorities,

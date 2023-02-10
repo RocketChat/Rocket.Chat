@@ -19,6 +19,7 @@ export const useOmnichannelRoomInfo = (
 		() =>
 			subscribeToRoom(roomId, () => {
 				queryClient.invalidateQueries(['/v1/rooms.info', roomId], { exact: true });
+				queryClient.invalidateQueries(['/v1/livechat/rooms']);
 			}),
 		[queryClient, roomId, subscribeToRoom],
 	);
