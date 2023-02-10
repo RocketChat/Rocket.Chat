@@ -32,8 +32,6 @@ class MarkdownClass {
 	parseMessageNotEscaped(message) {
 		const options = {
 			rootUrl: Meteor.absoluteUrl(),
-			supportSchemesForLink: 'http,https',
-			headers: false,
 		};
 
 		return parsers.original(message, options);
