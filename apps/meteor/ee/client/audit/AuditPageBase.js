@@ -91,6 +91,9 @@ export const AuditPageBase = ({
 								<VisitorsTab errors={errors} visitor={visitor} handleVisitor={handleVisitor} agent={agent} handleAgent={handleAgent} />
 							)}
 							<ButtonGroup mis='x8' align='end'>
+								<Button secondary onClick={() => window.print()}>
+									{t('Export')} {t('PDF')}
+								</Button>
 								<Button
 									primary
 									onClick={() =>
