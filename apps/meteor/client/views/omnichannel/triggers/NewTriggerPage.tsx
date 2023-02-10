@@ -19,11 +19,30 @@ export type TriggersFormType = {
 	actions: TriggerActions;
 };
 
+const defaultNewFormValues = {
+	name: '',
+	description: '',
+	enabled: false,
+	runOnce: false,
+	conditions: {
+		name: 'page-url',
+		value: '',
+	},
+	actions: {
+		name: '',
+		params: {
+			sender: 'queue',
+			msg: '',
+			name: '',
+		},
+	},
+};
+
 const NewTriggerPage = ({ onSave }: { onSave: () => void }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const methods = useForm<TriggersFormType>();
+	const methods = useForm<TriggersFormType>({ defaultValues: defaultNewFormValues });
 	const {
 		getValues,
 		handleSubmit,
