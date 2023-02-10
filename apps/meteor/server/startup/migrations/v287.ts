@@ -1,11 +1,12 @@
-import { Messages, Settings } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
+import { MongoInternals } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
 addMigration({
 	version: 287,
-	up() {
+	async up() {
 		const deprecatedSettings = [
 			'Markdown_Parser',
 			'Markdown_Headers',
@@ -34,11 +35,14 @@ addMigration({
 			'API_EmbedDisabledFor',
 		];
 
-		Settings.deleteMany({
+		await Settings.deleteMany({
 			_id: { $in: deprecatedSettings },
 		});
 
-		Messages.updateMany(
+		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+		const messages = mongo.db.collection('rocketchat_message');
+
+		await messages.updateMany(
 			{
 				snippeted: true,
 			},
@@ -51,7 +55,8 @@ addMigration({
 				},
 			},
 		);
+		await messages.dropIndex('snippeted_1');
 
-		upsertPermissions();
+		await upsertPermissions();
 	},
 });
