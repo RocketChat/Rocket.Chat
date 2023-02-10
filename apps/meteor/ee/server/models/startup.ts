@@ -13,4 +13,5 @@ onLicense('livechat-enterprise', () => {
 	import('./LivechatUnitMonitors');
 	import('./LivechatRooms');
 	import('./LivechatInquiry');
+	import('./LivechatDepartment');
 });

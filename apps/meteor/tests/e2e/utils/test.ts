@@ -88,6 +88,13 @@ expect.extend({
 			pass,
 		};
 	},
+	async toBeBusy(received: Locator) {
+		const pass = await received.evaluate((node) => node.getAttribute('aria-busy') === 'true');
+		return {
+			message: () => `expected ${received} to be busy`,
+			pass,
+		};
+	},
 	async hasAttribute(received: Locator, attribute: string) {
 		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);
 

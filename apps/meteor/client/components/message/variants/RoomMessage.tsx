@@ -22,18 +22,20 @@ import ToolboxHolder from '../ToolboxHolder';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
-	message: IMessage;
+	message: IMessage & { ignored?: boolean };
 	sequential: boolean;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
 	context?: MessageActionContext;
+	ignoredUser?: boolean;
 };
 
-const RoomMessage = ({ message, sequential, all, mention, unread, context }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored ?? false);
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { open: openUserCard } = useUserCard();
 
 	const selecting = useIsSelecting();
@@ -76,7 +78,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context }: Roo
 				{!sequential && <MessageHeader message={message} />}
 
 				{ignored ? (
-					<IgnoredContent onShowMessageIgnored={toggleIgnoring} />
+					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} />
 				)}
