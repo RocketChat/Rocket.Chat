@@ -1,22 +1,18 @@
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
-const styles = StyleSheet.create({
-	italic: {
-		fontStyle: 'italic',
-	},
-});
+import { codeStyles } from '../elements/CodeSpan';
 
 type CodeBlockProps = {
 	lines: MessageParser.CodeLine[];
 };
 
 const CodeBlock = ({ lines }: CodeBlockProps): ReactElement => (
-	<View>
+	<View style={codeStyles.wrapper}>
 		{lines.map((line, index) => (
-			<Text key={index} style={styles.italic}>
-				{line.value?.value}
+			<Text key={index} style={codeStyles.code}>
+				{line.value?.value || ' '}
 			</Text>
 		))}
 	</View>

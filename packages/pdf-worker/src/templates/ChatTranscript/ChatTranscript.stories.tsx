@@ -18,6 +18,11 @@ Font.register({
 	],
 });
 
+Font.register({
+	family: 'FiraCode',
+	fonts: [{ src: '/fira-code700.ttf', fontWeight: 700 }],
+});
+
 Font.registerHyphenationCallback((word) => [word]);
 
 export default {
