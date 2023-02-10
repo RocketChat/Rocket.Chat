@@ -1,6 +1,6 @@
 import type { IconProps } from '@rocket.chat/fuselage';
 import { Badge, Skeleton, Box, Icon, Tag } from '@rocket.chat/fuselage';
-import { useRoutePath } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoutePath } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo, useMemo } from 'react';
 
@@ -32,7 +32,8 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	const path = useRoutePath(pathSection, params);
 	const isActive = !!path && currentPath?.includes(path as string);
 
-	const { data: appRequestStats, isLoading, isError } = useAppRequestStats();
+	const isAdminUser = usePermission('manage-apps');
+	const { data: appRequestStats, isLoading, isError } = useAppRequestStats(isAdminUser);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;

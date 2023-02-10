@@ -329,6 +329,12 @@ export const appStatusSpanProps = (
 			};
 		}
 
+		if (appRequestStats.totalUnseen) {
+			return {
+				label: appRequestStats.totalUnseen > 1 ? 'requests' : 'request',
+			};
+		}
+
 		return {
 			label: appRequestStats.totalSeen > 1 ? 'requests' : 'request',
 		};
