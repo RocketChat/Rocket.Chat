@@ -1,5 +1,4 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
@@ -8,7 +7,7 @@ import GenericTable, { GenericTableCell, GenericTableRow } from '../../../../cli
 import { PriorityIcon } from './PriorityIcon';
 
 type PrioritiesTableProps = {
-	data?: Serialized<PaginatedResult<{ priorities: ILivechatPriority[] }>>;
+	data?: Serialized<ILivechatPriority>[];
 	onRowClick: (id: string) => void;
 };
 
@@ -37,5 +36,5 @@ export const PrioritiesTable = ({ data, onRowClick }: PrioritiesTableProps): Rea
 		[t],
 	);
 
-	return <GenericTable results={data?.priorities} header={header} renderRow={renderRow} pagination={false} />;
+	return <GenericTable results={data} header={header} renderRow={renderRow} pagination={false} />;
 };

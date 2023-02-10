@@ -7,13 +7,13 @@ import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
+import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import CustomFieldsForm from '../../../../../../components/CustomFieldsForm';
 import Tags from '../../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../../components/VerticalBar';
 import { useFormsSubscription } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
-import { usePrioritiesData } from '../../../hooks/usePrioritiesData';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
 
 type RoomEditProps = {
@@ -51,12 +51,12 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
-	const { data: slaPolicies, isLoading: isSlaPoliciesLoading } = useSlaPolicies();
-	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
+	const { data: slaPolicies, isInitialLoading: isSlaPoliciesLoading } = useSlaPolicies();
+	const { data: customFieldsMetadata, isInitialLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
 		scope: 'room',
 		enabled: canViewCustomFields,
 	});
-	const { data: { priorities } = {}, isLoading: isPrioritiesLoading } = usePrioritiesData();
+	const { data: priorities, isLoading: isPrioritiesLoading } = useOmnichannelPriorities();
 
 	const { useSlaPoliciesSelect = () => undefined, usePrioritiesSelect = () => undefined } = useFormsSubscription();
 	const SlaPoliciesSelect = useSlaPoliciesSelect();

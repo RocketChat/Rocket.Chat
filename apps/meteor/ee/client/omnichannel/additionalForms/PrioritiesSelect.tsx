@@ -1,9 +1,13 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select } from '@rocket.chat/fuselage';
+import { Options, Box, Option, Field, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import type { ComponentProps } from 'react';
+import React, { useCallback, forwardRef, useMemo, useState } from 'react';
+
+import { PriorityIcon } from '../priorities/PriorityIcon';
 
 type PrioritiesSelectProps = {
 	value: string;
@@ -14,16 +18,45 @@ type PrioritiesSelectProps = {
 
 export const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
 	const t = useTranslation();
-	const optionsSelect = useMemo<SelectOption[]>(() => {
-		const opts: SelectOption[] = options?.map(({ dirty, name, i18n, _id }) => [_id, dirty && name ? name : t(i18n as TranslationKey)]);
+	const [sorting] = useState<Record<string, LivechatPriorityWeight>>({});
+
+	const formattedOptions = useMemo<SelectOption[]>(() => {
+		const opts: SelectOption[] = options?.map(({ dirty, name, i18n, _id, sortItem }) => {
+			const label = dirty && name ? name : t(i18n as TranslationKey);
+			sorting[_id] = sortItem;
+			return [_id, label];
+		});
 		return [['', t('Unprioritized')], ...opts];
-	}, [options, t]);
+	}, [options, sorting, t]);
+
+	const renderOption = useCallback(
+		(label: string, value: string) => {
+			return (
+				<>
+					<PriorityIcon level={sorting[value] || LivechatPriorityWeight.NOT_SPECIFIED} showUnprioritized /> {label}
+				</>
+			);
+		},
+		[sorting],
+	);
+
+	// eslint-disable-next-line react/no-multi-comp, react/display-name
+	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>((props, ref) => (
+		<Options ref={ref} {...props} maxHeight={200} />
+	));
 
 	return (
 		<Field>
 			<Field.Label>{label}</Field.Label>
 			<Field.Row>
-				<Select value={value} onChange={onChange} options={optionsSelect} />
+				<Select
+					value={value}
+					onChange={onChange}
+					options={formattedOptions}
+					renderOptions={renderOptions}
+					renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
+					renderItem={({ label, value, ...props }) => <Option {...props} label={renderOption(label, value)} />}
+				/>
 			</Field.Row>
 		</Field>
 	);

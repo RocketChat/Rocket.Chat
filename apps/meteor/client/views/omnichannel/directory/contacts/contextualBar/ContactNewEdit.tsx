@@ -72,7 +72,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 
-	const { data: customFieldsMetadata = {}, isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+	const { data: customFieldsMetadata = {}, isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
 		enabled: canViewCustomFields(),
 	});
