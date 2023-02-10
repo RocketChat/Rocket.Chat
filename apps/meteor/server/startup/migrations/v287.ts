@@ -1,7 +1,6 @@
 import { LivechatRooms, Messages, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import type { IBaseModel } from '@rocket.chat/model-typings';
 import type { Db } from 'mongodb';
 
 import { addMigration } from '../../lib/migrations';
@@ -10,12 +9,13 @@ import { BaseRaw } from '../../models/raw/BaseRaw';
 import { db } from '../../database/utils';
 
 interface IOldLivechatPriority extends IRocketChatRecord {
+	_id: string;
 	name: string;
 	description: string;
 	dueTimeInMinutes: number;
 }
 
-class OldLivechatPriorityRaw extends BaseRaw<IBaseModel<IOldLivechatPriority>> implements IOldLivechatPriorityModel {
+class OldLivechatPriorityRaw extends BaseRaw<IOldLivechatPriority> {
 	constructor(db: Db) {
 		super(db, 'livechat_priority');
 	}
@@ -39,7 +39,7 @@ addMigration({
 			await OldLivechatPriority.col.dropIndexes();
 		} catch (error) {
 			// ignore
-			console.log('Error dropping index dueTimeInMinutes_1 from livechat_priority collection:', error);
+			console.warn('Error dropping indexes from livechat_priority collection:', error);
 		}
 
 		// If there's no priorities, then no rooms/slas should be modified
