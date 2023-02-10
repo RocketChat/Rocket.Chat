@@ -135,7 +135,11 @@ API.v1.addRoute(
 					};
 				}
 
+				// We'll send the transcript by email only if the setting is disabled (that means, we're not asking the user if he wants to receive the transcript by email)
+				// And the agent has the preference enabled to send the transcript by email and the visitor has an email address
+				// When Livechat_enable_transcript is enabled, the email will be sent via livechat/transcript route
 				if (
+					!rcSettings.get<boolean>('Livechat_enable_transcript') &&
 					servingAgent?.settings?.preferences?.omnichannelTranscriptEmail &&
 					visitor.visitorEmails?.length &&
 					visitor.visitorEmails?.[0]?.address
