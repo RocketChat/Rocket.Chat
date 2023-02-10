@@ -2,7 +2,7 @@ import { Box, Input } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 
@@ -32,10 +32,6 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 		}
 	});
 
-	const disabled = useMemo(() => {
-		return text !== name;
-	}, [name, text]);
-
 	return (
 		<GenericModal
 			onConfirm={onSubmit}
@@ -44,7 +40,7 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 			title={t('Delete_Department?')}
 			onClose={onClose}
 			variant='danger'
-			confirmDisabled={disabled}
+			confirmDisabled={text !== name}
 		>
 			<Box mbe='x16'>{t('Are_you_sure_delete_department')}</Box>
 			<Box mbe='x16' display='flex' justifyContent='stretch'>

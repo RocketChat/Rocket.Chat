@@ -76,7 +76,7 @@ function DepartmentsTable({ data, removeButton, pagination, sort, loading }: Dep
 				divider
 				current={current}
 				itemsPerPage={itemsPerPage}
-				count={data?.count || 0}
+				count={data?.total || 0}
 				onSetItemsPerPage={onSetItemsPerPage}
 				onSetCurrent={onSetCurrent}
 				{...paginationProps}

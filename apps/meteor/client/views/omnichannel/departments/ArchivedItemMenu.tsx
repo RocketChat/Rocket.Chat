@@ -19,7 +19,7 @@ const ArchivedItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedAt'
 	const queryClient = useQueryClient();
 
 	const handlePageDepartmentsReload = useCallback(async () => {
-		await queryClient.refetchQueries(['omnichannel', 'departments', 'archived']);
+		await queryClient.invalidateQueries(['omnichannel', 'departments', 'archived']);
 	}, [queryClient]);
 
 	const handleUnarchiveDepartment = useMutableCallback(async () => {

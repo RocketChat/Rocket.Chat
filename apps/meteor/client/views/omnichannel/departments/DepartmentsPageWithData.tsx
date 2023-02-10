@@ -33,7 +33,7 @@ const DepartmentsPageWithData = (): ReactElement => {
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
-	const { data, isLoading } = useQuery(['omnichannel', 'departments', query], async () => getDepartments(query));
+	const { data, isLoading } = useQuery(['omnichannel', 'departments', query], () => getDepartments(query));
 
 	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <DepartmentItemMenu dep={dep} />;
 
