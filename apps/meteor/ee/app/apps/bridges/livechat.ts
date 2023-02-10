@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import Future from 'fibers/future';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type {
 	ILivechatMessage,
@@ -13,7 +14,6 @@ import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/acces
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { Livechat } from '../../../../app/livechat/server/lib/Livechat';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { LivechatService } from '../../../../server/sdk';
 
@@ -23,9 +23,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		// TODO: Replace with LivechatService
-		// and use Fibers to wait for the result
-		return Livechat.online(departmentId);
+		return Future.fromPromise(LivechatService.isOnline(departmentId)).wait() as boolean;
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
