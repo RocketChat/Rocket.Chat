@@ -17,13 +17,3 @@ export type ProgressStep =
 	| 'importer_done'
 	| 'importer_import_failed'
 	| 'importer_import_cancelled';
-
-export interface IImportProgress {
-	key: string;
-	name: string;
-	step: ProgressStep;
-	count: {
-		completed: number;
-		total: number;
-	};
-}
