@@ -8,6 +8,7 @@ import type {
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
+import { updatePermission } from '../permissions.helper';
 import { adminUsername } from '../user';
 import type { DummyResponse } from './utils';
 
@@ -151,6 +152,7 @@ export const createManager = (): Promise<ILivechatAgent> =>
 	});
 
 export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
+	await updatePermission('view-l-room', ['livechat-agent', 'livechat-manager', 'admin']);
 	await request.post(api('users.setStatus')).set(overrideCredentials || credentials).send({
 		message: '',
 		status: 'online',
