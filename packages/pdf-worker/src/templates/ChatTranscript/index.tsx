@@ -81,7 +81,7 @@ export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> 
 	});
 	Font.register({
 		family: 'FiraCode',
-		fonts: [{ src: `${FONT_PATH}/fira-code700.ttf'`, fontWeight: 700 }],
+		fonts: [{ src: `${FONT_PATH}/fira-code700.ttf`, fontWeight: 700 }],
 	});
 	Font.registerHyphenationCallback((word) => [word]);
 
