@@ -6,7 +6,7 @@ import React from 'react';
 type ComposerBoxPopupProps<
 	T extends {
 		_id: string;
-		sort: number;
+		sort?: number;
 	},
 > = {
 	title?: string;
@@ -18,7 +18,7 @@ type ComposerBoxPopupProps<
 export const ComposerBoxPopup = <
 	T extends {
 		_id: string;
-		sort: number;
+		sort?: number;
 	},
 >({
 	title,
@@ -42,10 +42,10 @@ export const ComposerBoxPopup = <
 							}
 							return [];
 						})
-						.sort((a, b) => a.sort - b.sort)
+						.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0))
 						.map((item, index) => {
 							return (
-								<Option role='menuitem' tabindex={item === focused ? 0 : -1} selected={item === focused} key={index}>
+								<Option tabindex={item === focused ? 0 : -1} selected={item === focused} key={index}>
 									{renderItem({ item })}
 								</Option>
 							);

@@ -27,7 +27,7 @@ export type MessageBoxOptions<T extends { _id: string }> = {
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };
 
-type IMessageBoxResult<T> = {
+type IMessageBoxResult<T extends { _id: string; sort?: number }> = {
 	callbackRef: (node: HTMLElement) => void;
 } & (
 	| { popup: MessageBoxOptions<T>; items: UseQueryResult<T[]>[]; focused: T | undefined }
@@ -58,7 +58,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 
 	const [filter, setFilter] = useState('');
 
-	const items = useComposerBoxPopupQueries(filter, popup?.getItemsFromLocal, popup?.getItemsFromServer);
+	const items = useComposerBoxPopupQueries(filter, popup?.getItemsFromLocal, popup?.getItemsFromServer) as unknown as UseQueryResult<T[]>[];
 
 	const chat = useChat();
 
@@ -163,8 +163,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data)
-					.sort((a, b) => ('sort' in a && 'sort' in b ? a.sort - b.sort : 0));
+					.flatMap((item) => item.data as T[])
+					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
 					return;
@@ -182,8 +182,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data)
-					.sort((a, b) => ('sort' in a && 'sort' in b ? a.sort - b.sort : 0));
+					.flatMap((item) => item.data as T[])
+					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
 					return undefined;

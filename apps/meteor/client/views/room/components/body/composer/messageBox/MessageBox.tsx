@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMergedRefs, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -31,7 +32,6 @@ import type { FormattingButton } from '../../../../../../../app/ui-message/clien
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { ComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
 import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
-import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
@@ -332,14 +332,12 @@ const MessageBox = ({
 		focused,
 		items,
 		callbackRef: c,
-	} = useComposerBoxPopup({
+	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
 	const cc = useMergedRefs(c, callbackRef);
 	const isRecording = isRecordingAudio || isRecordingVideo;
-
-	console.log(isRecordingVideo);
 
 	return (
 		<>
