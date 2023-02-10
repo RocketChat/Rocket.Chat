@@ -15,4 +15,6 @@ if (isRunningMs()) {
 		api.setBroker(broker);
 		api.start();
 	})();
+} else {
+	require('./presence');
 }
