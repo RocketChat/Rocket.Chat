@@ -203,7 +203,6 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']> & { bypassUnits?: boolean }) {
-		console.log('updateOne', args);
 		const [query, update, opts, extraOpts] = args;
 		if (extraOpts?.bypassUnits) {
 			// When calling updateOne from a service, we cannot call the meteor code inside the query restrictions
