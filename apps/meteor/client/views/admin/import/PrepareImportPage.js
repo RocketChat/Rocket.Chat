@@ -145,9 +145,11 @@ function PrepareImportPage() {
 		getCurrentImportOperation,
 		getImportFileData,
 		handleError,
+
 		importHistoryRoute,
 		importProgressRoute,
 		newImportRoute,
+
 		setMessageCount,
 		setPreparing,
 		setProgressRate,
@@ -176,8 +178,10 @@ function PrepareImportPage() {
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
-	const handleMinimumImportData = () =>
-		!!((!usersCount && !channelsCount && !messageCount) || (!usersCount && !channelsCount && messageCount !== 0));
+	const handleMinimumImportData = !!(
+		(!usersCount && !channelsCount && !messageCount) ||
+		(!usersCount && !channelsCount && messageCount !== 0)
+	);
 
 	return (
 		<Page>
@@ -186,7 +190,7 @@ function PrepareImportPage() {
 					<Button secondary onClick={handleBackToImportsButtonClick}>
 						<Icon name='back' /> {t('Back_to_imports')}
 					</Button>
-					<Button primary disabled={isImporting || handleMinimumImportData()} onClick={handleStartButtonClick}>
+					<Button primary disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>

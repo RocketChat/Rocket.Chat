@@ -46,12 +46,13 @@ const ImportProgressPage = function ImportProgressPage() {
 					return;
 				}
 
-				if (!ImportingStartedStates.includes(status)) {
-					prepareImportRoute.push();
-				}
-
 				if (status === 'importer_done') {
 					importHistoryRoute.push();
+					return;
+				}
+
+				if (!ImportingStartedStates.includes(status)) {
+					prepareImportRoute.push();
 				}
 			},
 			onError: (error) => {
@@ -62,7 +63,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	const handleProgressUpdated = useMutableCallback(
-		({ key, step, completed = 0, total = 0 }: { key: string; step: ProgressStep; completed: number; total: number }) => {
+		({ key, step, completed, total }: { key: string; step: ProgressStep; completed: number; total: number }) => {
 			if (!currentOperation.isSuccess) {
 				return;
 			}
@@ -129,7 +130,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	useEffect(() => {
-		return streamer('progress', handleProgressUpdated);
+		return streamer('progress', ({ count: { completed, total }, ...rest }) => handleProgressUpdated({ ...rest, completed, total } as any));
 	}, [handleProgressUpdated, streamer]);
 
 	return (

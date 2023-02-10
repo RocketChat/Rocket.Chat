@@ -31,7 +31,6 @@ export default {
 	],
 	testDir: 'tests/e2e',
 	workers: 1,
-	retries: process.env.CI ? 1 : undefined,
 	timeout: 60 * 1000,
 	globalTimeout: 40 * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
