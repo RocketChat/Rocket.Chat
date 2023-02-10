@@ -6,7 +6,7 @@ import React from 'react';
 import PageSkeleton from '../../../components/PageSkeleton';
 import EditTriggerPage from './EditTriggerPage';
 
-const EditTriggerPageContainer = ({ id, onSave }) => {
+const EditTriggerPageContainer = ({ id, onSave }: { id: string; onSave: () => void }) => {
 	const t = useTranslation();
 	const getTrigger = useEndpoint('GET', '/v1/livechat/triggers/:_id', { _id: id });
 	const { data, isInitialLoading, isError } = useQuery(['/v1/livechat/triggers/:_id', id], () => getTrigger());

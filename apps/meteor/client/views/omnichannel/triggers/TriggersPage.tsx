@@ -17,7 +17,7 @@ const MonitorsPage = () => {
 
 	const router = useRoute('omnichannel-triggers');
 
-	const reload = useRef(() => {});
+	const reload = useRef(() => undefined);
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -49,11 +49,11 @@ const MonitorsPage = () => {
 			{context && (
 				<VerticalBar>
 					<VerticalBar.Header>
-						{t('Trigger')}
+						{context === 'edit' ? t('Edit_Trigger') : t('New_Trigger')}
 						<VerticalBar.Close onClick={handleCloseVerticalBar} />
 					</VerticalBar.Header>
 					<VerticalBar.ScrollableContent>
-						{context === 'edit' && <EditTriggerPageContainer id={id} onSave={reload.current} />}
+						{context === 'edit' && <EditTriggerPageContainer id={id || ''} onSave={reload.current} />}
 						{context === 'new' && <NewTriggerPage onSave={reload.current} />}
 					</VerticalBar.ScrollableContent>
 				</VerticalBar>

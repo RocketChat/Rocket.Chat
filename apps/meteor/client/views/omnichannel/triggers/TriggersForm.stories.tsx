@@ -1,5 +1,4 @@
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
-import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
@@ -37,13 +36,5 @@ Default.args = {
 				name: '',
 			},
 		},
-	},
-	handlers: {
-		handleName: action('handleName'),
-		handleDescription: action('handleDescription'),
-		handleEnabled: action('handleEnabled'),
-		handleRunOnce: action('handleRunOnce'),
-		handleConditions: action('handleConditions'),
-		handleActions: action('handleActions'),
 	},
 };

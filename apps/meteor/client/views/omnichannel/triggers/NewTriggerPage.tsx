@@ -2,36 +2,43 @@ import { Button, FieldGroup, Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+// import { useForm } from '../../../hooks/useForm';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import { useForm } from '../../../hooks/useForm';
+import type { TriggerConditions, TriggerActions } from './TriggersForm';
 import TriggersForm from './TriggersForm';
 
-const NewTriggerPage = ({ onSave }) => {
+export type TriggersFormType = {
+	name: string;
+	description: string;
+	enabled: boolean;
+	runOnce: boolean;
+	// In the future, this will be an array
+	conditions: TriggerConditions;
+	// In the future, this will be an array
+	actions: TriggerActions;
+};
+
+const NewTriggerPage = ({ onSave }: { onSave: () => void }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
+
+	const methods = useForm<TriggersFormType>();
+	const {
+		getValues,
+		handleSubmit,
+		formState: { isDirty },
+		watch,
+	} = methods;
+
+	const watchName = watch('name');
+	const watchMsg = watch('actions.params.msg');
 
 	const router = useRoute('omnichannel-triggers');
 
 	const save = useMethod('livechat:saveTrigger');
 
-	const { values, handlers } = useForm({
-		name: '',
-		description: '',
-		enabled: true,
-		runOnce: false,
-		conditions: {
-			name: 'page-url',
-			value: '',
-		},
-		actions: {
-			name: '',
-			params: {
-				sender: 'queue',
-				msg: '',
-				name: '',
-			},
-		},
-	});
+	const values = getValues();
 
 	const handleSave = useMutableCallback(async () => {
 		try {
@@ -63,23 +70,18 @@ const NewTriggerPage = ({ onSave }) => {
 		}
 	});
 
-	const {
-		name,
-		actions: {
-			params: { msg },
-		},
-	} = values;
-
-	const canSave = useMemo(() => name && msg, [name, msg]);
+	const canSave = useMemo(() => watchName && watchMsg && isDirty, [watchName, watchMsg, isDirty]);
 
 	return (
 		<>
 			<FieldGroup>
-				<TriggersForm values={values} handlers={handlers} />
+				<FormProvider {...methods}>
+					<TriggersForm values={values} />
+				</FormProvider>
 			</FieldGroup>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} primary onClick={handleSave} disabled={!canSave}>
+					<Button flexGrow={1} type='submit' primary onClick={handleSubmit(handleSave)} disabled={!canSave}>
 						{t('Save')}
 					</Button>
 				</Margins>

@@ -7,12 +7,12 @@ import { useController, useFormContext } from 'react-hook-form';
 
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 
-type TriggerConditions = {
+export type TriggerConditions = {
 	name: string;
 	value: string | number;
 };
 
-type TriggerActions = {
+export type TriggerActions = {
 	name: string;
 	params: {
 		sender: string | undefined;
@@ -204,14 +204,14 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 			<Field className={className}>
 				<Field.Label>{t('Action')}</Field.Label>
 				<Field.Row>
-					<TextInput {...register(`${t('Send_a_message')}`)} disabled />
+					<TextInput value={t('Send_a_message')} disabled />
 				</Field.Row>
 				<Field.Row>
 					<Select options={senderOptions} value={valueActionSender} onChange={handleActionSender} placeholder={t('Select_an_option')} />
 				</Field.Row>
 				{actionSender === 'custom' && (
 					<Field.Row>
-						<TextInput {...register('actions.params.actionAgentName')} placeholder={t('Name_of_agent')} />
+						<TextInput {...register('actions.params.name')} placeholder={t('Name_of_agent')} />
 					</Field.Row>
 				)}
 				<Field.Row>
