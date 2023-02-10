@@ -3,7 +3,7 @@ import type { Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { PriorityIcon } from '../priorities/PriorityIcon';
@@ -23,13 +23,13 @@ export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof
 		}
 	});
 
-	const renderOption = useMutableCallback((label: string, weight: LivechatPriorityWeight) => {
+	const renderOption = useCallback((label: string, weight: LivechatPriorityWeight) => {
 		return (
 			<>
 				<PriorityIcon level={weight || LivechatPriorityWeight.NOT_SPECIFIED} showUnprioritized /> {label}
 			</>
 		);
-	});
+	}, []);
 
 	return useMemo<ComponentProps<typeof Menu>['options']>(() => {
 		const menuHeading = {
