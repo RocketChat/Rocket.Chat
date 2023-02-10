@@ -30,7 +30,6 @@ addMigration({
 			'AutoLinker_Phone',
 			'IssueLinks_Enabled',
 			'IssueLinks_Template',
-			'API_EmbedDisabledFor',
 		];
 
 		Settings.deleteMany({
