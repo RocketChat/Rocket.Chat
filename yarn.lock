@@ -6339,7 +6339,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/css-in-js@npm:next, @rocket.chat/css-in-js@npm:~0.31.23-dev.19":
+"@rocket.chat/css-in-js@npm:next":
   version: 0.31.23-dev.19
   resolution: "@rocket.chat/css-in-js@npm:0.31.23-dev.19"
   dependencies:
@@ -6349,6 +6349,19 @@ __metadata:
     "@rocket.chat/stylis-logical-props-middleware": ~0.31.23-dev.19
     stylis: ~4.1.3
   checksum: 1487294a3141cf4680eb14b55f80e5ab6bd988c2a8f2b4d9c52e34e72a191e25e32e5a6c3dbc2ecdabe8c3764aac3db02614518018b2a697ecc5cbc41ebff610
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/css-in-js@npm:~0.31.23-dev.19, @rocket.chat/css-in-js@npm:~0.31.23-dev.47":
+  version: 0.31.23-dev.47
+  resolution: "@rocket.chat/css-in-js@npm:0.31.23-dev.47"
+  dependencies:
+    "@emotion/hash": ^0.9.0
+    "@rocket.chat/css-supports": ~0.31.23-dev.47
+    "@rocket.chat/memo": ~0.31.23-dev.47
+    "@rocket.chat/stylis-logical-props-middleware": ~0.31.23-dev.47
+    stylis: ~4.1.3
+  checksum: f6a6b747d37e0eb1188714959e7fe80b124a504275007f0745d58b01e409cbdbf4a1cc22e191de062634ef6c38018711522ff6c49b4a718e55ef97e880499a95
   languageName: node
   linkType: hard
 
@@ -6365,12 +6378,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/css-supports@npm:~0.31.23-dev.19":
-  version: 0.31.23-dev.19
-  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.19"
+"@rocket.chat/css-supports@npm:~0.31.23-dev.19, @rocket.chat/css-supports@npm:~0.31.23-dev.45":
+  version: 0.31.23-dev.45
+  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.45"
   dependencies:
     "@rocket.chat/memo": ~0.31.23-dev.19
-  checksum: 7a274e59a0eaac313876552a660e6f4aa34b67d20c66e30330c65745247f062869f5ee0086b3155361b635c0f6cf933c126e68c07598642aa6b4adfeaf82e8b7
+  checksum: c355919e6479b8d8dd0a524e6258a05f463b50b50f0431dde1206c808d8c6d2a51bb323fb3fd0fa58472782cc3712c6303d3d0eb4c4aedde1bd84f31129430a5
   languageName: node
   linkType: hard
 
@@ -6383,6 +6396,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/css-supports@npm:~0.31.23-dev.47":
+  version: 0.31.23-dev.47
+  resolution: "@rocket.chat/css-supports@npm:0.31.23-dev.47"
+  dependencies:
+    "@rocket.chat/memo": ~0.31.23-dev.47
+  checksum: cc9b409e4c33efb0aa6f46ff8a5c207b6ec0f26d8de8e2b4508549ef64b6fefa0e5fd508bb2040e22c2576711bed67dbb32d9b26c8fc8e6354643a2542023668
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
@@ -6392,6 +6414,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": next
     "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
@@ -6720,6 +6743,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/instance-status@workspace:^, @rocket.chat/instance-status@workspace:packages/instance-status":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/instance-status@workspace:packages/instance-status"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    eslint: ^8.29.0
+    mongodb: ^4.12.1
+    prettier: ^2.7.1
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/layout@npm:next":
   version: 0.32.0-dev.128
   resolution: "@rocket.chat/layout@npm:0.32.0-dev.128"
@@ -6829,10 +6865,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/memo@npm:next, @rocket.chat/memo@npm:~0.31.23-dev.19":
+"@rocket.chat/memo@npm:next":
   version: 0.31.23-dev.19
   resolution: "@rocket.chat/memo@npm:0.31.23-dev.19"
   checksum: 2c30df2b2e99b2d6b37d9e695c293724d0c116b521ff33ef747039f37633dc2343051f66e5fd0a05f22f8f6c85fd0a1c2e97b7f256704fdb2178b59621c58634
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/memo@npm:~0.31.23-dev.19, @rocket.chat/memo@npm:~0.31.23-dev.47":
+  version: 0.31.23-dev.47
+  resolution: "@rocket.chat/memo@npm:0.31.23-dev.47"
+  checksum: 3c90bec9feeb260d6dc1ea64c8a98bbb39fe848f97f066f701939398f882fd2579716fe1f98b7bbc6067a39b6a270f22004aa97ee258b1242a819021a212df81
   languageName: node
   linkType: hard
 
@@ -6895,6 +6938,7 @@ __metadata:
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": next
+    "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/layout": next
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/logo": next
@@ -7290,9 +7334,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/presence@workspace:^, @rocket.chat/presence@workspace:packages/presence":
+"@rocket.chat/presence@workspace:^, @rocket.chat/presence@workspace:ee/packages/presence":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/presence@workspace:packages/presence"
+  resolution: "@rocket.chat/presence@workspace:ee/packages/presence"
   dependencies:
     "@babel/core": ^7.20.5
     "@babel/preset-env": ^7.20.2
@@ -7393,13 +7437,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:next, @rocket.chat/styled@npm:~0.31.23-dev.19":
+"@rocket.chat/styled@npm:next":
   version: 0.31.23-dev.19
   resolution: "@rocket.chat/styled@npm:0.31.23-dev.19"
   dependencies:
     "@rocket.chat/css-in-js": ~0.31.23-dev.19
     tslib: ^2.3.1
   checksum: c1c4766c511d62c140dadaba9d9fc43572c051f7a4d86121df99ace2955f7a606faa91281987616a8b3d907526652c5d4b5b7e72b4ac0af0474641d16d694b62
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/styled@npm:~0.31.23-dev.19":
+  version: 0.31.23-dev.47
+  resolution: "@rocket.chat/styled@npm:0.31.23-dev.47"
+  dependencies:
+    "@rocket.chat/css-in-js": ~0.31.23-dev.47
+    tslib: ^2.3.1
+  checksum: 71da37ea3a24d7a8329e9feeffe0fa473e96babda23c5cec1daf4dc71bdf573c06deb6646e39824ed2b7b5fb361332c325cb2044df2def1eb87053b36a0c79b9
   languageName: node
   linkType: hard
 
@@ -7414,14 +7468,14 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/stylis-logical-props-middleware@npm:~0.31.23-dev.19":
-  version: 0.31.23-dev.19
-  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.19"
+  version: 0.31.23-dev.45
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.45"
   dependencies:
-    "@rocket.chat/css-supports": ~0.31.23-dev.19
+    "@rocket.chat/css-supports": ~0.31.23-dev.45
     tslib: ^2.3.1
   peerDependencies:
     stylis: 4.0.10
-  checksum: ae329803f71717b40aa4b9d019b56709726c0025e21af3768c2c6306ce10f7ea4cfe26a08e0df9e6ed3693e3821e2a171552ceb185c96e58fd31666c5f14ba5a
+  checksum: 7645bcde9fab55860fa6f886b942ae1a6189a663e61241fed513fd532102074e50e8696513e9439345a6272fc681b82bd3f8ab4a7b4cc6bce75a446e66efe1cf
   languageName: node
   linkType: hard
 
@@ -7434,6 +7488,18 @@ __metadata:
   peerDependencies:
     stylis: 4.0.10
   checksum: a67c52e29e8fa2a0ff22913c239ab7e6c0ceda15b07fc28ee4dbc60937c7d438d6067d663f7a31bfcd90f8fc4fa2c6c428791fa93073232c8afd58206b83856c
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/stylis-logical-props-middleware@npm:~0.31.23-dev.47":
+  version: 0.31.23-dev.47
+  resolution: "@rocket.chat/stylis-logical-props-middleware@npm:0.31.23-dev.47"
+  dependencies:
+    "@rocket.chat/css-supports": ~0.31.23-dev.47
+    tslib: ^2.3.1
+  peerDependencies:
+    stylis: 4.0.10
+  checksum: e3719d68b34a65a11ef5e6586b6df1ac6976b2fa3fa6b6bec313d202ea7c10c19a3c24b701eef8d067f1beac295956d78fe9da613fe2afb904c0d3d9e775c5a5
   languageName: node
   linkType: hard
 
@@ -8214,28 +8280,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addons@npm:6.5.14":
-  version: 6.5.14
-  resolution: "@storybook/addons@npm:6.5.14"
-  dependencies:
-    "@storybook/api": 6.5.14
-    "@storybook/channels": 6.5.14
-    "@storybook/client-logger": 6.5.14
-    "@storybook/core-events": 6.5.14
-    "@storybook/csf": 0.0.2--canary.4566f4d.1
-    "@storybook/router": 6.5.14
-    "@storybook/theming": 6.5.14
-    "@types/webpack-env": ^1.16.0
-    core-js: ^3.8.2
-    global: ^4.4.0
-    regenerator-runtime: ^0.13.7
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 99d06641bab06a3cc2821f309589d062c0efd8707b451ae24017449034da408bfddce3beda1ccdedadf59669d7d13348bee127f6fd4fc057200c84ff43288312
-  languageName: node
-  linkType: hard
-
 "@storybook/addons@npm:6.5.15, @storybook/addons@npm:~6.5.15":
   version: 6.5.15
   resolution: "@storybook/addons@npm:6.5.15"
@@ -8255,34 +8299,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 9de4cb9ff51cde37c456a0315f47c751daf4412a8d90321b5249a9b05f48a44dc48f01bbf83c9f369f63232da423d58ed47e4c03d50d16a8835d372022095b70
-  languageName: node
-  linkType: hard
-
-"@storybook/api@npm:6.5.14":
-  version: 6.5.14
-  resolution: "@storybook/api@npm:6.5.14"
-  dependencies:
-    "@storybook/channels": 6.5.14
-    "@storybook/client-logger": 6.5.14
-    "@storybook/core-events": 6.5.14
-    "@storybook/csf": 0.0.2--canary.4566f4d.1
-    "@storybook/router": 6.5.14
-    "@storybook/semver": ^7.3.2
-    "@storybook/theming": 6.5.14
-    core-js: ^3.8.2
-    fast-deep-equal: ^3.1.3
-    global: ^4.4.0
-    lodash: ^4.17.21
-    memoizerific: ^1.11.3
-    regenerator-runtime: ^0.13.7
-    store2: ^2.12.0
-    telejson: ^6.0.8
-    ts-dedent: ^2.0.0
-    util-deprecate: ^1.0.2
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 0d421c3211a49cb8910dea647b898edd60af79755108ed321626a8fc134713dd1b018c830f15c2fc6c863f0528b571c2e2b34bb79df3c2f43497f5ab36fa9bbf
   languageName: node
   linkType: hard
 
@@ -8455,17 +8471,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/channels@npm:6.5.14":
-  version: 6.5.14
-  resolution: "@storybook/channels@npm:6.5.14"
-  dependencies:
-    core-js: ^3.8.2
-    ts-dedent: ^2.0.0
-    util-deprecate: ^1.0.2
-  checksum: ff1ee3fea3c7b8591280ba7eabe13c999fc3e12a483ff2c0467cc9cca027662cbbc4676438da567865919157521df8a9a50bd20b35daed6896f39a3a7251a1e5
-  languageName: node
-  linkType: hard
-
 "@storybook/channels@npm:6.5.15":
   version: 6.5.15
   resolution: "@storybook/channels@npm:6.5.15"
@@ -8508,17 +8513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/client-logger@npm:6.5.14, @storybook/client-logger@npm:^6.4.0":
-  version: 6.5.14
-  resolution: "@storybook/client-logger@npm:6.5.14"
-  dependencies:
-    core-js: ^3.8.2
-    global: ^4.4.0
-  checksum: 29cc0b58db7a8dc90484320c86b386975580c0e534791b29f6a8c00ce5b156f2bff9513994202f9f9ef99787e8d793988048ae88d2780ba151c6782f3bbf97ff
-  languageName: node
-  linkType: hard
-
-"@storybook/client-logger@npm:6.5.15":
+"@storybook/client-logger@npm:6.5.15, @storybook/client-logger@npm:^6.4.0":
   version: 6.5.15
   resolution: "@storybook/client-logger@npm:6.5.15"
   dependencies:
@@ -8643,15 +8638,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 9c19c348137bea23295ff330d3a62d3551b6a8a2933f254f3f1cace4ef05e46b6c97e0cbca67cc5be45164e223d5ff52eced54b76564891c8a2dd085e3be4cc4
-  languageName: node
-  linkType: hard
-
-"@storybook/core-events@npm:6.5.14":
-  version: 6.5.14
-  resolution: "@storybook/core-events@npm:6.5.14"
-  dependencies:
-    core-js: ^3.8.2
-  checksum: 6787925c520a6ee5aee748d4b7e2ec599c5ee16a87dbb62a94eeec88003ef42683d8e7ac8b98b49ea2a33205e0648805410c4759d16a997ba2f4215f6c8784ce
   languageName: node
   linkType: hard
 
@@ -8808,7 +8794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/instrumenter@npm:6.5.15":
+"@storybook/instrumenter@npm:6.5.15, @storybook/instrumenter@npm:^6.4.0":
   version: 6.5.15
   resolution: "@storybook/instrumenter@npm:6.5.15"
   dependencies:
@@ -8818,19 +8804,6 @@ __metadata:
     core-js: ^3.8.2
     global: ^4.4.0
   checksum: ca9bee2e7ad42302614f27c669e4d247527bb58865e3c72b8fc58d3afb1c1466908cf54434f9a48cbd617389b8392382ef2bb67d614b499c18ece677e0de242a
-  languageName: node
-  linkType: hard
-
-"@storybook/instrumenter@npm:^6.4.0":
-  version: 6.5.14
-  resolution: "@storybook/instrumenter@npm:6.5.14"
-  dependencies:
-    "@storybook/addons": 6.5.14
-    "@storybook/client-logger": 6.5.14
-    "@storybook/core-events": 6.5.14
-    core-js: ^3.8.2
-    global: ^4.4.0
-  checksum: 99d480968012e59ead965034a153e19e0958622b917ca063e2f929b31782fb27db401f2cc272cc76143777785fa48e39a1f8a24d1a815a864164b3b5ce11d847
   languageName: node
   linkType: hard
 
@@ -8948,7 +8921,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/node-logger@npm:6.5.15":
+"@storybook/node-logger@npm:6.5.15, @storybook/node-logger@npm:^6.1.14":
   version: 6.5.15
   resolution: "@storybook/node-logger@npm:6.5.15"
   dependencies:
@@ -8958,19 +8931,6 @@ __metadata:
     npmlog: ^5.0.1
     pretty-hrtime: ^1.0.3
   checksum: 9c01127d3b57db7a85759d2f179afec0e1207c0754e80e22472e73468f831e1dafa2a5bf1047e54f92d47b5103325c157c14655208a6ddcdb8f9e7ee0b256e48
-  languageName: node
-  linkType: hard
-
-"@storybook/node-logger@npm:^6.1.14":
-  version: 6.5.14
-  resolution: "@storybook/node-logger@npm:6.5.14"
-  dependencies:
-    "@types/npmlog": ^4.1.2
-    chalk: ^4.1.0
-    core-js: ^3.8.2
-    npmlog: ^5.0.1
-    pretty-hrtime: ^1.0.3
-  checksum: d36d17816b20bf8409504f73b8fe7da2c1aa6b6f37c3cc910f544f4e3d9dfe8cfe5ab66930977413ab12a067f94477d5a1e3da8fa55c07af5dbc88160845ee47
   languageName: node
   linkType: hard
 
@@ -9093,22 +9053,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/router@npm:6.5.14":
-  version: 6.5.14
-  resolution: "@storybook/router@npm:6.5.14"
-  dependencies:
-    "@storybook/client-logger": 6.5.14
-    core-js: ^3.8.2
-    memoizerific: ^1.11.3
-    qs: ^6.10.0
-    regenerator-runtime: ^0.13.7
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: ec2550568c02f45de5307e77928eaeb39413049944e994adbc397d9c7e083ac7e110886e40517ddae40e3879c172f458167682f1d73d0bb150bc93ab9dd61514
-  languageName: node
-  linkType: hard
-
 "@storybook/router@npm:6.5.15":
   version: 6.5.15
   resolution: "@storybook/router@npm:6.5.15"
@@ -9214,21 +9158,6 @@ __metadata:
     "@testing-library/user-event": ^13.2.1
     ts-dedent: ^2.2.0
   checksum: 759361ad3fbc89bdfddfa6d5a15eef06ed6fa9110bfa40c08fcf2497e7acd85e8d5c73c26ea4a46934168b21db294256befb55755fee4292d3d277c576284a1c
-  languageName: node
-  linkType: hard
-
-"@storybook/theming@npm:6.5.14":
-  version: 6.5.14
-  resolution: "@storybook/theming@npm:6.5.14"
-  dependencies:
-    "@storybook/client-logger": 6.5.14
-    core-js: ^3.8.2
-    memoizerific: ^1.11.3
-    regenerator-runtime: ^0.13.7
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: d139325dd51e8dfa58458a5c033104123b019fc02ddc899898e02de2b5d1358fd318b5def7ef82e6138420f9198e90d50b0fdfbea926987ac6852fc3a2e77c6d
   languageName: node
   linkType: hard
 
