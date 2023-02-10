@@ -52,6 +52,14 @@ export class OmnichannelDepartments {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
 	}
 
+	get allDepartmentsTab() {
+		return this.page.locator('[role="tab"]:first-child');
+	}
+
+	get archivedDepartmentsTab() {
+		return this.page.locator('[role="tab"]:nth-child(2)');
+	}
+
 	get firstRowInTable() {
 		return this.page.locator('table tr:first-child td:first-child');
 	}
@@ -66,6 +74,14 @@ export class OmnichannelDepartments {
 
 	get menuDeleteOption() {
 		return this.page.locator('[role=option][value="delete"]');
+	}
+
+	get menuArchiveOption() {
+		return this.page.locator('[role=option][value="archive"]');
+	}
+
+	get menuUnarchiveOption() {
+		return this.page.locator('[role=option][value="unarchive"]');
 	}
 
 	get inputModalConfirmDelete() {
