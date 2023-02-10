@@ -2,7 +2,6 @@ import type { Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 
-import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings/client';
 
 export type FormattingButton =
@@ -13,13 +12,13 @@ export type FormattingButton =
 			// text?: () => string | undefined;
 			command?: string;
 			link?: string;
-			condition: () => boolean;
+			condition?: () => boolean;
 	  }
 	| {
 			label: TranslationKey;
 			text: () => string | undefined;
 			link: string;
-			condition: () => boolean;
+			condition?: () => boolean;
 	  };
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
@@ -28,45 +27,27 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '**{{text}}**',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~~{{text}}~~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'KaTeX' as TranslationKey,

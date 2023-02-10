@@ -235,17 +235,6 @@ FlowRouter.route('/reset-password/:token', {
 	},
 });
 
-FlowRouter.route('/snippet/:snippetId/:snippetName', {
-	name: 'snippetView',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='snippetPage' />
-			</MainLayout>,
-		);
-	},
-});
-
 FlowRouter.route('/oauth/authorize', {
 	name: 'oauth/authorize',
 	action() {

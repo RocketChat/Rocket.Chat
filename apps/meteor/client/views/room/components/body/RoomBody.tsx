@@ -33,11 +33,9 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
-import { useLegacyMessageEvents } from '../../hooks/useLegacyMessageEvents';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
-import LegacyMessageTemplateList from './LegacyMessageTemplateList';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
@@ -65,7 +63,6 @@ const RoomBody = (): ReactElement => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
@@ -318,19 +315,6 @@ const RoomBody = (): ReactElement => {
 			readMessage.off(room._id, handleReadMessage);
 		};
 	}, [room._id, setUnreadCount]);
-
-	useLegacyMessageEvents({
-		messageListRef: {
-			get current() {
-				if (!useLegacyMessageTemplate) {
-					return null;
-				}
-
-				return wrapperRef.current?.querySelector('ul') ?? null;
-			},
-		},
-		onRequestScrollToBottom: sendToBottomIfNecessary,
-	});
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -616,7 +600,7 @@ const RoomBody = (): ReactElement => {
 													)}
 												</>
 											) : null}
-											{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
+											<MessageList rid={room._id} />
 											{hasMoreNextMessages ? (
 												<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 											) : null}
