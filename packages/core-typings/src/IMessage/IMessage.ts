@@ -10,6 +10,8 @@ import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
+import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
+import type { ILivechatPriority } from '../ILivechatPriority';
 
 type MentionType = 'user' | 'team';
 
@@ -46,6 +48,8 @@ type TeamMessageTypes =
 type LivechatMessageTypes =
 	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
+	| 'omnichannel_priority_change_history'
+	| 'omnichannel_sla_change_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
 	| 'livechat_transfer_history_fallback'
@@ -184,6 +188,18 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
+	};
+
+	/* used when message type is "omnichannel_sla_change_history" */
+	slaData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>;
+	};
+
+	/* used when message type is "omnichannel_priority_change_history" */
+	priorityData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
 }
 

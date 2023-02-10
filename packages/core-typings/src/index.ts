@@ -110,6 +110,7 @@ export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
 export * from './ILivechatPriority';
 export * from './ILogs';
+export * from './IOmnichannelServiceLevelAgreements';
 
 export * from './IAutoTranslate';
 export * from './IVideoConference';

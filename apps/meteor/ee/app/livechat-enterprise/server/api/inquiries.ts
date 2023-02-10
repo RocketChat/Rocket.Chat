@@ -1,19 +1,24 @@
 import { API } from '../../../../../app/api/server';
-import { setPriorityToInquiry } from './lib/inquiries';
+import { setSLAToInquiry } from './lib/inquiries';
 
 API.v1.addRoute(
-	'livechat/inquiry.prioritize',
-	{ authRequired: true, permissionsRequired: { PUT: { permissions: ['manage-livechat-priorities', 'view-l-room'], operation: 'hasAny' } } },
+	'livechat/inquiry.setSLA',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			PUT: { permissions: ['view-l-room', 'manage-livechat-sla'], operation: 'hasAny' },
+		},
+	},
 	{
 		async put() {
-			const { roomId, priority } = this.bodyParams;
+			const { roomId, sla } = this.bodyParams;
 			if (!roomId) {
 				return API.v1.failure("The 'roomId' param is required");
 			}
-			await setPriorityToInquiry({
+			await setSLAToInquiry({
 				userId: this.userId,
 				roomId,
-				priority,
+				sla,
 			});
 			return API.v1.success();
 		},
