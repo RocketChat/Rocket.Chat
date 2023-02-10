@@ -6,7 +6,6 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useUserCard } from '../../../hooks/useUserCard';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -14,6 +13,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -36,7 +36,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -65,9 +65,11 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
-						size={'x36'}
-						onClick={openUserCard(message.u.username)}
-						style={{ cursor: 'pointer' }}
+						size='x36'
+						{...(chat?.userCard && {
+							onClick: chat?.userCard.open(message.u.username),
+							style: { cursor: 'pointer' },
+						})}
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}

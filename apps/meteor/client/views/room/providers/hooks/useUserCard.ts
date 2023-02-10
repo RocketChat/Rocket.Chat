@@ -1,9 +1,9 @@
 import type { UIEvent } from 'react';
 import { useCallback, useEffect } from 'react';
 
-import { openUserCard, closeUserCard } from '../../app/ui/client/lib/userCard';
-import { useRoom } from '../views/room/contexts/RoomContext';
-import { useTabBarOpenUserInfo } from '../views/room/contexts/ToolboxContext';
+import { openUserCard, closeUserCard } from '../../../../../app/ui/client/lib/userCard';
+import { useRoom } from '../../contexts/RoomContext';
+import { useTabBarOpenUserInfo } from '../../contexts/ToolboxContext';
 
 export const useUserCard = () => {
 	useEffect(() => {

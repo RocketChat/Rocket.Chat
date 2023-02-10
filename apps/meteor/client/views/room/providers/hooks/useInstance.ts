@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+
 import { useDepsMatch } from './useDepsMatch';
 
 export function useInstance<T>(factory: () => [instance: T, release?: () => void], deps: unknown[]): T {
@@ -8,7 +9,7 @@ export function useInstance<T>(factory: () => [instance: T, release?: () => void
 		() => () => {
 			ref.current?.[1]?.();
 		},
-		[]
+		[],
 	);
 
 	const depsMatch = useDepsMatch(deps);
