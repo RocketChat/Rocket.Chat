@@ -51,7 +51,7 @@ export class HomeSidenav {
 
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox]').type(name);
+		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link[name=/${name}/]"`).click();
 	}
 
