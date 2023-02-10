@@ -8,6 +8,7 @@ import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from '
 import React, { memo, useMemo } from 'react';
 
 import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
+import { InlineGroup } from '../../components/InlineGroup';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
@@ -135,16 +136,17 @@ function SideBarItemTemplateWithData({
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
+
 	const badges = (
-		<>
+		<InlineGroup gap={8}>
 			{showBadge &&
 				isUnread && ( // TODO: Remove any
-					<Badge {...({ style: { flexShrink: 0 } } as any)} variant={variant}>
+					<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
 						{unread + tunread?.length}
 					</Badge>
 				)}
 			{isOmnichannelRoom(room) && room.priorityWeight && <PriorityIcon level={room.priorityWeight} />}
-		</>
+		</InlineGroup>
 	);
 
 	return (
