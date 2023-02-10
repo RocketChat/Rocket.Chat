@@ -28,7 +28,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 	const allowEditing = useSetting('Message_AllowEditing');
 	const blockEditInMinutes = useSetting('Message_AllowEditing_BlockEditInMinutes');
 	const embed = useSetting('API_Embed');
-	const embedDisabledFor = useSetting('API_EmbedDisabledFor');
 	const groupingPeriod = useSetting('Message_GroupingPeriod') as number;
 
 	return useMemo(
@@ -54,7 +53,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 				Message_AllowEditing: allowEditing,
 				Message_AllowEditing_BlockEditInMinutes: blockEditInMinutes,
 				API_Embed: embed,
-				API_EmbedDisabledFor: embedDisabledFor,
 				Message_GroupingPeriod: groupingPeriod * 1000,
 			}),
 		[
@@ -66,7 +64,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 			collapseMediaByDefault,
 			displayRoles,
 			embed,
-			embedDisabledFor,
 			groupingPeriod,
 			hasPermissionDeleteMessage,
 			hasPermissionDeleteOwnMessage,

@@ -1292,14 +1292,6 @@ settingsRegistry.addGroup('Message', function () {
 	});
 
 	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedDisabledFor', '', {
-		type: 'string',
-		public: true,
-		i18nDescription: 'API_EmbedDisabledFor_Description',
-		alert: 'This_is_a_deprecated_feature_alert',
-	});
-
-	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
 		type: 'string',
 		i18nDescription: 'API_EmbedIgnoredHosts_Description',
