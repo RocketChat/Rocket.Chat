@@ -62,14 +62,7 @@ export class FederationHooksEE {
 		callbacks.add(
 			'afterCreateDirectRoom',
 			(room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): void => {
-				if (
-					!room ||
-					!isRoomFederated(room) ||
-					!params ||
-					!params.creatorId ||
-					!params.creatorId ||
-					!settings.get('Federation_Matrix_enabled')
-				) {
+				if (!room || !params || !params.creatorId || !params.creatorId || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(room, params.creatorId, params.members));

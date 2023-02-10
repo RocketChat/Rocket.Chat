@@ -1,7 +1,7 @@
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import type { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
-import type { ROCKET_CHAT_FEDERATION_ROLES } from '../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
+import type { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
 
 interface IFederationBaseInputDto {
 	externalEventId: string;
