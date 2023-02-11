@@ -1,6 +1,6 @@
 import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { Reads } from '@rocket.chat/core-services';
 
-import { Reads } from '../../../../server/sdk';
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';

@@ -23,6 +23,7 @@ import type {
 	ITeamAutocompleteResult,
 	IListRoomsFilter,
 } from './types/ITeamService';
+import type { IReadsService } from './types/IReadsService';
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
@@ -71,6 +72,7 @@ export {
 	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
+	IReadsService,
 	IRoomService,
 	ISAUMonitorService,
 	ISubscriptionExtraData,
@@ -110,6 +112,7 @@ export const Banner = proxifyWithWait<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
 export const NPS = proxifyWithWait<INPSService>('nps');
 export const Team = proxifyWithWait<ITeamService>('team');
+export const Reads = proxifyWithWait<IReadsService>('reads');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Voip = proxifyWithWait<IVoipService>('voip');
