@@ -34,11 +34,6 @@ const baseMessage: IMessage = {
 
 const RoomMessage = proxyquire.noCallThru().load('../../../../../../client/components/message/variants/RoomMessage.tsx', {
 	'../../avatar/UserAvatar': () => <p>user avatar</p>,
-	'../../../hooks/useUserCard': {
-		useUserCard: () => ({
-			open: () => '',
-		}),
-	},
 	'../../../views/room/MessageList/contexts/MessageHighlightContext': {
 		useIsMessageHighlight: () => false,
 	},

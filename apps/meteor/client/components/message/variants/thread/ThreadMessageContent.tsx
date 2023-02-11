@@ -3,11 +3,10 @@ import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, memo } from 'react';
+import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useRoomSubscription } from '../../../../views/room/contexts/RoomContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -17,8 +16,9 @@ import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
-import { useMessageNormalization } from '../../hooks/useMessageNormalization';
+import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
+import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
 
 type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -27,15 +27,15 @@ type ThreadMessageContentProps = {
 const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElement => {
 	const encrypted = isE2EEMessage(message);
 	const { enabled: oembedEnabled } = useOembedLayout();
-	const broadcast = useRoomSubscription()?.broadcast ?? false;
+	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
+	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
 	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 
 	const t = useTranslation();
 
-	const normalizeMessage = useMessageNormalization();
-	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
+	const normalizedMessage = useNormalizedMessage(message);
 
 	return (
 		<>
