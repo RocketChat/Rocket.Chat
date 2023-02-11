@@ -484,6 +484,7 @@
 	"Apps_context_private": "Private Apps",
   "Apps_Count_Enabled": "__count__ app enabled",
   "Apps_Count_Enabled_plural": "__count__ apps enabled",
+  "Apps_Count_Enabled_tooltip": "Community Edition workspaces can enable up to __number__ __context__ apps",
   "Apps_Engine_Version": "Apps Engine Version",
   "Apps_Essential_Alert": "This app is essential for the following events:",
   "Apps_Essential_Disclaimer": "Events listed above will be disrupted if this app is disabled. If you want Rocket.Chat to work without this app's functionality, you need to uninstall it",
