@@ -1369,7 +1369,7 @@ describe('[Chat]', function () {
 		});
 
 		describe('when an error occurs', () => {
-			it('should throw an error containing totp-required error when not running EE', function (done) {
+			it('should throw an error containing error-action-not-allowed error when not running EE', function (done) {
 				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 				if (isEnterprise) {
