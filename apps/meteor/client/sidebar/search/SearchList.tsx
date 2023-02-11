@@ -301,20 +301,21 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				top: 0;
 			`}
 			ref={ref}
+			role='search'
 		>
-			<Sidebar.TopBar.Section {...({ role: 'search', flexShrink: 0 } as any)} is='form'>
+			<Sidebar.TopBar.Section {...({ flexShrink: 0 } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
 					data-qa='sidebar-search-input'
 					ref={autofocus}
 					{...filter}
 					placeholder={placeholder}
+					role='searchbox'
 					addon={<Icon name='cross' size='x20' onClick={onClose} />}
 				/>
 			</Sidebar.TopBar.Section>
 			<Box
 				ref={boxRef}
-				aria-expanded='true'
 				role='listbox'
 				id={listId}
 				tabIndex={-1}
@@ -322,6 +323,8 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				h='full'
 				w='full'
 				data-qa='sidebar-search-result'
+				aria-live='polite'
+				aria-atomic='true'
 				aria-busy={isLoading}
 				onClick={handleClick}
 			>

@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { useUserCard } from '../../../../hooks/useUserCard';
+import { useChat } from '../../contexts/ChatContext';
 import Reactions from './Reactions';
 
 type ReactionListProps = {
@@ -16,7 +16,7 @@ type ReactionListProps = {
 const ReactionList = ({ reactions, onClose }: ReactionListProps): ReactElement => {
 	const t = useTranslation();
 
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	const onClick = useMutableCallback((e) => {
 		const { username } = e.currentTarget.dataset;
@@ -25,7 +25,7 @@ const ReactionList = ({ reactions, onClose }: ReactionListProps): ReactElement =
 			return;
 		}
 
-		openUserCard(username)(e);
+		chat?.userCard.open(username)(e);
 	});
 
 	return (
