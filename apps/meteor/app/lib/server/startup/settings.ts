@@ -3199,10 +3199,20 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
+
+	// this settings will let clients know in case presence has been disabled
+	this.add('Presence_broadcast_disabled', false, {
+		type: 'boolean',
+		public: true,
+		blocked: true,
+	});
+
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
+
 	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
