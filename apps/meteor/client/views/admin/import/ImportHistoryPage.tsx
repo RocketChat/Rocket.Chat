@@ -1,97 +1,96 @@
 import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
-import { useMediaQuery, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
 
 import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
 import ImportOperationSummary from './ImportOperationSummary';
 
 function ImportHistoryPage() {
+	const queryClient = useQueryClient();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [isLoading, setLoading] = useSafely(useState(true));
-	const [currentOperation, setCurrentOperation] = useSafely(useState());
-	const [latestOperations, setLatestOperations] = useSafely(useState([]));
+	const downloadPendingFiles = useEndpoint('POST', '/v1/downloadPendingFiles');
+	const downloadPendingAvatars = useEndpoint('POST', '/v1/downloadPendingAvatars');
 
 	const getCurrentImportOperation = useEndpoint('GET', '/v1/getCurrentImportOperation');
 	const getLatestImportOperations = useEndpoint('GET', '/v1/getLatestImportOperations');
-	const downloadPendingFiles = useEndpoint('POST', '/v1/downloadPendingFiles');
-	const downloadPendingAvatars = useEndpoint('POST', '/v1/downloadPendingAvatars');
 
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');
 
-	useEffect(() => {
-		const loadData = async () => {
-			setLoading(true);
+	const currentOperation = useQuery(
+		['ImportHistoryPage', 'currentOperation'],
+		async () => {
+			const { operation = { valid: false } } = await getCurrentImportOperation();
+			return operation;
+		},
+		{
+			onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') }),
+		},
+	);
 
-			try {
-				const { operation } = await getCurrentImportOperation();
-				setCurrentOperation(operation);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') });
-			}
+	const latestOperations = useQuery(
+		['ImportHistoryPage', 'latestOperations'],
+		async () => {
+			const operations = await getLatestImportOperations();
+			return operations;
+		},
+		{
+			onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') }),
+		},
+	);
 
-			try {
-				const operations = await getLatestImportOperations();
-				setLatestOperations(operations);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') });
-			}
+	const isLoading = currentOperation.isLoading || latestOperations.isLoading;
 
-			setLoading(false);
-		};
-
-		loadData();
-	}, [dispatchToastMessage, getCurrentImportOperation, getLatestImportOperations, setCurrentOperation, setLatestOperations, setLoading, t]);
-
-	const hasAnySuccessfulImport = useMemo(() => latestOperations?.some(({ status }) => status === ProgressStep.DONE), [latestOperations]);
+	const hasAnySuccessfulImport = useMemo(() => {
+		return latestOperations.isSuccess && latestOperations.data.some(({ status }) => status === ProgressStep.DONE);
+	}, [latestOperations.isSuccess, latestOperations.data]);
 
 	const handleNewImportClick = () => {
 		newImportRoute.push();
 	};
 
-	const handleDownloadPendingFilesClick = async () => {
-		try {
-			setLoading(true);
-			const { count } = await downloadPendingFiles();
-
+	const downloadPendingFilesResult = useMutation({
+		mutationFn: async () => downloadPendingFiles(),
+		onError: (error) => {
+			console.error(error);
+			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
+		},
+		onSuccess: ({ count }) => {
+			queryClient.invalidateQueries(['ImportHistoryPage', 'currentOperation']);
+			queryClient.invalidateQueries(['ImportHistoryPage', 'latestOperations']);
 			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
-				setLoading(false);
 				return;
 			}
 
 			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
 			importProgressRoute.push();
-		} catch (error) {
+		},
+	});
+
+	const downloadPendingAvatarsResult = useMutation({
+		mutationFn: async () => downloadPendingAvatars(),
+		onError: (error) => {
 			console.error(error);
 			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
-			setLoading(false);
-		}
-	};
-
-	const handleDownloadPendingAvatarsClick = async () => {
-		try {
-			setLoading(true);
-			const { count } = await downloadPendingAvatars();
-
+		},
+		onSuccess: ({ count }) => {
+			queryClient.invalidateQueries(['ImportHistoryPage', 'currentOperation']);
+			queryClient.invalidateQueries(['ImportHistoryPage', 'latestOperations']);
 			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
-				setLoading(false);
 				return;
 			}
 
 			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
 			importProgressRoute.push();
-		} catch (error) {
-			console.error(error);
-			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
-			setLoading(false);
-		}
-	};
+		},
+	});
 
 	const small = useMediaQuery('(max-width: 768px)');
 
@@ -103,12 +102,12 @@ function ImportHistoryPage() {
 						{t('Import_New_File')}
 					</Button>
 					{hasAnySuccessfulImport && (
-						<Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>
+						<Button disabled={isLoading || downloadPendingFilesResult.isLoading} onClick={() => downloadPendingFilesResult.mutate()}>
 							{t('Download_Pending_Files')}
 						</Button>
 					)}
 					{hasAnySuccessfulImport && (
-						<Button disabled={isLoading} onClick={handleDownloadPendingAvatarsClick}>
+						<Button disabled={isLoading || downloadPendingAvatarsResult.isLoading} onClick={() => downloadPendingAvatarsResult.mutate()}>
 							{t('Download_Pending_Avatars')}
 						</Button>
 					)}
@@ -156,13 +155,21 @@ function ImportHistoryPage() {
 						)}
 					</Table.Head>
 					<Table.Body>
-						{isLoading ? (
-							Array.from({ length: 20 }, (_, i) => <ImportOperationSummary.Skeleton small={small} key={i} />)
-						) : (
+						{isLoading && (
 							<>
-								{currentOperation?.valid && <ImportOperationSummary {...currentOperation} small={small} />}
-								{latestOperations
-									?.filter(({ _id }) => currentOperation?._id !== _id || !currentOperation?.valid)
+								{Array.from({ length: 20 }, (_, i) => (
+									<ImportOperationSummary.Skeleton small={small} key={i} />
+								))}
+							</>
+						)}
+
+						{currentOperation.isSuccess && currentOperation.data.valid && (
+							<ImportOperationSummary {...currentOperation.data} small={small} />
+						)}
+						{currentOperation.isSuccess && latestOperations.isSuccess && (
+							<>
+								{latestOperations.data
+									.filter(({ _id }) => !currentOperation.data.valid || currentOperation.data._id !== _id)
 									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
 									?.map((operation) => (
 										<ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />
