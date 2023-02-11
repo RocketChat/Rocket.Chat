@@ -8,15 +8,15 @@ type AppsContextValue = {
 	installedApps: AsyncState<{ apps: App[] }>;
 	marketplaceApps: AsyncState<{ apps: App[] }>;
 	privateApps: AsyncState<{ apps: App[] }>;
-	appsCount: { totalMarketplaceEnabled: string; totalPrivateEnabled: string; maxMarketplaceApps: string; maxPrivateApps: string };
+	appsCount: { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
 	reload: () => Promise<void>;
 };
 
 export const initialAppsCount: AppsContextValue['appsCount'] = {
-	totalMarketplaceEnabled: '-',
-	totalPrivateEnabled: '-',
-	maxMarketplaceApps: '-',
-	maxPrivateApps: '-',
+	totalMarketplaceEnabled: 0,
+	totalPrivateEnabled: 0,
+	maxMarketplaceApps: 0,
+	maxPrivateApps: 0,
 };
 
 export const AppsContext = createContext<AppsContextValue>({

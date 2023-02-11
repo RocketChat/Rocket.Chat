@@ -38,9 +38,7 @@ const EnabledAppsCount = (): ReactElement => {
 	);
 
 	const { variant, percentage } = useMemo(() => {
-		const enabled = Number(numberOfEnabledApps) || 0;
-		const limit = Number(enabledAppsLimit) || 0;
-		return getProgressBarValues(enabled, limit);
+		return getProgressBarValues(numberOfEnabledApps, enabledAppsLimit);
 	}, [enabledAppsLimit, numberOfEnabledApps]);
 
 	return (

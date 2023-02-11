@@ -3,12 +3,15 @@ import { usePermission, useRoute, useRouteParameter, useSetModal, useTranslation
 import React, { useCallback } from 'react';
 
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import EnabledAppsCount from './EnabledAppsCount';
 
 const MarketplaceHeader = ({ title }: { title: string }) => {
 	const t = useTranslation();
 	const isAdmin = usePermission('manage-apps');
+	const { data } = useIsEnterprise();
+	const isEnterprise = data?.isEnterprise;
 	const hasEnterpriseLicense = useHasLicenseModule('marketplace-enterprise');
 	const context = useRouteParameter('context') || 'explore';
 	const route = useRoute('marketplace');
@@ -22,7 +25,7 @@ const MarketplaceHeader = ({ title }: { title: string }) => {
 		<Box display='flex' pi='24px' pb='12px' alignItems='center' justifyContent='space-between'>
 			<Box fontScale='h2'>{title}</Box>
 			<Box display='flex' flexDirection='row' flexWrap='wrap'>
-				<EnabledAppsCount />
+				{!isEnterprise && <EnabledAppsCount />}
 				{isAdmin && (
 					<ButtonGroup>
 						{!hasEnterpriseLicense && (

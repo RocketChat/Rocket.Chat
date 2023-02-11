@@ -172,10 +172,10 @@ const AppsProvider: FC = ({ children }) => {
 	const isAdminUser = usePermission('manage-apps');
 	const getAppCount = useEndpoint('GET', '/apps/count');
 	const [appsCountState, setAppsCountState] = useState({
-		totalMarketplaceEnabled: '-',
-		totalPrivateEnabled: '-',
-		maxMarketplaceApps: '-',
-		maxPrivateApps: '-',
+		totalMarketplaceEnabled: 0,
+		totalPrivateEnabled: 0,
+		maxMarketplaceApps: 0,
+		maxPrivateApps: 0,
 	});
 
 	const fetch = useCallback(
@@ -191,14 +191,12 @@ const AppsProvider: FC = ({ children }) => {
 			let installedAppsError = false;
 			let privateAppsError = false;
 
-			// We don't need to wait on this to move forward, so let's
-			// just do it in the background
 			getAppCount().then((result) => {
 				setAppsCountState({
-					totalMarketplaceEnabled: String(result.totalMarketplaceEnabled),
-					totalPrivateEnabled: String(result.totalPrivateEnabled),
-					maxMarketplaceApps: String(result.maxMarketplaceApps),
-					maxPrivateApps: String(result.maxPrivateApps),
+					totalMarketplaceEnabled: result.totalMarketplaceEnabled,
+					totalPrivateEnabled: result.totalPrivateEnabled,
+					maxMarketplaceApps: result.maxMarketplaceApps,
+					maxPrivateApps: result.maxPrivateApps,
 				});
 			});
 
@@ -479,10 +477,6 @@ const AppsProvider: FC = ({ children }) => {
 				privateApps: privateAppsState,
 				appsCount: appsCountState,
 				reload: fetch,
-				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
-				numberOfMarketplaceEnabledApps: 0,
-				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
-				numberOfPrivateEnabledApps: 0,
 			}}
 		/>
 	);
