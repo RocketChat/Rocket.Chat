@@ -1347,10 +1347,11 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getMessageReadReceipts]', () => {
+		const isEnterprise = typeof process.env.IS_EE === 'string' ? process.env.IS_EE === 'true' : !!process.env.IS_EE;
 		describe('when execute successfully', () => {
 			it("should return the statusCode 200 and 'receipts' property and should be equal an array", (done) => {
-				if (!process.env.IS_EE) {
-					this.skip();
+				if (!isEnterprise) {
+					done();
 					return;
 				}
 
@@ -1371,8 +1372,8 @@ describe('[Chat]', function () {
 			it('should throw an error containing totp-required error when not running EE', function (done) {
 				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-				if (process.env.IS_EE) {
-					this.skip();
+				if (isEnterprise) {
+					done();
 					return;
 				}
 				request
@@ -1389,8 +1390,8 @@ describe('[Chat]', function () {
 			});
 
 			it('should return statusCode 400 and an error', (done) => {
-				if (!process.env.IS_EE) {
-					this.skip();
+				if (!isEnterprise) {
+					done();
 					return;
 				}
 
