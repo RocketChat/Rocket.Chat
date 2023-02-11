@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { unregisterWorkspace } from './unregisterWorkspace';
+import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -52,7 +52,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 
 		if (err.response?.data?.error === 'oauth_invalid_client_credentials') {
 			SystemLogger.error('Server has been unregistered from cloud');
-			unregisterWorkspace();
+			removeWorkspaceRegistrationInfo();
 		}
 
 		return tokenResponse;
