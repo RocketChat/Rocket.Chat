@@ -41,6 +41,7 @@ const ImportProgressPage = function ImportProgressPage() {
 		},
 		{
 			onSuccess: ({ valid, status }) => {
+				console.log('currentOperation', valid, status);
 				if (!valid) {
 					importHistoryRoute.push();
 					return;
@@ -64,6 +65,7 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const handleProgressUpdated = useMutableCallback(
 		({ key, step, completed, total }: { key: string; step: ProgressStep; completed: number; total: number }) => {
+			console.log('handleProgressUpdated', key, step, completed, total);
 			if (!currentOperation.isSuccess) {
 				return;
 			}
@@ -110,6 +112,7 @@ const ImportProgressPage = function ImportProgressPage() {
 		{
 			enabled: !!currentOperation.isSuccess,
 			onSuccess: (progress) => {
+				console.log('progress', progress);
 				if (!progress) {
 					dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
 					prepareImportRoute.push();
@@ -130,7 +133,10 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	useEffect(() => {
-		return streamer('progress', ({ count: { completed, total }, ...rest }) => handleProgressUpdated({ ...rest, completed, total } as any));
+		return streamer('progress', ({ count: { completed, total }, ...rest }) => {
+			console.log('streamer', rest, completed, total);
+			handleProgressUpdated({ ...rest, completed, total } as any);
+		});
 	}, [handleProgressUpdated, streamer]);
 
 	return (

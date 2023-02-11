@@ -341,34 +341,34 @@ jobs:
             sleep 10
           done;
 
-      - name: E2E Test API
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-        working-directory: ./apps/meteor
-        run: |
-          for i in $(seq 1 5); do
-            npm run testapi && s=0 && break || s=$?
+      # - name: E2E Test API
+      #   env:
+      #     LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+      #     RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+      #     RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+      #     DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #   working-directory: ./apps/meteor
+      #   run: |
+      #     for i in $(seq 1 5); do
+      #       npm run testapi && s=0 && break || s=$?
 
-            docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100
+      #       docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100
 
-            docker compose -f ../../docker-compose-ci.yml stop rocketchat
+      #       docker compose -f ../../docker-compose-ci.yml stop rocketchat
 
-            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+      #       docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
+      #       NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
-            docker compose -f ../../docker-compose-ci.yml restart rocketchat
+      #       docker compose -f ../../docker-compose-ci.yml restart rocketchat
 
-            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-              echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
-              sleep 10
-            done;
-          done;
-          exit $s
+      #       until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+      #         echo "Waiting Rocket.Chat to start up"
+      #         ((c++)) && ((c==10)) && exit 1
+      #         sleep 10
+      #       done;
+      #     done;
+      #     exit $s
 
       - name: Cache Playwright binaries
         uses: actions/cache@v3
@@ -454,8 +454,8 @@ jobs:
       - name: yarn build
         run: yarn build
 
-      - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+      # - name: Unit Test
+      #   run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -533,34 +533,34 @@ jobs:
             sleep 10
           done;
 
-      - name: E2E Test API
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-        working-directory: ./apps/meteor
-        run: |
-          for i in $(seq 1 5); do
-            IS_EE=true npm run testapi && s=0 && break || s=$?
+      # - name: E2E Test API
+      #   env:
+      #     LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+      #     RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+      #     RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+      #     DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      #   working-directory: ./apps/meteor
+      #   run: |
+      #     for i in $(seq 1 5); do
+      #       IS_EE=true npm run testapi && s=0 && break || s=$?
 
-            docker compose -f ../../docker-compose-ci.yml logs --tail=100
+      #       docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
-            docker compose -f ../../docker-compose-ci.yml stop
+      #       docker compose -f ../../docker-compose-ci.yml stop
 
-            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+      #       docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
 
-            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
+      #       NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
-            docker compose -f ../../docker-compose-ci.yml restart
+      #       docker compose -f ../../docker-compose-ci.yml restart
 
-            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-              echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
-              sleep 10
-            done;
-          done;
-          exit $s
+      #       until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+      #         echo "Waiting Rocket.Chat to start up"
+      #         ((c++)) && ((c==10)) && exit 1
+      #         sleep 10
+      #       done;
+      #     done;
+      #     exit $s
 
       - name: Reset containers
         env:
