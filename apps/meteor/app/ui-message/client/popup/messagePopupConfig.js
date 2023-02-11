@@ -383,7 +383,7 @@ Template.messagePopupConfig.helpers({
 					.find(
 						{
 							name: exp,
-							federated: { $exists: false },
+							$or: [{ federated: { $exists: false } }, { federated: false }],
 							t: {
 								$in: ['c', 'p'],
 							},

@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
-import { isUserFederated } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer';
+import { isUserIdFederated } from './isUserIdFederated';
 
 const sendResetNotitification = function (uid: string): void {
 	const user: IUser = Users.findOneById(uid, {});
@@ -62,9 +62,9 @@ export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boo
 		sendResetNotitification(uid);
 	}
 
-	const user = Users.findOneById(uid, { fields: { federated: 1, username: 1 } });
-	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have e2e encryption', { function: 'resetUserE2EEncriptionKey' });
+	const isUserFederated = Promise.await(isUserIdFederated(uid));
+	if (isUserFederated) {
+		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
 
 	Users.resetE2EKey(uid);
