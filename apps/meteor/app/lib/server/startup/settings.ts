@@ -525,13 +525,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'This_is_a_deprecated_feature_alert',
-		});
-
 		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
 			type: 'boolean',
 			public: true,
