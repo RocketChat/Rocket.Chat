@@ -37,6 +37,7 @@ const AppsPageContent = (): ReactElement => {
 
 	const isEnterprise = context === 'enterprise';
 	const isMarketplace = context === 'explore';
+	const isInstalled = context === 'installed';
 	const isRequested = context === 'requested';
 	const isPrivate = context === 'private';
 
@@ -151,6 +152,8 @@ const AppsPageContent = (): ReactElement => {
 					onSetCurrent={onSetCurrent}
 					paginationProps={paginationProps}
 					noErrorsOcurred={noErrorsOcurred}
+					isEnterprise={isEnterprise}
+					isInstalled={isInstalled}
 				/>
 			)}
 

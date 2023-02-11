@@ -193,8 +193,18 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
-		if ((status.label === 'request' || status.label === 'requests') && !installed) {
-			return isAppRequestsPage && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests;
+		if ((status.label === 'request' || status.label === 'requests') && !installed && isAppRequestsPage) {
+			let numberOfRequests = 0;
+
+			if (totalUnseenRequests >= 0) {
+				numberOfRequests += totalUnseenRequests;
+			}
+
+			if (totalSeenRequests >= 0) {
+				numberOfRequests += totalSeenRequests;
+			}
+
+			return numberOfRequests;
 		}
 
 		return null;
