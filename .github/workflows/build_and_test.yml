@@ -451,6 +451,9 @@ jobs:
       - name: yarn install
         run: yarn
 
+      - name: yarn build
+        run: yarn build
+
       - name: Restore build
         uses: actions/download-artifact@v2
         with:
