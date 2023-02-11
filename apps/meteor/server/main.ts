@@ -9,7 +9,6 @@ import './importPackages';
 import '../imports/startup/server';
 import '../app/lib/server/startup';
 import '../app/apps/server/startup';
-import '../app/apps/server/api';
 
 import '../ee/server';
 import './lib/pushConfig';
@@ -84,4 +83,3 @@ import './stream/streamBroadcast';
 import './settings/index';
 
 import './features/EmailInbox/index';
-import '../app/apps/server/communication/startup';
