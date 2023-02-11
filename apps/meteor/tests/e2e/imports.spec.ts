@@ -38,11 +38,11 @@ test.describe.serial('imports', () => {
 		await poAdmin.btnStartImport.click();
 
 		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
-			timeout: 1000 * 60 * 10,
+			timeout: 30_000,
 		});
 	});
 
-	test('expect all users is added is visible', async ({ page }) => {
+	test('expect to all users imported are actually listed as users', async ({ page }) => {
 		await page.goto('/admin/users');
 
 		for (const user of rowUserName) {

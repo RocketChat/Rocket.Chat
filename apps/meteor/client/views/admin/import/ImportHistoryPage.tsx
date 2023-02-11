@@ -23,9 +23,9 @@ function ImportHistoryPage() {
 	const importProgressRoute = useRoute('admin-import-progress');
 
 	const currentOperation = useQuery(
-		['importers', 'currentOperation'],
+		['ImportHistoryPage', 'currentOperation'],
 		async () => {
-			const { operation } = await getCurrentImportOperation();
+			const { operation = { valid: false } } = await getCurrentImportOperation();
 			return operation;
 		},
 		{
@@ -34,7 +34,7 @@ function ImportHistoryPage() {
 	);
 
 	const latestOperations = useQuery(
-		['importers', 'latestOperations'],
+		['ImportHistoryPage', 'latestOperations'],
 		async () => {
 			const operations = await getLatestImportOperations();
 			return operations;
@@ -61,8 +61,8 @@ function ImportHistoryPage() {
 			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
 		},
 		onSuccess: ({ count }) => {
-			queryClient.invalidateQueries(['importers', 'currentOperation']);
-			queryClient.invalidateQueries(['importers', 'latestOperations']);
+			queryClient.invalidateQueries(['ImportHistoryPage', 'currentOperation']);
+			queryClient.invalidateQueries(['ImportHistoryPage', 'latestOperations']);
 			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
 				return;
@@ -80,8 +80,8 @@ function ImportHistoryPage() {
 			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
 		},
 		onSuccess: ({ count }) => {
-			queryClient.invalidateQueries(['importers', 'currentOperation']);
-			queryClient.invalidateQueries(['importers', 'latestOperations']);
+			queryClient.invalidateQueries(['ImportHistoryPage', 'currentOperation']);
+			queryClient.invalidateQueries(['ImportHistoryPage', 'latestOperations']);
 			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
 				return;
@@ -169,7 +169,7 @@ function ImportHistoryPage() {
 						{currentOperation.isSuccess && latestOperations.isSuccess && (
 							<>
 								{latestOperations.data
-									.filter(({ _id }) => currentOperation.data._id !== _id || !currentOperation.data.valid)
+									.filter(({ _id }) => !currentOperation.data.valid || currentOperation.data._id !== _id)
 									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
 									?.map((operation) => (
 										<ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />

@@ -34,7 +34,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	});
 
 	const currentOperation = useQuery(
-		['importers', 'currentOperation'],
+		['ImportProgressPage', 'currentOperation'],
 		async () => {
 			const { operation } = await getCurrentImportOperation();
 			return operation;
@@ -97,7 +97,7 @@ const ImportProgressPage = function ImportProgressPage() {
 	);
 
 	const progress = useQuery(
-		['importers', 'progress'],
+		['ImportProgressPage', 'progress'],
 		async () => {
 			const { key, step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
 			return {
