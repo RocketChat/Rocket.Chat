@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -20,14 +20,14 @@ type DepartmentsListOptions = {
 export const useDepartmentsList = (
 	options: DepartmentsListOptions,
 ): {
-	itemsList: RecordList<ILivechatDepartmentRecord>;
+	itemsList: RecordList<ILivechatDepartment>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const t = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartment>());
+	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartment>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
