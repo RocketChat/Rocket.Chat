@@ -1,4 +1,4 @@
-import type { IRoom, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -75,7 +75,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 									data-unread={firstUnread}
 									data-sequential={sequential}
 									sequential={shouldShowAsSequential}
-									message={message as IThreadMessage}
+									message={message}
 								/>
 							)}
 
