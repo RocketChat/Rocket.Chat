@@ -31,7 +31,6 @@ type CurrentData = {
 	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string;
-	messageViewMode: number;
 	hideUsernames: boolean;
 	hideRoles: boolean;
 	displayAvatars: boolean;

@@ -3,7 +3,7 @@ import os from 'os';
 import { ServiceBroker } from 'moleculer';
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 
