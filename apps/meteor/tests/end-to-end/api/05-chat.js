@@ -1346,6 +1346,69 @@ describe('[Chat]', function () {
 		});
 	});
 
+	describe('[/chat.getMessageReadReceipts]', () => {
+		describe('when execute successfully', () => {
+			it("should return the statusCode 200 and 'receipts' property and should be equal an array", (done) => {
+				if (!process.env.IS_EE) {
+					this.skip();
+					return;
+				}
+
+				request
+					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('receipts').and.to.be.an('array');
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should throw an error containing totp-required error when not running EE', function (done) {
+				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+				if (process.env.IS_EE) {
+					this.skip();
+					return;
+				}
+				request
+					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'This is an enterprise feature [error-action-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(done);
+			});
+
+			it('should return statusCode 400 and an error', (done) => {
+				if (!process.env.IS_EE) {
+					this.skip();
+					return;
+				}
+
+				request
+					.get(api('chat.getMessageReadReceipts'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).not.have.property('receipts');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/chat.reportMessage]', () => {
 		describe('when execute successfully', () => {
 			it('should return the statusCode 200', (done) => {
