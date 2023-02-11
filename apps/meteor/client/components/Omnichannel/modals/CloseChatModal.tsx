@@ -1,7 +1,8 @@
-import { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Field, Button, TextInput, Modal, Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useEffect, ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import GenericModal from '../../GenericModal';

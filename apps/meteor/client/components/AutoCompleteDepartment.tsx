@@ -1,7 +1,8 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
@@ -14,6 +15,7 @@ type AutoCompleteDepartmentProps = {
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
+	showArchived?: boolean;
 };
 
 const AutoCompleteDepartment = ({
@@ -23,6 +25,7 @@ const AutoCompleteDepartment = ({
 	onChange,
 	haveAll,
 	haveNone,
+	showArchived = false,
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
@@ -37,8 +40,9 @@ const AutoCompleteDepartment = ({
 				haveAll,
 				haveNone,
 				excludeDepartmentId,
+				showArchived,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
 		),
 	);
 
@@ -47,18 +51,9 @@ const AutoCompleteDepartment = ({
 	const sortedByName = useMemo(
 		() =>
 			departmentsItems.sort((a, b) => {
-				if (a.value.value === 'all') {
-					return -1;
-				}
-
-				if (a.name > b.name) {
-					return 1;
-				}
-				if (a.name < b.name) {
-					return -1;
-				}
-
-				return 0;
+				const rankA = 'name' in a ? a.name : '';
+				const rankB = 'name' in b ? b.name : '';
+				return rankA.localeCompare(rankB);
 			}),
 		[departmentsItems],
 	);
@@ -71,7 +66,7 @@ const AutoCompleteDepartment = ({
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={department}
+			value={department as any}
 			onChange={onChange}
 			filter={departmentsFilter}
 			// Workaround for setFilter weird typing

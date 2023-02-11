@@ -2,7 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Field, TextInput, FieldGroup, Modal, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../lib/constants';

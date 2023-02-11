@@ -1,4 +1,4 @@
-export * from './sessions';
+import './sessions';
 
 export * from './SessionsProps';
 export * from './SessionsPaginateProps';

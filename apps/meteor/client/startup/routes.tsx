@@ -27,7 +27,7 @@ const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRout
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 
-const DirectoryPage = lazy(() => import('../views/directory/DirectoryPage'));
+const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
 
@@ -232,17 +232,6 @@ FlowRouter.route('/reset-password/:token', {
 	name: 'resetPassword',
 	action() {
 		appLayout.render(<ResetPasswordPage />);
-	},
-});
-
-FlowRouter.route('/snippet/:snippetId/:snippetName', {
-	name: 'snippetView',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='snippetPage' />
-			</MainLayout>,
-		);
 	},
 });
 

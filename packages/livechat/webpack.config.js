@@ -12,7 +12,7 @@ module.exports = (env, argv) => [
 		resolve: {
 			extensions: ['.js', '.jsx', '.ts', '.tsx'],
 			alias: {
-				react: 'preact/compat',
+				'react': 'preact/compat',
 				'react-dom': 'preact/compat',
 			},
 		},
@@ -189,7 +189,7 @@ module.exports = (env, argv) => [
 		resolve: {
 			extensions: ['.js', '.jsx', '.ts', '.tsx'],
 			alias: {
-				react: 'preact/compat',
+				'react': 'preact/compat',
 				'react-dom': 'preact/compat',
 			},
 		},

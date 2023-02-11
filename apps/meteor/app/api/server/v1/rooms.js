@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Media } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models/server';
@@ -12,9 +13,8 @@ import {
 	findRoomsAvailableForTeams,
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
-import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
-import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
@@ -546,7 +546,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
 				}
 
-				sendFile(
+				dataExport.sendFile(
 					{
 						rid,
 						format,
@@ -569,7 +569,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = sendViaEmail(
+				const result = dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers,

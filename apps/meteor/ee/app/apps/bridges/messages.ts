@@ -5,8 +5,8 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Messages, Users, Subscriptions } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
-import { api } from '../../../../server/sdk/api';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { MessageService, NotificationService } from '../../../../server/sdk';
 

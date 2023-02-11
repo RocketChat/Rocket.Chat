@@ -1,5 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { ReactElement, ComponentProps, memo } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from './VerticalBar';
 import VerticalBarHeader from './VerticalBarHeader';

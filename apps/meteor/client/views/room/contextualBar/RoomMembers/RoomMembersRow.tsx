@@ -1,5 +1,6 @@
-import { IUser, IRoom } from '@rocket.chat/core-typings';
-import React, { memo, MouseEvent, ReactElement } from 'react';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { MouseEvent, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import RoomMembersItem from './RoomMembersItem';
 

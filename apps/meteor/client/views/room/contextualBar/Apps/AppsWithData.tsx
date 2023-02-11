@@ -1,4 +1,4 @@
-import {
+import type {
 	IUIKitContextualBarInteraction,
 	IUIKitErrorInteraction,
 	IUIKitSurface,
@@ -7,12 +7,13 @@ import {
 	IBlock,
 	IBlockElement,
 	IActionsBlock,
-	InputElementDispatchAction,
 } from '@rocket.chat/apps-engine/definition/uikit';
+import { InputElementDispatchAction } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent, ContextType } from 'react';
+import type { Dispatch, SyntheticEvent, ContextType } from 'react';
+import React, { memo, useState, useEffect, useReducer } from 'react';
 
 import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
 import { useTabBarClose } from '../../contexts/ToolboxContext';

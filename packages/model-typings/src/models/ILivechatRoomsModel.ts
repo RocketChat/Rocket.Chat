@@ -113,4 +113,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
 
 	findAvailableSources(): AggregationCursor<Document>;
+
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 }

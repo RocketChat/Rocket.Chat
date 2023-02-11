@@ -2,7 +2,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
-import {
+import type {
 	CategoryDropDownGroups,
 	CategoryDropdownItem,
 	CategoryDropDownListProps,

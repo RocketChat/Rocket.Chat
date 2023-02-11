@@ -58,7 +58,6 @@ export async function findInquiries({
 		],
 	};
 
-	// @ts-ignore - LivechatInquiry has a ref to messages
 	const { cursor, totalCount } = LivechatInquiry.findPaginated(filter, options);
 
 	const [inquiries, total] = await Promise.all([cursor.toArray(), totalCount]);

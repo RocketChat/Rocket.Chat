@@ -2,7 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isVoipRoom } from '@rocket.chat/core-typings';
 import { Header as TemplateHeader } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import BurgerMenu from '../../../components/BurgerMenu';
 import DirectRoomHeader from './DirectRoomHeader';

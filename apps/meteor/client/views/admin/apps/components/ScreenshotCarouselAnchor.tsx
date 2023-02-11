@@ -1,8 +1,8 @@
-import { AppScreenshot } from '@rocket.chat/core-typings';
+import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import ScreenshotCarousel from './ScreenshotCarousel';
@@ -105,9 +105,9 @@ const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps
 					]}
 				/>
 
-				<Box display='flex' flexDirection='row' bg={colors.n100} pi='x16' pb='x10' alignItems='center'>
+				<Box display='flex' flexDirection='row' bg='tint' pi='x16' pb='x10' alignItems='center'>
 					<Icon name='image' size='x24' mie='x8' />{' '}
-					<Box is='span' fontWeight={500} fontSize='x14' color={colors.n800}>
+					<Box is='span' fontWeight={500} fontSize='x14' color='default'>
 						{currentPreviewIndex + 1} of {screenshots.length}
 					</Box>
 				</Box>

@@ -1,12 +1,12 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useTranslation, usePermission, useUserRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 
@@ -29,11 +29,9 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
 	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_';
 
-	const changeOwner = useEndpointActionExperimental(
-		'POST',
-		`${endpointPrefix}.${changeOwnerEndpoint}`,
-		t(changeOwnerMessage, { username: user.username, room_name: roomName }),
-	);
+	const changeOwner = useEndpointAction('POST', `${endpointPrefix}.${changeOwnerEndpoint}` as const, {
+		successMessage: t(changeOwnerMessage, { username: user.username, room_name: roomName }),
+	});
 
 	const changeOwnerAction = useMutableCallback(async () => changeOwner({ roomId: rid, userId: uid }));
 	const changeOwnerOption = useMemo(

@@ -1,9 +1,7 @@
 import './lib/messageActionDefault';
 
 export { modal } from './lib/modal';
-export { SideNav } from './lib/SideNav';
 export { AccountBox } from './lib/AccountBox';
-export { menu } from './lib/menu';
 export { MessageAction } from './lib/MessageAction';
 export { messageBox } from './lib/messageBox';
 export { popover } from './lib/popover';
@@ -17,4 +15,3 @@ export { messageProperties } from '../lib/MessageProperties';
 export { MessageTypes, MessageType } from '../lib/MessageTypes';
 export { Message } from '../lib/Message';
 export { openRoom } from './lib/openRoom';
-export * from './lib/collapseArrow';

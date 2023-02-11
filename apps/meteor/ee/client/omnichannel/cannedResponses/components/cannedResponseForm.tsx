@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Field, TextInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import AutoCompleteDepartment from '../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../client/components/Omnichannel/Tags';
@@ -49,7 +50,7 @@ const CannedResponseForm: FC<{
 				<Field.Label w='full'>
 					<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
 						{t('Message')}
-						<Box className={clickable} color='link' onClick={onPreview}>
+						<Box className={clickable} color='on-info' onClick={onPreview}>
 							{previewState ? t('Editor') : t('Preview')}
 						</Box>
 					</Box>

@@ -3,10 +3,9 @@ import { createHash } from 'crypto';
 import type { INpsVote, INps } from '@rocket.chat/core-typings';
 import { NPSStatus, INpsVoteStatus } from '@rocket.chat/core-typings';
 import { Nps, NpsVote, Settings } from '@rocket.chat/models';
+import type { INPSService, NPSVotePayload, NPSCreatePayload } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Banner, NPS } from '@rocket.chat/core-services';
 
-import type { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { Banner, NPS } from '../../sdk';
 import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
 import { SystemLogger } from '../../lib/logger/system';

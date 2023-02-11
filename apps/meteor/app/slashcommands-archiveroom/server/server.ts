@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 import { settings } from '../../settings/server';
 
 slashCommands.add({

@@ -1,9 +1,10 @@
-import { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
 import { useFileInput } from '../../hooks/useFileInput';

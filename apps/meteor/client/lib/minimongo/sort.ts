@@ -1,7 +1,7 @@
 import { compareBSONValues } from './bson';
 import { isEmptyArray } from './comparisons';
 import { createLookupFunction } from './lookups';
-import { Sort } from './types';
+import type { Sort } from './types';
 
 const createSortSpecParts = <T>(
 	spec: Sort,

@@ -1,10 +1,12 @@
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import { CustomSounds } from '../../../../app/custom-sounds/client';
 import { useForm } from '../../../hooks/useForm';
-import { FormSectionProps } from './AccountPreferencesPage';
+import type { FormSectionProps } from './AccountPreferencesPage';
 
 type Values = {
 	newRoomNotification: string;

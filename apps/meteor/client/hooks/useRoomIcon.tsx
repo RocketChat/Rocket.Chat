@@ -1,15 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+	busy: 'on-danger',
+	away: 'on-warning',
+	online: 'on-success',
+	offline: 'annotation',
 };
 
 export const useRoomIcon = (

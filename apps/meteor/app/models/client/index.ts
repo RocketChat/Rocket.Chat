@@ -1,13 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-
-import { Base } from './models/_Base';
+import { Base } from './models/Base';
 import Avatars from './models/Avatars';
 import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
 import { Roles } from './models/Roles';
-import { Subscriptions as subscriptions } from './models/Subscriptions';
-import { Users as users } from './models/Users';
+import { Users } from './models/Users';
 import { CachedChannelList } from './models/CachedChannelList';
 import { CachedChatRoom } from './models/CachedChatRoom';
 import { CachedChatSubscription } from './models/CachedChatSubscription';
@@ -23,10 +19,17 @@ import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 
-const Users = _.extend({}, users, Meteor.users);
-const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
-const Messages = _.extend({}, ChatMessage);
-const Rooms = _.extend({}, ChatRoom);
+// overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket
+Meteor.users = Users as typeof Meteor.users;
+Meteor.user = () => {
+	const uid = Meteor.userId();
+
+	if (!uid) {
+		return null;
+	}
+
+	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
+};
 
 export {
 	Base,
@@ -34,23 +37,30 @@ export {
 	Uploads,
 	UserDataFiles,
 	Roles,
-	Subscriptions,
-	Users,
-	Messages,
 	CachedChannelList,
 	CachedChatRoom,
 	CachedChatSubscription,
 	CachedUserList,
-	ChatRoom,
 	RoomRoles,
 	UserAndRoom,
 	UserRoles,
 	AuthzCachedCollection,
 	ChatPermissions,
-	ChatMessage,
-	ChatSubscription,
-	Rooms,
 	CustomSounds,
 	EmojiCustom,
 	WebdavAccounts,
+	/** @deprecated */
+	Users,
+	/** @deprecated */
+	ChatRoom as Rooms,
+	/** @deprecated */
+	ChatRoom,
+	/** @deprecated */
+	ChatSubscription,
+	/** @deprecated */
+	ChatSubscription as Subscriptions,
+	/** @deprecated */
+	ChatMessage,
+	/** @deprecated */
+	ChatMessage as Messages,
 };

@@ -1,13 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Menu, Option, Box } from '@rocket.chat/fuselage';
+import type { Box } from '@rocket.chat/fuselage';
+import { Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Header } from '@rocket.chat/ui-client';
-import { TranslationKey, useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactNode, useRef, ComponentProps, ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactNode, ComponentProps, ReactElement } from 'react';
+import React, { memo, useRef } from 'react';
 
 // used to open the menu option by keyboard
 import { useToolboxContext, useTab, useTabBarOpen } from '../../contexts/ToolboxContext';
-import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
+import type { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 
 const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: any): ReactNode => (
 	<Option label={title} icon={icon} data-qa-id={`ToolBoxAction-${icon}`} {...props} />

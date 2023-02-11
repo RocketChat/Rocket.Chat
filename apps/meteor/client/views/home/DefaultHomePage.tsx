@@ -1,6 +1,7 @@
 import { Box, Grid } from '@rocket.chat/fuselage';
 import { usePermission, useAtLeastOnePermission, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Page from '../../components/Page/Page';
 import PageScrollableContent from '../../components/Page/PageScrollableContent';
@@ -27,13 +28,13 @@ const DefaultHomePage = (): ReactElement => {
 		<Page color='default' is='main' data-qa='page-home' data-qa-type='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h2' fontScale='h1' data-qa-id='homepage-welcome-text'>
+				<Box is='h2' fontScale='h1' mb='x20' data-qa-id='homepage-welcome-text'>
 					{t('Welcome_to', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
 				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
-				<Grid>
+				<Grid margin='neg-x8'>
 					{canAddUsers && (
 						<HomepageGridItem>
 							<AddUsersCard />
@@ -58,7 +59,7 @@ const DefaultHomePage = (): ReactElement => {
 					</HomepageGridItem>
 				</Grid>
 				{displayCustomBody && (
-					<Box mb='x16'>
+					<Box mbs='x32' mbe='x16'>
 						<CustomHomePageContent />
 					</Box>
 				)}

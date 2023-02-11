@@ -1,7 +1,8 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import { useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import UserInfo from '../../../components/UserInfo';
 import { useActionSpread } from '../../hooks/useActionSpread';

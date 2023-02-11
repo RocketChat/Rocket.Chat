@@ -13,8 +13,9 @@
  *
  */
 
-import { Session } from 'sip.js';
-import { defaultMediaStreamFactory, MediaStreamFactory, SessionDescriptionHandler } from 'sip.js/lib/platform/web';
+import type { Session } from 'sip.js';
+import type { MediaStreamFactory, SessionDescriptionHandler } from 'sip.js/lib/platform/web';
+import { defaultMediaStreamFactory } from 'sip.js/lib/platform/web';
 
 import Stream from './Stream';
 

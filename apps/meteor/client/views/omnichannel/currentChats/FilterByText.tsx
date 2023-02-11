@@ -2,7 +2,8 @@ import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import type { Dispatch, FC, SetStateAction } from 'react';
+import React, { useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -133,11 +134,27 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
 					<Label mb='x4'>{t('From')}</Label>
-					<InputBox type='date' flexShrink={0} placeholder={t('From')} onChange={handleFrom} value={from} data-qa='current-chats-from' />
+					<InputBox
+						type='date'
+						flexShrink={0}
+						placeholder={t('From')}
+						onChange={handleFrom}
+						value={from}
+						data-qa='current-chats-from'
+						color='default'
+					/>
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
 					<Label mb='x4'>{t('To')}</Label>
-					<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' />
+					<InputBox
+						type='date'
+						flexShrink={0}
+						placeholder={t('To')}
+						onChange={handleTo}
+						value={to}
+						data-qa='current-chats-to'
+						color='default'
+					/>
 				</Box>
 
 				<RemoveAllClosed
@@ -149,7 +166,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
+					<AutoCompleteDepartment haveAll showArchived value={department} onChange={handleDepartment} onlyMyDepartments />
 				</Box>
 			</Box>
 			{EETagsComponent && (

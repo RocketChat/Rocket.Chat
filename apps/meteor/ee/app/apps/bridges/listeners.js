@@ -80,12 +80,12 @@ export class AppListenerBridge {
 						message: msg,
 					};
 				case AppInterface.IPostMessageReacted:
-					const [userReacted, reaction, isRemoved] = payload;
+					const [userReacted, reaction, isReacted] = payload;
 					return {
 						message: msg,
 						user: await this.orch.getConverters().get('users').convertToApp(userReacted),
 						reaction,
-						isRemoved,
+						isReacted,
 					};
 				case AppInterface.IPostMessageFollowed:
 					const [userFollowed, isUnfollow] = payload;

@@ -1,4 +1,4 @@
-import { App, AppPermission } from '@rocket.chat/core-typings';
+import type { App, AppPermission } from '@rocket.chat/core-typings';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { handleAPIError, warnStatusChange } from '../helpers';

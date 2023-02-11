@@ -1,4 +1,5 @@
-import React, { forwardRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { forwardRef } from 'react';
 
 import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 

@@ -2,7 +2,7 @@
 import proxyquire from 'proxyquire';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 const {
 	normalizeExternalInviteeId,

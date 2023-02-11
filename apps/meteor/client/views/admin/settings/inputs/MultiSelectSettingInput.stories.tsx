@@ -1,9 +1,10 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import type keys from '../../../../../packages/rocketchat-i18n/i18n/en.i18n.json';
-import MultiSelectSettingInput, { valuesOption } from './MultiSelectSettingInput';
+import type { valuesOption } from './MultiSelectSettingInput';
+import MultiSelectSettingInput from './MultiSelectSettingInput';
 
 export default {
 	title: 'Admin/Settings/Inputs/MultiSelectSettingInput',

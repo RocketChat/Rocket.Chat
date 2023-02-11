@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Team } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
-import { Team } from '../../../../server/sdk';
 import { validateName } from './validateName';
 
 let usernameBlackList: RegExp[] = [];

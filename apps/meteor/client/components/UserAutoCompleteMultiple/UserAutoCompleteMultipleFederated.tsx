@@ -2,7 +2,8 @@ import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { memo, ReactElement, useState, useCallback, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useState, useCallback, useMemo } from 'react';
 
 import UserAvatar from '../avatar/UserAvatar';
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';

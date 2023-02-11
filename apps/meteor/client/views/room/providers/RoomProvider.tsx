@@ -1,6 +1,7 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useMemo, memo, useEffect, ContextType, ReactElement, useCallback } from 'react';
+import type { ReactNode, ContextType, ReactElement } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client';
@@ -13,6 +14,7 @@ import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
 import { RoomAPIContext } from '../contexts/RoomAPIContext';
 import { RoomContext } from '../contexts/RoomContext';
+import ComposerPopupProvider from './ComposerPopupProvider';
 import ToolboxProvider from './ToolboxProvider';
 
 type RoomProviderProps = {
@@ -81,16 +83,22 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid]);
 
+	const subscribed = !!subscriptionQuery.data;
+
 	useEffect(() => {
-		if (!subscriptionQuery.data) {
+		if (!subscribed) {
 			return;
 		}
 
 		UserAction.addStream(rid);
 		return (): void => {
-			UserAction.cancel(rid);
+			try {
+				UserAction.cancel(rid);
+			} catch (error) {
+				// Do nothing
+			}
 		};
-	}, [rid, subscriptionQuery.data]);
+	}, [rid, subscribed]);
 
 	const api = useMemo(() => ({}), []);
 
@@ -101,7 +109,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomAPIContext.Provider value={api}>
 			<RoomContext.Provider value={context}>
-				<ToolboxProvider room={pseudoRoom}>{children}</ToolboxProvider>
+				<ToolboxProvider room={pseudoRoom}>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				</ToolboxProvider>
 			</RoomContext.Provider>
 		</RoomAPIContext.Provider>
 	);

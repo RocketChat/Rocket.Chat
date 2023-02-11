@@ -1,7 +1,8 @@
 import { Box, TextInput, Button, Field, FieldGroup, Margins, CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';

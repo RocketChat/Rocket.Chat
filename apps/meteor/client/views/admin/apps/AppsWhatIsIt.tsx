@@ -1,7 +1,8 @@
 import { Button, Box, Throbber } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useState } from 'react';
+import type { FC } from 'react';
+import React, { useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client';
 import Page from '../../../components/Page';

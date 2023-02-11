@@ -13,8 +13,8 @@ export type AttachmentContextValue = {
 export const AttachmentContext = createContext<AttachmentContextValue>({
 	getURL: (url: string) => url,
 	dimensions: {
-		width: 480,
-		height: 360,
+		width: 368,
+		height: 368,
 	},
 	collapsedByDefault: false,
 	autoLoadEmbedMedias: true,

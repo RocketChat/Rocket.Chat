@@ -1,5 +1,6 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -8,12 +9,11 @@ import {
 	usePermission,
 	useEndpoint,
 	useTranslation,
-	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import { Action } from '../../../hooks/useActionSpread';
+import type { Action } from '../../../hooks/useActionSpread';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): Action | undefined => {

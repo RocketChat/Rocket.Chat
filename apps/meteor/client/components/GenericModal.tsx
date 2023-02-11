@@ -1,8 +1,11 @@
-import { Button, Icon, Modal } from '@rocket.chat/fuselage';
+import type { Icon } from '@rocket.chat/fuselage';
+import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, ComponentProps, ReactElement, ReactNode } from 'react';
+import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
+import React from 'react';
 
-import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
+import type { RequiredModalProps } from './withDoNotAskAgain';
+import { withDoNotAskAgain } from './withDoNotAskAgain';
 
 type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
@@ -14,10 +17,11 @@ type GenericModalProps = RequiredModalProps & {
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
+	tagline?: ReactNode;
 	onCancel?: () => void;
 	onClose?: () => void;
 	onConfirm: () => void;
-};
+} & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	danger: 'modal-warning',
@@ -47,7 +51,7 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (typeof icon === 'string') {
-		return <Modal.Icon color={variant} name={icon} />;
+		return <Modal.Icon name={icon} />;
 	}
 
 	return icon;
@@ -65,6 +69,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
+	tagline,
 	...props
 }) => {
 	const t = useTranslation();
@@ -74,6 +79,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.HeaderText>
+					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />

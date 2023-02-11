@@ -1,11 +1,11 @@
-import { App } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
-import { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
-import { AppInfo } from '../definitions/AppInfo';
+import type { AppInfo } from '../definitions/AppInfo';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	const { bundledIn = [] } = app;
@@ -24,12 +24,10 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 
 	const [appData, setAppData] = useState<AppInfo>();
 
-	const getSettings = useEndpoint('GET', `/apps/${appId}/settings`);
-	const getScreenshots = useEndpoint('GET', `/apps/${appId}/screenshots`);
-	const getApis = useEndpoint('GET', `/apps/${appId}/apis`);
-
-	// TODO: remove EndpointFunction<'GET', 'apps/:id'>
-	const getBundledIn = useEndpoint('GET', `/apps/${appId}`) as any;
+	const getSettings = useEndpoint('GET', '/apps/:id/settings', { id: appId });
+	const getScreenshots = useEndpoint('GET', '/apps/:id/screenshots', { id: appId });
+	const getApis = useEndpoint('GET', '/apps/:id/apis', { id: appId });
+	const getBundledIn = useEndpoint('GET', '/apps/:id', { id: appId });
 
 	useEffect(() => {
 		const apps: App[] = [];

@@ -1,7 +1,7 @@
 import { MongoInternals } from 'meteor/mongo';
+import { api } from '@rocket.chat/core-services';
 
 import { AnalyticsService } from './analytics/service';
-import { api } from '../sdk/api';
 import { AppsEngineService } from './apps-engine/service';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { BannerService } from './banner/service';

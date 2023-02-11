@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
-import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../server/sdk';
 

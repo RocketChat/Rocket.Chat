@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldGroup,
@@ -14,8 +14,10 @@ import {
 	Margins,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation, TranslationKey, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { Dispatch, ReactElement, SetStateAction, useCallback, useMemo, useEffect, useState } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
@@ -23,7 +25,7 @@ import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import { AccountFormValues } from './AccountProfilePage';
+import type { AccountFormValues } from './AccountProfilePage';
 
 type AccountProfileFormProps = {
 	values: Record<string, unknown>;

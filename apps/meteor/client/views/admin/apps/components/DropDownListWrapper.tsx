@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { usePosition, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import React, { forwardRef, ComponentProps, useRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef, useRef } from 'react';
 
 const options = {
 	margin: 8,

@@ -1,13 +1,8 @@
 import type { IMessage, IUpload } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type {
-	ISendFileLivechatMessageParams,
-	ISendFileMessageParams,
-	IUploadFileParams,
-	IUploadService,
-} from '../../sdk/types/IUploadService';
 import { FileUpload } from '../../../app/file-upload/server';
 
 export class UploadService extends ServiceClassInternal implements IUploadService {

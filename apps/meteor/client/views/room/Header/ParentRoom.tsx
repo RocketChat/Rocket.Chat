@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Header } from '@rocket.chat/ui-client';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';

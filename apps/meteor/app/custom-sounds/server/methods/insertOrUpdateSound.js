@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { check } from 'meteor/check';
 import { CustomSounds } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization/server';
-import { api } from '../../../../server/sdk/api';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({

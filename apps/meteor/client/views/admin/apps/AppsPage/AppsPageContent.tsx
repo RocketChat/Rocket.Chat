@@ -1,13 +1,14 @@
-import { Pagination, Divider } from '@rocket.chat/fuselage';
+import { Pagination, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { useAppsReload, useAppsResult } from '../AppsContext';
 import AppsList from '../AppsList';
-import { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import { useFilteredApps } from '../hooks/useFilteredApps';
 import { useRadioToggle } from '../hooks/useRadioToggle';
@@ -116,23 +117,23 @@ const AppsPageContent = (): ReactElement => {
 			{appsResult.phase === AsyncStatePhase.RESOLVED &&
 				!noMarketplaceOrInstalledAppMatches &&
 				(!noInstalledAppMatches || !noInstalledAppsFound) && (
-					<>
-						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
-						{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
+					<Box display='flex' flexDirection='column' height='100%' overflow='hidden'>
+						<Box height='100%' overflowY='scroll'>
+							{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult.value.allApps} />}
+							{!noInstalledAppsFound && <AppsList apps={appsResult.value.items} title={t('All_Apps')} isMarketplace={isMarketplace} />}
+						</Box>
 						{Boolean(appsResult.value.count) && (
-							<>
-								<Divider />
-								<Pagination
-									current={current}
-									itemsPerPage={itemsPerPage}
-									count={appsResult.value.total}
-									onSetItemsPerPage={onSetItemsPerPage}
-									onSetCurrent={onSetCurrent}
-									{...paginationProps}
-								/>
-							</>
+							<Pagination
+								divider
+								current={current}
+								itemsPerPage={itemsPerPage}
+								count={appsResult.value.total}
+								onSetItemsPerPage={onSetItemsPerPage}
+								onSetCurrent={onSetCurrent}
+								{...paginationProps}
+							/>
 						)}
-					</>
+					</Box>
 				)}
 			{noMarketplaceOrInstalledAppMatches && (
 				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />

@@ -24,11 +24,11 @@ export const preferences = {
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationRequireInteraction: false,
-		messageViewMode: 0,
 		hideUsernames: false,
 		hideRoles: false,
 		displayAvatars: true,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
+		idleTimeLimit: 3600,
 	},
 };

@@ -1,9 +1,10 @@
 import { Button, ButtonGroup, FieldGroup, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { NotificationFormValues } from './NotificationPreferencesWithData';
+import type { NotificationFormValues } from './NotificationPreferencesWithData';
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationToogle from './components/NotificationToogle';
 import { Preferences } from './components/Preferences';
@@ -67,7 +68,7 @@ const NotificationPreferences = ({
 					/>
 				)}
 				<FieldGroup>
-					<NotificationByDevice device={t('Desktop')} icon={'computer'}>
+					<NotificationByDevice device={t('Desktop')} icon='desktop'>
 						<Preferences
 							id={'DesktopAlert'}
 							onChange={formHandlers?.handleDesktopAlert}
@@ -85,7 +86,7 @@ const NotificationPreferences = ({
 							<IconButton icon='play' mis='x4' onClick={handlePlaySound} />
 						</Preferences>
 					</NotificationByDevice>
-					<NotificationByDevice device={t('Mobile')} icon={'mobile'}>
+					<NotificationByDevice device={t('Mobile')} icon='mobile'>
 						<Preferences
 							id={'MobileAlert'}
 							onChange={formHandlers?.handleMobileAlert}

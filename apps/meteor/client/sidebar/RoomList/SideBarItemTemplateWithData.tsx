@@ -1,25 +1,24 @@
 /* eslint-disable react/display-name */
-import {
-	IMessage,
-	IRoom,
-	isDirectMessageRoom,
-	isMultipleDirectMessageRoom,
-	isOmnichannelRoom,
-	ISubscription,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode, useMemo } from 'react';
+import type { useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
+import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnType<typeof useTranslation>): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
+	}
+	if (isVideoConfMessage(lastMessage)) {
+		return t('Call_started');
 	}
 	if (!lastMessage.u) {
 		return normalizeSidebarMessage(lastMessage, t);
@@ -152,7 +151,9 @@ function SideBarItemTemplateWithData({
 			unread={highlighted}
 			selected={selected}
 			href={href}
-			onClick={(): void => !selected && sidebar.toggle()}
+			onClick={(): void => {
+				!selected && sidebar.toggle();
+			}}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}

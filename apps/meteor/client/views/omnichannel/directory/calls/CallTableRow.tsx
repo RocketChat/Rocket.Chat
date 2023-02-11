@@ -1,8 +1,9 @@
-import { IVoipRoom } from '@rocket.chat/core-typings';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Table } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { useIsCallReady } from '../../../../contexts/CallContext';

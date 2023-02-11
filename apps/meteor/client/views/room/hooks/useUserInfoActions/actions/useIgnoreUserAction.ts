@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
@@ -10,7 +10,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { Action } from '../../../../hooks/useActionSpread';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 
 export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): Action | undefined => {

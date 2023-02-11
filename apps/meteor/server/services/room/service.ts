@@ -1,9 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { ServiceClassInternal, Authorization } from '@rocket.chat/core-services';
+import type { ICreateRoomParams, IRoomService, ICreateDiscussionParams } from '@rocket.chat/core-services';
 
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import type { ICreateDiscussionParams, ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
-import { Authorization } from '../../sdk';
 import { createRoom, addUserToRoom as meteorAddUserToRoom } from '../../../app/lib/server/functions'; // TODO remove this import
 import { create as createDiscussion } from '../../../app/discussion/server/methods/createDiscussion';
 

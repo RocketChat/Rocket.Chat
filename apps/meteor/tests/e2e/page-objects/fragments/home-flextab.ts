@@ -44,10 +44,12 @@ export class HomeFlextab {
 		return this.page.locator('[data-qa-id=ToolBoxAction-bell]');
 	}
 
+	get btnE2E(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
+	}
+
 	get flexTabViewThreadMessage(): Locator {
-		return this.page.locator(
-			'div.thread-list.js-scroll-thread ul.thread [data-qa-type="message"]:last-child div.message-body-wrapper [data-qa-type="message-body"]',
-		);
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
 
 	get userInfoUsername(): Locator {

@@ -1,7 +1,9 @@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { useMemo, ContextType } from 'react';
+import type { ContextType } from 'react';
+import { useMemo } from 'react';
 
-import { AsyncState, AsyncStatePhase } from '../../../../lib/asyncState';
+import type { AsyncState } from '../../../../lib/asyncState';
+import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { AppsContext } from '../AppsContext';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
@@ -11,7 +13,7 @@ import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
 import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
-import { App } from '../types';
+import type { App } from '../types';
 
 type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
 

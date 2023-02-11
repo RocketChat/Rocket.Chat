@@ -1,6 +1,8 @@
-import { RouterContext, RouterContextValue } from '@rocket.chat/ui-contexts';
+import type { RouterContextValue } from '@rocket.chat/ui-contexts';
+import { RouterContext } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { createSubscription } from '../lib/createSubscription';
 
