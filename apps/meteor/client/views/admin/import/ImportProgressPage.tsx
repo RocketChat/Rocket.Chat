@@ -154,7 +154,7 @@ const ImportProgressPage = function ImportProgressPage() {
 						{progress.isSuccess && (
 							<>
 								<Box is='p' fontScale='p2'>
-									{progress.data.step[0].toUpperCase() + progress.data.step.slice(1)}
+									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
 								</Box>
 								<Box display='flex' justifyContent='center'>
 									<Box is='progress' value={progress.data.completed} max={progress.data.total} marginInlineEnd='x24' />

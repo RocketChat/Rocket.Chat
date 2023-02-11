@@ -24,7 +24,7 @@ test.describe.serial('imports', () => {
 		csvToJson();
 	});
 
-	test.only('expect import users data from slack', async ({ page }) => {
+	test('expect import users data from slack', async ({ page }) => {
 		const poAdmin: Admin = new Admin(page);
 		await page.goto('/admin/import');
 
