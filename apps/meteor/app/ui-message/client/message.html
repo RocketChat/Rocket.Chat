@@ -97,9 +97,6 @@
 					{{/if}}
 				</div>
 				<div class="body {{bodyClass}}" data-qa-type="message-body" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
-					{{#if isSnippet}}
-						<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
-					{{/if}}
 					{{#if msg.blocks}}
 						<div class='rc-ui-kit'>
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}

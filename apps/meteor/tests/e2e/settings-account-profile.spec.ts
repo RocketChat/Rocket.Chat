@@ -51,7 +51,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputToken.type(token);
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('button:has-text("Ok")').click();
+			await page.locator('role=button[name=Ok]').click();
 		});
 
 		await test.step('expect not allow add new personal token with same name', async () => {
@@ -64,7 +64,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
 			await poAccountProfile.btnRegenerateTokenModal.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('button:has-text("Ok")').click();
+			await page.locator('role=button[name=Ok]').click();
 		});
 
 		await test.step('expect delete personal token', async () => {

@@ -22,7 +22,6 @@ Meteor.methods({
 			pushNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
-			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
 			displayAvatars: Match.Optional(Boolean),

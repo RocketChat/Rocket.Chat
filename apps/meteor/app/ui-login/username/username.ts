@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import type { Blaze } from 'meteor/blaze';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/client';
@@ -11,28 +10,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import './username.html';
 
-type UsernameTemplateInstance = Blaze.TemplateInstance<Record<string, never>> & {
-	customFields: ReactiveVar<Record<
-		string,
-		{
-			required?: boolean;
-			maxLength?: number;
-			minLength?: number;
-		}
-	> | null>;
-	username: ReactiveVar<{
-		ready: boolean;
-		username: string;
-		empty?: boolean;
-		error?: boolean;
-		invalid?: boolean;
-		escaped?: string;
-		blocked?: boolean;
-		unavailable?: boolean;
-	}>;
-	validate: () => unknown;
-};
-Template.username.onCreated(function (this: UsernameTemplateInstance) {
+Template.username.onCreated(function () {
 	this.customFields = new ReactiveVar(null);
 	this.username = new ReactiveVar({
 		ready: false,
@@ -118,7 +96,7 @@ Template.username.onCreated(function (this: UsernameTemplateInstance) {
 
 Template.username.helpers({
 	username() {
-		return (Template.instance() as UsernameTemplateInstance).username.get();
+		return Template.instance<'username'>().username.get();
 	},
 
 	backgroundUrl() {
@@ -143,7 +121,7 @@ Template.username.events({
 	'reset #login-card'() {
 		Meteor.logout();
 	},
-	'submit #login-card'(event: JQuery.SubmitEvent<HTMLFormElement>, instance: UsernameTemplateInstance) {
+	'submit #login-card'(event: JQuery.SubmitEvent<HTMLFormElement>, instance) {
 		event.preventDefault();
 
 		const formData = instance.validate();
