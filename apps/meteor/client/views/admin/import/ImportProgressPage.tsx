@@ -110,6 +110,7 @@ const ImportProgressPage = function ImportProgressPage() {
 			};
 		},
 		{
+			refetchInterval: 1000,
 			enabled: !!currentOperation.isSuccess,
 			onSuccess: (progress) => {
 				console.log('progress', progress);
