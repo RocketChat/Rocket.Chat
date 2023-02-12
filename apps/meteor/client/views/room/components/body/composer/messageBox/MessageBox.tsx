@@ -347,7 +347,7 @@ const MessageBox = ({
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
-					disabled={isRecording || !canSend}
+					disabled={isRecording || (!canJoin && !canSend)}
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={t('Message')}
@@ -360,7 +360,7 @@ const MessageBox = ({
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
 							icon='emoji'
-							disabled={!useEmojis || isRecording || !canSend}
+							disabled={!useEmojis || isRecording || (!canJoin && !canSend)}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
 						/>
@@ -370,12 +370,12 @@ const MessageBox = ({
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording || !canSend}
+								disabled={isRecording || (!canJoin && !canSend)}
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<VideoMessageAction isRecording={isRecordingAudio} canSend={canSend} />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing || isRecordingVideo} />
+						<VideoMessageAction isRecording={isRecordingAudio} canSend={canJoin || canSend} />
+						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={(!canJoin && !canSend) || typing || isRecordingVideo} />
 						<FileUploadAction isRecording={isRecording} canSend={canSend} />
 						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>
