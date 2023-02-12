@@ -29,7 +29,10 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(edit) not be visible');
 
-			await expect(page.locator('.rcx-message', { hasText: 'expect option(edit) not be visible' })).not.toBeBusy();
+			await expect(page.locator('.rcx-message', { hasText: 'expect option(edit) not be visible' })).not.toHaveAttribute(
+				'aria-busy',
+				'true',
+			);
 			await poHomeChannel.content.openLastMessageMenu();
 			await expect(poHomeChannel.content.btnOptionEditMessage).toBeHidden();
 		});
@@ -52,7 +55,10 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(delete) not be visible');
 
-			await expect(page.locator('.rcx-message', { hasText: 'expect option(delete) not be visible' })).not.toBeBusy();
+			await expect(page.locator('.rcx-message', { hasText: 'expect option(delete) not be visible' })).not.toHaveAttribute(
+				'aria-busy',
+				'true',
+			);
 
 			await poHomeChannel.content.openLastMessageMenu();
 
@@ -79,7 +85,7 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(pin) not be visible');
 
-			await expect(page.locator('.rcx-message', { hasText: 'expect option(pin) not be visible' })).not.toBeBusy();
+			await expect(page.locator('.rcx-message', { hasText: 'expect option(pin) not be visible' })).not.toHaveAttribute('aria-busy', 'true');
 			await poHomeChannel.content.openLastMessageMenu();
 
 			await expect(poHomeChannel.content.btnOptionPinMessage).toBeHidden();
@@ -105,7 +111,10 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(star) not be visible');
 
-			await expect(page.locator('.rcx-message', { hasText: 'expect option(star) not be visible' })).not.toBeBusy();
+			await expect(page.locator('.rcx-message', { hasText: 'expect option(star) not be visible' })).not.toHaveAttribute(
+				'aria-busy',
+				'true',
+			);
 			await poHomeChannel.content.openLastMessageMenu();
 
 			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();
