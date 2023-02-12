@@ -3106,26 +3106,8 @@ describe('[Users]', function () {
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
 		let testUserCredentials;
-		const testRoleName = `role.test.${Date.now()}`;
-		let testRoleId = null;
+		const testRoleId = 'guest';
 
-		before('Create a new role with Users scope', (done) => {
-			request
-				.post(api('roles.create'))
-				.set(credentials)
-				.send({
-					name: testRoleName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('role');
-					expect(res.body.role).to.have.property('name', testRoleName);
-					testRoleId = res.body.role._id;
-				})
-				.end(done);
-		});
 		before('Create test user', (done) => {
 			const username = `user.test.${Date.now()}`;
 			const email = `${username}@rocket.chat`;
@@ -3217,7 +3199,7 @@ describe('[Users]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 1);
+						expect(res.body).to.have.property('count', 2);
 					})
 					.end(done);
 			});

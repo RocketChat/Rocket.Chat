@@ -11,18 +11,7 @@ import { call } from '../../../../client/lib/utils/call';
 import { CachedCollectionManager } from './CachedCollectionManager';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { isTruthy } from '../../../../lib/isTruthy';
-
-type Collection<T> = Mongo.Collection<T> & {
-	_collection: Mongo.Collection<T> & {
-		queries: Record<string, unknown>;
-		_docs: {
-			_idStringify: (id: string) => string;
-			_map: Map<string, T>;
-		};
-		_recomputeResults: (query: unknown) => void;
-	};
-	direct: Mongo.Collection<T>;
-};
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 type EventType = Extract<keyof typeof Notifications, `on${string}`>;
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
@@ -47,7 +36,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 export class CachedCollection<T extends object> extends Emitter<{ changed: T; removed: T }> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
-	public collection: Collection<T>;
+	public collection: MinimongoCollection<T>;
 
 	public ready = new ReactiveVar(false);
 
@@ -68,7 +57,7 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 	constructor({ name, eventType = 'onUser', userRelated = true }: { name: Name; eventType?: EventType; userRelated?: boolean }) {
 		super();
 
-		this.collection = new Mongo.Collection(null) as Collection<T>;
+		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
 
 		this.name = name;
 		this.eventType = eventType;
@@ -179,8 +168,8 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 				return;
 			}
 
-			const { _id, ...data } = newRecord;
-			this.collection.direct.upsert({ _id } as Mongo.Selector<T>, { $set: data } as Mongo.Modifier<T>);
+			const { _id } = newRecord;
+			this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
 			this.emit('changed', newRecord as any); // TODO: investigate why this is needed
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
@@ -243,8 +232,8 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 			if (action === 'removed') {
 				this.collection.remove(newRecord._id);
 			} else {
-				const { _id, ...data } = newRecord;
-				this.collection.direct.upsert({ _id } as Mongo.Selector<T>, { $set: data } as Mongo.Modifier<T>);
+				const { _id } = newRecord;
+				this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
 			}
 			this.save();
 		});
@@ -287,8 +276,8 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 				const actionTime = newRecord._updatedAt;
 				changes.push({
 					action: () => {
-						const { _id, ...data } = newRecord;
-						this.collection.direct.upsert({ _id } as Mongo.Selector<T>, { $set: data } as Mongo.Modifier<T>);
+						const { _id } = newRecord;
+						this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}

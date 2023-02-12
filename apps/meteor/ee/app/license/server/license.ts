@@ -5,8 +5,8 @@ import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definitions/ILicense';
-import type { ILicenseTag } from '../definitions/ILicenseTag';
+import type { ILicense } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
 
 const EnterpriseLicenses = new EventEmitter();
 

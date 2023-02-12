@@ -1,3 +1,4 @@
+import './audit';
 import './deviceManagement';
 import './engagementDashboard';
 import './maxRoomsPerGuest';
@@ -16,4 +17,6 @@ if (isRunningMs()) {
 		api.setBroker(broker);
 		api.start();
 	})();
+} else {
+	require('./presence');
 }
