@@ -3,15 +3,12 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useAppsCount } from '../AppsContext';
+import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 
 type Variant = 'success' | 'warning' | 'danger';
 
-const getProgressBarValues = (numberOfEnabledApps: string, enabledAppsLimit: string): { variant: Variant; percentage: number } => {
+const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: number): { variant: Variant; percentage: number } => {
 	const values = { variant: 'danger', percentage: 0 } as { variant: Variant; percentage: number };
-
-	const enabled = Number(numberOfEnabledApps) || 0;
-	const limit = Number(enabledAppsLimit) || 0;
 
 	if (numberOfEnabledApps < enabledAppsLimit) {
 		values.variant = 'success';
@@ -21,7 +18,7 @@ const getProgressBarValues = (numberOfEnabledApps: string, enabledAppsLimit: str
 		values.variant = 'warning';
 	}
 
-	values.percentage = Math.round((enabled / limit) * 100);
+	values.percentage = Math.round((numberOfEnabledApps / enabledAppsLimit) * 100);
 
 	return values;
 };
@@ -29,7 +26,11 @@ const getProgressBarValues = (numberOfEnabledApps: string, enabledAppsLimit: str
 const EnabledAppsCount = (): ReactElement => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
-	const appsCount = useAppsCount();
+	const { data: appsCount, status } = useAppsCountQuery();
+
+	if (status !== 'success') {
+		return <div />;
+	}
 
 	const numberOfEnabledApps = context === 'private' ? appsCount.totalPrivateEnabled : appsCount.totalMarketplaceEnabled;
 	const enabledAppsLimit = context === 'private' ? appsCount.maxPrivateApps : appsCount.maxMarketplaceApps;

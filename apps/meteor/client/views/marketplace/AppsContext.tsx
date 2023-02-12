@@ -8,15 +8,7 @@ type AppsContextValue = {
 	installedApps: AsyncState<{ apps: App[] }>;
 	marketplaceApps: AsyncState<{ apps: App[] }>;
 	privateApps: AsyncState<{ apps: App[] }>;
-	appsCount: { totalMarketplaceEnabled: string; totalPrivateEnabled: string; maxMarketplaceApps: string; maxPrivateApps: string };
 	reload: () => Promise<void>;
-};
-
-export const initialAppsCount: AppsContextValue['appsCount'] = {
-	totalMarketplaceEnabled: '-',
-	totalPrivateEnabled: '-',
-	maxMarketplaceApps: '-',
-	maxPrivateApps: '-',
 };
 
 export const AppsContext = createContext<AppsContextValue>({
@@ -35,18 +27,12 @@ export const AppsContext = createContext<AppsContextValue>({
 		value: undefined,
 		error: undefined,
 	},
-	appsCount: initialAppsCount,
 	reload: () => Promise.resolve(),
 });
 
 export const useAppsReload = (): (() => void) => {
 	const { reload } = useContext(AppsContext);
 	return reload;
-};
-
-export const useAppsCount = (): AppsContextValue['appsCount'] => {
-	const { appsCount } = useContext(AppsContext);
-	return appsCount;
 };
 
 export const useAppsResult = (): AppsContextValue => useContext(AppsContext);

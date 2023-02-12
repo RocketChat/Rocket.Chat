@@ -1,8 +1,8 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { FC, Reducer } from 'react';
-import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import React, { useEffect, useReducer, useCallback } from 'react';
 
 import { AppEvents } from '../../../app/apps/client/communication';
 import { Apps } from '../../../app/apps/client/orchestrator';
@@ -10,6 +10,7 @@ import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { AppsContext } from './AppsContext';
 import { handleAPIError } from './helpers';
+import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
 import type { App } from './types';
 
 type ListenersMapping = {
@@ -170,154 +171,137 @@ const AppsProvider: FC = ({ children }) => {
 	});
 
 	const isAdminUser = usePermission('manage-apps');
-	const getAppCount = useEndpoint('GET', '/apps/count');
-	const [appsCountState, setAppsCountState] = useState({
-		totalMarketplaceEnabled: '-',
-		totalPrivateEnabled: '-',
-		maxMarketplaceApps: '-',
-		maxPrivateApps: '-',
-	});
 
-	const fetch = useCallback(
-		async (isAdminUser?: string): Promise<void> => {
-			dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
-			dispatchInstalledApps({ type: 'request', reload: async () => undefined });
-			dispatchPrivateApps({ type: 'request', reload: async () => undefined });
+	const fetch = useCallback(async (isAdminUser?: string): Promise<void> => {
+		dispatchMarketplaceApps({ type: 'request', reload: async () => undefined });
+		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
+		dispatchPrivateApps({ type: 'request', reload: async () => undefined });
 
-			let installedApps: App[] = [];
-			let marketplaceApps: App[] = [];
-			let privateApps: App[] = [];
-			let marketplaceError = false;
-			let installedAppsError = false;
-			let privateAppsError = false;
+		let installedApps: App[] = [];
+		let marketplaceApps: App[] = [];
+		let privateApps: App[] = [];
+		let marketplaceError = false;
+		let installedAppsError = false;
+		let privateAppsError = false;
 
-			// We don't need to wait on this to move forward, so let's
-			// just do it in the background
-			getAppCount().then((result) => {
-				setAppsCountState({
-					totalMarketplaceEnabled: String(result.totalMarketplaceEnabled),
-					totalPrivateEnabled: String(result.totalPrivateEnabled),
-					maxMarketplaceApps: String(result.maxMarketplaceApps),
-					maxPrivateApps: String(result.maxPrivateApps),
-				});
+		try {
+			marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
+		} catch (e) {
+			dispatchMarketplaceApps({
+				type: 'failure',
+				error: e instanceof Error ? e : new Error(String(e)),
+				reload: fetch,
+			});
+			marketplaceError = true;
+		}
+
+		try {
+			installedApps = await Apps.getInstalledApps().then((result: App[]) =>
+				result.map((current: App) => ({
+					...current,
+					installed: true,
+					marketplace: false,
+				})),
+			);
+		} catch (e) {
+			dispatchInstalledApps({
+				type: 'failure',
+				error: e instanceof Error ? e : new Error(String(e)),
+				reload: fetch,
+			});
+			installedAppsError = true;
+		}
+
+		try {
+			privateApps = installedApps.filter((app: App) => app.private);
+		} catch (e) {
+			dispatchPrivateApps({
+				type: 'failure',
+				error: e instanceof Error ? e : new Error(String(e)),
+				reload: fetch,
 			});
 
-			try {
-				marketplaceApps = (await Apps.getAppsFromMarketplace(isAdminUser)) as unknown as App[];
-			} catch (e) {
-				dispatchMarketplaceApps({
-					type: 'failure',
-					error: e instanceof Error ? e : new Error(String(e)),
-					reload: fetch,
-				});
-				marketplaceError = true;
-			}
+			privateAppsError = true;
+		}
 
-			try {
-				installedApps = await Apps.getInstalledApps().then((result: App[]) =>
-					result.map((current: App) => ({
-						...current,
-						installed: true,
-						marketplace: false,
-					})),
-				);
-			} catch (e) {
-				dispatchInstalledApps({
-					type: 'failure',
-					error: e instanceof Error ? e : new Error(String(e)),
-					reload: fetch,
-				});
-				installedAppsError = true;
-			}
+		const installedAppsData: App[] = [];
+		const marketplaceAppsData: App[] = [];
+		const privateAppsData: App[] = [];
 
-			try {
-				privateApps = installedApps.filter((app: App) => app.private);
-			} catch (e) {
-				dispatchPrivateApps({
-					type: 'failure',
-					error: e instanceof Error ? e : new Error(String(e)),
-					reload: fetch,
-				});
-
-				privateAppsError = true;
-			}
-
-			const installedAppsData: App[] = [];
-			const marketplaceAppsData: App[] = [];
-			const privateAppsData: App[] = [];
-
-			if (!marketplaceError) {
-				marketplaceApps.forEach((app) => {
-					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-					if (!installedApps[appIndex]) {
-						marketplaceAppsData.push({
-							...app,
-							status: undefined,
-							marketplaceVersion: app.version,
-							bundledIn: app.bundledIn,
-						});
-
-						return;
-					}
-					const [installedApp] = installedApps.splice(appIndex, 1);
-					const appData = {
+		if (!marketplaceError) {
+			marketplaceApps.forEach((app) => {
+				const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+				if (!installedApps[appIndex]) {
+					marketplaceAppsData.push({
 						...app,
-						installed: true,
-						...(installedApp && {
-							status: installedApp.status,
-							version: installedApp.version,
-							licenseValidation: installedApp.licenseValidation,
-						}),
-						bundledIn: app.bundledIn,
+						status: undefined,
 						marketplaceVersion: app.version,
-					};
+						bundledIn: app.bundledIn,
+					});
 
-					installedAppsData.push(appData);
-					marketplaceAppsData.push(appData);
-				});
-				dispatchMarketplaceApps({
-					type: 'success',
-					reload: fetch,
-					apps: marketplaceAppsData,
-				});
-			}
-
-			if (!installedAppsError) {
-				if (installedApps.length > 0) {
-					installedAppsData.push(...installedApps);
+					return;
 				}
+				const [installedApp] = installedApps.splice(appIndex, 1);
+				const appData = {
+					...app,
+					installed: true,
+					...(installedApp && {
+						status: installedApp.status,
+						version: installedApp.version,
+						licenseValidation: installedApp.licenseValidation,
+					}),
+					bundledIn: app.bundledIn,
+					marketplaceVersion: app.version,
+				};
 
-				dispatchInstalledApps({
-					type: 'success',
-					reload: fetch,
-					apps: installedAppsData,
-				});
+				installedAppsData.push(appData);
+				marketplaceAppsData.push(appData);
+			});
+			dispatchMarketplaceApps({
+				type: 'success',
+				reload: fetch,
+				apps: marketplaceAppsData,
+			});
+		}
+
+		if (!installedAppsError) {
+			if (installedApps.length > 0) {
+				installedAppsData.push(...installedApps);
 			}
 
-			if (!privateAppsError) {
-				if (privateApps.length > 0) {
-					privateAppsData.push(...privateApps);
-				}
+			dispatchInstalledApps({
+				type: 'success',
+				reload: fetch,
+				apps: installedAppsData,
+			});
+		}
 
-				dispatchPrivateApps({
-					type: 'success',
-					reload: fetch,
-					apps: privateAppsData,
-				});
+		if (!privateAppsError) {
+			if (privateApps.length > 0) {
+				privateAppsData.push(...privateApps);
 			}
-		},
-		[getAppCount],
-	);
+
+			dispatchPrivateApps({
+				type: 'success',
+				reload: fetch,
+				apps: privateAppsData,
+			});
+		}
+	}, []);
 
 	const getCurrentData = useMutableCallback(function getCurrentData() {
 		return [marketplaceAppsState, installedAppsState, privateAppsState];
 	});
+
+	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			let marketplaceApp: { app: App; success: boolean } | undefined;
 			let installedApp: App;
 			let privateApp: App | undefined;
+
+			invalidateAppsCountQuery();
 
 			try {
 				const app = await Apps.getApp(appId);
@@ -417,6 +401,8 @@ const AppsProvider: FC = ({ children }) => {
 						marketplaceVersion: app?.marketplaceVersion,
 					},
 				});
+
+				invalidateAppsCountQuery();
 			},
 			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: AppStatus }): void => {
 				const [updatedData] = getCurrentData();
@@ -455,6 +441,8 @@ const AppsProvider: FC = ({ children }) => {
 					},
 					reload: fetch,
 				});
+
+				invalidateAppsCountQuery();
 			},
 			APP_SETTING_UPDATED: ({ appId }: { appId: string }): void => {
 				dispatchInstalledApps({ type: 'invalidate', appId, reload: fetch });
@@ -469,7 +457,8 @@ const AppsProvider: FC = ({ children }) => {
 			// eslint-disable-next-line no-unsafe-finally
 			return unregisterListeners;
 		}
-	}, [fetch, getCurrentData, isAdminUser]);
+	}, [fetch, getCurrentData, invalidateAppsCountQuery, isAdminUser]);
+
 	return (
 		<AppsContext.Provider
 			children={children}
@@ -477,12 +466,7 @@ const AppsProvider: FC = ({ children }) => {
 				installedApps: installedAppsState,
 				marketplaceApps: marketplaceAppsState,
 				privateApps: privateAppsState,
-				appsCount: appsCountState,
 				reload: fetch,
-				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
-				numberOfMarketplaceEnabledApps: 0,
-				// TODO: Remove this hardcoded value once we have a way to get the number of enabled apps
-				numberOfPrivateEnabledApps: 0,
 			}}
 		/>
 	);
