@@ -20,6 +20,9 @@ export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
+		if (isRoomFederated(_room as IRoom)) {
+			return Federation.isRoomSettingAllowed(_room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:

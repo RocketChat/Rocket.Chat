@@ -18,6 +18,9 @@ export const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {
+		if (isRoomFederated(room as IRoom)) {
+			return Federation.isRoomSettingAllowed(room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
 				return Boolean(room.broadcast);

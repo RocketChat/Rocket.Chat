@@ -2,13 +2,15 @@ import type { IRoom, ISubscription, IUser, ValueOf } from '@rocket.chat/core-typ
 import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 
 import { RoomRoles } from '../../../app/models/client';
-import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 
 const allowedUserActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.REMOVE_USER,
 	RoomMemberActions.SET_AS_OWNER,
 	RoomMemberActions.SET_AS_MODERATOR,
 ];
+
+const allowedRoomSettingsChangesInFederatedRooms: ValueOf<typeof RoomSettingsEnum>[] = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
 
 export const actionAllowed = (
 	room: Partial<IRoom>,
@@ -78,4 +80,15 @@ export const isEditableByTheUser = (user?: IUser, room?: IRoom, subscription?: I
 		return false;
 	}
 	return Boolean(subscription.roles?.includes('owner') || subscription.roles?.includes('moderator'));
+};
+
+export const isRoomSettingAllowed = (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>): boolean => {
+	if (!isRoomFederated(room)) {
+		return false;
+	}
+
+	if (isDirectMessageRoom(room)) {
+		return false;
+	}
+	return allowedRoomSettingsChangesInFederatedRooms.includes(setting);
 };

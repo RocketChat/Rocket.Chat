@@ -2,7 +2,7 @@ import type { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { escapeExternalFederationEventId, unescapeExternalFederationEventId } from './infrastructure/rocket-chat/adapters/MessageConverter';
 
 const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
@@ -13,6 +13,8 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.JOIN,
 	RoomMemberActions.LEAVE,
 ];
+
+const allowedRoomSettingsChangesInFederatedRooms: ValueOf<typeof RoomSettingsEnum>[] = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
 
 export class Federation {
 	public static actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): boolean {
@@ -47,5 +49,16 @@ export class Federation {
 
 	public static unescapeExternalFederationEventId(externalEventId: string): string {
 		return unescapeExternalFederationEventId(externalEventId);
+	}
+
+	public static isRoomSettingAllowed(room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+		if (!isRoomFederated(room)) {
+			return false;
+		}
+
+		if (isDirectMessageRoom(room)) {
+			return false;
+		}
+		return allowedRoomSettingsChangesInFederatedRooms.includes(setting);
 	}
 }

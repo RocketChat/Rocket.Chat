@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { RoomMemberActions } from '../../../../../definition/IRoomTypeConfig';
+import { RoomMemberActions, RoomSettingsEnum } from '../../../../../definition/IRoomTypeConfig';
 
 const findOneStub = sinon.stub();
 
@@ -375,6 +375,32 @@ describe('Federation[Client] - Federation', () => {
 
 		it('should return false if the current user is NOT the room owner', () => {
 			expect(Federation.isEditableByTheUser({ _id: 'differentId' } as any, { u: { _id: 'id' } } as any, {} as any)).to.be.false;
+		});
+	});
+
+	describe('#isRoomSettingAllowed()', () => {
+		it('should return false if the room is NOT federated', () => {
+			expect(Federation.isRoomSettingAllowed({ t: 'c' } as any, RoomSettingsEnum.NAME)).to.be.false;
+		});
+
+		it('should return false if the room is a DM one', () => {
+			expect(Federation.isRoomSettingAllowed({ t: 'd', federated: true } as any, RoomSettingsEnum.NAME)).to.be.false;
+		});
+
+		const allowedSettingsChanges = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
+
+		Object.values(RoomSettingsEnum)
+			.filter((setting) => !allowedSettingsChanges.includes(setting as any))
+			.forEach((setting) => {
+				it('should return false if the setting change is NOT allowed within the federation context for regular channels', () => {
+					expect(Federation.isRoomSettingAllowed({ t: 'c', federated: true } as any, setting)).to.be.false;
+				});
+			});
+
+		allowedSettingsChanges.forEach((setting) => {
+			it('should return true if the setting change is allowed within the federation context for regular channels', () => {
+				expect(Federation.isRoomSettingAllowed({ t: 'c', federated: true } as any, setting)).to.be.true;
+			});
 		});
 	});
 });

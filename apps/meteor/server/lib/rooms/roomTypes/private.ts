@@ -11,6 +11,9 @@ export const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 
 roomCoordinator.add(PrivateRoomType, {
 	allowRoomSettingChange(room, setting) {
+		if (isRoomFederated(room)) {
+			return Federation.isRoomSettingAllowed(room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
