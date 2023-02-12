@@ -39,7 +39,7 @@ const UpsellModal = ({
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
 				<Modal.HeaderText>
-					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_Feature')}</Modal.Tagline>
+					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_feature')}</Modal.Tagline>
 					<Modal.Title>{title}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />
@@ -63,7 +63,7 @@ const UpsellModal = ({
 					)}
 					{onConfirm && (
 						<Button primary onClick={onConfirm}>
-							{confirmText ?? t('Talk_To_Sales')}
+							{confirmText ?? t('Talk_to_sales')}
 						</Button>
 					)}
 				</Modal.FooterControllers>
