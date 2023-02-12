@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { BlazeTemplates } from 'meteor/templating';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
 
@@ -11,7 +12,7 @@ import { useTabBarClose } from '../contexts/ToolboxContext';
 import BlazeTemplate from './BlazeTemplate';
 
 type VerticalBarOldActionsProps = {
-	name: string;
+	name: keyof BlazeTemplates;
 	rid: IRoom['_id'];
 	_id: IRoom['_id'];
 	icon?: ComponentProps<typeof Icon>['name'];

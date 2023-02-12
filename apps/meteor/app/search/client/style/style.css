@@ -21,6 +21,8 @@
 	overflow-x: hidden;
 	flex-direction: column;
 	flex: 1 1 0;
+
+	margin: 0 -24px;
 }
 
 .rocket-default-search-settings {

@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
+import type { BlazeTemplates } from 'meteor/templating';
 import { Template } from 'meteor/templating';
 import type { ComponentProps, FC } from 'react';
 import React, { memo, useLayoutEffect, useRef } from 'react';
@@ -11,7 +12,7 @@ import { useRoomMessageContext } from './body/useRoomMessageContext';
 
 const BlazeTemplate: FC<
 	Omit<ComponentProps<typeof Box>, 'children'> & {
-		name: string;
+		name: keyof BlazeTemplates;
 	} & Record<string, unknown>
 > = ({ name, flexShrink, overflow, onClick, w, ...props }) => {
 	const [portals, portalsSubscription] = useBlazePortals();

@@ -1,6 +1,7 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -22,54 +23,70 @@ declare module 'meteor/blaze' {
 }
 
 declare module 'meteor/templating' {
-	interface TemplateStatic {
-		requiresPermission: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalAdmin: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchResultTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleUser: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleRoom: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		emojiPicker: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		lazyloadImage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		customFieldsForm: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ExternalFrameContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		broadcastView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		liveStreamBroadcast: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		liveStreamTab: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		liveStreamView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		inputAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		textareaAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		_autocompleteContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		_noMatch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		authorize: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oauth404: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedBaseWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedAudioWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedFrameWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedImageWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedUrlWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedVideoWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedYoutubeWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		DefaultSearchResultTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		DefaultSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		RocketSearch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		icon: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_default: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_item_default: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_item_channel: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_item_custom: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		selectDropdown: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		CodeMirror: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		photoswipeContent: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		roomSearch: Blaze.Template<typeof AutoComplete, Blaze.TemplateInstance<typeof AutoComplete>>;
-		roomSearchEmpty: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		avatar: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		username: Blaze.Template<
+	type BlazeTemplate<TData = any, TInstanceExtras = Record<string, never>> = Blaze.Template<
+		TData,
+		Blaze.TemplateInstance<TData> & TInstanceExtras
+	>;
+
+	type BlazeTemplates = {
+		requiresPermission: BlazeTemplate;
+		ChatpalAdmin: BlazeTemplate;
+		ChatpalSearchResultTemplate: BlazeTemplate;
+		ChatpalSearchSingleTemplate: BlazeTemplate;
+		ChatpalSearchSingleUser: BlazeTemplate;
+		ChatpalSearchSingleRoom: BlazeTemplate;
+		ChatpalSuggestionItemTemplate: BlazeTemplate;
+		emojiPicker: BlazeTemplate;
+		lazyloadImage: BlazeTemplate;
+		customFieldsForm: BlazeTemplate;
+		ExternalFrameContainer: BlazeTemplate;
+		broadcastView: BlazeTemplate;
+		liveStreamBroadcast: BlazeTemplate;
+		liveStreamTab: BlazeTemplate;
+		liveStreamView: BlazeTemplate;
+		inputAutocomplete: BlazeTemplate;
+		textareaAutocomplete: BlazeTemplate;
+		_autocompleteContainer: BlazeTemplate;
+		_noMatch: BlazeTemplate;
+		authorize: BlazeTemplate;
+		oauth404: BlazeTemplate;
+		oembedBaseWidget: BlazeTemplate;
+		oembedAudioWidget: BlazeTemplate;
+		oembedFrameWidget: BlazeTemplate;
+		oembedImageWidget: BlazeTemplate;
+		oembedUrlWidget: BlazeTemplate;
+		oembedVideoWidget: BlazeTemplate;
+		oembedYoutubeWidget: BlazeTemplate;
+		DefaultSearchResultTemplate: BlazeTemplate;
+		DefaultSuggestionItemTemplate: BlazeTemplate;
+		RocketSearch: BlazeTemplate<
+			{
+				rid: IRoom['_id'];
+			},
+			{
+				provider: ReactiveVar<any>;
+				isActive: ReactiveVar<boolean>;
+				error: ReactiveVar<string | undefined>;
+				suggestions: ReactiveVar<any>;
+				suggestionActive: ReactiveVar<any>;
+			}
+		>;
+		icon: BlazeTemplate;
+		popupList: BlazeTemplate;
+		popupList_default: BlazeTemplate;
+		popupList_item_default: BlazeTemplate;
+		popupList_loading: BlazeTemplate;
+		popupList_item_channel: BlazeTemplate;
+		popupList_item_custom: BlazeTemplate;
+		selectDropdown: BlazeTemplate;
+		CodeMirror: BlazeTemplate;
+		photoswipeContent: BlazeTemplate;
+		roomSearch: BlazeTemplate<typeof AutoComplete>;
+		roomSearchEmpty: BlazeTemplate;
+		avatar: BlazeTemplate;
+		username: BlazeTemplate<
 			Record<string, never>,
-			Blaze.TemplateInstance<Record<string, never>> & {
+			{
 				customFields: ReactiveVar<Record<
 					string,
 					{
@@ -91,23 +108,25 @@ declare module 'meteor/templating' {
 				validate: () => unknown;
 			}
 		>;
-		error: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		message: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messageThread: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopup: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupChannel: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupConfig: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupEmoji: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupSlashCommand: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupSlashCommandPreview: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupUser: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		collapseArrow: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messagePopupCannedResponse: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		error: BlazeTemplate;
+		loading: BlazeTemplate;
+		message: BlazeTemplate;
+		messageThread: BlazeTemplate;
+		messagePopup: BlazeTemplate;
+		messagePopupChannel: BlazeTemplate;
+		messagePopupConfig: BlazeTemplate;
+		messagePopupEmoji: BlazeTemplate;
+		messagePopupSlashCommand: BlazeTemplate;
+		messagePopupSlashCommandPreview: BlazeTemplate;
+		messagePopupUser: BlazeTemplate;
+		collapseArrow: BlazeTemplate;
+		rc_modal: BlazeTemplate;
+		popout: BlazeTemplate;
+		popover: BlazeTemplate;
+		messagePopupCannedResponse: BlazeTemplate;
+	};
 
+	interface TemplateStatic extends BlazeTemplates {
 		instance<TTemplateName extends keyof TemplateStatic>(): TemplateStatic[TTemplateName] extends Blaze.Template<any, infer I> ? I : never;
 	}
 }

@@ -267,6 +267,33 @@ export interface ServerMethods {
 	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
 	'pinMessage': (message: IMessage) => void;
 	'unpinMessage': (message: IMessage) => void;
+	'rocketchatSearch.getProvider': () =>
+		| {
+				key: string;
+				description: TranslationKey;
+				icon: string;
+				resultTemplate: string;
+				supportsSuggestions: boolean;
+				suggestionItemTemplate: string | undefined;
+				settings: unknown[];
+		  }
+		| undefined;
+	'rocketchatSearch.search': (
+		text: string,
+		context: { uid: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => {
+		message: IMessage;
+		room: IRoom;
+	};
+	'rocketchatSearch.suggest': (
+		text: string,
+		context: { uid: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => {
+		message: IMessage;
+		room: IRoom;
+	};
 }
 
 export type ServerMethodName = keyof ServerMethods;

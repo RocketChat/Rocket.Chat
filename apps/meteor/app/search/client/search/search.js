@@ -3,10 +3,12 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
+import './search.html';
 
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import { t } from '../../../utils/client';
+import { call } from '../../../../client/lib/utils/call';
 
 Template.RocketSearch.onCreated(function () {
 	this.provider = new ReactiveVar();
@@ -15,15 +17,20 @@ Template.RocketSearch.onCreated(function () {
 	this.suggestions = new ReactiveVar();
 	this.suggestionActive = new ReactiveVar();
 
-	Meteor.call('rocketchatSearch.getProvider', (error, provider) => {
-		if (!error && provider) {
+	call('rocketchatSearch.getProvider').then(
+		(provider) => {
+			if (!provider) {
+				throw new Error('Current search provider is not active');
+			}
+
 			this.scope.settings = provider.settings;
 			this.provider.set(provider);
 			this.isActive.set(true);
-		} else {
-			this.error.set('Search_current_provider_not_active');
-		}
-	});
+		},
+		() => {
+			this.error.set(t('Search_current_provider_not_active'));
+		},
+	);
 
 	const _search = () => {
 		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
@@ -31,22 +38,17 @@ Template.RocketSearch.onCreated(function () {
 		if (this.scope.text.get()) {
 			this.scope.searching.set(true);
 
-			Meteor.call(
-				'rocketchatSearch.search',
-				this.scope.text.get(),
-				{ rid: Session.get('openedRoom'), uid: Meteor.userId() },
-				_p,
-				(err, result) => {
-					if (err) {
-						dispatchToastMessage({
-							type: 'error',
-							message: TAPi18n.__('Search_message_search_failed'),
-						});
-						this.scope.searching.set(false);
-					} else {
-						this.scope.searching.set(false);
-						this.scope.result.set(result);
-					}
+			call('rocketchatSearch.search', this.scope.text.get(), { rid: Session.get('openedRoom'), uid: Meteor.userId() }, _p).then(
+				(result) => {
+					this.scope.searching.set(false);
+					this.scope.result.set(result);
+				},
+				() => {
+					dispatchToastMessage({
+						type: 'error',
+						message: t('Search_message_search_failed'),
+					});
+					this.scope.searching.set(false);
 				},
 			);
 		}
@@ -74,27 +76,16 @@ Template.RocketSearch.onCreated(function () {
 
 		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
 
-		Meteor.call(
-			'rocketchatSearch.suggest',
-			value,
-			{ rid: Session.get('openedRoom'), uid: Meteor.userId() },
-			this.scope.parentPayload,
-			_p,
-			(err, result) => {
-				if (err) {
-					// TODO what should happen
-				} else {
-					this.suggestionActive.set(undefined);
-					if (value !== this.scope.text.get()) {
-						this.suggestions.set(result);
-					}
-				}
-			},
-		);
+		call('rocketchatSearch.suggest', value, { rid: Session.get('openedRoom'), uid: Meteor.userId() }, _p).then((result) => {
+			this.suggestionActive.set(undefined);
+			if (value !== this.scope.text.get()) {
+				this.suggestions.set(result);
+			}
+		});
 	};
 });
 
-Template.RocketSearch.events = {
+Template.RocketSearch.events({
 	'keydown #message-search'(evt, t) {
 		if (evt.keyCode === 13) {
 			if (t.suggestionActive.get() !== undefined) {
@@ -126,7 +117,7 @@ Template.RocketSearch.events = {
 			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive === 0 ? suggestions.length - 1 : suggestionActive - 1);
 		}
 	},
-	'keyup #message-search': _.debounce(function (evt, t) {
+	'keyup #message-search': withDebouncing({ wait: 300 })(function (evt, t) {
 		if (evt.keyCode === 13) {
 			return evt.preventDefault();
 		}
@@ -142,7 +133,7 @@ Template.RocketSearch.events = {
 		} else {
 			t.suggest(value);
 		}
-	}, 300),
+	}),
 	'click .rocket-search-suggestion-item'(e, t) {
 		if (this.action) {
 			const value = this.action();
@@ -158,7 +149,7 @@ Template.RocketSearch.events = {
 	'mouseenter .rocket-search-suggestion-item'(e, t) {
 		t.suggestionActive.set(t.suggestions.get().indexOf(this));
 	},
-};
+});
 
 Template.RocketSearch.helpers({
 	error() {
@@ -189,21 +180,15 @@ Template.RocketSearch.helpers({
 
 // add closer to suggestions
 Template.RocketSearch.onRendered(function () {
-	$(document).on(`click.suggestionclose.${this.data.rid}`, () => {
-		// if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
-		this.suggestions.set();
-		// }
-	});
 	Tracker.autorun((c) => {
-		if (this.isActive.get() === true) {
-			Tracker.afterFlush(() => {
-				document.querySelector('#message-search').focus();
-			});
-			c.stop();
+		if (!this.isActive.get()) {
+			return;
 		}
-	});
-});
 
-Template.RocketSearch.onDestroyed(function () {
-	$(document).off(`click.suggestionclose.${this.data.rid}`);
+		Tracker.afterFlush(() => {
+			document.querySelector('#message-search').focus();
+		});
+
+		c.stop();
+	});
 });

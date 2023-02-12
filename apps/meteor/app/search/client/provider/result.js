@@ -13,6 +13,8 @@ import { Rooms } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 
+import './result.html';
+
 Meteor.startup(function () {
 	MessageAction.addButton({
 		id: 'jump-to-search-message',
