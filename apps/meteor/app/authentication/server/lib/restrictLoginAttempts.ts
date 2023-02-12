@@ -83,7 +83,7 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
+	const minutesUntilUnblock = settings.get<number>('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes');
 	const willBeBlockedUntil = addMinutesToADate(new Date(), minutesUntilUnblock);
 	await saveBlockedLogin(login, willBeBlockedUntil, ServerEventType.BLOCKED_AT_BY_IP);
 
