@@ -16,6 +16,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private broker: ServiceBroker;
 
+	private troubleshootDisableInstanceBroadcast = false;
+
 	constructor() {
 		super();
 
@@ -33,6 +35,27 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			if (module === 'scalability' && valid) {
 				this.startBroadcast();
 			}
+		});
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction === 'removed') {
+				return;
+			}
+
+			const { _id, value } = setting;
+			if (_id !== 'Troubleshoot_Disable_Instance_Broadcast') {
+				return;
+			}
+
+			if (typeof value !== 'boolean') {
+				return;
+			}
+
+			if (this.troubleshootDisableInstanceBroadcast === value) {
+				return;
+			}
+
+			this.troubleshootDisableInstanceBroadcast = value;
 		});
 	}
 
@@ -137,6 +160,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	private sendBroadcast(streamName: string, eventName: string, args: unknown[]) {
+		if (this.troubleshootDisableInstanceBroadcast) {
+			return;
+		}
+
 		this.broker.broadcast('broadcast', { streamName, eventName, args });
 	}
 
@@ -144,19 +171,3 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		return this.broker.call('$node.list', { onlyAvailable: true });
 	}
 }
-
-// TODO missing implementation of disable instance broadcast
-// let TroubleshootDisableInstanceBroadcast;
-// settings.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
-// 	if (TroubleshootDisableInstanceBroadcast === value) {
-// 		return;
-// 	}
-// 	TroubleshootDisableInstanceBroadcast = value;
-
-// 	if (value) {
-// 		return StreamerCentral.removeListener('broadcast', onBroadcast);
-// 	}
-
-// 	// TODO move to a service and stop using StreamerCentral
-// 	StreamerCentral.on('broadcast', onBroadcast);
-// });
