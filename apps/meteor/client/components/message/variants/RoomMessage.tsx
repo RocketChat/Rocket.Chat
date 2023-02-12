@@ -59,6 +59,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
 			data-qa-type='message'
+			aria-busy={message.temp}
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && (
