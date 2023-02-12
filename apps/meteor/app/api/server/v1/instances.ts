@@ -1,5 +1,6 @@
 import { InstanceStatus } from '@rocket.chat/models';
 
+import { Instance as InstanceService } from '../../../../ee/server/sdk';
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 
@@ -12,46 +13,28 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const instances = await InstanceStatus.find().toArray();
+			const instanceRecords = await InstanceStatus.find().toArray();
+
+			const connections = await InstanceService.getInstances();
+
+			const result = instanceRecords.map((instanceRecord) => {
+				const connection = connections.find((c) => c.id === instanceRecord._id);
+
+				return {
+					address: connection?.ipList[0],
+					currentStatus: {
+						connected: connection?.available || false,
+						lastHeartbeatTime: connection?.lastHeartbeatTime,
+						local: connection?.local,
+					},
+					instanceRecord,
+					broadcastAuth: true,
+				};
+			});
 
 			return API.v1.success({
-				instances,
-				// instances: instances.map((instance: IInstanceStatus) => {
-				// 	const connection = getInstanceConnection(instance);
-
-				// 	if (connection) {
-				// 		delete connection.instanceRecord;
-				// 	}
-				// 	return {
-				// 		...instance,
-				// 		connection,
-				// 	};
-				// }),
+				instances: result,
 			});
 		},
 	},
 );
-
-// TODO why?
-// function getConnection(address) {
-// 	const conn = connections[address];
-// 	if (!conn) {
-// 		return;
-// 	}
-
-// 	const { instanceRecord, broadcastAuth } = conn;
-
-// 	return {
-// 		address,
-// 		currentStatus: conn._stream.currentStatus,
-// 		instanceRecord,
-// 		broadcastAuth,
-// 	};
-// }
-
-// export function getInstanceConnection(instance) {
-// 	const subPath = getURL('', { cdn: false, full: false });
-// 	const address = `${instance.extraInformation.host}:${instance.extraInformation.port}${subPath}`;
-
-// 	return getConnection(address);
-// }

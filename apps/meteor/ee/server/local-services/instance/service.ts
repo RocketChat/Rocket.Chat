@@ -1,13 +1,15 @@
 import os from 'os';
 
+import type { BrokerNode } from 'moleculer';
 import { ServiceBroker } from 'moleculer';
 import { License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
-export class InstanceService extends ServiceClassInternal {
+export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
 	private broadcastStarted = false;
@@ -38,6 +40,7 @@ export class InstanceService extends ServiceClassInternal {
 		const port = process.env.TCP_PORT ? String(process.env.TCP_PORT).trim() : 0;
 
 		this.broker = new ServiceBroker({
+			nodeID: InstanceStatus.id(),
 			transporter: {
 				type: 'TCP',
 				options: {
@@ -135,6 +138,10 @@ export class InstanceService extends ServiceClassInternal {
 
 	private sendBroadcast(streamName: string, eventName: string, args: unknown[]) {
 		this.broker.broadcast('broadcast', { streamName, eventName, args });
+	}
+
+	async getInstances(): Promise<BrokerNode[]> {
+		return this.broker.call('$node.list', { onlyAvailable: true });
 	}
 }
 
