@@ -5,6 +5,7 @@ import type { UserPresence } from '../lib/presence';
 import { Presence } from '../lib/presence';
 
 /**
+ * @deprecated
  * Hook to fetch and subscribe users presence
  *
  * @param uid - User Id

@@ -28,6 +28,8 @@ module.exports = {
 		'./tests/setup/hoistedReact.ts',
 		'./tests/setup/cleanupTestingLibrary.ts',
 	],
+	reporter: 'dot',
+	timeout: 5000,
 	exit: false,
 	slow: 200,
 	spec: [
