@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
-import { isUserFederated } from '@rocket.chat/core-typings';
 import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
@@ -21,10 +20,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 	if (!user) {
 		return;
-	}
-
-	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-user-is-federated', 'Cannot delete federated user');
 	}
 
 	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
