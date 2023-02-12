@@ -1,4 +1,4 @@
-import type { IStats } from '@rocket.chat/core-typings';
+import type { IStats, Serialized } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { usePermission, useServerInformation, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -20,7 +20,7 @@ const InformationRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
-	const [instances, setInstances] = useState<IInstance[]>([]);
+	const [instances, setInstances] = useState<Serialized<IInstance[]>>([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
 	const getInstances = useEndpoint('GET', '/v1/instances.get');
