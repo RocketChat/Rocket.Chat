@@ -21,7 +21,7 @@ export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
 
 	const licenseValidation = app.getLatestLicenseValidationResult();
 
-	if (licenseValidation.hasErrors || licenseValidation.hasWarnings) {
+	if (licenseValidation?.hasErrors || licenseValidation?.hasWarnings) {
 		appRest.licenseValidation = licenseValidation;
 	}
 

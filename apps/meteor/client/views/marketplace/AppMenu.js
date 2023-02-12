@@ -157,7 +157,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -180,7 +180,17 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, checkUserLoggedIn, setModal, cancelAction, closeModal]);
+	}, [
+		action,
+		app,
+		isAppPurchased,
+		showAppPermissionsReviewModal,
+		checkUserLoggedIn,
+		setModal,
+		cancelAction,
+		requestConfirmAction,
+		closeModal,
+	]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -309,7 +319,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const menuOptions = useMemo(() => {
 		const bothAppStatusOptions = {
 			...(canAppBeSubscribed &&
-				isSubscribed && {
+				isSubscribed &&
+				isAdminUser && {
 					subscribe: {
 						label: (
 							<Option>

@@ -1,13 +1,6 @@
 import { Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
-import {
-	useRoute,
-	useSetting,
-	useMethod,
-	useTranslation,
-	useCurrentRoute,
-	useRouteParameter,
-	usePermission,
-} from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation, useCurrentRoute, useRouteParameter, usePermission, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState } from 'react';
 
@@ -21,7 +14,6 @@ type AppsPageProps = {
 const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 	const t = useTranslation();
 
-	const isDevelopmentMode = useSetting('Apps_Framework_Development_Mode');
 	const cloudRoute = useRoute('cloud');
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 	const isAdminUser = usePermission('manage-apps');
@@ -51,9 +43,17 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 		context && router.push({ context, page: 'install' });
 	};
 
+	const AppsTitles: { [key: string]: string } = {
+		explore: 'Explore',
+		installed: 'Installed',
+		enterprise: 'Enterprise',
+		requested: 'Requested',
+		private: 'Private apps',
+	};
+
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Apps')}>
+			<Page.Header title={context && t(AppsTitles[context] as TranslationKey)}>
 				<ButtonGroup>
 					{isMarketplace && !isLoggedInCloud && isAdminUser && (
 						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
@@ -66,7 +66,7 @@ const AppsPage = ({ isMarketplace }: AppsPageProps): ReactElement => {
 							)}
 						</Button>
 					)}
-					{Boolean(isDevelopmentMode) && isAdminUser && context === 'private' && (
+					{isAdminUser && context === 'private' && (
 						<Button primary onClick={handleUploadButtonClick}>
 							<Icon size='x20' name='upload' /> {t('Upload_app')}
 						</Button>

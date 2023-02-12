@@ -10,7 +10,7 @@ export async function sendDirectMessageToUsers(
 	toIds: string[],
 	messageFn: (user: IUser) => string,
 ): Promise<string[]> {
-	const fromUser = await Users.findOneById(fromId, { projection: { _id: 1 } });
+	const fromUser = await Users.findOneById(fromId, { projection: { _id: 1, username: 1 } });
 	if (!fromUser) {
 		throw new Error(`User not found: ${fromId}`);
 	}
@@ -18,7 +18,7 @@ export async function sendDirectMessageToUsers(
 	const users = Users.findByIds(toIds, { projection: { _id: 1, username: 1, language: 1 } });
 	const success: string[] = [];
 
-	users.forEach((user: IUser) => {
+	for await (const user of users) {
 		try {
 			const { rid } = createDirectMessage([user.username], fromId);
 			const msg = typeof messageFn === 'function' ? messageFn(user) : messageFn;
@@ -28,7 +28,7 @@ export async function sendDirectMessageToUsers(
 		} catch (error) {
 			SystemLogger.error(error);
 		}
-	});
+	}
 
 	return success;
 }

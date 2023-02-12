@@ -24,6 +24,8 @@ type AppsPageContentBodyProps = {
 		showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
 	};
 	noErrorsOcurred: boolean;
+	isEnterprise: boolean;
+	isInstalled: boolean;
 };
 
 const AppsPageContentBody = ({
@@ -37,6 +39,8 @@ const AppsPageContentBody = ({
 	onSetCurrent,
 	paginationProps,
 	noErrorsOcurred,
+	isEnterprise,
+	isInstalled,
 }: AppsPageContentBodyProps) => {
 	const t = useTranslation();
 
@@ -46,7 +50,7 @@ const AppsPageContentBody = ({
 				{noErrorsOcurred && (
 					<Box overflowY='scroll' height='100%'>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult?.value?.allApps || []} />}
-						<AppsList apps={appsResult?.value?.items || []} title={isRequested ? '' : t('All_Apps')} />
+						<AppsList apps={appsResult?.value?.items || []} title={isRequested || isEnterprise || isInstalled ? '' : t('All_Apps')} />
 					</Box>
 				)}
 			</Box>

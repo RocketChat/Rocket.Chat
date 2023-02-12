@@ -13,6 +13,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
+import semver from 'semver';
 
 import { Apps } from '../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
@@ -48,6 +49,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const button = appButtonProps({ ...app, isAdminUser });
 	const isAppRequestsPage = context === 'requested';
+	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');
 
@@ -153,7 +156,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		if (action === 'request') {
 			try {
 				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} wrapperHeight={'x380'} cancel={cancelAction} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data?.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -190,18 +193,26 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
-		if ((status.label === 'request' || status.label === 'requests') && !installed) {
-			return isAppRequestsPage && totalUnseenRequests ? totalUnseenRequests : totalSeenRequests;
+		if ((status.label === 'request' || status.label === 'requests') && !installed && isAppRequestsPage) {
+			let numberOfRequests = 0;
+
+			if (totalUnseenRequests >= 0) {
+				numberOfRequests += totalUnseenRequests;
+			}
+
+			if (totalSeenRequests >= 0) {
+				numberOfRequests += totalSeenRequests;
+			}
+
+			return numberOfRequests;
 		}
 
 		return null;
 	};
 
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
-
 	return (
 		<Box {...props} display='flex' alignItems='center'>
-			{button && isAppDetailsPage && !installed && (
+			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
 					flexDirection='row'

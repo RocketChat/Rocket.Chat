@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings, Users as UsersRaw } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -15,6 +16,8 @@ import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyAppInstall } from '../marketplace/appInstall';
+import { canEnableApp } from '../../../../ee/app/license/server/license';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 
 const rocketChatVersion = Info.version;
@@ -69,6 +72,7 @@ export class AppsRestApi {
 		};
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+		this.api.addRoute('count', ...appsCountHandler(this));
 
 		this.api.addRoute(
 			'incompatibleModal',
@@ -304,10 +308,6 @@ export class AppsRestApi {
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Installation from url is disabled.' });
-						}
-
 						try {
 							const response = await fetch(this.bodyParams.url);
 
@@ -357,10 +357,6 @@ export class AppsRestApi {
 							return API.v1.failure(err.message);
 						}
 					} else {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
-						}
-
 						const app = await getUploadFormData(
 							{
 								request: this.request,
@@ -387,7 +383,7 @@ export class AppsRestApi {
 
 					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user });
+					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
 					const info = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -405,6 +401,11 @@ export class AppsRestApi {
 					info.status = aff.getApp().getStatus();
 
 					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
+
+					if (await canEnableApp(aff.getApp().getStorageItem())) {
+						const success = await manager.enable(info.id);
+						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
+					}
 
 					return API.v1.success({
 						app: info,
@@ -659,10 +660,6 @@ export class AppsRestApi {
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
-						}
-
 						const response = await fetch(this.bodyParams.url);
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -703,10 +700,6 @@ export class AppsRestApi {
 							return API.v1.internalError();
 						}
 					} else {
-						if (settings.get('Apps_Framework_Development_Mode') !== true) {
-							return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
-						}
-
 						const app = await getUploadFormData(
 							{
 								request: this.request,
@@ -1098,7 +1091,7 @@ export class AppsRestApi {
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
-				post() {
+				async post() {
 					if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
 						return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 					}
@@ -1107,6 +1100,12 @@ export class AppsRestApi {
 
 					if (!prl) {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+					}
+
+					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
+						if (!(await canEnableApp(prl.getStorageItem()))) {
+							return API.v1.failure('Enabled apps have been maxed out');
+						}
 					}
 
 					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));

@@ -1,5 +1,5 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -19,7 +19,8 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
 
-	const { data: appRequestStats, isLoading } = useAppRequestStats();
+	const isAdminUser = usePermission('manage-apps');
+	const { data: appRequestStats, isLoading } = useAppRequestStats(isAdminUser);
 
 	return (
 		<>
@@ -35,7 +36,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 						}}
 					/>
 					<ListItem
-						icon='cube'
+						icon='circle-arrow-down'
 						text={t('Installed')}
 						action={(): void => {
 							marketplaceRoute.push({ context: 'installed', page });
