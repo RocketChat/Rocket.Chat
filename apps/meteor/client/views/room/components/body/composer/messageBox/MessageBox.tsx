@@ -47,6 +47,7 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxDropdown from './MessageBoxDropdown';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import AudioMessageAction from './actions/AudioMessageAction';
 import FileUploadAction from './actions/FileUploadAction';
 import VideoMessageAction from './actions/VideoMessageAction';
 
@@ -274,7 +275,9 @@ const MessageBox = ({
 		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
 	});
 
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
+	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
 
 	const federationModuleEnabled = useHasLicenseModule('federation') === true;
 	const federationEnabled = useSetting('Federation_Matrix_enabled') === true;
@@ -329,8 +332,6 @@ const MessageBox = ({
 		}
 	});
 
-	const isRecording = isRecordingAudio || isRecordingVideo;
-
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -343,6 +344,7 @@ const MessageBox = ({
 			)}
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
+				{isRecordingAudio && <AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />}
 				<MessageComposerInput
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
@@ -375,7 +377,7 @@ const MessageBox = ({
 						)}
 						<MessageComposerActionsDivider />
 						<VideoMessageAction isRecording={isRecordingAudio} canSend={canJoin || canSend} />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={(!canJoin && !canSend) || typing || isRecordingVideo} />
+						<AudioMessageAction disabled={(!canJoin && !canSend) || typing || isRecording} />
 						<FileUploadAction isRecording={isRecording} canSend={canSend} />
 						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>
