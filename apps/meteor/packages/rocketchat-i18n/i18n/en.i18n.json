@@ -5580,5 +5580,7 @@
   "Start_free_trial": "Start free trial",
   "Get_all_apps": "Get all the apps your team needs",
   "Workspaces_on_community_edition_trial_on": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Start a free Enterprise trial to remove these limits today!",
-  "Workspaces_on_community_edition_trial_off": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Upgrade to Enterprise to remove limits and supercharge your workspace."
+  "Workspaces_on_community_edition_trial_off": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Upgrade to Enterprise to remove limits and supercharge your workspace.",
+  "No_private_apps_installed": "No private apps installed",
+  "Private_apps_are_side-loaded": "Private apps are side-loaded and are not available on the Marketplace."
 }

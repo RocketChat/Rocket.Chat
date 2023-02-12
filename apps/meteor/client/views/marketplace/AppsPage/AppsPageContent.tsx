@@ -19,6 +19,7 @@ import NoAppRequestsEmptyState from './NoAppRequestsEmptyState';
 import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
 import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
+import PrivateEmptyState from './PrivateEmptyState';
 
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
@@ -170,9 +171,7 @@ const AppsPageContent = (): ReactElement => {
 					onButtonClick={handleReturn}
 				/>
 			)}
-
-			{noInstalledApps && <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}
-
+			{noInstalledApps && context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
