@@ -17,6 +17,7 @@ import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useActiveConnections } from './hooks/useActiveConnections';
 
 const CustomUserStatusService = () => {
@@ -25,6 +26,7 @@ const CustomUserStatusService = () => {
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 	const togglePresenceServiceEndpoint = useEndpoint('POST', '/v1/presence.enableBroadcast');
 	const disablePresenceService = useMutation(() => togglePresenceServiceEndpoint());
+	const isEnterprise = useIsEnterprise();
 
 	if (result.isLoading || disablePresenceService.isLoading) {
 		return <Skeleton />;
@@ -61,11 +63,9 @@ const CustomUserStatusService = () => {
 					</Box>
 					<Box display='flex' fontScale='c1' justifyContent='space-between' mb='x16'>
 						<Box>{t('Active_connections')}</Box>
-						<Box>
-							{current}/{max}
-						</Box>
+						<Box>{isEnterprise ? current : `${current}/${max}`}</Box>
 					</Box>
-					<ProgressBar percentage={percentage} variant='success' />
+					{!isEnterprise && <ProgressBar percentage={percentage} variant={percentage > 80 ? 'danger' : 'success'} />}
 					{presenceDisabled && (
 						<Margins block='x16'>
 							<Callout type='danger' title={t('Service_disabled')}>
@@ -75,21 +75,39 @@ const CustomUserStatusService = () => {
 					)}
 				</div>
 				<Box display='flex' flexDirection='column' mb='x16'>
-					<Box fontScale='p2' mb='x8'>
-						{t('Community_cap_description')}
-					</Box>
-					<Box fontScale='p2' mb='x8'>
-						{t('Enterprise_cap_description')}
-					</Box>
+					{isEnterprise ? (
+						<>
+							<Box fontScale='p2' mb='x8'>
+								{t('Enterprise_cap_description')}
+							</Box>
+							<Box fontScale='p2' mb='x8'>
+								{t('Larger_amounts_of_active_connections')}{' '}
+								<Box is='a' href='https://go.rocket.chat/i/presence-cap-learn-more' target='_blank' color='status-font-on-info'>
+									{t('multiple_instance_solutions')}
+								</Box>
+							</Box>
+						</>
+					) : (
+						<>
+							<Box fontScale='p2' mb='x8'>
+								{t('Community_cap_description')}
+							</Box>
+							<Box fontScale='p2' mb='x8'>
+								{t('Enterprise_cap_description')}
+							</Box>
+						</>
+					)}
 				</Box>
 			</VerticalBar.Content>
-			<VerticalBar.Footer borderBlockStartWidth='default' borderBlockColor='extra-light'>
-				<ButtonGroup stretch vertical>
-					<Button primary width='100%'>
-						{t('More_about_Enterprise_Edition')}
-					</Button>
-				</ButtonGroup>
-			</VerticalBar.Footer>
+			{!isEnterprise && (
+				<VerticalBar.Footer borderBlockStartWidth='default' borderBlockColor='extra-light'>
+					<ButtonGroup stretch vertical>
+						<Button primary width='100%' is='a' href='https://go.rocket.chat/i/presence-cap-learn-more' target='_blank'>
+							{t('More_about_Enterprise_Edition')}
+						</Button>
+					</ButtonGroup>
+				</VerticalBar.Footer>
+			)}
 		</>
 	);
 };
