@@ -39,7 +39,7 @@ const UpsellModal = ({
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
 				<Modal.HeaderText>
-					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_feature')}</Modal.Tagline>
+					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
 					<Modal.Title>{title}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />

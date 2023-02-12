@@ -14,7 +14,6 @@ type AppsPageContentBodyProps = {
 	appsResult: AsyncState<
 		{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
 	>;
-	isRequested: boolean;
 	itemsPerPage: 25 | 50 | 100;
 	current: number;
 	onSetItemsPerPage: React.Dispatch<React.SetStateAction<25 | 50 | 100>>;
@@ -30,7 +29,6 @@ const AppsPageContentBody = ({
 	isMarketplace,
 	isFiltered,
 	appsResult,
-	isRequested,
 	itemsPerPage,
 	current,
 	onSetItemsPerPage,
@@ -46,7 +44,7 @@ const AppsPageContentBody = ({
 				{noErrorsOcurred && (
 					<Box overflowY='scroll' height='100%'>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult?.value?.allApps || []} />}
-						<AppsList apps={appsResult?.value?.items || []} title={isRequested ? '' : t('All_Apps')} />
+						<AppsList apps={appsResult?.value?.items || []} title={isMarketplace ? t('All_Apps') : ''} />
 					</Box>
 				)}
 			</Box>
