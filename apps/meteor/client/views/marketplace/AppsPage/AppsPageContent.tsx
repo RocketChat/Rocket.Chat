@@ -171,7 +171,7 @@ const AppsPageContent = (): ReactElement => {
 					onButtonClick={handleReturn}
 				/>
 			)}
-			{noInstalledApps && context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}
+			{noInstalledApps && <>{context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}</>}
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
