@@ -1,7 +1,7 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { useAppsCount } from '../AppsContext';
 
@@ -28,18 +28,11 @@ const EnabledAppsCount = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const appsCount = useAppsCount();
 
-	const numberOfEnabledApps = useMemo(() => {
-		return context === 'private' ? appsCount.totalPrivateEnabled : appsCount.totalMarketplaceEnabled;
-	}, [context, appsCount.totalMarketplaceEnabled, appsCount.totalPrivateEnabled]);
+	const numberOfEnabledApps = context === 'private' ? appsCount.totalPrivateEnabled : appsCount.totalMarketplaceEnabled;
 
-	const enabledAppsLimit = useMemo(
-		() => (context === 'private' ? appsCount.maxPrivateApps : appsCount.maxMarketplaceApps),
-		[context, appsCount.maxMarketplaceApps, appsCount.maxPrivateApps],
-	);
+	const enabledAppsLimit = context === 'private' ? appsCount.maxPrivateApps : appsCount.maxMarketplaceApps;
 
-	const { variant, percentage } = useMemo(() => {
-		return getProgressBarValues(numberOfEnabledApps, enabledAppsLimit);
-	}, [enabledAppsLimit, numberOfEnabledApps]);
+	const { variant, percentage } = getProgressBarValues(numberOfEnabledApps, enabledAppsLimit);
 
 	return (
 		<Box
