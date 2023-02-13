@@ -5,6 +5,8 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { SettingValue } from '@rocket.chat/core-typings';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
+import type { AppServerNotifier } from '../../../app/apps/server/communication';
+
 export interface IAppsService {
 	triggerEvent: (event: string, ...payload: any) => Promise<any>;
 	updateAppsMarketplaceInfo: (apps: Array<IAppInfo>) => Promise<ProxiedApp[] | undefined>;
@@ -21,4 +23,5 @@ export interface IAppsService {
 	rocketChatLoggerError<T>(obj: T, args: any[]): void;
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null>;
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
+	runOnAppEvent(listener: AppServerNotifier): void;
 }

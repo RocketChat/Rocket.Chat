@@ -7,6 +7,7 @@ import { slashCommands } from '../../../../app/utils/server';
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
+import { AppEvents } from '../../../../app/apps/server/communication';
 
 export class AppCommandsBridge extends CommandBridge {
 	disabledCommands: Map<string, typeof slashCommands.commands[string]>;
@@ -44,7 +45,7 @@ export class AppCommandsBridge extends CommandBridge {
 		slashCommands.commands[cmd] = this.disabledCommands.get(cmd) as typeof slashCommands.commands[string];
 		this.disabledCommands.delete(cmd);
 
-		this.orch.getNotifier().commandUpdated(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_UPDATED, cmd);
 	}
 
 	protected disableCommand(command: string, appId: string): void {
@@ -69,7 +70,7 @@ export class AppCommandsBridge extends CommandBridge {
 		this.disabledCommands.set(cmd, commandObj);
 		delete slashCommands.commands[cmd];
 
-		this.orch.getNotifier().commandDisabled(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_DISABLED, cmd);
 	}
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
@@ -95,7 +96,7 @@ export class AppCommandsBridge extends CommandBridge {
 		) as typeof slashCommands.commands[string]['previewCallback'];
 
 		slashCommands.commands[cmd] = item;
-		this.orch.getNotifier().commandUpdated(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_UPDATED, cmd);
 	}
 
 	protected registerCommand(command: ISlashCommand, appId: string): void {
@@ -118,7 +119,7 @@ export class AppCommandsBridge extends CommandBridge {
 		} as SlashCommand;
 
 		slashCommands.commands[command.command.toLowerCase()] = item;
-		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
+		this.orch.notifyAppEvent(AppEvents.COMMAND_ADDED, command.command.toLowerCase());
 	}
 
 	protected unregisterCommand(command: string, appId: string): void {
@@ -132,7 +133,7 @@ export class AppCommandsBridge extends CommandBridge {
 		this.disabledCommands.delete(cmd);
 		delete slashCommands.commands[cmd];
 
-		this.orch.getNotifier().commandRemoved(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_REMOVED, cmd);
 	}
 
 	private _verifyCommand(command: ISlashCommand): void {
