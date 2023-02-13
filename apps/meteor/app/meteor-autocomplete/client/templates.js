@@ -38,6 +38,7 @@ const autocompleteHelpers = {
 			ac.element = this.parentView.firstNode();
 			ac.$element = $(ac.element);
 		});
+		// eslint-disable-next-line new-cap
 		return Blaze.With(ac, function () {
 			//eslint-disable-line
 			return Template._autocompleteContainer;
