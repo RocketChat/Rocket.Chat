@@ -68,7 +68,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 			</Modal.Header>
 			<Modal.Content>
 				<Box fontSize='p2'>
-					<Box is='p'>
+					<Box>
 						<Trans i18nKey='RegisterWorkspace_Setup_Email_Confirmation'>
 							<Box is='p'>
 								Email sent to{' '}

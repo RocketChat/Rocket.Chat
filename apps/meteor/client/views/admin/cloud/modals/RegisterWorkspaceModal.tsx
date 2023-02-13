@@ -1,4 +1,5 @@
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -12,8 +13,7 @@ type RegisterWorkspaceModalProps = {
 	isConnectedToCloud?: boolean | string;
 };
 
-const documentationLink =
-	'https://docs.rocket.chat/setup-and-configure/accessing-your-workspace/rocket.chat-setup-wizard#information-collected-for-registered-workspaces';
+const documentationLink = 'https://go.rocket.chat/i/register-info-collected';
 
 const RegisterWorkspaceModal = ({ onClose, onStatusChange, isConnectedToCloud = false, ...props }: RegisterWorkspaceModalProps) => {
 	const setModal = useSetModal();
@@ -62,9 +62,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, isConnectedToCloud = 
 			</Modal.Content>
 			<Modal.Footer>
 				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' w='full'>
-					<a href={documentationLink} target='_blank' rel='noopener noreferrer'>
-						{t('Learn_more')}
-					</a>
+					<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
 					<ButtonGroup align='end'>
 						<Button onClick={handleTokenModal}>{t('Use_token')}</Button>
 						<Button primary onClick={handleSetupModal}>
