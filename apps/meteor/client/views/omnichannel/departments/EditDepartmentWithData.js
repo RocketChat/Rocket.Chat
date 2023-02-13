@@ -18,11 +18,11 @@ function EditDepartmentWithData({ id, title }) {
 	}
 
 	if (error || (id && !data?.department)) {
-		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
+		return <Box mbs={16}>{t('Department_not_found')}</Box>;
 	}
 
 	if (data.department.archived === true) {
-		return <Box mbs='x16'>{t('Department_archived')}</Box>;
+		return <Box mbs={16}>{t('Department_archived')}</Box>;
 	}
 
 	return (

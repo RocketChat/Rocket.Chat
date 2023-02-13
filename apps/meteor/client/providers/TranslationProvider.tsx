@@ -17,7 +17,7 @@ type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> exten
 		: never
 	: never;
 
-const namespacesDefault = ['onboarding', 'registration'] as TranslationNamespace[];
+const namespacesDefault = ['onboarding', 'registration', 'cloud'] as TranslationNamespace[];
 
 const parseToJSON = (customTranslations: string) => {
 	try {

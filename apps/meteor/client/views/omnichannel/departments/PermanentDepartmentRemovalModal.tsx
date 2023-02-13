@@ -15,7 +15,7 @@ type PermanentDepartmentRemovalModalProps = {
 
 const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: PermanentDepartmentRemovalModalProps): ReactElement => {
 	const t = useTranslation();
-	console.log(_id);
+
 	const [text, setText] = useState('');
 
 	const removeDepartment = useEndpoint('DELETE', '/v1/livechat/department/:_id', { _id });
@@ -42,8 +42,8 @@ const PermanentDepartmentRemovalModal = ({ _id = '', name, reset, onClose }: Per
 			variant='danger'
 			confirmDisabled={text !== name}
 		>
-			<Box mbe='x16'>{t('Are_you_sure_delete_department')}</Box>
-			<Box mbe='x16' display='flex' justifyContent='stretch'>
+			<Box mbe={16}>{t('Are_you_sure_delete_department')}</Box>
+			<Box mbe={16} display='flex' justifyContent='stretch'>
 				<Input value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value)} />
 			</Box>
 		</GenericModal>
