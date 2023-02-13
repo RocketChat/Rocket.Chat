@@ -23,7 +23,6 @@ import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
-import { useUserCard } from '../../../../hooks/useUserCard';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -33,11 +32,9 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
-import { useLegacyMessageEvents } from '../../hooks/useLegacyMessageEvents';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
-import LegacyMessageTemplateList from './LegacyMessageTemplateList';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
@@ -65,8 +62,6 @@ const RoomBody = (): ReactElement => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
-	const viewMode = useUserPreference<number>('messageViewMode');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
@@ -128,11 +123,6 @@ const RoomBody = (): ReactElement => {
 
 	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
 
-	const messageViewMode = useMemo(() => {
-		const modes = ['', 'cozy', 'compact'] as const;
-		return modes[viewMode ?? 0] ?? modes[0];
-	}, [viewMode]);
-
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead') as boolean | undefined;
@@ -176,17 +166,15 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const { open: openUserCard } = useUserCard();
-
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			openUserCard(username)(event);
+			chat?.userCard.open(username)(event);
 		},
-		[openUserCard],
+		[chat?.userCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -574,10 +562,7 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div
-								ref={messagesBoxRef}
-								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
-							>
+							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
 								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
@@ -619,7 +604,7 @@ const RoomBody = (): ReactElement => {
 													)}
 												</>
 											) : null}
-											{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
+											<MessageList rid={room._id} />
 											{hasMoreNextMessages ? (
 												<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 											) : null}

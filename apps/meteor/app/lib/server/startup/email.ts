@@ -396,6 +396,13 @@ settingsRegistry.addGroup('Email', function () {
 		return this.add('SMTP_Test_Button', 'sendSMTPTestEmail', {
 			type: 'action',
 			actionText: 'Send_a_test_mail_to_my_user',
+			enableQuery: {
+				_id: 'SMTP_Host',
+				value: {
+					$exists: true,
+					$ne: '',
+				},
+			},
 		});
 	});
 
