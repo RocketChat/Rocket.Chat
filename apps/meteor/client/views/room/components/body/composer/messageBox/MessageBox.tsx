@@ -30,7 +30,6 @@ import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { messageBox, popover } from '../../../../../../../app/ui-utils/client';
 import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
@@ -45,8 +44,11 @@ import { useRoom } from '../../../../contexts/RoomContext';
 import BlazeTemplate from '../../../BlazeTemplate';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
+import MessageBoxDropdown from './MessageBoxDropdown';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import FileUploadAction from './actions/FileUploadAction';
+import VideoMessageAction from './actions/VideoMessageAction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -111,7 +113,6 @@ const MessageBox = ({
 	onUploadFiles,
 	onEscape,
 	onTyping,
-	subscription,
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
@@ -137,7 +138,6 @@ const MessageBox = ({
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
 			const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
-			chat.composer?.release();
 			if (node === null) {
 				return;
 			}
@@ -259,7 +259,7 @@ const MessageBox = ({
 		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
 	});
 
-	const isRecording = useSubscription({
+	const isRecordingAudio = useSubscription({
 		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
@@ -329,6 +329,8 @@ const MessageBox = ({
 		}
 	});
 
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -372,48 +374,10 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />
-						<MessageComposerAction
-							disabled={isRecording || !canSend}
-							onClick={(event): void => {
-								const groups = messageBox.actions.get();
-								const config = {
-									popoverClass: 'message-box',
-									columns: [
-										{
-											groups: Object.entries(groups).map(([name, group]) => {
-												const items = group.map((item) => ({
-													icon: item.icon,
-													name: t(item.label),
-													type: 'messagebox-action',
-													id: item.id,
-													action: item.action,
-												}));
-												return {
-													title: t.has(name) && t(name),
-													items,
-												};
-											}),
-										},
-									],
-									offsetVertical: 10,
-									direction: 'top-inverted',
-									currentTarget: event.currentTarget,
-									data: {
-										rid,
-										tmid,
-										prid: subscription?.prid,
-										messageBox: textareaRef.current,
-										chat,
-									},
-									activeElement: event.currentTarget,
-								};
-
-								popover.open(config);
-							}}
-							icon='plus'
-							data-qa-id='menu-more-actions'
-						/>
+						<VideoMessageAction isRecording={isRecordingAudio} canSend={canSend} />
+						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing || isRecordingVideo} />
+						<FileUploadAction isRecording={isRecording} canSend={canSend} />
+						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && canJoin && (
