@@ -14,5 +14,15 @@
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
-	"cSpell.words": ["katex", "listbox", "livechat", "omnichannel", "photoswipe", "searchbox", "tmid"]
+	"cSpell.words": [
+		"autotranslate",
+		"katex",
+		"listbox",
+		"livechat",
+		"oauthapps",
+		"omnichannel",
+		"photoswipe",
+		"searchbox",
+		"tmid"
+	]
 }
