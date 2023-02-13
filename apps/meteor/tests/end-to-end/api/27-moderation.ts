@@ -130,7 +130,7 @@ describe('[Moderation]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-					reportedMessage = res.body.reports[0];
+					reportedMessage = res.body.reports.reports[0];
 				})
 				.end(done);
 		});
