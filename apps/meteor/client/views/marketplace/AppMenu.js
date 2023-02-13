@@ -355,7 +355,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					viewLogs: {
 						label: (
 							<Option>
-								<Icon name='list-alt' size='x16' marginInlineEnd='x4' />
+								<Icon name='desktop-text' size='x16' marginInlineEnd='x4' />
 								{t('View_Logs')}
 							</Option>
 						),
