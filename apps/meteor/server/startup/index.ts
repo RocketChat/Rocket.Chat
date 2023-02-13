@@ -15,5 +15,4 @@ import { isRunningMs } from '../lib/isRunningMs';
 if (!isRunningMs()) {
 	require('./localServices');
 	require('./watchDb');
-	require('./presence');
 }

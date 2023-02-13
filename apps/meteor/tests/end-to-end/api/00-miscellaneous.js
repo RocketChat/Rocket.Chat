@@ -4,6 +4,7 @@ import { getCredentials, api, login, request, credentials } from '../../data/api
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('miscellaneous', function () {
 	this.retries(0);
@@ -595,18 +596,29 @@ describe('miscellaneous', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const {
-						instances: [instance],
-					} = res.body;
+					// ddp-streamer registers itself as an instance, so for EE we have 2 instances
+					const totalInstances = IS_EE ? 2 : 1;
+					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(totalInstances);
 
-					expect(instance).to.have.property('_id');
-					expect(instance).to.have.property('extraInformation');
-					expect(instance).to.have.property('name');
-					expect(instance).to.have.property('pid');
+					const { instances } = res.body;
 
-					const { extraInformation } = instance;
+					const instance = instances.filter((i) => i.instanceRecord.name === 'rocket.chat')[0];
+
+					expect(instance).to.have.property('address');
+					expect(instance).to.have.property('instanceRecord');
+					expect(instance).to.have.property('currentStatus');
+
+					expect(instance.currentStatus).to.have.property('connected');
+					expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
+					expect(instance.currentStatus).to.have.property('local');
+
+					expect(instance.instanceRecord).to.have.property('_id');
+					expect(instance.instanceRecord).to.have.property('extraInformation');
+					expect(instance.instanceRecord).to.have.property('name');
+					expect(instance.instanceRecord).to.have.property('pid');
+
+					const { extraInformation } = instance.instanceRecord;
 
 					expect(extraInformation).to.have.property('host');
 					expect(extraInformation).to.have.property('port');

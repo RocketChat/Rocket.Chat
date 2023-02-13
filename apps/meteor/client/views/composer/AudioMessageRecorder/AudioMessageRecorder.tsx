@@ -39,7 +39,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: Audio
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
 
-		chat?.flows.action.stop('recording');
+		chat?.action.stop('recording');
 
 		chat?.composer?.setRecordingMode(false);
 
@@ -124,7 +124,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: Audio
 
 		try {
 			await audioRecorder.start();
-			chat?.flows.action.performContinuously('recording');
+			chat?.action.performContinuously('recording');
 			const startTime = new Date();
 			setRecordingInterval(
 				setInterval(() => {
