@@ -1,11 +1,12 @@
 import type { ReactElement } from 'react';
 import { useContext, createContext } from 'react';
 
-type ComposerPopupOption<T extends { _id: string } = { _id: string }> = {
+type ComposerPopupItem<T> = T extends { _id: string; sort?: number } ? T : never;
+
+export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id: string; sort?: number }> = {
 	title?: string;
 	getItemsFromLocal: (filter: string) => Promise<T[]>;
 	getItemsFromServer: (filter: string) => Promise<T[]>;
-	focused?: T | undefined;
 	blurOnSelectItem?: boolean;
 	closeOnEsc?: boolean;
 
@@ -17,22 +18,25 @@ type ComposerPopupOption<T extends { _id: string } = { _id: string }> = {
 
 	matchSelectorRegex?: RegExp;
 
-	getValue(item: T): string;
+	getValue: (item: ComposerPopupItem<T>) => string;
 
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };
 
-export type ComposerPopupContextValue<T extends { _id: string } = { _id: string }> = ComposerPopupOption<T>[];
+export type ComposerPopupContextValue = ComposerPopupOption[];
 
 export const ComposerPopupContext = createContext<ComposerPopupContextValue | undefined>(undefined);
 
-export const createMessageBoxPopupConfig = <T extends { _id: string }>(partial: ComposerPopupOption<T>): ComposerPopupOption<T> => {
+export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: number }>(
+	partial: Omit<ComposerPopupOption<T>, 'getValue'> & Partial<Pick<ComposerPopupOption<T>, 'getValue'>>,
+): ComposerPopupOption<T> => {
 	return {
 		blurOnSelectItem: true,
 		closeOnEsc: true,
 		triggerAnywhere: true,
 		suffix: ' ',
 		prefix: partial.trigger ?? ' ',
+		getValue: (item) => item._id,
 		...partial,
 	};
 };

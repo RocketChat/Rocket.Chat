@@ -1,22 +1,34 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useMethod, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
+import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji, EmojiPicker } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
+import ComposerPopupCannedResponse from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupCannedResponse';
+import type { ComposerBoxPopupEmojiProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupEmoji';
 import ComposerPopupEmoji from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupEmoji';
 import type { ComposerBoxPopupRoomProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupRoom';
 import ComposerBoxPopupRoom from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupRoom';
+import type { ComposerBoxPopupSlashCommandProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupSlashCommand';
+import ComposerPopupSlashCommand from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupSlashCommand';
 import ComposerBoxPopupUser from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupUser';
 import type { ComposerBoxPopupUserProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupUser';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
+import { slashCommands } from '../../../../app/utils/client';
+import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 
-const ComposerPopupProvider = ({ children, rid }: { children: ReactNode; rid: string }) => {
+const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: IRoom }) => {
+	const { _id: rid } = room;
 	const userSpotlight = useMethod('spotlight');
 	const suggestionsCount = useSetting<number>('Number_of_users_autocomplete_suggestions');
+	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
+	const isOmnichannel = isOmnichannelRoom(room);
 
 	const t = useTranslation();
 	const value: ComposerPopupContextValue = useMemo(() => {
@@ -127,13 +139,13 @@ const ComposerPopupProvider = ({ children, rid }: { children: ReactNode; rid: st
 					return records;
 				},
 				getItemsFromServer: async (filter: string) => {
-					const { rooms = [] } = await userSpotlight(filter, undefined, { rooms: true, mentions: true }, rid);
-					return rooms;
+					const { rooms = [] } = await userSpotlight(filter, [], { rooms: true, mentions: true }, rid);
+					return rooms as unknown as ComposerBoxPopupRoomProps[];
 				},
 				getValue: (item) => `${item.fname || item.name}`,
 				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
-			}),
-			createMessageBoxPopupConfig<ComposerBoxPopupRoomProps>({
+			}) as any,
+			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 				trigger: ':',
 				title: t('Emoji'),
 				getItemsFromLocal: async (filter: string) => {
@@ -187,9 +199,8 @@ const ComposerPopupProvider = ({ children, rid }: { children: ReactNode; rid: st
 				getValue: (item) => `${item._id.substring(1)}`,
 				renderItem: ({ item }) => <ComposerPopupEmoji {...item} />,
 			}),
-			createMessageBoxPopupConfig<ComposerBoxPopupRoomProps>({
+			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 				title: t('Emoji'),
-				template: 'messagePopupEmoji',
 				trigger: '\\+:',
 				prefix: '+',
 				suffix: ' ',
@@ -245,8 +256,80 @@ const ComposerPopupProvider = ({ children, rid }: { children: ReactNode; rid: st
 				getValue: (item) => `${item._id}`,
 				renderItem: ({ item }) => <ComposerPopupEmoji {...item} />,
 			}),
-		];
-	}, [t, suggestionsCount, userSpotlight, rid]);
+
+			createMessageBoxPopupConfig<ComposerBoxPopupSlashCommandProps>({
+				title: t('Commands'),
+				trigger: '/',
+				suffix: ' ',
+				triggerAnywhere: false,
+				renderItem: ({ item }) => <ComposerPopupSlashCommand {...item} />,
+				getItemsFromLocal: async (filter: string) => {
+					return Object.keys(slashCommands.commands)
+						.map((command) => {
+							const item = slashCommands.commands[command];
+							return {
+								_id: command,
+								params: item.params && t.has(item.params) ? t(item.params) : item.params ?? '',
+								description: t.has(item.description) ? t(item.description) : item.description,
+								permission: item.permission,
+							};
+						})
+						.filter((command) => {
+							const isMatch = command._id.indexOf(filter) > -1;
+
+							if (!isMatch) {
+								return false;
+							}
+
+							if (!command.permission) {
+								return true;
+							}
+
+							return hasAtLeastOnePermission(command.permission, rid);
+						})
+						.sort((a, b) => a._id.localeCompare(b._id))
+						.slice(0, 11);
+				},
+				getItemsFromServer: async () => [],
+			}),
+			cannedResponseEnabled &&
+				isOmnichannel &&
+				createMessageBoxPopupConfig<{
+					_id: string;
+					text: string;
+					shortcut: string;
+				}>({
+					title: t('Canned_Responses'),
+					trigger: '!',
+					triggerAnywhere: true,
+					renderItem: ({ item }) => <ComposerPopupCannedResponse {...item} />,
+					getItemsFromLocal: async (filter: string) => {
+						const exp = new RegExp(filter, 'i');
+						return CannedResponse.find(
+							{
+								shortcut: exp,
+							},
+							{
+								limit: 12,
+								sort: {
+									shortcut: -1,
+								},
+							},
+						)
+							.fetch()
+							.map((record) => ({
+								_id: record._id,
+								text: record.text,
+								shortcut: record.shortcut,
+							}));
+					},
+					getItemsFromServer: async () => [],
+					getValue: (item) => {
+						return item.text;
+					},
+				}),
+		].filter(Boolean);
+	}, [t, cannedResponseEnabled, isOmnichannel, suggestionsCount, userSpotlight, rid]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };

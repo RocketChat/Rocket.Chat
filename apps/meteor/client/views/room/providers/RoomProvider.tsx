@@ -110,7 +110,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		<RoomAPIContext.Provider value={api}>
 			<RoomContext.Provider value={context}>
 				<ToolboxProvider room={pseudoRoom}>
-					<ComposerPopupProvider rid={rid}>{children}</ComposerPopupProvider>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
 				</ToolboxProvider>
 			</RoomContext.Provider>
 		</RoomAPIContext.Provider>
