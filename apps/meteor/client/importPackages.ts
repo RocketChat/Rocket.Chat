@@ -48,7 +48,6 @@ import '../app/slashcommands-topic/client';
 import '../app/slashcommands-unarchiveroom/client';
 import '../app/tokenpass/client';
 import '../app/ui/client';
-import '../app/ui-account/client';
 import '../app/ui-clean-history/client';
 import '../app/ui-login';
 import '../app/ui-master/client';
