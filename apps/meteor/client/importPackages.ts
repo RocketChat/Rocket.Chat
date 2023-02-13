@@ -60,7 +60,6 @@ import '../app/meteor-accounts-saml/client';
 import '../app/e2e/client';
 import '../app/version-check/client';
 import '../app/search/client';
-import '../app/lazy-load/client';
 import '../app/discussion/client';
 import '../app/threads/client';
 import '../app/user-status/client';

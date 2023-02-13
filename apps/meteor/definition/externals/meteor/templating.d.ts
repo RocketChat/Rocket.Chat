@@ -25,7 +25,6 @@ declare module 'meteor/templating' {
 	interface TemplateStatic {
 		requiresPermission: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		emojiPicker: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		lazyloadImage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		customFieldsForm: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		ExternalFrameContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		broadcastView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
