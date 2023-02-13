@@ -49,12 +49,6 @@ declare module 'meteor/templating' {
 		DefaultSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		RocketSearch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		icon: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_default: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_item_default: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_item_channel: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popupList_item_custom: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		selectDropdown: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		CodeMirror: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		photoswipeContent: Blaze.Template<any, Blaze.TemplateInstance<any>>;
