@@ -12,6 +12,7 @@ type ComposerBoxPopupProps<
 	title?: string;
 	focused?: T;
 	items: UseQueryResult<T[]>[];
+	select: (item: T) => void;
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };
 
@@ -24,6 +25,7 @@ export const ComposerBoxPopup = <
 	title,
 	items,
 	focused,
+	select,
 	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
 }: ComposerBoxPopupProps<T>): ReactElement | null => {
 	return (
@@ -45,7 +47,13 @@ export const ComposerBoxPopup = <
 						.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0))
 						.map((item, index) => {
 							return (
-								<Option tabindex={item === focused ? 0 : -1} selected={item === focused} key={index}>
+								<Option
+									onClick={() => select(item)}
+									selected={item === focused}
+									key={index}
+									id={`popup-item-${item._id}`}
+									{...({ tabindex: item === focused ? 0 : -1 } as any)}
+								>
 									{renderItem({ item })}
 								</Option>
 							);

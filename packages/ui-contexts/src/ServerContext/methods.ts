@@ -241,8 +241,9 @@ export interface ServerMethods {
 			| string
 			| string[]
 			| {
-					users: boolean;
-					rooms: boolean;
+					users?: boolean;
+					rooms?: boolean;
+					mentions?: boolean;
 			  }
 		)[]
 	) => {

@@ -27,16 +27,23 @@ export type MessageBoxOptions<T extends { _id: string }> = {
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };
 
-type IMessageBoxResult<T extends { _id: string; sort?: number }> = {
-	callbackRef: (node: HTMLElement) => void;
-} & (
-	| { popup: MessageBoxOptions<T>; items: UseQueryResult<T[]>[]; focused: T | undefined }
+type IMessageBoxResult<T extends { _id: string; sort?: number }> =
+	| {
+			popup: MessageBoxOptions<T>;
+			items: UseQueryResult<T[]>[];
+			focused: T | undefined;
+			ariaActiveDescendant: string | undefined;
+			select: (item: T) => void;
+			callbackRef: (node: HTMLElement) => void;
+	  }
 	| {
 			popup: undefined;
 			items: undefined;
 			focused: undefined;
-	  }
-);
+			ariaActiveDescendant: undefined;
+			callbackRef: (node: HTMLElement) => void;
+			select: undefined;
+	  };
 
 const keys = {
 	TAB: 9,
@@ -61,6 +68,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	const items = useComposerBoxPopupQueries(filter, popup?.getItemsFromLocal, popup?.getItemsFromServer) as unknown as UseQueryResult<T[]>[];
 
 	const chat = useChat();
+
+	const ariaActiveDescendant = focused ? `popup-item-${focused._id}` : undefined;
 
 	const select = useMutableCallback((item: T) => {
 		if (!popup) {
@@ -212,10 +221,23 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		[keyup, keydown, onFocus],
 	);
 
+	if (!popup) {
+		return {
+			callbackRef,
+			focused: undefined,
+			items: undefined,
+			ariaActiveDescendant: undefined,
+			popup: undefined,
+			select: undefined,
+		};
+	}
+
 	return {
-		items,
-		popup,
 		focused,
+		items,
+		ariaActiveDescendant,
+		popup,
+		select,
 
 		callbackRef,
 	};
