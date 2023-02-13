@@ -55,8 +55,17 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
-			{icon && <Icon name={icon} size='x20' mi='x4' />}
-			<Box withTruncatedText fontScale='p2' mi='x4' display='flex' alignItems='center' justifyContent='space-between' width='100%'>
+			{icon && <Icon name={icon} size='x20' mi='x4' color='default' />}
+			<Box
+				withTruncatedText
+				fontScale='p2'
+				mi='x4'
+				display='flex'
+				alignItems='center'
+				justifyContent='space-between'
+				width='100%'
+				color='default'
+			>
 				{label} {tag && <Tag>{tag}</Tag>}
 				{handleAppsRequestBadge()}
 			</Box>

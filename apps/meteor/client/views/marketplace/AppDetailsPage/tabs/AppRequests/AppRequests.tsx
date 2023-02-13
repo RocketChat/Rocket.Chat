@@ -1,4 +1,4 @@
-import type { App } from '@rocket.chat/core-typings';
+import type { App, AppRequest } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -33,7 +33,9 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	useEffect(() => {
 		return () => {
 			if (isAdminUser && isSuccess) {
-				const unseenRequests = paginatedAppRequests.data?.filter(({ seen }) => !seen).map(({ id }) => id);
+				const unseenRequests = paginatedAppRequests.data
+					?.filter(({ seen }: { seen: boolean }) => !seen)
+					.map(({ id }: { id: string }) => id);
 
 				if (unseenRequests.length) {
 					markAppRequestsAsSeen.mutate(unseenRequests, {
@@ -60,7 +62,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 		<Box h='full' display='flex' flexDirection='column'>
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36' flexGrow='1'>
 				{paginatedAppRequests?.data?.length ? (
-					paginatedAppRequests?.data.map((request) => (
+					paginatedAppRequests?.data.map((request: AppRequest) => (
 						<AppRequestItem
 							key={request.id}
 							seen={request.seen}
