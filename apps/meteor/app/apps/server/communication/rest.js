@@ -4,7 +4,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Users } from '../../../models/server';
@@ -148,7 +148,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = await getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+						const token = await getWorkspaceAccessTokenWithScope('marketplace:purchase');
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
@@ -160,7 +160,7 @@ export class AppsRestApi {
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/${
 								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-							}?workspaceId=${workspaceId}&token=${token}&seats=${seats}`,
+							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
 
