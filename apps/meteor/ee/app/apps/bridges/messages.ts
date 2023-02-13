@@ -6,11 +6,9 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Messages, Users, Subscriptions } from '@rocket.chat/models';
 
-import { updateMessage } from '../../../../app/lib/server/functions/updateMessage';
-import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
-import notifications from '../../../../app/notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { MessageService, NotificationService } from '../../../../server/sdk';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function
@@ -23,7 +21,7 @@ export class AppMessageBridge extends MessageBridge {
 
 		const convertedMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const sentMessage = await MessageService.sendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}
@@ -52,7 +50,7 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Could not find message editor');
 		}
 
-		updateMessage(msg, editor);
+		await MessageService.updateMessage(msg, editor);
 	}
 
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
@@ -94,7 +92,7 @@ export class AppMessageBridge extends MessageBridge {
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
-				notifications.notifyRoom(id, 'typing', username, isTyping);
+				NotificationService.notifyRoom(id, 'typing', username, isTyping);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');

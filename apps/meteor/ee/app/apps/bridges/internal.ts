@@ -29,7 +29,7 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
-		return records.map((s: ISubscription) => s.u.username);
+		return records.map((s: ISubscription) => s.u.username).filter((username) => username) as Array<string>;
 	}
 
 	protected async getWorkspacePublicKey(): Promise<ISetting> {
