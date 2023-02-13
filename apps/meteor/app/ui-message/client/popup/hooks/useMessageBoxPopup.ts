@@ -1,7 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { ReactElement, useCallback, useState } from 'react';
+import type { ReactElement } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useChat } from '../../../../../client/views/room/contexts/ChatContext';
 
