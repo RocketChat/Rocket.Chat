@@ -80,7 +80,6 @@ declare module 'meteor/templating' {
 		messagePopupSlashCommand: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupSlashCommandPreview: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupUser: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		collapseArrow: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
