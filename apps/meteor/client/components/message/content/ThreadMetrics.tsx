@@ -40,14 +40,14 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 	});
 
 	const handleFollow = useCallback(() => {
-		toggleFollowingThreadMutation.mutate({ tmid: mid, follow: !following });
-	}, [following, mid, toggleFollowingThreadMutation]);
+		toggleFollowingThreadMutation.mutate({ rid, tmid: mid, follow: !following });
+	}, [following, rid, mid, toggleFollowingThreadMutation]);
 
 	return (
 		<MessageBlock className={followStyle}>
 			<div className={className} ref={ref} />
 			<MessageMetrics>
-				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread(mid)}>
+				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })}>
 					{t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={t('Replies')}>

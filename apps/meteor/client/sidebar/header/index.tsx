@@ -27,7 +27,7 @@ const HeaderWithData = (): ReactElement => {
 				<UserAvatarButton />
 				<Sidebar.TopBar.Actions>
 					<Home title={t('Home')} />
-					<Search title={t('Search')} data-qa='sidebar-search' />
+					<Search title={t('Search')} />
 					{user && (
 						<>
 							<Directory title={t('Directory')} />

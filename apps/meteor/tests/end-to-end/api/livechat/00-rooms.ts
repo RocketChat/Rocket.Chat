@@ -515,8 +515,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(lastMessage?.transferData?.scope).to.be.equal('agent');
 			expect(lastMessage?.transferData?.transferredTo?.username).to.be.equal(forwardChatToUser.username);
 		});
-
-		it('should return a success message when transferred successfully to a department', async () => {
+		(IS_EE ? it : it.skip)('should return a success message when transferred successfully to a department', async () => {
 			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
 			const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
 
@@ -1578,7 +1577,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	describe('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
+	(IS_EE ? describe : describe.skip)('it should NOT mark room as unread when a new message arrives and the config is deactivated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;

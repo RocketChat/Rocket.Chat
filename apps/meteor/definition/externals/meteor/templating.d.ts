@@ -106,7 +106,6 @@ declare module 'meteor/templating' {
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		audit: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupCannedResponse: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 
 		instance<TTemplateName extends keyof TemplateStatic>(): TemplateStatic[TTemplateName] extends Blaze.Template<any, infer I> ? I : never;

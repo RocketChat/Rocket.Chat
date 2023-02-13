@@ -21,6 +21,7 @@ import {
 	LivechatInquiry as LivechatInquiryRaw,
 	Subscriptions as SubscriptionsRaw,
 	Messages as MessagesRaw,
+	LivechatDepartment as LivechatDepartmentRaw,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -1003,74 +1004,6 @@ export const Livechat = {
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
-	saveDepartment(_id, departmentData, departmentAgents) {
-		check(_id, Match.Maybe(String));
-
-		const defaultValidations = {
-			enabled: Boolean,
-			name: String,
-			description: Match.Optional(String),
-			showOnRegistration: Boolean,
-			email: String,
-			showOnOfflineForm: Boolean,
-			requestTagBeforeClosingChat: Match.Optional(Boolean),
-			chatClosingTags: Match.Optional([String]),
-			fallbackForwardDepartment: Match.Optional(String),
-		};
-
-		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-		Object.keys(departmentData).forEach((field) => {
-			if (!defaultValidations.hasOwnProperty(field)) {
-				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-			}
-		});
-
-		check(departmentData, defaultValidations);
-		check(
-			departmentAgents,
-			Match.Maybe({
-				upsert: Match.Maybe(Array),
-				remove: Match.Maybe(Array),
-			}),
-		);
-
-		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
-		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
-			throw new Meteor.Error(
-				'error-validating-department-chat-closing-tags',
-				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
-				{ method: 'livechat:saveDepartment' },
-			);
-		}
-
-		if (_id) {
-			const department = LivechatDepartment.findOneById(_id);
-			if (!department) {
-				throw new Meteor.Error('error-department-not-found', 'Department not found', {
-					method: 'livechat:saveDepartment',
-				});
-			}
-		}
-
-		if (fallbackForwardDepartment === _id) {
-			throw new Meteor.Error(
-				'error-fallback-department-circular',
-				'Cannot save department. Circular reference between fallback department and department',
-			);
-		}
-
-		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
-		}
-
-		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
-		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
-		}
-
-		return departmentDB;
-	},
-
 	saveAgentInfo(_id, agentData, agentDepartments) {
 		check(_id, Match.Maybe(String));
 		check(agentData, Object);
@@ -1087,6 +1020,66 @@ export const Livechat = {
 		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
+	},
+
+	removeDepartment(_id) {
+		check(_id, String);
+
+		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+
+		if (!departmentRemovalEnabled) {
+			throw new Meteor.Error('department-removal-disabled', 'Department removal is disabled', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		const department = LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+		const ret = LivechatDepartment.removeById(_id);
+		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id)
+			.fetch()
+			.map((agent) => agent.agentId);
+		LivechatDepartmentAgents.removeByDepartmentId(_id);
+		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+			});
+		}
+		return ret;
+	},
+
+	async unarchiveDepartment(_id) {
+		check(_id, String);
+
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.unarchiveDepartment(_id);
+	},
+
+	async archiveDepartment(_id) {
+		check(_id, String);
+
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.archiveDepartment(_id);
 	},
 
 	showConnecting() {
