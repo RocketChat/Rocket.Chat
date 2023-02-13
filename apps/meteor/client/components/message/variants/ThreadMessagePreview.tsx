@@ -58,7 +58,11 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			{!sequential && (
 				<ThreadMessageRow
-					onClick={!isSelecting && parentMessage.isSuccess ? () => goToThread(message.tmid, parentMessage.data?._id) : undefined}
+					onClick={
+						!isSelecting && parentMessage.isSuccess
+							? () => goToThread({ rid: message.rid, tmid: message.tmid, jump: parentMessage.data?._id })
+							: undefined
+					}
 				>
 					<ThreadMessageLeftContainer>
 						<ThreadMessageIconThread />
@@ -87,7 +91,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!isSelecting ? () => goToThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, jump: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}

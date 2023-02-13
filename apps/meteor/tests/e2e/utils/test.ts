@@ -81,12 +81,34 @@ export const { expect } = test;
 
 expect.extend({
 	async toBeInvalid(received: Locator) {
-		const pass = await received.evaluate((node) => node.getAttribute('aria-invalid') === 'true');
+		try {
+			await expect(received).toHaveAttribute('aria-invalid', 'true');
 
-		return {
-			message: () => `expected ${received} to be invalid`,
-			pass,
-		};
+			return {
+				message: () => `expected ${received} to be invalid`,
+				pass: true,
+			};
+		} catch (error) {
+			return {
+				message: () => `expected ${received} to be invalid`,
+				pass: false,
+			};
+		}
+	},
+	async toBeBusy(received: Locator) {
+		try {
+			await expect(received).toHaveAttribute('aria-busy', 'true');
+
+			return {
+				message: () => `expected ${received} to be busy`,
+				pass: true,
+			};
+		} catch (error) {
+			return {
+				message: () => `expected ${received} to be busy`,
+				pass: false,
+			};
+		}
 	},
 	async hasAttribute(received: Locator, attribute: string) {
 		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);

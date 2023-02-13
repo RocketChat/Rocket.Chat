@@ -6,9 +6,8 @@ import type { ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
-import { UserStatus } from '../../../../components/UserStatus';
+import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { usePresence } from '../../../../hooks/usePresence';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
 type LeaderBarProps = {
@@ -23,7 +22,6 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 	const t = useTranslation();
 
 	const chatNowLink = useMemo(() => roomCoordinator.getRouteLink('d', { name: username }) || undefined, [username]);
-	const roomLeaderData = usePresence(_id);
 
 	const handleAvatarClick = useCallback(
 		(event: UIEvent) => {
@@ -72,8 +70,7 @@ const LeaderBar = ({ _id, name, username, visible, onAvatarClick }: LeaderBarPro
 				<Box fontScale='p2' mi='x4'>
 					<Box fontWeight={700}>{name}</Box>
 					<Box display='flex' alignItems='center'>
-						<UserStatus status={roomLeaderData?.status} />
-						<Box mis='x4'>{roomLeaderData?.statusText ?? t(roomLeaderData?.status || 'offline')}</Box>
+						<ReactiveUserStatus uid={_id} />
 					</Box>
 				</Box>
 			</Box>
