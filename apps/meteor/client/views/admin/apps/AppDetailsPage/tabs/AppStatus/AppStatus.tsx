@@ -2,13 +2,12 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetModal, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo, Fragment } from 'react';
 
 import { Apps } from '../../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
-import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
 import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
@@ -90,21 +89,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		}
 	};
 
-	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
-
 	const handleClick = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
 		e.preventDefault();
 		e.stopPropagation();
 
 		setLoading(true);
-
-		const isLoggedIn = await checkUserLoggedIn();
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
 
 		if (app.versionIncompatible && action !== undefined) {
 			openIncompatibleModal(app, action, cancelAction);
