@@ -19,7 +19,6 @@ import React, { memo } from 'react';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
-import { useUserCard } from '../../../hooks/useUserCard';
 import { useUserData } from '../../../hooks/useUserData';
 import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import type { UserPresence } from '../../../lib/presence';
@@ -29,6 +28,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
@@ -42,7 +42,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -72,8 +72,11 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 				<MessageSystemBlock>
 					<MessageNameContainer>
 						<MessageSystemName
-							onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
-							style={{ cursor: 'pointer' }}
+							{...(user.username !== undefined &&
+								chat?.userCard && {
+									onClick: chat?.userCard.open(user.username),
+									style: { cursor: 'pointer' },
+								})}
 						>
 							{getUserDisplayName(user.name, user.username, showRealName)}
 						</MessageSystemName>
@@ -82,8 +85,11 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 								{' '}
 								<MessageUsername
 									data-username={user.username}
-									onClick={user.username !== undefined ? openUserCard(user.username) : undefined}
-									style={{ cursor: 'pointer' }}
+									{...(user.username !== undefined &&
+										chat?.userCard && {
+											onClick: chat?.userCard.open(user.username),
+											style: { cursor: 'pointer' },
+										})}
 								>
 									@{user.username}
 								</MessageUsername>

@@ -13,19 +13,6 @@ import type { UserPresence } from '../lib/presence';
  */
 export const useUserData = (uid: string): UserPresence | undefined => {
 	const userPresence = useContext(UserPresenceContext);
-	// const subscription = useCallback(
-	// 	(callback: () => void): (() => void) => {
-	// 		Presence.listen(uid, callback);
-	// 		return (): void => {
-	// 			Presence.stop(uid, callback);
-	// 		};
-	// 	},
-	// 	[uid],
-	// );
-
-	// const getSnapshot = (): UserPresence | undefined => Presence.store.get(uid);
-
-	// return useSyncExternalStore(subscription, getSnapshot);
 
 	const { subscribe, get } = useMemo(
 		() => userPresence?.queryUserData(uid) ?? { subscribe: () => () => undefined, get: () => undefined },
