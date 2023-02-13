@@ -23,12 +23,14 @@ const PORT = process.env.PORT || 3034;
 	const { AppsConverterService } = await import('../../../../apps/meteor/ee/app/apps/converterService');
 	const { AppsManagerService } = await import('../../../../apps/meteor/ee/app/apps/managerService');
 	const { AppsVideoManagerService } = await import('../../../../apps/meteor/ee/app/apps/videoManagerService');
+	const { AppsApiService } = await import('../../../../apps/meteor/ee/app/apps/apiService');
 
 	api.registerService(new AppsOrchestratorService(db));
 	api.registerService(new AppsStatisticsService());
 	api.registerService(new AppsConverterService());
 	api.registerService(new AppsManagerService());
 	api.registerService(new AppsVideoManagerService());
+	api.registerService(new AppsApiService());
 
 	await api.start();
 

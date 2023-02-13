@@ -8,4 +8,5 @@ export interface IAppsConverterService {
 	convertMessageById(id: string): Promise<IMessage>;
 	convertVistitorByToken(id: string): Promise<IVisitor>;
 	convertUserToApp(user: any): Promise<IUser>;
+	convertUserById(id: string): Promise<IUser>;
 }
