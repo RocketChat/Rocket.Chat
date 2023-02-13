@@ -26,6 +26,8 @@
 .rocket-default-search-results .list .message {
 	padding-right: 8px !important;
 	padding-left: 70px !important;
+
+	list-style: none;
 }
 
 .rocket-default-search-results .js-list {

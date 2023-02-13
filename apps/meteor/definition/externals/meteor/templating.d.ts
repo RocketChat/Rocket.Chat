@@ -1,7 +1,7 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { IRoom, ISetting } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISetting, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -65,16 +65,6 @@ declare module 'meteor/templating' {
 		oembedUrlWidget: BlazeTemplate;
 		oembedVideoWidget: BlazeTemplate;
 		oembedYoutubeWidget: BlazeTemplate;
-		DefaultSearchResultTemplate: BlazeTemplate<{
-			searching: ReactiveVar<boolean>;
-			result: ReactiveVar<any>;
-			text: ReactiveVar<string>;
-			settings: Record<ISetting['_id'], ISetting['value']>;
-			parentPayload: Record<string, unknown>;
-			payload: Record<string, unknown>;
-			search(): void;
-		}>;
-		DefaultSuggestionItemTemplate: BlazeTemplate;
 		icon: BlazeTemplate<{
 			block?: string;
 			icon: string;
@@ -117,7 +107,31 @@ declare module 'meteor/templating' {
 		>;
 		error: BlazeTemplate;
 		loading: BlazeTemplate;
-		message: BlazeTemplate;
+		message: BlazeTemplate<{
+			msg: Omit<IMessage, 'groupable'> & { searchedText?: string; customClass?: string; actionContext?: string; groupable?: boolean };
+			room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
+			subscription?: Pick<ISubscription, 'name' | 'autoTranslate' | 'rid' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
+			settings: {
+				translateLanguage?: unknown;
+				autoImageLoad?: unknown;
+				saveMobileBandwidth?: unknown;
+				collapseMediaByDefault?: unknown;
+				showreply?: unknown;
+				showReplyButton?: unknown;
+				hasPermissionDeleteMessage?: unknown;
+				hasPermissionDeleteOwnMessage?: unknown;
+				hideRoles?: unknown;
+				UI_Use_Real_Name?: unknown;
+				Chatops_Username?: unknown;
+				AutoTranslate_Enabled?: unknown;
+				Message_AllowEditing?: unknown;
+				Message_AllowEditing_BlockEditInMinutes?: unknown;
+				API_Embed?: unknown;
+				Message_GroupingPeriod?: unknown;
+			};
+			u?: Partial<IUser>;
+			[key: string]: any;
+		}>;
 		messageThread: BlazeTemplate;
 		messagePopup: BlazeTemplate;
 		messagePopupChannel: BlazeTemplate;

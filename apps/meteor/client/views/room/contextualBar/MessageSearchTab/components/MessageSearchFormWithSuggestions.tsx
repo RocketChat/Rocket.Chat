@@ -15,11 +15,10 @@ import MessageSearchSuggestion from './MessageSearchSuggestion';
 
 type MessageSearchFormWithSuggestionsProps = {
 	provider: ISearchProvider;
-	getPayload: () => Record<string, unknown>;
 	onSearch: (searchText: string) => void;
 };
 
-const MessageSearchFormWithSuggestions = ({ provider, getPayload, onSearch }: MessageSearchFormWithSuggestionsProps) => {
+const MessageSearchFormWithSuggestions = ({ provider, onSearch }: MessageSearchFormWithSuggestionsProps) => {
 	const { handleSubmit, register, setFocus, setValue } = useForm({
 		defaultValues: {
 			'message-search': '',
@@ -41,7 +40,7 @@ const MessageSearchFormWithSuggestions = ({ provider, getPayload, onSearch }: Me
 	const suggestionsMutation = useMutation(
 		['rooms', room._id, 'message-search', 'suggestions', { uid, rid: room._id }] as const,
 		async ({ searchText }: { searchText: string }) => {
-			const suggestions = await getSearchSuggestions(searchText, { rid: room._id, uid }, getPayload());
+			const suggestions = await getSearchSuggestions(searchText, { rid: room._id, uid }, {});
 
 			if (!suggestions || suggestions.length === 0) {
 				return [{ text: 'Test' }];
