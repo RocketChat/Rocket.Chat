@@ -8,8 +8,8 @@ import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense, LicenseAppSources } from '../definitions/ILicense';
-import type { ILicenseTag } from '../definitions/ILicenseTag';
+import type { ILicense, LicenseAppSources } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
 import type { AppServerOrchestrator } from '../../../../app/apps/server/orchestrator';
 
