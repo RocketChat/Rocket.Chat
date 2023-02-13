@@ -2,10 +2,9 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Field, TextInput, ToggleSwitch, Select, TextAreaInput } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FC } from 'react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
+import type { FieldErrorsImpl } from 'react-hook-form';
 import { useController, useFormContext } from 'react-hook-form';
-
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 
 export type TriggerConditions = {
 	name: string;
@@ -34,6 +33,25 @@ type TriggersFormProps = {
 	};
 	className?: ComponentProps<typeof Field>['className'];
 };
+
+type ErrorsType = FieldErrorsImpl<{
+	name: string;
+	description: string;
+	enabled: boolean;
+	runOnce: boolean;
+	conditions: {
+		name: string;
+		value: NonNullable<string | number>;
+	};
+	actions: {
+		name: string;
+		params: {
+			sender: string;
+			msg: string;
+			name: string;
+		};
+	};
+}>;
 
 const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 	const {
@@ -67,15 +85,14 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 		control,
 	});
 
-	// const [nameError, setNameError] = useState('');
-	const [msgError, setMsgError] = useState('');
+	// const [msgError, setMsgError] = useState('');
 	const t = useTranslation();
 	const { conditions, actions } = values;
 
 	const { name: conditionName } = conditions || {};
 
 	const {
-		params: { sender: actionSender, msg: actionMsg },
+		params: { sender: actionSender },
 	} = actions || { params: {} };
 
 	const conditionOptions: SelectOption[] = useMemo(
@@ -105,56 +122,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 		[t],
 	);
 
-	// const handleConditionName = useMutableCallback((name) => {
-	// 	handleConditions({
-	// 		name,
-	// 		value: '',
-	// 	});
-	// });
-
-	// const handleConditionValue = useMutableCallback(({ currentTarget: { value } }) => {
-	// 	handleConditions({
-	// 		...conditions,
-	// 		value,
-	// 	});
-	// });
-
-	// const handleActionAgentName = useMutableCallback(({ currentTarget: { value: name } }) => {
-	// 	handleActions({
-	// 		...actions,
-	// 		params: {
-	// 			...actions.params,
-	// 			name,
-	// 		},
-	// 	});
-	// });
-
-	// const handleActionSender = useMutableCallback((sender) => {
-	// 	handleActions({
-	// 		...actions,
-	// 		params: {
-	// 			...actions.params,
-	// 			sender,
-	// 		},
-	// 	});
-	// });
-
-	// const handleActionMessage = useMutableCallback(({ currentTarget: { value: msg } }) => {
-	// 	handleActions({
-	// 		...actions,
-	// 		params: {
-	// 			...actions.params,
-	// 			msg,
-	// 		},
-	// 	});
-	// });
-
 	// useComponentDidUpdate(() => {
-	// 	setNameError(!name ? t('The_field_is_required', t('Name')) : '');
-	// }, [t, name]);
-	useComponentDidUpdate(() => {
-		setMsgError(!actionMsg ? t('The_field_is_required', t('Message')) : '');
-	}, [t, actionMsg]);
+	// 	setMsgError(!actionMsg ? t('The_field_is_required', t('Message')) : '');
+	// }, [t, actionMsg]);
 	return (
 		<>
 			<Field className={className}>
@@ -178,7 +148,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				<Field.Row>
 					<TextInput
 						{...register('name', { required: t('The_field_is_required', t('Name')) })}
-						error={(errors as any)?.name?.message}
+						error={errors?.name?.message as string}
 						placeholder={t('Name')}
 					/>
 				</Field.Row>
@@ -215,9 +185,15 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 					</Field.Row>
 				)}
 				<Field.Row>
-					<TextAreaInput rows={3} {...register('actions.params.msg', { required: true })} placeholder={`${t('Message')}*`} />
+					<TextAreaInput
+						rows={3}
+						{...register('actions.params.msg', { required: t('The_field_is_required', t('Message')) })}
+						placeholder={`${t('Message')}*`}
+					/>
 				</Field.Row>
-				{(errors as any)?.actions?.params?.msg && <Field.Error>{msgError}</Field.Error>}
+				{(errors as ErrorsType)?.actions?.params?.msg && (
+					<Field.Error>{(errors as ErrorsType)?.actions?.params?.msg?.message || ''}</Field.Error>
+				)}
 			</Field>
 		</>
 	);

@@ -19,7 +19,7 @@ const EditTriggerPageContainer = ({ id, onSave }: { id: string; onSave: () => vo
 		return <Callout>{t('Error')}: error</Callout>;
 	}
 
-	return <EditTriggerPage data={data.trigger} onSave={onSave} />;
+	return <EditTriggerPage data={data.trigger} id={id} onSave={onSave} />;
 };
 
 export default EditTriggerPageContainer;

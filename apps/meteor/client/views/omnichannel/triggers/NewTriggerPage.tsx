@@ -2,7 +2,6 @@ import { Button, FieldGroup, Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
-// import { useForm } from '../../../hooks/useForm';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import type { TriggerConditions, TriggerActions } from './TriggersForm';

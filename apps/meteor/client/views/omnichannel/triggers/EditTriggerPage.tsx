@@ -2,6 +2,7 @@ import type { ILivechatTrigger, Serialized } from '@rocket.chat/core-typings';
 import { Margins, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
@@ -36,7 +37,7 @@ const getInitialValues = ({
 	},
 });
 
-const EditTriggerPage = ({ data, onSave }: { data: Serialized<ILivechatTrigger>; onSave: () => void }) => {
+const EditTriggerPage = ({ data, onSave, id }: { data: Serialized<ILivechatTrigger>; onSave: () => void; id: string }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
@@ -46,9 +47,12 @@ const EditTriggerPage = ({ data, onSave }: { data: Serialized<ILivechatTrigger>;
 
 	const methods = useForm<TriggersFormType>({ defaultValues: getInitialValues(data), mode: 'onChange' });
 	const { getValues, handleSubmit, formState } = methods;
-
+	formState.errors;
 	const values = getValues();
 	const hasUnsavedChanges = formState.isDirty;
+
+	const queryClient = useQueryClient();
+
 	const handleSave = useMutableCallback(async () => {
 		try {
 			const {
@@ -73,6 +77,7 @@ const EditTriggerPage = ({ data, onSave }: { data: Serialized<ILivechatTrigger>;
 				],
 			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			queryClient.invalidateQueries(['/v1/livechat/triggers/:_id', id], { exact: true });
 			onSave();
 			router.push({});
 		} catch (error) {
