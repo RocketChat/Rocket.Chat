@@ -23,7 +23,6 @@ import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
-import { useUserCard } from '../../../../hooks/useUserCard';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -167,17 +166,15 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const { open: openUserCard } = useUserCard();
-
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			openUserCard(username)(event);
+			chat?.userCard.open(username)(event);
 		},
-		[openUserCard],
+		[chat?.userCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {

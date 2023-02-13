@@ -96,6 +96,7 @@ export const isLivechatDepartmentIdProps = ajv.compile<LivechatDepartmentId>(Liv
 type LivechatDepartmentAutocomplete = {
 	selector: string;
 	onlyMyDepartments: booleanString;
+	showArchived?: booleanString;
 };
 
 const LivechatDepartmentAutocompleteSchema = {
@@ -106,6 +107,10 @@ const LivechatDepartmentAutocompleteSchema = {
 		},
 		onlyMyDepartments: {
 			type: 'string',
+		},
+		showArchived: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['selector', 'onlyMyDepartments'],
@@ -473,10 +478,11 @@ const LivechatTagsListSchema = {
 export const isLivechatTagsListProps = ajv.compile<LivechatTagsListProps>(LivechatTagsListSchema);
 
 type LivechatDepartmentProps = PaginatedRequest<{
-	text: string;
+	text?: string;
 	onlyMyDepartments?: booleanString;
 	enabled?: booleanString;
 	excludeDepartmentId?: string;
+	showArchived?: booleanString;
 }>;
 
 const LivechatDepartmentSchema = {
@@ -496,6 +502,10 @@ const LivechatDepartmentSchema = {
 			nullable: true,
 		},
 		excludeDepartmentId: {
+			type: 'string',
+			nullable: true,
+		},
+		showArchived: {
 			type: 'string',
 			nullable: true,
 		},
@@ -2855,7 +2865,7 @@ export type OmnichannelEndpoints = {
 		GET: () => ILivechatTag | null;
 	};
 	'/v1/livechat/department': {
-		GET: (params: LivechatDepartmentProps) => PaginatedResult<{
+		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {
@@ -2869,17 +2879,29 @@ export type OmnichannelEndpoints = {
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
-			department: ILivechatDepartment;
+			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
 		};
 		DELETE: () => void;
 	};
+	'/v1/livechat/departments/archived': {
+		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
+	};
+	'/v1/livechat/department/:_id/archive': {
+		POST: () => void;
+	};
+	'/v1/livechat/department/:_id/unarchive': {
+		POST: () => void;
+	};
+
 	'/v1/livechat/department.autocomplete': {
 		GET: (params: LivechatDepartmentAutocomplete) => {
 			items: ILivechatDepartment[];
 		};
 	};
-	'/v1/livechat/department/:departmentId/agents': {
+	'/v1/livechat/department/:_id/agents': {
 		GET: (params: LivechatDepartmentDepartmentIdAgentsGET) => PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>;
 		POST: (params: LivechatDepartmentDepartmentIdAgentsPOST) => void;
 	};
@@ -2904,6 +2926,10 @@ export type OmnichannelEndpoints = {
 		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => {
 			departments: ILivechatDepartment[];
 		};
+	};
+
+	'/v1/livechat/department/isDepartmentCreationAvailable': {
+		GET: () => { isDepartmentCreationAvailable: boolean };
 	};
 
 	'/v1/livechat/custom-fields': {
@@ -2965,7 +2991,7 @@ export type OmnichannelEndpoints = {
 
 	'/v1/livechat/users/agent/:_id': {
 		GET: (
-			params: PaginatedRequest<{
+			params?: PaginatedRequest<{
 				text: string;
 			}>,
 		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
@@ -3149,7 +3175,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'/v1/livechat/agents/:agentId/departments': {
-		GET: (params: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
+		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
 	};
 	'/v1/livechat/business-hour': {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };

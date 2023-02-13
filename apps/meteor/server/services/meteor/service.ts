@@ -11,7 +11,6 @@ import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
@@ -141,17 +140,6 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 			settings.set({ ...setting, value: undefined });
 			setValue(setting._id, undefined);
-		});
-
-		this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
-			if (clientAction === 'removed') {
-				matrixBroadCastActions?.removed?.(id);
-				return;
-			}
-
-			if (clientAction === 'inserted' && data?.extraInformation?.port) {
-				matrixBroadCastActions?.added?.(data);
-			}
 		});
 
 		if (disableOplog) {

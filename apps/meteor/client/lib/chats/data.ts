@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
@@ -266,6 +266,33 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return discussion;
 	};
 
+	const createStrictGetter = <TFind extends (...args: any[]) => Promise<any>>(
+		find: TFind,
+		errorMessage: string,
+	): ((...args: Parameters<TFind>) => Promise<Exclude<Awaited<ReturnType<TFind>>, undefined>>) => {
+		return async (...args) => {
+			const result = await find(...args);
+
+			if (!result) {
+				throw new Error(errorMessage);
+			}
+
+			return result;
+		};
+	};
+
+	const findSubscription = async (): Promise<ISubscription | undefined> => {
+		return ChatSubscription.findOne({ rid }, { reactive: false });
+	};
+
+	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
+
+	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
+		return ChatSubscription.findOne({ rid: message.rid }, { reactive: false });
+	};
+
+	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');
+
 	return {
 		composeMessage,
 		findMessageByID,
@@ -293,5 +320,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		markRoomAsRead,
 		findDiscussionByID,
 		getDiscussionByID,
+		findSubscription,
+		getSubscription,
+		findSubscriptionFromMessage,
+		getSubscriptionFromMessage,
 	};
 };
