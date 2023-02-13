@@ -88,7 +88,6 @@ import '../app/meteor-accounts-saml/server';
 import '../app/e2e/server';
 import '../app/version-check/server';
 import '../app/search/server';
-import '../app/chatpal-search/server';
 import '../app/discussion/server';
 import '../app/mail-messages/server';
 import '../app/user-status';
