@@ -20,8 +20,6 @@ const AppsRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
 
-	const isMarketplace = !context;
-
 	useEffect(() => {
 		let mounted = true;
 
@@ -63,7 +61,7 @@ const AppsRoute = (): ReactElement => {
 
 	return (
 		<AppsProvider>
-			{(page === 'list' && <AppsPage isMarketplace={isMarketplace} />) ||
+			{(page === 'list' && <AppsPage />) ||
 				(id && page === 'info' && <AppDetailsPage id={id} />) ||
 				(page === 'install' && <AppInstallPage />)}
 		</AppsProvider>

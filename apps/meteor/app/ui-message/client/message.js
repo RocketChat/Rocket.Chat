@@ -309,15 +309,6 @@ Template.message.helpers({
 			return false;
 		}
 
-		// check if oembed is disabled for message's sender
-		if (
-			(settings.API_EmbedDisabledFor || '')
-				.split(',')
-				.map((username) => username.trim())
-				.includes(msg.u && msg.u.username)
-		) {
-			return false;
-		}
 		return true;
 	},
 	reactions() {
@@ -445,10 +436,6 @@ Template.message.helpers({
 	},
 	messageActions() {
 		return Template.instance().actions.get();
-	},
-	isSnippet() {
-		const { msg } = this;
-		return msg.actionContext === 'snippeted';
 	},
 	isThreadReply() {
 		const {

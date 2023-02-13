@@ -24,12 +24,6 @@ declare module 'meteor/blaze' {
 declare module 'meteor/templating' {
 	interface TemplateStatic {
 		requiresPermission: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalAdmin: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchResultTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleUser: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleRoom: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		emojiPicker: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		lazyloadImage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		customFieldsForm: Blaze.Template<any, Blaze.TemplateInstance<any>>;
@@ -38,8 +32,6 @@ declare module 'meteor/templating' {
 		liveStreamBroadcast: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamTab: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		snippetPage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		snippetedMessages: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		inputAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		textareaAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		_autocompleteContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
@@ -108,7 +100,6 @@ declare module 'meteor/templating' {
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		audit: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupCannedResponse: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 
 		instance<TTemplateName extends keyof TemplateStatic>(): TemplateStatic[TTemplateName] extends Blaze.Template<any, infer I> ? I : never;
