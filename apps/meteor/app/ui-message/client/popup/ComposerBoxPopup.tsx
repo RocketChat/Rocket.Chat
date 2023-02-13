@@ -52,7 +52,7 @@ export const ComposerBoxPopup = <
 									selected={item === focused}
 									key={index}
 									id={`popup-item-${item._id}`}
-									{...({ tabindex: item === focused ? 0 : -1 } as any)}
+									{...({ tabIndex: item === focused ? 0 : -1 } as any)}
 								>
 									{renderItem({ item })}
 								</Option>
