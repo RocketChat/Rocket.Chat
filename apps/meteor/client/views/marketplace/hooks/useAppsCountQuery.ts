@@ -19,7 +19,7 @@ export const useAppsCountQuery = (context: 'private' | 'explore' | 'marketplace'
 
 		const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
 		const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
-		const hasUnlimitedApps = (context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps) === -1;
+		const hasUnlimitedApps = enabledAppsLimit === -1;
 		return {
 			hasUnlimitedApps,
 			enabled: numberOfEnabledApps,
