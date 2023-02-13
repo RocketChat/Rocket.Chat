@@ -122,14 +122,14 @@ declare module 'meteor/templating' {
 		messagePopup: BlazeTemplate;
 		messagePopupChannel: BlazeTemplate;
 		messagePopupConfig: BlazeTemplate<{
-			tmid: IMessage['_id'];
 			rid: IRoom['_id'];
+			tmid?: IMessage['_id'];
 			getInput: () => HTMLTextAreaElement | null;
 		}>;
 		messagePopupEmoji: BlazeTemplate;
 		messagePopupSlashCommand: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<{
-			tmid: IMessage['_id'];
+			tmid?: IMessage['_id'];
 			rid: IRoom['_id'];
 			getInput: () => HTMLTextAreaElement | null;
 		}>;

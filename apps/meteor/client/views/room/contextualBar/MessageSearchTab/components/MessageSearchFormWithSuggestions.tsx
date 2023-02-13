@@ -1,4 +1,4 @@
-import type { ISearchProvider } from '@rocket.chat/core-typings';
+import type { IMessageSearchProvider, IMessageSearchSuggestion } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -9,12 +9,10 @@ import { useForm } from 'react-hook-form';
 
 import BlazeTemplate from '../../../components/BlazeTemplate';
 import { useRoom } from '../../../contexts/RoomContext';
-import type { MessageSearchSuggestion as MessageSearchSuggestionType } from '../lib/MessageSearchSuggestion';
-import { getSuggestionText } from '../lib/getSuggestionText';
 import MessageSearchSuggestion from './MessageSearchSuggestion';
 
 type MessageSearchFormWithSuggestionsProps = {
-	provider: ISearchProvider;
+	provider: IMessageSearchProvider;
 	onSearch: (searchText: string) => void;
 };
 
@@ -71,8 +69,7 @@ const MessageSearchFormWithSuggestions = ({ provider, onSearch }: MessageSearchF
 		const suggestions = suggestionsMutation.data;
 
 		if (event.code === 'Enter') {
-			const suggestion = suggestionIndex >= 0 ? suggestions?.[suggestionIndex] : undefined;
-			const suggestionText = getSuggestionText(suggestion);
+			const suggestionText = suggestionIndex >= 0 ? suggestions?.[suggestionIndex]?.text : undefined;
 			if (!suggestionText) {
 				return;
 			}
@@ -99,18 +96,17 @@ const MessageSearchFormWithSuggestions = ({ provider, onSearch }: MessageSearchF
 		}
 	});
 
-	const handleSuggestionClick = useMutableCallback((suggestion: MessageSearchSuggestionType) => {
-		const suggestionText = getSuggestionText(suggestion);
-		if (!suggestionText) {
+	const handleSuggestionClick = useMutableCallback((suggestion: IMessageSearchSuggestion) => {
+		if (!suggestion.text) {
 			return;
 		}
 
-		setValue('message-search', suggestionText);
-		onSearch(suggestionText);
+		setValue('message-search', suggestion.text);
+		onSearch(suggestion.text);
 		suggestionsMutation.reset();
 	});
 
-	const handleSuggestionHover = useMutableCallback((suggestion: MessageSearchSuggestionType) => {
+	const handleSuggestionHover = useMutableCallback((suggestion: IMessageSearchSuggestion) => {
 		setSuggestionIndex(suggestionsMutation.data?.indexOf(suggestion) ?? 0);
 	});
 

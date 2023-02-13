@@ -1,4 +1,4 @@
-import type { ISearchProvider } from '@rocket.chat/core-typings';
+import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -10,7 +10,7 @@ import MessageSearchFormWithSuggestions from './MessageSearchFormWithSuggestions
 import MessageSearchFormWithoutSuggestions from './MessageSearchFormWithoutSuggestions';
 
 type MessageSearchPanelProps = {
-	provider: ISearchProvider;
+	provider: IMessageSearchProvider;
 };
 
 const MessageSearchPanel = ({ provider }: MessageSearchPanelProps): ReactElement => {

@@ -1,16 +1,13 @@
-import type { ISearchProvider } from '@rocket.chat/core-typings';
+import type { IMessageSearchProvider, IMessageSearchSuggestion } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import type { MessageSearchSuggestion as MessageSearchSuggestionType } from '../lib/MessageSearchSuggestion';
-import { getSuggestionText } from '../lib/getSuggestionText';
-
 type MessageSearchSuggestionProps = {
-	provider: ISearchProvider;
-	suggestion: MessageSearchSuggestionType;
+	provider: IMessageSearchProvider;
+	suggestion: IMessageSearchSuggestion;
 	active: boolean;
-	onClick: (suggestion: MessageSearchSuggestionType) => void;
-	onHover: (suggestion: MessageSearchSuggestionType) => void;
+	onClick: (suggestion: IMessageSearchSuggestion) => void;
+	onHover: (suggestion: IMessageSearchSuggestion) => void;
 };
 
 const MessageSearchSuggestion = ({ provider, suggestion, active, onClick, onHover }: MessageSearchSuggestionProps) => {
@@ -28,9 +25,7 @@ const MessageSearchSuggestion = ({ provider, suggestion, active, onClick, onHove
 			onClick={handleClick}
 			onMouseEnter={handleMouseEnter}
 		>
-			{provider.suggestionItemTemplate === 'DefaultSuggestionItemTemplate' && (
-				<div className='default-suggestion'>{getSuggestionText(suggestion)}</div>
-			)}
+			{provider.suggestionItemTemplate === 'DefaultSuggestionItemTemplate' && <div className='default-suggestion'>{suggestion.text}</div>}
 		</div>
 	);
 };

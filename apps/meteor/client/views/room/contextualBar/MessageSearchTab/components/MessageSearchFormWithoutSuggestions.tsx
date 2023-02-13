@@ -1,4 +1,4 @@
-import type { ISearchProvider } from '@rocket.chat/core-typings';
+import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import BlazeTemplate from '../../../components/BlazeTemplate';
 
 type MessageSearchFormWithoutSuggestionsProps = {
-	provider: ISearchProvider;
+	provider: IMessageSearchProvider;
 	onSearch: (searchText: string) => void;
 };
 

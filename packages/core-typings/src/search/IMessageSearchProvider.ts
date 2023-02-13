@@ -1,6 +1,6 @@
 import type { ISetting } from '../ISetting';
 
-export interface ISearchProvider {
+export interface IMessageSearchProvider {
 	key: string;
 	description: string;
 	icon: string;
