@@ -23,7 +23,6 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
-		callbacks.run('beforeReadMessages', thread.rid, user._id);
 
 		const room = Rooms.findOneById(thread.rid);
 
@@ -31,6 +30,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 
+		callbacks.run('beforeReadMessages', thread.rid, user._id);
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 	},

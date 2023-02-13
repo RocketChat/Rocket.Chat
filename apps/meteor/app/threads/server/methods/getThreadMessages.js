@@ -29,7 +29,6 @@ Meteor.methods({
 
 		const user = Meteor.user();
 		const room = Rooms.findOneById(thread.rid);
-		callbacks.run('beforeReadMessages', thread.rid, user._id);
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
@@ -39,6 +38,7 @@ Meteor.methods({
 			return [];
 		}
 
+		callbacks.run('beforeReadMessages', thread.rid, user._id);
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = Messages.findVisibleThreadByThreadId(tmid, {
