@@ -31,7 +31,6 @@ declare module 'meteor/templating' {
 		liveStreamTab: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		inputAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		textareaAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		_autocompleteContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		_noMatch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		authorize: Blaze.Template<any, Blaze.TemplateInstance<any>>;
