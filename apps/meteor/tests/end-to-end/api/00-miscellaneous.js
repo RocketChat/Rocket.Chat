@@ -597,33 +597,37 @@ describe('miscellaneous', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 
-					// ddp-streamer registers itself as an instance, so for EE we have 2 instances
-					const totalInstances = IS_EE ? 2 : 1;
-					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(totalInstances);
+					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
 					const { instances } = res.body;
 
-					const instance = instances.filter((i) => i.instanceRecord.name === 'rocket.chat')[0];
+					const instanceName = IS_EE ? 'ddp-streamer' : 'rocket.chat';
 
-					expect(instance).to.have.property('address');
+					const instance = instances.filter((i) => i.instanceRecord.name === instanceName)[0];
+
 					expect(instance).to.have.property('instanceRecord');
 					expect(instance).to.have.property('currentStatus');
 
 					expect(instance.currentStatus).to.have.property('connected');
-					expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
-					expect(instance.currentStatus).to.have.property('local');
 
 					expect(instance.instanceRecord).to.have.property('_id');
 					expect(instance.instanceRecord).to.have.property('extraInformation');
 					expect(instance.instanceRecord).to.have.property('name');
 					expect(instance.instanceRecord).to.have.property('pid');
 
-					const { extraInformation } = instance.instanceRecord;
+					if (!IS_EE) {
+						expect(instance).to.have.property('address');
 
-					expect(extraInformation).to.have.property('host');
-					expect(extraInformation).to.have.property('port');
-					expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
-					expect(extraInformation).to.have.property('nodeVersion');
+						expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
+						expect(instance.currentStatus).to.have.property('local');
+
+						const { extraInformation } = instance.instanceRecord;
+
+						expect(extraInformation).to.have.property('host');
+						expect(extraInformation).to.have.property('port');
+						expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
+						expect(extraInformation).to.have.property('nodeVersion');
+					}
 				})
 				.end(done);
 		});

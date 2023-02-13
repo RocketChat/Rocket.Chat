@@ -3,6 +3,15 @@ import { InstanceStatus } from '@rocket.chat/models';
 import { Instance as InstanceService } from '../../../../ee/server/sdk';
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
+
+const getMatrixInstances = (() => {
+	if (isRunningMs()) {
+		return () => [];
+	}
+
+	return () => InstanceService.getInstances();
+})();
 
 API.v1.addRoute(
 	'instances.get',
@@ -15,7 +24,7 @@ API.v1.addRoute(
 
 			const instanceRecords = await InstanceStatus.find().toArray();
 
-			const connections = await InstanceService.getInstances();
+			const connections = await getMatrixInstances();
 
 			const result = instanceRecords.map((instanceRecord) => {
 				const connection = connections.find((c) => c.id === instanceRecord._id);
