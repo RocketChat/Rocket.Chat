@@ -75,7 +75,6 @@ declare module 'meteor/templating' {
 		error: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		message: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		messageThread: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopup: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupChannel: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupConfig: Blaze.Template<any, Blaze.TemplateInstance<any>>;

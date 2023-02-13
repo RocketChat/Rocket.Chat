@@ -23,8 +23,6 @@ import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
 import { hasTranslationLanguageInAttachments } from '../../../client/views/room/MessageList/lib/autoTranslate';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import './messageThread';
-import './message.html';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
