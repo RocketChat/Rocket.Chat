@@ -14,13 +14,13 @@ import BlazeTemplate from './BlazeTemplate';
 type VerticalBarOldActionsProps = {
 	name: keyof BlazeTemplates;
 	rid: IRoom['_id'];
-	_id: IRoom['_id'];
+	_id: string;
 	icon?: ComponentProps<typeof Icon>['name'];
 	tabBar: ToolboxContextValue['tabBar'];
 	title: TranslationKey;
 };
 
-const VerticalBarOldActions = ({ name, rid, icon, tabBar, title, ...props }: VerticalBarOldActionsProps): ReactElement => {
+const VerticalBarOldActions = ({ name, icon, title, ...props }: VerticalBarOldActionsProps): ReactElement => {
 	const close = useTabBarClose();
 	const t = useTranslation();
 
@@ -32,7 +32,7 @@ const VerticalBarOldActions = ({ name, rid, icon, tabBar, title, ...props }: Ver
 				{close && <VerticalBar.Close onClick={close} />}
 			</VerticalBar.Header>
 			<VerticalBar.Content>
-				<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} rid={rid} {...props} />
+				<BlazeTemplate flexShrink={1} overflow='hidden' name={name} {...(props as any)} />
 			</VerticalBar.Content>
 		</>
 	);

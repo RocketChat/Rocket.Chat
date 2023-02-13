@@ -5,18 +5,12 @@
 	padding: 0 !important;
 }
 
-.rocket-search-tab {
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-}
-
 .rocket-default-search-results {
 	overflow: auto;
 	overflow-x: hidden;
 }
 
-.rocket-search-result {
+.rocket-search-result.rocket-search-result {
 	display: flex;
 	overflow-x: hidden;
 	flex-direction: column;
@@ -32,10 +26,6 @@
 .rocket-default-search-results .list .message {
 	padding-right: 8px !important;
 	padding-left: 70px !important;
-}
-
-.rocket-search-error {
-	padding: 0 24px;
 }
 
 .rocket-default-search-results .js-list {

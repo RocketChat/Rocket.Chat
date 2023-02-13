@@ -1,20 +1,20 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ISetting } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
-		interface Template {
+		interface Template<D = any, T = Blaze.TemplateInstance<D>> {
 			events(
 				eventsMap: Record<
 					string,
 					(
-						this: TInstance,
+						this: any,
 						event: {
-							[K in keyof JQuery.TriggeredEvent]: any;
+							[K in keyof JQuery.TriggeredEvent | keyof JQuery.KeyboardEventBase]: any;
 						},
-						instance: TInstance,
+						instance: T,
 					) => void
 				>,
 			): void;
@@ -31,7 +31,15 @@ declare module 'meteor/templating' {
 	type BlazeTemplates = {
 		requiresPermission: BlazeTemplate;
 		ChatpalAdmin: BlazeTemplate;
-		ChatpalSearchResultTemplate: BlazeTemplate;
+		ChatpalSearchResultTemplate: BlazeTemplate<{
+			searching: ReactiveVar<boolean>;
+			result: ReactiveVar<any>;
+			text: ReactiveVar<string>;
+			settings: Record<ISetting['_id'], ISetting['value']>;
+			parentPayload: Record<string, unknown>;
+			payload: Record<string, unknown>;
+			search(): void;
+		}>;
 		ChatpalSearchSingleTemplate: BlazeTemplate;
 		ChatpalSearchSingleUser: BlazeTemplate;
 		ChatpalSearchSingleRoom: BlazeTemplate;
@@ -57,21 +65,20 @@ declare module 'meteor/templating' {
 		oembedUrlWidget: BlazeTemplate;
 		oembedVideoWidget: BlazeTemplate;
 		oembedYoutubeWidget: BlazeTemplate;
-		DefaultSearchResultTemplate: BlazeTemplate;
+		DefaultSearchResultTemplate: BlazeTemplate<{
+			searching: ReactiveVar<boolean>;
+			result: ReactiveVar<any>;
+			text: ReactiveVar<string>;
+			settings: Record<ISetting['_id'], ISetting['value']>;
+			parentPayload: Record<string, unknown>;
+			payload: Record<string, unknown>;
+			search(): void;
+		}>;
 		DefaultSuggestionItemTemplate: BlazeTemplate;
-		RocketSearch: BlazeTemplate<
-			{
-				rid: IRoom['_id'];
-			},
-			{
-				provider: ReactiveVar<any>;
-				isActive: ReactiveVar<boolean>;
-				error: ReactiveVar<string | undefined>;
-				suggestions: ReactiveVar<any>;
-				suggestionActive: ReactiveVar<any>;
-			}
-		>;
-		icon: BlazeTemplate;
+		icon: BlazeTemplate<{
+			block: string;
+			icon: string;
+		}>;
 		popupList: BlazeTemplate;
 		popupList_default: BlazeTemplate;
 		popupList_item_default: BlazeTemplate;
@@ -114,10 +121,18 @@ declare module 'meteor/templating' {
 		messageThread: BlazeTemplate;
 		messagePopup: BlazeTemplate;
 		messagePopupChannel: BlazeTemplate;
-		messagePopupConfig: BlazeTemplate;
+		messagePopupConfig: BlazeTemplate<{
+			tmid: IMessage['_id'];
+			rid: IRoom['_id'];
+			getInput: () => HTMLTextAreaElement | null;
+		}>;
 		messagePopupEmoji: BlazeTemplate;
 		messagePopupSlashCommand: BlazeTemplate;
-		messagePopupSlashCommandPreview: BlazeTemplate;
+		messagePopupSlashCommandPreview: BlazeTemplate<{
+			tmid: IMessage['_id'];
+			rid: IRoom['_id'];
+			getInput: () => HTMLTextAreaElement | null;
+		}>;
 		messagePopupUser: BlazeTemplate;
 		collapseArrow: BlazeTemplate;
 		rc_modal: BlazeTemplate;
