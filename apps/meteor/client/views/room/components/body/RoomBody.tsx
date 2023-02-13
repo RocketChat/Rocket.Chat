@@ -306,19 +306,6 @@ const RoomBody = (): ReactElement => {
 		readMessage.refreshUnreadMark(room._id);
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
 
-	useLegacyMessageEvents({
-		messageListRef: {
-			get current() {
-				if (!useLegacyMessageTemplate) {
-					return null;
-				}
-
-				return wrapperRef.current?.querySelector('ul') ?? null;
-			},
-		},
-		onRequestScrollToBottom: sendToBottomIfNecessary,
-	});
-
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
 
