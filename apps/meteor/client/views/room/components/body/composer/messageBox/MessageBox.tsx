@@ -134,7 +134,6 @@ const MessageBox = ({
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
 			const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
-			chat.composer?.release();
 			if (node === null) {
 				return;
 			}
@@ -322,8 +321,6 @@ const MessageBox = ({
 	});
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
-
-	console.log(isRecordingVideo);
 
 	return (
 		<>

@@ -38,8 +38,6 @@ declare module 'meteor/templating' {
 		liveStreamBroadcast: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamTab: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		liveStreamView: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		snippetPage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		snippetedMessages: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		inputAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		textareaAutocomplete: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		_autocompleteContainer: Blaze.Template<any, Blaze.TemplateInstance<any>>;
@@ -108,7 +106,6 @@ declare module 'meteor/templating' {
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		audit: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		messagePopupCannedResponse: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 
 		instance<TTemplateName extends keyof TemplateStatic>(): TemplateStatic[TTemplateName] extends Blaze.Template<any, infer I> ? I : never;
