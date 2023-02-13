@@ -73,9 +73,9 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 							<Box is='p'>
 								Email sent to{' '}
 								<Box is='span' fontScale='p2b'>
-									{email}
+									{email}{' '}
 								</Box>
-								with a confirmation link.{' '}
+								with a confirmation link.
 							</Box>
 						</Trans>
 					</Box>
