@@ -1,7 +1,8 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
+import { AppsLogs } from '@rocket.chat/models';
 
-import { settings, settingsRegistry } from '../../../app/settings/server';
-import type { AppServerOrchestrator } from './orchestrator';
+import { settings, settingsRegistry } from '../../settings/server';
+import { Apps } from '../../../server/sdk';
 
 export function addAppsSettings() {
 	settingsRegistry.addGroup('General', function () {
@@ -72,24 +73,29 @@ export function addAppsSettings() {
 	});
 }
 
-export function watchAppsSettingsChanges(apps: AppServerOrchestrator) {
-	settings.watch('Apps_Framework_Source_Package_Storage_Type', (value: SettingValue) => {
-		apps.getAppSourceStorage()?.setStorage(value as string);
+export function watchAppsSettingsChanges() {
+	settings.watch('Apps_Framework_Source_Package_Storage_Type', async (value: SettingValue) => {
+		await Apps.setStorage(value as string);
 	});
 
-	settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value: SettingValue) => {
-		apps.getAppSourceStorage()?.setFileSystemStoragePath(value as string);
+	settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', async (value: SettingValue) => {
+		await Apps.setFileSystemStoragePath(value as string);
 	});
 
-	settings.watch('Apps_Framework_enabled', (isEnabled: SettingValue) => {
+	settings.watch('Apps_Framework_enabled', async (isEnabled: SettingValue) => {
+		await Apps.setFrameworkEnabled(isEnabled as boolean);
 		if (isEnabled) {
-			apps.load();
+			await Apps.load();
 		} else {
-			apps.unload();
+			await Apps.unload();
 		}
 	});
 
-	settings.watch('Apps_Logs_TTL', (value: SettingValue) => {
+	settings.watch('Apps_Framework_Development_Mode', async (isEnabled: SettingValue) => {
+		await Apps.setDevelopmentMode(isEnabled as boolean);
+	});
+
+	settings.watch('Apps_Logs_TTL', async (value: SettingValue) => {
 		let expireAfterSeconds = 0;
 
 		switch (value) {
@@ -108,8 +114,6 @@ export function watchAppsSettingsChanges(apps: AppServerOrchestrator) {
 			return;
 		}
 
-		const model = apps._logModel;
-
-		model?.resetTTLIndex(expireAfterSeconds);
+		await AppsLogs.resetTTLIndex(expireAfterSeconds);
 	});
 }
