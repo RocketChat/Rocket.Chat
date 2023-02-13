@@ -6,7 +6,6 @@ import {
 	useRouteParameter,
 	usePermission,
 	useSetModal,
-	useMethod,
 	useTranslation,
 	useToastMessageDispatch,
 	useEndpoint,
@@ -17,7 +16,6 @@ import semver from 'semver';
 
 import { Apps } from '../../../../../../app/apps/client/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
-import CloudLoginModal from '../../../CloudLoginModal';
 import IframeModal from '../../../IframeModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
@@ -134,24 +132,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		}
 	};
 
-	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
-
 	const handleClick = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
 		e.preventDefault();
 		e.stopPropagation();
 
 		setLoading(true);
-
-		let isLoggedIn = true;
-		if (isAdminUser) {
-			isLoggedIn = await checkUserLoggedIn();
-		}
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
 
 		if (action === 'request') {
 			try {

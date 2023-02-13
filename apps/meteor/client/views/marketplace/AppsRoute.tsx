@@ -8,7 +8,7 @@ import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
 import AppsPage from './AppsPage/AppsPage';
 import AppsProvider from './AppsProvider';
-// import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
+import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
 
 const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
@@ -48,6 +48,7 @@ const AppsRoute = (): ReactElement => {
 
 	return (
 		<AppsProvider>
+			<BannerEnterpriseTrialEnded />
 			{(page === 'list' && <AppsPage />) ||
 				(id && page === 'info' && <AppDetailsPage id={id} />) ||
 				(page === 'install' && <AppInstallPage />)}

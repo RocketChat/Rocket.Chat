@@ -38,12 +38,12 @@ const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, setting
 					{t('Requests')}
 				</Tabs.Item>
 			)}
-			{Boolean(installed) && isSecurityVisible && (
+			{isSecurityVisible && (
 				<Tabs.Item onClick={(): void => handleTabClick('security')} selected={tab === 'security'}>
 					{t('Security')}
 				</Tabs.Item>
 			)}
-			{Boolean(installed) && marketplace !== false && (
+			{marketplace !== false && (
 				<Tabs.Item onClick={(): void => handleTabClick('releases')} selected={tab === 'releases'}>
 					{t('Releases')}
 				</Tabs.Item>

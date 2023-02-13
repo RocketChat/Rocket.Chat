@@ -1,7 +1,6 @@
 import { Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
-	useMethod,
 	useEndpoint,
 	useTranslation,
 	useRoute,
@@ -16,7 +15,6 @@ import semver from 'semver';
 import { Apps } from '../../../app/apps/client/orchestrator';
 import WarningModal from '../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
-import CloudLoginModal from './CloudLoginModal';
 import IframeModal from './IframeModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
@@ -34,7 +32,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const [currentRouteName, currentRouteParams] = useCurrentRoute();
 	if (!currentRouteName) {
@@ -79,19 +76,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		[setModal, action, app, setLoading],
 	);
 
-	const requestConfirmAction = (postMessage) => {
-		setModal(null);
-		setLoading(false);
-		setRequestedEndUser(true);
-		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
-
-		notifyAdmins({
-			appId: app.id,
-			appName: app.name,
-			message: postMessage.message,
-		});
-	};
-
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
 			setPurchased(true);
@@ -106,11 +90,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [setModal]);
 
 	const handleSubscription = useCallback(async () => {
-		if (!(await checkUserLoggedIn())) {
-			setModal(<CloudLoginModal />);
-			return;
-		}
-
 		if (app?.versionIncompatible && !isSubscribed) {
 			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
@@ -138,21 +117,23 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [checkUserLoggedIn, app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
+	}, [app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const handleAcquireApp = useCallback(async () => {
-		setLoading(true);
-
-		let isLoggedIn = true;
-		if (action !== 'request') {
-			isLoggedIn = await checkUserLoggedIn();
-		}
-
-		if (!isLoggedIn) {
+		const requestConfirmAction = (postMessage) => {
+			setModal(null);
 			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
+			setRequestedEndUser(true);
+			dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+			notifyAdmins({
+				appId: app.id,
+				appName: app.name,
+				message: postMessage.message,
+			});
+		};
+
+		setLoading(true);
 
 		if (action === 'request') {
 			try {
@@ -180,17 +161,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [
-		action,
-		app,
-		isAppPurchased,
-		showAppPermissionsReviewModal,
-		checkUserLoggedIn,
-		setModal,
-		cancelAction,
-		requestConfirmAction,
-		closeModal,
-	]);
+	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, dispatchToastMessage, notifyAdmins, cancelAction, closeModal]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -303,16 +274,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			return;
 		}
 
-		const isLoggedIn = await checkUserLoggedIn();
-
-		if (!isLoggedIn) {
-			setLoading(false);
-			setModal(<CloudLoginModal />);
-			return;
-		}
-
 		showAppPermissionsReviewModal();
-	}, [checkUserLoggedIn, app, closeModal, setModal, showAppPermissionsReviewModal]);
+	}, [app, closeModal, setModal, showAppPermissionsReviewModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 

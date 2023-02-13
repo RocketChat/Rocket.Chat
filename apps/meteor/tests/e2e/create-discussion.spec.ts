@@ -20,7 +20,7 @@ test.describe.serial('create-discussion', () => {
 
 		await poHomeDiscussion.sidenav.openNewByLabel('Discussion');
 		await poHomeDiscussion.inputChannelName.type('general');
-		await page.keyboard.press('Enter');
+		await page.locator('role=listbox >> role=option[name=general]').click();
 		await poHomeDiscussion.inputName.type(discussionName);
 		await poHomeDiscussion.inputMessage.type(discussionMessage);
 		await poHomeDiscussion.btnCreate.click();
