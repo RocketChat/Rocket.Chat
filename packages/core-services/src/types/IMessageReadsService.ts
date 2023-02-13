@@ -1,5 +1,5 @@
 import type { IServiceClass } from './ServiceClass';
 
-export interface IReadsService extends IServiceClass {
+export interface IMessageReadsService extends IServiceClass {
 	readThread(userId: string, threadId: string): Promise<void>;
 }

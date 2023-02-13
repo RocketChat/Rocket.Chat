@@ -1,23 +1,23 @@
-import type { Reads, IUser, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IReadsModel } from '@rocket.chat/model-typings';
+import type { MessageReads, IUser, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMessageReadsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-export class ReadsRaw extends BaseRaw<Reads> implements IReadsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<Reads>>) {
-		super(db, 'reads', trash);
+export class MessageReadsRaw extends BaseRaw<MessageReads> implements IMessageReadsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<MessageReads>>) {
+		super(db, 'message_reads', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {
 		return [{ key: { tmid: 1, userId: 1 }, unique: true }, { key: { ls: 1 } }];
 	}
 
-	async findOneByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<Reads | null> {
+	async findOneByUserIdAndThreadId(userId: IUser['_id'], tmid: IMessage['_id']): Promise<MessageReads | null> {
 		return this.findOne({ userId, tmid });
 	}
 
-	getMinimumLastSeenByThreadId(tmid: IMessage['_id']): Promise<Reads | null> {
+	getMinimumLastSeenByThreadId(tmid: IMessage['_id']): Promise<MessageReads | null> {
 		return this.findOne(
 			{
 				tmid,

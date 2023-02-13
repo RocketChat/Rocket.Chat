@@ -59,7 +59,7 @@ export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
 export * from './ReadReceipt';
-export * from './Reads';
+export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';
 export * from './IOembed';

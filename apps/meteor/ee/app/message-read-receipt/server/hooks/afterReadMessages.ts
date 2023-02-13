@@ -1,5 +1,5 @@
 import type { IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
-import { Reads } from '@rocket.chat/core-services';
+import { MessageReads } from '@rocket.chat/core-services';
 
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -14,7 +14,7 @@ callbacks.add(
 		const { uid, lastSeen, tmid } = params;
 
 		if (tmid) {
-			Reads.readThread(uid, tmid);
+			MessageReads.readThread(uid, tmid);
 		} else if (lastSeen) {
 			ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
 		}
