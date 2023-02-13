@@ -10,7 +10,7 @@ type ContextualBarProps = {
 	chatReload?: () => void;
 };
 
-const ContextualBar: FC<ContextualBarProps> = ({ chatReload }: ContextualBarProps) => {
+const ContextualBar: FC<ContextualBarProps> = ({ chatReload }) => {
 	const page = useRouteParameter('page');
 	const bar = useRouteParameter('bar');
 
