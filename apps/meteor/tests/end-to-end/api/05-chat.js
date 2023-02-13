@@ -1349,15 +1349,17 @@ describe('[Chat]', function () {
 	describe('[/chat.getMessageReadReceipts]', () => {
 		const isEnterprise = typeof process.env.IS_EE === 'string' ? process.env.IS_EE === 'true' : !!process.env.IS_EE;
 		describe('when execute successfully', () => {
-			it("should return the statusCode 200 and 'receipts' property and should be equal an array", (done) => {
+			it('should return statusCode: 200 and an array of receipts when running EE', function (done) {
 				if (!isEnterprise) {
-					done();
-					return;
+					this.skip();
 				}
 
 				request
-					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.get(api(`chat.getMessageReadReceipts`))
 					.set(credentials)
+					.query({
+						messageId: message._id,
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -1369,16 +1371,18 @@ describe('[Chat]', function () {
 		});
 
 		describe('when an error occurs', () => {
-			it('should throw an error containing error-action-not-allowed error when not running EE', function (done) {
+			it('should throw error-action-not-allowed error when not running EE', function (done) {
 				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 				if (isEnterprise) {
-					done();
-					return;
+					this.skip();
 				}
 				request
-					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.get(api(`chat.getMessageReadReceipts`))
 					.set(credentials)
+					.query({
+						messageId: message._id,
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
@@ -1389,10 +1393,9 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 
-			it('should return statusCode 400 and an error', (done) => {
+			it('should return statusCode: 400 and an error when no messageId is provided', function (done) {
 				if (!isEnterprise) {
-					done();
-					return;
+					this.skip();
 				}
 
 				request
