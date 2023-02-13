@@ -603,14 +603,22 @@ describe('miscellaneous', function () {
 
 					const { instances } = res.body;
 
-					const instance = instances.filter((i) => i.name === 'rocket.chat')[0];
+					const instance = instances.filter((i) => i.instanceRecord.name === 'rocket.chat')[0];
 
-					expect(instance).to.have.property('_id');
-					expect(instance).to.have.property('extraInformation');
-					expect(instance).to.have.property('name');
-					expect(instance).to.have.property('pid');
+					expect(instance).to.have.property('address');
+					expect(instance).to.have.property('instanceRecord');
+					expect(instance).to.have.property('currentStatus');
 
-					const { extraInformation } = instance;
+					expect(instance.currentStatus).to.have.property('connected');
+					expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
+					expect(instance.currentStatus).to.have.property('local');
+
+					expect(instance.instanceRecord).to.have.property('_id');
+					expect(instance.instanceRecord).to.have.property('extraInformation');
+					expect(instance.instanceRecord).to.have.property('name');
+					expect(instance.instanceRecord).to.have.property('pid');
+
+					const { extraInformation } = instance.instanceRecord;
 
 					expect(extraInformation).to.have.property('host');
 					expect(extraInformation).to.have.property('port');
