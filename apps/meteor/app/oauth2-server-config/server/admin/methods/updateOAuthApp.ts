@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { OAuthApps } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
@@ -13,7 +13,7 @@ Meteor.methods({
 			'updateOAuthApp is deprecated and will be removed in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.update instead',
 		);
 
-		if (!this.userId || !hasPermission(this.userId, 'manage-oauth-apps')) {
+		if (!this.userId || (await !hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
 		if (!_.isString(application.name) || application.name.trim() === '') {

@@ -51,6 +51,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const { appId } = this.bodyParams;
 
 			const result = Meteor.call('updateOAuthApp', appId, this.bodyParams);
@@ -68,6 +72,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const { appId } = this.bodyParams;
 
 			const result = Meteor.call('deleteOAuthApp', appId);
@@ -85,6 +93,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const application = await addOAuthApp(this.bodyParams, this.userId);
 
 			return API.v1.success({ application });

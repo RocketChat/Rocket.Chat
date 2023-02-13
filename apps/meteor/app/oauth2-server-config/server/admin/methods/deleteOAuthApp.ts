@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { OAuthApps } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
@@ -10,7 +10,7 @@ Meteor.methods({
 			'deleteOAuthApp is deprecated and will be removed in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.delete instead.',
 		);
 
-		if (!this.userId || !hasPermission(this.userId, 'manage-oauth-apps')) {
+		if (!this.userId || (await !hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteOAuthApp' });
 		}
 		const application = await OAuthApps.findOneById(applicationId);
