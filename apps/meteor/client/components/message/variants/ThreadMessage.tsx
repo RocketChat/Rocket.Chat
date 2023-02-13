@@ -5,8 +5,8 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useUserCard } from '../../../hooks/useUserCard';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -24,7 +24,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	return (
 		<Message
@@ -46,8 +46,10 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 						url={message.avatar}
 						username={message.u.username}
 						size='x36'
-						style={{ cursor: 'pointer' }}
-						onClick={openUserCard(message.u.username)}
+						{...(chat?.userCard && {
+							onClick: chat?.userCard.open(message.u.username),
+							style: { cursor: 'pointer' },
+						})}
 					/>
 				)}
 				{sequential && <StatusIndicators message={message} />}

@@ -68,6 +68,7 @@ export interface ServerMethods {
 	};
 	'cloud:checkUserLoggedIn': (...args: any[]) => any;
 	'cloud:connectWorkspace': (...args: any[]) => any;
+	'cloud:reconnectWorkspace': (...args: any[]) => any;
 	'cloud:disconnectWorkspace': (...args: any[]) => any;
 	'cloud:finishOAuthAuthorization': (...args: any[]) => any;
 	'cloud:getOAuthAuthorizationUrl': (...args: any[]) => any;

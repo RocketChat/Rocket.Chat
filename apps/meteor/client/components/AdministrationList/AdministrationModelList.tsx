@@ -1,14 +1,15 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, useMethod, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
 import React from 'react';
 
-// import { userHasAllPermission } from '../../../app/authorization/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
+import RegisterWorkspaceModal from '../../views/admin/cloud/modals/RegisterWorkspaceModal';
 import { useUpgradeTabParams } from '../../views/hooks/useUpgradeTabParams';
-// import Emoji from '../Emoji';
+import Emoji from '../Emoji';
 import ListItem from '../Sidebar/ListItem';
 
 type AdministrationModelListProps = {
@@ -23,10 +24,21 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 	const shouldShowEmoji = isFullyFeature(tabType);
 	const label = getUpgradeTabLabel(tabType);
 	const hasInfoPermission = usePermission('view-statistics');
+	const setModal = useSetModal();
+
+	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
+	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
+	const { workspaceRegistered, connectToCloud } = result.data || {};
+
+	const handleRegisterWorkspaceClick = (): void => {
+		const handleModalClose = (): void => setModal(null);
+		setModal(<RegisterWorkspaceModal onClose={handleModalClose} isConnectedToCloud={connectToCloud} />);
+	};
 
 	const infoRoute = useRoute('admin-info');
 	const adminRoute = useRoute('admin-index');
 	const upgradeRoute = useRoute('upgrade');
+	const cloudRoute = useRoute('cloud');
 	const showUpgradeItem = !isLoading && tabType;
 
 	return (
@@ -36,13 +48,30 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 				{showUpgradeItem && (
 					<ListItem
 						icon='arrow-stack-up'
-						text={<>{/* {t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />} */}</>}
+						text={
+							<>
+								{' '}
+								{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
+							</>
+						}
 						action={(): void => {
 							upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
 							onDismiss();
 						}}
 					/>
 				)}
+				<ListItem
+					icon='cloud-plus'
+					text={workspaceRegistered ? t('Registration') : t('Register')}
+					action={(): void => {
+						if (workspaceRegistered) {
+							cloudRoute.push({ context: '/' });
+							onDismiss();
+							return;
+						}
+						handleRegisterWorkspaceClick();
+					}}
+				/>
 				{showWorkspace && (
 					<ListItem
 						icon='cog'
