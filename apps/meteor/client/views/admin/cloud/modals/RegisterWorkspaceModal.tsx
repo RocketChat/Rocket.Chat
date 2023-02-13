@@ -12,6 +12,9 @@ type RegisterWorkspaceModalProps = {
 	isConnectedToCloud?: boolean | string;
 };
 
+const documentationLink =
+	'https://docs.rocket.chat/setup-and-configure/accessing-your-workspace/rocket.chat-setup-wizard#information-collected-for-registered-workspaces';
+
 const RegisterWorkspaceModal = ({ onClose, onStatusChange, isConnectedToCloud = false, ...props }: RegisterWorkspaceModalProps) => {
 	const setModal = useSetModal();
 	const bulletFeatures = useFeatureBullets();
@@ -59,7 +62,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, isConnectedToCloud = 
 			</Modal.Content>
 			<Modal.Footer>
 				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' w='full'>
-					<a href={'https://cloud.rocket.chat'} target='_blank' rel='noopener noreferrer'>
+					<a href={documentationLink} target='_blank' rel='noopener noreferrer'>
 						{t('Learn_more')}
 					</a>
 					<ButtonGroup align='end'>
