@@ -421,6 +421,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }) {
 									placeholder={t('Fallback_forward_department')}
 									label={t('Fallback_forward_department')}
 									onlyMyDepartments
+									showArchived
 								/>
 							</Field>
 						)}
