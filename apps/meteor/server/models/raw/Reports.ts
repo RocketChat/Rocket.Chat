@@ -442,28 +442,61 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 	// 		return this.col.estimatedDocumentCount(query);
 	// 	}
 
-	// 	async countGroupedReports(): Promise<number> {
-	// 		const query = {
-	// 			'reports._hidden': {
-	// 				$ne: true,
-	// 			},
-	// 		};
+	async countGroupedReports(latest?: number, oldest?: number, selector?: string): Promise<number> {
+		const query = {
+			'reports._hidden': {
+				$ne: true,
+			},
+			'reports.ts': {
+				$lt: latest || new Date(),
+				$gt: oldest || new Date(0),
+			},
+		};
 
-	// 		const params = [
-	// 			{
-	// 				$group: {
-	// 					_id: { message: '$message.msg', user: '$message.u._id' },
-	// 					reports: { $push: '$$ROOT' },
-	// 				},
-	// 			},
-	// 			{ $match: query },
-	// 			{
-	// 				$count: 'total_count',
-	// 			},
-	// 		];
+		console.log(query);
 
-	// 		const result = await this.col.aggregate(params, { allowDiskUse: true }).toArray();
+		const cquery = selector
+			? {
+					$or: [
+						{
+							'reports.message.msg': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+						{
+							'reports.description': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+						{
+							'reports.message.u.username': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+					],
+			  }
+			: {};
 
-	// 		return result[0].total_count;
-	// 	}
+		const params = [
+			{
+				$group: {
+					_id: { message: '$message.msg', user: '$message.u._id' },
+					reports: { $push: '$$ROOT' },
+				},
+			},
+			{ $match: { ...query, ...cquery } },
+			{
+				$count: 'total_count',
+			},
+		];
+
+		const result = await this.col.aggregate(params, { allowDiskUse: true }).toArray();
+
+		console.log(result);
+
+		return result[0]?.total_count || 0;
+	}
 }

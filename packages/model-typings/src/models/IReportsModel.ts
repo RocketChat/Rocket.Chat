@@ -41,5 +41,5 @@ export interface IReportsModel extends IBaseModel<IReport> {
 
 	countReportsByMessageId(messageId: IReport['message']['_id'], count?: number): Promise<number>;
 
-	// countReports(): Promise<number>;
+	countGroupedReports(latest?: Date, oldest?: Date, selector?: string): Promise<number>;
 }

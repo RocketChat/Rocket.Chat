@@ -12,12 +12,10 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { latest, oldest } = this.queryParams;
+			const { latest, oldest, selector } = this.queryParams;
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-
-			const { selector } = this.queryParams;
 
 			const cursor = oldest
 				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), offset, count, sort, selector)
@@ -25,13 +23,13 @@ API.v1.addRoute(
 
 			const [reports] = await Promise.all([cursor.toArray()]);
 
-			// TODO: find total number of reports in the Reports Collection
+			const total = await Reports.countGroupedReports(latest ? new Date(latest) : new Date(), oldest && new Date(oldest), selector);
 
 			return API.v1.success({
 				reports,
 				count: reports.length,
 				offset,
-				total: reports.length || 0,
+				total,
 			});
 		},
 	},

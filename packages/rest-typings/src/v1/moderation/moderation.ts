@@ -35,9 +35,4 @@ export type ModerationEndpoints = {
 			reportCounts: number;
 		};
 	};
-	// '/v1/moderation.countReports': {
-	// 	GET: () => {
-	// 		reportCounts: number;
-	// 	};
-	// };
 };
