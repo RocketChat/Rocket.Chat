@@ -23,13 +23,13 @@ const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: num
 	return values;
 };
 
-const EnabledAppsCount = (): ReactElement => {
+const EnabledAppsCount = (): ReactElement | null => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const { data: appsCount, status } = useAppsCountQuery();
 
 	if (status !== 'success') {
-		return <div />;
+		return null;
 	}
 
 	const numberOfEnabledApps = context === 'private' ? appsCount.totalPrivateEnabled : appsCount.totalMarketplaceEnabled;
