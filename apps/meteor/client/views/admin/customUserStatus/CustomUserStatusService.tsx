@@ -63,11 +63,9 @@ const CustomUserStatusService = () => {
 					</Box>
 					<Box display='flex' fontScale='c1' justifyContent='space-between' mb='x16'>
 						<Box>{t('Active_connections')}</Box>
-						<Box>
-							{current}/{max}
-						</Box>
+						<Box>{isEnterprise ? current : `${current}/${max}`}</Box>
 					</Box>
-					{!isEnterprise && <ProgressBar percentage={percentage} variant='success' />}
+					{!isEnterprise && <ProgressBar percentage={percentage} variant={percentage > 80 ? 'danger' : 'success'} />}
 					{presenceDisabled && (
 						<Margins block='x16'>
 							<Callout type='danger' title={t('Service_disabled')}>
