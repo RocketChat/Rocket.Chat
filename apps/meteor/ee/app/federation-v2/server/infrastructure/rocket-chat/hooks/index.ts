@@ -2,16 +2,24 @@ import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
+import { settings } from '../../../../../../../app/settings/server';
 
 export class FederationHooksEE {
 	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => Promise<void>): void {
 		callbacks.add(
 			'federation.afterCreateFederatedRoom',
-			(room: IRoom, { owner, originalMemberList }): void => {
-				if (!room || !isRoomFederated(room)) {
+			(room: IRoom, params: { owner: IUser; originalMemberList: string[] }): void => {
+				if (
+					!room ||
+					!isRoomFederated(room) ||
+					!params ||
+					!params.owner ||
+					!params.originalMemberList ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return;
 				}
-				Promise.await(callback(room, owner, originalMemberList));
+				Promise.await(callback(room, params.owner, params.originalMemberList));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-create-room',
@@ -22,7 +30,14 @@ export class FederationHooksEE {
 		callbacks.add(
 			'federation.onAddUsersToARoom',
 			(params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom): void => {
-				if (!room || !isRoomFederated(room)) {
+				if (
+					!room ||
+					!isRoomFederated(room) ||
+					!params ||
+					!params.invitees ||
+					!params.inviter ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return;
 				}
 				Promise.await(callback(room, params.invitees, params.inviter));
@@ -33,7 +48,7 @@ export class FederationHooksEE {
 		callbacks.add(
 			'afterAddedToRoom',
 			(params: { user: IUser; inviter?: IUser }, room: IRoom): void => {
-				if (!room || !isRoomFederated(room)) {
+				if (!room || !isRoomFederated(room) || !params || !params.user || !params.inviter || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(room, [params.user], params?.inviter));
@@ -46,8 +61,12 @@ export class FederationHooksEE {
 	public static onDirectMessageRoomCreated(callback: (room: IRoom, creatorId: string, memberList: IUser[]) => Promise<void>): void {
 		callbacks.add(
 			'afterCreateDirectRoom',
-			(room: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }): void =>
-				Promise.await(callback(room, second.creatorId, second.members)),
+			(room: IRoom, params: { members: IUser[]; creatorId: IUser['_id'] }): void => {
+				if (!room || !params || !params.creatorId || !params.creatorId || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
+				Promise.await(callback(room, params.creatorId, params.members));
+			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-create-direct-message-room',
 		);
@@ -56,20 +75,25 @@ export class FederationHooksEE {
 	public static beforeDirectMessageRoomCreate(callback: (memberList: IUser[]) => Promise<void>): void {
 		callbacks.add(
 			'beforeCreateDirectRoom',
-			(members: IUser[]): void => Promise.await(callback(members)),
+			(members: IUser[]): void => {
+				if (!members || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
+				Promise.await(callback(members));
+			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-create-direct-message-room',
 		);
 	}
 
-	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom) => Promise<void>): void {
+	public static beforeAddUserToARoom(callback: (userToBeAdded: IUser | string, room: IRoom, inviter?: IUser) => Promise<void>): void {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
-			(params: { user: IUser | string }, room: IRoom): void => {
-				if (!room || !isRoomFederated(room)) {
+			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
+				if (!room || !isRoomFederated(room) || !params || !params.user || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
-				Promise.await(callback(params.user, room));
+				Promise.await(callback(params.user, room, params.inviter));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-before-add-user-to-the-room',
@@ -79,8 +103,11 @@ export class FederationHooksEE {
 	public static afterRoomNameChanged(callback: (roomId: string, changedRoomName: string) => Promise<void>): void {
 		callbacks.add(
 			'afterRoomNameChange',
-			({ rid: roomId, name }: Record<string, any>): void => {
-				Promise.await(callback(roomId, name));
+			(params: Record<string, any>): void => {
+				if (!params || !params.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
+				Promise.await(callback(params.rid, params.name));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-room-name-changed',
@@ -90,8 +117,11 @@ export class FederationHooksEE {
 	public static afterRoomTopicChanged(callback: (roomId: string, changedRoomTopic: string) => Promise<void>): void {
 		callbacks.add(
 			'afterRoomTopicChange',
-			({ rid: roomId, topic }: Record<string, any>): void => {
-				Promise.await(callback(roomId, topic));
+			(params: Record<string, any>): void => {
+				if (!params || !params.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
+				Promise.await(callback(params.rid, params.topic));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-room-topic-changed',
