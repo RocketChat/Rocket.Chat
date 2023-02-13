@@ -79,19 +79,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		[setModal, action, app, setLoading],
 	);
 
-	const requestConfirmAction = (postMessage) => {
-		setModal(null);
-		setLoading(false);
-		setRequestedEndUser(true);
-		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
-
-		notifyAdmins({
-			appId: app.id,
-			appName: app.name,
-			message: postMessage.message,
-		});
-	};
-
 	const showAppPermissionsReviewModal = useCallback(() => {
 		if (!isAppPurchased) {
 			setPurchased(true);
@@ -141,6 +128,19 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [checkUserLoggedIn, app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const handleAcquireApp = useCallback(async () => {
+		const requestConfirmAction = (postMessage) => {
+			setModal(null);
+			setLoading(false);
+			setRequestedEndUser(true);
+			dispatchToastMessage({ type: 'success', message: 'App request submitted' });
+
+			notifyAdmins({
+				appId: app.id,
+				appName: app.name,
+				message: postMessage.message,
+			});
+		};
+
 		setLoading(true);
 
 		let isLoggedIn = true;
@@ -185,10 +185,11 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		app,
 		isAppPurchased,
 		showAppPermissionsReviewModal,
-		checkUserLoggedIn,
 		setModal,
+		dispatchToastMessage,
+		notifyAdmins,
+		checkUserLoggedIn,
 		cancelAction,
-		requestConfirmAction,
 		closeModal,
 	]);
 
