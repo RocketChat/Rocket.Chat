@@ -1,5 +1,5 @@
-import type { IReport, IMessage } from '@rocket.chat/core-typings';
-import type { Document, FindCursor, UpdateResult } from 'mongodb';
+import type { IReport, IMessage, MsgGroupedIReport } from '@rocket.chat/core-typings';
+import type { AggregationCursor, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -17,7 +17,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): FindPaginated<FindCursor<IReport>>;
+	): AggregationCursor<MsgGroupedIReport>;
 
 	findReportsByRoom(roomId: string, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
@@ -31,13 +31,15 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		selector?: string,
 	): Promise<IReport[]>;
 
-	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
+	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport>;
 
-	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
+	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport>;
 
 	hideReportById(reportId: IReport['_id'], userId: string): Promise<UpdateResult | Document>;
 
 	hideReportsByMessageId(messageId: IReport['message']['_id'], userId: string): Promise<UpdateResult | Document>;
 
 	countReportsByMessageId(messageId: IReport['message']['_id'], count?: number): Promise<number>;
+
+	// countReports(): Promise<number>;
 }

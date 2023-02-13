@@ -19,17 +19,19 @@ API.v1.addRoute(
 
 			const { selector } = this.queryParams;
 
-			const { cursor, totalCount } = oldest
+			const cursor = oldest
 				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), offset, count, sort, selector)
 				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), offset, count, sort, selector);
 
-			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [reports] = await Promise.all([cursor.toArray()]);
+
+			// TODO: find total number of reports in the Reports Collection
 
 			return API.v1.success({
 				reports,
 				count: reports.length,
 				offset,
-				total,
+				total: reports.length || 0,
 			});
 		},
 	},

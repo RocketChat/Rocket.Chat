@@ -12,3 +12,11 @@ export interface IReport extends IRocketChatRecord {
 	_hiddenAt?: Date;
 	_hiddenBy?: string;
 }
+
+export type MsgGroupedIReport = {
+	_id: {
+		message: IMessage['msg'];
+		user: IUser['_id'];
+	};
+	reports: IReport[];
+};

@@ -1,6 +1,6 @@
-import type { IMessage, IReport, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMessage, IReport, RocketChatRecordDeleted, MsgGroupedIReport } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindCursor, UpdateResult, Document } from 'mongodb';
+import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -29,12 +29,12 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		count = 20,
 		sort?: any,
 		selector?: string,
-	): FindPaginated<FindCursor<IReport>> {
+	): AggregationCursor<MsgGroupedIReport> {
 		const query = {
-			_hidden: {
+			'reports._hidden': {
 				$ne: true,
 			},
-			ts: {
+			'reports.ts': {
 				$lt: latest,
 				$gt: oldest,
 			},
@@ -44,19 +44,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'message.msg': {
+							'reports.message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							description: {
+							'reports.description': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'u.username': {
+							'reports.message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -65,16 +65,28 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			  }
 			: {};
 
-		return this.findPaginated(
-			{ ...query, ...cquery },
+		const params = [
 			{
-				sort: sort || {
+				$group: {
+					_id: { message: '$msg.message', user: '$message.u._id' },
+					reports: { $push: '$$ROOT' },
+				},
+			},
+			{ $match: { ...query, ...cquery } },
+			{
+				$sort: sort || {
 					ts: -1,
 				},
-				skip: offset,
-				limit: count,
 			},
-		);
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+		];
+
+		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
 	findReportsByRoom(roomId: string, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {
@@ -253,12 +265,12 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		return reports as IReport[];
 	}
 
-	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {
+	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport> {
 		const query = {
-			_hidden: {
+			'reports._hidden': {
 				$ne: true,
 			},
-			ts: {
+			'reports.ts': {
 				$gt: oldest,
 			},
 		};
@@ -267,19 +279,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'message.msg': {
+							'reports.message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							description: {
+							'reports.description': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'u.username': {
+							'reports.message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -288,24 +300,36 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			  }
 			: {};
 
-		return this.findPaginated(
-			{ ...query, ...cquery },
+		const params = [
 			{
-				sort: sort || {
-					ts: -1,
+				$group: {
+					_id: { message: '$message.msg', user: '$message.u._id' },
+					reports: { $push: '$$ROOT' },
 				},
-				skip: offset,
-				limit: count,
 			},
-		);
+			{ $match: { ...query, ...cquery } },
+			{
+				$sort: sort || {
+					'reports.ts': -1,
+				},
+			},
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+		];
+
+		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>> {
+	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport> {
 		const query = {
-			_hidden: {
+			'reports._hidden': {
 				$ne: true,
 			},
-			ts: {
+			'reports.ts': {
 				$lt: latest,
 			},
 		};
@@ -314,19 +338,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'message.msg': {
+							'reports.message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							description: {
+							'reports.description': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'u.username': {
+							'reports.message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -335,16 +359,28 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			  }
 			: {};
 
-		return this.findPaginated(
-			{ ...query, ...cquery },
+		const params = [
 			{
-				sort: sort || {
-					ts: -1,
+				$group: {
+					_id: { message: '$message.msg', user: '$message.u._id' },
+					reports: { $push: '$$ROOT' },
 				},
-				skip: offset,
-				limit: count,
 			},
-		);
+			{ $match: { ...query, ...cquery } },
+			{
+				$sort: sort || {
+					'reports.ts': -1,
+				},
+			},
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+		];
+
+		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
 	// update
@@ -395,4 +431,39 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 		return this.col.countDocuments(query, { limit: count });
 	}
+
+	// 	async countReports(): Promise<number> & void {
+	// 		const query = {
+	// 			_hidden: {
+	// 				$ne: true,
+	// 			},
+	// 		};
+
+	// 		return this.col.estimatedDocumentCount(query);
+	// 	}
+
+	// 	async countGroupedReports(): Promise<number> {
+	// 		const query = {
+	// 			'reports._hidden': {
+	// 				$ne: true,
+	// 			},
+	// 		};
+
+	// 		const params = [
+	// 			{
+	// 				$group: {
+	// 					_id: { message: '$message.msg', user: '$message.u._id' },
+	// 					reports: { $push: '$$ROOT' },
+	// 				},
+	// 			},
+	// 			{ $match: query },
+	// 			{
+	// 				$count: 'total_count',
+	// 			},
+	// 		];
+
+	// 		const result = await this.col.aggregate(params, { allowDiskUse: true }).toArray();
+
+	// 		return result[0].total_count;
+	// 	}
 }

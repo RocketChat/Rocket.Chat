@@ -1,4 +1,4 @@
-import type { IReport } from '@rocket.chat/core-typings';
+import type { IReport, MsgGroupedIReport } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportProps } from './ArchiveReportProps';
@@ -8,7 +8,10 @@ export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages
 	'/v1/moderation.getReports': {
 		GET: (params: ReportHistoryProps) => PaginatedResult<{
-			reports: IReport[];
+			reports: MsgGroupedIReport[];
+			count: number;
+			offset: number;
+			total: number;
 		}>;
 	};
 	'/v1/moderation.markChecked': {
@@ -32,4 +35,9 @@ export type ModerationEndpoints = {
 			reportCounts: number;
 		};
 	};
+	// '/v1/moderation.countReports': {
+	// 	GET: () => {
+	// 		reportCounts: number;
+	// 	};
+	// };
 };
