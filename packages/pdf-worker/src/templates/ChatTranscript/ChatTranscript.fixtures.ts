@@ -84,7 +84,7 @@ export const exampleData = {
 	closedAt: '2022-11-21T00:00:00.000Z',
 	dateFormat: 'MMM D, YYYY',
 	timeAndDateFormat: 'MMM D, YYYY H:mm:ss',
-	timezone: 'GTM',
+	timezone: 'Etc/GMT+1',
 	translations: [
 		{ key: 'Chat_transcript', value: 'Chat transcript' },
 		{ key: 'Agent', value: 'Agent' },

@@ -17,7 +17,7 @@ const PreferencesConversationTranscript = ({ register }: FormSectionProps): Reac
 		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
 				<Field>
-					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1} color='red'>
+					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 						<Field.Label color={!canSendTranscriptPDF || !hasLicense ? 'disabled' : undefined}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_pdf')}

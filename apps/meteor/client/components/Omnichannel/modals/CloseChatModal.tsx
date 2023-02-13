@@ -213,7 +213,6 @@ const CloseChatModal = ({
 								{canSendTranscriptPDF && canSendTranscriptEmail
 									? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
 									: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
-								{}
 							</Field.Label>
 						</Field>
 					</>

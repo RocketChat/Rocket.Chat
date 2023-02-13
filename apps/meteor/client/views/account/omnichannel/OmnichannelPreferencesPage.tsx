@@ -46,22 +46,24 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 	};
 
 	return (
-		<Page>
-			<Page.Header title={t('Omnichannel')}>
-				<ButtonGroup>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
-					<Accordion>
-						<PreferencesConversationTranscript register={register} />
-					</Accordion>
-				</Box>
-			</Page.ScrollableContentWithShadow>
-		</Page>
+		<form onSubmit={handleSubmit(handleSave)}>
+			<Page>
+				<Page.Header title={t('Omnichannel')}>
+					<ButtonGroup>
+						<Button type='submit' primary disabled={!isDirty}>
+							{t('Save_changes')}
+						</Button>
+					</ButtonGroup>
+				</Page.Header>
+				<Page.ScrollableContentWithShadow>
+					<Box maxWidth='x600' w='full' alignSelf='center'>
+						<Accordion>
+							<PreferencesConversationTranscript register={register} />
+						</Accordion>
+					</Box>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		</form>
 	);
 };
 

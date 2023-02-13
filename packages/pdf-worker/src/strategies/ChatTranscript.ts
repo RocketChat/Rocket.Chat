@@ -10,22 +10,18 @@ export class ChatTranscript implements IStrategy {
 		return !previous || !moment(current.ts).tz(timezone).isSame(previous.ts, 'day');
 	}
 
-	private parserMessages(messages: PDFMessage[], dateFormat: unknown, timeAndDateFormat: unknown, timezone: unknown): unknown[] {
+	private parserMessages(messages: PDFMessage[], dateFormat: string, timeAndDateFormat: string, timezone: string): PDFMessage[] {
 		return messages.map((message, index, arr) => {
 			const previousMessage = arr[index - 1];
 			const { ts, ...rest } = message;
-			const formattedTs = moment(ts)
-				.tz(timezone as string)
-				.format(String(timeAndDateFormat));
-			const isDivider = this.isNewDay(message, previousMessage, timezone as string);
+			const formattedTs = moment(ts).tz(timezone).format(timeAndDateFormat);
+			const isDivider = this.isNewDay(message, previousMessage, timezone);
 
 			if (isDivider) {
 				return {
 					...rest,
 					ts: formattedTs,
-					divider: moment(ts)
-						.tz(timezone as string)
-						.format(String(dateFormat)),
+					divider: moment(ts).tz(timezone).format(dateFormat),
 				};
 			}
 
@@ -80,7 +76,7 @@ export class ChatTranscript implements IStrategy {
 					.format('H:mm:ss')} ${data.timezone}`,
 			},
 			messages: Array.isArray(data.messages)
-				? this.parserMessages(data.messages, data.dateFormat, data.timeAndDateFormat, data.timezone)
+				? this.parserMessages(data.messages, data.dateFormat as string, data.timeAndDateFormat as string, data.timezone as string)
 				: [],
 			t: this.getTranslations(data.translations as Record<string, unknown>[]),
 		};

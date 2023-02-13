@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	list: {
+		display: 'flex',
 		flexDirection: 'row',
 	},
 	bullet: {
