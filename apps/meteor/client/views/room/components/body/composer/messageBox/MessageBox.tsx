@@ -330,22 +330,23 @@ const MessageBox = ({
 		popup,
 		focused,
 		items,
+		ariaActiveDescendant,
+		select,
 		callbackRef: c,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
-	const cc = useMergedRefs(c, callbackRef);
+	const mergedRefs = useMergedRefs(c, callbackRef);
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
 
-			{/* <BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
-			<BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
+			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
 
-			{popup && <ComposerBoxPopup items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />}
+			{popup && <ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />}
 
 			{readOnly && (
 				<Box mbe='x4'>
@@ -356,7 +357,7 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				<MessageComposerInput
-					ref={cc as unknown as Ref<HTMLInputElement>}
+					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
 					disabled={isRecording}
@@ -366,7 +367,7 @@ const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 					onPaste={handlePaste}
-					// aria-activedescendant
+					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
