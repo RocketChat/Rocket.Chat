@@ -1,6 +1,6 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
-import type { ILicense, LicenseAppSources } from '../../definitions/ILicense';
+import type { ILicense, LicenseAppSources } from '../../definition/ILicense';
 
 export async function isUnderAppLimits(
 	{ appManager }: { appManager: AppManager },
