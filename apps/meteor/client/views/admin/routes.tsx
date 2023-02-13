@@ -125,17 +125,6 @@ registerAdminRoute('/settings/:group?', {
 	component: lazy(() => import('./settings/SettingsRoute')),
 });
 
-registerAdminRoute('/chatpal', {
-	name: 'chatpal-admin',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='ChatpalAdmin' />
-			</MainLayout>,
-		);
-	},
-});
-
 registerAdminRoute('/upgrade/:type?', {
 	name: 'upgrade',
 	component: lazy(() => import('./upgrade/UpgradePage')),
