@@ -19,15 +19,9 @@ API.v1.addRoute(
 				});
 			}
 
-			try {
-				return API.v1.success({
-					receipts: await Meteor.call('getReadReceipts', { messageId }),
-				});
-			} catch (error: any) {
-				return API.v1.failure({
-					error: error.message,
-				});
-			}
+			return API.v1.success({
+				receipts: await Meteor.call('getReadReceipts', { messageId }),
+			});
 		},
 	},
 );
