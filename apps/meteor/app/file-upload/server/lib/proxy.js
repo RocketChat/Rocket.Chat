@@ -4,7 +4,8 @@ import URL from 'url';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { InstanceStatus } from '@rocket.chat/instance-status';
+import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 
 import { Logger } from '../../../logger';
 import { isDocker } from '../../../utils';
@@ -63,7 +64,7 @@ WebApp.connectHandlers.stack.unshift({
 		}
 
 		// Proxy to other instance
-		const instance = InstanceStatus.getCollection().findOne({ _id: file.instanceId });
+		const instance = Promise.await(InstanceStatusModel.findOneById(file.instanceId));
 
 		if (instance == null) {
 			res.writeHead(404);
