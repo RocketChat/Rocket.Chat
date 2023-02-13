@@ -12,13 +12,14 @@ const PreferencesConversationTranscript = ({ register }: FormSectionProps): Reac
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
+	const cantSendTranscriptPDF = !canSendTranscriptPDF || !hasLicense;
 
 	return (
 		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
 				<Field>
 					<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label color={!canSendTranscriptPDF || !hasLicense ? 'disabled' : undefined}>
+						<Field.Label color={cantSendTranscriptPDF ? 'disabled' : undefined}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_pdf')}
 								<Box marginInline={4}>
@@ -28,10 +29,10 @@ const PreferencesConversationTranscript = ({ register }: FormSectionProps): Reac
 							</Box>
 						</Field.Label>
 						<Field.Row>
-							<ToggleSwitch disabled={!canSendTranscriptPDF || !hasLicense} {...register('omnichannelTranscriptPDF')} />
+							<ToggleSwitch disabled={cantSendTranscriptPDF} {...register('omnichannelTranscriptPDF')} />
 						</Field.Row>
 					</Box>
-					<Field.Hint color={!canSendTranscriptPDF || !hasLicense ? 'disabled' : undefined}>
+					<Field.Hint color={cantSendTranscriptPDF ? 'disabled' : undefined}>
 						{t('Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description')}
 					</Field.Hint>
 				</Field>
