@@ -1,7 +1,6 @@
 import { Component } from 'preact';
 import { withTranslation } from 'react-i18next';
 
-import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import Screen from '../../components/Screen';
@@ -9,11 +8,6 @@ import { createClassName } from '../../components/helpers';
 import styles from './styles.scss';
 
 class ChatFinished extends Component {
-	constructor(props) {
-		super(props);
-		Livechat.unsubscribeAll();
-	}
-
 	handleClick = () => {
 		const { onRedirectChat } = this.props;
 		onRedirectChat && onRedirectChat();
