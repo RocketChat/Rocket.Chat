@@ -1,4 +1,3 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import { useEffect, useState } from 'react';
 
 import type { AsyncStatePhase } from '../../lib/asyncState';
@@ -11,7 +10,7 @@ type RecordListValue<T> = {
 	error: Error | undefined;
 };
 
-export const useRecordList = <T extends IRocketChatRecord>(recordList: RecordList<T>): RecordListValue<T> => {
+export const useRecordList = <T extends { _id: string; _updatedAt?: Date }>(recordList: RecordList<T>): RecordListValue<T> => {
 	const [state, setState] = useState<RecordListValue<T>>(() => ({
 		phase: recordList.phase,
 		items: recordList.items,
