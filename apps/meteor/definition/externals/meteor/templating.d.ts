@@ -40,7 +40,6 @@ declare module 'meteor/templating' {
 		DefaultSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		RocketSearch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		icon: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		selectDropdown: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		CodeMirror: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		photoswipeContent: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		roomSearch: Blaze.Template<typeof AutoComplete, Blaze.TemplateInstance<typeof AutoComplete>>;

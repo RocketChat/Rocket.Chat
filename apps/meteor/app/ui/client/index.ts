@@ -8,8 +8,6 @@ import './views/app/roomSearch';
 import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
 import './components/icon';
 
-import './components/selectDropdown.html';
-
 export { UserAction, USER_ACTIVITIES } from './lib/UserAction';
 export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
