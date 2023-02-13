@@ -95,14 +95,14 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 				<Box w='full' alignSelf='center' mb='neg-x8'>
 					<Margins block='x8'>
 						<FormProvider {...methods}>
-							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} />
+							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} isDisabled={!isEnterprise} />
 						</FormProvider>
 					</Margins>
 				</Box>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup vertical stretch>
-					<Button primary disabled={!methods.formState.isDirty} onClick={methods.handleSubmit(handleSave)}>
+					<Button primary disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (

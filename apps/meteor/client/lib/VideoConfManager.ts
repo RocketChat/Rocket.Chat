@@ -22,10 +22,10 @@ export type DirectCallParams = {
 	uid: IUser['_id'];
 	rid: IRoom['_id'];
 	callId: string;
+
+	// #ToDo: The attributes below should not be part of DirectCallParams - they are used by local events only, never notification events.
 	dismissed?: boolean;
 	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
-	// TODO: improve this, nowadays there is not possible check if the video call has finished, but ist a nice improvement
-	// state: 'incoming' | 'outgoing' | 'connected' | 'disconnected' | 'dismissed';
 };
 
 type IncomingDirectCall = DirectCallParams & { timeout: number };
