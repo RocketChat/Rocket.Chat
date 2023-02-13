@@ -1,6 +1,6 @@
 import { Subscriptions } from '@rocket.chat/models';
-import type { IRoom, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -13,7 +13,7 @@ callbacks.add(
 			return message;
 		}
 
-		if (room && !(room as IOmnichannelRoom).closedAt) {
+		if (!isOmnichannelRoom(room) || !room.closedAt) {
 			// set subscription as read right after message was sent
 			Promise.await(Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id));
 		}
