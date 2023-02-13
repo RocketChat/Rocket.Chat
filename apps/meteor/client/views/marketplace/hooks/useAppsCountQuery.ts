@@ -14,25 +14,19 @@ const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: num
 export const useAppsCountQuery = (context: 'private' | 'explore' | 'marketplace') => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
-	return useQuery(
-		['apps/count'],
-		async () => {
-			const data = await getAppsCount();
+	return useQuery(['apps/count'], async () => {
+		const data = await getAppsCount();
 
-			const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
-			const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
-			const hasUnlimitedApps = (context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps) === -1;
-			return {
-				hasUnlimitedApps,
-				enabled: numberOfEnabledApps,
-				limit: enabledAppsLimit,
-				...getProgressBarValues(numberOfEnabledApps, enabledAppsLimit),
-			};
-		},
-		{
-			staleTime: 10_000,
-		},
-	);
+		const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
+		const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
+		const hasUnlimitedApps = (context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps) === -1;
+		return {
+			hasUnlimitedApps,
+			enabled: numberOfEnabledApps,
+			limit: enabledAppsLimit,
+			...getProgressBarValues(numberOfEnabledApps, enabledAppsLimit),
+		};
+	});
 };
 
 export const useInvalidateAppsCountQueryCallback = () => {
