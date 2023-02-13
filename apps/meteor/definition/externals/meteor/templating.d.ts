@@ -1,7 +1,7 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { IMessage, IRoom, ISetting, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -30,20 +30,6 @@ declare module 'meteor/templating' {
 
 	type BlazeTemplates = {
 		requiresPermission: BlazeTemplate;
-		ChatpalAdmin: BlazeTemplate;
-		ChatpalSearchResultTemplate: BlazeTemplate<{
-			searching: ReactiveVar<boolean>;
-			result: ReactiveVar<any>;
-			text: ReactiveVar<string>;
-			settings: Record<ISetting['_id'], ISetting['value']>;
-			parentPayload: Record<string, unknown>;
-			payload: Record<string, unknown>;
-			search(): void;
-		}>;
-		ChatpalSearchSingleTemplate: BlazeTemplate;
-		ChatpalSearchSingleUser: BlazeTemplate;
-		ChatpalSearchSingleRoom: BlazeTemplate;
-		ChatpalSuggestionItemTemplate: BlazeTemplate;
 		emojiPicker: BlazeTemplate;
 		lazyloadImage: BlazeTemplate;
 		customFieldsForm: BlazeTemplate;

@@ -1,9 +1,5 @@
-import type { MessageSearchSuggestion as MessageSearchSuggestionType } from './MessageSearchSuggestion';
+import type { MessageSearchSuggestion } from './MessageSearchSuggestion';
 
-export const getSuggestionText = (suggestion?: MessageSearchSuggestionType): string | undefined => {
-	if (!suggestion) {
-		return undefined;
-	}
-
-	return 'text' in suggestion ? suggestion.text : suggestion.action();
+export const getSuggestionText = (suggestion?: MessageSearchSuggestion): string | undefined => {
+	return suggestion?.text;
 };
