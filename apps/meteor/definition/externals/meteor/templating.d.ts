@@ -38,13 +38,6 @@ declare module 'meteor/templating' {
 		_noMatch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		authorize: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		oauth404: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedBaseWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedAudioWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedFrameWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedImageWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedUrlWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedVideoWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		oembedYoutubeWidget: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		DefaultSearchResultTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		DefaultSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		RocketSearch: Blaze.Template<any, Blaze.TemplateInstance<any>>;
