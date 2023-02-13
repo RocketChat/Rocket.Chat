@@ -29,8 +29,8 @@ export const ComposerBoxPopup = <
 	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
 }: ComposerBoxPopupProps<T>): ReactElement | null => {
 	return (
-		<div className='message-popup-position'>
-			<Tile className='message-popup' padding={0} role='menu'>
+		<Box className='message-popup-position' position='relative'>
+			<Tile className='message-popup' padding={0} role='menu' mbe='x2' maxHeight='20rem'>
 				{title && (
 					<Box bg='tint' pi='x16' pb='x8'>
 						{title}
@@ -52,15 +52,15 @@ export const ComposerBoxPopup = <
 									selected={item === focused}
 									key={index}
 									id={`popup-item-${item._id}`}
-									{...({ tabIndex: item === focused ? 0 : -1 } as any)}
+									tabIndex={item === focused ? 0 : -1}
 								>
 									{renderItem({ item })}
 								</Option>
 							);
 						})}
-					{items.some((item) => item.isLoading) && <OptionSkeleton />}
+					{items.some((item) => item.isLoading && item.fetchStatus !== 'idle') && <OptionSkeleton />}
 				</Box>
 			</Tile>
-		</div>
+		</Box>
 	);
 };

@@ -1055,39 +1055,6 @@
 	}
 }
 
-.rc-old .message-popup-position {
-	position: relative;
-	margin-block-end: 2px;
-
-	.message-popup {
-		display: flex;
-		flex-direction: column;
-
-		max-height: 20rem;
-		align-items: stretch;
-
-		.message-popup-items {
-			overflow-y: auto;
-
-			.popup-slash-command {
-				display: flex;
-				flex-flow: row wrap;
-
-				&-format {
-					flex-grow: 1;
-				}
-
-				&-description {
-					text-align: right;
-
-					font-style: italic;
-					flex-grow: 2;
-				}
-			}
-		}
-	}
-}
-
 .rc-old .message-popup-items.preview-items {
 	display: flex;
 	overflow-y: auto;
