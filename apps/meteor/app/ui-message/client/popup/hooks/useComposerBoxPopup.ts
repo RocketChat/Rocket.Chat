@@ -1,12 +1,12 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useCallback, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 
 import { useChat } from '../../../../../client/views/room/contexts/ChatContext';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 
-export type MessageBoxOptions<T extends { _id: string }> = {
+export type ComposerBoxPopupOptions<T extends { _id: string }> = {
 	title?: string;
 	getItemsFromLocal: (filter: string) => Promise<T[]>;
 	getItemsFromServer: (filter: string) => Promise<T[]>;
@@ -27,9 +27,9 @@ export type MessageBoxOptions<T extends { _id: string }> = {
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };
 
-type IMessageBoxResult<T extends { _id: string; sort?: number }> =
+type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 	| {
-			popup: MessageBoxOptions<T>;
+			popup: ComposerBoxPopupOptions<T>;
 			items: UseQueryResult<T[]>[];
 			focused: T | undefined;
 			ariaActiveDescendant: string | undefined;
@@ -58,18 +58,30 @@ const keys = {
 export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	configurations,
 }: {
-	configurations: MessageBoxOptions<T>[];
-}): IMessageBoxResult<T> => {
-	const [popup, setPopup] = useState<MessageBoxOptions<T> | undefined>(undefined);
+	configurations: ComposerBoxPopupOptions<T>[];
+}): ComposerBoxPopupResult<T> => {
+	const [popup, setPopup] = useState<ComposerBoxPopupOptions<T> | undefined>(undefined);
 	const [focused, setFocused] = useState<T | undefined>(undefined);
-
 	const [filter, setFilter] = useState('');
 
-	const items = useComposerBoxPopupQueries(filter, popup?.getItemsFromLocal, popup?.getItemsFromServer) as unknown as UseQueryResult<T[]>[];
+	const items = useComposerBoxPopupQueries(filter, popup) as unknown as UseQueryResult<T[]>[];
 
 	const chat = useChat();
 
 	const ariaActiveDescendant = focused ? `popup-item-${focused._id}` : undefined;
+
+	useEffect(() => {
+		if (!popup) {
+			return;
+		}
+		setFocused((focused) => {
+			const sortedItems = items
+				.filter((item) => item.isSuccess)
+				.flatMap((item) => item.data as T[])
+				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
+			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
+		});
+	}, [items, popup]);
 
 	const select = useMutableCallback((item: T) => {
 		if (!popup) {
@@ -95,7 +107,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		setFocused(undefined);
 	});
 
-	const setConfigByInput = useMutableCallback((): MessageBoxOptions<T> | undefined => {
+	const setConfigByInput = useMutableCallback((): ComposerBoxPopupOptions<T> | undefined => {
 		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 
 		if (!value) {
