@@ -1,3 +1,4 @@
+import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
@@ -13,7 +14,7 @@ type NewDepartmentProps = {
 const NewDepartment = ({ id }: NewDepartmentProps) => {
 	const setModal = useSetModal();
 	const getDepartmentCreationAvailable = useEndpoint('GET', '/v1/livechat/department/isDepartmentCreationAvailable');
-	const { data, isLoading } = useQuery(['getDepartments'], async () => getDepartmentCreationAvailable(), {
+	const { data, isLoading, error } = useQuery(['getDepartments'], () => getDepartmentCreationAvailable(), {
 		onSuccess: (data) => {
 			if (data.isDepartmentCreationAvailable === false) {
 				setModal(<EnterpriseDepartmentsModal closeModal={(): void => setModal(null)} />);
@@ -22,6 +23,10 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 	});
 
 	const t = useTranslation();
+
+	if (error) {
+		return <Callout type='danger'>{t('Unavailable')}</Callout>;
+	}
 
 	if (!data || isLoading || !data.isDepartmentCreationAvailable) {
 		return <PageSkeleton />;

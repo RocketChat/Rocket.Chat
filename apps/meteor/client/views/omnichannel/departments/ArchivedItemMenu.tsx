@@ -14,7 +14,7 @@ const ArchivedItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedAt'
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToast = useToastMessageDispatch();
-	const departmentRemovalEnabled = useSetting('Omnichannel_enable_department_removal');
+	const departmentRemovalEnabled = useSetting('Omnichannel_enable_department_removal') === true;
 
 	const queryClient = useQueryClient();
 
@@ -45,7 +45,7 @@ const ArchivedItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedAt'
 			action: (): Promise<void> => handleUnarchiveDepartment(),
 		},
 
-		...(departmentRemovalEnabled === true && {
+		...(departmentRemovalEnabled && {
 			delete: {
 				label: { label: t('Delete'), icon: 'trash' },
 				action: (): void => handlePermanentDepartmentRemoval(),
