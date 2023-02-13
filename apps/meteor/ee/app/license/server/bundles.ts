@@ -36,7 +36,6 @@ const bundles: IBundle = {
 		'device-management',
 		'federation',
 		'videoconference-enterprise',
-		'marketplace-enterprise',
 	],
 	pro: [],
 };
