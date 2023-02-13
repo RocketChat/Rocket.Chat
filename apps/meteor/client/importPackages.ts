@@ -58,7 +58,6 @@ import '../app/videobridge/client';
 import '../app/webdav/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
-import '../app/nrr/client';
 import '../app/meteor-accounts-saml/client';
 import '../app/e2e/client';
 import '../app/version-check/client';
