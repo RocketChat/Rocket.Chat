@@ -15,7 +15,6 @@ import { useFileUploadDropTarget } from '../../../components/body/useFileUploadD
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
-import LegacyThreadMessageList from './LegacyThreadMessageList';
 import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
@@ -105,18 +104,12 @@ const ThreadChat: VFC<ThreadChatProps> = ({ mainMessage }) => {
 	const sendToChannelID = useUniqueId();
 	const t = useTranslation();
 
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
-
 	return (
 		<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DropTargetOverlay {...fileUploadOverlayProps} />
 			<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 				<MessageListErrorBoundary>
-					{useLegacyMessageTemplate ? (
-						<LegacyThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
-					) : (
-						<ThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
-					)}
+					<ThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
 				</MessageListErrorBoundary>
 
 				<ComposerContainer

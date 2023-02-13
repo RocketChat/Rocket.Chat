@@ -29,7 +29,6 @@ import '../app/logger/client';
 import '../app/markdown/client';
 import '../app/message-attachments/client';
 import '../app/message-mark-as-unread/client';
-import '../app/message-snippet/client';
 import '../app/nextcloud/client';
 import '../app/oauth2-server-config/client';
 import '../app/oembed/client';

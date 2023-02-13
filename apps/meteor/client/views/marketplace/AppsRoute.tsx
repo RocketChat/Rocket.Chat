@@ -18,7 +18,6 @@ const AppsRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
 
-	const isMarketplace = context === 'explore';
 	const isAdminUser = usePermission('manage-apps');
 
 	if (!page) marketplaceRoute.push({ context, page: 'list' });
@@ -50,7 +49,7 @@ const AppsRoute = (): ReactElement => {
 	return (
 		<AppsProvider>
 			<BannerEnterpriseTrialEnded />
-			{(page === 'list' && <AppsPage isMarketplace={isMarketplace} />) ||
+			{(page === 'list' && <AppsPage />) ||
 				(id && page === 'info' && <AppDetailsPage id={id} />) ||
 				(page === 'install' && <AppInstallPage />)}
 		</AppsProvider>
