@@ -282,7 +282,7 @@ export interface ServerMethods {
 		text: string,
 		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
 		payload: unknown,
-	) => ({ action(): string } | { text: string })[];
+	) => ({ type: string; action(): string } | { text: string })[];
 }
 
 export type ServerMethodName = keyof ServerMethods;

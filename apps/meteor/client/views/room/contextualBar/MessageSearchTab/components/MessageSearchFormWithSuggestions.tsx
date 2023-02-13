@@ -9,15 +9,9 @@ import { useForm } from 'react-hook-form';
 
 import BlazeTemplate from '../../../components/BlazeTemplate';
 import { useRoom } from '../../../contexts/RoomContext';
+import type { MessageSearchSuggestion as MessageSearchSuggestionType } from '../lib/MessageSearchSuggestion';
+import { getSuggestionText } from '../lib/getSuggestionText';
 import MessageSearchSuggestion from './MessageSearchSuggestion';
-
-const getSuggestionText = (suggestion?: { action(): string } | { text: string }): string | undefined => {
-	if (!suggestion) {
-		return undefined;
-	}
-
-	return 'text' in suggestion ? suggestion.text : suggestion.action();
-};
 
 type MessageSearchFormWithSuggestionsProps = {
 	provider: ISearchProvider;
@@ -106,7 +100,7 @@ const MessageSearchFormWithSuggestions = ({ provider, getPayload, onSearch }: Me
 		}
 	});
 
-	const handleSuggestionClick = useMutableCallback((suggestion: { action(): string } | { text: string }) => {
+	const handleSuggestionClick = useMutableCallback((suggestion: MessageSearchSuggestionType) => {
 		const suggestionText = getSuggestionText(suggestion);
 		if (!suggestionText) {
 			return;
@@ -117,7 +111,7 @@ const MessageSearchFormWithSuggestions = ({ provider, getPayload, onSearch }: Me
 		suggestionsMutation.reset();
 	});
 
-	const handleSuggestionHover = useMutableCallback((suggestion: { action(): string } | { text: string }) => {
+	const handleSuggestionHover = useMutableCallback((suggestion: MessageSearchSuggestionType) => {
 		setSuggestionIndex(suggestionsMutation.data?.indexOf(suggestion) ?? 0);
 	});
 

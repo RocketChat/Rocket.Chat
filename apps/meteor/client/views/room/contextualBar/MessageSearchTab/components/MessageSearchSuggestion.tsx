@@ -1,15 +1,18 @@
 import type { ISearchProvider } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import BlazeTemplate from '../../../components/BlazeTemplate';
+import type { MessageSearchSuggestion as MessageSearchSuggestionType } from '../lib/MessageSearchSuggestion';
+import { getSuggestionText } from '../lib/getSuggestionText';
 
 type MessageSearchSuggestionProps = {
 	provider: ISearchProvider;
-	suggestion: { action(): string } | { text: string };
+	suggestion: MessageSearchSuggestionType;
 	active: boolean;
-	onClick: (suggestion: { action(): string } | { text: string }) => void;
-	onHover: (suggestion: { action(): string } | { text: string }) => void;
+	onClick: (suggestion: MessageSearchSuggestionType) => void;
+	onHover: (suggestion: MessageSearchSuggestionType) => void;
 };
 
 const MessageSearchSuggestion = ({ provider, suggestion, active, onClick, onHover }: MessageSearchSuggestionProps) => {
@@ -21,14 +24,27 @@ const MessageSearchSuggestion = ({ provider, suggestion, active, onClick, onHove
 		onHover(suggestion);
 	});
 
+	const t = useTranslation();
+
 	return (
-		<BlazeTemplate
+		<div
 			className={['rocket-search-suggestion-item', active && 'active'].filter(Boolean).join(' ')}
-			name={provider.suggestionItemTemplate as 'DefaultSuggestionItemTemplate' | 'ChatpalSuggestionItemTemplate'}
 			onClick={handleClick}
 			onMouseEnter={handleMouseEnter}
-			{...suggestion}
-		/>
+		>
+			{provider.suggestionItemTemplate === 'ChatpalSuggestionItemTemplate' && (
+				<div className='chatpal-suggestion'>
+					<span className='chatpal-suggestion-text'>{getSuggestionText(suggestion)}</span>
+					<span className='chatpal-suggestion-hint'>
+						{t('Chatpal_run_search')}
+						<BlazeTemplate name='icon' icon='chatpal-enter' />
+					</span>
+				</div>
+			)}
+			{provider.suggestionItemTemplate === 'DefaultSuggestionItemTemplate' && (
+				<div className='default-suggestion'>{getSuggestionText(suggestion)}</div>
+			)}
+		</div>
 	);
 };
 

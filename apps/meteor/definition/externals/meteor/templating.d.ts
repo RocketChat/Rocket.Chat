@@ -76,7 +76,7 @@ declare module 'meteor/templating' {
 		}>;
 		DefaultSuggestionItemTemplate: BlazeTemplate;
 		icon: BlazeTemplate<{
-			block: string;
+			block?: string;
 			icon: string;
 		}>;
 		popupList: BlazeTemplate;
