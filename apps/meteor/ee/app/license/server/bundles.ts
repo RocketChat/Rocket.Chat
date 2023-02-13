@@ -13,8 +13,7 @@ export type BundleFeature =
 	| 'device-management'
 	| 'oauth-enterprise'
 	| 'federation'
-	| 'videoconference-enterprise'
-	| 'marketplace-enterprise';
+	| 'videoconference-enterprise';
 
 interface IBundle {
 	[key: string]: BundleFeature[];
