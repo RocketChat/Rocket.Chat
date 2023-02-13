@@ -1,9 +1,17 @@
-import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/models';
 
-import { getInstanceConnection } from '../../../../server/stream/streamBroadcast';
+import { Instance as InstanceService } from '../../../../ee/server/sdk';
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
+import { isRunningMs } from '../../../../server/lib/isRunningMs';
+
+const getMatrixInstances = (() => {
+	if (isRunningMs()) {
+		return () => [];
+	}
+
+	return () => InstanceService.getInstances();
+})();
 
 API.v1.addRoute(
 	'instances.get',
@@ -14,20 +22,27 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const instances = await InstanceStatus.find().toArray();
+			const instanceRecords = await InstanceStatus.find().toArray();
+
+			const connections = await getMatrixInstances();
+
+			const result = instanceRecords.map((instanceRecord) => {
+				const connection = connections.find((c) => c.id === instanceRecord._id);
+
+				return {
+					address: connection?.ipList[0],
+					currentStatus: {
+						connected: connection?.available || false,
+						lastHeartbeatTime: connection?.lastHeartbeatTime,
+						local: connection?.local,
+					},
+					instanceRecord,
+					broadcastAuth: true,
+				};
+			});
 
 			return API.v1.success({
-				instances: instances.map((instance: IInstanceStatus) => {
-					const connection = getInstanceConnection(instance);
-
-					if (connection) {
-						delete connection.instanceRecord;
-					}
-					return {
-						...instance,
-						connection,
-					};
-				}),
+				instances: result,
 			});
 		},
 	},

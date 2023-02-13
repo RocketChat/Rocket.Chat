@@ -35,20 +35,20 @@ const InstancesModal = ({ instances = [], onClose }) => {
 								<DescriptionList.Entry
 									label={
 										<>
-											{t('Current_Status')} &gt; {t('Retry_Count')}
+											{t('Current_Status')} &gt; {t('Local')}
 										</>
 									}
 								>
-									{currentStatus.retryCount}
+									{currentStatus.local ? 'true' : 'false'}
 								</DescriptionList.Entry>
 								<DescriptionList.Entry
 									label={
 										<>
-											{t('Current_Status')} &gt; {t('Status')}
+											{t('Current_Status')} &gt; {t('Last_Heartbeat_Time')}
 										</>
 									}
 								>
-									{currentStatus.status}
+									{currentStatus.lastHeartbeatTime}
 								</DescriptionList.Entry>
 								<DescriptionList.Entry
 									label={
