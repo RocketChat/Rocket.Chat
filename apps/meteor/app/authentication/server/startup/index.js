@@ -19,6 +19,7 @@ import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -91,7 +92,9 @@ Meteor.startup(() => {
 });
 
 Accounts.emailTemplates.verifyEmail.html = function (userModel, url) {
-	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name: userModel.name });
+	const name = safeHtmlDots(userModel.name);
+
+	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name });
 };
 
 Accounts.emailTemplates.verifyEmail.subject = function () {

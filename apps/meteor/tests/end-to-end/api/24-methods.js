@@ -1665,6 +1665,58 @@ describe('Meteor.methods', function () {
 						.end(done);
 				});
 		});
+
+		['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'].forEach((prop) => {
+			it(`should allow to update a message changing property '${prop}'`, (done) => {
+				request
+					.post(methodCall('updateMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'updateMessage',
+							params: [{ _id: messageId, rid, msg: 'Message updated', [prop]: 'valid' }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('msg').that.is.a('string');
+					})
+					.end(done);
+			});
+		});
+
+		['tmid', '_hidden', 'rid'].forEach((prop) => {
+			it(`should fail to update a message changing invalid property '${prop}'`, (done) => {
+				request
+					.post(methodCall('updateMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'updateMessage',
+							params: [{ _id: messageId, rid, msg: 'Message updated invalid', [prop]: 'invalid' }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('error').that.is.an('object');
+						expect(data.error).to.have.a.property('error', 'error-invalid-update-key');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('[@setUserActiveStatus]', () => {

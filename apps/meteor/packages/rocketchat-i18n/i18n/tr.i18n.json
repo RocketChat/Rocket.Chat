@@ -3140,7 +3140,6 @@
   "Username_ended_the_OTR_session": "__username__ Kayıt Dışı oturumu sonlandırdı",
   "Username_invalid": "<strong>%s</strong> geçerli bir kullanıcı adı değil,<br/> Kullanıcı adınızı seçerken yalnızca harfler, sayılar, noktalar, tireler ve alt çizgiler kullanın",
   "Username_is_already_in_here": "`@%s` zaten burada.",
-  "Username_is_not_in_this_room": "`#%s` adlı kullanıcı bu odada değil.",
   "Username_Placeholder": "Lütfen kullanıcı adlarını giriniz...",
   "Username_title": "Kullanıcı adını kaydet",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ Kayıt Dışı başlatmak istiyor. Kabul etmek istiyor musunuz?",

@@ -2787,7 +2787,6 @@
   "Username_ended_the_OTR_session": "__username__ je završio SP razgovor",
   "Username_invalid": "<strong>%s</strong> nije valjano korisničko ime,<br/> koristite samo slova, brojeve, točke, crtice i podvlake",
   "Username_is_already_in_here": "`@%s` je već ovdje.",
-  "Username_is_not_in_this_room": "Korisnik `#%s` nije u ovoj sobi.",
   "Username_Placeholder": "Unesite korisnička imena ...",
   "Username_title": "Registriraj korisničko ime",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ želi započeti SP. Želite li prihvatiti?",

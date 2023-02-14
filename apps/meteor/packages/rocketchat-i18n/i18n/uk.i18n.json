@@ -3229,7 +3229,6 @@
   "Username_ended_the_OTR_session": "__username__ закінчив сеанс OTR",
   "Username_invalid": "<strong>%s</strong> не дійсне ім'я користувача,<br/> використовувати тільки букви, цифри, крапки і тире",
   "Username_is_already_in_here": "`@%s` вже тут.",
-  "Username_is_not_in_this_room": "Користувач `#%s` не в цій кімнаті.",
   "Username_Placeholder": "Будь ласка, введіть імена користувачів ...",
   "Username_title": "Зареєструйте ім’я користувача",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ хоче почати OTR. Ви хочете прийняти?",

@@ -116,6 +116,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	resetTOTPById(userId: any): any;
 
 	unsetLoginTokens(userId: any): any;
+
 	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateResult>;
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;

@@ -3536,7 +3536,6 @@
   "Username_ended_the_OTR_session": "__username__-მა დაასრულა OTR სესია",
   "Username_invalid": "<strong>%s</strong> არ არის სწორი სახელი, <br/> გამოიყენეთ მხოლოდ ასოები, რიცხვები, წერტილები, ტირეები და ქვედა ხაზები",
   "Username_is_already_in_here": "`@%s` უკვე აქ არის.",
-  "Username_is_not_in_this_room": "მომხმარებელი `#%s` არ არის ამ ოთახში.",
   "Username_Placeholder": "გთხოვთ, შეიყვანოთ მომხმარებლის სახელი ...",
   "Username_title": "მომხმარებლის სახელის რეგისტრაცია",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ სურს OTR-ის დაწყება. გსურთ მიიღოთ?",

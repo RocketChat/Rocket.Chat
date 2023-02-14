@@ -2748,7 +2748,6 @@
   "Username_ended_the_OTR_session": "__username__ avslutade OTR-session",
   "Username_invalid": "<strong>%s</strong> är inte ett giltigt användarnamn,<br/> använd bara bokstäver, siffror, punkter och bindestreck",
   "Username_is_already_in_here": "`@%s` är redan här inne.",
-  "Username_is_not_in_this_room": "Användaren `#%s` är inte i rummet.",
   "Username_Placeholder": "Vänligen ange användarnamn ...",
   "Username_title": "Registrera användarnamn",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ vill starta OTR. Vill du acceptera?",
