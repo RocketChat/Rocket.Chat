@@ -5,7 +5,6 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { APIClient, t } from '../../utils/client';
-import { popover } from '../../ui-utils/client';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models/client';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
@@ -13,7 +12,6 @@ import GenericModal from '../../../client/components/GenericModal';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { refocusComposer } from '../../ui-message/client/messageBox/messageBox.ts';
 import { rtrim } from '../../../lib/utils/stringUtils';
 import './body.html';
 
@@ -67,34 +65,6 @@ Template.body.onRendered(function () {
 				},
 			});
 		}
-	});
-
-	$(document.body).on('keydown', function (e) {
-		const { target } = e;
-		if (e.ctrlKey === true || e.metaKey === true) {
-			popover.close();
-			return;
-		}
-
-		if (!((e.keyCode > 45 && e.keyCode < 91) || e.keyCode === 8)) {
-			return;
-		}
-
-		if (/input|textarea|select/i.test(target.tagName)) {
-			return;
-		}
-
-		if (target.id === 'pswp') {
-			return;
-		}
-
-		popover.close();
-
-		if (document.querySelector('.rc-modal-wrapper dialog[open]')) {
-			return;
-		}
-
-		refocusComposer();
 	});
 
 	const handleMessageLinkClick = (event) => {
