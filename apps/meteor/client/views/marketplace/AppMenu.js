@@ -16,8 +16,10 @@ import { Apps } from '../../../app/apps/client/orchestrator';
 import WarningModal from '../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import IframeModal from './IframeModal';
+// import AppInstallModal from './components/AppInstallModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
+// import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -58,6 +60,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
+
+	// const result = useAppsCountQuery(context);
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
@@ -137,6 +141,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 		if (action === 'request') {
 			try {
+				// if (!result.hasUnlimitedApps) {
+				// 	setModal(<AppInstallModal enable={result.enable} limit={result.limit} />);
+				// }
+
 				const data = await Apps.buildExternalAppRequest(app.id);
 				setModal(<IframeModal url={data.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
