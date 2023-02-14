@@ -1,12 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages } from '../../../../../app/models/server';
-import { canAccessRoomId } from '../../../../../app/authorization/server';
-import { ReadReceipt } from '../../lib/ReadReceipt';
+import { Messages } from '../../../app/models/server';
+import { canAccessRoomId } from '../../../app/authorization/server';
+import { hasLicense } from '../../app/license/server/license';
+import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 Meteor.methods({
-	async getReadReceipts({ messageId }) {
+	getReadReceipts({ messageId }) {
+		if (!hasLicense('message-read-receipt')) {
+			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
+		}
+
 		if (!messageId) {
 			throw new Meteor.Error('error-invalid-message', "The required 'messageId' param is missing.", { method: 'getReadReceipts' });
 		}
