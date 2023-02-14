@@ -25,7 +25,7 @@ test.describe.serial('homepage', () => {
 			await adminPage.waitForSelector('[data-qa-id="home-header"]');
 		});
 		test('expect show customize button', async () => {
-			await expect(adminPage.locator('[data-qa-id="home-header-customize-button"]')).toBeVisible();
+			await expect(adminPage.locator('role=button[name="Customize"]')).toBeVisible();
 		});
 
 		test.describe('cards', () => {
@@ -43,35 +43,33 @@ test.describe.serial('homepage', () => {
 			});
 
 			test('expect default value in custom body', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-body"]')).toContainText(
-					'Admins may insert content html to be rendered in this white space.',
-				);
+				await expect(
+					adminPage.locator('role=status[name="Admins may insert content html to be rendered in this white space."]'),
+				).toBeVisible();
 			});
 
 			test('expect both change visibility and show only custom content buttons to be disabled', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).toBeDisabled();
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
+				await expect(adminPage.locator('role=button[name="Show to workspace"]')).toBeDisabled();
+				await expect(adminPage.locator('role=button[name="Show only this content"]')).toBeDisabled();
 			});
 
 			test('expect visibility tag to show "not visible"', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-content-visibility-tag"]')).toContainText('Not visible to workspace');
+				await expect(adminPage.locator('role=status[name="Not visible to workspace"]')).toBeVisible();
 			});
 		});
 
 		test.describe('custom body with custom content', () => {
 			test.beforeAll(async ({ api }) => {
-				expect(
-					(await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello admin</span>' })).status(),
-				).toBe(200);
+				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
 			});
 
 			test('expect custom body to be visible', async () => {
-				await expect(adminPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello admin');
+				await expect(adminPage.locator('role=status[name="Hello admin"]')).toBeVisible();
 			});
 
 			test('expect correct state for card buttons', async () => {
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).not.toBeDisabled();
-				await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).toBeDisabled();
+				await expect(adminPage.locator('role=button[name="Show to workspace"]')).not.toBeDisabled();
+				await expect(adminPage.locator('role=button[name="Show only this content"]')).toBeDisabled();
 			});
 
 			test.describe('enterprise edition', () => {
@@ -79,20 +77,22 @@ test.describe.serial('homepage', () => {
 
 				test.describe('display custom content only', () => {
 					test.beforeAll(async ({ api }) => {
-						expect(
-							(await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello admin</span>' })).status(),
-						).toBe(200);
+						expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
 						expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 						expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 					});
 
 					test('expect default layout to not be visible (show only custom content card)', async () => {
-						await expect(adminPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
+						await expect(adminPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).not.toBeVisible();
 					});
 
 					test('expect correct state for card buttons', async () => {
-						await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(0)).toBeDisabled();
-						await expect(adminPage.locator('[data-qa-id="homepage-custom-card"]').locator('button').nth(1)).not.toBeDisabled();
+						await expect(adminPage.locator('role=button[name="Hide on workspace"]')).toBeDisabled();
+						await expect(adminPage.locator('role=button[name="Show default content"]')).not.toBeDisabled();
+					});
+
+					test('expect visibility tag to show "visible to workspace"', async () => {
+						await expect(adminPage.locator('role=status[name="Visible to workspace"]')).toBeVisible();
 					});
 				});
 			});
@@ -117,7 +117,7 @@ test.describe.serial('homepage', () => {
 		});
 
 		test('expect to not show customize button', async () => {
-			await expect(regularUserPage.locator('[data-qa-id="home-header-customize-button"]')).not.toBeVisible();
+			await expect(regularUserPage.locator('role=button[name="Customize"]')).not.toBeVisible();
 		});
 
 		test.describe('cards', () => {
@@ -138,7 +138,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('default values', () => {
 			test('expect welcome text to use Site_Name default setting', async () => {
-				await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('Rocket.Chat');
+				await expect(regularUserPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 			});
 
 			test('expect header text to use Layout_Home_Title default setting', async () => {
@@ -159,7 +159,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			test('expect welcome text to be NewSiteName', async () => {
-				await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).toContainText('NewSiteName');
+				await expect(regularUserPage.locator('role=heading[name="Welcome to NewSiteName"]')).toBeVisible();
 			});
 
 			test('expect header text to be Layout_Home_Title setting', async () => {
@@ -174,15 +174,13 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with empty content', () => {
 			test('expect to not show custom content card', async () => {
-				await expect(regularUserPage.locator('[data-qa-id="homepage-custom-content-body"]')).not.toBeVisible();
+				await expect(regularUserPage.locator('role=status')).not.toBeVisible();
 			});
 		});
 
 		test.describe('custom body with content', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: '<span data-qa-id="custom-body-span">Hello</span>' })).status()).toBe(
-					200,
-				);
+				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
 				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 			});
 
@@ -193,7 +191,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			test('expect custom body to be visible', async () => {
-				await expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+				await expect(regularUserPage.locator('role=status[name="Hello"]')).toBeVisible();
 			});
 
 			test.describe('enterprise edition', () => {
@@ -208,7 +206,7 @@ test.describe.serial('homepage', () => {
 				});
 
 				test('expect custom body to be visible', async () => {
-					await expect(regularUserPage.locator('[data-qa-id="custom-body-span"]')).toContainText('Hello');
+					await expect(regularUserPage.locator('role=status[name="Hello"]')).toBeVisible();
 				});
 
 				test.afterAll(async ({ api }) => {
