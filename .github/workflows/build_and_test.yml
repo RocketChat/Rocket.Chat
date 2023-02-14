@@ -58,8 +58,90 @@ jobs:
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "::set-output name=gh-docker-tag::${DOCKER_TAG}"
 
+  lint-and-ts:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Github Info
+        run: |
+          echo "GITHUB_ACTION: $GITHUB_ACTION"
+          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
+          echo "github.event_name: ${{ github.event_name }}"
+          cat $GITHUB_EVENT_PATH
+
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 14.21.2
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.21.2'
+          cache: 'yarn'
+
+      - name: Versions
+        run: |
+          npm --versions
+          yarn -v
+          node -v
+          meteor --version
+          meteor npm --versions
+          meteor node -v
+          git version
+
+      - name: yarn install
+        run: yarn
+
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        if: "${{ env.TURBO_TEAM != '' }}"
+        with:
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: Lint
+        run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+
+      - name: Translation check
+        run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+
+      - name: TS typecheck
+        run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+
+  unit-test:
+    runs-on: ubuntu-20.04
+    needs: [lint-and-ts]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: yarn install
+        run: yarn
+
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        if: "${{ env.TURBO_TEAM != '' }}"
+        with:
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: Unit Test
+        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+
   build:
     runs-on: ubuntu-20.04
+    needs: [lint-and-ts]
 
     steps:
       - name: Github Info
@@ -145,15 +227,6 @@ jobs:
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-
-      - name: Lint
-        run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
-
-      - name: Translation check
-        run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
-
-      - name: TS typecheck
-        run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
