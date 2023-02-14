@@ -1,4 +1,16 @@
 
+# 5.4.3
+`2023-02-14  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 5.4.2
 `2023-01-24  ·  1 🚀  ·  5 🐛  ·  6 👩‍💻👨‍💻`
 
