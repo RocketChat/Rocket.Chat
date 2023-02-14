@@ -1,5 +1,3 @@
-import './messageBoxActions';
-
 const lastFocusedInput: HTMLTextAreaElement | undefined = undefined;
 
 export const refocusComposer = () => {

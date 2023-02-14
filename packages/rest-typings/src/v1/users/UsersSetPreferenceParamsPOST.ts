@@ -24,7 +24,6 @@ export type UsersSetPreferencesParamsPOST = {
 		highlights?: string[];
 		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
-		messageViewMode?: number;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -40,7 +39,6 @@ export type UsersSetPreferencesParamsPOST = {
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		receiveLoginDetectionEmail?: boolean;
-		useLegacyMessageTemplate?: boolean;
 		idleTimeLimit?: number;
 	};
 };
@@ -127,10 +125,6 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
-				messageViewMode: {
-					type: 'number',
-					nullable: true,
-				},
 				hideUsernames: {
 					type: 'boolean',
 					nullable: true,
@@ -192,10 +186,6 @@ const UsersSetPreferencesParamsPostSchema = {
 							label: { type: 'string' },
 						},
 					},
-					nullable: true,
-				},
-				useLegacyMessageTemplate: {
-					type: 'boolean',
 					nullable: true,
 				},
 				receiveLoginDetectionEmail: {

@@ -87,13 +87,14 @@ const MemoizedSetting = ({
 		<Field className={className}>
 			<InputComponent
 				value={value}
+				hint={hint}
 				editor={editor}
 				onChangeValue={onChangeValue}
 				onChangeEditor={onChangeEditor}
 				{...inputProps}
 				disabled={disabled}
 			/>
-			{hint && <Field.Hint>{hint}</Field.Hint>}
+			{hint && type !== 'code' && <Field.Hint>{hint}</Field.Hint>}
 			{callout && (
 				<Margins block='x16'>
 					<Callout type='warning'>{callout}</Callout>
