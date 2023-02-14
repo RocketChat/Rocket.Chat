@@ -9,10 +9,10 @@ type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 export type RoomID = string;
 export type ChannelName = string;
 interface IRequestTranscript {
-	email: string;
+	email: string; // the email address to send the transcript to
+	subject: string; // the subject of the email
 	requestedAt: Date;
-	requestedBy: IUser;
-	subject: string;
+	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
 }
 
 export interface IRoom extends IRocketChatRecord {
@@ -155,7 +155,10 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		// The default sidebar icon
 		defaultIcon?: string;
 	};
+
+	// Note: this field is used only for email transcripts. For Pdf transcripts, we have a separate field.
 	transcriptRequest?: IRequestTranscript;
+
 	servedBy?: {
 		_id: string;
 		ts: Date;
@@ -166,9 +169,11 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags?: any;
+	tags?: string[];
 	closedAt?: Date;
-	metrics?: any;
+	metrics?: {
+		serviceTimeDuration?: number;
+	};
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;
@@ -201,6 +206,23 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	sms?: {
 		from: string;
 	};
+
+	// Signals if the room already has a pdf transcript requested
+	// This prevents the user from requesting a transcript multiple times
+	pdfTranscriptRequested?: boolean;
+	// The ID of the pdf file generated for the transcript
+	// This will help if we want to have this file shown on other places of the UI
+	pdfFileId?: string;
+
+	metrics?: {
+		serviceTimeDuration?: number;
+		chatDuration?: number;
+	};
+
+	// Both fields are being used for the auto transfer feature for unanswered chats
+	// which is controlled by Livechat_auto_transfer_chat_timeout setting
+	autoTransferredAt?: Date;
+	autoTransferOngoing?: boolean;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -233,10 +255,15 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
-export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
+export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
 	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & {
 		serviceTimeDuration?: number;
 	};
+
+export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
+	serviceTimeDuration?: number;
+	chatDuration: number;
+};
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
