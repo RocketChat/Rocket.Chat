@@ -24,12 +24,6 @@ declare module 'meteor/blaze' {
 declare module 'meteor/templating' {
 	interface TemplateStatic {
 		requiresPermission: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalAdmin: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchResultTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleUser: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSearchSingleRoom: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		ChatpalSuggestionItemTemplate: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		emojiPicker: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		lazyloadImage: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		customFieldsForm: Blaze.Template<any, Blaze.TemplateInstance<any>>;
