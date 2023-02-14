@@ -15,14 +15,13 @@ const audioRecorder = new AudioRecorder();
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	isRecording?: boolean;
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
-const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
-	const [state, setState] = useState<'idle' | 'loading' | 'recording'>('idle');
+	const [state, setState] = useState<'loading' | 'recording'>('recording');
 	const [time, setTime] = useState('00:00');
 	const [isMicrophoneDenied, setIsMicrophoneDenied] = useState(false);
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
@@ -42,8 +41,6 @@ const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: Audio
 		chat?.action.stop('recording');
 
 		chat?.composer?.setRecordingMode(false);
-
-		setState('idle');
 
 		return blob;
 	});
@@ -83,13 +80,57 @@ const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: Audio
 		}
 	});
 
+	const handleRecord = useMutableCallback(async () => {
+		if (recordingRoomId && recordingRoomId !== rid) {
+			return;
+		}
+
+		try {
+			await audioRecorder.start();
+			chat?.action.performContinuously('recording');
+			const startTime = new Date();
+			setRecordingInterval(
+				setInterval(() => {
+					const now = new Date();
+					const distance = (now.getTime() - startTime.getTime()) / 1000;
+					const minutes = Math.floor(distance / 60);
+					const seconds = Math.floor(distance % 60);
+					setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+				}, 1000),
+			);
+			setRecordingRoomId(rid);
+		} catch (error) {
+			console.log(error);
+			setIsMicrophoneDenied(true);
+			chat?.composer?.setRecordingMode(false);
+		}
+	});
+
+	const handleCancelButtonClick = useMutableCallback(async () => {
+		await stopRecording();
+	});
+
+	const chat = useChat() ?? chatContext;
+
+	const handleDoneButtonClick = useMutableCallback(async () => {
+		setState('loading');
+
+		const blob = await stopRecording();
+
+		const fileName = `${t('Audio_record')}.mp3`;
+		const file = new File([blob], fileName, { type: 'audio/mpeg' });
+
+		await chat?.flows.uploadFiles([file]);
+	});
+
 	useEffect(() => {
 		handleMount();
+		handleRecord();
 
 		return () => {
 			handleUnmount();
 		};
-	}, [handleMount, handleUnmount]);
+	}, [handleMount, handleUnmount, handleRecord]);
 
 	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
 	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled') as boolean;
@@ -115,72 +156,12 @@ const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: Audio
 		return state && `rc-message-box__audio-message--${state}`;
 	}, [recordingRoomId, rid, state]);
 
-	const handleRecordButtonClick = useMutableCallback(async () => {
-		if (recordingRoomId && recordingRoomId !== rid) {
-			return;
-		}
-		chat?.composer?.setRecordingMode(true);
-		setState('recording');
-
-		try {
-			await audioRecorder.start();
-			chat?.action.performContinuously('recording');
-			const startTime = new Date();
-			setRecordingInterval(
-				setInterval(() => {
-					const now = new Date();
-					const distance = (now.getTime() - startTime.getTime()) / 1000;
-					const minutes = Math.floor(distance / 60);
-					const seconds = Math.floor(distance % 60);
-					setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-				}, 1000),
-			);
-			setRecordingRoomId(rid);
-		} catch (error) {
-			console.log(error);
-			setIsMicrophoneDenied(true);
-			chat?.composer?.setRecordingMode(false);
-			setState('idle');
-		}
-	});
-
-	const handleCancelButtonClick = useMutableCallback(async () => {
-		await stopRecording();
-	});
-
-	const chat = useChat() ?? chatContext;
-
-	const handleDoneButtonClick = useMutableCallback(async () => {
-		setState('loading');
-
-		const blob = await stopRecording();
-
-		const fileName = `${t('Audio_record')}.mp3`;
-		const file = new File([blob], fileName, { type: 'audio/mpeg' });
-
-		await chat?.flows.uploadFiles([file]);
-	});
-
 	if (!isAllowed) {
 		return null;
 	}
 
-	if (state === 'idle') {
-		return (
-			<MessageComposerAction
-				disabled={isRecording}
-				title={t('Audio_message')}
-				icon='mic'
-				className='rc-message-box__icon rc-message-box__audio-message-mic'
-				data-qa-id='audio-record'
-				onClick={handleRecordButtonClick}
-				{...props}
-			/>
-		);
-	}
-
 	return (
-		<div className={`rc-message-box__audio-message ${stateClass}`}>
+		<Box position='absolute' pi='x4' pb='x12' className={`rc-message-box__audio-message ${stateClass}`}>
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction
@@ -204,7 +185,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isRecording, ...props }: Audio
 					<Throbber inheritColor size='x12' />
 				</div>
 			)}
-		</div>
+		</Box>
 	);
 };
 

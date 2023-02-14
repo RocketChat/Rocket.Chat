@@ -29,9 +29,10 @@ type RoomMessageProps = {
 	all: boolean;
 	context?: MessageActionContext;
 	ignoredUser?: boolean;
+	searchText?: string;
 };
 
-const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser, searchText }: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
@@ -83,7 +84,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} />
+					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
 			{!message.private && <ToolboxHolder message={message} context={context} />}
