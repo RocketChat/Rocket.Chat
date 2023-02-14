@@ -16,10 +16,10 @@ import { Apps } from '../../../app/apps/client/orchestrator';
 import WarningModal from '../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import IframeModal from './IframeModal';
-// import AppInstallModal from './components/AppInstallModal';
+import AppInstallModal from './components/AppInstallModal/AppInstallModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
-// import { useAppsCountQuery } from './hooks/useAppsCountQuery';
+import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -40,6 +40,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		throw new Error('No current route name');
 	}
 	const router = useRoute(currentRouteName);
+	const upgradeRoute = useRoute('upgradeRoute');
 
 	const context = useRouteParameter('context');
 	const currentTab = useRouteParameter('tab');
@@ -61,7 +62,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
 
-	// const result = useAppsCountQuery(context);
+	const result = useAppsCountQuery(context);
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
@@ -123,7 +124,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
 	}, [app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
-	const handleAcquireApp = useCallback(async () => {
+	const acquireApp = useCallback(async () => {
 		const requestConfirmAction = (postMessage) => {
 			setModal(null);
 			setLoading(false);
@@ -141,20 +142,11 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 		if (action === 'request') {
 			try {
-				// if (!result.hasUnlimitedApps) {
-				// 	setModal(<AppInstallModal enable={result.enable} limit={result.limit} />);
-				// }
-
 				const data = await Apps.buildExternalAppRequest(app.id);
 				setModal(<IframeModal url={data.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
-			return;
-		}
-
-		if (app?.versionIncompatible) {
-			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 
@@ -169,7 +161,31 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, dispatchToastMessage, notifyAdmins, cancelAction, closeModal]);
+	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, dispatchToastMessage, notifyAdmins, cancelAction]);
+
+	const handleAcquireApp = useCallback(async () => {
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
+			return;
+		}
+
+		if (result.hasUnlimitedApps) {
+			acquireApp();
+		}
+
+		setModal(
+			<AppInstallModal
+				context={context}
+				enable={result.enable}
+				limit={result.limit}
+				appName={app.name}
+				handleConfirm={acquireApp}
+				handleEnableUnlimitedApps={() => {
+					upgradeRoute.push();
+				}}
+			/>,
+		);
+	}, [app, result.hasUnlimitedApps, result.enable, result.limit, setModal, context, acquireApp, closeModal, upgradeRoute]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });

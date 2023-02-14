@@ -9,9 +9,11 @@ type AppsInstallationModalProps = {
 	enable: number;
 	limit: number;
 	appName: string;
+	handleConfirm: () => void;
+	handleEnableUnlimitedApps: () => void;
 };
 
-const AppInstallationModal = ({ context, enable, limit, appName }: AppsInstallationModalProps) => {
+const AppInstallationModal = ({ context, enable, limit, appName, handleConfirm, handleEnableUnlimitedApps }: AppsInstallationModalProps) => {
 	const t = useTranslation();
 
 	const getTitle = () => {
@@ -60,8 +62,8 @@ const AppInstallationModal = ({ context, enable, limit, appName }: AppsInstallat
 
 				<Modal.Footer>
 					<Modal.FooterControllers>
-						<Button>{t('Enable_unlimited_apps')}</Button>
-						{enable >= limit ? <Button>{t('Upload_anyway')}</Button> : <Button primary>{t('Next')}</Button>}
+						<Button onClick={() => {handleEnableUnlimitedApps}}>{t('Enable_unlimited_apps')}</Button>
+						<Button {...(enable < limit && {primary: true})} onClick={handleConfirm}>{enable < limit ? t('Next') : t('Upload_anyway')}</Button>
 					</Modal.FooterControllers>
 				</Modal.Footer>
 			</Modal>
