@@ -243,8 +243,9 @@ export interface ServerMethods {
 			| string
 			| string[]
 			| {
-					users: boolean;
-					rooms: boolean;
+					users?: boolean;
+					rooms?: boolean;
+					mentions?: boolean;
 			  }
 		)[]
 	) => {
@@ -256,6 +257,7 @@ export interface ServerMethods {
 			username: string;
 			outside: boolean;
 			avatarETag?: string;
+			nickname?: string;
 		}[];
 	};
 	'getPasswordPolicy': (params?: { token: string }) => {
