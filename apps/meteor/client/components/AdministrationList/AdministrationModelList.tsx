@@ -1,10 +1,11 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute, useMethod, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, useMethod, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
 import React from 'react';
 
+import { userHasAllPermission } from '../../../app/authorization/client';
 import type { AccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import { getUpgradeTabLabel, isFullyFeature } from '../../../lib/upgradeTab';
 import RegisterWorkspaceModal from '../../views/admin/cloud/modals/RegisterWorkspaceModal';
@@ -18,12 +19,14 @@ type AdministrationModelListProps = {
 	onDismiss: () => void;
 };
 
+const INFO_PERMISSIONS = ['view-statistics'];
+
 const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxItems, showWorkspace, onDismiss }) => {
 	const t = useTranslation();
 	const { tabType, trialEndDate, isLoading } = useUpgradeTabParams();
 	const shouldShowEmoji = isFullyFeature(tabType);
 	const label = getUpgradeTabLabel(tabType);
-	const hasInfoPermission = usePermission('view-statistics');
+	const hasInfoPermission = userHasAllPermission(INFO_PERMISSIONS);
 	const setModal = useSetModal();
 
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
@@ -50,7 +53,6 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 						icon='arrow-stack-up'
 						text={
 							<>
-								{' '}
 								{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
 							</>
 						}
