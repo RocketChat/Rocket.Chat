@@ -60,7 +60,7 @@ const beforeRouteChat = async (inquiry, agent) => {
 
 	if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
 		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
-			_id,
+			inquiryId: _id,
 			department,
 			queueSortBy: getInquirySortMechanismSetting(),
 		});

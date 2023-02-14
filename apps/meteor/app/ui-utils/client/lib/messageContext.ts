@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import type { Blaze } from 'meteor/blaze';
 
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
@@ -77,8 +76,6 @@ export const createMessageContext = ({
 	rid?: IRoom['_id'];
 	room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
 	subscription?: Pick<ISubscription, 'name' | 'autoTranslate' | 'rid' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-	instance?: Blaze.TemplateInstance | ((actionId: string, context: string) => void);
-	embeddedLayout?: boolean;
 	translateLanguage?: unknown;
 	autoImageLoad?: unknown;
 	saveMobileBandwidth?: unknown;

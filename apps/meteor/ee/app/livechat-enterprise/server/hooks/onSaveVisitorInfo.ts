@@ -12,7 +12,7 @@ const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) =>
 		return;
 	}
 
-	const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId);
+	const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId, { projection: { _id: 1, dueTimeInMinutes: 1 } });
 	if (!sla) {
 		throw new Error(`SLA not found with id: ${slaId}`);
 	}

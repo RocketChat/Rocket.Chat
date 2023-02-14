@@ -44,6 +44,7 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxDropdown from './MessageBoxDropdown';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import AudioMessageAction from './actions/AudioMessageAction';
 import FileUploadAction from './actions/FileUploadAction';
 import VideoMessageAction from './actions/VideoMessageAction';
 
@@ -270,7 +271,9 @@ const MessageBox = ({
 		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
 	});
 
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef);
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
+	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
 
@@ -320,8 +323,6 @@ const MessageBox = ({
 		}
 	});
 
-	const isRecording = isRecordingAudio || isRecordingVideo;
-
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -334,6 +335,7 @@ const MessageBox = ({
 			)}
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
+				{isRecordingAudio && <AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />}
 				<MessageComposerInput
 					ref={callbackRef as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
@@ -360,8 +362,8 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<VideoMessageAction isRecording={isRecordingAudio} />
-						<AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing || isRecordingVideo} />
+						<VideoMessageAction isRecording={isRecording} />
+						<AudioMessageAction disabled={!canSend || typing || isRecording} />
 						<FileUploadAction isRecording={isRecording} />
 						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
 					</MessageComposerToolbarActions>

@@ -26,7 +26,7 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 	}
 
 	async canResetPriorities(): Promise<boolean> {
-		return Boolean(await this.findOne({ dirty: true }));
+		return Boolean(await this.findOne({ dirty: true }, { projection: { _id: 1 } }));
 	}
 
 	async resetPriorities(): Promise<void> {

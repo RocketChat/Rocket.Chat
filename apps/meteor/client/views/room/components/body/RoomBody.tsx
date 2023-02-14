@@ -55,7 +55,7 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
-	const [lastMessage, setLastMessage] = useState<Date | undefined>();
+	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
@@ -179,17 +179,19 @@ const RoomBody = (): ReactElement => {
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
 		const rid = room._id;
-		const { firstUnread } = RoomHistoryManager.getRoom(rid) ?? {};
+		const { firstUnread } = RoomHistoryManager.getRoom(rid);
 		let message = firstUnread?.get();
 		if (!message) {
-			message = ChatMessage.findOne({ rid, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 });
+			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
 		}
 		RoomHistoryManager.getSurroundingMessages(message, atBottomRef);
-	}, [room._id, subscription?.ls]);
+		setUnreadCount(0);
+	}, [room._id, unread?.since, setUnreadCount]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		readMessage.readNow(room._id);
-	}, [room._id]);
+		setUnreadCount(0);
+	}, [room._id, setUnreadCount]);
 
 	const handleUploadProgressClose = useCallback(
 		(id: Upload['id']) => {
@@ -291,11 +293,11 @@ const RoomBody = (): ReactElement => {
 
 		const count = ChatMessage.find({
 			rid: room._id,
-			ts: { $lte: lastMessage, $gt: subscription?.ls },
+			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		setUnreadCount(count);
-	}, [lastMessage, room._id, setUnreadCount, subscribed, subscription?.ls]);
+		count && setUnreadCount(count);
+	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
 		if (!unread?.count) {
@@ -303,15 +305,6 @@ const RoomBody = (): ReactElement => {
 		}
 		readMessage.refreshUnreadMark(room._id);
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
-
-	useEffect(() => {
-		const handleReadMessage = (): void => setUnreadCount(0);
-		readMessage.on(room._id, handleReadMessage);
-
-		return () => {
-			readMessage.off(room._id, handleReadMessage);
-		};
-	}, [room._id, setUnreadCount]);
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -338,7 +331,7 @@ const RoomBody = (): ReactElement => {
 				element = document.elementFromPoint(messagesBoxLeft + 1, messagesBoxTop + topOffset + 1);
 			}
 
-			if (element?.classList.contains('message')) {
+			if (element?.classList.contains('rcx-message') || element?.classList.contains('rcx-message--sequential')) {
 				return element;
 			}
 		};
@@ -347,7 +340,7 @@ const RoomBody = (): ReactElement => {
 			Tracker.afterFlush(() => {
 				const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
-				if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
+				if (!lastInvisibleMessageOnScreen) {
 					setUnreadCount(0);
 					return;
 				}
@@ -358,7 +351,7 @@ const RoomBody = (): ReactElement => {
 					return;
 				}
 
-				setLastMessage(lastMessage.ts);
+				setLastMessageDate(lastMessage.ts);
 			});
 		});
 
@@ -536,14 +529,15 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
-								{unread ? (
+								{unread && (
 									<UnreadMessagesIndicator
 										count={unread.count}
 										since={unread.since}
 										onJumpButtonClick={handleUnreadBarJumpToButtonClick}
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
-								) : null}
+								)}
+
 								{uploads.map((upload) => (
 									<UploadProgressIndicator
 										key={upload.id}

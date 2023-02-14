@@ -1,5 +1,5 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, UpdateFilter, ModifyResult } from 'mongodb';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, ModifyResult, Filter } from 'mongodb';
 import type {
 	ILivechatInquiryRecord,
 	IMessage,
@@ -105,7 +105,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		department: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
-		const filter: UpdateFilter<ILivechatInquiryRecord>[] = [
+		const filter: Filter<ILivechatInquiryRecord>[] = [
 			{
 				$match: {
 					status: 'queued',

@@ -13,7 +13,7 @@ export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string;
 		throw new Error('error-invalid-sla');
 	}
 
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { projection: { _id: 1, username: 1, name: 1 } });
 	if (!user) {
 		throw new Error('error-invalid-user');
 	}

@@ -215,7 +215,7 @@ export const updateSLAInquiries = async (sla) => {
 	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
-	await Promise.allSettled(promises.length ? promises : []);
+	await Promise.allSettled(promises);
 };
 
 export const getLivechatCustomFields = async () => {
@@ -260,7 +260,7 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
-		_id,
+		inquiryId: _id,
 		department,
 		queueSortBy: getInquirySortMechanismSetting(),
 	});

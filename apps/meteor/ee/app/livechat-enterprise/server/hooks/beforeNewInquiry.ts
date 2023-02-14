@@ -42,8 +42,7 @@ const beforeNewInquiry = async (extraData: Props) => {
 		}
 	}
 
-	const now = new Date();
-	const ts = new Date(now.getTime());
+	const ts = new Date();
 	const changes: Partial<ILivechatInquiryRecord> = {
 		ts,
 	};
