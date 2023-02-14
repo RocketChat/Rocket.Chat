@@ -122,9 +122,6 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 		[t],
 	);
 
-	// useComponentDidUpdate(() => {
-	// 	setMsgError(!actionMsg ? t('The_field_is_required', t('Message')) : '');
-	// }, [t, actionMsg]);
 	return (
 		<>
 			<Field className={className}>
@@ -147,6 +144,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
 					<TextInput
+						data-qa='TriggerTextInput-Name'
 						{...register('name', { required: t('The_field_is_required', t('Name')) })}
 						error={errors?.name?.message as string}
 						placeholder={t('Name')}

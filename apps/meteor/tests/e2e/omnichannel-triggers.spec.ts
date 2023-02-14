@@ -32,8 +32,8 @@ test.describe.serial('omnichannel-departments', () => {
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelTriggers = new OmnichannelTriggers(page);
 
-		await page.goto('/omnichannel/triggers');
-		// await poOmnichannelTriggers.sidenav.linkTriggers.click();
+		await page.goto('/omnichannel');
+		await poOmnichannelTriggers.sidenav.linkTriggers.click();
 	});
 
 	test('expect create new trigger', async () => {
@@ -90,7 +90,15 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelTriggers.findRowByName(trigger[0].name).click();
 		await poOmnichannelTriggers.findRowByName(trigger[1].name).click();
 
-		await expect(poOmnichannelTriggers.inputDescription).toHaveValue(trigger[1].name);
+		await (trigger[1].enabled
+			? expect(poOmnichannelTriggers.btnEnabled).toBeChecked()
+			: expect(poOmnichannelTriggers.btnEnabled).not.toBeChecked());
+		await (trigger[1].runOnce
+			? expect(poOmnichannelTriggers.btnRunOnce).toBeChecked()
+			: expect(poOmnichannelTriggers.btnRunOnce).not.toBeChecked());
+		await expect(poOmnichannelTriggers.inputName).toHaveValue(trigger[1].name);
+		await expect(poOmnichannelTriggers.inputDescription).toHaveValue(trigger[1].description);
+		await expect(poOmnichannelTriggers.inputActionMsg).toHaveValue(trigger[1].actionMsg);
 	});
 
 	test('expect delete trigger', async () => {
