@@ -2,6 +2,7 @@ import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rock
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { Templates } from '@rocket.chat/pdf-worker';
 import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import {
 	ServiceClass,
 	Upload as uploadService,
@@ -107,7 +108,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			this.log.info(`Not requesting transcript for room ${details.rid} because scalability module is not enabled`);
 			return;
 		}
-		this.log.log(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
+		this.log.info(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
 		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			throw new Error('room-not-found');
@@ -124,7 +125,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Don't request a transcript if there's already one requested :)
 		if (room.pdfTranscriptRequested) {
 			// TODO: use logger
-			this.log.log(`Transcript already requested for room ${details.rid}`);
+			this.log.info(`Transcript already requested for room ${details.rid}`);
 			return;
 		}
 
@@ -132,7 +133,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		// Even when processing is done "in-house", we still need to queue the work
 		// to avoid blocking the request
-		this.log.log(`Queuing work for room ${details.rid}`);
+		this.log.info(`Queuing work for room ${details.rid}`);
 		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
 			template: 'omnichannel-transcript',
 			details: { userId: details.userId, rid: details.rid, from: this.name },
@@ -151,16 +152,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const files = [];
 
 			for await (const attachment of message.attachments) {
-				// @ts-expect-error - messages...
-				if (attachment.type !== 'file') {
-					// @ts-expect-error - messages...
+				if (isFileAttachment(attachment) && attachment.type !== 'file') {
 					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore other types of attachments
 					continue;
 				}
-				// @ts-expect-error - messages...
-				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
-					// @ts-expect-error - messages...
+				if (isFileAttachment(attachment) && isFileImageAttachment(attachment) && !this.worker.isMimeTypeValid(attachment.image_type)) {
 					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore invalid mime types
 					files.push({ name: attachment.title, buffer: null });
@@ -197,8 +194,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				const fileBuffer = await uploadService.getFileBuffer({ userId, file: uploadedFile });
-				// @ts-expect-error - identify.format is valid, but type is not updated
-				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.identify?.format });
+				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
 			}
 
 			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
@@ -237,7 +233,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Stopped (no scalability license found)`);
 			return;
 		}
-		this.log.log(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
+		this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
 			this.log.error(`Processing transcript for room ${details.rid} by user ${details.userId} - Too many concurrent jobs, queuing again`);
 			throw new Error('retry');
@@ -332,7 +328,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
 		const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
-		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
+		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
 		await messageService.sendMessage({
 			fromId: 'rocket.cat',
 			rid,
@@ -341,7 +337,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
-		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
+		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
 		const user = await Users.findOneById(details.userId);
 		if (!user) {
 			return;
@@ -353,13 +349,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
 			]);
 
-			this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
+			this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
 			const result = await Promise.allSettled([
 				uploadService.sendFileMessage({
 					roomId: details.rid,
 					userId: 'rocket.cat',
 					file,
-					// @ts-expect-error - why?
 					message: {
 						// Translate from service
 						msg: await translationService.translateToServerLanguage('pdf_success_message'),
@@ -370,7 +365,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					roomId: rid,
 					userId: 'rocket.cat',
 					file,
-					// @ts-expect-error - why?
 					message: {
 						// Translate from service
 						msg: await translationService.translate('pdf_success_message', user),

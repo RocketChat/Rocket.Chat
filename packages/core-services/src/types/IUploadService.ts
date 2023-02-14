@@ -10,14 +10,14 @@ export interface ISendFileMessageParams {
 	roomId: string;
 	userId: string;
 	file: IUpload;
-	message?: IMessage;
+	message?: Partial<IMessage>;
 }
 
 export interface ISendFileLivechatMessageParams {
 	roomId: string;
 	visitorToken: string;
 	file: IUpload;
-	message?: IMessage;
+	message?: Partial<IMessage>;
 }
 
 export interface IUploadService {
