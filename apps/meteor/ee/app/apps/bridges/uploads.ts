@@ -3,7 +3,6 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
 
 import { Upload } from '../../../../server/sdk';
-import { FileUpload } from '../../../../app/file-upload/server';
 import { determineFileType } from '../../../../app/apps/lib/misc/determineFileType';
 import type { AppServerOrchestrator } from '../orchestrator';
 
@@ -31,15 +30,7 @@ export class AppUploadBridge extends UploadBridge {
 
 		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
-		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error: Error, result: Buffer) => {
-				if (error) {
-					return reject(error);
-				}
-
-				resolve(result);
-			});
-		});
+		return Upload.getBuffer(rocketChatUpload);
 	}
 
 	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {

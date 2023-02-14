@@ -24,4 +24,5 @@ export interface IUploadService {
 	uploadFile(params: IUploadFileParams): Promise<IUpload>;
 	sendFileMessage(params: ISendFileMessageParams): Promise<IMessage | undefined>;
 	sendFileLivechatMessage(params: ISendFileLivechatMessageParams): Promise<IMessage | undefined>;
+	getBuffer(cb: Function): Promise<Buffer>;
 }

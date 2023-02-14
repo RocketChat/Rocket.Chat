@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -40,4 +40,10 @@ export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
 	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
 	createDiscussion(params: ICreateDiscussionParams): Promise<IRoom>;
+	addUserToRoom(
+		rid: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | unknown>;
 }
