@@ -19,7 +19,7 @@ API.v1.addRoute(
 				return API.v1.success({ config: { enabled: false } });
 			}
 
-			const { token, department, businessUnit } = this.queryParams as { token?: string; department?: string; businessUnit?: string };
+			const { token, department, businessUnit } = this.queryParams;
 
 			const config = await cachedSettings({ businessUnit });
 
