@@ -29,7 +29,7 @@ export const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer
 						icon={featuredFormatter.icon}
 					/>
 				)}
-				<FormattingToolbarDropdown {...props} composer={composer} items={collapsedItems} />;
+				<FormattingToolbarDropdown {...props} composer={composer} items={collapsedItems} />
 			</>
 		);
 	}
