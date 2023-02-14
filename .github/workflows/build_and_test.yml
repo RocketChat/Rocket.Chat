@@ -297,6 +297,7 @@ jobs:
       matrix:
         node-version: ['14.21.2']
         mongodb-version: ['4.4', '5.0', '6.0']
+        shard: [1, 2]
 
     steps:
       - name: Launch MongoDB
@@ -479,9 +480,9 @@ jobs:
             sleep 10
           done;
 
-      - name: E2E Test UI
+      - name: E2E Test UI Test (${{ matrix.shard }}/${{ strategy.job-total }})
         working-directory: ./apps/meteor
-        run: yarn test:e2e
+        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v3
