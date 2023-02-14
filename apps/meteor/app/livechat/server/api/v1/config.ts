@@ -26,7 +26,7 @@ API.v1.addRoute(
 			const status = Livechat.online(department);
 			const guest: ILivechatVisitor | null = token ? await Livechat.findGuest(token) : null;
 
-			const room: IOmnichannelRoom | undefined = guest && token ? findOpenRoom(token) : undefined;
+			const room: IOmnichannelRoom | undefined = guest ? findOpenRoom(guest.token) : undefined;
 			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
 
 			const extra = await getExtraConfigInfo(room);
