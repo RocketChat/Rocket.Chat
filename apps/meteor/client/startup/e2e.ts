@@ -54,49 +54,53 @@ Meteor.startup(() => {
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
-				if (!sub.encrypted && !sub.E2EKey) {
-					e2e.removeInstanceByRoomId(sub.rid);
-					return;
-				}
-
-				const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
-				if (!e2eRoom) {
-					return;
-				}
-
-				if (sub.E2ESuggestedKey) {
-					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-						e2e.acceptSuggestedKey(sub.rid);
-					} else {
-						console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-						e2e.rejectSuggestedKey(sub.rid);
+				Meteor.defer(async () => {
+					if (!sub.encrypted && !sub.E2EKey) {
+						e2e.removeInstanceByRoomId(sub.rid);
+						return;
 					}
-				}
 
-				sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					if (!e2eRoom) {
+						return;
+					}
 
-				// Cover private groups and direct messages
-				if (!e2eRoom.isSupportedRoomType(sub.t)) {
-					e2eRoom.disable();
-					return;
-				}
+					if (sub.E2ESuggestedKey) {
+						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+							e2e.acceptSuggestedKey(sub.rid);
+						} else {
+							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+							e2e.rejectSuggestedKey(sub.rid);
+						}
+					}
 
-				if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
-					e2eRoom.keyReceived();
-					return;
-				}
+					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
-				if (!e2eRoom.isReady()) {
-					return;
-				}
+					// Cover private groups and direct messages
+					if (!e2eRoom.isSupportedRoomType(sub.t)) {
+						e2eRoom.disable();
+						return;
+					}
 
-				e2eRoom.decryptSubscription();
+					if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+						e2eRoom.keyReceived();
+						return;
+					}
+
+					if (!e2eRoom.isReady()) {
+						return;
+					}
+
+					e2eRoom.decryptSubscription();
+				});
 			},
 			added: async (sub: ISubscription) => {
-				if (!sub.encrypted && !sub.E2EKey) {
-					return;
-				}
-				return e2e.getInstanceByRoomId(sub.rid);
+				Meteor.defer(async () => {
+					if (!sub.encrypted && !sub.E2EKey) {
+						return;
+					}
+					return e2e.getInstanceByRoomId(sub.rid);
+				});
 			},
 			removed: (sub: ISubscription) => {
 				e2e.removeInstanceByRoomId(sub.rid);
