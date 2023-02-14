@@ -20,6 +20,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 
 	const [token, setToken] = useState('');
 	const [processing, setProcessing] = useState(false);
+	const [error, setError] = useState(false);
 
 	const handleBackAction = (): void => {
 		const handleModalClose = (): void => setModal(null);
@@ -34,6 +35,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 
 	const handleConnectButtonClick = async () => {
 		setProcessing(true);
+		setError(false);
 
 		try {
 			const isConnected = await connectWorkspace(token);
@@ -47,6 +49,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 			dispatchToastMessage({ type: 'success', message: t('Connected') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+			setError(true);
 		} finally {
 			await (onStatusChange && onStatusChange());
 			setProcessing(false);
@@ -81,6 +84,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 					<Field.Row>
 						<TextInput onChange={handleTokenChange} value={token} />
 					</Field.Row>
+					{error && <Field.Error>{t('Token_Not_Recognized')}</Field.Error>}
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
