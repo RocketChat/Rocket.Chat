@@ -8,7 +8,7 @@ import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 const AutoCompleteDepartmentMultiple = (props) => {
-	const { value, onlyMyDepartments = false, onChange = () => {} } = props;
+	const { value, onlyMyDepartments = false, showArchived = false, onChange = () => {} } = props;
 
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
@@ -16,7 +16,10 @@ const AutoCompleteDepartmentMultiple = (props) => {
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }), [debouncedDepartmentsFilter, onlyMyDepartments]),
+		useMemo(
+			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, ...(showArchived && { showArchived: 'true' }) }),
+			[debouncedDepartmentsFilter, onlyMyDepartments, showArchived],
+		),
 	);
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);

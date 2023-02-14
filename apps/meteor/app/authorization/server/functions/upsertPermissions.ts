@@ -217,7 +217,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'register-on-cloud', roles: ['admin'] },
 		{ _id: 'test-admin-options', roles: ['admin'] },
 		{ _id: 'sync-auth-services-users', roles: ['admin'] },
-		{ _id: 'manage-chatpal', roles: ['admin'] },
 		{ _id: 'restart-server', roles: ['admin'] },
 		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
 		{ _id: 'view-import-operations', roles: ['admin'] },
