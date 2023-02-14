@@ -13,8 +13,8 @@ export class HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
-	get messagePopUpItems(): Locator {
-		return this.page.locator('.message-popup-items');
+	get messagePopupUsers(): Locator {
+		return this.page.locator('role=menu[name="People"]');
 	}
 
 	get lastUserMessage(): Locator {
