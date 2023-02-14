@@ -37,6 +37,7 @@ import { createDefaultPriorities } from './priorities';
 onLicense('livechat-enterprise', async () => {
 	require('./api');
 	require('./hooks');
+	await import('./startup');
 	const { createPermissions } = await import('./permissions');
 	const { createSettings } = await import('./settings');
 
