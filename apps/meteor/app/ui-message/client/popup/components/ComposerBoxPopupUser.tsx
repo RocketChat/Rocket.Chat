@@ -29,11 +29,17 @@ const ComposerBoxPopupUser = ({ _id, system, username, name, nickname, outside, 
 					<OptionColumn>
 						<ReactiveUserStatus uid={_id} />
 					</OptionColumn>
+					<OptionContent>
+						<strong>{name ?? username}</strong> {nickname && <span className='popup-user-nickname'>({nickname})</span>}
+					</OptionContent>
 				</>
 			)}
-			<OptionContent>
-				<strong>{name ?? username}</strong> {nickname && <span className='popup-user-nickname'>({nickname})</span>}
-			</OptionContent>
+
+			{system && (
+				<OptionContent>
+					<strong>{username}</strong> {name}
+				</OptionContent>
+			)}
 
 			{outside && <OptionColumn>{t('Not_in_channel')}</OptionColumn>}
 			{suggestion && <OptionColumn>{t('Suggestion_from_recent_messages')}</OptionColumn>}
