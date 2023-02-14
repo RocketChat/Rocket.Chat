@@ -27,6 +27,9 @@ describe('AdministrationModelList', () => {
 				getUpgradeTabLabel: () => 'Upgrade',
 				isFullyFeature: () => true,
 			},
+			'../../../app/authorization/client': {
+				userHasAllPermission: () => true,
+			},
 			'@tanstack/react-query': {
 				useQuery: () => '',
 			},
