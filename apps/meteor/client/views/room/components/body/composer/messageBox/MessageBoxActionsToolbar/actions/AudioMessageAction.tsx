@@ -3,8 +3,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
-import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
-import { useChat } from '../../../../../contexts/ChatContext';
+import type { ChatAPI } from '../../../../../../../../lib/chats/ChatAPI';
+import { useChat } from '../../../../../../contexts/ChatContext';
 
 type AudioMessageActionProps = {
 	chatContext?: ChatAPI;

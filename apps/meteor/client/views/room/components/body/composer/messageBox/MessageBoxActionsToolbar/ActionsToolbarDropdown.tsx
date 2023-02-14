@@ -1,24 +1,25 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Dropdown, IconButton, Option, OptionTitle, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
 import { useTranslation, useUserRoom } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import React, { useRef, Fragment } from 'react';
 
-import { messageBox } from '../../../../../../../app/ui-utils/client';
-import type { ChatAPI } from '../../../../../../lib/chats/ChatAPI';
-import { useDropdownVisibility } from '../../../../../../sidebar/header/hooks/useDropdownVisibility';
+import { messageBox } from '../../../../../../../../app/ui-utils/client';
+import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
+import { useDropdownVisibility } from '../../../../../../../sidebar/header/hooks/useDropdownVisibility';
 import CreateDiscussionAction from './actions/CreateDiscussionAction';
 import ShareLocationAction from './actions/ShareLocationAction';
 import WebdavAction from './actions/WebdavAction';
 
-type MessageBoxDropdownProps = {
+type ActionsToolbarDropdownProps = {
 	chatContext?: ChatAPI;
 	rid: IRoom['_id'];
 	isRecording?: boolean;
 	tmid?: string;
+	actions?: ReactNode[];
 };
 
-const MessageBoxDropdown = ({ chatContext, isRecording, rid, tmid }: MessageBoxDropdownProps) => {
+const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions }: ActionsToolbarDropdownProps) => {
 	const t = useTranslation();
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -50,6 +51,7 @@ const MessageBoxDropdown = ({ chatContext, isRecording, rid, tmid }: MessageBoxD
 				<Dropdown reference={reference} ref={target} placement='bottom-start'>
 					<OptionTitle>{t('Create_new')}</OptionTitle>
 					{room && <CreateDiscussionAction room={room} />}
+					{actions}
 					<WebdavAction chatContext={chatContext} />
 					{room && <ShareLocationAction room={room} tmid={tmid} />}
 					{messageBoxActions?.map((actionGroup, index) => (
@@ -69,4 +71,4 @@ const MessageBoxDropdown = ({ chatContext, isRecording, rid, tmid }: MessageBoxD
 	);
 };
 
-export default MessageBoxDropdown;
+export default ActionsToolbarDropdown;
