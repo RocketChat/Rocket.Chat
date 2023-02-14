@@ -70,6 +70,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$group: {
 					_id: { message: '$msg.message', user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
+					count: { $sum: 1 },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -305,6 +306,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$group: {
 					_id: { message: '$message.msg', user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
+					count: { $sum: 1 },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -364,6 +366,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$group: {
 					_id: { message: '$message.msg', user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
+					count: { $sum: 1 },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -453,8 +456,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			},
 		};
 
-		console.log(query);
-
 		const cquery = selector
 			? {
 					$or: [
@@ -484,7 +485,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$group: {
 					_id: { message: '$message.msg', user: '$message.u._id' },
-					reports: { $first: '$$ROOT' },
+					reports: { $push: '$$ROOT' },
 				},
 			},
 			{ $match: { ...query, ...cquery } },

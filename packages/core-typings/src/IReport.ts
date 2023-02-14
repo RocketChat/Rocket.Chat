@@ -19,4 +19,5 @@ export type MsgGroupedIReport = {
 		user: IUser['_id'];
 	};
 	reports: IReport[];
+	count: number;
 };
