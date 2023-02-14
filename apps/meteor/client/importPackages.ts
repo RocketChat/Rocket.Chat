@@ -24,7 +24,6 @@ import '../app/importer-hipchat-enterprise/client';
 import '../app/importer-slack/client';
 import '../app/importer-slack-users/client';
 import '../app/lib/client';
-import '../app/livestream/client';
 import '../app/logger/client';
 import '../app/markdown/client';
 import '../app/message-attachments/client';

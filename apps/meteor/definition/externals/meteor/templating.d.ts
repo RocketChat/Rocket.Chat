@@ -32,10 +32,6 @@ declare module 'meteor/templating' {
 		emojiPicker: BlazeTemplate;
 		customFieldsForm: BlazeTemplate;
 		ExternalFrameContainer: BlazeTemplate;
-		broadcastView: BlazeTemplate;
-		liveStreamBroadcast: BlazeTemplate;
-		liveStreamTab: BlazeTemplate;
-		liveStreamView: BlazeTemplate;
 		inputAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
