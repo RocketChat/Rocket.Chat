@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { QuoteAttachment } from '../../../../../../components/message/Attachments/QuoteAttachment';
+import { QuoteAttachment } from '../../../../../../components/message/content/attachments/QuoteAttachment';
 import { useChat } from '../../../../contexts/ChatContext';
 
 const MessageBoxReplies = (): ReactElement | null => {
@@ -38,6 +38,7 @@ const MessageBoxReplies = (): ReactElement | null => {
 							attachment={
 								{
 									text: reply.msg,
+									md: reply.md,
 									author_name: reply.u.username,
 									author_icon: `/avatar/${reply.u.username}`,
 									ts: reply.ts,

@@ -11,7 +11,7 @@ import Label from './Label';
 
 const CustomField = ({ id, value }) => {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/custom-fields/${id}`);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/custom-fields/:_id', { keys: { _id: id } });
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

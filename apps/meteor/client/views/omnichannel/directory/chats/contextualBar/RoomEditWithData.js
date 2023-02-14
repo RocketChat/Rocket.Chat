@@ -10,14 +10,7 @@ import VisitorData from './VisitorData';
 function RoomEditWithData({ id, reload, reloadInfo, close }) {
 	const t = useTranslation();
 
-	const {
-		value: roomData,
-		phase: state,
-		error,
-	} = useEndpointData(
-		'/v1/rooms.info',
-		useMemo(() => ({ roomId: id }), [id]),
-	);
+	const { value: roomData, phase: state, error } = useEndpointData('/v1/rooms.info', { params: useMemo(() => ({ roomId: id }), [id]) });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

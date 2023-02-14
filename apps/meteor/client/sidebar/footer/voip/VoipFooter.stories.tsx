@@ -67,7 +67,7 @@ const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
 	};
 
 	return (
-		<Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
+		<Box maxWidth='x300' bg='dark' borderRadius='x4'>
 			<VoipFooter
 				{...args}
 				callActions={callActions}

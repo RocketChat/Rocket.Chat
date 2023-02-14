@@ -7,6 +7,7 @@ import GenericTable from '../../../../client/components/GenericTable';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import NotAuthorizedPage from '../../../../client/views/notAuthorized/NotAuthorizedPage';
 import RemoveTagButton from './RemoveTagButton';
+import TagEdit from './TagEdit';
 import TagEditWithData from './TagEditWithData';
 import TagsPage from './TagsPage';
 
@@ -59,7 +60,7 @@ function TagsRoute() {
 			}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('/v1/livechat/tags', query);
+	const { value: data = {}, reload } = useEndpointData('/v1/livechat/tags', { params: query });
 
 	const header = useMemo(
 		() =>
@@ -94,7 +95,11 @@ function TagsRoute() {
 		[reload, onRowClick],
 	);
 
-	if (context === 'edit' || context === 'new') {
+	if (context === 'new') {
+		return <TagEdit reload={reload} />;
+	}
+
+	if (context === 'edit') {
 		return <TagEditWithData reload={reload} tagId={id} title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')} />;
 	}
 

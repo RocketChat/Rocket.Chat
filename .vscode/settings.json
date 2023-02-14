@@ -15,9 +15,14 @@
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
+		"autotranslate",
+		"katex",
+		"listbox",
 		"livechat",
+		"oauthapps",
 		"omnichannel",
 		"photoswipe",
+		"searchbox",
 		"tmid"
 	]
 }

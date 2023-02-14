@@ -16,10 +16,9 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
-	const { value: data, phase: state } = useEndpointData(
-		'/v1/livechat/business-hour',
-		useMemo(() => ({ _id: id, type }), [id, type]),
-	);
+	const { value: data, phase: state } = useEndpointData('/v1/livechat/business-hour', {
+		params: useMemo(() => ({ _id: id, type }), [id, type]),
+	});
 
 	const saveData = useRef({ form: {} });
 
