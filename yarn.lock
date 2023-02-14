@@ -7272,8 +7272,8 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/onboarding-ui@npm:next":
-  version: 0.32.0-dev.245
-  resolution: "@rocket.chat/onboarding-ui@npm:0.32.0-dev.245"
+  version: 0.32.0-dev.275
+  resolution: "@rocket.chat/onboarding-ui@npm:0.32.0-dev.275"
   dependencies:
     i18next: ~21.6.16
     react-hook-form: ~7.27.1
@@ -7289,7 +7289,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-i18next: ~11.15.4
-  checksum: eef580b286ceab884e40c660269521e7a7a814803cd5b62a2b4968dcb4b41f180149dc97a708d79dd62ae5d27ddae2d9acadabf81e8cbdd6aae7bef1ed38873b
+  checksum: c5007a1e6dacd404e192327858a7b76da938380370df55da9ad51fdc055888d8fcc059117b21091826da02b043fd03aa3d0bcdc5eb573d7c330d7deef8edd196
   languageName: node
   linkType: hard
 
