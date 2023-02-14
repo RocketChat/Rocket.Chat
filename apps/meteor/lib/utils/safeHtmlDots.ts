@@ -2,4 +2,4 @@
 // If we can, we should avoid that.
 export const safeHtmlDots = (text: string): string => {
 	return text.replace(/\./g, '&#8228');
-}
+};
