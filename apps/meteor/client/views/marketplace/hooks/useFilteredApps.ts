@@ -13,6 +13,7 @@ import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
 import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
+import { sortAppsByMostOrLeastRecentRequested } from '../helpers/sortAppsByMostRecentRequested';
 import type { App } from '../types';
 
 export type appsDataType = ContextType<typeof AppsContext>['installedApps'] | ContextType<typeof AppsContext>['marketplaceApps'];
@@ -51,6 +52,14 @@ export const useFilteredApps = ({
 		let shouldShowSearchText = true;
 
 		const sortingMethods: Record<string, () => App[]> = {
+			mrr: () =>
+				filtered.sort((firstApp, secondApp) =>
+					sortAppsByMostOrLeastRecentRequested(firstApp?.appRequestStats?.totalUnseen, secondApp?.appRequestStats?.totalUnseen),
+				),
+			lrr: () =>
+				filtered.sort((firstApp, secondApp) =>
+					sortAppsByMostOrLeastRecentRequested(secondApp?.appRequestStats?.totalUnseen, firstApp?.appRequestStats?.totalUnseen),
+				),
 			az: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(firstApp.name, secondApp.name)),
 			za: () => filtered.sort((firstApp, secondApp) => sortAppsByAlphabeticalOrInverseOrder(secondApp.name, firstApp.name)),
 			mru: () =>
@@ -61,10 +70,6 @@ export const useFilteredApps = ({
 
 		if (context && context === 'enterprise') {
 			filtered = apps.filter(({ categories }) => categories.includes('Enterprise'));
-		}
-
-		if (context && context === 'requested') {
-			filtered = apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed);
 		}
 
 		if (sortingMethod) {
@@ -96,6 +101,10 @@ export const useFilteredApps = ({
 		if (!categories.length && Boolean(text)) {
 			filtered = filtered.filter(({ name }) => filterAppsByText(name, text));
 			shouldShowSearchText = true;
+		}
+
+		if (context && context === 'requested') {
+			filtered = apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed);
 		}
 
 		const total = filtered.length;

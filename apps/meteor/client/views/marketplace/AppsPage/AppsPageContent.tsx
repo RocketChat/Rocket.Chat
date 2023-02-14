@@ -65,10 +65,12 @@ const AppsPageContent = (): ReactElement => {
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
 		label: t('Sort_By'),
 		items: [
-			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
+			{ id: 'mrr', label: t('Most_recent_requested'), checked: isRequested },
+			{ id: 'lrr', label: t('Least_recent_requested'), checked: false },
 			{ id: 'az', label: 'A-Z', checked: false },
 			{ id: 'za', label: 'Z-A', checked: false },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: !isRequested },
+			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
 		],
 	});
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
