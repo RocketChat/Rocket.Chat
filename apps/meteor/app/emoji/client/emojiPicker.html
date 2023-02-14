@@ -5,7 +5,9 @@
 				<label class="rc-input__label">
 					<div class="rc-input__wrapper">
 						<div class="rc-input__icon">
-							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+							<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--magnifier" aria-hidden="true">
+								<use xlink:href="{{baseUrl}}#icon-magnifier"></use>
+							</svg>
 						</div>
 						<input name="name" type="text" class="rc-input__element js-emojipicker-search" placeholder="{{_ "Search"}}" autofocus autocomplete="off">
 					</div>

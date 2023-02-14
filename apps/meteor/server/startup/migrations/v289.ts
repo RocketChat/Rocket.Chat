@@ -1,29 +1,22 @@
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Settings } from '@rocket.chat/models';
 
-import { AppsModel } from '../../../app/models/server';
-import { AppRealStorage } from '../../../app/apps/server/storage';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 289,
-	name: "Mark all installed apps as 'migrated'",
 	async up() {
-		const appsStorage = new AppRealStorage(AppsModel);
+		const deprecatedSettings = [
+			'LiveStream & Broadcasting',
+			'Livestream_enabled',
+			'Broadcasting_enabled',
+			'Broadcasting_client_id',
+			'Broadcasting_client_secret',
+			'Broadcasting_api_key',
+			'Broadcasting_media_server_url',
+		];
 
-		const apps = await appsStorage.retrieveAll();
-
-		const promises: Array<ReturnType<typeof appsStorage.update>> = [];
-
-		apps.forEach((app) =>
-			promises.push(
-				appsStorage.update({
-					...app,
-					migrated: true,
-					installationSource: 'marketplaceInfo' in app ? 'marketplace' : 'private',
-				} as IAppStorageItem),
-			),
-		);
-
-		await Promise.all(promises);
+		await Settings.deleteMany({
+			_id: { $in: deprecatedSettings },
+		});
 	},
 });
