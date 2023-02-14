@@ -2660,7 +2660,6 @@
   "Username_ended_the_OTR_session": "__username__ ukončil reláciu OTR",
   "Username_invalid": "<strong>%s</strong> nie je platné používateľské meno, <br/> použite len písmená, čísla, bodky, pomlčky a podčiarkovníky",
   "Username_is_already_in_here": "`@%s` je už tu.",
-  "Username_is_not_in_this_room": "Používateľ `#%s` nie je v tejto miestnosti.",
   "Username_Placeholder": "Zadajte používateľské mená ...",
   "Username_title": "Registrovať používateľské meno",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ chce začať OTR. Chcete prijať?",
