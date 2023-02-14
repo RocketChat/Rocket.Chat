@@ -1,5 +1,3 @@
-import './message';
-// import './messageBox/messageBox.ts';
 import './popup/customMessagePopups';
 import './popup/messagePopup';
 import './popup/messagePopupChannel';
