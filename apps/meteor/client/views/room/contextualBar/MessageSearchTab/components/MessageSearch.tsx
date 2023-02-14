@@ -82,6 +82,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 															mention={mention}
 															all={all}
 															context='search'
+															searchText={searchText}
 														/>
 													)}
 												</Fragment>
