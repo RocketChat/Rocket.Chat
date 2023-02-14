@@ -1,6 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 import { api } from '@rocket.chat/core-services';
-import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/service-classes';
+import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';

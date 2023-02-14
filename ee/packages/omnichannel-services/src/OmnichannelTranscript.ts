@@ -15,7 +15,7 @@ import {
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
 
-import type { Logger } from '../../../apps/meteor/server/lib/logger/Logger';
+import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 

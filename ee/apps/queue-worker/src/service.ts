@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3038;
 	api.setBroker(broker);
 
 	// need to import service after models are registeredpackagfe
-	const { QueueWorker } = await import('@rocket.chat/service-classes');
+	const { QueueWorker } = await import('@rocket.chat/omnichannel-services');
 
 	api.registerService(new QueueWorker(db, Logger));
 
