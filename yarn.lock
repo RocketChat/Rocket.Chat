@@ -7037,7 +7037,6 @@ __metadata:
     "@types/string-strip-html": ^5.0.1
     "@types/supertest": ^2.0.12
     "@types/ua-parser-js": ^0.7.36
-    "@types/underscore.string": 0.0.38
     "@types/use-subscription": ^1.0.0
     "@types/use-sync-external-store": ^0.0.3
     "@types/uuid": ^8.3.4
@@ -7219,7 +7218,6 @@ __metadata:
     typescript: ~4.6.4
     ua-parser-js: ^1.0.2
     underscore: ^1.13.4
-    underscore.string: ^3.3.6
     universal-perf-hooks: ^1.0.1
     url-polyfill: ^1.1.12
     use-subscription: ~1.6.0
@@ -10657,15 +10655,6 @@ __metadata:
   dependencies:
     source-map: ^0.6.1
   checksum: def36fd2c698a33d8f67f5e21aab926eb9bda2d7951eab544941e1feb1231f020ff1c210d840dcc0fc9f07b5d22ef8b566887ddec9753b8b9f7223cceaa70993
-  languageName: node
-  linkType: hard
-
-"@types/underscore.string@npm:0.0.38":
-  version: 0.0.38
-  resolution: "@types/underscore.string@npm:0.0.38"
-  dependencies:
-    "@types/underscore": "*"
-  checksum: d3c46ade404c8afdd141a4156babf67dcf74987e91105b4cdad70e2ee528963c2beced97ef9c416d79441504d2c4a331de4c8334a9c296a4a60498214486dca0
   languageName: node
   linkType: hard
 
@@ -31624,7 +31613,6 @@ __metadata:
     sodium-plus: ^0.9.0
     ts-node: ^10.9.1
     typescript: ~4.6.4
-    underscore.string: ^3.3.6
     uuid: ^8.3.2
     ws: ^8.8.1
   languageName: unknown
@@ -32880,7 +32868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sprintf-js@npm:1.1.2, sprintf-js@npm:^1.1.1":
+"sprintf-js@npm:1.1.2":
   version: 1.1.2
   resolution: "sprintf-js@npm:1.1.2"
   checksum: d4bb46464632b335e5faed381bd331157e0af64915a98ede833452663bc672823db49d7531c32d58798e85236581fb7342fd0270531ffc8f914e186187bf1c90
@@ -35101,16 +35089,6 @@ __metadata:
     buffer: ^5.2.1
     through: ^2.3.8
   checksum: 0e67c4a91f4fa0fc7b4045f8b914d3498c2fc2e8c39c359977708ec85ac6d6029840e97f508675fdbdf21fcb8d276ca502043406f3682b70f075e69aae626d1d
-  languageName: node
-  linkType: hard
-
-"underscore.string@npm:^3.3.6":
-  version: 3.3.6
-  resolution: "underscore.string@npm:3.3.6"
-  dependencies:
-    sprintf-js: ^1.1.1
-    util-deprecate: ^1.0.2
-  checksum: b7719c30e5d1fdda4ee9379e8d80dca2b0668942420ba365ae3410120e08225fe36707a7981ce0f921812dee6a2290b713cdce1e75e770b98e67a45d8a378d35
   languageName: node
   linkType: hard
 

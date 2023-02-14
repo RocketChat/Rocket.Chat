@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
-import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
@@ -17,6 +16,7 @@ import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -90,14 +90,14 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (settings.get('Accounts_RequireNameForSignUp') && !userData._id && !s.trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !userData._id && !trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
 		});
 	}
 
-	if (!userData._id && !s.trim(userData.username)) {
+	if (!userData._id && !trim(userData.username)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Username is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Username',

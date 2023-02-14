@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { createColors } from 'colorette';
 
 // force enable colors on dev env
@@ -16,8 +15,8 @@ export function showBox(title: string, message: string, color?: LogColors): void
 		msgLines.map((line) => line.length),
 	);
 
-	const topLine = `+--${s.pad('', len, '-')}--+`;
-	const separator = `|  ${s.pad('', len, '')}  |`;
+	const topLine = `+--${'-'.repeat(len)}--+`;
+	const separator = `|  ${' '.repeat(len)}  |`;
 
 	const lines = [];
 
@@ -28,7 +27,7 @@ export function showBox(title: string, message: string, color?: LogColors): void
 	}
 	lines.push(separator);
 
-	[...lines, ...msgLines.map((line) => `|  ${s.rpad(line, len)}  |`), separator, topLine].forEach((line) =>
+	[...lines, ...msgLines.map((line) => `|  ${line.padEnd(len)}  |`), separator, topLine].forEach((line) =>
 		console.log(color ? colors[color](line) : line),
 	);
 }
