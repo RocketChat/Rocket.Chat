@@ -35,6 +35,8 @@ export class LivechatRooms extends Base {
 			},
 		);
 		this.tryEnsureIndex({ 'livechatData.$**': 1 });
+		this.tryEnsureIndex({ pdfTranscriptRequested: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pdfFileId: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {

@@ -65,7 +65,8 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 		}
 
 		Promise.await(
-			Promise.all([
+			// We don't want one killing the other :)
+			Promise.allSettled([
 				closeOmnichannelConversations(user, livechatSubscribedRooms),
 				relinquishRoomOwnerships(user, chatSubscribedRooms, false),
 			]),
