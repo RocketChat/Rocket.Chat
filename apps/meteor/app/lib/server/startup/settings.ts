@@ -524,6 +524,12 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
+
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Omnichannel_transcript_email',
+		});
 	});
 
 	this.section('Avatar', function () {
